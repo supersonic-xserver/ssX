@@ -306,7 +306,7 @@ Strdup(const char *s){
 static void 
 createtmpdir(void) {
        /* length of prefix + 20 (digits in 2**64) + 1 (slash) + 1 */
-       temp_dir = Malloc(strlen(TEMPORARY_XF86CONFIG_DIR_PREFIX) + 22);
+       temp_dir = Malloc(strlen(TEMPORARY_XF86CONFIG_DIR_PREFIX) + 23);
        sprintf(temp_dir, "%s%ld", TEMPORARY_XF86CONFIG_DIR_PREFIX,
 	       (long)getpid());
        if (mkdir(temp_dir, 0700) != 0) {
