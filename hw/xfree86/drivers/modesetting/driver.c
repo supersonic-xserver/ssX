@@ -2125,8 +2125,17 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     pScrn->vtSema = TRUE;
 
-    if (ms->vrr_support)
-        pScreen->SetWindowVRRMode = msSetWindowVRRMode;
+    if (ms->vrr_support) {
+        if (!property_vectors_wrapped) {
+            saved_change_property = ProcVector[X_ChangeProperty];
+            ProcVector[X_ChangeProperty] = ms_change_property;
+            saved_delete_property = ProcVector[X_DeleteProperty];
+            ProcVector[X_DeleteProperty] = ms_delete_property;
+            property_vectors_wrapped = TRUE;
+        }
+        vrr_atom = MakeAtom("_VARIABLE_REFRESH",
+                             strlen("_VARIABLE_REFRESH"), TRUE);
+    }
 
     return TRUE;
 }
