@@ -40,9 +40,7 @@
 #include <X11/extensions/randr.h>
 #include <X11/extensions/Xv.h>
 
-#ifdef GLAMOR_HAS_EGL
 #include <epoxy/egl.h>
-#endif
 
 #include "config/hotplug_priv.h"
 #include "dix/dix_priv.h"
