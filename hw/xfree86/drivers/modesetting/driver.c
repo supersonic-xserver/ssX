@@ -92,6 +92,12 @@ static Bool ms_pci_probe(DriverPtr driver,
                          intptr_t match_data);
 #endif
 static Bool ms_driver_func(ScrnInfoPtr scrn, xorgDriverFuncOp op, void *data);
+/* window wrapper functions used to get the notification when the window property changes */
+static Atom vrr_atom;
+static Bool property_vectors_wrapped;
+static Bool restore_property_vector;
+static int (*saved_change_property) (ClientPtr client);
+static int (*saved_delete_property) (ClientPtr client);
 
 #ifdef XSERVER_LIBPCIACCESS
 static const struct pci_id_match ms_device_match[] = {
