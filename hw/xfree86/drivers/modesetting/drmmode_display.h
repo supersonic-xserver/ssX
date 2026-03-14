@@ -113,6 +113,7 @@ typedef struct {
     /** Is Option "PageFlip" enabled? */
     Bool pageflip;
     Bool force_24_32;
+    uint32_t triple_buffer_name;
     void *shadow_fb;
     void *shadow_fb2;
 
