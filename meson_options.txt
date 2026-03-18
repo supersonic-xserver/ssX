@@ -38,9 +38,9 @@ option('xkb_default_layout', type: 'string', value: 'us')
 option('xkb_default_variant', type: 'string')
 option('xkb_default_options', type: 'string')
 
-option('vendor_name', type: 'string', value: 'The X.Org Foundation')
-option('vendor_name_short', type: 'string', value: 'X.Org')
-option('vendor_web', type: 'string', value: 'http://wiki.x.org')
+option('vendor_name', type: 'string', value: 'Super Sonic X')
+option('vendor_name_short', type: 'string', value: 'ssX')
+option('vendor_web', type: 'string', value: 'https://github.com/supersonic-xserver')
 option('os_vendor', type: 'string', value: '')
 
 option('listen_tcp', type: 'boolean', value: false,
