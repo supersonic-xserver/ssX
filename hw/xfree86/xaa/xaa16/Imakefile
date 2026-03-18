@@ -1,0 +1,8 @@
+XCOMM $XFree86$
+
+#define LinkDirectory ..
+#define PixelSize 16
+#define BPPDEFINES -DPSZ=16
+#define BPPOBJECTNAME xaa16
+
+#include "../ImakefileBPP"
