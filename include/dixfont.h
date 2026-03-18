@@ -79,6 +79,12 @@ extern _X_EXPORT int SetFontPath(ClientPtr /*client */ ,
                                  int /*npaths */ ,
                                  unsigned char * /*paths */ );
 
+/* Backward-compatible wrapper for legacy code - takes just npaths and paths */
+static inline int SetFontPathCompat(int npaths, unsigned char *paths)
+{
+    return SetFontPath(NULL, npaths, paths);
+}
+
 extern _X_EXPORT int SetDefaultFontPath(const char * /*path */ );
 
 extern _X_EXPORT int GetFontPath(ClientPtr client,
@@ -102,5 +108,13 @@ extern _X_EXPORT void GetGlyphs(FontPtr /*font */ ,
                                 FontEncoding /*fontEncoding */ ,
                                 unsigned long * /*glyphcount */ ,
                                 CharInfoPtr * /*glyphs */ );
+
+/* ssX: Legacy glyph extent query - forward declaration */
+/* Note: ExtentInfoRec is already defined in X11/fonts/fontstruct.h */
+
+extern _X_EXPORT void QueryGlyphExtents(FontPtr /*pFont */,
+                                        CharInfoPtr * /*ppci */,
+                                        unsigned long /*nglyph */,
+                                        ExtentInfoRec * /*info */);
 
 #endif                          /* DIXFONT_H */

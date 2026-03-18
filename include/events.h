@@ -33,6 +33,6 @@ typedef struct _RawDeviceEvent RawDeviceEvent;
 #ifdef XQUARTZ
 typedef struct _XQuartzEvent XQuartzEvent;
 #endif
-typedef union _InternalEvent InternalEvent;
+/* ssX: InternalEvent is defined in input.h for compatibility */
 
 #endif

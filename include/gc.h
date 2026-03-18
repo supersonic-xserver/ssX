@@ -89,6 +89,7 @@ extern void ValidateGC(
     GCPtr /*pGC*/);
 
 extern int ChangeGC(
+    ClientPtr /*client*/,
     GCPtr/*pGC*/,
     BITS32 /*mask*/,
     XID* /*pval*/);

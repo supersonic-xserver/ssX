@@ -30,6 +30,10 @@
 
 #define DRI3_SCREEN_INFO_VERSION        1
 
+/* DRI3 version macros - used in request handlers */
+#define SERVER_DRI3_MAJOR_VERSION 1
+#define SERVER_DRI3_MINOR_VERSION 0
+
 typedef int (*dri3_open_proc)(ScreenPtr screen,
                               RRProviderPtr provider,
                               int *fd);

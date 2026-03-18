@@ -27,6 +27,8 @@
 #ifndef _DAMAGE_H_
 #define _DAMAGE_H_
 
+#include "region.h"
+
 typedef struct _damage	*DamagePtr;
 
 typedef enum _damageReportLevel {

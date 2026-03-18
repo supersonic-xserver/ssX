@@ -25,6 +25,34 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define XaceAllowOperation  1
 #define XaceIgnoreOperation 2
 
+/* ssX compatibility: Additional access types */
+#define XACE_SERVER_ACCESS       1
+#define XACE_DEVICE_ACCESS       2
+#define XACE_PROPERTY_ACCESS    3
+#define XACE_SELECTION_ACCESS    4
+#define XACE_DRAWABLE_ACCESS    5
+#define XACE_SCREEN_ACCESS      6
+#define XACE_WINDOW_ACCESS      7
+#define XACE_PIXMAP_ACCESS     8
+#define XACE_CURSOR_ACCESS     9
+#define XACE_GC_ACCESS         10
+#define XACE_FONT_ACCESS       11
+
+/* Access masks */
+#define DixReadAccess           (1 << 0)
+#define DixWriteAccess          (1 << 1)
+#define DixGetAttrAccess       (1 << 2)
+#define DixSetAttrAccess       (1 << 3)
+#define DixUseAccess           (1 << 4)
+#define DixCreateAccess        (1 << 5)
+#define DixManageAccess        (1 << 6)
+#define DixDestroyAccess       (1 << 7)
+#define DixRemoveAccess        (1 << 13)
+#define DixListPropAccess      (1 << 9)
+#define DixGetFocusAccess     (1 << 10)
+#define DixSetFocusAccess     (1 << 11)
+#define DixGrabAccess         (1 << 12)
+
 #ifdef XACE
 
 #define XACE_EXTENSION_NAME		"XAccessControlExtension"
@@ -61,12 +89,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 extern CallbackListPtr XaceHooks[XACE_NUM_HOOKS];
 
-/* Entry point for hook functions.  Called by Xserver.
- */
-extern int XaceHook(
-    int /*hook*/,
-    ... /*appropriate args for hook*/
-    ); 
+/* Note: XaceHook is defined in include/xace.h as an inline function
+ * when XACE is enabled. Don't declare it here to avoid conflicts. */
 
 /* Register a callback for a given hook.
  */
@@ -96,13 +120,8 @@ extern void XaceCensorImage(
 
 /* Define calls away when XACE is not being built. */
 
-#ifdef __GNUC__
-#define XaceHook(args...) XaceAllowOperation
-#define XaceCensorImage(args...) { ; }
-#else
-#define XaceHook(...) XaceAllowOperation
-#define XaceCensorImage(...) { ; }
-#endif
+#define XaceHook(...) (Success)
+#define XaceCensorImage(...) do { } while(0)
 
 #endif /* XACE */
 

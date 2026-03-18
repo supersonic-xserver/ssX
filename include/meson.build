@@ -149,9 +149,8 @@ conf_data.set('HAVE_WALKCONTEXT', cc.has_function('walkcontext'))
 
 conf_data.set('BUSFAULT', conf_data.get('HAVE_SIGACTION'))
 
-# Don't let X dependencies typedef 'pointer'
-conf_data.set('_XTYPEDEF_POINTER', '1')
-conf_data.set('_XITYPEDEF_POINTER', '1')
+# NOTE: _XTYPEDEF_POINTER and _XITYPEDEF_POINTER are now handled
+# by the header files themselves to avoid conflicts with system X11 headers
 
 conf_data.set('LISTEN_TCP', get_option('listen_tcp'))
 conf_data.set('LISTEN_UNIX', get_option('listen_unix'))

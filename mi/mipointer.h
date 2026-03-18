@@ -155,13 +155,21 @@ extern void miPointerGetPosition(
     int *x,
     int *y);
 
-/* Moves the cursor to the specified position.  May clip the co-ordinates:
- * x and y are modified in-place. */
+/* Legacy version */
 extern void miPointerSetPosition(
     DeviceIntPtr pDev,
     int *x,
     int *y,
     unsigned long time);
+
+/* ssX: Extended version with barrier/event support - matches Xlibre/XFree86 API */
+extern ScreenPtr miPointerSetPositionExt(
+    DeviceIntPtr pDev,
+    int mode,
+    double *x,
+    double *y,
+    int *nevents,
+    void *events);
 
 extern void miPointerUpdateSprite(
     DeviceIntPtr pDev);

@@ -54,6 +54,9 @@ SOFTWARE.
 #include "extension.h"
 #include "gc.h"
 
+/* Extension events start at this number - should be same as last core event + 1 */
+#define EXTENSION_EVENT_BASE 64
+
 typedef struct _ExtensionEntry {
     int index;
     void (* CloseDown)(	/* called at server shutdown */

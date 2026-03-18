@@ -198,8 +198,18 @@ typedef struct _xReq *xReqPtr;
 #define SwapRestL(stuff) \
     SwapLongs((CARD32 *)(stuff + 1), LengthRestL(stuff))
 
-/* byte swap a 32-bit value */
-#define swapl(x, n) { \
+/* byte swap a 32-bit value - single argument version for SwapLongs use */
+#define swapl_1(x) { \
+		 char _swapl_n; \
+		 _swapl_n = ((char *) (x))[0];\
+		 ((char *) (x))[0] = ((char *) (x))[3];\
+		 ((char *) (x))[3] = _swapl_n;\
+		 _swapl_n = ((char *) (x))[1];\
+		 ((char *) (x))[1] = ((char *) (x))[2];\
+		 ((char *) (x))[2] = _swapl_n; }
+
+/* byte swap a 32-bit value - two argument version for swaprep.c */
+#define swapl_2(x, n) { \
 		 n = ((char *) (x))[0];\
 		 ((char *) (x))[0] = ((char *) (x))[3];\
 		 ((char *) (x))[3] = n;\
@@ -207,8 +217,15 @@ typedef struct _xReq *xReqPtr;
 		 ((char *) (x))[1] = ((char *) (x))[2];\
 		 ((char *) (x))[2] = n; }
 
-/* byte swap a short */
-#define swaps(x, n) { \
+/* byte swap a short - single argument version for SwapShorts use */
+#define swaps_1(x) { \
+		 char _swaps_n; \
+		 _swaps_n = ((char *) (x))[0];\
+		 ((char *) (x))[0] = ((char *) (x))[1];\
+		 ((char *) (x))[1] = _swaps_n; }
+
+/* byte swap a short - two argument version for swaprep.c */
+#define swaps_2(x, n) { \
 		 n = ((char *) (x))[0];\
 		 ((char *) (x))[0] = ((char *) (x))[1];\
 		 ((char *) (x))[1] = n; }
@@ -232,6 +249,13 @@ extern void SwapLongs(
 extern void SwapShorts(
     short *list,
     unsigned long count);
+
+/* Convert byte count to 32-bit word count (for font replies) */
+static inline int
+bytes_to_int32(int bytes)
+{
+    return (bytes + 3) >> 2;
+}
 
 extern void MakePredeclaredAtoms(void);
 

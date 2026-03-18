@@ -59,6 +59,8 @@
 #ifndef GLXVENDORABI_H
 #define GLXVENDORABI_H
 
+#include "xlibre_ptrtypes.h"
+
 #include <scrnintstr.h>
 #include <extnsionst.h>
 #include <GL/glxproto.h>
@@ -75,7 +77,7 @@
  * will still work.
  */
 #define GLXSERVER_VENDOR_ABI_MAJOR_VERSION 0
-#define GLXSERVER_VENDOR_ABI_MINOR_VERSION 0
+#define GLXSERVER_VENDOR_ABI_MINOR_VERSION 1
 
 #if defined(__cplusplus)
 extern "C" {
@@ -223,7 +225,7 @@ typedef struct GlxServerExportsRec {
      * up the old context private pointer.
      *
      * However, this function is not safe to use from a ClientStateCallback,
-     * because GLVND may have alraedy deleted the tag by that point.
+     * because GLVND may have already deleted the tag by that point.
      */
     void * (* getContextTagPrivate)(ClientPtr client, GLXContextTag tag);
 
@@ -236,6 +238,17 @@ typedef struct GlxServerExportsRec {
      * \param client The client.
      */
     int (* forwardRequest) (GlxServerVendor *vendor, ClientPtr client);
+
+    /**
+     * Sets the vendor library to use for a screen for a specific client.
+     *
+     * This function changes which vendor should handle GLX requests for a
+     * screen. Unlike \c setScreenVendor, this function can be called at any
+     * time, and only applies to requests from a single client.
+     *
+     * This function is available in GLXVND version 0.1 or later.
+     */
+    Bool (* setClientScreenVendor) (ClientPtr client, ScreenPtr screen, GlxServerVendor *vendor);
 } GlxServerExports;
 
 extern _X_EXPORT const GlxServerExports glxServer;

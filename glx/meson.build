@@ -57,12 +57,12 @@ endif
 srcs_vnd = [
     'vndcmds.c',
     'vndext.c',
-    'vndservermapping.c',
-    'vndservervendor.c',
+    # 'vndservermapping.c',
+    # 'vndservervendor.c',
 ]
 
 hdrs_vnd = [
-    'vndserver.h',
+    # 'vndserver.h',
 ]
 
 libglxvnd = ''

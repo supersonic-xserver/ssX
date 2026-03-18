@@ -41,6 +41,7 @@
 
 #include "dix.h"
 #include "inputstr.h"
+#include "xace.h"
 #include "misc.h"
 #include "eventstr.h"
 #include "exglobals.h"
@@ -340,7 +341,11 @@ getValuatorEvents(DeviceEvent *ev, deviceValuator *xv)
         DeviceIntPtr dev = NULL;
         dixLookupDevice(&dev, ev->deviceid, serverClient, DixUseAccess);
         /* State needs to be assembled BEFORE the device is updated. */
+#ifdef XKB
         state = (dev && dev->key) ? XkbStateFieldFromRec(&dev->key->xkbInfo->state) : 0;
+#else
+        state = 0;
+#endif
         state |= (dev && dev->button) ? (dev->button->state) : 0;
     }
 

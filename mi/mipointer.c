@@ -473,6 +473,70 @@ miPointerSetPosition(DeviceIntPtr pDev, int *x, int *y, unsigned long time)
     miPointerMoved(pDev, pScreen, *x, *y, time);
 }
 
+/* ssX: Extended version of miPointerSetPosition for XI2 support */
+_X_EXPORT ScreenPtr
+miPointerSetPositionExt(DeviceIntPtr pDev, int mode, double *x, double *y,
+                       int *nevents, void *events)
+{
+    miPointerScreenPtr	pScreenPriv;
+    ScreenPtr		pScreen;
+    ScreenPtr		newScreen;
+    int ix, iy;
+
+    pScreen = miPointer.pScreen;
+    if (!pScreen)
+	return NULL;
+
+    if (!pDev || !(pDev->coreEvents || pDev == inputInfo.pointer))
+        return pScreen;
+
+    /* Convert double coordinates to integer */
+    ix = (int)*x;
+    iy = (int)*y;
+
+    if (ix < 0 || ix >= pScreen->width || iy < 0 || iy >= pScreen->height)
+    {
+	pScreenPriv = GetScreenPrivate (pScreen);
+	if (!miPointer.confined)
+	{
+	    newScreen = pScreen;
+	    (*pScreenPriv->screenFuncs->CursorOffScreen) (&newScreen, &ix, &iy);
+	    if (newScreen != pScreen)
+	    {
+		pScreen = newScreen;
+		(*pScreenPriv->screenFuncs->NewEventScreen) (pScreen, FALSE);
+		pScreenPriv = GetScreenPrivate (pScreen);
+	    	/* Smash the confine to the new screen */
+	    	miPointer.limits.x2 = pScreen->width;
+	    	miPointer.limits.y2 = pScreen->height;
+	    }
+	}
+    }
+    /* Constrain the sprite to the current limits. */
+    if (ix < miPointer.limits.x1)
+	ix = miPointer.limits.x1;
+    if (ix >= miPointer.limits.x2)
+	ix = miPointer.limits.x2 - 1;
+    if (iy < miPointer.limits.y1)
+	iy = miPointer.limits.y1;
+    if (iy >= miPointer.limits.y2)
+	iy = miPointer.limits.y2 - 1;
+
+    /* Update the double coordinates with constrained values */
+    *x = ix;
+    *y = iy;
+
+    if (miPointer.x == ix && miPointer.y == iy && miPointer.pScreen == pScreen) {
+        if (nevents) *nevents = 0;
+        return pScreen;
+    }
+
+    miPointerMoved(pDev, pScreen, ix, iy, GetTimeInMillis());
+    
+    if (nevents) *nevents = 0;
+    return pScreen;
+}
+
 _X_EXPORT void
 miPointerPosition (int *x, int *y)
 {

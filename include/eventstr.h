@@ -64,6 +64,10 @@ enum EventType {
     ET_RawButtonPress,
     ET_RawButtonRelease,
     ET_RawMotion,
+    ET_RawTouchBegin,
+    ET_RawTouchUpdate,
+    ET_RawTouchEnd,
+    ET_TouchOwnership,
     ET_XQuartz,
     ET_Internal = 0xFF /* First byte */
 };
@@ -157,6 +161,9 @@ struct _DeviceChangedEvent
         uint32_t resolution;    /**< Resolution counts/m */
         uint8_t mode;           /**< Relative or Absolute */
         Atom name;              /**< Axis name */
+        /* XI2 compatibility members */
+        int value;              /**< Current value */
+        int scroll;             /**< Scroll type */
     } valuators[MAX_VALUATORS];
 
     struct {
@@ -164,6 +171,21 @@ struct _DeviceChangedEvent
         int max_keycode;
     } keys;
 };
+
+/* Touch ownership event for XI2 compatibility */
+typedef struct _TouchOwnershipEvent {
+    unsigned char header;
+    enum EventType type;
+    int length;
+    Time time;
+    int deviceid;
+    int sourceid;
+    int touchid;
+    Window root;
+    Window window;
+    int x;
+    int y;
+} TouchOwnershipEvent;
 
 #ifdef XFreeXDGA
 /**

@@ -225,6 +225,7 @@ extern pointer LookupClientResourceComplex(
 #define DixWriteAccess		(1<<1)	/* changing the object */
 #define DixReadWriteAccess	(DixReadAccess|DixWriteAccess)
 #define DixDestroyAccess	(1<<2)	/* destroying the object */
+#define DixUseAccess		DixReadWriteAccess	/* use the object */
 
 extern pointer SecurityLookupIDByType(
     ClientPtr /*client*/,

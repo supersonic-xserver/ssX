@@ -55,12 +55,60 @@ SOFTWARE.
 #include <X11/fonts/font.h>
 #include "input.h"
 #include "cursor.h"
+#include "colormap.h"
+
+/* Compatibility macro - pCompositeClip is accessed directly from GC */
+#define miGetCompositeClip(pGC) ((pGC)->pCompositeClip)
 
 #define MiBits	CARD32
 
 typedef struct _miDash *miDashPtr;
 #define EVEN_DASH	0
 #define ODD_DASH	~0
+
+/* micopy.c */
+
+/* miCopyProc - type for copy functions */
+typedef void (*miCopyProc)(
+    DrawablePtr /*pSrcDrawable*/,
+    DrawablePtr /*pDstDrawable*/,
+    GCPtr /*pGC*/,
+    BoxPtr /*pbox*/,
+    int /*nbox*/,
+    int /*dx*/,
+    int /*dy*/,
+    Bool /*reverse*/,
+    Bool /*upsidedown*/,
+    Pixel /*bitPlane*/,
+    void * /*closure*/
+);
+
+extern void miCopyRegion(
+    DrawablePtr /*pSrcDrawable*/,
+    DrawablePtr /*pDstDrawable*/,
+    GCPtr /*pGC*/,
+    RegionPtr /*pDstRegion*/,
+    int /*dx*/,
+    int /*dy*/,
+    miCopyProc /*copyProc*/,
+    Pixel /*bitPlane*/,
+    void * /*closure*/
+);
+
+extern RegionPtr miDoCopy(
+    DrawablePtr /*pSrcDrawable*/,
+    DrawablePtr /*pDstDrawable*/,
+    GCPtr /*pGC*/,
+    int /*xIn*/,
+    int /*yIn*/,
+    int /*widthSrc*/,
+    int /*heightSrc*/,
+    int /*xOut*/,
+    int /*yOut*/,
+    miCopyProc /*copyProc*/,
+    Pixel /*bitPlane*/,
+    void * /*closure*/
+);
 
 /* miarc.c */
 
@@ -573,5 +621,8 @@ extern void miPolyFillArc(
     int /*narcs*/,
     xArc * /*parcs*/
 );
+
+/* Compatibility stub for legacy DDX code */
+#define miSourceValidate(pDraw, x, y, w, h, subWindowMode) /* no-op */
 
 #endif /* MI_H */

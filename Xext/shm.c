@@ -53,7 +53,7 @@ in this Software without prior written authorization from The Open Group.
 #include "gcstruct.h"
 #include "extnsionst.h"
 #include "servermd.h"
-#include "shmint.h"
+#include <shmint.h>
 #include "xace.h"
 #include <X11/extensions/shmproto.h>
 #include <X11/Xfuncproto.h>

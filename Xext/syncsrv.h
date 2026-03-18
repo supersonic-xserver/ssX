@@ -85,9 +85,9 @@ typedef XID XSyncAlarm;
  */
 #ifndef CARD64
 #if defined(__alpha__) || defined(__alpha) || defined(_XSERVER64)
-typedef long CARD64;
+typedef unsigned long CARD64;
 #else
-typedef int64_t CARD64;
+typedef uint64_t CARD64;
 #endif
 #endif
 

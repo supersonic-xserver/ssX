@@ -90,6 +90,8 @@ typedef struct _Pixmap {
     short		screen_x;
     short		screen_y;
 #endif
+    /* ssX: shared pixmap support */
+    PixmapPtr		primary_pixmap;
 } PixmapRec;
 
 #endif /* PIXMAPSTRUCT_H */

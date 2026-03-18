@@ -456,10 +456,14 @@
 #undef BUSFAULT
 
 /* Don't let Xdefs.h define 'pointer' */
+#ifndef _XTYPEDEF_POINTER
 #define _XTYPEDEF_POINTER       1
+#endif
 
 /* Don't let XIproto define 'Pointer' */
+#ifndef _XITYPEDEF_POINTER
 #define _XITYPEDEF_POINTER      1
+#endif
 
 /* Ask fontsproto to make font path element names const */
 #define FONT_PATH_ELEMENT_NAME_CONST    1

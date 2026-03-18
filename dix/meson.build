@@ -26,6 +26,7 @@ srcs_dix = [
     'registry.c',
     'resource.c',
     'selection.c',
+    'ssx_shims.c',
     'swaprep.c',
     'swapreq.c',
     'tables.c',

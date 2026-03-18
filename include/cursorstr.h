@@ -90,6 +90,18 @@ typedef struct {
     ScreenPtr  pScreen;
 } HotSpot;
 
+/* Sprite structure for pointer device tracking */
+typedef struct _Sprite {
+    ScreenPtr screen;
+    int x, y;  /* current position */
+    HotSpot hotPhys;  /* physical hot spot */
+    HotSpot hotWarn;   /* warning: may be invalid */
+    /* ssX: legacy support - window for focus tracking */
+    WindowPtr win;
+    /* ssX: XI2 compatibility - hot for multi-pointer access */
+    HotSpot hot;
+} SpriteRec, *SpritePtr;
+
 #ifdef XEVIE
 extern HotSpot xeviehot;
 #endif

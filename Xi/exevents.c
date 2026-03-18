@@ -1272,3 +1272,4 @@ SendEventToAllWindows(DeviceIntPtr dev, Mask mask, xEvent * ev, int count)
         FindInterestedChildren(dev, p1, mask, ev, count);
     }
 }
+

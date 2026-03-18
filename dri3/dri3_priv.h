@@ -32,7 +32,7 @@
 #include <randrstr.h>
 #include "dri3.h"
 
-extern DevPrivateKeyRec dri3_screen_private_key;
+extern DevPrivateKey dri3_screen_private_key;
 
 typedef struct dri3_screen_priv {
     CloseScreenProcPtr          CloseScreen;

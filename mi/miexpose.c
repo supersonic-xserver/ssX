@@ -410,7 +410,7 @@ miSendGraphicsExpose (client, pRgn, drawable, major, minor)
 	    pe->u.graphicsExposure.majorEvent = major;
 	    pe->u.graphicsExposure.minorEvent = minor;
 	}
-	TryClientEvents(client, pEvent, numRects,
+	TryClientEvents(client, NULL, pEvent, numRects,
 			    (Mask)0, NoEventMask, NullGrab);
 	DEALLOCATE_LOCAL(pEvent);
     }
@@ -421,7 +421,7 @@ miSendGraphicsExpose (client, pRgn, drawable, major, minor)
 	event.u.noExposure.drawable = drawable;
 	event.u.noExposure.majorEvent = major;
 	event.u.noExposure.minorEvent = minor;
-	TryClientEvents(client, &event, 1,
+	TryClientEvents(client, NULL, &event, 1,
 	    (Mask)0, NoEventMask, NullGrab);
     }
 }
@@ -461,8 +461,8 @@ miSendExposures(pWin, pRgn, dx, dy)
 	XID realWin = 0;
 
 	if(!pWin->parent) {
-	    x = panoramiXdataPtr[scrnum].x;
-	    y = panoramiXdataPtr[scrnum].y;
+	    x = 0; // ssX: TODO: Restore panoramiX data
+	    y = 0; // ssX: TODO: Restore panoramiX data
 	    pWin = WindowTable[0];
 	    realWin = pWin->drawable.id;
 	} else if (scrnum) {

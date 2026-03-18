@@ -56,6 +56,7 @@ SOFTWARE.
 #include "validate.h"
 #include <X11/Xproto.h>
 #include "dix.h"
+#include "list.h"
 
 typedef struct _PixmapFormat {
     unsigned char	depth;
@@ -201,7 +202,11 @@ typedef    PixmapPtr (* CreatePixmapProcPtr)(
 	ScreenPtr /*pScreen*/,
 	int /*width*/,
 	int /*height*/,
-	int /*depth*/);
+	int /*depth*/,
+	int /*usage_hint*/);
+
+/* Compatibility macro for legacy 4-argument CreatePixmap calls */
+#define CreatePixmap_4(s, w, h, d) (*(s)->CreatePixmap)((s), (w), (h), (d), 0)
 
 typedef    Bool (* DestroyPixmapProcPtr)(
 	PixmapPtr /*pPixmap*/);
@@ -423,6 +428,16 @@ typedef    void (* MarkUnrealizedWindowProcPtr)(
 	WindowPtr /*pWin*/,
 	Bool /*fromConfigure*/);
 
+/* Pixmap sharing function pointers */
+typedef    Bool (* SharePixmapBackingProcPtr)(
+	PixmapPtr /*pPixmap*/,
+	ScreenPtr /*pScreen*/,
+	void ** /*pHandle*/);
+
+typedef    Bool (* SetSharedPixmapBackingProcPtr)(
+	PixmapPtr /*pPixmap*/,
+	void * /*handle*/);
+
 typedef struct _Screen {
     int			myNum;	/* index of this instance in Screens[] */
     ATOM		id;
@@ -579,6 +594,16 @@ typedef struct _Screen {
     ChangeBorderWidthProcPtr	ChangeBorderWidth;
     MarkUnrealizedWindowProcPtr	MarkUnrealizedWindow;
 
+    /* Pixmap sharing for DRI3 */
+    SharePixmapBackingProcPtr	SharePixmapBacking;
+    SetSharedPixmapBackingProcPtr SetSharedPixmapBacking;
+
+    /* Dirty tracking for pixmaps */
+    struct xorg_list pixmap_dirty_list;
+
+    /* Root window for this screen */
+    WindowPtr root;
+
 } ScreenRec;
 
 typedef struct _ScreenInfo {
@@ -593,6 +618,9 @@ typedef struct _ScreenInfo {
     int		numScreens;
     ScreenPtr	screens[MAXSCREENS];
     int		numVideoScreens;
+    /* Screen position and size */
+    int		x, y;
+    int		width, height;
 } ScreenInfo;
 
 extern ScreenInfo screenInfo;

@@ -315,8 +315,8 @@ main(int argc, char *argv[], char *envp[])
 	{
 	    CreateWellKnownSockets();
 	    InitProcVectors();
-	    clients = (ClientPtr *)xalloc(MAXCLIENTS * sizeof(ClientPtr));
-	    if (!clients)
+	    *clients = (ClientPtr)xalloc(MAXCLIENTS * sizeof(ClientPtr));
+	    if (!*clients)
 		FatalError("couldn't create client array");
 	    for (i=1; i<MAXCLIENTS; i++) 
 		clients[i] = NullClient;
@@ -381,7 +381,7 @@ main(int argc, char *argv[], char *envp[])
 	for (i = 0; i < screenInfo.numScreens; i++)
 	{
 	    ScreenPtr pScreen = screenInfo.screens[i];
-	    if (!CreateScratchPixmapsForScreen(i))
+	    if (!CreateScratchPixmapsForScreen(pScreen))
 		FatalError("failed to create scratch pixmaps");
 	    if (pScreen->CreateScreenResources &&
 		!(*pScreen->CreateScreenResources)(pScreen))
@@ -400,7 +400,7 @@ main(int argc, char *argv[], char *envp[])
 
 	InitFonts();
 	if (loadableFonts) {
-	    SetFontPath(0, 0, (unsigned char *)defaultFontPath, &error);
+	    SetFontPath(0, 1, (unsigned char *)defaultFontPath);
 	}
         else {
 	    if (SetDefaultFontPath(defaultFontPath) != Success)
@@ -472,7 +472,7 @@ main(int argc, char *argv[], char *envp[])
 	CloseDownDevices();
 	for (i = screenInfo.numScreens - 1; i >= 0; i--)
 	{
-	    FreeScratchPixmapsForScreen(i);
+	    FreeScratchPixmapsForScreen(screenInfo.screens[i]);
 	    FreeGCperDepth(i);
 	    FreeDefaultStipple(i);
 	    (* screenInfo.screens[i]->CloseScreen)(i, screenInfo.screens[i]);

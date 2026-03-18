@@ -19,9 +19,70 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * STUFF FOR PRIVATES
  *****************************************************************/
 
-typedef int *DevPrivateKey;
+/* DevPrivateKeyRec - used by older XAA code for private key storage */
+typedef struct _DevPrivateKeyRec {
+    int offset;
+    int size;
+    Bool initialized;
+    Bool allocated;
+    int type;
+    struct _DevPrivateKeyRec *next;
+} DevPrivateKeyRec;
+
+/* DevPrivateKey is a pointer to DevPrivateKeyRec - for XFree86/XAA compatibility */
+typedef DevPrivateKeyRec *DevPrivateKey;
+
+typedef struct _DevPrivateSetRec {
+    DevPrivateKey key;
+    unsigned offset;
+    int created;
+} DevPrivateSetRec, *DevPrivateSet;
+
 struct _Private;
 typedef struct _Private PrivateRec;
+
+/* DevPrivateList - list of private pointers for an object */
+typedef struct _DevPrivateList {
+    DevPrivateKey key;
+    pointer val;
+    struct _DevPrivateList *next;
+} DevPrivateList;
+
+/* Define ConfigNotifyProcPtr - used by DRI3 and others */
+typedef int (*ConfigNotifyProcPtr) (ScreenPtr screen, 
+                                    int x, int y, int w, int h, int bw);
+
+/*
+ * Look up a private pointer.
+ */
+pointer
+dixLookupPrivate(PrivateRec **privates, const DevPrivateKey key);
+
+/* Add compatibility wrapper for dixLookupPrivate that accepts DevUnion** */
+static inline pointer
+dixLookupPrivateCompat(PrivateRec **privates, DevPrivateKey key)
+{
+    return dixLookupPrivate(privates, key);
+}
+#define dixLookupPrivate(d, k) dixLookupPrivateCompat((PrivateRec**)(d), (DevPrivateKey)(k))
+
+/* Private key type identifiers - for dixRegisterPrivateKey */
+#define PRIVATE_SCREEN 1
+#define PRIVATE_WINDOW 2
+#define PRIVATE_PIXMAP 3
+#define PRIVATE_GC 4
+#define PRIVATE_FONT 5
+#define PRIVATE_CURSOR 6
+#define PRIVATE_DEVICE 7
+
+/* Compatibility function for registering private keys - used by DRI3, randr, etc. */
+/* Returns TRUE if successful */
+static inline int
+dixRegisterPrivateKey(DevPrivateKey *key, int private_id, unsigned size)
+{
+    *key = (DevPrivateKey)(intptr_t)private_id;
+    return 1;
+}
 
 /*
  * Request pre-allocated private space for your driver/module.
@@ -37,12 +98,6 @@ extern pointer *
 dixAllocatePrivate(PrivateRec **privates, const DevPrivateKey key);
 
 /*
- * Look up a private pointer.
- */
-pointer
-dixLookupPrivate(PrivateRec **privates, const DevPrivateKey key);
-
-/*
  * Look up the address of a private pointer.
  */
 pointer *
@@ -53,6 +108,14 @@ dixLookupPrivateAddr(PrivateRec **privates, const DevPrivateKey key);
  */
 int
 dixSetPrivate(PrivateRec **privates, const DevPrivateKey key, pointer val);
+
+/* Add compatibility wrapper for dixSetPrivate that accepts DevUnion** */
+static inline int
+dixSetPrivateCompat(PrivateRec **privates, DevPrivateKey key, pointer val)
+{
+    return dixSetPrivate(privates, key, val);
+}
+#define dixSetPrivate(d, k, v) dixSetPrivateCompat((PrivateRec**)(d), (DevPrivateKey)(k), (pointer)(v))
 
 /*
  * Register callbacks to be called on private allocation/freeing.
@@ -108,5 +171,18 @@ dixRegisterPrivateOffset(RESTYPE type, int offset);
  * when making a call to one of the devPrivates functions
  */
 #define DEVPRIV_AT(ptr, offset) ((PrivateRec **)((char *)ptr + offset))
+
+/*
+ * Screen-specific private allocation functions
+ * These are used by the pixmap code
+ */
+extern unsigned int
+dixScreenSpecificPrivatesSize(ScreenPtr pScreen, int private_id);
+
+extern void
+dixInitScreenPrivates(ScreenPtr pScreen, void *p1, void *p2, int private_id);
+
+extern void
+dixFiniPrivates(void *p, int private_id);
 
 #endif /* PRIVATES_H */

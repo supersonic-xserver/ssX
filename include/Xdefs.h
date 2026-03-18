@@ -51,7 +51,7 @@ typedef int Bool;
 #endif
 
 #ifndef _XTYPEDEF_POINTER
-#  define _XTYPEDEF_POINTER
+#define _XTYPEDEF_POINTER
 typedef void *pointer;
 #endif
 
@@ -103,8 +103,10 @@ typedef FSID AccContext;
 typedef struct timeval **OSTimePtr;
 
 
-typedef void (* BlockHandlerProcPtr)(pointer /* blockData */,
-				     OSTimePtr /* pTimeout */,
-				     pointer /* pReadmask */);
+/* Old BlockHandlerProcPtr definition - now in dix.h
+ t y*pedef void (* BlockHandlerProcPtr)(pointer blockData,
+ OSTimePtr pTimeout,
+pointer pReadmask);
+*/
 
 #endif

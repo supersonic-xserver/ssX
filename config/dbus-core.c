@@ -51,11 +51,11 @@ static CARD32 reconnect_timer(OsTimerPtr timer, CARD32 time, pointer arg);
 /*
  * wakeup_handler: called after select() returns.
  *
- * The modern ServerWakeupHandlerProcPtr signature dropped the read_mask
- * argument. We check the fd directly via select with a zero timeout instead.
+ * The modern ServerWakeupHandlerProcPtr signature is 
+ * (void *data, int result, void *pReadmask).
  */
 static void
-wakeup_handler(void *data, int err)
+wakeup_handler(void *data, int err, void *pReadmask)
 {
     struct dbus_core_info *info = data;
 
@@ -79,12 +79,12 @@ wakeup_handler(void *data, int err)
 /*
  * block_handler: called before select().
  *
- * The modern ServerBlockHandlerProcPtr signature is (void *data, void *timeout)
- * where timeout is an opaque pointer — was (pointer, struct timeval **, pointer).
- * This handler has no work to do so both old and new bodies are empty.
+ * The modern ServerBlockHandlerProcPtr signature is 
+ * (void *data, void *timeout, void *pReadmask).
+ * This handler has no work to do so body is empty.
  */
 static void
-block_handler(void *data, void *timeout)
+block_handler(void *data, void *timeout, void *pReadmask)
 {
 }
 

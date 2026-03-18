@@ -48,8 +48,38 @@ SOFTWARE.
 #ifndef PIXMAP_H
 #define PIXMAP_H
 
+/* Define these types early to avoid circular dependency issues */
+typedef struct _Drawable *DrawablePtr;	
+typedef struct _Pixmap *PixmapPtr;
+
+/* Now include other headers */
 #include "misc.h"
 #include "screenint.h"
+#include <pixman.h>
+#include "list.h"
+
+/* Forward declarations for damage types */
+typedef struct _damage *DamagePtr;
+
+/* Use RR_Rotation from randr.h - we include randrstr.h later which provides this */
+typedef unsigned short RR_Rotation;
+
+/* Pixmap dirty tracking structure - forward declare Rotation from randr */
+typedef struct _PixmapDirtyUpdate {
+    DrawablePtr src;
+    PixmapPtr secondary_dst;
+    int x, y;
+    int dst_x, dst_y;
+    RR_Rotation rotation;
+    DamagePtr damage;
+    struct pixman_transform transform;
+    struct pixman_f_transform f_transform;
+    struct pixman_f_transform f_inverse;
+    struct xorg_list ent;
+} PixmapDirtyUpdateRec, *PixmapDirtyUpdatePtr;
+
+/* Pixmap usage types */
+#define CREATE_PIXMAP_USAGE_SHARED 1
 
 /* types for Drawable */
 #define DRAWABLE_WINDOW 0
@@ -72,9 +102,6 @@ SOFTWARE.
 #define PW_BORDER 1
 
 #define NullPixmap ((PixmapPtr)0)
-
-typedef struct _Drawable *DrawablePtr;	
-typedef struct _Pixmap *PixmapPtr;
 
 typedef union _PixUnion {
     PixmapPtr		pixmap;
@@ -106,10 +133,10 @@ extern void FreeScratchPixmapHeader(
     PixmapPtr /*pPixmap*/);
 
 extern Bool CreateScratchPixmapsForScreen(
-    int /*scrnum*/);
+    ScreenPtr /*pScreen*/);
 
 extern void FreeScratchPixmapsForScreen(
-    int /*scrnum*/);
+    ScreenPtr /*pScreen*/);
 
 extern PixmapPtr AllocatePixmap(
     ScreenPtr /*pScreen*/,

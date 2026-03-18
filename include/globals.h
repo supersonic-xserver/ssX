@@ -1,8 +1,22 @@
-
 #ifndef _XSERV_GLOBAL_H_
 #define _XSERV_GLOBAL_H_
 
 #include "window.h"	/* for WindowPtr */
+
+/* Legacy constants for ssX - MAXDEVICES is critical for input handling */
+#define MAXDEVICES 256
+
+/* Legacy default constants for ssX */
+#define DEFAULT_KEYBOARD_CLICK 0
+#define DEFAULT_BELL 50
+#define DEFAULT_BELL_PITCH 0
+#define DEFAULT_BELL_DURATION 0
+#define DEFAULT_AUTOREPEAT 1
+#define DEFAULT_AUTOREPEATS 96
+#define DEFAULT_LEDS 0
+#define DEFAULT_PTR_NUMERATOR 1
+#define DEFAULT_PTR_DENOMINATOR 1
+#define DEFAULT_PTR_THRESHOLD 0
 
 /* Global X server variables that are visible to mi, dix, os, and ddx */
 
@@ -15,12 +29,14 @@ extern CARD32 ScreenSaverInterval;
 extern Bool screenSaverSuspended;
 #endif
 
-extern char *defaultFontPath;
+extern const char *defaultFontPath;
 extern char *rgbPath;
 extern int monitorResolution;
 extern Bool loadableFonts;
 extern int defaultColorVisualClass;
 
+/* Client array - pointer to dynamically allocated array */
+typedef struct _Client *ClientPtr;
 extern Bool Must_have_memory;
 extern WindowPtr *WindowTable;
 extern int GrabInProgress;

@@ -14,6 +14,7 @@ add_global_arguments('-fvisibility=hidden', language : 'c')
 
 add_global_link_arguments('-fvisibility=hidden', language : 'c')
 add_global_arguments('-include', meson.source_root() + '/include/os.h', language : 'c')
+add_global_arguments('-include', meson.source_root() + '/include/ssx_compat.h', language : 'c')
 
 if get_option('static_loader')
     add_project_arguments('-DCONFIG_STATIC_LOADER', language: 'c')
@@ -452,6 +453,7 @@ inc = include_directories(
     'miext/shadow',
     'miext/sync',
     'dbe',
+    'dix',
     'dri3',
     'include',
     'present',

@@ -32,6 +32,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <X11/extensions/XIproto.h>
 #include "input.h"
+#include "inputstr.h"
 #include "client.h"
 #include "window.h"
 #include "dixaccess.h"
@@ -182,5 +183,9 @@ void SendEventToAllWindows(
         Mask                   /* mask */,
         xEvent *               /* ev */,
         int                    /* count */);
+
+extern Bool XIShouldNotify(
+        ClientPtr              /* client */,
+        DeviceIntPtr           /* dev */);
 
 #endif /* EXEVENTS_H */

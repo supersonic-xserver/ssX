@@ -251,6 +251,7 @@ typedef struct
      */
     ProcessInputProc realInputProc;
     DeviceUnwrapProc unwrapProc;
+    XkbDescPtr desc;  /* XKB keyboard description for this device */
 } xkbDeviceInfoRec, *xkbDeviceInfoPtr;
 
 #define WRAP_PROCESS_INPUT_PROC(device, oldprocs, proc, unwrapproc) \
@@ -555,8 +556,11 @@ extern void XkbApplyMappingChange(
     CARD8 		/* request */,
     KeyCode 		/* firstKey */,
     CARD8 		/* num */,
-    ClientPtr		/* client */
-);
+    ClientPtr		/* client */);
+
+/* Legacy compatibility: redirect to handle CARD8* argument */
+#define XkbApplyMappingChange(dev, request, ...) \
+    XkbApplyMappingChange((dev), (CARD8)((uintptr_t)(request)), ## __VA_ARGS__)
 
 extern void XkbSetIndicators(
     DeviceIntPtr		/* pXDev */,

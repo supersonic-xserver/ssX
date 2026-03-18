@@ -197,7 +197,7 @@ RemoveFontWakeup(FontPathElementPtr fpe)
 }
 
 static void
-FontWakeup(void *data, int count)
+FontWakeup(void *data, int count, void *timeout)
 {
     int i;
     FontPathElementPtr fpe;
@@ -1174,7 +1174,7 @@ doPolyText(ClientPtr client, PTclosurePtr c)
                     ChangeGCVal val;
 
                     val.ptr = pFont;
-                    ChangeGC(NullClient, c->pGC, GCFont, &val);
+                    dixChangeGC(NullClient, c->pGC, GCFont, NULL, &val);
                     ValidateGC(c->pDraw, c->pGC);
                 }
 
@@ -1315,7 +1315,7 @@ doPolyText(ClientPtr client, PTclosurePtr c)
             ChangeGCVal val;
 
             val.ptr = pFont;
-            ChangeGC(NullClient, origGC, GCFont, &val);
+            dixChangeGC(NullClient, origGC, GCFont, NULL, &val);
             ValidateGC(c->pDraw, origGC);
         }
 
@@ -1334,7 +1334,7 @@ doPolyText(ClientPtr client, PTclosurePtr c)
     }
     if (ClientIsAsleep(client)) {
         ClientWakeup(c->client);
-        ChangeGC(NullClient, c->pGC, clearGCmask, clearGC);
+        dixChangeGC(NullClient, c->pGC, clearGCmask, NULL, clearGC);
 
         /* Unreference the font from the scratch GC */
         CloseFont(c->pGC->font, (Font) 0);
@@ -1480,7 +1480,7 @@ doImageText(ClientPtr client, ITclosurePtr c)
     }
     if (ClientIsAsleep(client)) {
         ClientWakeup(c->client);
-        ChangeGC(NullClient, c->pGC, clearGCmask, clearGC);
+        dixChangeGC(NullClient, c->pGC, clearGCmask, NULL, clearGC);
 
         /* Unreference the font from the scratch GC */
         CloseFont(c->pGC->font, (Font) 0);
@@ -1918,7 +1918,7 @@ _client_auth_generation(ClientPtr client)
 static int fs_handlers_installed = 0;
 static unsigned int last_server_gen;
 
-static void fs_block_handler(void *blockData, void *timeout)
+static void fs_block_handler(void *blockData, void *blockTime, void *timeout)
 {
     FontBlockHandlerProcPtr block_handler = blockData;
 

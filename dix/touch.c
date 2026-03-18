@@ -30,6 +30,7 @@
 
 #include "inputstr.h"
 #include "scrnintstr.h"
+#include "extensions/xi2proto.h"
 #include "dixgrabs.h"
 
 #include "eventstr.h"

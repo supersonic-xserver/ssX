@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/include/inputstr.h,v 1.6 2003/04/27 21:31:04 herrb Exp $ */
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,21 +45,66 @@ SOFTWARE.
 
 ********************************************************/
 
+
 #ifndef INPUTSTRUCT_H
 #define INPUTSTRUCT_H
 
 #include "input.h"
 #include "window.h"
+#include "cursorstr.h"
+#include <pixman.h>
 #include "dixstruct.h"
 
-#define BitIsOn(ptr, bit) (((BYTE *) (ptr))[(bit)>>3] & (1 << ((bit) & 7)))
+#define BitIsOn(ptr, bit) (((BYTE *) (ptr))[(bit)>>3] & (1 << ((bit) & 7))
 
 #define SameClient(obj,client) \
 	(CLIENT_BITS((obj)->resource) == (client)->clientAsMask)
 
 #define MAX_DEVICES	20
 
+/* Device type constants for device->type */
+#define MASTER_POINTER 1
+#define MASTER_KEYBOARD 2
+#define SLAVE 3
+
+/* Maximum number of event types */
+#define MAXEVENTS 128
+
+/* Additional device type constants */
+#define MASTER_ATTACHED 4
+#define POINTER_OR_FLOAT 5
+#define KEYBOARD_OR_FLOAT 6
+
+/* SpriteInfo - for tracking pointer sprite and device pairing */
+typedef struct _SpriteInfo {
+    SpritePtr sprite;
+    Bool spriteOwner;
+    DeviceIntPtr paired;
+} SpriteInfoRec, *SpriteInfoPtr;
+
+/* Legacy device grab tracking */
+typedef struct _DeviceGrabRec {
+    GrabPtr grab;
+    Bool fromPassiveGrab;
+    TimeStamp timestamp;
+    WindowPtr window;
+    int state;
+    /* Additional members needed for XI2 compatibility */
+    TimeStamp grabTime;
+    void (*ActivateGrab)(DeviceIntPtr device, GrabPtr grab, TimeStamp time, Bool autoGrab);
+    void (*DeactivateGrab)(DeviceIntPtr device);
+    struct {
+        Bool frozen;
+        int state;
+        GrabPtr other;
+        xEvent *event;
+        int evcount;
+    } sync;
+} DeviceGrabRec;
+
 #define EMASKSIZE	MAX_DEVICES
+
+extern int CoreDevicePrivatesIndex;
 
 /* Kludge: OtherClients and InputClients must be compatible, see code */
 
@@ -74,6 +118,7 @@ typedef struct _InputClients {
     InputClientsPtr	next;
     XID			resource; /* id for putting into resource manager */
     Mask		mask[EMASKSIZE];
+    void		*xi2mask; /* XI2 event mask */
 } InputClients;
 
 typedef struct _OtherInputMasks {
@@ -81,6 +126,7 @@ typedef struct _OtherInputMasks {
     Mask		inputEvents[EMASKSIZE];
     Mask		dontPropagateMask[EMASKSIZE];
     InputClientsPtr	inputClients;
+    void		*xi2mask; /* XI2 event mask */
 } OtherInputMasks;
 
 /*
@@ -91,15 +137,15 @@ typedef struct _OtherInputMasks {
  */
 
 #define MasksPerDetailMask 8		/* 256 keycodes and 256 possible
-						modifier combinations, but only	
-						3 buttons. */
+                                           modifier combinations, but only	
+                                           3 buttons. */
 
-  typedef struct _DetailRec {		/* Grab details may be bit masks */
-	unsigned short exact;
-	Mask *pMask;
-  } DetailRec;
+typedef struct _DetailRec {		/* Grab details may be bit masks */
+    unsigned short      exact;
+    Mask                *pMask;
+} DetailRec;
 
-  typedef struct _GrabRec {
+typedef struct _GrabRec {
     GrabPtr		next;		/* for chain of passive grabs */
     XID			resource;
     DeviceIntPtr	device;
@@ -120,6 +166,7 @@ typedef struct _OtherInputMasks {
 
 typedef struct _KeyClassRec {
     CARD8		down[DOWN_LENGTH];
+    CARD8		postdown[DOWN_LENGTH];
     KeyCode 		*modifierKeyMap;
     KeySymsRec		curKeySyms;
     int			modifierKeyCount[8];
@@ -129,8 +176,13 @@ typedef struct _KeyClassRec {
     unsigned short	prev_state;
 #ifdef XKB
     struct _XkbSrvInfo *xkbInfo;
+#else
+    struct _XkbSrvInfo *xkbInfo;  /* Backward compat - always available */
 #endif
-} KeyClassRec, *KeyClassPtr;
+} KeyClassRec;
+#ifndef KeyClassPtr
+#define KeyClassPtr KeyClassRec *
+#endif
 
 typedef struct _AxisInfo {
     int		resolution;
@@ -138,17 +190,82 @@ typedef struct _AxisInfo {
     int		max_resolution;
     int		min_value;
     int		max_value;
+    int             mode;           /* Relative or Absolute */
+    Atom            label;          /* axis label */
+    union {
+        struct {
+            int increment;
+            int type;           /* SCROLL_TYPE_* */
+        } scroll;
+    } scroll;
 } AxisInfo, *AxisInfoPtr;
 
+/* Forward declarations - defined in ptrveloc.h */
+typedef void (*AccelSchemeProcPtr)(DeviceIntPtr /*pDev*/, int /*first_valuator*/,
+                                    int /*num_valuators*/, int */*valuators*/, int /*evtime*/);
+typedef Bool (*AccelInitProcPtr)(DeviceIntPtr /*dev*/, void */*scheme*/);
+typedef void (*AccelCleanupProcPtr)(DeviceIntPtr /*dev*/);
+
+/* Valuator acceleration scheme record */
+typedef struct _ValuatorAccelerationRec {
+    int number;
+    AccelSchemeProcPtr AccelSchemeProc;
+    void *accelData;
+    AccelInitProcPtr AccelInitProc;
+    AccelCleanupProcPtr AccelCleanupProc;
+} ValuatorAccelerationRec, *ValuatorAccelerationPtr;
+
+/* Legacy last device info for tracking previous coordinates */
+/* Forward declaration - actual definition below */
+/* Forward declarations - only if not already defined */
+/* ssX: Use _TOUCHPOINTINFOPTR guard to match dix.h definition */
+#ifndef _TOUCHPOINTINFOPTR
+typedef struct _TouchPointInfoRec *TouchPointInfoPtr;
+#define _TOUCHPOINTINFOPTR
+#endif
+
+#ifndef _DEFINED_DDXTouchPointInfoPtr
+typedef struct _DDXTouchPointInfoRec *DDXTouchPointInfoPtr;
+#define _DEFINED_DDXTouchPointInfoPtr 1
+#endif
+
+typedef struct _LastDeviceInfo {
+    int valuators[MAX_VALUATORS];          /* previous valuator values */
+    float remainder[2];                    /* fractional remainders for acceleration */
+    int numValuators;
+    /* XI2 compatibility members */
+    struct {
+        int value;
+        int type;
+    } scroll[MAX_VALUATORS];
+    /* ssX: Touch support */
+    int num_touches;
+    DDXTouchPointInfoPtr *touches;  /* array of active touch points */
+    /* Master/slave tracking for XI2 */
+    DeviceIntPtr slave;
+} LastDeviceInfo, *LastDeviceInfoPtr;
+
 typedef struct _ValuatorClassRec {
+    ValuatorAccelerationRec accelScheme;
     ValuatorMotionProcPtr GetMotionProc;
-    int		 	numMotionEvents;
-    WindowPtr    	motionHintWindow;
-    AxisInfoPtr 	axes;
-    unsigned short	numAxes;
-    int			*axisVal;
-    CARD8	 	mode;
-} ValuatorClassRec, *ValuatorClassPtr;
+    int		 	  numMotionEvents;
+    int                   first_motion;
+    int                   last_motion;
+    void                  *motion;
+
+    WindowPtr    	  motionHintWindow;
+
+    AxisInfoPtr 	  axes;
+    unsigned short	  numAxes;
+    int			  *axisVal;
+    int                   lastx, lasty; /* last event recorded, not posted to
+                                         * client; see dix/devices.c */
+    int                   dxremaind, dyremaind; /* for acceleration */
+    CARD8	 	  mode;
+} ValuatorClassRec;
+#ifndef ValuatorClassPtr
+#define ValuatorClassPtr ValuatorClassRec *
+#endif
 
 typedef struct _ButtonClassRec {
     CARD8		numButtons;
@@ -156,11 +273,19 @@ typedef struct _ButtonClassRec {
     unsigned short	state;
     Mask		motionMask;
     CARD8		down[DOWN_LENGTH];
+    CARD8		postdown[DOWN_LENGTH];	/* buttons posted to client */
     CARD8		map[MAP_LENGTH];
+    Atom		labels[MAX_BUTTONS];
 #ifdef XKB
-    union _XkbAction *	xkb_acts;
+    union _XkbAction    *xkb_acts;
+#else
+    void                *pad0;
 #endif
-} ButtonClassRec, *ButtonClassPtr;
+    unsigned int	sourceid;
+} ButtonClassRec;
+#ifndef ButtonClassPtr
+#define ButtonClassPtr ButtonClassRec *
+#endif
 
 typedef struct _FocusClassRec {
     WindowPtr	win;
@@ -169,18 +294,67 @@ typedef struct _FocusClassRec {
     WindowPtr	*trace;
     int		traceSize;
     int		traceGood;
-} FocusClassRec, *FocusClassPtr;
+} FocusClassRec;
+#ifndef FocusClassPtr
+#define FocusClassPtr FocusClassRec *
+#endif
 
 typedef struct _ProximityClassRec {
     char	pad;
-} ProximityClassRec, *ProximityClassPtr;
+} ProximityClassRec;
+#ifndef ProximityClassPtr
+#define ProximityClassPtr ProximityClassRec *
+#endif
 
+typedef struct _AbsoluteClassRec {
+    /* Calibration. */
+    int         min_x;
+    int         max_x;
+    int         min_y;
+    int         max_y;
+    int         flip_x;
+    int         flip_y;
+    int		rotation;
+    int         button_threshold;
+
+    /* Area. */
+    int         offset_x;
+    int         offset_y;
+    int         width;
+    int         height;
+    int         screen;
+    XID		following;
+} AbsoluteClassRec, *AbsoluteClassPtr;
+
+#ifndef _KBDFEEDBACKPTR_TYPEDEF
+#define _KBDFEEDBACKPTR_TYPEDEF
 typedef struct _KbdFeedbackClassRec *KbdFeedbackPtr;
+#endif
+
+#ifndef _PTRFEEDBACKPTR_TYPEDEF
+#define _PTRFEEDBACKPTR_TYPEDEF
 typedef struct _PtrFeedbackClassRec *PtrFeedbackPtr;
+#endif
+
+#ifndef _INTEGERFEEDBACKPTR_TYPEDEF
+#define _INTEGERFEEDBACKPTR_TYPEDEF
 typedef struct _IntegerFeedbackClassRec *IntegerFeedbackPtr;
+#endif
+
+#ifndef _STRINGFEEDBACKPTR_TYPEDEF
+#define _STRINGFEEDBACKPTR_TYPEDEF
 typedef struct _StringFeedbackClassRec *StringFeedbackPtr;
+#endif
+
+#ifndef _BELLFEEDBACKPTR_TYPEDEF
+#define _BELLFEEDBACKPTR_TYPEDEF
 typedef struct _BellFeedbackClassRec *BellFeedbackPtr;
+#endif
+
+#ifndef _LEDFEEDBACKPTR_TYPEDEF
+#define _LEDFEEDBACKPTR_TYPEDEF
 typedef struct _LedFeedbackClassRec *LedFeedbackPtr;
+#endif
 
 typedef struct _KbdFeedbackClassRec {
     BellProcPtr		BellProc;
@@ -189,6 +363,8 @@ typedef struct _KbdFeedbackClassRec {
     KbdFeedbackPtr	next;
 #ifdef XKB
     struct _XkbSrvLedInfo *xkb_sli;
+#else
+    void                *pad0;
 #endif
 } KbdFeedbackClassRec;
 
@@ -223,8 +399,71 @@ typedef struct _LedFeedbackClassRec {
     LedFeedbackPtr	next;
 #ifdef XKB
     struct _XkbSrvLedInfo *xkb_sli;
+#else
+    void                *pad0;
 #endif
 } LedFeedbackClassRec;
+
+/* Touch class - for touchscreen/touchpad support */
+/* Only define struct if not already defined */
+#ifndef _DDXTOUCHPOINTINFOREC_DEFINED
+#define _DDXTOUCHPOINTINFOREC_DEFINED
+typedef struct _DDXTouchPointInfoRec {
+    int x, y;
+    WindowPtr win;
+    Bool active;
+    int ddx_id;
+    TimeStamp timestamp;
+    /* Additional fields for touch tracking */
+    void *private;
+    /* ssX: XI2 compatibility */
+    XID client_id;
+    Bool emulate_pointer;
+} DDXTouchPointInfoRec;
+#endif
+
+/* Pointer type - only define if not already defined */
+/* ssX: DDXTouchPointInfoPtr already defined above with _DEFINED_DDXTouchPointInfoPtr guard */
+#ifndef _DDXTOUCHPOINTINFOPTR_TYPEDEF
+#define _DDXTOUCHPOINTINFOPTR_TYPEDEF
+/* Pointer typedef deferred to forward declaration above */
+#endif
+
+#ifndef _TOUCHPOINTINFOREC_DEFINED
+#define _TOUCHPOINTINFOREC_DEFINED
+typedef struct _TouchPointInfoRec {
+    int id;
+    int ddx_id;
+    Bool active;
+    Bool emulated_ptr;
+    TimeStamp start;
+    WindowPtr win;
+    WindowPtr emulatedWin;
+    int num_listeners;
+    struct {
+        DeviceIntPtr *listeners;
+        int num_listeners;
+    } listeners;
+    int remaining_reason;
+    DDXTouchPointInfoPtr ddx_info;
+    /* ssX: XI2 compatibility */
+    void *valuators;
+    void *sprite;
+} TouchPointInfoRec;
+/* ssX: TouchPointInfoPtr already defined above with _TOUCHPOINTINFOPTR guard */
+
+typedef struct _TouchClassRec {
+    TouchPointInfoPtr *touches;
+    int num_touches;
+    int max_touches;
+    /* Touch mode - relative or absolute */
+    int mode;
+    /* For tracking touch ownership */
+    TimeStamp *first_touch;
+} TouchClassRec;
+#ifndef TouchClassPtr
+#define TouchClassPtr TouchClassRec *
+#endif
 
 /* states for devices */
 
@@ -241,13 +480,18 @@ typedef struct _LedFeedbackClassRec {
 typedef struct _DeviceIntRec {
     DeviceRec	public;
     DeviceIntPtr next;
+    LastDeviceInfo       last; /* legacy tracking for previous coordinate states */
+    DeviceGrabRec       deviceGrab; /* legacy device grab tracking */
     TimeStamp	grabTime;
+    void               *idle_counter;  /* XI2 idle counter */
     Bool	startup;		/* true if needs to be turned on at
 				          server intialization time */
     DeviceProc	deviceProc;		/* proc(DevicePtr, DEVICE_xx). It is
 					  used to initialize, turn on, or
 					  turn off the device */
     Bool	inited;			/* TRUE if INIT returns Success */
+    Bool        enabled;                /* TRUE if ON returns Success */
+    Bool        coreEvents;             /* TRUE if device also sends core */
     GrabPtr	grab;			/* the grabber - used by DIX */
     struct {
 	Bool		frozen;
@@ -274,15 +518,31 @@ typedef struct _DeviceIntRec {
     ButtonClassPtr	button;
     FocusClassPtr	focus;
     ProximityClassPtr	proximity;
+    AbsoluteClassPtr    absolute;
     KbdFeedbackPtr	kbdfeed;
     PtrFeedbackPtr	ptrfeed;
     IntegerFeedbackPtr	intfeed;
     StringFeedbackPtr	stringfeed;
     BellFeedbackPtr	bell;
     LedFeedbackPtr	leds;
+    TouchClassPtr	touch;		/* Touch device class */
 #ifdef XKB
-    struct _XkbInterest *	xkb_interest;
+    struct _XkbInterest *xkb_interest;
+#else
+    void                *pad0;
 #endif
+    char                *config_info; /* used by the hotplug layer */
+    DevUnion		*devPrivates;
+    int			nPrivates;
+    DeviceUnwrapProc    unwrapProc;
+    struct pixman_f_transform relative_transform;
+	struct pixman_f_transform transform;
+    struct pixman_f_transform scale_and_transform;
+    /* Master/slave device tracking */
+    DeviceIntPtr master;         /* master device if this is a slave */
+    DeviceIntPtr lastSlave;      /* last attached slave device */
+    /* Sprite for cursor tracking */
+    SpriteInfoPtr spriteInfo;
 } DeviceIntRec;
 
 typedef struct {

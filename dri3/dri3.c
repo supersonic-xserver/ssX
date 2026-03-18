@@ -27,19 +27,19 @@
 #include "dri3_priv.h"
 
 static int dri3_request;
-DevPrivateKeyRec dri3_screen_private_key;
+DevPrivateKey dri3_screen_private_key;
 
 static int dri3_screen_generation;
 
 static Bool
-dri3_close_screen(ScreenPtr screen)
+dri3_close_screen(int index, ScreenPtr screen)
 {
     dri3_screen_priv_ptr screen_priv = dri3_screen_priv(screen);
 
     unwrap(screen_priv, screen, CloseScreen);
 
     free(screen_priv);
-    return (*screen->CloseScreen) (screen);
+    return (*screen->CloseScreen) (index, screen);
 }
 
 Bool
@@ -59,7 +59,7 @@ dri3_screen_init(ScreenPtr screen, dri3_screen_info_ptr info)
 
         screen_priv->info = info;
 
-        dixSetPrivate(&screen->devPrivates, &dri3_screen_private_key, screen_priv);
+        dixSetPrivate(&screen->devPrivates, dri3_screen_private_key, screen_priv);
     }
 
     return TRUE;

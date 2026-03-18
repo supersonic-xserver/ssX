@@ -24,7 +24,13 @@
 #define _RRTRANSFORM_H_
 
 #include <X11/extensions/randr.h>
+#include <pixman.h>
 #include "picturestr.h"
+
+/* Define pict_f_transform structure (float version of PictTransform) */
+struct pict_f_transform {
+    double m[3][3];
+};
 
 typedef struct _rrTransform RRTransformRec, *RRTransformPtr;
 

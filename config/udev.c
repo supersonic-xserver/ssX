@@ -239,11 +239,11 @@ device_removed(struct udev_device *device)
 /*
  * wakeup_handler: called after select() returns.
  *
- * The modern ServerWakeupHandlerProcPtr dropped the read_mask argument.
+ * The modern ServerWakeupHandlerProcPtr is (void *data, int result, void *pReadmask).
  * We check the udev fd directly with a zero-timeout select() instead.
  */
 static void
-wakeup_handler(void *data, int err)
+wakeup_handler(void *data, int err, void *pReadmask)
 {
     int udev_fd = udev_monitor_get_fd(udev_monitor);
     struct udev_device *udev_device;
@@ -278,11 +278,11 @@ wakeup_handler(void *data, int err)
 /*
  * block_handler: called before select().
  *
- * Modern ServerBlockHandlerProcPtr is (void *data, void *timeout).
+ * Modern ServerBlockHandlerProcPtr is (void *data, void *timeout, void *pReadmask).
  * Body is intentionally empty.
  */
 static void
-block_handler(void *data, void *timeout)
+block_handler(void *data, void *timeout, void *pReadmask)
 {
 }
 

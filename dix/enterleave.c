@@ -41,6 +41,15 @@
 #include "xkbsrv.h"
 #include "inpututils.h"
 
+/* ssX compatibility: Define missing macros for legacy XFree86 structs */
+#ifndef BUG_RETURN
+#define BUG_RETURN(cond) if (cond) return
+#endif
+
+#ifndef bits_to_bytes
+#define bits_to_bytes(n) (((n) + 7) >> 3)
+#endif
+
 /**
  * @file
  * This file describes the model for sending core enter/leave events and
@@ -212,7 +221,7 @@ SetFocusOut(DeviceIntPtr dev)
  * @return The window that is the first ancestor of both 'a' and 'b', or the
  *         NullWindow if they do not have a common ancestor.
  */
-static WindowPtr
+WindowPtr
 CommonAncestor(WindowPtr a, WindowPtr b)
 {
     for (b = b->parent; b; b = b->parent)
@@ -658,8 +667,7 @@ FixDeviceStateNotify(DeviceIntPtr dev, deviceStateNotify * ev, KeyClassPtr k,
     }
     if (k) {
         ev->classes_reported |= (1 << KeyClass);
-        ev->num_keys = k->xkbInfo->desc->max_key_code -
-            k->xkbInfo->desc->min_key_code;
+        ev->num_keys = k->curKeySyms.maxKeyCode - k->curKeySyms.minKeyCode;
         memmove((char *) &ev->keys[0], (char *) k->down, 4);
     }
     if (v) {
@@ -718,7 +726,8 @@ DeliverStateNotifyEvent(DeviceIntPtr dev, WindowPtr win)
             evcount++;
     }
     if ((k = dev->key) != NULL) {
-        nkeys = k->xkbInfo->desc->max_key_code - k->xkbInfo->desc->min_key_code;
+        /* ssX: Use curKeySyms for legacy compatibility */
+        nkeys = k->curKeySyms.maxKeyCode - k->curKeySyms.minKeyCode;
         if (nkeys > 32) /* first 32 are encoded in deviceStateNotify */
             evcount++;
     }
@@ -797,7 +806,7 @@ DeviceFocusEvent(DeviceIntPtr dev, int type, int mode, int detail,
 
     for (i = 0; mouse && mouse->button && i < mouse->button->numButtons; i++)
         if (BitIsOn(mouse->button->down, i))
-            SetBit(&xi2event[1], mouse->button->map[i]);
+            SetBit((unsigned char *)(((unsigned char *)xi2event) + sizeof(xXIEnterEvent)), mouse->button->map[i]);
 
     if (dev->key) {
         xi2event->mods.base_mods = dev->key->xkbInfo->state.base_mods;
@@ -1400,8 +1409,9 @@ CoreFocusEvents(DeviceIntPtr dev, WindowPtr from, WindowPtr to, int mode)
     SetFocusOut(dev);
 
     if (((to == NullWindow) || (to == PointerRootWin)) &&
-        ((from == NullWindow) || (from == PointerRootWin)))
+        ((from == NullWindow) || (from == PointerRootWin))) {
         CoreFocusPointerRootNoneSwitch(dev, from, to, mode);
+    }
     else if ((to == NullWindow) || (to == PointerRootWin))
         CoreFocusToPointerRootOrNone(dev, from, to, mode);
     else if ((from == NullWindow) || (from == PointerRootWin))

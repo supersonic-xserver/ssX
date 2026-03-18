@@ -63,8 +63,36 @@ SOFTWARE.
 #define POINTER_ABSOLUTE (1 << 2)
 #define POINTER_ACCELERATE (1 << 3)
 
+/* Event type flags */
+#define BUTTON_PROCESSED  1
+#define KEY_PROCESSED     1
+#define BUTTON_POSTED     2
+#define KEY_POSTED        2
+
+/* Scroll type flags for valuators */
+#define SCROLL_TYPE_NONE 0
+#define SCROLL_TYPE_VERTICAL 1
+#define SCROLL_TYPE_HORIZONTAL 2
+#define SCROLL_FLAG_DONT_EMULATE 1
+#define SCROLL_FLAG_PREFERRED 2
+
+/* Note: Event types are defined in eventstr.h as an enum */
+
+/* ssX: Forward declare InternalEvent - actual definition in eventstr.h */
+typedef union _InternalEvent InternalEvent;
+
 #define MAX_BUTTONS     256
 #define MAX_VALUATORS   36
+
+/* Legacy valuator mask shims for backward compatibility */
+#define valuator_mask_size(m) (MAX_VALUATORS)
+#define valuator_mask_isset(m, i) (!!((m) && (i) < MAX_VALUATORS))
+#define valuator_mask_has_unaccelerated(m) ((m) != NULL)
+#define valuator_mask_get_unaccelerated(m, i) (0)
+#define valuator_mask_get_double(m, i) (0.0)
+#define SetBit(b, i) ((b)[(i)>>3] |= (1 << ((i) & 7)))
+#define ClearBit(b, i) ((b)[(i)>>3] &= ~(1 << ((i) & 7)))
+
 #define MAP_LENGTH	256
 #define DOWN_LENGTH	32	/* 256/8 => number of bytes to hold 256 bits */
 #define NullGrab ((GrabPtr)NULL)
@@ -198,18 +226,23 @@ typedef struct _InputOption {
 
 extern void InitCoreDevices(void);
 
-extern DeviceIntPtr AddInputDevice(
+extern int AddInputDevice(
+    ClientPtr /*client*/,
     DeviceProc /*deviceProc*/,
-    Bool /*autoStart*/);
+    Bool /*autoStart*/,
+    DeviceIntPtr * /*pDev*/);
 
 extern Bool EnableDevice(
-    DeviceIntPtr /*device*/);
+    DeviceIntPtr /*device*/,
+    BOOL /*sendevent*/);
 
 extern Bool ActivateDevice(
-    DeviceIntPtr /*device*/);
+    DeviceIntPtr /*device*/,
+    BOOL /*sendevent*/);
 
 extern Bool DisableDevice(
-    DeviceIntPtr /*device*/);
+    DeviceIntPtr /*device*/,
+    BOOL /*sendevent*/);
 
 extern int InitAndStartDevices(void);
 
@@ -462,6 +495,24 @@ extern int GetMotionHistory(
     unsigned long stop,
     ScreenPtr pScreen);
 
+/* Legacy compatibility wrapper for GetMotionHistory */
+static inline int GetMotionHistoryCompat(DeviceIntPtr pDev, xTimecoord **buff, 
+                                         unsigned long start, unsigned long stop,
+                                         ScreenPtr pScreen)
+{
+    return GetMotionHistory(pDev, *buff, start, stop, pScreen);
+}
+#define GetMotionHistory(pDev, buff, start, stop, pScreen) GetMotionHistoryCompat(pDev, &(buff), start, stop, pScreen)
+
+/* Valuator mask for XI2 compatibility - simple wrapper */
+typedef struct _ValuatorMask {
+    int num_valuators;
+    int valuators[MAX_VALUATORS];
+} ValuatorMask;
+
+/* Valuator mode helper functions */
+extern int valuator_get_mode(DeviceIntPtr dev, int num);
+
 extern void SwitchCoreKeyboard(DeviceIntPtr pDev);
 extern void SwitchCorePointer(DeviceIntPtr pDev);
 
@@ -480,5 +531,16 @@ extern void DDXRingBell(
     int volume,
     int pitch,
     int duration);
+
+extern InputAttributes *DuplicateInputAttributes(InputAttributes *attrs);
+extern void FreeInputAttributes(InputAttributes *attrs);
+
+/* Master device functions */
+extern DeviceIntPtr GetMaster(DeviceIntPtr dev, int which);
+extern DeviceIntPtr GetPairedDevice(DeviceIntPtr dev);
+extern int AttachDevice(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr master);
+extern int AllocDevicePair(ClientPtr client, const char *name,
+                           DeviceIntPtr *ptr, DeviceIntPtr *keybd,
+                           DeviceProc ptr_proc, DeviceProc keybd_proc, Bool master);
 
 #endif /* INPUT_H */

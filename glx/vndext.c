@@ -26,8 +26,9 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
+#include <dix-config.h>
 
-#include "vndserver.h"
+#include "vndserver_priv.h"
 
 #include <string.h>
 #include <scrnintstr.h>
@@ -38,6 +39,13 @@
 
 #include <GL/glxproto.h>
 #include "vndservervendor.h"
+
+#include "dix/callback_priv.h"
+#include "dix/dix_priv.h"
+#include "dix/screenint_priv.h"
+#include "miext/extinit_priv.h"
+
+Bool noGlxExtension = FALSE;
 
 ExtensionEntry *GlxExtensionEntry;
 int GlxErrorBase = 0;
@@ -89,32 +97,28 @@ GlxGetScreen(ScreenPtr pScreen)
 static void
 GlxMappingReset(void)
 {
-    int i;
-
-    for (i=0; i<screenInfo.numScreens; i++) {
-        GlxScreenPriv *priv = xglvGetScreenPrivate(screenInfo.screens[i]);
+    DIX_FOR_EACH_SCREEN({
+        GlxScreenPriv *priv = xglvGetScreenPrivate(walkScreen);
         if (priv != NULL) {
-            xglvSetScreenPrivate(screenInfo.screens[i], NULL);
+            xglvSetScreenPrivate(walkScreen, NULL);
             free(priv);
         }
-    }
+    });
 }
 
 static Bool
 GlxMappingInit(void)
 {
-    int i;
-
-    for (i=0; i<screenInfo.numScreens; i++) {
-        if (GlxGetScreen(screenInfo.screens[i]) == NULL) {
+    DIX_FOR_EACH_SCREEN({
+        if (GlxGetScreen(walkScreen) == NULL) {
             GlxMappingReset();
             return FALSE;
         }
-    }
+    });
 
     idResource = CreateNewResourceType(idResourceDeleteCallback,
                                        "GLXServerIDRes");
-    if (idResource == RT_NONE)
+    if (idResource == X11_RESTYPE_NONE)
     {
         GlxMappingReset();
         return FALSE;
@@ -139,8 +143,13 @@ GlxGetClientData(ClientPtr client)
 {
     GlxClientPriv *cl = xglvGetClientPrivate(client);
     if (cl == NULL) {
-        cl = calloc(1, sizeof(GlxClientPriv));
+        cl = calloc(1, sizeof(GlxClientPriv)
+                + screenInfo.numScreens * sizeof(GlxServerVendor *));
         if (cl != NULL) {
+            cl->vendors = (GlxServerVendor **) (cl + 1);
+            DIX_FOR_EACH_SCREEN({
+                cl->vendors[walkScreenIdx] = GlxGetVendorForScreen(NULL, walkScreen);
+            });
             xglvSetClientPrivate(client, cl);
         }
     }
@@ -184,7 +193,7 @@ GLXClientCallback(CallbackListPtr *list, void *closure, void *data)
 static void
 GLXReset(ExtensionEntry *extEntry)
 {
-    // xf86Msg(X_INFO, "GLX: GLXReset\n");
+    // LogMessageVerb(X_INFO, 1, "GLX: GLXReset\n");
 
     GlxVendorExtensionReset(extEntry);
     GlxDispatchReset();
@@ -235,9 +244,11 @@ GlxExtensionInit(void)
     CallCallbacks(&vndInitCallbackListPtr, extEntry);
 
     /* We'd better have found at least one vendor */
-    for (int i = 0; i < screenInfo.numScreens; i++)
-        if (GlxGetVendorForScreen(serverClient, screenInfo.screens[i]))
+    DIX_FOR_EACH_SCREEN({
+        if (GlxGetVendorForScreen(serverClient, walkScreen))
             return;
+    });
+
     extEntry->base = 0;
 }
 
@@ -295,8 +306,8 @@ GlxFreeServerImports(GlxServerImports *imports)
 }
 
 _X_EXPORT const GlxServerExports glxServer = {
-    .majorVersion = 0,
-    .minorVersion = 0,
+    .majorVersion = GLXSERVER_VENDOR_ABI_MAJOR_VERSION,
+    .minorVersion = GLXSERVER_VENDOR_ABI_MINOR_VERSION,
 
     .extensionInitCallback = &vndInitCallbackListPtr,
 
@@ -315,6 +326,7 @@ _X_EXPORT const GlxServerExports glxServer = {
     .getContextTagPrivate = GlxGetContextTagPrivate,
     .getVendorForScreen = GlxGetVendorForScreen,
     .forwardRequest =  GlxForwardRequest,
+    .setClientScreenVendor = GlxSetClientScreenVendor,
 };
 
 const GlxServerExports *

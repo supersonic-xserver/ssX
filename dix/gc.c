@@ -522,10 +522,10 @@ dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr
 /* Publically defined entry to ChangeGC.  Just calls dixChangeGC and tells
  * it that all of the entries are constants or IDs */
 _X_EXPORT int
-ChangeGC(GC *pGC, BITS32 mask, XID *pval)
+ChangeGC(ClientPtr client, GC *pGC, BITS32 mask, XID *pval)
 {
     /* ssX: Cast to CARD32* for compatibility on 64-bit systems */
-    return (dixChangeGC(NullClient, pGC, mask, (CARD32 *)pval, NULL));
+    return (dixChangeGC(client ? client : NullClient, pGC, mask, (CARD32 *)pval, NULL));
 }
 
 /* DoChangeGC(pGC, mask, pval, fPointer)
@@ -668,7 +668,7 @@ CreateGC(DrawablePtr pDrawable, BITS32 mask, XID *pval, int *pStatus)
     if (!(*pGC->pScreen->CreateGC)(pGC))
 	*pStatus = BadAlloc;
     else if (mask)
-        *pStatus = ChangeGC(pGC, mask, pval);
+        *pStatus = ChangeGC(NullClient, pGC, mask, pval);
     else
 	*pStatus = Success;
     if (*pStatus != Success)
@@ -696,7 +696,7 @@ CreateDefaultTile (GCPtr pGC)
     (*pGC->pScreen->QueryBestSize)(TileShape, &w, &h, pGC->pScreen);
     pTile = (PixmapPtr)
 	    (*pGC->pScreen->CreatePixmap)(pGC->pScreen,
-					  w, h, pGC->depth);
+					  w, h, pGC->depth, 0);
     pgcScratch = GetScratchGC(pGC->depth, pGC->pScreen);
     if (!pTile || !pgcScratch)
     {
@@ -709,7 +709,7 @@ CreateDefaultTile (GCPtr pGC)
     tmpval[0] = GXcopy;
     tmpval[1] = pGC->tile.pixel;
     tmpval[2] = FillSolid;
-    (void)ChangeGC(pgcScratch, GCFunction | GCForeground | GCFillStyle, 
+    (void)ChangeGC(NullClient, pgcScratch, GCFunction | GCForeground | GCFillStyle, 
 		   tmpval);
     ValidateGC((DrawablePtr)pTile, pgcScratch);
     rect.x = 0;
@@ -1038,7 +1038,7 @@ CreateDefaultStipple(int screenNum)
     h = 16;
     (* pScreen->QueryBestSize)(StippleShape, &w, &h, pScreen);
     if (!(pScreen->PixmapPerDepth[0] =
-			(*pScreen->CreatePixmap)(pScreen, w, h, 1)))
+			(*pScreen->CreatePixmap)(pScreen, w, h, 1, 0)))
 	return FALSE;
     /* fill stipple with 1 */
     tmpval[0] = GXcopy; tmpval[1] = 1; tmpval[2] = FillSolid;
@@ -1048,7 +1048,7 @@ CreateDefaultStipple(int screenNum)
 	(*pScreen->DestroyPixmap)(pScreen->PixmapPerDepth[0]);
 	return FALSE;
     }
-    (void)ChangeGC(pgcScratch, GCFunction|GCForeground|GCFillStyle, tmpval);
+    (void)ChangeGC(NullClient, pgcScratch, GCFunction|GCForeground|GCFillStyle, tmpval);
     ValidateGC((DrawablePtr)pScreen->PixmapPerDepth[0], pgcScratch);
     rect.x = 0;
     rect.y = 0;

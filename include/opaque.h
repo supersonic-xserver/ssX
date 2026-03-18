@@ -51,7 +51,7 @@ extern int defaultScreenSaverBlanking;
 extern int defaultScreenSaverAllowExposures;
 extern int argcGlobal;
 extern char **argvGlobal;
-extern char *display;
+extern const char *display;
 
 extern int defaultBackingStore;
 extern Bool disableBackingStore;

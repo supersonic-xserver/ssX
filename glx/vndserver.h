@@ -33,6 +33,9 @@
 #include <dix-config.h>
 #include "glxvndabi.h"
 
+/* Include DIX headers for full Client struct definition */
+#include "dix.h"
+
 #define GLXContextID CARD32
 #define GLXDrawable CARD32
 

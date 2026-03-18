@@ -36,6 +36,7 @@
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
+#include "privates.h"
 #include <X11/extensions/geproto.h>
 
 extern int GEEventType;

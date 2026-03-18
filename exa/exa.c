@@ -33,7 +33,7 @@
 #endif
 
 #ifdef MITSHM
-#include "shmint.h"
+#include <shmint.h>
 #endif
 
 #include <stdlib.h>

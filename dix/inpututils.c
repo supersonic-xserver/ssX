@@ -36,6 +36,28 @@
 #include "xkbsrv.h"
 #include "xkbstr.h"
 
+/* Forward declaration for key_is_down */
+static int key_is_down(DeviceIntPtr dev, int keyCode, int mask);
+
+/* Check if a key is down */
+static int
+key_is_down(DeviceIntPtr dev, int keyCode, int mask)
+{
+    int i;
+    KeyClassPtr keyc = dev->key;
+
+    if (!keyc)
+        return 0;
+
+    for (i = 0; i < DOWN_LENGTH; i++) {
+        if ((keyc->down[i] & (1 << (keyCode & 7))) &&
+            (mask & KEY_POSTED || !(keyc->postdown[i] & (1 << (keyCode & 7)))))
+            return 1;
+    }
+
+    return 0;
+}
+
 /* Check if a button map change is okay with the device.
  * Returns -1 for BadValue, as it collides with MappingBusy. */
 static int
@@ -112,7 +134,7 @@ ApplyPointerMapping(DeviceIntPtr dev, CARD8 *map, int len, ClientPtr client)
     int ret;
 
     /* If we can't perform the change on the requested device, bail out. */
-    ret = check_butmap_change(dev, map, len, &client->errorValue, client);
+    ret = check_butmap_change(dev, map, len, (CARD32 *)&client->errorValue, client);
     if (ret != Success)
         return ret;
     do_butmap_change(dev, map, len, client);
@@ -129,6 +151,7 @@ check_modmap_change(ClientPtr client, DeviceIntPtr dev, KeyCode *modmap)
 {
     int ret, i;
     XkbDescPtr xkb;
+    xkbDeviceInfoPtr xkbInfo;
 
     ret = XaceHook(XACE_DEVICE_ACCESS, client, dev, DixManageAccess);
     if (ret != Success)
@@ -136,7 +159,10 @@ check_modmap_change(ClientPtr client, DeviceIntPtr dev, KeyCode *modmap)
 
     if (!dev->key)
         return BadMatch;
-    xkb = dev->key->xkbInfo->desc;
+    xkbInfo = XKBDEVICEINFO(dev);
+    if (!xkbInfo)
+        return BadMatch;
+    xkb = xkbInfo->desc;
 
     for (i = 0; i < MAP_LENGTH; i++) {
         if (!modmap[i])
@@ -182,13 +208,18 @@ check_modmap_change_slave(ClientPtr client, DeviceIntPtr master,
                           DeviceIntPtr slave, CARD8 *modmap)
 {
     XkbDescPtr master_xkb, slave_xkb;
+    xkbDeviceInfoPtr master_xkbInfo, slave_xkbInfo;
     int i, j;
 
     if (!slave->key || !master->key)
         return 0;
 
-    master_xkb = master->key->xkbInfo->desc;
-    slave_xkb = slave->key->xkbInfo->desc;
+    master_xkbInfo = XKBDEVICEINFO(master);
+    slave_xkbInfo = XKBDEVICEINFO(slave);
+    if (!master_xkbInfo || !slave_xkbInfo)
+        return 0;
+    master_xkb = master_xkbInfo->desc;
+    slave_xkb = slave_xkbInfo->desc;
 
     /* Ignore devices with a clearly different keymap. */
     if (slave_xkb->min_key_code != master_xkb->min_key_code ||
@@ -219,7 +250,7 @@ check_modmap_change_slave(ClientPtr client, DeviceIntPtr master,
 static void
 do_modmap_change(ClientPtr client, DeviceIntPtr dev, CARD8 *modmap)
 {
-    XkbApplyMappingChange(dev, NULL, 0, 0, modmap, serverClient);
+    XkbApplyMappingChange(dev, (CARD8 *)NULL, 0, 0, serverClient);
 }
 
 /* Rebuild modmap (key -> mod) from map (mod -> key). */
@@ -267,15 +298,15 @@ change_modmap(ClientPtr client, DeviceIntPtr dev, KeyCode *modkeymap,
     /* Change any attached masters/slaves. */
     if (IsMaster(dev)) {
         for (tmp = inputInfo.devices; tmp; tmp = tmp->next) {
-            if (!IsMaster(tmp) && tmp->u.master == dev)
+            if (!IsMaster(tmp) && tmp->master == dev)
                 if (check_modmap_change_slave(client, dev, tmp, modmap))
                     do_modmap_change(client, tmp, modmap);
         }
     }
-    else if (dev->u.master && dev->u.master->u.lastSlave == dev) {
+    else if (dev->master && dev->master->lastSlave == dev) {
         /* If this fails, expect the results to be weird. */
-        if (check_modmap_change(client, dev->u.master, modmap))
-            do_modmap_change(client, dev->u.master, modmap);
+        if (check_modmap_change(client, dev->master, modmap))
+            do_modmap_change(client, dev->master, modmap);
     }
 
     return Success;
@@ -287,6 +318,8 @@ int generate_modkeymap(ClientPtr client, DeviceIntPtr dev,
     CARD8 keys_per_mod[8];
     int max_keys_per_mod;
     KeyCode *modkeymap;
+    xkbDeviceInfoPtr xkbInfo;
+    XkbDescPtr xkb;
     int i, j, ret;
 
     ret = XaceHook(XACE_DEVICE_ACCESS, client, dev, DixGetAttrAccess);
@@ -296,6 +329,13 @@ int generate_modkeymap(ClientPtr client, DeviceIntPtr dev,
     if (!dev->key)
         return BadMatch;
 
+    xkbInfo = XKBDEVICEINFO(dev);
+    if (!xkbInfo)
+        return BadMatch;
+    xkb = xkbInfo->desc;
+    if (!xkb || !xkb->map)
+        return BadMatch;
+
     /* Count the number of keys per modifier to determine how wide we
      * should make the map. */
     max_keys_per_mod = 0;
@@ -303,7 +343,7 @@ int generate_modkeymap(ClientPtr client, DeviceIntPtr dev,
         keys_per_mod[i] = 0;
     for (i = 8; i < MAP_LENGTH; i++) {
         for (j = 0; j < 8; j++) {
-            if (dev->key->xkbInfo->desc->map->modmap[i] & (1 << j)) {
+            if (xkb->map->modmap[i] & (1 << j)) {
                 if (++keys_per_mod[j] > max_keys_per_mod)
                     max_keys_per_mod = keys_per_mod[j];
             }
@@ -319,7 +359,7 @@ int generate_modkeymap(ClientPtr client, DeviceIntPtr dev,
 
     for (i = 8; i < MAP_LENGTH; i++) {
         for (j = 0; j < 8; j++) {
-            if (dev->key->xkbInfo->desc->map->modmap[i] & (1 << j)) {
+            if (xkb->map->modmap[i] & (1 << j)) {
                 modkeymap[(j * max_keys_per_mod) + keys_per_mod[j]] = i;
                 keys_per_mod[j]++;
             }

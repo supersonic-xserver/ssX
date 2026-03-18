@@ -70,14 +70,7 @@ SOFTWARE.
 #define SQSECANT 108.856472512142   /* 1/sin^2(11/2) - for 11o miter cutoff */
 
 /* Point with sub-pixel positioning. */
-typedef struct _SppPoint {
-    double x, y;
-} SppPointRec, *SppPointPtr;
-
-typedef struct _SppArc {
-    double x, y, width, height;
-    double angle1, angle2;
-} SppArcRec, *SppArcPtr;
+/* Note: SppPointRec, SppPointPtr, SppArcRec, SppArcPtr are defined in mifpoly.h */
 
 static double miDsin(double a);
 static double miDcos(double a);
@@ -988,7 +981,7 @@ miWideArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc * parcs)
             gcvals[3].val = pGC->lineWidth;
             gcvals[4].val = pGC->capStyle;
             gcvals[5].val = pGC->joinStyle;
-            ChangeGC(NullClient, pGCTo, GCFunction |
+            dixChangeGC(NullClient, pGCTo, GCFunction |
                      GCForeground | GCBackground | GCLineWidth |
                      GCCapStyle | GCJoinStyle, gcvals);
         }
@@ -1026,12 +1019,12 @@ miWideArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc * parcs)
 
         if (iphase == 1) {
             gcval.val = bg;
-            ChangeGC(NullClient, pGC, GCForeground, &gcval);
+            dixChangeGC(NullClient, pGC, GCForeground, NULL, &gcval);
             ValidateGC(pDraw, pGC);
         }
         else if (pGC->lineStyle == LineDoubleDash) {
             gcval.val = fg;
-            ChangeGC(NullClient, pGC, GCForeground, &gcval);
+            dixChangeGC(NullClient, pGC, GCForeground, NULL, &gcval);
             ValidateGC(pDraw, pGC);
         }
         for (i = 0; i < polyArcs[iphase].narcs; i++) {
