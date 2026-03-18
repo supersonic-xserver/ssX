@@ -56,7 +56,7 @@ static const char glamor_name[] = "glamor";
 static void
 glamor_identify(int flags)
 {
-    xf86Msg(X_INFO, "%s: OpenGL accelerated X.org driver based.\n",
+    xf86Msg(X_INFO, "%s: OpenGL accelerated Super Sonic X driver based.\n",
             glamor_name);
 }
 

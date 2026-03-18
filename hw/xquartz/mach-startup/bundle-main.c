@@ -71,7 +71,7 @@ extern int xquartz_resetenv_display;
 #endif
 
 const int __crashreporter_info__len = 4096;
-const char *__crashreporter_info__base = "X.Org X Server " XSERVER_VERSION " Build Date: " BUILD_DATE;
+const char *__crashreporter_info__base = "Super Sonic X Server " XSERVER_VERSION " Build Date: " BUILD_DATE;
 char __crashreporter_info__buf[4096];
 char *__crashreporter_info__ = __crashreporter_info__buf;
 
