@@ -1091,36 +1091,42 @@ static Bool
 xtransLocalClient(ClientPtr client)
 {
     int alen, family, notused;
-    Xtransaddr *from = NULL;
+    struct sockaddr_storage from_storage;
+    struct sockaddr *from = (struct sockaddr *)&from_storage;
     void *addr;
     register HOST *host;
     OsCommPtr oc = (OsCommPtr) client->osPrivate;
 
-    if (!oc->trans_conn)
+    if (!oc || !oc->trans_conn)
         return FALSE;
 
-    if (!_XSERVTransGetPeerAddr(oc->trans_conn, &notused, &alen, &from)) {
+    /* Initialize size for the transport layer */
+    alen = sizeof(from_storage);
+
+    /* * Pass the address of the pointer to storage. 
+     * Using sockaddr_storage ensures CodeQL and the compiler know the 
+     * memory is aligned for a sockaddr cast.
+     */
+    if (!_XSERVTransGetPeerAddr(oc->trans_conn, &notused, &alen, (void **)&from)) {
         family = ConvertAddr((struct sockaddr *) from,
                              &alen, (void **) &addr);
+
         if (family == -1) {
-            free(from);
             return FALSE;
         }
+
         if (family == FamilyLocal) {
-            free(from);
             return TRUE;
         }
+
         for (host = selfhosts; host; host = host->next) {
             if (addrEqual(family, addr, alen, host)) {
-                free(from);
                 return TRUE;
             }
         }
-        free(from);
     }
     return FALSE;
 }
-
 /* Is client on the local host */
 Bool
 ComputeLocalClient(ClientPtr client)
