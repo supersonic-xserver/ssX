@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -50,7 +64,7 @@ OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -96,13 +110,14 @@ OR PERFORMANCE OF THIS SOFTWARE.
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $XFree86: xc/programs/Xserver/os/log.c,v 1.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/log.c,v 1.12 2005/03/02 19:17:43 dawes Exp $ */
 
-#include <X11/Xos.h>
+#include "Xos.h"
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
 #include <stdarg.h>
+#include <stdlib.h>	/* for malloc() */
 #include <errno.h>
 
 #include "site.h"
@@ -170,9 +185,11 @@ LogInit(const char *fname, const char *backup)
     char *logFileName = NULL;
 
     if (fname && *fname) {
-	xasprintf(&logFileName, fname, display);
+	/* xalloc() can't be used yet. */
+	logFileName = malloc(strlen(fname) + strlen(display) + 1);
 	if (!logFileName)
-	    FatalError("Cannot allocate space for the log file name.\n");
+	    FatalError("Cannot allocate space for the log file name\n");
+	sprintf(logFileName, fname, display);
 
 	if (backup && *backup) {
 	    struct stat buf;
@@ -181,13 +198,14 @@ LogInit(const char *fname, const char *backup)
 		char *suffix;
 		char *oldLog;
 
-		xasprintf(&suffix, backup, display);
-		if (!suffix)
-		    FatalError("Cannot allocate space for the log file name.\n");
-		xasprintf(&oldLog, "%s%s", logFileName, suffix);
-		if (!oldLog)
-		    FatalError("Cannot allocate space for the log file name.\n");
-		xfree(suffix);
+		oldLog = malloc(strlen(logFileName) + strlen(backup) +
+				strlen(display) + 1);
+		suffix = malloc(strlen(backup) + strlen(display) + 1);
+		if (!oldLog || !suffix)
+		    FatalError("Cannot allocate space for the log file name\n");
+		sprintf(suffix, backup, display);
+		sprintf(oldLog, "%s%s", logFileName, suffix);
+		free(suffix);
 #ifdef __UNIXOS2__
 		remove(oldLog);
 #endif
@@ -195,7 +213,7 @@ LogInit(const char *fname, const char *backup)
 		    FatalError("Cannot move old log file (\"%s\" to \"%s\"\n",
 			       logFileName, oldLog);
 		}
-		xfree(oldLog);
+		free(oldLog);
 	    }
 	}
 	if ((logFile = fopen(logFileName, "w")) == NULL)
@@ -215,7 +233,7 @@ LogInit(const char *fname, const char *backup)
      * needed.
      */
     if (saveBuffer && bufferSize > 0) {
-	xfree(saveBuffer);
+	free(saveBuffer);	/* Must be free(), not xfree() */
 	saveBuffer = NULL;
 	bufferSize = 0;
     }
@@ -282,15 +300,19 @@ LogVWrite(int verb, const char *f, va_list args)
 		    fsync(fileno(logFile));
 	    }
 	} else if (needBuffer) {
+	    /*
+	     * Note, this code is used before OsInit() has been called, so
+	     * xalloc() and friends can't be used.
+	     */
 	    if (len > bufferUnused) {
 		bufferSize += 1024;
 		bufferUnused += 1024;
 		if (saveBuffer)
-		    saveBuffer = xrealloc(saveBuffer, bufferSize);
+		    saveBuffer = realloc(saveBuffer, bufferSize);
 		else
-		    saveBuffer = xalloc(bufferSize);
+		    saveBuffer = malloc(bufferSize);
 		if (!saveBuffer)
-		    FatalError("xrealloc() failed while saving log messages\n");
+		    FatalError("realloc() failed while saving log messages\n");
 	    }
 	    bufferUnused -= len;
 	    memcpy(saveBuffer + bufferPos, tmpBuffer, len);
@@ -313,6 +335,7 @@ void
 LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 {
     const char *s  = X_UNKNOWN_STRING;
+    char *tmpBuf = NULL;
 
     /* Ignore verbosity for X_ERROR */
     if (logVerbosity >= verb || logFileVerbosity >= verb || type == X_ERROR) {
@@ -359,10 +382,14 @@ LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 	 * so that LogVWrite() is only called once per message.
 	 */
 	if (s) {
-	    char tmpBuf[4096];
-
-	    snprintf(tmpBuf, sizeof(tmpBuf), "%s %s", s, format);
+	    tmpBuf = malloc(strlen(format) + strlen(s) + 1 + 1);
+	    /* Silently return if malloc fails here. */
+	    if (!tmpBuf)
+		return;
+	    sprintf(tmpBuf, "%s ", s);
+	    strcat(tmpBuf, format);
 	    LogVWrite(verb, tmpBuf, args);
+	    free(tmpBuf);
 	} else
 	    LogVWrite(verb, format, args);
     }
@@ -390,6 +417,21 @@ LogMessage(MessageType type, const char *format, ...)
     va_end(ap);
 }
 
+#ifdef __GNUC__
+void AbortServer(void) __attribute__((noreturn));
+#endif
+
+void
+AbortServer(void)
+{
+    OsCleanup(TRUE);
+    AbortDDX();
+    fflush(stderr);
+    if (CoreDump)
+	abort();
+    exit (1);
+}
+
 #ifndef AUDIT_PREFIX
 #define AUDIT_PREFIX "AUDIT: %s: %ld %s: "
 #endif
@@ -410,29 +452,29 @@ FreeAuditTimer(void)
 	TimerFree(auditTimer);
 	auditTimer = NULL;
     }
-    /* Clear old message. */
-    oldlen = -1;
 }
 
 static char *
 AuditPrefix(void)
 {
     time_t tm;
-    char *autime, *a;
-    const char *s;
+    char *autime, *s;
     char *tmpBuf;
+    int len;
 
     time(&tm);
     autime = ctime(&tm);
-    if ((a = strchr(autime, '\n')))
-	*a = '\0';
+    if ((s = strchr(autime, '\n')))
+	*s = '\0';
     if ((s = strrchr(argvGlobal[0], '/')))
 	s++;
     else
 	s = argvGlobal[0];
-    xasprintf(&tmpBuf, AUDIT_PREFIX, autime, (unsigned long)getpid(), s);
+    len = strlen(AUDIT_PREFIX) + strlen(autime) + 10 + strlen(s) + 1;
+    tmpBuf = malloc(len);
     if (!tmpBuf)
 	return NULL;
+    snprintf(tmpBuf, len, AUDIT_PREFIX, autime, (unsigned long)getpid(), s);
     return tmpBuf;
 }
 
@@ -458,7 +500,7 @@ AuditFlush(OsTimerPtr timer, CARD32 now, pointer arg)
 	       prefix != NULL ? prefix : "", nrepeat);
 	nrepeat = 0;
 	if (prefix != NULL)
-	    xfree(prefix);
+	    free(prefix);
 	return AUDIT_TIMEOUT;
     } else {
 	/* if the timer expires without anything to print, flush the message */
@@ -492,7 +534,7 @@ VAuditF(const char *f, va_list args)
 	auditTimer = TimerSet(auditTimer, 0, AUDIT_TIMEOUT, AuditFlush, NULL);
     }
     if (prefix != NULL)
-	xfree(prefix);
+	free(prefix);
 }
 
 void
@@ -519,7 +561,7 @@ FatalError(const char *f, ...)
 #endif
     if (!beenhere) {
 	beenhere = TRUE;
-	AbortServer(0);
+	AbortServer();
     } else
 	abort();
     /*NOTREACHED*/
@@ -572,11 +614,12 @@ Error(char *str)
     int saveErrno = errno;
 
     if (str) {
-	xasprintf(&err, "%s: %s", str, strerror(saveErrno));
+	err = malloc(strlen(strerror(saveErrno)) + strlen(str) + 2 + 1);
 	if (!err)
 	    return;
+	sprintf(err, "%s: ", str);
+	strcat(err, strerror(saveErrno));
 	LogWrite(-1, err);
-	xfree(err);
     } else
 	LogWrite(-1, strerror(saveErrno));
 }

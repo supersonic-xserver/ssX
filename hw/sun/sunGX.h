@@ -1,5 +1,11 @@
 /*
- * $Xorg: sunGX.h,v 1.4 2001/02/09 02:04:44 xorgcvs Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
 Copyright 1991, 1998  The Open Group
 
@@ -25,7 +31,7 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.h,v 1.4 2001/12/14 19:59:43 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.h,v 1.5 2006/01/09 14:59:49 dawes Exp $ */
 
 typedef unsigned int	Uint;
 typedef volatile Uint VUint;
@@ -94,7 +100,7 @@ typedef struct _sunGX {
 	Uint	junk0[1];
 	VUint	mode;
 	VUint	clip;
-	Uint	junk1[1];
+	Uint	junk1[1];	    
 	VUint	s;
 	VUint	draw;
 	VUint	blit;

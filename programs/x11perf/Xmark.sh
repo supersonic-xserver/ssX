@@ -1,4 +1,6 @@
 #! /bin/sh
+#$Xorg: Xmark.sh,v 1.3 2000/08/17 19:54:08 cpqbld Exp $
+#XPC Header: Xmark,v 1.15 93/04/12 10:10:07 hmgr Exp
 #
 ############################################################
 # Xmark version XPC Revision: 1.15

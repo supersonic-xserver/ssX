@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.121tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/OpenBSD.cf,v 3.112 2005/02/04 02:58:27 dawes Exp $
 XCOMM
 /*
  * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
@@ -76,6 +76,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define XpmIncDir		/usr/X11R6/include
 #define ConfigDir		/usr/X11R6/lib/X11/config
 #define IncRoot			/usr/local/include
+#define TopXInclude		-I/usr/X11R6/include
 #define ImakeCmd		imake -DPorts
 #define DocDir			/usr/local/share/doc
 #define BuildHtmlManPages	NO
@@ -95,7 +96,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 #define HasBSD44Sockets 	YES
 #define Malloc0ReturnsNull	NO
-#define InstallXtermSetGID	YES	/* xterm will be set gid */
 #define SetTtyGroup     	YES
 #define DBMLibrary		/**/
 #define HasLibCrypt		NO
@@ -104,7 +104,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define HasMkstemp		YES
 #define HasSetProcTitle		YES
 #define HasZlib			YES
-#define PassMFLAGS		NO
 #ifndef HasKrbIV
 # if OSMajorVersion == 2 || OSMajorVersion == 3 && OSMinorVersion < 3
 #  define HasKrbIV		YES
@@ -215,9 +214,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define StandardCppOptions	-traditional
 #define StandardCppDefines	/**/
 #define PreProcessCmd   	CppCmd
-#ifndef PreIncDir
 #define PreIncDir		DefaultGccIncludeDir
-#endif
 
 #ifndef CcCmd
 #define CcCmd 			cc
@@ -262,7 +259,10 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # define OverrideShlibRevs     HasGccStackProtector
 #endif
 
+
+#define StandardDefines	-DCSRG_BASED
 #define XawI18nDefines	-DUSE_XWCHAR_STRING -DUSE_XMBTOWC
+
 
 #define	AdmDir			/var/log
 
@@ -277,14 +277,12 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define HasBsdMake		YES
 
+#define BuildCyrillicFonts	YES
 #define GzipFontCompression	YES
 #define DefaultUserPath		/bin:/usr/bin:/usr/local/bin:$(BINDIR)
 #define DefaultSystemPath	/sbin:/usr/sbin:/bin:/usr/bin:$(BINDIR)
 
 #define InstUidFlags		-m 4755
-#ifndef InstUtmpFlags
-#define InstUtmpFlags		-m 2755 -g utmp
-#endif
 
 #ifdef  InstallCmd
 # undef  InstallCmd
@@ -308,6 +306,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  define MkCookieCmd \
 	'dd if=/dev/urandom bs=16 count=1 2>/dev/null | hexdump -e \\"%08x\\"'
 #endif
+
 
 /*
  * Man pages need to be formatted when installed, so override the default
@@ -398,6 +397,7 @@ InstallHtmlManPageAliases(file,aliases,suffix)				@@\
 									@@\
 InstallManPageAliasesBase(file,destdir,aliases)
 
+
 /*
  * InstallFontAliases - generate rules to install font aliases
  *                      databases without comments for X11R5 servers
@@ -425,6 +425,7 @@ install::								@@\
  * Architecture specific sections - put all architecture dependent
  * options and setting here into the correct section
  */
+
 
 /*
  * Definitions for the alpha architecture
@@ -560,6 +561,7 @@ install::								@@\
 #   define HasAgpGart   YES 
 #  endif 
 # endif 
+ 
 
 # ifndef DefaultGcc2i386Opt
 #   if (OSMajorVersion == 2 && OSMinorVersion >= 3) || OSMajorVersion > 2
@@ -585,6 +587,7 @@ install::								@@\
 #  endif
 # endif
 
+
 /* A hack to work around an optimization problem with gcc 2.95.2 */
 # if OSMajorVersion > 2 || (OSMajorVersion == 2 && OSMinorVersion >= 6)
 #  define GccOptBug295
@@ -603,6 +606,7 @@ install::								@@\
 # include <xfree86.cf>
 
 #endif /* i386Architecture */
+
 
 /*
  * Definitions for the m68k architecture (currently amiga, hp300,
@@ -624,6 +628,7 @@ install::								@@\
  
 #endif /* Mc68020Architecture */
 
+
 /*
  * Definitions for the amiga architecture
  */
@@ -639,6 +644,7 @@ install::								@@\
 
 #endif /* AmigaArchitecture */
 
+
 /*
  * Definitions for the hp300 architecture
  */
@@ -650,12 +656,15 @@ install::								@@\
 /* For the X11R5 server */
 # define CompressAllFonts	NO
 # define InstallFontAliases	InstallFontAliasesNoComment
+# define UseRgbTxt		NO
+# define UseRgb			YES
 
 # define ServerExtraDefines	-DXFree86Server
 
 #include <xfree86.cf>
 
 #endif /* Hp300Architecture */
+
 
 /*
  * Definitions for the mac68k architecture
@@ -672,6 +681,7 @@ install::								@@\
 
 #endif /* mac68kArchitecture */
 
+
 /*
  * Definitions for the mvme68k architecture
  */
@@ -687,6 +697,7 @@ install::								@@\
 
 #endif /* Mvme68kArchitecture */
 
+
 /*
  * Definitions for the sun3 architecture
  */
@@ -698,7 +709,8 @@ install::								@@\
 # define BootstrapCFlags       -Dsun3
 # define UnalignedReferencesAllowed	YES /* changes _XtCopyArgs() */
 /* Note: -ansi turns off -Dmc68000 */
-# define ServerExtraDefines    GccGasOption -Dmc68000 -Dmc68020 -DXFree86Server
+# define ServerExtraDefines    GccGasOption -Dmc68000 -Dmc68020 \
+				-DXFree86Server -DINCLUDE_CG2_HEADER
 
 # ifndef Xsun24Server
 #  define Xsun24Server		NO
@@ -713,6 +725,7 @@ install::								@@\
 #define XkbServerDefines  -DXKB_ALWAYS_USES_SOFT_REPEAT
 
 #endif /* Sun3Architecture */
+
 
 /*
  * Definitions for the mips architecture (currently arc, pmax)
@@ -729,6 +742,7 @@ install::								@@\
 
 #endif /* MipsArchitecture */
 
+
 /*
  * Definitions for the arc architecture
  */
@@ -743,6 +757,7 @@ install::								@@\
 
 #endif /* ArcArchitecture */
 
+
 /*
  * Definitions for the pmax architecture
  */
@@ -755,6 +770,7 @@ install::								@@\
 /* For the X11R5 server */
 # define CompressAllFonts	NO
 # define InstallFontAliases	InstallFontAliasesNoComment
+# define UseRgbTxt		NO
 
 #endif /* PmaxArchitecture */
 
@@ -820,19 +836,20 @@ install::								@@\
 /*
  * Definitions for the sparc architecture
  */
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
+#ifdef SparcArchitecture
 
 # define BuildXF86MiscExt	NO
 # define BuildMITMiscExt	NO
 
 # if OSMajorVersion > 3 || OSMajorVersion == 3 && OSMinorVersion >= 2
 #  define HasWeakSymbols	YES
-# endif 
+#endif 
 
 # if OSMajorVersion == 2 || OSMajorVersion == 3 && OSMinorVersion < 2
 #  define ServerOSDefines 	-DDDXOSINIT
-#  define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV -DXFree86Server \
-				DebugDefines -DX_BYTE_ORDER=$(X_BYTE_ORDER)
+#  define ServerExtraDefines	-DAVOID_GLYPHBLT -DPIXPRIV  -DXFree86Server \
+				DebugDefines -DINCLUDE_CG2_HEADER \
+				-DX_BYTE_ORDER=$(X_BYTE_ORDER)
 #  ifndef Xsun24Server
 #   define Xsun24Server		YES
 #  endif
@@ -854,7 +871,6 @@ install::								@@\
 #  endif
 # endif
 
-# define StandardDefines	-DCSRG_BASED -Dsparc -D__sparc__
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
 
 # define BuildXF86VidModeExt	NO
@@ -866,13 +882,6 @@ install::								@@\
 #  define OptimizedCDebugFlags	DefaultGcc2SparcOpt
 # endif
 
-# if UseElfFormat && !defined(AsVISOption)
-#  define AsVISOption		-Av9a
-#  ifndef AsOutputArchSize
-#   define AsOutputArchSize	32
-#  endif
-# endif
-
 #endif /* SparcArchitecture */
 
 /*
@@ -881,15 +890,7 @@ install::								@@\
 
 #ifdef Sparc64Architecture
 
-# ifndef Xsun24Server
-#  define Xsun24Server		NO
-# endif
-# ifndef XsunServer
-#  define XsunServer		NO
-# endif
-# ifndef XsunMonoServer
-#  define XsunMonoServer	NO
-# endif
+# define OptimizedCDebugFlags	-O2
 
 # if OSMajorVersion == 3 && OSMinorVersion > 1 || OSMajorVersion > 3
 #  define HasWeakSymbols	YES
@@ -899,7 +900,6 @@ install::								@@\
 #  define XF86Server		YES
 # endif
 
-# define StandardDefines	-DCSRG_BASED -Dsparc -D__sparc__
 # define ServerExtraDefines	GccGasOption -D_XSERVER64 XFree86ServerDefines
 # define ServerOSDefines	XFree86ServerOSDefines -DDDXOSINIT
 # define XkbServerDefines	-DXKB_ALWAYS_USES_SOFT_REPEAT
@@ -917,13 +917,6 @@ install::								@@\
 #  define OptimizedCDebugFlags	DefaultGcc2SparcOpt
 # endif
 
-# if UseElfFormat && !defined(AsVISOption)
-#  define AsVISOption		-Av9a
-#  ifndef AsOutputArchSize
-#   define AsOutputArchSize	64
-#  endif
-# endif
-
 #endif /* Sparc64Architecture */
 
 /*
@@ -938,6 +931,8 @@ install::								@@\
 /* For the X11R5 server */
 # define CompressAllFonts	NO
 # define InstallFontAliases	InstallFontAliasesNoComment
+# define UseRgbTxt		NO
+# define UseRgb			YES
 
 # define ServerExtraDefines	-DXFree86Server
 # define UnalignedReferencesAllowed YES
@@ -957,9 +952,6 @@ install::								@@\
  * Generic settings for all architectures
  * which can be overridden by architecture specific sections above
  */
-#ifndef StandardDefines
-#define StandardDefines	-DCSRG_BASED
-#endif
 
 #if !defined(OptimizedCDebugFlags)
 # define OptimizedCDebugFlags	-O2
@@ -984,7 +976,7 @@ install::								@@\
 #  define HasPosixThreads		YES
 #  define ThreadedX			YES
 #  define SystemMTDefines		/**/
-#  define NeedThreadStubLibrary		YES
+#  define BuildThreadStubLibrary	YES
 #  define NeedUIThrStubs		YES
 #  define ThreadsCompileFlag		-pthread
 #  define ThreadsLibraries		-pthread
@@ -994,6 +986,7 @@ install::								@@\
 #else
 #  define ThreadedX			NO
 #endif
+
 
 /* Set this to YES when getpwuid_r is added to libc_r */
 #define HasThreadSafeAPI		NO
@@ -1028,6 +1021,16 @@ install::								@@\
 
 #ifndef SharedLibXdmGreet
 # define SharedLibXdmGreet		NO
+#endif
+
+/*
+ * XFree86 uses its own (more portable) database routines to speed up
+ * the RGB database lookups
+ * However, if you want to use ndbm anyway, you can set that to NO in
+ * host.def
+ */
+#ifndef UseRgbTxt
+# define UseRgbTxt			YES
 #endif
 
 #ifndef OSBinaryType

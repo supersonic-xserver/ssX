@@ -1,3 +1,11 @@
+/* $Xorg: Xtrans.h,v 1.4 2001/02/09 02:04:06 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtrans.h,v 3.23 2006/01/09 14:59:38 dawes Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtrans.h,v 3.22 2003/07/24 13:50:19 eich Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -343,7 +351,7 @@ int TRANS(CreateListener)(
 );
 
 int TRANS(NoListen) (
-    const char*         /* protocol*/
+    char*               /* protocol*/
 );
 
 int TRANS(ResetListener)(

@@ -1,6 +1,20 @@
-/* $XFree86: xc/programs/Xserver/mi/mioverlay.c,v 3.17tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mioverlay.c,v 3.16 2003/11/10 18:22:49 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#include <X11/X.h>
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include "X.h"
 #include "scrnintstr.h"
 #include "validate.h"
 #include "windowstr.h"
@@ -1016,7 +1030,7 @@ miOverlayMoveWindow(
 static void 
 miOverlayWindowExposures(
     WindowPtr pWin,
-    RegionPtr prgn,
+    register RegionPtr prgn,
     RegionPtr other_exposed
 ){
     RegionPtr   exposures = prgn;
@@ -1103,7 +1117,7 @@ miOverlayRecomputeExposures (
     WindowPtr	pWin,
     pointer	value 
 ){
-    ScreenPtr pScreen;
+    register ScreenPtr pScreen;
     miOverlayTwoRegions	*pValid = (miOverlayTwoRegions*)value;
     miOverlayTreePtr pTree = MIOVERLAY_GET_WINDOW_TREE(pWin);
 
@@ -1158,10 +1172,10 @@ miOverlayResizeWindow(
     DDXPointRec oldpt;
     RegionPtr oldRegion = NULL, oldRegion2 = NULL;
     WindowPtr pFirstChange;
-    WindowPtr pChild;
+    register WindowPtr pChild;
     RegionPtr	gravitate[StaticGravity + 1];
     RegionPtr	gravitate2[StaticGravity + 1];
-    unsigned g;
+    register unsigned g;
     int		nx, ny;		/* destination x,y */
     int		newx, newy;	/* new inner window position */
     RegionPtr	pRegion = NULL;
@@ -1666,7 +1680,7 @@ miOverlayChangeBorderWidth(
     unsigned int width
 ){
     int oldwidth;
-    ScreenPtr pScreen;
+    register ScreenPtr pScreen;
     Bool WasViewable = (Bool)(pWin->viewable);
     Bool HadBorder;
 #ifdef DO_SAVE_UNDERS

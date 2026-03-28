@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (c) Copyright 1998 by Sebastien Marineau
  *			<sebastien@qnx.com>
  *
@@ -24,7 +31,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Sebastien Marineau.
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_video.c,v 1.4tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_video.c,v 1.4 2003/03/14 13:46:07 tsi Exp $
  */
 
 /* This module contains the qnx-specific functions to deal with video 
@@ -37,7 +44,7 @@
 #include <i86.h>
 #include <sys/mman.h>
 
-#include <X11/X.h>
+#include <X.h>
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"

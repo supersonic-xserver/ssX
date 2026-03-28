@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/initfonts.c,v 1.7tsi Exp $ */
+/* $Xorg: initfonts.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -47,8 +54,9 @@ in this Software without prior written authorization from The Open Group.
  * %W%	%E%
  *
  */
+/* $XFree86: xc/programs/xfs/difs/initfonts.c,v 1.7 2001/12/14 20:01:34 dawes Exp $ */
 
-#include        <X11/fonts/font.h>
+#include        "font.h"
 #include	"difs.h"
 #ifdef FONTCACHE
 #include        "misc.h"

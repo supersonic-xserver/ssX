@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/drm/Imakefile,v 1.24tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/drm/Imakefile,v 1.24 2005/03/01 03:48:53 dawes Exp $
 /*
  * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -81,8 +81,9 @@ OS_SUBDIR = extensions
 	xf86drmSL.o \
 	$(MOBJ)
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include \
-           -Ikernel -I$(DRMINCLUDESDIR)
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
+           -I$(XINCLUDESRC) -I$(EXTINCSRC) -I../.. -Ikernel \
+	   -I$(DRMINCLUDESDIR)
 
 DEFINES = $(MTRR_DEFINES) $(GLX_DEFINES)
 

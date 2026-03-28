@@ -32,11 +32,17 @@ The sources for XFree86 are available by anonymous ftp from:
 
 <htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;"
 url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;">
-]]>
 
 Binaries for NetBSD 1.5 and later are available from:
 <htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/NetBSD"
 url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/NetBSD">
+
+
+A list of mirror sites is provided by
+<htmlurl name="http://www.xfree86.org/MIRRORS.shtml"
+url="http://www.xfree86.org/MIRRORS.shtml">
+]]>
+
 
 XFree86 also builds on other NetBSD architectures. See section
 <ref id="otherarchs" name="Building on other architectures"> for details.

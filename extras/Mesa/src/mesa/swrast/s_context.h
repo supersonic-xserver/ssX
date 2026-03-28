@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/swrast/s_context.h,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -203,7 +209,6 @@ do {								\
    (S).primitive = (PRIMITIVE);					\
    (S).interpMask = (INTERP_MASK);				\
    (S).arrayMask = (ARRAY_MASK);				\
-   (S).y = 0;							\
    (S).start = 0;						\
    (S).end = (END);						\
    (S).facing = 0;						\

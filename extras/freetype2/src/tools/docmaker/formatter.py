@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# $XFree86$
-#
-
 from sources import *
 from content import *
 from utils   import *

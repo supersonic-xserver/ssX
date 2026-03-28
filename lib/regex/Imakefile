@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/regex/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/lib/regex/Imakefile,v 1.1 1999/01/03 03:58:16 dawes Exp $
 
 #define DoNormalLib	YES
 #define DoSharedLib	NO
@@ -20,7 +20,7 @@ DEFINES = -DPOSIX_MISTAKE
 
 REGEXSOURCEDIR = $(TOP)/extras/regex
 
-INCLUDES = -I$(REGEXSOURCEDIR)
+INCLUDES = -I. -I$(REGEXSOURCEDIR)
 
 #include <Library.tmpl>
 

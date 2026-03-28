@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.2.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -21,7 +28,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/extras/Mesa/src/X/xm_span.c,v 1.3 2002/02/27 21:07:54 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/x11/xm_span.c,v 1.1.1.3 2004/12/10 15:33:30 alanh Exp $ */
 
 #include "glxheader.h"
 #include "colormac.h"
@@ -185,8 +192,6 @@ static void write_span_TRUECOLOR_pixmap( RGBA_SPAN_ARGS )
    XMesaDrawable buffer = xmesa->xm_buffer->buffer;
    XMesaGC gc = xmesa->xm_buffer->gc;
    register GLuint i;
-
-   (void)DitherValues;		/* Muffle compiler */
 
    y = FLIP(xmesa->xm_buffer, y);
    if (mask) {
@@ -3458,6 +3463,49 @@ static void write_pixels_index_ximage( INDEX_PIXELS_ARGS )
 /*****                      Pixel reading                         *****/
 /**********************************************************************/
 
+#ifndef XFree86Server
+/**
+ * Do clip testing prior to calling XGetImage.  If any of the region lies
+ * outside the screen's bounds, XGetImage will return NULL.
+ * We use XTranslateCoordinates() to check if that's the case and
+ * adjust the x, y and length parameters accordingly.
+ * \return  -1 if span is totally clipped away,
+ *          else return number of pixels to skip in the destination array.
+ */
+static int
+clip_for_xgetimage(XMesaContext xmesa, GLuint *n, GLint *x, GLint *y)
+{
+   XMesaBuffer source = xmesa->xm_buffer;
+   Window rootWin = RootWindow(xmesa->display, 0);
+   Window child;
+   int screenWidth = WidthOfScreen(DefaultScreenOfDisplay(xmesa->display));
+   int dx, dy;
+   if (source->type == PBUFFER)
+      return 0;
+   XTranslateCoordinates(xmesa->display, source->buffer, rootWin,
+                         *x, *y, &dx, &dy, &child);
+   if (dx >= screenWidth) {
+      /* totally clipped on right */
+      return -1;
+   }
+   if (dx < 0) {
+      /* clipped on left */
+      int clip = -dx;
+      if (clip >= *n)
+         return -1;  /* totally clipped on left */
+      *x += clip;
+      *n -= clip;
+      dx = 0;
+      return clip;
+   }
+   if (dx + *n > screenWidth) {
+      /* clipped on right */
+      int clip = dx + *n - screenWidth;
+      *n -= clip;
+   }
+   return 0;
+}
+#endif
 
 
 /*
@@ -3476,6 +3524,11 @@ static void read_index_span( const GLcontext *ctx,
 #ifndef XFree86Server
       XMesaImage *span = NULL;
       int error;
+      int k = clip_for_xgetimage(xmesa, &n, &x, &y);
+      if (k < 0)
+         return;
+      index += k;
+
       catch_xgetimage_errors( xmesa->display );
       span = XGetImage( xmesa->display, source->buffer,
 		        x, y, n, 1, AllPlanes, ZPixmap );
@@ -3532,9 +3585,15 @@ static void read_color_span( const GLcontext *ctx,
 				  x, FLIP(source, y), n, 1, ZPixmap,
 				  ~0L, (pointer)span->data);
 #else
+      int k;
+      y = FLIP(source, y);
+      k = clip_for_xgetimage(xmesa, &n, &x, &y);
+      if (k < 0)
+         return;
+      rgba += k;
       catch_xgetimage_errors( xmesa->display );
       span = XGetImage( xmesa->display, source->buffer,
-		        x, FLIP(source, y), n, 1, AllPlanes, ZPixmap );
+		        x, y, n, 1, AllPlanes, ZPixmap );
       error = check_xgetimage_errors();
 #endif
       if (span && !error) {

@@ -1,4 +1,11 @@
 /* -*- mode:C; coding: mult-utf-8-unix -*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * !!! Important: This file is encoded in UTF-8 !!!
  *
@@ -265,6 +272,33 @@ DRI_CONF_OPT_BEGIN_V(vblank_mode,enum,def,"0:3") \
                 DRI_CONF_ENUM(2,"Anwendung entscheidet, Standardinterval 1") \
                 DRI_CONF_ENUM(3,"Anwendung entscheidet, immer mit Bildaufbau synchronisieren") \
         DRI_CONF_DESC_END \
+DRI_CONF_OPT_END
+
+#define DRI_CONF_MAX_TEXTURE_UNITS(def,min,max) \
+DRI_CONF_OPT_BEGIN_V(texture_units,int,def, # min ":" # max ) \
+        DRI_CONF_DESC(en,"Number of texture units") \
+        DRI_CONF_DESC(de,"Anzahl der Textureinheiten") \
+DRI_CONF_OPT_END
+
+/* Options for features that are not done in hardware by the driver (like GL_ARB_vertex_program
+   On cards where there is no documentation (r200) or on rasterization-only hardware). */
+#define DRI_CONF_SECTION_SOFTWARE \
+DRI_CONF_SECTION_BEGIN \
+        DRI_CONF_DESC(de,"Funktionalität, die nicht durch die Hardware beschleunigt wird") \
+        DRI_CONF_DESC(en,"Features that are not hardware-accelerated")
+
+#define DRI_CONF_ARB_VERTEX_PROGRAM(def) \
+DRI_CONF_OPT_BEGIN(arb_vertex_program,bool,def) \
+        DRI_CONF_DESC(de,"GL_ARB_vertex_program aktivieren") \
+        DRI_CONF_DESC(en,"Enable GL_ARB_vertex_program") \
+        DRI_CONF_DESC(fr,"Activer GL_ARB_vertex_program") \
+DRI_CONF_OPT_END
+
+#define DRI_CONF_NV_VERTEX_PROGRAM(def) \
+DRI_CONF_OPT_BEGIN(nv_vertex_program,bool,def) \
+        DRI_CONF_DESC(de,"GL_NV_vertex_program aktivieren") \
+        DRI_CONF_DESC(en,"Enable GL_NV_vertex_program") \
+        DRI_CONF_DESC(fr,"Activer GL_NV_vertex_program") \
 DRI_CONF_OPT_END
 
 #endif

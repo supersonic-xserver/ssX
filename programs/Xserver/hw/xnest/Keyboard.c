@@ -1,3 +1,11 @@
+/* $Xorg: Keyboard.c,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,12 +19,12 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Keyboard.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Keyboard.c,v 1.10 2003/11/16 05:05:20 dawes Exp $ */
 
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/keysym.h>
+#include "X.h"
+#include "Xproto.h"
+#include "keysym.h"
 #include "screenint.h"
 #include "inputstr.h"
 #include "misc.h"
@@ -261,17 +269,13 @@ XkbError:
       break;
     case DEVICE_ON: 
       xnestEventMask |= XNEST_KEYBOARD_EVENT_MASK;
-	  if (xnestInputEnabled) {
-        for (i = 0; i < xnestNumScreens; i++)
-	      XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
-	  }
+      for (i = 0; i < xnestNumScreens; i++)
+	XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
       break;
     case DEVICE_OFF: 
       xnestEventMask &= ~XNEST_KEYBOARD_EVENT_MASK;
-	  if (xnestInputEnabled) {
-        for (i = 0; i < xnestNumScreens; i++)
-	      XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
-	  }
+      for (i = 0; i < xnestNumScreens; i++)
+	XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
       break;
     case DEVICE_CLOSE: 
       break;

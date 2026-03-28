@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/os/osinit.c,v 3.35 2008/10/31 19:10:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,12 +52,55 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/*
+ * Copyright (c) 1996-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include <stdio.h>
+#include <signal.h>
 #include <X11/X.h>
 #include "os.h"
 #include "osdep.h"
@@ -104,8 +155,12 @@ OsInit(void)
     set42sig();
 #endif
 
+#ifdef DDXOSINIT
+    OsVendorPreInit();
+#endif
+
     if (!been_here) {
-#if !defined(__SCO__) && !defined(__CYGWIN__) && !defined(__UNIXWARE__)
+#if !defined(__SCO__) && !defined(__CYGWIN__)
 	fclose(stdin);
 	fclose(stdout);
 #endif
@@ -133,7 +188,7 @@ OsInit(void)
 		dup2 (fileno (err), 2);
 		fclose (err);
 	    }
-#if defined(SYSV) || defined(SVR4) || defined(WIN32) || defined(__CYGWIN__)
+#if defined(SYSV) || defined(SVR4) || defined(__UNIXOS2__) || defined(WIN32) || defined(__CYGWIN__)
 	    {
 	    static char buf[BUFSIZ];
 	    setvbuf (stderr, buf, _IOLBF, BUFSIZ);
@@ -228,10 +283,30 @@ OsInit(void)
 void
 OsCleanup(Bool terminating)
 {
+    if (!terminating)
+	return;
+
+    CloseWellKnownConnections();
 #ifdef SERVER_LOCK
-    if (terminating)
-    {
-	UnlockServer();
-    }
+    UnlockServer();
 #endif
 }
+
+/* Make sure that signals don't cause re-entry during screen close. */
+void
+OsPrepareShutdown(Bool terminating)
+{
+    if (terminating) {
+	OsSignal(SIGINT, SIG_IGN);
+    } else {
+	OsSignal(SIGINT, GiveUp);
+    }
+}
+
+/* Reset signal disposition before reset. */
+void
+OsPrepareRestart()
+{
+    OsSignal(SIGINT, AbortServer);
+}
+

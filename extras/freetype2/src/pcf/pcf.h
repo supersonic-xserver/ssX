@@ -1,9 +1,23 @@
-/*  pcf.h                                                                 
+/*  pcf.h
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
   FreeType font driver for pcf fonts
 
-  Copyright (C) 2000 by            
-  Francesco Zappa Nardelli     
+  Copyright (C) 2000, 2001, 2002, 2003 by
+  Francesco Zappa Nardelli
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +45,7 @@ THE SOFTWARE.
 
 #include <ft2build.h>
 #include FT_INTERNAL_DRIVER_H
+#include FT_INTERNAL_STREAM_H
 
 
 FT_BEGIN_HEADER
@@ -45,7 +60,7 @@ FT_BEGIN_HEADER
   } PCF_TableRec, *PCF_Table;
 
 
-  typedef struct  PCF_TocRec_ 
+  typedef struct  PCF_TocRec_
   {
     FT_ULong   version;
     FT_ULong   count;
@@ -54,7 +69,7 @@ FT_BEGIN_HEADER
   } PCF_TocRec, *PCF_Toc;
 
 
-  typedef struct  PCF_ParseProperty_ 
+  typedef struct  PCF_ParsePropertyRec_
   {
     FT_Long  name;
     FT_Byte  isString;
@@ -63,7 +78,7 @@ FT_BEGIN_HEADER
   } PCF_ParsePropertyRec, *PCF_ParseProperty;
 
 
-  typedef struct  PCF_Property_
+  typedef struct  PCF_PropertyRec_
   {
     FT_String*  name;
     FT_Byte     isString;
@@ -76,10 +91,10 @@ FT_BEGIN_HEADER
 
     } value;
 
-  } PCF_PropertyRec, *PCF_Property;      
+  } PCF_PropertyRec, *PCF_Property;
 
 
-  typedef struct  PCF_Compressed_Metric_ 
+  typedef struct  PCF_Compressed_MetricRec_
   {
     FT_Byte  leftSideBearing;
     FT_Byte  rightSideBearing;
@@ -88,9 +103,9 @@ FT_BEGIN_HEADER
     FT_Byte  descent;
 
   } PCF_Compressed_MetricRec, *PCF_Compressed_Metric;
-    
 
-  typedef struct  PCF_Metric_ 
+
+  typedef struct  PCF_MetricRec_
   {
     FT_Short  leftSideBearing;
     FT_Short  rightSideBearing;
@@ -123,10 +138,10 @@ FT_BEGIN_HEADER
   } PCF_AccelRec, *PCF_Accel;
 
 
-  typedef struct  PCD_Encoding_
+  typedef struct  PCF_EncodingRec_
   {
-    FT_Long   enc;
-    FT_Short  glyph;
+    FT_Long    enc;
+    FT_UShort  glyph;
 
   } PCF_EncodingRec, *PCF_Encoding;
 
@@ -134,7 +149,10 @@ FT_BEGIN_HEADER
   typedef struct  PCF_FaceRec_
   {
     FT_FaceRec     root;
-      
+
+    FT_StreamRec   gzip_stream;
+    FT_Stream      gzip_source;
+
     char*          charset_encoding;
     char*          charset_registry;
 
@@ -148,7 +166,7 @@ FT_BEGIN_HEADER
     PCF_Metric     metrics;
     FT_Long        nencodings;
     PCF_Encoding   encodings;
-      
+
     FT_Short       defaultChar;
 
     FT_ULong       bitmapsFormat;
@@ -157,11 +175,6 @@ FT_BEGIN_HEADER
     FT_CharMapRec  charmap;  /* a single charmap per face */
 
   } PCF_FaceRec, *PCF_Face;
-
-
-  /* XXX hack */
-  static
-  FT_Error  PCF_Done_Face( PCF_Face  face );
 
 
   /* macros for pcf font format */
@@ -173,7 +186,7 @@ FT_BEGIN_HEADER
                                   ( 'c' << 16 ) | \
                                   ( 'f' <<  8 ) | 1 )
 #define PCF_FORMAT_MASK         0xFFFFFF00L
-    
+
 #define PCF_DEFAULT_FORMAT      0x00000000L
 #define PCF_INKBOUNDS           0x00000200L
 #define PCF_ACCEL_W_INKBOUNDS   0x00000100L
@@ -226,10 +239,9 @@ FT_BEGIN_HEADER
 
 #define GLYPHPADOPTIONS  4 /* I'm not sure about this */
 
-  FT_LOCAL
-  FT_Error  pcf_load_font( FT_Stream,
-                           PCF_Face );
-    
+  FT_LOCAL( FT_Error )
+  pcf_load_font( FT_Stream,
+                 PCF_Face );
 
 FT_END_HEADER
 

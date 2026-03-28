@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Monitor.c,v 1.33 2006/08/09 20:53:16 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -26,7 +34,54 @@
  * 
  */
 /*
- * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * Copyright © 2004, 2005 X-Oz Technologies.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -34,30 +89,43 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
+ * 
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions, and the following disclaimer.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *  2. Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ * 
+ *  3. The end-user documentation included with the redistribution,
+ *     if any, must include the following acknowledgment: "This product
+ *     includes software developed by X-Oz Technologies
+ *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
+ *     appear in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *  4. Except as contained in this notice, the name of X-Oz
+ *     Technologies shall not be used in advertising or otherwise to
+ *     promote the sale, use or other dealings in this Software without
+ *     prior written authorization from X-Oz Technologies.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
  */
 
 
 /* View/edit this file with tab stops set to 4 */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include "xf86Parser.h"
 #include "xf86tokens.h"
@@ -88,6 +156,7 @@ static xf86ConfigSymTabRec ModesTab[] =
 	{IDENTIFIER, "identifier"},
 	{MODELINE, "modeline"},
 	{MODE, "mode"},
+	{OPTION, "option"},
 	{-1, ""},
 };
 
@@ -124,21 +193,7 @@ static xf86ConfigSymTabRec ModeTab[] =
 
 #define CLEANUP xf86freeModeLineList
 
-static void
-xf86freeModeLineList (XF86ConfModeLinePtr ptr)
-{
-	XF86ConfModeLinePtr prev;
-	while (ptr)
-	{
-		TestFree (ptr->ml_identifier);
-		TestFree (ptr->ml_comment);
-		prev = ptr;
-		ptr = ptr->list.next;
-		xf86conffree (prev);
-	}
-}
-
-static XF86ConfModeLinePtr
+XF86ConfModeLinePtr
 xf86parseModeLine (void)
 {
 	int token;
@@ -147,7 +202,7 @@ xf86parseModeLine (void)
 	/* Identifier */
 	if (xf86getSubToken (&(ptr->ml_comment)) != STRING)
 		Error ("ModeLine identifier expected", NULL);
-	ptr->ml_identifier = val.str;
+	ptr->ml_identifier = xf86configStrdup(val.str);
 
 	/* DotClock */
 	if (xf86getSubToken (&(ptr->ml_comment)) != NUMBER)
@@ -267,7 +322,7 @@ xf86parseModeLine (void)
 	return (ptr);
 }
 
-static XF86ConfModeLinePtr
+XF86ConfModeLinePtr
 xf86parseVerboseMode (void)
 {
 	int token, token2;
@@ -276,7 +331,7 @@ xf86parseVerboseMode (void)
 
 		if (xf86getSubToken (&(ptr->ml_comment)) != STRING)
 		Error ("Mode name expected", NULL);
-	ptr->ml_identifier = val.str;
+	ptr->ml_identifier = xf86configStrdup(val.str);
 	while ((token = xf86getToken (ModeTab)) != ENDMODE)
 	{
 		switch (token)
@@ -439,18 +494,18 @@ xf86parseMonitorSection (void)
 				Error (QUOTE_MSG, "Identifier");
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
-			ptr->mon_identifier = val.str;
+			ptr->mon_identifier = xf86configStrdup(val.str);
 			has_ident = TRUE;
 			break;
 		case VENDOR:
 			if (xf86getSubToken (&(ptr->mon_comment)) != STRING)
 				Error (QUOTE_MSG, "Vendor");
-			ptr->mon_vendor = val.str;
+			ptr->mon_vendor = xf86configStrdup(val.str);
 			break;
 		case MODEL:
 			if (xf86getSubToken (&(ptr->mon_comment)) != STRING)
 				Error (QUOTE_MSG, "ModelName");
-			ptr->mon_modelname = val.str;
+			ptr->mon_modelname = xf86configStrdup(val.str);
 			break;
 		case MODE:
 			HANDLE_LIST (mon_modeline_lst, xf86parseVerboseMode,
@@ -473,8 +528,6 @@ xf86parseMonitorSection (void)
 			if (xf86getSubToken (&(ptr->mon_comment)) != NUMBER)
 				Error (HORIZSYNC_MSG, NULL);
 			do {
-				if (ptr->mon_n_hsync >= CONF_MAX_HSYNC)
-					Error ("Sorry. Too many horizontal sync intervals.", NULL);
 				ptr->mon_hsync[ptr->mon_n_hsync].lo = val.realnum;
 				switch (token = xf86getSubToken (&(ptr->mon_comment)))
 				{
@@ -500,6 +553,8 @@ xf86parseMonitorSection (void)
 						ptr->mon_n_hsync++;
 						goto HorizDone;
 				}
+				if (ptr->mon_n_hsync >= CONF_MAX_HSYNC)
+					Error ("Sorry. Too many horizontal sync intervals.", NULL);
 				ptr->mon_n_hsync++;
 			} while ((token = xf86getSubToken (&(ptr->mon_comment))) == NUMBER);
 HorizDone:
@@ -582,7 +637,7 @@ VertDone:
 				   referenced here */
 				mptr = xf86confcalloc (1, sizeof (XF86ConfModesLinkRec));
 				mptr->list.next = NULL;
-				mptr->ml_modes_str = val.str;
+				mptr->ml_modes_str = xf86configStrdup(val.str);
 				mptr->ml_modes = NULL;
 				ptr->mon_modes_sect_lst = (XF86ConfModesLinkPtr)
 					xf86addListItem((GenericListPtr)ptr->mon_modes_sect_lst,
@@ -596,7 +651,6 @@ VertDone:
 			xf86parseError (INVALID_KEYWORD_MSG, xf86tokenString ());
 			CLEANUP (ptr);
 			return NULL;
-			break;
 		}
 	}
 
@@ -631,7 +685,7 @@ xf86parseModesSection (void)
 				Error (QUOTE_MSG, "Identifier");
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
-			ptr->modes_identifier = val.str;
+			ptr->modes_identifier = xf86configStrdup(val.str);
 			has_ident = TRUE;
 			break;
 		case MODE:
@@ -642,11 +696,13 @@ xf86parseModesSection (void)
 			HANDLE_LIST (mon_modeline_lst, xf86parseModeLine,
 						 XF86ConfModeLinePtr);
 			break;
+		case OPTION:
+			ptr->modes_option_lst = xf86parseOption(ptr->modes_option_lst);
+			break;
 		default:
 			xf86parseError (INVALID_KEYWORD_MSG, xf86tokenString ());
 			CLEANUP (ptr);
 			return NULL;
-			break;
 		}
 	}
 
@@ -688,8 +744,6 @@ xf86printMonitorSection (FILE * cf, XF86ConfMonitorPtr ptr)
 			fprintf (cf, "\tDisplaySize  %d\t%d\n",
 					 ptr->mon_width,
 					 ptr->mon_height);
-		if ( ptr->mon_n_hsync || ptr->mon_n_vrefresh )
-		    fprintf(cf," ### Comment all HorizSync and VertRefresh values to use DDC:\n");
 		for (i = 0; i < ptr->mon_n_hsync; i++)
 		{
 			fprintf (cf, "\tHorizSync    %2.1f - %2.1f\n",
@@ -804,6 +858,7 @@ xf86printModesSection (FILE * cf, XF86ConfModesPtr ptr)
 			else
 				fprintf (cf, "\n");
 		}
+		xf86printOptionList(cf, ptr->modes_option_lst, 1);
 		fprintf (cf, "EndSection\n\n");
 		ptr = ptr->list.next;
 	}
@@ -838,6 +893,21 @@ xf86freeModesList (XF86ConfModesPtr ptr)
 		TestFree (ptr->modes_identifier);
 		TestFree (ptr->modes_comment);
 		xf86freeModeLineList (ptr->mon_modeline_lst);
+		xf86optionListFree (ptr->modes_option_lst);
+		prev = ptr;
+		ptr = ptr->list.next;
+		xf86conffree (prev);
+	}
+}
+
+void
+xf86freeModeLineList (XF86ConfModeLinePtr ptr)
+{
+	XF86ConfModeLinePtr prev;
+	while (ptr)
+	{
+		TestFree (ptr->ml_identifier);
+		TestFree (ptr->ml_comment);
 		prev = ptr;
 		ptr = ptr->list.next;
 		xf86conffree (prev);
@@ -886,21 +956,30 @@ xf86findModeLine (const char *ident, XF86ConfModeLinePtr p)
 int
 xf86validateMonitor (XF86ConfigPtr p, XF86ConfScreenPtr screen)
 {
-	XF86ConfMonitorPtr monitor = screen->scrn_monitor;
-	XF86ConfModesLinkPtr modeslnk = monitor->mon_modes_sect_lst;
+	XF86ConfMonitorListPtr monitorlist;
+	XF86ConfModesLinkPtr modeslnk;
 	XF86ConfModesPtr modes;
-	while(modeslnk)
+
+	monitorlist = screen->scrn_monitor_lst;
+	while (monitorlist)
 	{
-		modes = xf86findModes (modeslnk->ml_modes_str, p->conf_modes_lst);
-		if (!modes)
-		{
-			xf86validationError (UNDEFINED_MODES_MSG, 
-					     modeslnk->ml_modes_str, 
-					     screen->scrn_identifier);
-			return (FALSE);
+	    if (monitorlist->monitor) {
+			modeslnk = monitorlist->monitor->mon_modes_sect_lst;
+			while(modeslnk)
+			{
+				modes = xf86findModes (modeslnk->ml_modes_str, p->conf_modes_lst);
+				if (!modes)
+				{
+					xf86validationError (UNDEFINED_MODES_MSG, 
+					     		modeslnk->ml_modes_str, 
+					     		screen->scrn_identifier);
+					return (FALSE);
+				}
+				modeslnk->ml_modes = modes;
+				modeslnk = modeslnk->list.next;
+			}
 		}
-		modeslnk->ml_modes = modes;
-		modeslnk = modeslnk->list.next;
+		monitorlist = monitorlist->list.next;
 	}
 	return (TRUE);
 }

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 by Sven Luther <luther@dpt-info.u-strasbg.fr>.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -26,9 +33,9 @@
  * 
  * Permedia 3 accelerated options.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/pm3_accel.c,v 1.33tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/pm3_accel.c,v 1.32 2004/03/29 16:25:16 tsi Exp $ */
 
-#include <X11/Xarch.h>
+#include "Xarch.h"
 #include "xf86.h"
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"

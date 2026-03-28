@@ -1,7 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_kmod.c,v 3.6 2001/10/31 22:50:30 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <errno.h>
 #include <fcntl.h>
@@ -36,7 +47,7 @@
  * Return:
  *    0 for failure, 1 for success
  */
-_X_EXPORT int
+int
 xf86LoadKernelModule(const char *modName)
 {
    char mpPath[MAX_PATH] = "";

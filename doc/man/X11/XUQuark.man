@@ -153,7 +153,7 @@ XrmQuark XrmUniqueQuark\^(void);
 .br
 \&#define XrmStringToRepresentation(string) XrmStringToQuark(string)
 .HP
-XrmQuark XrmStringToQuark\^(\^char *\fIstring\fP\^); 
+int XrmQuark XrmStringToQuark\^(\^char *\fIstring\fP\^); 
 .HP
 XrmQuark XrmPermStringToQuark\^(\^char *\fIstring\fP\^); 
 .LP
@@ -183,7 +183,7 @@ char *XrmQuarkToString\^(\^XrmQuark \fIquark\fP\^);
 void XrmStringToQuarkList\^(\^char *\fIstring\fP\^, XrmQuarkList
 \fIquarks_return\fP\^); 
 .HP
-void XrmStringToBindingQuarkList\^(\^char *\fIstring\fP\^, XrmBindingList
+XrmStringToBindingQuarkList\^(\^char *\fIstring\fP\^, XrmBindingList
 \fIbindings_return\fP\^, XrmQuarkList \fIquarks_return\fP\^); 
 .SH ARGUMENTS
 .IP \fIbindings_return\fP 1i

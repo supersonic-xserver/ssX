@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.71tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.68 2005/02/03 02:01:14 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1995-1998 by Metro Link, Inc.
@@ -22,7 +36,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -90,7 +104,7 @@
 #include "swaprep.h"
 #include "swapreq.h"
 #include "inputstr.h"
-#include <X11/extensions/XIproto.h>
+#include "XIproto.h"
 #include "exevents.h"
 #include "extinit.h"
 #ifdef XV
@@ -174,10 +188,10 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(QueueWorkProc)
     SYMFUNC(RegisterBlockAndWakeupHandlers)
     SYMFUNC(RemoveBlockAndWakeupHandlers)
+#ifdef XCSECURITY
     SYMFUNC(SecurityLookupDrawable)
     SYMFUNC(SecurityLookupWindow)
-    SYMFUNC(SecurityVerifyDrawable)
-    SYMFUNC(SecurityVerifyGC)
+#endif
     /* events.c */
     SYMFUNC(CheckCursorConfinement)
     SYMFUNC(DeliverEvents)
@@ -227,13 +241,11 @@ LOOKUP dixLookupTab[] = {
     SYMVAR(defaultDPMSEnabled)
     /* bigreq */
     SYMVAR(maxBigRequestSize)
-    /* XXX These are exported from the DDX, not DIX. */
 #ifdef XV
+    /* XXX These are exported from the DDX, not DIX. */
     SYMVAR(XvScreenInitProc)
     SYMVAR(XvGetScreenIndexProc)
     SYMVAR(XvGetRTPortProc)
-#endif
-#ifdef XVMC
     SYMVAR(XvMCScreenInitProc)
 #endif
     SYMVAR(ScreenSaverBlanking)
@@ -251,7 +263,6 @@ LOOKUP dixLookupTab[] = {
     SYMVAR(serverGeneration)
     /* main.c */
     SYMFUNC(NotImplemented)
-    SYMFUNC(IsXineramaActive)
     /* pixmap.c */
     SYMFUNC(AllocatePixmap)
     SYMFUNC(GetScratchPixmapHeader)
@@ -283,8 +294,10 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(LookupIDByType)
     SYMFUNC(LookupIDByClass)
     SYMFUNC(LegalNewID)
+#ifdef XCSECURITY
     SYMFUNC(SecurityLookupIDByClass)
     SYMFUNC(SecurityLookupIDByType)
+#endif
     SYMFUNC(FindClientResourcesByType)
     SYMFUNC(FindAllClientResources)
     SYMVAR(lastResourceType)
@@ -342,8 +355,6 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(AdjustWaitForDelay)
     SYMVAR(noTestExtensions)
     SYMFUNC(GiveUp)
-    SYMFUNC(Fopen)
-    SYMFUNC(Fclose)
     /* log.c */
     SYMFUNC(LogVWrite)
     SYMFUNC(LogWrite)
@@ -430,5 +441,5 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(PictureSetSubpixelOrder)
 #endif
 
-    LOOKUP_TERMINATOR
+    {0, 0}
 };

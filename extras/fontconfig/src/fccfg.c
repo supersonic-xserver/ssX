@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,7 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/extras/fontconfig/src/fccfg.c,v 1.3 2005/05/03 20:43:27 dawes Exp $ */
+/* $XFree86: xc/extras/fontconfig/src/fccfg.c,v 1.2 2003/06/04 16:29:39 dawes Exp $ */
 
 #include "fcint.h"
 
@@ -50,7 +57,11 @@ FcConfigCreate (void)
     
     config->cache = 0;
     if (!FcConfigSetCache (config, (FcChar8 *) ("~/" FC_USER_CACHE_FILE)))
-	goto bail4;
+#ifdef P_tmpdir
+	if (!FcConfigSetCache (config, (FcChar8 *)
+	    (P_tmpdir FC_USER_CACHE_FILE)))
+#endif
+	   goto bail4;
 
     config->blanks = 0;
 
@@ -675,7 +686,6 @@ FcConfigEvaluate (FcPattern *p, FcExpr *e)
 	r = FcPatternGet (p, e->u.field, 0, &v);
 	if (r != FcResultMatch)
 	    v.type = FcTypeVoid;
-	v = FcValueSave (v);
 	break;
     case FcOpConst:
 	if (FcNameConstant (e->u.constant, &v.u.i))
@@ -1383,11 +1393,10 @@ FcConfigFilename (const FcChar8 *url)
     file = 0;
     switch (*url) {
     case '~':
-	dir = FcGetHomeDir ();
-	if (dir) {
+	dir = (FcChar8 *) getenv ("HOME");
+	if (dir)
 	    file = FcConfigFileExists (dir, url + 1);
-	    FcStrFree (dir);
-	} else
+	else
 	    file = 0;
 	break;
     case '/':

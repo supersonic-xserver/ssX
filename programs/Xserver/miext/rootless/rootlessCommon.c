@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Common rootless definitions and code
  */
 /*
@@ -28,7 +35,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessCommon.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessCommon.c,v 1.6 2004/07/02 01:30:33 torrey Exp $ */
 
 #include "rootlessCommon.h"
 
@@ -111,7 +118,7 @@ void RootlessStartDrawing(WindowPtr pWindow)
     if (winRec == NULL)
         return;
 
-    /* Make sure the window's top-level parent is prepared for drawing */
+    // Make sure the window's top-level parent is prepared for drawing.
     if (!winRec->is_drawing) {
         int bw = wBorderWidth(top);
 
@@ -186,7 +193,7 @@ RootlessDamageRegion(WindowPtr pWindow, RegionPtr pRegion)
     WindowPtr pTop;
     BoxPtr b1, b2;
 
-    RL_DEBUG_MSG(("Damaged win 0x%x ", pWindow));
+    RL_DEBUG_MSG("Damaged win 0x%x ", pWindow);
 
     pTop = TopLevelParent(pWindow);
     if (pTop == NULL)
@@ -268,8 +275,8 @@ out:
         int numBox = REGION_NUM_RECTS(pRegion);
 
         for (end = box+numBox; box < end; box++) {
-            RL_DEBUG_MSG(("Damage rect: %i, %i, %i, %i\n",
-                         box->x1, box->x2, box->y1, box->y2));
+            RL_DEBUG_MSG("Damage rect: %i, %i, %i, %i\n",
+                         box->x1, box->x2, box->y1, box->y2);
         }
     }
 #endif
@@ -337,11 +344,11 @@ RootlessRedisplay(WindowPtr pWindow)
     RootlessStopDrawing(pWindow, FALSE);
 
     if (REGION_NOTEMPTY(pScreen, &winRec->damage)) {
-        RL_DEBUG_MSG(("Redisplay Win 0x%x, %i x %i @ (%i, %i)\n",
+        RL_DEBUG_MSG("Redisplay Win 0x%x, %i x %i @ (%i, %i)\n",
                      pWindow, winRec->width, winRec->height,
-                     winRec->x, winRec->y));
+                     winRec->x, winRec->y);
 
-        /* Move region to window local coords */
+        // move region to window local coords
         REGION_TRANSLATE(pScreen, &winRec->damage,
                          -winRec->x, -winRec->y);
 

@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/programs/Xserver/xkb/Imakefile,v 3.24tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:53:45 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/programs/Xserver/xkb/Imakefile,v 3.22 2003/07/16 01:39:03 dawes Exp $
 
 #define SGIHyperOpt
 #include <Server.tmpl>
@@ -20,13 +25,9 @@ XKB_DISABLE = -DXKB_DFLT_DISABLED=0
 
 XKB_DDXDEFS = XkbServerDefines
 
-#if defined(XF86Server) && XF86Server
+#if XF86Server
 XF86INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC)
    XF86_OBJS = xf86KillSrv.o xf86VT.o xf86Private.o
-#endif
-
-#ifndef LinkDefines
-#define LinkDefines /**/
 #endif
 
  DDX_SRCS = ddxBeep.c ddxCtrls.c ddxFakeBtn.c ddxFakeMtn.c ddxInit.c \
@@ -45,10 +46,11 @@ XF86INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC)
 	    xkmread.o xkbtext.o xkbfmisc.o xkberrs.o xkbout.o maprules.o \
 	    XKBMisc.o XKBMAlloc.o XKBAlloc.o XKBGAlloc.o \
 	    $(XKBXI_OBJS) $(DDX_OBJS)
-   INCLUDES = -I$(SERVERSRC)/include -I$(SERVERSRC)/Xext \
+   INCLUDES = -I../include -I$(XINCLUDESRC) -I$(EXTINCSRC) -I$(SERVERSRC)/Xext \
 	      -I$(SERVERSRC)/mi $(XF86INCLUDES)
+   LINTLIBS = ../dix/llib-ldix.ln ../os/llib-los.ln
 
-DEFINES = -DXKB_IN_SERVER $(EXTRA_ALLOC_DEFINES) $(XKB_DDXDEFS) LinkDefines
+DEFINES = -DXKB_IN_SERVER $(EXTRA_ALLOC_DEFINES) $(XKB_DDXDEFS)
 XKB_DEFINES = -DXKB_BASE_DIRECTORY=\"$(LIBDIR)/xkb\" $(XKB_DISABLE)
 
 NormalLibraryObjectRule()
@@ -56,7 +58,7 @@ NormalLibraryTarget(xkb,$(OBJS))
 LintLibraryTarget(xkb,$(SRCS))
 NormalLintTarget($(SRCS))
 
-#if defined(XF86Server) && XF86Server
+#if XF86Server
 ObjectFromSpecialSource(xf86KillSrv,ddxKillSrv,-DXF86DDXACTIONS)
 ObjectFromSpecialSource(xf86VT,ddxVT,-DXF86DDXACTIONS)
 ObjectFromSpecialSource(xf86Private,ddxPrivate,-DXF86DDXACTIONS)
@@ -68,7 +70,7 @@ SpecialCObjectRule(xkbInit,$(ICONFIGFILES),$(XKB_DEFINES))
 LinkSourceFile(maprules.c,$(XKBFILELIBSRC))
 LinkSourceFile(xkmread.c,$(XKBFILELIBSRC))
 LinkSourceFile(xkbtext.c,$(XKBFILELIBSRC))
-/* avoid clash between XKBMisc.c and xkbmisc.c on NT */
+XCOMM avoid clash between XKBMisc.c and xkbmisc.c on NT
 LinkFile(xkbfmisc.c,$(XKBFILELIBSRC)/xkbmisc.c)
 LinkSourceFile(xkberrs.c,$(XKBFILELIBSRC))
 LinkSourceFile(xkbconfig.c,$(XKBFILELIBSRC))
@@ -78,38 +80,7 @@ LinkSourceFile(XKBMAlloc.c,$(XLIBSRC))
 LinkSourceFile(XKBAlloc.c,$(XLIBSRC))
 LinkSourceFile(XKBGAlloc.c,$(XLIBSRC))
 
-LinkSourceFile(modinit.h,$(SERVERSRC)/Xext/extmod)
-
-#ifdef LinkDirectory
-
-LinkSourceFile(ddxBeep.c,LinkDirectory)
-LinkSourceFile(ddxConfig.c,LinkDirectory)
-LinkSourceFile(ddxCtrls.c,LinkDirectory)
-LinkSourceFile(ddxDevBtn.c,LinkDirectory)
-LinkSourceFile(ddxFakeBtn.c,LinkDirectory)
-LinkSourceFile(ddxFakeMtn.c,LinkDirectory)
-LinkSourceFile(ddxInit.c,LinkDirectory)
-LinkSourceFile(ddxKeyClick.c,LinkDirectory)
-LinkSourceFile(ddxKillSrv.c,LinkDirectory)
-LinkSourceFile(ddxLEDs.c,LinkDirectory)
-LinkSourceFile(ddxList.c,LinkDirectory)
-LinkSourceFile(ddxLoad.c,LinkDirectory)
-LinkSourceFile(ddxPrivate.c,LinkDirectory)
-LinkSourceFile(ddxVT.c,LinkDirectory)
-LinkSourceFile(xkb.c,LinkDirectory)
-LinkSourceFile(xkb.h,LinkDirectory)
-LinkSourceFile(xkbAccessX.c,LinkDirectory)
-LinkSourceFile(xkbActions.c,LinkDirectory)
-LinkSourceFile(xkbDflts.h,LinkDirectory)
-LinkSourceFile(xkbEvents.c,LinkDirectory)
-LinkSourceFile(xkbInit.c,LinkDirectory)
-LinkSourceFile(xkbLEDs.c,LinkDirectory)
-LinkSourceFile(xkbPrKeyEv.c,LinkDirectory)
-LinkSourceFile(xkbPrOtherEv.c,LinkDirectory)
-LinkSourceFile(xkbSwap.c,LinkDirectory)
-LinkSourceFile(xkbUtils.c,LinkDirectory)
-
-#else
+LinkSourceFile(modinit.h,../Xext/extmod)
 
 #if BuildLibraries
 #if UseConfDirForXkb
@@ -127,7 +98,5 @@ NDIR = $(CONFDIR)
 LinkConfDirectoryLong(xkb,xkb,compiled,compiled,$(ODIR),$(NDIR))
 #endif
 #endif
-
-#endif /* defined(LinkDirectory) */
 
 DependTarget()

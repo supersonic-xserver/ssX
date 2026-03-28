@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/vgaVideo.h,v 1.2 1998/07/25 16:59:45 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,6 +28,8 @@
  * SOFTWARE.
  *
 */
+
+/* $XConsortium: vgaVideo.h /main/4 1996/02/21 17:59:14 kaleb $ */
 
 #include "misc.h"	/* GJA -- for pointer data type */
 #ifdef lint

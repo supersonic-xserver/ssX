@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atii2c.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atii2c.c,v 1.5 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2003 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2003 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -347,7 +354,7 @@ ATII2CPreInit
     switch (pATI->Adapter)
     {
         case ATI_ADAPTER_MACH64:
-            if (!ATILoadSubModule(pScreenInfo, "i2c", ATIi2cSymbols))
+            if (!ATILoadModule(pScreenInfo, "i2c", ATIi2cSymbols))
                 return;
 
             ATIMach64I2CPreInit(pScreenInfo, pATI);

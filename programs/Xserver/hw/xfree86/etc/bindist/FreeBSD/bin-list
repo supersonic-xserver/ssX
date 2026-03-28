@@ -1,8 +1,6 @@
 .XFree86_Version
 bin
 lib/aout
-lib/libAppleWM.so.1
-lib/libAppleWM.so
 lib/libFS.so.6
 lib/libFS.so
 lib/libGL.so.1

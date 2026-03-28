@@ -1,681 +1,636 @@
 /*
- * Copyright (c) 2005 Bruno Schwander
- * Author: Bruno Schwander <bruno@tinkerbox.org>
- * Template driver used: dmc:
- *
- * Copyright (c) 1999  Machine Vision Holdings Incorporated
- * Author: Mayk Langer <langer@vsys.de>
- *
- * Template driver used: Copyright (c) 1998  Metro Link Incorporated
- *
-  * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/magictouch/xf86MagicTouch.c,v 1.8 2005/06/11 09:57:28 dawes Exp $ */
 
-#define _MGT_C_
+
+ * $XFree86: xc/programs/Xserver/hw/xfree86/input/magictouch/xf86MagicTouch.c,v 1.6 2004/05/06 00:49:35 dawes Exp $
+ */
+
+#ifndef XFree86LOADER
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
+#endif
 
 #include <misc.h>
 #include <xf86.h>
-#define NEED_XF86_TYPES
+#if !defined(DGUX)
 #include <xf86_ansic.h>
+#endif
 #include <xf86_OSproc.h>
 #include <xf86Xinput.h>
-#include <xisb.h>
 #include <exevents.h>
 
-#include "xf86MagicTouch.h"
+#include <xf86Module.h>
 
-InputDriverRec MAGICTOUCH = {
-        1,
-        "magictouch",
-        NULL,
-        MGTPreInit,
-        /*MGTUnInit*/NULL,
-        NULL,
-        0
-};
+/*
+ ***************************************************************************
+ *
+ * Default constants.
+ *
+ ***************************************************************************
+ */
+#define MAGIC_PACKET_SIZE	5
+#define MAGIC_PORT		"/dev/magictouch"
+#define MAGIC_LINK_SPEED	B9600
 
+/* First byte of the packet */
+#define MGCT_TOUCH	      0x01
+#define MGCT_RKEY		      0x02
+#define MGCT_LKEY		      0x04
+#define MGCT_MKEY		      0x08
+#define MGCT_CLICK_STATUS	0x10
 
-
-#ifdef XFree86LOADER
-
-static XF86ModuleVersionInfo VersionRec =
-{
-	"magictouch",
-	MODULEVENDORSTRING,
-	MODINFOSTRING1,
-	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
-	1, 0, 0,
-	ABI_CLASS_XINPUT,
-	ABI_XINPUT_VERSION,
-	MOD_CLASS_XINPUT,
-	{0, 0, 0, 0}				/* signature, to be patched into the file by
-								 * a tool */
-};
-
-
-static const char *reqSymbols[] = {
-	"AddEnabledDevice",
-	"ErrorF",
-	"InitButtonClassDeviceStruct",
-	"InitProximityClassDeviceStruct",
-	"InitValuatorAxisStruct",
-	"InitValuatorClassDeviceStruct",
-	"InitPtrFeedbackClassDeviceStruct",
-	"RemoveEnabledDevice",
-	"Xcalloc",
-	"Xfree",
-	"XisbBlockDuration",
-	"XisbFree",
-	"XisbNew",
-	"XisbRead",
-	"XisbTrace",
-	"screenInfo",
-	"xf86AddInputDriver",
-	"xf86AllocateInput",
-	"xf86CloseSerial",
-	"xf86ReadSerial",
-	"xf86WriteSerial",
-	"xf86CollectInputOptions",
-	"xf86ErrorFVerb",
-	"xf86FindOptionValue",
-	"xf86GetMotionEvents",
-	"xf86GetVerbosity",
-	"xf86MotionHistoryAllocate",
-	"xf86NameCmp",
-	"xf86OpenSerial",
-	"xf86OptionListCreate",
-	"xf86OptionListMerge",
-	"xf86OptionListReport",
-	"xf86PostButtonEvent",
-	"xf86PostMotionEvent",
-	"xf86PostProximityEvent",
-	"xf86ProcessCommonOptions",
-	"xf86ScaleAxis",
-	"xf86SetIntOption",
-	"xf86SetStrOption",
-	"xf86XInputSetScreen",
-	"xf86XInputSetSendCoreEvents",
-	NULL
-};
-
-static MODULESETUPPROTO(MGTSetupProc);
-
-static pointer
-MGTSetupProc(	ModuleDescPtr module,
-			pointer options,
-			int *errmaj,
-			int *errmin )
-{
-	xf86LoaderReqSymLists(reqSymbols, NULL);
-	xf86AddInputDriver(&MAGICTOUCH, module, 0);
-	return (pointer) 1;
-}
-
-XF86ModuleData magictouchModuleData = { &VersionRec, MGTSetupProc, NULL };
-
-
-#endif /* XFree86LOADER */
+#define MEDIE_X		20
+#define MEDIE_Y		20
 
 
 /*
- * Be sure to set vmin appropriately for your device's protocol. You want to
- * read a full packet before returning
+ ***************************************************************************
+ *
+ * Usefull macros.
+ *
+ ***************************************************************************
  */
-static const char *default_options[] =
+#define WORD_ASSEMBLY(byte1, byte2)	(((byte2) << 8) | (byte1))
+#define SYSCALL(call)			while(((call) == -1) && (errno == EINTR))
+
+/* This one is handy, thanx Fred ! */
+#ifdef DBG
+#undef DBG
+#endif
+#ifdef DEBUG
+#undef DEBUG
+#endif
+
+static int      debug_level = 0;
+#define DEBUG 1
+#if DEBUG
+#define DBG(lvl, f) {if ((lvl) == debug_level) { f; } }
+#else
+#define DBG(lvl, f)
+#endif
+
+
+#undef SYSCALL
+#undef read
+#undef write
+#undef close
+#undef strdup
+#define SYSCALL(call) call
+#define read(fd, ptr, num) xf86ReadSerial(fd, ptr, num)
+#define write(fd, ptr, num) xf86WriteSerial(fd, ptr, num)
+#define close(fd) xf86CloseSerial(fd)
+#define strdup(str) xf86strdup(str)
+
+/*
+ ***************************************************************************
+ *
+ * Device private records.
+ *
+ ***************************************************************************
+ */
+typedef struct _MagicPrivateRec {
+  char	*input_dev;				/* The touchscreen input tty			*/
+  int		min_x;				/* Minimum x reported by calibration		*/
+  int		max_x;				/* Maximum x					*/
+  int		min_y;				/* Minimum y reported by calibration		*/
+  int		max_y;				/* Maximum y					*/
+  int		screen_no;			/* Screen associated with the device		*/
+  int		screen_width;			/* Width of the associated X screen		*/
+  int		screen_height;			/* Height of the screen				*/
+  int		swap_axes;			/* Swap X an Y axes if != 0 */
+  unsigned char	packet_buf[MAGIC_PACKET_SIZE]; 	/* Assembly buffer				*/
+  int		packet_pos;
+  int		buf_x[MEDIE_X], i_x, num_medie_x;
+  int		buf_y[MEDIE_Y], i_y, num_medie_y;
+  Bool		first_x, first_y;
+  Bool		first_entry;
+  Bool		e_presente;
+  Bool		click_on;
+} MagicPrivateRec, *MagicPrivatePtr;
+
+static Bool xf86MagicConvert(LocalDevicePtr local, int first, int num,
+			     int v0, int v1, int v2, int v3, int v4, int v5,
+			     int *x, int *y);
+
+/****************************************************************************
+ *
+ * xf86MagicQueryOK --
+ *	Testa la presenza del touch controller. 
+ * 	Si osserva che al primo accesso al touch dopo l'accensione e' 
+ *	presente nel buffer di ricezione il codice 0xF che identifica la
+ *	vera presenza del touch controller.
+ *	Dal secondo accesso in poi bisogna interrogare il touch controller
+ * 	per verificarne l'esistenza. 
+ ****************************************************************************
+ */
+static Bool
+xf86MagicQueryOK(int fd)
 {
-	"Device", "/dev/ttyS1",
-	"BaudRate", "9600",
-	"StopBits", "1",
-	"DataBits", "8",
-	"Parity", "None",
-	"Vmin", "1",
-	"Vtime", "5",
-	"FlowControl", "None",
-	NULL,
-};
+	Bool	ok;
+	int	result;
+	char 	buf;
 
+	ok = Success;
 
-/*****************************************************************************
- *	Function Definitions
- ****************************************************************************/
+	/* Provo a leggere un byte dal buffer di ricezione */
+	SYSCALL( result = read(fd, &buf, 1) );
+	
+	DBG(4, ErrorF("<<%s[%d]>> QueryOK: read --> %d\n", __FILE__, __LINE__, result) );
+	
+	/* Se result e' -1 vuol dire che non c'e' nessun carattere nel
+	 buffer. Allora X/Window e' stato avviato almeno una volta */
+	if (result<0) {
+		DBG(4,
+			ErrorF("Avvio n-esimo di X/Windows\n");
+			ErrorF("Controllo presenza Touch Controller\n")
+		);
+		
+		/* Cerco il touch controller. Invio il carattere 0x00. */
+		buf = 0;
+		SYSCALL( result = write(fd, &buf, 1) );
+		
+		/* Attendo 20 ms per dare il tempo al touch controller di
+		capire il comando */
+		usleep(20000);
+		
+		/* Leggo la risposta */
+		SYSCALL( result = read(fd, &buf, 1) );
 
-
-
-static InputInfoPtr
-MGTPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
-{
-	InputInfoPtr pInfo;
-   	MGTPrivatePtr priv = xcalloc (1, sizeof (MGTPrivateRec));
-	char *s;
-
-	if (!priv)
-		return NULL;
-
-	if (!(pInfo = xf86AllocateInput(drv, 0))) {
-		xfree(priv);
-		return NULL;
+		DBG(4,
+			ErrorF("QueryOK: buf==%X,  result==%d\n", buf, result)
+		);
+	}
+		
+	/* Se result<0 allora il touch controller non e' presente sul 
+	disposito. Non posso proseguire */
+	if (result<0) {
+		DBG(4,
+			ErrorF("<<%s[%d]>> result<0\n", __FILE__, __LINE__)
+		);
+		ok = !Success;
+	}
+	/* Se il touch controller ha risposto allora controllo cosa ha 
+	risposto */
+	else {
+		ok = (buf==0xF ? Success : !Success);
+		DBG(4,
+			ErrorF("<<%s[%d]>> QueryOK buf==%x\n", __FILE__, __LINE__, buf)
+		);
 	}
 
-	priv->min_x = 0;
-	priv->max_x = 16384;
-	priv->min_y = 0;
-	priv->max_y = 16384;
-	priv->screen_num = 0;
+	return ok;
+}
+
+/*
+ ***********************************************************************
+ *
+ * xf86MagicControl
+ *
+ ***********************************************************************
+ */
+static Bool
+xf86MagicControl(DeviceIntPtr dev,
+		int mode)
+{
+	LocalDevicePtr	local = (LocalDevicePtr) dev->public.devicePrivate;
+	MagicPrivatePtr	priv = (MagicPrivatePtr)(local->private);
+	unsigned char	map[] = { 0, 1 };
+	unsigned char	req[MAGIC_PACKET_SIZE];
+	
+	switch (mode) {
+		case DEVICE_INIT:
+			DBG(2, ErrorF("MagicTouch init...\n") );
+			
+			/* Controlla il numero di schermo selezionato */
+			if (priv->screen_no >= screenInfo.numScreens || priv->screen_no<0)
+				priv->screen_no = 0;
+			/* Legge le dimensioni dello schermo */
+			priv->screen_width = screenInfo.screens[priv->screen_no]->width;
+			priv->screen_height = screenInfo.screens[priv->screen_no]->height;
+			
+			if (InitButtonClassDeviceStruct(dev, 1, map)==FALSE) {
+				ErrorF("Impossibile allocare ButtonClassDeviceStruct per MagicTouch\n");
+				return !Success;
+			}
+			
+			if (InitFocusClassDeviceStruct(dev)==FALSE) {
+				ErrorF("Impossibile allocare FocusClassDeviceStruct per MagicTouch\n");
+				return !Success;
+			}
+			
+			/*
+			 * Il movimento viene eseguito su due assi in coordinate assolute.
+			 */
+			if (InitValuatorClassDeviceStruct(dev, 2, xf86GetMotionEvents, local->history_size, Absolute) == FALSE ) 
+			{
+				ErrorF("MagicTouch ValuatorClassDeviceStruct: ERRORE\n");
+				return !Success;
+			}
+			else {
+				InitValuatorAxisStruct(dev, 0, priv->min_x, priv->max_x, 
+							9500, 
+							0, 	/* min res */
+							9500	/* max res */);
+							
+				InitValuatorAxisStruct(dev, 1, priv->min_y, priv->max_y,
+							10500,
+							0,
+							10500);
+			}
+			
+			if (InitFocusClassDeviceStruct(dev)==FALSE) {
+				ErrorF("Impossibile allocare FocusClassDeviceStruct per MagicTouch\n");
+			}
+			
+			/*
+			 * Alloca il buffer degli eventi spostamento
+			 */
+			xf86MotionHistoryAllocate(local);
+			
+			DBG(2, ErrorF("MagicTouch INIT OK\n") );
+			
+			break; /* DEVICE_INIT*/
+			
+		case DEVICE_ON:
+			DBG(2, ErrorF("MagicTouch ON\n") );
+			if (local->fd<0) {
+			DBG(2, ErrorF("Opening device...\n") );
+			
+			local->fd = xf86OpenSerial(local->options);
+			if (local->fd<0) {
+				ErrorF("Impossibile aprire MagicTouch\n");
+				return !Success;
+			}
+
+			/* Controlla se e' presente il touch controller.*/
+			req[0] = 0x00;
+			if (xf86MagicQueryOK(local->fd)!=Success) {
+				ErrorF("MagicTouch not present\n");
+				close(local->fd);
+				return !Success;
+			}
+
+			priv->e_presente = TRUE;			
+			
+			AddEnabledDevice(local->fd);
+			dev->public.on = TRUE;			
+			} /* if (local->fd<0) */
+			break; /* DEVICE_ON */
+			
+		case DEVICE_CLOSE:
+		case DEVICE_OFF:
+			DBG(2, ErrorF("MagicTouch OFF\n") );
+			dev->public.on = FALSE;
+			if (local->fd>=0)
+			   RemoveEnabledDevice(local->fd);
+				
+			SYSCALL( close(local->fd) );
+			local->fd = -1;
+			DBG(2, ErrorF("OK\n") );
+			break; /* DEVICE_OFF*/
+			
+		default:
+			ErrorF("unsupported mode %d\n", mode);
+			return !Success;
+	} /* switch (mode) */
+	
+	return Success;
+}
+
+
+
+/*
+ ***************************************************************************
+ *
+ * GetPacket --
+ *
+ ***************************************************************************
+ */
+static Bool
+GetPacket(LocalDevicePtr local,  unsigned char *buffer, int *n_rx, int fd)
+{
+ 	int	num_bytes;
+ 	int  	i;
+	Bool	ok;
+
+	DBG(6, ErrorF("Entering GetPacket with packet_pos == %d\n", *n_rx) );
+	
+	SYSCALL( 
+		num_bytes=read(fd, buffer+*n_rx, MAGIC_PACKET_SIZE-*n_rx) 
+	);
+	
+	/* Se e' il primo ingresso nella procedura e ho letto un solo byte,
+	   allora e' arrivato lo 0x0F di risposta all-inizializzazione del
+	   touch controlloer */
+	/* Sto gia' leggendo un pacchetto normale */		
+	*n_rx += num_bytes;
+	
+	DBG(8,
+		for (i=0; i<*n_rx; i++)
+			ErrorF("%3X", buffer[i]);
+		ErrorF("\n")
+	);
+
+	ok = (*n_rx==MAGIC_PACKET_SIZE ? Success : !Success );
+	
+	if (ok==Success)
+		*n_rx = 0;
+	
+	DBG(6, 
+		if(ok==Success) 
+			ErrorF("GetPacket OK\n");
+		else
+			ErrorF("GetPacket FAIL\n")
+	);
+	  
+  	return ok;
+}
+
+/*
+ ************************************************************************
+ *
+ * xf86MagicReadInput
+ *
+ ************************************************************************
+ */
+static 
+int medie_x(LocalDevicePtr local, int x)
+{
+	int i,res;
+	float medie;
+	MagicPrivatePtr priv = (MagicPrivatePtr)(local->private);
+	
+	DBG(6, 
+		ErrorF("Medie in X = %d\n", priv->num_medie_x)
+	);
+	
+	if (priv->first_x) {
+		priv->first_x = FALSE;
+		for (i=0; i<priv->num_medie_x; i++)
+			priv->buf_x[i] = x;
+			
+		res = x;
+	}
+	else {
+		priv->buf_x[priv->i_x] = x;
+		priv->i_x++;
+		if (priv->i_x>=priv->num_medie_x)
+			priv->i_x = 0;
+			
+		medie = 0.0;	
+		for (i=0; i<priv->num_medie_x; i++)
+			medie += priv->buf_x[i];
+		
+		res = (int)(medie/priv->num_medie_x);
+	}
+	
+	return res;
+}
+
+static
+int medie_y(LocalDevicePtr local, int y)
+{
+	int i,res;
+	float medie;
+	MagicPrivatePtr priv = (MagicPrivatePtr)(local->private);
+	
+	DBG(6, 
+		ErrorF("Medie in Y = %d\n", priv->num_medie_y)
+	);
+	
+	if (priv->first_y) {
+		priv->first_y = FALSE;
+		for (i=0; i<priv->num_medie_y; i++)
+			priv->buf_y[i] = y;
+			
+		res = y;
+	}
+	else {
+		priv->buf_y[priv->i_y] = y;
+		priv->i_y++;
+		if (priv->i_y>=priv->num_medie_y)
+			priv->i_y = 0;
+			
+		medie = 0.0;	
+		for (i=0; i<priv->num_medie_y; i++)
+			medie += priv->buf_y[i];
+		
+		res = (int)(medie/priv->num_medie_y);
+	}
+	
+	return res;
+}
+
+/*
+static
+int MAX(int x, int y)
+{
+  return (x>=y ? x : y);
+}
+*/
+
+#define MAX(x,y) (x>=y ? x : y)
+ 
+static void
+xf86MagicReadInput(LocalDevicePtr	local)
+{
+	MagicPrivatePtr	priv = (MagicPrivatePtr)(local->private);
+	int		cur_x, cur_y;
+	Bool		touch_now;
+	int		x, y;
+
+	if (!priv->e_presente) {
+		DBG(4,
+			ErrorF("ReadInput: Touch Controller non inizializzato\n")
+		);
+		return;
+	}
+		
+	DBG(4, ErrorF("Entering ReadInput\n"));
+  	/*
+  	 * Try to get a packet.
+  	 */
+  	if (GetPacket(local, priv->packet_buf, &priv->packet_pos, local->fd)==Success) 
+  	{
+  		/* Calculate the (x,y) coord of pointer */
+  		cur_x = priv->packet_buf[1];
+  		cur_x <<= 6;
+  		cur_x |= priv->packet_buf[2];
+  		
+  		cur_y = priv->packet_buf[3];
+  		cur_y <<= 6;
+  		cur_y |= priv->packet_buf[4];
+  		
+		touch_now = ((priv->packet_buf[0] & MGCT_TOUCH) == MGCT_TOUCH);
+		
+		/* Se c'e' pressione sul touch inizio a calcolare la posizione
+		   e a spostare il cursore grafico */
+		if (touch_now) {
+			DBG(6, 
+				ErrorF("Touch premuto: medio i valori di posizione\n")
+			);
+			cur_x = medie_x(local, cur_x);
+			cur_y = medie_y(local, cur_y);
+		}
+		else {
+			DBG(6, 
+				ErrorF("Touch rilasciato:\n"
+					"\tazzeramento buffer memoria\n"
+					"\tposizionamento immediato\n")
+			);
+			
+			/* Se non ho pressione allora comando lo spostamento
+			del cursore senza mediare. Svuoto il buffer delle medie */
+			priv->first_x = TRUE;
+			priv->first_y = TRUE;
+		}
+
+		xf86MagicConvert(local, 0, 2, cur_x, cur_y, 0, 0, 0, 0,
+				 &x, &y);
+		xf86XInputSetScreen(local, priv->screen_no, x, y);
+
+		/* Comando lo spostamento */
+		xf86PostMotionEvent(local->dev, TRUE, 0, 2, cur_x, cur_y);		
+    		/* comanda la pressione del tasto */
+    		
+    		DBG(9,
+    			ErrorF("touch_now==%s\n", (touch_now==TRUE ? "TRUE" : "FALSE") )
+    		);
+    		if (touch_now!=priv->click_on) {
+    			DBG(9,
+    				ErrorF("Bottone == %s\n", (touch_now==TRUE ? "PREMUTO" : "RILASCAITO") )
+    			);
+    			priv->click_on = touch_now;
+			xf86PostButtonEvent(local->dev, TRUE, 1, touch_now, 0, 2, cur_x, cur_y);
+		}
+  	} /* GetPacket */
+}
+
+
+/*
+ ************************************************************************
+ *
+ * xf86MagicConvert
+ *
+ ************************************************************************
+ */
+static Bool
+xf86MagicConvert(LocalDevicePtr	local,
+	       int		first,
+	       int		num,
+	       int		v0,
+	       int		v1,
+	       int		v2,
+	       int		v3,
+	       int		v4,
+	       int		v5,
+	       int		*x,
+	       int		*y)
+{
+  MagicPrivatePtr	priv = (MagicPrivatePtr) local->private;
+  int		width = priv->max_x - priv->min_x;
+  int		height = priv->max_y - priv->min_y;
+  int		input_x, input_y;
+  
+  if (first != 0 || num != 2) {
+    return FALSE;
+  }
+
+  DBG(3, ErrorF("MagicConvert: v0(%d), v1(%d)\n",	v0, v1));
+
+  if (priv->swap_axes) {
+    input_x = v1;
+    input_y = v0;
+  }
+  else {
+    input_x = v0;
+    input_y = v1;
+  }
+  *x = (priv->screen_width * (input_x - priv->min_x)) / width;
+  *y = (priv->screen_height - (priv->screen_height * (input_y - priv->min_y)) / height);
+  
+  DBG(3, ErrorF("MagicConvert: x(%d), y(%d)\n",	*x, *y));
+
+  return TRUE;
+}
+
+
+
+/*
+ ************************************************************************
+ *
+ * xf86MagicAllocate
+ * 
+ ************************************************************************
+ */
+static LocalDevicePtr
+xf86MagicAllocate(void)
+{
+	LocalDevicePtr	local = xalloc(sizeof(LocalDeviceRec));
+
+	MagicPrivatePtr	priv = (MagicPrivatePtr) xalloc( sizeof(MagicPrivateRec) );
+
+	/* Controlla la corretta allocazione di buffers. Se uno dei buffers non
+		e' stato allocato correttamente termina l'inizializzazione
+	*/
+	if (!local) {
+		if (priv)
+			xfree(priv);
+		return NULL;
+	}
+	
+	if (!priv) {
+		if (local)
+			xfree(local);
+		return NULL;
+	}
+	
+	/* I buffers sono allocati correttamente */
+	priv->input_dev = strdup(MAGIC_PORT);
+
+	priv->min_x = 60;
+	priv->max_x = 960;
+	priv->min_y = 60;
+	priv->max_y = 960;
+	priv->screen_no = 0;
 	priv->screen_width = -1;
 	priv->screen_height = -1;
-	priv->lex_mode = MGT_byte0;
-	priv->swap_xy = 0;
-	priv->button_down = FALSE;
-	priv->button_number = 1;
-	priv->proximity = FALSE;
-	priv->pen_down = 0;
+	priv->swap_axes = 0;
+	priv->first_x = 
+	priv->first_y = TRUE;
+	priv->first_entry = TRUE;
+	priv->e_presente = FALSE;
+	priv->click_on = FALSE;
+	priv->i_x = 
+	priv->i_y = 0;
+	priv->packet_pos = 0;
+	bzero(priv->buf_x, MEDIE_X);
+	bzero(priv->buf_y, MEDIE_Y);
+	priv->num_medie_x = MEDIE_X;
+	priv->num_medie_y = MEDIE_Y;
+	
+	local->name = XI_TOUCHSCREEN;
+	local->flags = 0;
+	local->device_control = xf86MagicControl;
+	local->read_input = xf86MagicReadInput;
+	local->control_proc = NULL;
+	local->close_proc = NULL;
+	local->switch_mode = NULL;
+	local->conversion_proc = xf86MagicConvert;
+	local->reverse_conversion_proc = NULL;
+	local->fd = -1;
+	local->atom = 0;
+	local->dev = NULL;
+	local->private = priv;
+	local->type_name = "MagicTouch";
+	local->history_size = 0;
+	
+	return local;
+	
+} /* xf86MagicAllocae */
 
-	pInfo->type_name = XI_TOUCHSCREEN;
-	pInfo->device_control = DeviceControl;
-	pInfo->read_input = ReadInput;
-	pInfo->control_proc = ControlProc;
-	pInfo->close_proc = CloseProc;
-	pInfo->switch_mode = SwitchMode;
-	pInfo->conversion_proc = ConvertProc;
-	pInfo->dev = NULL;
-	pInfo->private = priv;
-	pInfo->private_flags = 0;
-	pInfo->flags = XI86_POINTER_CAPABLE | XI86_SEND_DRAG_EVENTS;
-	pInfo->conf_idev = dev;
-
-	xf86CollectInputOptions(pInfo, default_options, NULL);
-
-	xf86OptionListReport( pInfo->options );
-
-	pInfo->fd = xf86OpenSerial (pInfo->options);
-	if (pInfo->fd == -1)
-	{
-		ErrorF ("MGT driver unable to open device\n");
-		goto SetupProc_fail;
-	}
-	xf86CloseSerial(pInfo->fd);
-	/*
-	 * Process the options for your device like this
-	 */
-	priv->min_x = xf86SetIntOption( pInfo->options, "MinX", 0 );
-	priv->max_x = xf86SetIntOption( pInfo->options, "MaxX", 16384 );
-	priv->min_y = xf86SetIntOption( pInfo->options, "MinY", 0 );
-	priv->max_y = xf86SetIntOption( pInfo->options, "MaxY", 16384 );
-	priv->screen_num = xf86SetIntOption( pInfo->options, "ScreenNumber", 0 );
-	priv->button_number = xf86SetIntOption( pInfo->options, "ButtonNumber", 1 );
-	priv->swap_xy = xf86SetIntOption( pInfo->options, "SwapXY", 0 );
-	/*	priv->buffer = NULL;*/
-        s = xf86FindOptionValue (pInfo->options, "ReportingMode");
-        if ((s) && (xf86NameCmp (s, "raw") == 0))
-                priv->reporting_mode = TS_Raw;
-        else
-                priv->reporting_mode = TS_Scaled;
-
-	priv->proximity = FALSE;
-	priv->button_down = FALSE;
-	priv->lex_mode = MGT_byte0;
-
-	if (QueryHardware (priv) != Success)
-	{
-		ErrorF ("Unable to query/initialize MGT hardware.\n");
-		goto SetupProc_fail;
-	}
-
-	/* this results in an xstrdup that must be freed later */
-	pInfo->name = xf86SetStrOption( pInfo->options, "DeviceName", "MGT");
-	xf86ProcessCommonOptions(pInfo, pInfo->options);
-
-	pInfo->flags |= XI86_CONFIGURED;
-	return (pInfo);
-
-  SetupProc_fail:
-	if ((pInfo) && (pInfo->fd))
-		xf86CloseSerial (pInfo->fd);
-	if ((pInfo) && (pInfo->name))
-		xfree (pInfo->name);
-
-	if ((priv) && (priv->buffer))
-		XisbFree (priv->buffer);
-
-	if (priv)
-		xfree (priv);
-	return (pInfo);
-}
-
-static Bool
-DeviceControl (DeviceIntPtr dev, int mode)
-{
-	InputInfoPtr pInfo = dev->public.devicePrivate;
-	MGTPrivatePtr priv = (MGTPrivatePtr) (pInfo->private);
-	unsigned char map[] =
-	{0, 1};
-
-	switch (mode)
-	{
-	case DEVICE_INIT:
-		/*
-		 * these have to be here instead of in the SetupProc, because when the
-		 * SetupProc is run at server startup, screenInfo is not setup yet
-		 */
-		priv->screen_width = screenInfo.screens[priv->screen_num]->width;
-		priv->screen_height = screenInfo.screens[priv->screen_num]->height;
-
-		/*
-		 * Device reports button press for 1 button.
-		 */
-		if (InitButtonClassDeviceStruct (dev, 1, map) == FALSE)
-			{
-				ErrorF ("Unable to allocate MGT ButtonClassDeviceStruct\n");
-				return !Success;
-			}
-
-		/*
-		 * Device reports motions on 2 axes in absolute coordinates.
-		 * Axes min and max values are reported in raw coordinates.
-		 */
-		if (InitValuatorClassDeviceStruct (dev, 2, xf86GetMotionEvents,
-						   pInfo->history_size, Absolute) == FALSE)
-			{
-				ErrorF ("Unable to allocate MGT ValuatorClassDeviceStruct\n");
-				return !Success;
-			}
-		else
-			{
-				InitValuatorAxisStruct (dev, 0, priv->min_x, priv->max_x,
-							16384,
-							0 /* min_res */ ,
-							16384 /* max_res */ );
-				InitValuatorAxisStruct (dev, 1, priv->min_y, priv->max_y,
-							16384,
-							0 /* min_res */ ,
-							16384 /* max_res */ );
-			}
-
-		if (InitProximityClassDeviceStruct (dev) == FALSE)
-			{
-				ErrorF ("unable to allocate MGT ProximityClassDeviceStruct\n");
-				return !Success;
-			}
-
-		if (InitPtrFeedbackClassDeviceStruct(dev, MGTPtrCtrl) == FALSE)
-			{
-				ErrorF ("unable to allocate MGT PtrFeedbackClassDeviceStruct\n");
-				return !Success;
-			}
-
-		/*
-		 * Allocate the motion events buffer.
-		 */
-		xf86MotionHistoryAllocate (pInfo);
-		return (Success);
-
-	case DEVICE_ON:
-	  pInfo->fd = xf86OpenSerial(pInfo->options);
-	  if (pInfo->fd == -1)
-	    {
-	      xf86Msg(X_WARNING, "%s: cannot open input device\n", pInfo->name);
-	      return (!Success);
-	    }
-	  else
-	    {
-	      /* we should probably lower and then raise DTR and RTS to make sure
-		 the touchscreen is reset. Seems to work fine without though... */
-
-	      priv->buffer = XisbNew(pInfo->fd, 64);
-	      if (!priv->buffer)
-		{
-		  xf86CloseSerial(pInfo->fd);
-		  pInfo->fd = -1;
-		  return (!Success);
-		}
-	      else
-		{
-		  unsigned char	buf[1] = { 'I' };
-
-		  XisbBlockDuration (priv->buffer, 500000);
-		  if ( MGTSendPacket(priv, buf, 1) == Success )
-		    {
-		      sleep(2);  /* touch needs up to 2s delay !!! */
-		      /* wait for right response */
-		      priv->lex_mode = MGT_byte0;
-		      if (MGTGetPacket (priv) == Success )
-			{
-			  if ( priv->packet[0] == 0xCF )
-			    {
-			      xf86Msg(X_INFO, "MGT-Touch found\n");
-			    }
-			  else
-			    {
-			      xf86Msg(X_ERROR, "MGT-Touch not found(bad response)\n");
-			      return (!Success);
-			    }
-			}
-		      else
-			{
-			  xf86Msg(X_ERROR, "MGT-Touch not found(no response)\n");
-			  return (!Success);
-			}
-		    }
-		  else
-		    {
-		      xf86Msg(X_ERROR, "MGT-Touch not found(send error)\n");
-		      return (!Success);
-		    }
-		}
-	    }
-
-	  XisbBlockDuration (priv->buffer, -1);
-	  priv->lex_mode = MGT_byte0;
-
-	  xf86FlushInput(pInfo->fd);
-	  AddEnabledDevice (pInfo->fd);
-	  dev->public.on = TRUE;
-	  return (Success);
-
-	case DEVICE_OFF:
-	case DEVICE_CLOSE:
-	  if (pInfo->fd != -1)
-			{
-				RemoveEnabledDevice (pInfo->fd);
-					if (priv->buffer)
-					{
-						XisbFree(priv->buffer);
-						priv->buffer = NULL;
-						}
-				xf86CloseSerial(pInfo->fd);
-			}
-		dev->public.on = FALSE;
-		return (Success);
-	default:
-		return (BadValue);
-	}
-
-}
-
-
-/*
- * The ReadInput function will have to be tailored to your device
- */
-static void
-ReadInput (InputInfoPtr pInfo)
-{
-	MGTPrivatePtr priv = (MGTPrivatePtr) (pInfo->private);
-	int x,y;
-	unsigned char opck[ MGT_PACKET_SIZE ];
-
-	/*
-	 * set blocking to -1 on the first call because we know there is data to
-	 * read. Xisb automatically clears it after one successful read so that
-	 * succeeding reads are preceeded buy a select with a 0 timeout to prevent
-	 * read from blocking indefinately.
-	 */
-	XisbBlockDuration (priv->buffer, -1);
-	while (1)
-	{
-		memcpy(opck,priv->packet,5);
-
-		if ( MGTGetPacket (priv) != Success)
-			break;
-
-		if ( priv->swap_xy)
-		{
-			y = priv->packet[1];
-			y <<=7;
-			y |= priv->packet[2];
-			x = priv->packet[3];
-			x <<=7;
-			x |= priv->packet[4];
-		}
-		else
-		{
-			x = priv->packet[1];
-			x <<=7;
-			x |= priv->packet[2];
-			y = priv->packet[3];
-			y <<=7;
-			y |= priv->packet[4];
-		}
-
-                if (priv->reporting_mode == TS_Scaled)
-		  {
-		    x = xf86ScaleAxis (x, 0, screenInfo.screens[priv->screen_num]->width,
-				       priv->min_x,
-				       priv->max_x);
-		    y = xf86ScaleAxis (y, 0, screenInfo.screens[priv->screen_num]->height,
-				       priv->min_y,
-				       priv->max_y);
-		  }
-
-		xf86XInputSetScreen (pInfo, priv->screen_num, x, y);
-
-             /*
-                 * Send events.
-                 *
-                 * We *must* generate a motion before a button change if pointer
-                 * location has changed as DIX assumes this. This is why we always
-                 * emit a motion, regardless of the kind of packet processed.
-                 */
-
-                xf86PostMotionEvent (pInfo->dev, TRUE, 0, 2, x, y);
-
-                /*
-                 * Emit a touch or release. (button click)
-                 */
-                if ((priv->button_down == FALSE) && (priv->packet[0] & MGT_TOUCH))
-
-                {
-                        xf86PostButtonEvent (pInfo->dev, TRUE,
-					     priv->button_number, 1, 0, 2, x, y);
-                        priv->button_down = TRUE;
-                }
-                if ((priv->button_down == TRUE) && !(priv->packet[0] & MGT_TOUCH))
-                {
-                        xf86PostButtonEvent (pInfo->dev, TRUE,
-					     priv->button_number, 0, 0, 2, x, y);
-                        priv->button_down = FALSE;
-                }
-	}
-}
-
-/*
- * The ControlProc function may need to be tailored for your device
- */
-static int
-ControlProc (InputInfoPtr pInfo, xDeviceCtl * control)
-{
-	xDeviceTSCalibrationCtl *c = (xDeviceTSCalibrationCtl *) control;
-	MGTPrivatePtr priv = (MGTPrivatePtr) (pInfo->private);
-
-        priv->min_x = c->min_x;
-        priv->max_x = c->max_x;
-        priv->min_y = c->min_y;
-        priv->max_y = c->max_y;
-
-	return (Success);
-}
-
-/*
- * the CloseProc should not need to be tailored to your device
- */
-static void
-CloseProc (InputInfoPtr pInfo)
-{
-
-}
-
-/*
- * The SwitchMode function may need to be tailored for your device
- */
-static int
-SwitchMode (ClientPtr client, DeviceIntPtr dev, int mode)
-{
-	InputInfoPtr pInfo = dev->public.devicePrivate;
-        MGTPrivatePtr priv = (MGTPrivatePtr) (pInfo->private);
-
-
-	if ((mode == TS_Raw) || (mode == TS_Scaled))
-        {
-                priv->reporting_mode = mode;
-                return (Success);
-        }
-        else if ((mode == SendCoreEvents) || (mode == DontSendCoreEvents))
-        {
-                xf86XInputSetSendCoreEvents (pInfo, (mode == SendCoreEvents));
-                return (Success);
-        }
-        else
-                return (!Success);
-}
-
-/*
- * The ConvertProc function may need to be tailored for your device.
- * This function converts the device's valuator outputs to x and y coordinates
- * to simulate mouse events.
- */
-static Bool
-ConvertProc (InputInfoPtr pInfo,
-			 int first,
-			 int num,
-			 int v0,
-			 int v1,
-			 int v2,
-			 int v3,
-			 int v4,
-			 int v5,
-			 int *x,
-			 int *y)
-{
-	MGTPrivatePtr priv = (MGTPrivatePtr) (pInfo->private);
-
-	if (priv->reporting_mode == TS_Raw)
-	{
-                *x = xf86ScaleAxis (v0, 0, priv->screen_width, priv->min_x,
-                                                        priv->max_x);
-                *y = xf86ScaleAxis (v1, 0, priv->screen_height, priv->min_y,
-                                                        priv->max_y);
-        }
-        else
-        {
-                *x = v0;
-                *y = v1;
-	}
-	return (TRUE);
-}
-
-/*
- * the QueryHardware fuction should be tailored to your device to
- * verify the device is attached and functional and perform any
- * needed initialization.
- */
-static Bool
-QueryHardware (MGTPrivatePtr priv)
-{
-	/* Maybe once we get the hardware to actually respond correctly to its
-	   configuration 'packets' */
-
-  return Success;
-}
-
-/*
- * This function should be renamed for your device and tailored to handle
- * your device's protocol.
- */
-static Bool
-MGTGetPacket (MGTPrivatePtr priv)
-{
-	int count = 0;
-	int c;
-
-	while ((c = XisbRead (priv->buffer)) >= 0)
-	{
-		/*
-		 * fail after 500 bytes so the server doesn't hang forever if a
-		 * device sends bad data.
-		 */
-		if (count++ > 500)
-			return (!Success);
-
-		switch (priv->lex_mode)
-		{
-		case MGT_byte0:
-			priv->packet[0] = (unsigned char) c;
-			priv->lex_mode = MGT_byte1;
-			break;
-
-		case MGT_byte1:
-			priv->packet[1] = (unsigned char) c;
-			priv->lex_mode = MGT_byte2;
-			break;
-
-		case MGT_byte2:
-			priv->packet[2] = (unsigned char) c;
-			priv->lex_mode = MGT_byte3;
-			break;
-
-		case MGT_byte3:
-			priv->packet[3] = (unsigned char) c;
-			priv->lex_mode = MGT_byte4;
-			break;
-
-		case MGT_byte4:
-			priv->packet[4] = (unsigned char) c;
-			priv->lex_mode = MGT_byte0;
-			return (Success);
-			break;
-
-		case MGT_Response0:
-			priv->packet[0] = (unsigned char) c;
-			return (Success);
-			break;
-
-		}
-	}
-	return (!Success);
-}
-
-static Bool
-MGTSendPacket (MGTPrivatePtr priv, unsigned char *buf, int len)
-{
-	int				count = 0;
-
-	while ( len > 0 )
-	{
-		if ( XisbWrite(priv->buffer, buf, 1) == 1 )
-		{
-			buf++;
-			len--;
-			continue;
-		}
-		if ( count++ > 500 )
-			break;
-	}
-	return (len ? !Success : Success);
-}
-
-static void
-MGTPtrCtrl(DeviceIntPtr device, PtrCtrl *ctrl)
-{
-  /* I have no clue what this does, except that registering it stops the
-     X server segfaulting in ProcGetPointerMapping()
-     Ho Hum.
-  */
-}

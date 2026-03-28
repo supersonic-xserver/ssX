@@ -1,28 +1,56 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/posix_tty.c,v 3.34 2006/01/09 15:00:25 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1993-2003 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE XFREE86 PROJECT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the XFree86 Project shall
- * not be used in advertising or otherwise to promote the sale, use or other
- * dealings in this Software without prior written authorization from the
- * XFree86 Project.
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
  *
@@ -51,10 +79,6 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include <X11/X.h>
 #include "xf86.h"
@@ -111,7 +135,7 @@ GetBaud (int baudrate)
 	return (0);
 }
 
-_X_EXPORT int
+int
 xf86OpenSerial (pointer options)
 {
 #ifdef Lynx
@@ -203,7 +227,7 @@ xf86OpenSerial (pointer options)
 	return (fd);
 }
 
-_X_EXPORT int
+int
 xf86SetSerial (int fd, pointer options)
 {
 	struct termios t;
@@ -249,7 +273,6 @@ xf86SetSerial (int fd, pointer options)
 			xf86Msg (X_ERROR,
 				 "Invalid Option StopBits value: %d\n", val);
 			return (-1);
-			break;
 		}
 	}
 
@@ -277,7 +300,6 @@ xf86SetSerial (int fd, pointer options)
 			xf86Msg (X_ERROR,
 				 "Invalid Option DataBits value: %d\n", val);
 			return (-1);
-			break;
 		}
 	}
 
@@ -349,12 +371,12 @@ xf86SetSerial (int fd, pointer options)
 # else
 		SYSCALL (ioctl(fd, TIOCCDTR, NULL));
 # endif
+		xf86MarkOptionUsedByName (options, "ClearDTR");
 #else
 		xf86Msg (X_WARNING,
 			 "Option ClearDTR not supported on this OS\n");
 			return (-1);
 #endif
-		xf86MarkOptionUsedByName (options, "ClearDTR");
 	}
 
 	if ((xf86SetBoolOption (options, "ClearRTS", FALSE)))
@@ -362,19 +384,19 @@ xf86SetSerial (int fd, pointer options)
 #ifdef CLEARRTS_SUPPORT
 		val = TIOCM_RTS;
 		SYSCALL (ioctl(fd, TIOCMBIC, &val));
+		xf86MarkOptionUsedByName (options, "ClearRTS");
 #else
 		xf86Msg (X_WARNING,
 			 "Option ClearRTS not supported on this OS\n");
 			return (-1);
 #endif
-		xf86MarkOptionUsedByName (options, "ClearRTS");
 	}
 
 	SYSCALL (r = tcsetattr (fd, TCSANOW, &t));
 	return (r);
 }
 
-_X_EXPORT int
+int
 xf86SetSerialSpeed (int fd, int speed)
 {
 	struct termios t;
@@ -405,7 +427,7 @@ xf86SetSerialSpeed (int fd, int speed)
 	return (r);
 }
 
-_X_EXPORT int
+int
 xf86ReadSerial (int fd, void *buf, int count)
 {
 	int r;
@@ -423,7 +445,7 @@ xf86ReadSerial (int fd, void *buf, int count)
 	return (r);
 }
 
-_X_EXPORT int
+int
 xf86WriteSerial (int fd, const void *buf, int count)
 {
 	int r;
@@ -439,7 +461,7 @@ xf86WriteSerial (int fd, const void *buf, int count)
 	return (r);
 }
 
-_X_EXPORT int
+int
 xf86CloseSerial (int fd)
 {
 	int r;
@@ -448,7 +470,7 @@ xf86CloseSerial (int fd)
 	return (r);
 }
 
-_X_EXPORT int
+int
 xf86WaitForInput (int fd, int timeout)
 {
 	fd_set readfds;
@@ -474,7 +496,7 @@ xf86WaitForInput (int fd, int timeout)
 	return (r);
 }
 
-_X_EXPORT int
+int
 xf86SerialSendBreak (int fd, int duration)
 {
 	int r;
@@ -484,7 +506,7 @@ xf86SerialSendBreak (int fd, int duration)
 	
 }
 
-_X_EXPORT int
+int
 xf86FlushInput(int fd)
 {
 	fd_set fds;
@@ -585,7 +607,7 @@ getOsStateMask(void)
 
 static int osStateMask = 0;
 
-_X_EXPORT int
+int
 xf86SetSerialModemState(int fd, int state)
 {
 	int ret;
@@ -618,7 +640,7 @@ xf86SetSerialModemState(int fd, int state)
 #endif
 }
 
-_X_EXPORT int
+int
 xf86GetSerialModemState(int fd)
 {
 	int ret;
@@ -641,7 +663,7 @@ xf86GetSerialModemState(int fd)
 #endif
 }
 
-_X_EXPORT int
+int
 xf86SerialModemSetBits(int fd, int bits)
 {
 	int ret;
@@ -663,7 +685,7 @@ xf86SerialModemSetBits(int fd, int bits)
 #endif
 }
 
-_X_EXPORT int
+int
 xf86SerialModemClearBits(int fd, int bits)
 {
 	int ret;

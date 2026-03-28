@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbmskbits.c,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbmskbits.c,v 3.2 2001/01/17 22:36:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -28,6 +35,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
+/* $Xorg: cfbmskbits.c,v 1.3 2000/08/17 19:48:14 cpqbld Exp $ */
+
 /*
  * ==========================================================================
  * Converted to Color Frame Buffer by smarks@sun, April-May 1987.  The "bit 
@@ -46,11 +55,11 @@ bit index 32-n in a longword
 
    see also cfbmskbits.h
 */
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include "servermd.h"
-#include "cfb.h"
-#include "cfbmskbits.h"
+#include	<X.h>
+#include	<Xmd.h>
+#include	<servermd.h>
+#include	"cfb.h"
+#include	"cfbmskbits.h"
 
 #define _cfbBits(a) (PixelGroup)(a)
 
@@ -62,7 +71,12 @@ bit index 32-n in a longword
 #define cfbFlip8(a)	((cfbFlip4(a) << 4) | cfbFlip4(a >> 4))
 #define cfbFlip16(a)	((cfbFlip8(a) << 8) | cfbFlip8(a >> 8))
 #define cfbFlip32(a)	((cfbFlip16(a) << 16) | cfbFlip16(a >> 16))
+#if PGSZ == 32
 #define cfbBits(a)	cfbFlip32(_cfbBits(a))
+#else /* PGSZ == 64 */
+#define cfbFlip64(a)	((cfbFlip32(a) << 32) | cfbFlip32(a >> 32))
+#define cfbBits(a)	cfbFlip64(_cfbBits(a))
+#endif /* PGSZ */
 #endif /* BITMAP_BIT_ORDER */
 
 /* NOTE:
@@ -72,6 +86,7 @@ than having to do the multiple reads and masks that we'd
 have to do if we thought it was partial.
 */
 #if PSZ == 4
+#if PGSZ == 32
 PixelGroup cfbstarttab[] =
     {
 	cfbBits(0x00000000),
@@ -94,9 +109,50 @@ PixelGroup cfbendtab[] =
 	cfbBits(0xFFFFFF00),
 	cfbBits(0xFFFFFFF0)
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstarttab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0x0FFFFFFFFFFFFFFF),
+	cfbBits(0x00FFFFFFFFFFFFFF),
+	cfbBits(0x000FFFFFFFFFFFFF),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x00000FFFFFFFFFFF),
+	cfbBits(0x000000FFFFFFFFFF),
+	cfbBits(0x0000000FFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x000000000FFFFFFF),
+	cfbBits(0x0000000000FFFFFF),
+	cfbBits(0x00000000000FFFFF),
+	cfbBits(0x000000000000FFFF),
+	cfbBits(0x0000000000000FFF),
+	cfbBits(0x00000000000000FF),
+	cfbBits(0x000000000000000F),
+    };
+PixelGroup cfbendtab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0xF000000000000000),
+	cfbBits(0xFF00000000000000),
+	cfbBits(0xFFF0000000000000),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFFFFF00000000000),
+	cfbBits(0xFFFFFF0000000000),
+	cfbBits(0xFFFFFFF000000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFFFFF0000000),
+	cfbBits(0xFFFFFFFFFF000000),
+	cfbBits(0xFFFFFFFFFFF00000),
+	cfbBits(0xFFFFFFFFFFFF0000),
+	cfbBits(0xFFFFFFFFFFFFF000),
+	cfbBits(0xFFFFFFFFFFFFFF00),
+	cfbBits(0xFFFFFFFFFFFFFFF0),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 4 */
 
 #if PSZ == 8
+#if PGSZ == 32
 PixelGroup cfbstarttab[] =
     {
 	cfbBits(0x00000000),
@@ -111,9 +167,34 @@ PixelGroup cfbendtab[] =
 	cfbBits(0xFFFF0000),
 	cfbBits(0xFFFFFF00)
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstarttab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0x00FFFFFFFFFFFFFF),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x000000FFFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x0000000000FFFFFF),
+	cfbBits(0x000000000000FFFF),
+	cfbBits(0x00000000000000FF)
+    };
+PixelGroup cfbendtab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0xFF00000000000000),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFFFFFF0000000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFFFFFF000000),
+	cfbBits(0xFFFFFFFFFFFF0000),
+	cfbBits(0xFFFFFFFFFFFFFF00)
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 8 */
 
 #if PSZ == 16
+#if PGSZ == 32
 PixelGroup cfbstarttab[] =
     {
 	cfbBits(0x00000000),
@@ -124,9 +205,26 @@ PixelGroup cfbendtab[] =
 	cfbBits(0x00000000),
 	cfbBits(0xFFFF0000),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstarttab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x000000000000FFFF),
+    };
+PixelGroup cfbendtab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFFFFFFFF0000),
+    };
+#endif /* PGSZ */
 #endif
 
 #if PSZ == 24
+#if PGSZ == 32
 PixelGroup cfbstarttab[] =
     {
 	cfbBits(0x00000000),
@@ -141,9 +239,24 @@ PixelGroup cfbendtab[] =
 	cfbBits(0xFFFF0000),
 	cfbBits(0xFF000000),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstarttab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0x000000FFFFFFFFFF),
+	cfbBits(0x000000000000FFFF),
+    };
+PixelGroup cfbendtab[] = 
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0xFFFFFFFFFF000000),
+	cfbBits(0xFFFF000000000000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 24 */
 
 #if PSZ == 32
+#if PGSZ == 32
 PixelGroup cfbstarttab[] =
     {
 	cfbBits(0x00000000),
@@ -152,6 +265,18 @@ PixelGroup cfbendtab[] =
     {
 	cfbBits(0x00000000),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstarttab[] =
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0x00000000FFFFFFFF),
+    };
+PixelGroup cfbendtab[] = 
+    {
+	cfbBits(0x0000000000000000),
+	cfbBits(0xFFFFFFFF00000000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 32 */
 
 /* a hack, for now, since the entries for 0 need to be all
@@ -160,6 +285,7 @@ PixelGroup cfbendtab[] =
    0 (which is only a problem in the horizontal line code.)
 */
 #if PSZ == 4
+#if PGSZ == 32
 PixelGroup cfbstartpartial[] =
     {
 	cfbBits(0xFFFFFFFF),
@@ -183,9 +309,51 @@ PixelGroup cfbendpartial[] =
 	cfbBits(0xFFFFFF00),
 	cfbBits(0xFFFFFFF0)
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstartpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0x0FFFFFFFFFFFFFFF),
+	cfbBits(0x00FFFFFFFFFFFFFF),
+	cfbBits(0x000FFFFFFFFFFFFF),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x00000FFFFFFFFFFF),
+	cfbBits(0x000000FFFFFFFFFF),
+	cfbBits(0x0000000FFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x000000000FFFFFFF),
+	cfbBits(0x0000000000FFFFFF),
+	cfbBits(0x00000000000FFFFF),
+	cfbBits(0x000000000000FFFF),
+	cfbBits(0x0000000000000FFF),
+	cfbBits(0x00000000000000FF),
+	cfbBits(0x000000000000000F),
+    };
+
+PixelGroup cfbendpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0xF000000000000000),
+	cfbBits(0xFF00000000000000),
+	cfbBits(0xFFF0000000000000),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFFFFF00000000000),
+	cfbBits(0xFFFFFF0000000000),
+	cfbBits(0xFFFFFFF000000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFFFFF0000000),
+	cfbBits(0xFFFFFFFFFF000000),
+	cfbBits(0xFFFFFFFFFFF00000),
+	cfbBits(0xFFFFFFFFFFFF0000),
+	cfbBits(0xFFFFFFFFFFFFF000),
+	cfbBits(0xFFFFFFFFFFFFFF00),
+	cfbBits(0xFFFFFFFFFFFFFFF0),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 4 */
 
 #if PSZ == 8
+#if PGSZ == 32
 PixelGroup cfbstartpartial[] =
     {
 	cfbBits(0xFFFFFFFF),
@@ -201,9 +369,35 @@ PixelGroup cfbendpartial[] =
 	cfbBits(0xFFFF0000),
 	cfbBits(0xFFFFFF00)
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstartpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0x00FFFFFFFFFFFFFF),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x000000FFFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x0000000000FFFFFF),
+	cfbBits(0x000000000000FFFF),
+	cfbBits(0x00000000000000FF),
+    };
+
+PixelGroup cfbendpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0xFF00000000000000),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFFFFFF0000000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFFFFFF000000),
+	cfbBits(0xFFFFFFFFFFFF0000),
+	cfbBits(0xFFFFFFFFFFFFFF00),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 8 */
 
 #if PSZ == 16
+#if PGSZ == 32
 PixelGroup cfbstartpartial[] =
     {
 	cfbBits(0xFFFFFFFF),
@@ -215,9 +409,27 @@ PixelGroup cfbendpartial[] =
 	cfbBits(0xFFFFFFFF),
 	cfbBits(0xFFFF0000),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstartpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x000000000000FFFF),
+    };
+
+PixelGroup cfbendpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFFFFFFFF0000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 16 */
 
 #if PSZ == 24
+#if PGSZ == 32
 PixelGroup cfbstartpartial[] =
     {
 	cfbBits(0xFFFFFFFF),
@@ -233,9 +445,33 @@ PixelGroup cfbendpartial[] =
 	cfbBits(0xFFFF0000),
 	cfbBits(0xFF000000),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstartpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0x0000FFFFFFFFFFFF),
+	cfbBits(0x000000FFFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0x0000000000FFFFFF),
+	cfbBits(0x000000000000FFFF),
+	cfbBits(0x00000000000000FF),
+    };
+
+PixelGroup cfbendpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0xFFFFFFFFFFFF0000),
+	cfbBits(0xFFFFFFFFFF000000),
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0xFFFFFF0000000000),
+	cfbBits(0xFFFF000000000000),
+	cfbBits(0xFF00000000000000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 24 */
 
 #if PSZ == 32
+#if PGSZ == 32
 PixelGroup cfbstartpartial[] =
     {
 	cfbBits(0xFFFFFFFF),
@@ -245,6 +481,19 @@ PixelGroup cfbendpartial[] =
     {
 	cfbBits(0xFFFFFFFF),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbstartpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0x00000000FFFFFFFF),
+    };
+
+PixelGroup cfbendpartial[] =
+    {
+	cfbBits(0xFFFFFFFFFFFFFFFF),
+	cfbBits(0xFFFFFFFF00000000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 32 */
 
 /* used for masking bits in bresenham lines
@@ -255,6 +504,7 @@ is a screen posiotion.)
 */
 
 #if PSZ == 4
+#if PGSZ == 32
 PixelGroup cfbmask[] =
     {
 	cfbBits(0xF0000000),
@@ -277,9 +527,50 @@ PixelGroup cfbrmask[] =
  	cfbBits(0xFFFFFF0F),
  	cfbBits(0xFFFFFFF0)
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbmask[] =
+    {
+	cfbBits(0xF000000000000000),
+	cfbBits(0x0F00000000000000),
+ 	cfbBits(0x00F0000000000000),
+ 	cfbBits(0x000F000000000000),
+ 	cfbBits(0x0000F00000000000),
+ 	cfbBits(0x00000F0000000000),
+ 	cfbBits(0x000000F000000000),
+ 	cfbBits(0x0000000F00000000),
+	cfbBits(0x00000000F0000000),
+	cfbBits(0x000000000F000000),
+ 	cfbBits(0x0000000000F00000),
+ 	cfbBits(0x00000000000F0000),
+ 	cfbBits(0x000000000000F000),
+ 	cfbBits(0x0000000000000F00),
+ 	cfbBits(0x00000000000000F0),
+ 	cfbBits(0x000000000000000F),
+    }; 
+PixelGroup cfbrmask[] = 
+    {
+	cfbBits(0x0FFFFFFFFFFFFFFF),
+	cfbBits(0xF0FFFFFFFFFFFFFF),
+ 	cfbBits(0xFF0FFFFFFFFFFFFF),
+ 	cfbBits(0xFFF0FFFFFFFFFFFF),
+ 	cfbBits(0xFFFF0FFFFFFFFFFF),
+ 	cfbBits(0xFFFFF0FFFFFFFFFF),
+ 	cfbBits(0xFFFFFF0FFFFFFFFF),
+ 	cfbBits(0xFFFFFFF0FFFFFFFF),
+	cfbBits(0xFFFFFFFF0FFFFFFF),
+	cfbBits(0xFFFFFFFFF0FFFFFF),
+ 	cfbBits(0xFFFFFFFFFF0FFFFF),
+ 	cfbBits(0xFFFFFFFFFFF0FFFF),
+ 	cfbBits(0xFFFFFFFFFFFF0FFF),
+ 	cfbBits(0xFFFFFFFFFFFFF0FF),
+ 	cfbBits(0xFFFFFFFFFFFFFF0F),
+ 	cfbBits(0xFFFFFFFFFFFFFFF0),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 4 */
 
 #if PSZ == 8
+#if PGSZ == 32
 PixelGroup cfbmask[] =
     {
 	cfbBits(0xFF000000),
@@ -294,9 +585,34 @@ PixelGroup cfbrmask[] =
  	cfbBits(0xFFFF00FF),
  	cfbBits(0xFFFFFF00)
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbmask[] =
+    {
+	cfbBits(0xFF00000000000000),
+ 	cfbBits(0x00FF000000000000),
+ 	cfbBits(0x0000FF0000000000),
+ 	cfbBits(0x000000FF00000000),
+	cfbBits(0x00000000FF000000),
+ 	cfbBits(0x0000000000FF0000),
+ 	cfbBits(0x000000000000FF00),
+ 	cfbBits(0x00000000000000FF),
+    }; 
+PixelGroup cfbrmask[] = 
+    {
+	cfbBits(0x00FFFFFFFFFFFFFF),
+ 	cfbBits(0xFF00FFFFFFFFFFFF),
+ 	cfbBits(0xFFFF00FFFFFFFFFF),
+ 	cfbBits(0xFFFFFF00FFFFFFFF),
+	cfbBits(0xFFFFFFFF00FFFFFF),
+ 	cfbBits(0xFFFFFFFFFF00FFFF),
+ 	cfbBits(0xFFFFFFFFFFFF00FF),
+ 	cfbBits(0xFFFFFFFFFFFFFF00),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 8 */
 
 #if PSZ == 16
+#if PGSZ == 32
 PixelGroup cfbmask[] =
     {
 	cfbBits(0xFFFF0000),
@@ -307,9 +623,26 @@ PixelGroup cfbrmask[] =
 	cfbBits(0x0000FFFF),
  	cfbBits(0xFFFF0000),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbmask[] =
+    {
+	cfbBits(0xFFFF000000000000),
+ 	cfbBits(0x0000FFFF00000000),
+	cfbBits(0x00000000FFFF0000),
+ 	cfbBits(0x000000000000FFFF),
+    }; 
+PixelGroup cfbrmask[] = 
+    {
+	cfbBits(0x0000FFFFFFFFFFFF),
+ 	cfbBits(0xFFFF0000FFFFFFFF),
+	cfbBits(0xFFFFFFFF0000FFFF),
+ 	cfbBits(0xFFFFFFFFFFFF0000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 16 */
 
 #if PSZ == 24
+#if PGSZ == 32
 PixelGroup cfbmask[] =
     {
  	cfbBits(0xFFFFFF00),
@@ -332,9 +665,36 @@ PixelGroup cfbrmask[] =
 	cfbBits(0xFF000000),
  	cfbBits(0xFFFFFFFF),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbmask[] =
+    {
+	cfbBits(0xFFFFFF0000000000),
+ 	cfbBits(0x000000FFFFFF0000),
+ 	cfbBits(0x000000000000FFFF),
+    }; 
+PixelGroup cfbmask2[] =
+    {
+ 	cfbBits(0x0000000000000000),
+ 	cfbBits(0x0000000000000000),
+	cfbBits(0xFF00000000000000),
+    }; 
+PixelGroup cfbrmask[] = 
+    {
+ 	cfbBits(0x000000FFFFFFFFFF),
+ 	cfbBits(0xFFFFFF000000FFFF),
+ 	cfbBits(0xFFFFFFFFFFFF0000),
+    };
+PixelGroup cfbrmask2[] = 
+    {
+ 	cfbBits(0x0000000000000000),
+ 	cfbBits(0x0000000000000000),
+ 	cfbBits(0x00FFFFFFFFFFFFFF),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 24 */
 
 #if PSZ == 32
+#if PGSZ == 32
 PixelGroup cfbmask[] =
     {
 	cfbBits(0xFFFFFFFF),
@@ -343,6 +703,18 @@ PixelGroup cfbrmask[] =
     {
 	cfbBits(0xFFFFFFFF),
     };
+#else /* PGSZ == 64 */
+PixelGroup cfbmask[] =
+    {
+	cfbBits(0xFFFFFFFF00000000),
+	cfbBits(0x00000000FFFFFFFF),
+    }; 
+PixelGroup cfbrmask[] = 
+    {
+	cfbBits(0x00000000FFFFFFFF),
+	cfbBits(0xFFFFFFFF00000000),
+    };
+#endif /* PGSZ */
 #endif /* PSZ == 32 */
 
 /*
@@ -352,6 +724,7 @@ PixelGroup cfbrmask[] =
  */
 #if PSZ == 4
 PixelGroup QuartetBitsTable[] = {
+#if PGSZ == 32
 #if (BITMAP_BIT_ORDER == MSBFirst)
     0x00000000,                         /* 0 - 00000000 */
     0x00000080,				/* 1 - 10000000 */
@@ -373,11 +746,51 @@ PixelGroup QuartetBitsTable[] = {
     0x0000007F,                         /* 7 - 01111111 */
     0x000000FF                          /* 8 - 11111111 */
 #endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#else /* PGSZ == 64 */
+#if (BITMAP_BIT_ORDER == MSBFirst)
+    0x00000000,                         /* 0 - 0000000000000000 */
+    0x00008000,				/* 1 - 1000000000000000 */
+    0x0000C000,                         /* 2 - 1100000000000000 */
+    0x0000E000,                         /* 3 - 1110000000000000 */
+    0x0000F000,                         /* 4 - 1111000000000000 */
+    0x0000F800,                         /* 5 - 1111100000000000 */
+    0x0000FC00,                         /* 6 - 1111110000000000 */
+    0x0000FE00,                         /* 7 - 1111111000000000 */
+    0x0000FF00,                         /* 8 - 1111111100000000 */
+    0x0000FF80,				/* 9 - 1111111110000000 */
+    0x0000FFC0,                         /* 10- 1111111111000000 */
+    0x0000FFE0,                         /* 11- 1111111111100000 */
+    0x0000FFF0,                         /* 12- 1111111111110000 */
+    0x0000FFF8,                         /* 13- 1111111111111000 */
+    0x0000FFFC,                         /* 14- 1111111111111100 */
+    0x0000FFFE,                         /* 15- 1111111111111110 */
+    0x0000FFFF,                         /* 16- 1111111111111111 */
+#else /* (BITMAP_BIT_ORDER == LSBFirst */
+    0x00000000,                         /* 0 - 0000000000000000 */
+    0x00000001,                         /* 1 - 0000000000000001 */
+    0x00000003,                         /* 2 - 0000000000000011 */
+    0x00000007,                         /* 3 - 0000000000000111 */
+    0x0000000F,                         /* 4 - 0000000000001111 */
+    0x0000001F,                         /* 5 - 0000000000011111 */
+    0x0000003F,                         /* 6 - 0000000000111111 */
+    0x0000007F,                         /* 7 - 0000000001111111 */
+    0x000000FF,                         /* 8 - 0000000011111111 */
+    0x000001FF,                         /* 9 - 0000000111111111 */
+    0x000003FF,                         /* 10- 0000001111111111 */
+    0x000007FF,                         /* 11- 0000011111111111 */
+    0x00000FFF,                         /* 12- 0000111111111111 */
+    0x00001FFF,                         /* 13- 0001111111111111 */
+    0x00003FFF,                         /* 14- 0011111111111111 */
+    0x00007FFF,                         /* 15- 0111111111111111 */
+    0x0000FFFF,                         /* 16- 1111111111111111 */
+#endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#endif /* PGSZ */
 };
 #endif /* PSZ == 4 */
 
 #if PSZ == 8
 PixelGroup QuartetBitsTable[] = {
+#if PGSZ == 32
 #if (BITMAP_BIT_ORDER == MSBFirst)
     0x00000000,                         /* 0 - 0000 */
     0x00000008,                         /* 1 - 1000 */
@@ -391,11 +804,35 @@ PixelGroup QuartetBitsTable[] = {
     0x00000007,                         /* 3 - 0111 */
     0x0000000F                          /* 4 - 1111 */
 #endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#else /* PGSZ == 64 */
+#if (BITMAP_BIT_ORDER == MSBFirst)
+    0x00000000,                         /* 0 - 00000000 */
+    0x00000080,                         /* 1 - 10000000 */
+    0x000000C0,                         /* 2 - 11000000 */
+    0x000000E0,                         /* 3 - 11100000 */
+    0x000000F0,                         /* 4 - 11110000 */
+    0x000000F8,                         /* 5 - 11111000 */
+    0x000000FC,                         /* 6 - 11111100 */
+    0x000000FE,                         /* 7 - 11111110 */
+    0x000000FF                          /* 8 - 11111111 */
+#else /* (BITMAP_BIT_ORDER == LSBFirst */
+    0x00000000,                         /* 0 - 00000000 */
+    0x00000001,                         /* 1 - 00000001 */
+    0x00000003,                         /* 2 - 00000011 */
+    0x00000007,                         /* 3 - 00000111 */
+    0x0000000F,                         /* 4 - 10000111 */
+    0x0000001F,                         /* 5 - 00011111 */
+    0x0000003F,                         /* 6 - 00111111 */
+    0x0000007F,                         /* 7 - 01111111 */
+    0x000000FF                          /* 8 - 11111111 */
+#endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#endif /* PGSZ */
 };
 #endif /* PSZ == 8 */
 
 #if PSZ == 16
 PixelGroup QuartetBitsTable[] = {
+#if PGSZ == 32
 #if (BITMAP_BIT_ORDER == MSBFirst)
     0x00000000,                         /* 0 - 00 */
     0x00000002,                         /* 1 - 10 */
@@ -405,11 +842,27 @@ PixelGroup QuartetBitsTable[] = {
     0x00000001,                         /* 1 - 01 */
     0x00000003,                         /* 2 - 11 */
 #endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#else /* PGSZ == 64 */
+#if (BITMAP_BIT_ORDER == MSBFirst)
+    0x00000000,                         /* 0 - 0000 */
+    0x00000008,                         /* 1 - 1000 */
+    0x0000000C,                         /* 2 - 1100 */
+    0x0000000E,                         /* 3 - 1110 */
+    0x0000000F,                         /* 4 - 1111 */
+#else /* (BITMAP_BIT_ORDER == LSBFirst */
+    0x00000000,                         /* 0 - 0000 */
+    0x00000001,                         /* 1 - 0001 */
+    0x00000003,                         /* 2 - 0011 */
+    0x00000007,                         /* 3 - 0111 */
+    0x0000000F,                         /* 4 - 1111 */
+#endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#endif /* PGSZ */
 };
 #endif /* PSZ == 16 */
 
 #if PSZ == 24
 PixelGroup QuartetBitsTable[] = {
+#if PGSZ == 32
 #if (BITMAP_BIT_ORDER == MSBFirst)
     0x00000000,                         /* 0 - 0 */
     0x00000001,                         /* 1 - 1 */
@@ -417,11 +870,23 @@ PixelGroup QuartetBitsTable[] = {
     0x00000000,                         /* 0 - 0 */
     0x00000001,                         /* 1 - 1 */
 #endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#else /* PGSZ == 64 */
+#if (BITMAP_BIT_ORDER == MSBFirst)
+    0x00000000,                         /* 0 - 00 */
+    0x00000002,                         /* 1 - 10 */
+    0x00000003,                         /* 2 - 11*/
+#else /* (BITMAP_BIT_ORDER == LSBFirst */
+    0x00000000,                         /* 0 - 00 */
+    0x00000001,                         /* 1 - 01 */
+    0x00000003,                         /* 2 - 11 */
+#endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#endif /* PGSZ */
 };
 #endif /* PSZ == 24 */
 
 #if PSZ == 32
 PixelGroup QuartetBitsTable[] = {
+#if PGSZ == 32
 #if (BITMAP_BIT_ORDER == MSBFirst)
     0x00000000,                         /* 0 - 0 */
     0x00000001,                         /* 1 - 1 */
@@ -429,6 +894,17 @@ PixelGroup QuartetBitsTable[] = {
     0x00000000,                         /* 0 - 0 */
     0x00000001,                         /* 1 - 1 */
 #endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#else /* PGSZ == 64 */
+#if (BITMAP_BIT_ORDER == MSBFirst)
+    0x00000000,                         /* 0 - 00 */
+    0x00000002,                         /* 1 - 10 */
+    0x00000003,                         /* 2 - 11*/
+#else /* (BITMAP_BIT_ORDER == LSBFirst */
+    0x00000000,                         /* 0 - 00 */
+    0x00000001,                         /* 1 - 01 */
+    0x00000003,                         /* 2 - 11 */
+#endif /* (BITMAP_BIT_ORDER == MSBFirst) */
+#endif /* PGSZ */
 };
 #endif /* PSZ == 32 */
 
@@ -438,6 +914,7 @@ PixelGroup QuartetBitsTable[] = {
  * is handled by QuartetBitsTable above.
  */
 #if PSZ == 4
+#if PGSZ == 32
 PixelGroup QuartetPixelMaskTable[] = {
     0x00000000,
     0x0000000F,
@@ -696,10 +1173,17 @@ PixelGroup QuartetPixelMaskTable[] = {
     0xFFFFFFF0,
     0xFFFFFFFF,
 };
+#else /* PGSZ == 64 */
+No QuartetPixelMaskTable for psz=PSZ
+this would be a 64K entry table, a bit much I think.
+Try breaking things in two:
+mask = table[index&0xff00]<<32 | table[index&0xff]
+#endif /* PGSZ */
 #endif /* PSZ == 4 */
 
 #if PSZ == 8
 PixelGroup QuartetPixelMaskTable[] = {
+#if PGSZ == 32
     0x00000000,
     0x000000FF,
     0x0000FF00,
@@ -716,22 +1200,164 @@ PixelGroup QuartetPixelMaskTable[] = {
     0xFFFF00FF,
     0xFFFFFF00,
     0xFFFFFFFF
+#else /* PGSZ == 64 */
+    0x0000000000000000,    0x00000000000000FF,
+    0x000000000000FF00,    0x000000000000FFFF,
+    0x0000000000FF0000,    0x0000000000FF00FF,
+    0x0000000000FFFF00,    0x0000000000FFFFFF,
+    0x00000000FF000000,    0x00000000FF0000FF,
+    0x00000000FF00FF00,    0x00000000FF00FFFF,
+    0x00000000FFFF0000,    0x00000000FFFF00FF,
+    0x00000000FFFFFF00,    0x00000000FFFFFFFF,
+    0x000000FF00000000,    0x000000FF000000FF,
+    0x000000FF0000FF00,    0x000000FF0000FFFF,
+    0x000000FF00FF0000,    0x000000FF00FF00FF,
+    0x000000FF00FFFF00,    0x000000FF00FFFFFF,
+    0x000000FFFF000000,    0x000000FFFF0000FF,
+    0x000000FFFF00FF00,    0x000000FFFF00FFFF,
+    0x000000FFFFFF0000,    0x000000FFFFFF00FF,
+    0x000000FFFFFFFF00,    0x000000FFFFFFFFFF,
+    0x0000FF0000000000,    0x0000FF00000000FF,
+    0x0000FF000000FF00,    0x0000FF000000FFFF,
+    0x0000FF0000FF0000,    0x0000FF0000FF00FF,
+    0x0000FF0000FFFF00,    0x0000FF0000FFFFFF,
+    0x0000FF00FF000000,    0x0000FF00FF0000FF,
+    0x0000FF00FF00FF00,    0x0000FF00FF00FFFF,
+    0x0000FF00FFFF0000,    0x0000FF00FFFF00FF,
+    0x0000FF00FFFFFF00,    0x0000FF00FFFFFFFF,
+    0x0000FFFF00000000,    0x0000FFFF000000FF,
+    0x0000FFFF0000FF00,    0x0000FFFF0000FFFF,
+    0x0000FFFF00FF0000,    0x0000FFFF00FF00FF,
+    0x0000FFFF00FFFF00,    0x0000FFFF00FFFFFF,
+    0x0000FFFFFF000000,    0x0000FFFFFF0000FF,
+    0x0000FFFFFF00FF00,    0x0000FFFFFF00FFFF,
+    0x0000FFFFFFFF0000,    0x0000FFFFFFFF00FF,
+    0x0000FFFFFFFFFF00,    0x0000FFFFFFFFFFFF,
+    0x00FF000000000000,    0x00FF0000000000FF,
+    0x00FF00000000FF00,    0x00FF00000000FFFF,
+    0x00FF000000FF0000,    0x00FF000000FF00FF,
+    0x00FF000000FFFF00,    0x00FF000000FFFFFF,
+    0x00FF0000FF000000,    0x00FF0000FF0000FF,
+    0x00FF0000FF00FF00,    0x00FF0000FF00FFFF,
+    0x00FF0000FFFF0000,    0x00FF0000FFFF00FF,
+    0x00FF0000FFFFFF00,    0x00FF0000FFFFFFFF,
+    0x00FF00FF00000000,    0x00FF00FF000000FF,
+    0x00FF00FF0000FF00,    0x00FF00FF0000FFFF,
+    0x00FF00FF00FF0000,    0x00FF00FF00FF00FF,
+    0x00FF00FF00FFFF00,    0x00FF00FF00FFFFFF,
+    0x00FF00FFFF000000,    0x00FF00FFFF0000FF,
+    0x00FF00FFFF00FF00,    0x00FF00FFFF00FFFF,
+    0x00FF00FFFFFF0000,    0x00FF00FFFFFF00FF,
+    0x00FF00FFFFFFFF00,    0x00FF00FFFFFFFFFF,
+    0x00FFFF0000000000,    0x00FFFF00000000FF,
+    0x00FFFF000000FF00,    0x00FFFF000000FFFF,
+    0x00FFFF0000FF0000,    0x00FFFF0000FF00FF,
+    0x00FFFF0000FFFF00,    0x00FFFF0000FFFFFF,
+    0x00FFFF00FF000000,    0x00FFFF00FF0000FF,
+    0x00FFFF00FF00FF00,    0x00FFFF00FF00FFFF,
+    0x00FFFF00FFFF0000,    0x00FFFF00FFFF00FF,
+    0x00FFFF00FFFFFF00,    0x00FFFF00FFFFFFFF,
+    0x00FFFFFF00000000,    0x00FFFFFF000000FF,
+    0x00FFFFFF0000FF00,    0x00FFFFFF0000FFFF,
+    0x00FFFFFF00FF0000,    0x00FFFFFF00FF00FF,
+    0x00FFFFFF00FFFF00,    0x00FFFFFF00FFFFFF,
+    0x00FFFFFFFF000000,    0x00FFFFFFFF0000FF,
+    0x00FFFFFFFF00FF00,    0x00FFFFFFFF00FFFF,
+    0x00FFFFFFFFFF0000,    0x00FFFFFFFFFF00FF,
+    0x00FFFFFFFFFFFF00,    0x00FFFFFFFFFFFFFF,
+    0xFF00000000000000,    0xFF000000000000FF,
+    0xFF0000000000FF00,    0xFF0000000000FFFF,
+    0xFF00000000FF0000,    0xFF00000000FF00FF,
+    0xFF00000000FFFF00,    0xFF00000000FFFFFF,
+    0xFF000000FF000000,    0xFF000000FF0000FF,
+    0xFF000000FF00FF00,    0xFF000000FF00FFFF,
+    0xFF000000FFFF0000,    0xFF000000FFFF00FF,
+    0xFF000000FFFFFF00,    0xFF000000FFFFFFFF,
+    0xFF0000FF00000000,    0xFF0000FF000000FF,
+    0xFF0000FF0000FF00,    0xFF0000FF0000FFFF,
+    0xFF0000FF00FF0000,    0xFF0000FF00FF00FF,
+    0xFF0000FF00FFFF00,    0xFF0000FF00FFFFFF,
+    0xFF0000FFFF000000,    0xFF0000FFFF0000FF,
+    0xFF0000FFFF00FF00,    0xFF0000FFFF00FFFF,
+    0xFF0000FFFFFF0000,    0xFF0000FFFFFF00FF,
+    0xFF0000FFFFFFFF00,    0xFF0000FFFFFFFFFF,
+    0xFF00FF0000000000,    0xFF00FF00000000FF,
+    0xFF00FF000000FF00,    0xFF00FF000000FFFF,
+    0xFF00FF0000FF0000,    0xFF00FF0000FF00FF,
+    0xFF00FF0000FFFF00,    0xFF00FF0000FFFFFF,
+    0xFF00FF00FF000000,    0xFF00FF00FF0000FF,
+    0xFF00FF00FF00FF00,    0xFF00FF00FF00FFFF,
+    0xFF00FF00FFFF0000,    0xFF00FF00FFFF00FF,
+    0xFF00FF00FFFFFF00,    0xFF00FF00FFFFFFFF,
+    0xFF00FFFF00000000,    0xFF00FFFF000000FF,
+    0xFF00FFFF0000FF00,    0xFF00FFFF0000FFFF,
+    0xFF00FFFF00FF0000,    0xFF00FFFF00FF00FF,
+    0xFF00FFFF00FFFF00,    0xFF00FFFF00FFFFFF,
+    0xFF00FFFFFF000000,    0xFF00FFFFFF0000FF,
+    0xFF00FFFFFF00FF00,    0xFF00FFFFFF00FFFF,
+    0xFF00FFFFFFFF0000,    0xFF00FFFFFFFF00FF,
+    0xFF00FFFFFFFFFF00,    0xFF00FFFFFFFFFFFF,
+    0xFFFF000000000000,    0xFFFF0000000000FF,
+    0xFFFF00000000FF00,    0xFFFF00000000FFFF,
+    0xFFFF000000FF0000,    0xFFFF000000FF00FF,
+    0xFFFF000000FFFF00,    0xFFFF000000FFFFFF,
+    0xFFFF0000FF000000,    0xFFFF0000FF0000FF,
+    0xFFFF0000FF00FF00,    0xFFFF0000FF00FFFF,
+    0xFFFF0000FFFF0000,    0xFFFF0000FFFF00FF,
+    0xFFFF0000FFFFFF00,    0xFFFF0000FFFFFFFF,
+    0xFFFF00FF00000000,    0xFFFF00FF000000FF,
+    0xFFFF00FF0000FF00,    0xFFFF00FF0000FFFF,
+    0xFFFF00FF00FF0000,    0xFFFF00FF00FF00FF,
+    0xFFFF00FF00FFFF00,    0xFFFF00FF00FFFFFF,
+    0xFFFF00FFFF000000,    0xFFFF00FFFF0000FF,
+    0xFFFF00FFFF00FF00,    0xFFFF00FFFF00FFFF,
+    0xFFFF00FFFFFF0000,    0xFFFF00FFFFFF00FF,
+    0xFFFF00FFFFFFFF00,    0xFFFF00FFFFFFFFFF,
+    0xFFFFFF0000000000,    0xFFFFFF00000000FF,
+    0xFFFFFF000000FF00,    0xFFFFFF000000FFFF,
+    0xFFFFFF0000FF0000,    0xFFFFFF0000FF00FF,
+    0xFFFFFF0000FFFF00,    0xFFFFFF0000FFFFFF,
+    0xFFFFFF00FF000000,    0xFFFFFF00FF0000FF,
+    0xFFFFFF00FF00FF00,    0xFFFFFF00FF00FFFF,
+    0xFFFFFF00FFFF0000,    0xFFFFFF00FFFF00FF,
+    0xFFFFFF00FFFFFF00,    0xFFFFFF00FFFFFFFF,
+    0xFFFFFFFF00000000,    0xFFFFFFFF000000FF,
+    0xFFFFFFFF0000FF00,    0xFFFFFFFF0000FFFF,
+    0xFFFFFFFF00FF0000,    0xFFFFFFFF00FF00FF,
+    0xFFFFFFFF00FFFF00,    0xFFFFFFFF00FFFFFF,
+    0xFFFFFFFFFF000000,    0xFFFFFFFFFF0000FF,
+    0xFFFFFFFFFF00FF00,    0xFFFFFFFFFF00FFFF,
+    0xFFFFFFFFFFFF0000,    0xFFFFFFFFFFFF00FF,
+    0xFFFFFFFFFFFFFF00,    0xFFFFFFFFFFFFFFFF,
+#endif /* PGSZ */
 };
 #endif /* PSZ == 8 */
 
 #if PSZ == 16
 PixelGroup QuartetPixelMaskTable[] = {
+#if PGSZ == 32
     0x00000000,
     0x0000FFFF,
     0xFFFF0000,
     0xFFFFFFFF,
+#else /* PGSZ == 64 */
+    0x0000000000000000,    0x000000000000FFFF,
+    0x00000000FFFF0000,    0x00000000FFFFFFFF,
+    0x0000FFFF00000000,    0x0000FFFF0000FFFF,
+    0x0000FFFFFFFF0000,    0x0000FFFFFFFFFFFF,
+    0xFFFF000000000000,    0xFFFF00000000FFFF,
+    0xFFFF0000FFFF0000,    0xFFFF0000FFFFFFFF,
+    0xFFFFFFFF00000000,    0xFFFFFFFF0000FFFF,
+    0xFFFFFFFFFFFF0000,    0xFFFFFFFFFFFFFFFF,
+#endif /* PGSZ */
 };
 #endif /* PSZ == 16 */
 
 #if PSZ == 24
 PixelGroup QuartetPixelMaskTable[] = {
-/* Four pixels consist three pixel groups.... */
-      0x00000000, 0x00FFFFFF, /*0x00000000, *//*0*/
+#if PGSZ == 32
+/* Four pixels consist three pixel groups....*/
+    0x00000000, 0x00FFFFFF, /*0x00000000, *//*0*/
 /*    0x00000000, 0x00000000, 0x00000000,*/ /*0*/
 /*    0x00FFFFFF, 0x00000000, 0x00000000,*/ /*1*/
 /*    0xFF000000, 0x0000FFFF, 0x00000000,*/ /*2*/
@@ -748,13 +1374,24 @@ PixelGroup QuartetPixelMaskTable[] = {
 /*    0x00FFFFFF, 0xFFFF0000, 0xFFFFFFFF,*/ /*13*/
 /*    0xFF000000, 0xFFFFFFFF, 0xFFFFFFFF,*/ /*14*/
 /*    0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,*/ /*15*/
+#else /* PGSZ == 64 */
+    0x0000000000000000,    0x0000000000FFFFFF,
+    0x0000FFFFFF000000,    0xFFFFFFFFFFFFFFFF
+#endif /* PGSZ */
 };
 #endif /* PSZ == 24 */
 
 #if PSZ == 32
 PixelGroup QuartetPixelMaskTable[] = {
+#if PGSZ == 32
     0x00000000,
     0xFFFFFFFF,
+#else /* PGSZ == 64 */
+    0x0000000000000000,
+    0x00000000FFFFFFFF,
+    0xFFFFFFFF00000000,
+    0xFFFFFFFFFFFFFFFF
+#endif /* PGSZ */
 };
 #endif /* PSZ == 32 */
 

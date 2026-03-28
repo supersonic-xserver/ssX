@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcBStore.c,v 1.3 1999/06/06 08:48:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987  X Consortium
@@ -60,6 +67,7 @@ used in advertising or publicity pertaining to distribution of the
 software without specific, written prior permission.
 
 */
+/* $XConsortium: ppcBStore.c /main/5 1996/02/21 17:57:06 kaleb $ */
 
 #include "xf4bpp.h"
 #include "vgaVideo.h"
@@ -79,11 +87,15 @@ software without specific, written prior permission.
  *-----------------------------------------------------------------------
  */
 void
-xf4bppSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
-		WindowPtr pWin)
+xf4bppSaveAreas( pPixmap, prgnSave, xorg, yorg, pWin )
+    register PixmapPtr pPixmap ; /* Backing pixmap */
+    RegionPtr prgnSave ;	/* Region to save (pixmap-relative) */
+    int xorg ;			/* X origin of region */
+    int yorg ;			/* Y origin of region */
+    WindowPtr pWin;
 {
-    BoxPtr pBox ;
-    int nBox ;
+    register BoxPtr pBox ;
+    register int nBox ;
 
     TRACE( ( "xf4bppSaveAreas(0x%x,0x%x,%d,%d)\n",
 	   pPixmap, prgnSave, xorg, yorg ) ) ;
@@ -118,11 +130,15 @@ xf4bppSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
  *-----------------------------------------------------------------------
  */
 void
-xf4bppRestoreAreas(PixmapPtr pPixmap, RegionPtr prgnRestore, int xorg,
-		   int yorg, WindowPtr pWin)
+xf4bppRestoreAreas( pPixmap, prgnRestore, xorg, yorg, pWin )
+    register PixmapPtr pPixmap ; /* Backing pixmap */
+    RegionPtr prgnRestore ;	/* Region to restore (screen-relative)*/
+    int xorg ;			/* X origin of window */
+    int yorg ;			/* Y origin of window */
+    WindowPtr pWin;
 {
-    BoxPtr pBox ;
-    int nBox ;
+    register BoxPtr pBox ;
+    register int nBox ;
 
     TRACE( ( "xf4bppRestoreAreas(0x%x,0x%x,%d,%d)\n",
 	   pPixmap, prgnRestore, xorg, yorg ) ) ;

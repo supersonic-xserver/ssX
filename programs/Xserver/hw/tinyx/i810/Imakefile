@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/i810/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/i810/Imakefile,v 1.1 2004/06/02 22:43:01 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -59,7 +59,7 @@ OBJS = 	i810.o i810stub.o i810draw.o i810_cursor.o $(XVOBJS)
 
 DEFINES = XvExtensionDefines /* -DI810CFG_SHOW_OVERSCAN */
 
-INCLUDES = $(TINYXINCLUDES)
+INCLUDES = -I. $(TINYXINCLUDES)
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(i810,$(OBJS))

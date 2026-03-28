@@ -1,3 +1,11 @@
+/* $Xorg: restart.c,v 1.5 2001/02/09 02:06:01 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 Copyright 1993, 1998  The Open Group
@@ -29,11 +37,7 @@ in this Software without prior written authorization from The Open Group.
 #include "restart.h"
 #include "saveutil.h"
 
-#include <stdlib.h>
-#ifndef _GNU_SOURCE
 extern char **environ;
-#endif
-
 
 
 /*

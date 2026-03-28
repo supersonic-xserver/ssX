@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2000 Compaq Computer Corporation
  * Copyright © 2002 Hewlett-Packard Company
  * Copyright © 2006 Intel Corporation
@@ -31,6 +38,7 @@
 #endif
 
 #include "randrstr.h"
+#include "dixaccess.h"
 #include "extinit.h"
 
 /* From render.h */
@@ -84,8 +92,8 @@ RRClientCallback(CallbackListPtr *list, void *closure, void *data)
     }
 }
 
-static Bool
-RRCloseScreen(ScreenPtr pScreen)
+static int
+RRCloseScreen(int index, ScreenPtr pScreen)
 {
     rrScrPriv(pScreen);
     int j;
@@ -109,7 +117,7 @@ RRCloseScreen(ScreenPtr pScreen)
     free(pScrPriv->outputs);
     free(pScrPriv);
     RRNScreens -= 1;            /* ok, one fewer screen with RandR running */
-    return (*pScreen->CloseScreen) (pScreen);
+    return (*pScreen->CloseScreen) (index, pScreen);
 }
 
 static void
@@ -353,8 +361,10 @@ RRScreenInit(ScreenPtr pScreen)
 
     wrap(pScrPriv, pScreen, CloseScreen, RRCloseScreen);
 
+#ifndef SSX_LEGACY_MODE
     pScreen->ConstrainCursorHarder = RRConstrainCursorHarder;
     pScreen->ReplaceScanoutPixmap = RRReplaceScanoutPixmap;
+#endif
     pScrPriv->numOutputs = 0;
     pScrPriv->outputs = NULL;
     pScrPriv->numCrtcs = 0;
@@ -424,10 +434,10 @@ RRExtensionInit(void)
     if (!AddCallback(&ClientStateCallback, RRClientCallback, 0))
         return;
 
-    RRClientType = CreateNewResourceType(RRFreeClient, "RandRClient");
+    RRClientType = CreateNewResourceType(RRFreeClient);
     if (!RRClientType)
         return;
-    RREventType = CreateNewResourceType(RRFreeEvents, "RandREvent");
+    RREventType = CreateNewResourceType(RRFreeEvents);
     if (!RREventType)
         return;
     extEntry = AddExtension(RANDR_NAME, RRNumberEvents, RRNumberErrors,
@@ -510,6 +520,7 @@ TellChanged(WindowPtr pWin, void *value)
                     RRDeliverCrtcEvent(client, pWin, crtc);
             }
 
+#ifndef SSX_LEGACY_MODE
             xorg_list_for_each_entry(iter, &pScreen->secondary_list, secondary_head) {
                 if (!iter->is_output_secondary)
                     continue;
@@ -522,6 +533,7 @@ TellChanged(WindowPtr pWin, void *value)
                         RRDeliverCrtcEvent(client, pWin, crtc);
                 }
             }
+#endif
         }
 
         if (pRREvent->mask & RROutputChangeNotifyMask) {
@@ -532,6 +544,7 @@ TellChanged(WindowPtr pWin, void *value)
                     RRDeliverOutputEvent(client, pWin, output);
             }
 
+#ifndef SSX_LEGACY_MODE
             xorg_list_for_each_entry(iter, &pScreen->secondary_list, secondary_head) {
                 if (!iter->is_output_secondary)
                     continue;
@@ -544,14 +557,17 @@ TellChanged(WindowPtr pWin, void *value)
                         RRDeliverOutputEvent(client, pWin, output);
                 }
             }
+#endif
         }
 
         if (pRREvent->mask & RRProviderChangeNotifyMask) {
+#ifndef SSX_LEGACY_MODE
             xorg_list_for_each_entry(iter, &pScreen->secondary_list, secondary_head) {
                 pSecondaryScrPriv = rrGetScrPriv(iter);
                 if (pSecondaryScrPriv->provider->changed)
                     RRDeliverProviderEvent(client, pWin, pSecondaryScrPriv->provider);
             }
+#endif
         }
 
         if (pRREvent->mask & RRResourceChangeNotifyMask) {
@@ -577,6 +593,7 @@ RRSetChanged(ScreenPtr pScreen)
     rrScrPriv(pScreen);
     rrScrPrivPtr primarysp;
 
+#ifndef SSX_LEGACY_MODE
     if (pScreen->isGPU) {
         primary = pScreen->current_primary;
         if (!primary)
@@ -589,6 +606,11 @@ RRSetChanged(ScreenPtr pScreen)
     }
 
     primarysp->changed = TRUE;
+#else
+    primary = pScreen;
+    primarysp = pScrPriv;
+    primarysp->changed = TRUE;
+#endif
 }
 
 /*
@@ -604,6 +626,7 @@ RRTellChanged(ScreenPtr pScreen)
     ScreenPtr iter;
     rrScrPrivPtr pSecondaryScrPriv;
 
+#ifndef SSX_LEGACY_MODE
     if (pScreen->isGPU) {
         primary = pScreen->current_primary;
         if (!primary)
@@ -614,11 +637,16 @@ RRTellChanged(ScreenPtr pScreen)
         primary = pScreen;
         primarysp = pScrPriv;
     }
+#else
+    primary = pScreen;
+    primarysp = pScrPriv;
+#endif
 
     /* If there's no root window yet, can't send events */
     if (!primary->root)
         return;
 
+#ifndef SSX_LEGACY_MODE
     xorg_list_for_each_entry(iter, &primary->secondary_list, secondary_head) {
         pSecondaryScrPriv = rrGetScrPriv(iter);
 
@@ -630,6 +658,7 @@ RRTellChanged(ScreenPtr pScreen)
             primarysp->lastSetTime = pSecondaryScrPriv->lastSetTime;
         }
     }
+#endif
 
     if (primarysp->changed) {
         UpdateCurrentTimeIf();
@@ -649,6 +678,7 @@ RRTellChanged(ScreenPtr pScreen)
         for (i = 0; i < pScrPriv->numCrtcs; i++)
             pScrPriv->crtcs[i]->changed = FALSE;
 
+#ifndef SSX_LEGACY_MODE
         xorg_list_for_each_entry(iter, &primary->secondary_list, secondary_head) {
             pSecondaryScrPriv = rrGetScrPriv(iter);
             pSecondaryScrPriv->provider->changed = FALSE;
@@ -659,6 +689,7 @@ RRTellChanged(ScreenPtr pScreen)
                     pSecondaryScrPriv->crtcs[i]->changed = FALSE;
             }
         }
+#endif
 
         if (primarysp->layoutChanged) {
             pScrPriv->layoutChanged = FALSE;

@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_reg.h,v 1.1.1.2tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_reg.h,v 1.1.1.2 2004/12/10 15:06:00 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -29,8 +36,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef _R200_REG_H_
 #define _R200_REG_H_
-
-#include "radeon_reg.h"
 
 #define R200_PP_MISC                      0x1c14 
 #define     R200_REF_ALPHA_MASK        0x000000ff
@@ -1030,7 +1035,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define     R200_TXC_ARG_A_TFACTOR1_ALPHA      (27)
 #define     R200_TXC_ARG_A_MASK			(31 << 0)
 #define     R200_TXC_ARG_A_SHIFT			0
-#ifndef R200_TXC_ARG_B_ZERO	/* Might be in radeon_reg.h */
 #define     R200_TXC_ARG_B_ZERO                (0<<5)
 #define     R200_TXC_ARG_B_CURRENT_COLOR       (2<<5)
 #define     R200_TXC_ARG_B_CURRENT_ALPHA       (3<<5)
@@ -1054,10 +1058,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define     R200_TXC_ARG_B_R5_ALPHA            (21<<5)
 #define     R200_TXC_ARG_B_TFACTOR1_COLOR      (26<<5)
 #define     R200_TXC_ARG_B_TFACTOR1_ALPHA      (27<<5)
-#endif
 #define     R200_TXC_ARG_B_MASK			(31 << 5)
 #define     R200_TXC_ARG_B_SHIFT			5
-#ifndef R200_TXC_ARG_C_ZERO	/* Might be in radeon_reg.h */
 #define     R200_TXC_ARG_C_ZERO                (0<<10)
 #define     R200_TXC_ARG_C_CURRENT_COLOR       (2<<10)
 #define     R200_TXC_ARG_C_CURRENT_ALPHA       (3<<10)
@@ -1081,7 +1083,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define     R200_TXC_ARG_C_R5_ALPHA            (21<<10)
 #define     R200_TXC_ARG_C_TFACTOR1_COLOR      (26<<10)
 #define     R200_TXC_ARG_C_TFACTOR1_ALPHA      (27<<10)
-#endif
 #define     R200_TXC_ARG_C_MASK			(31 << 10)
 #define     R200_TXC_ARG_C_SHIFT			10
 #define     R200_TXC_COMP_ARG_A                    (1 << 16)
@@ -1179,7 +1180,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define     R200_TXA_ARG_A_TFACTOR1_BLUE     (27)
 #define     R200_TXA_ARG_A_MASK			(31 << 0)
 #define     R200_TXA_ARG_A_SHIFT			0
-#ifndef R200_TXA_ARG_B_ZERO	/* Might be in radeon_reg.h */
 #define     R200_TXA_ARG_B_ZERO              (0<<5)
 #define     R200_TXA_ARG_B_CURRENT_ALPHA     (2<<5) /* guess */
 #define     R200_TXA_ARG_B_CURRENT_BLUE      (3<<5) /* guess */
@@ -1203,10 +1203,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define     R200_TXA_ARG_B_R5_BLUE           (21<<5)
 #define     R200_TXA_ARG_B_TFACTOR1_ALPHA    (26<<5)
 #define     R200_TXA_ARG_B_TFACTOR1_BLUE     (27<<5)
-#endif
 #define     R200_TXA_ARG_B_MASK			(31 << 5)
 #define     R200_TXA_ARG_B_SHIFT			5
-#ifndef R200_TXA_ARG_C_ZERO	/* Might be in radeon_reg.h */
 #define     R200_TXA_ARG_C_ZERO              (0<<10)
 #define     R200_TXA_ARG_C_CURRENT_ALPHA     (2<<10) /* guess */
 #define     R200_TXA_ARG_C_CURRENT_BLUE      (3<<10) /* guess */
@@ -1230,7 +1228,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define     R200_TXA_ARG_C_R5_BLUE           (21<<10)
 #define     R200_TXA_ARG_C_TFACTOR1_ALPHA    (26<<10)
 #define     R200_TXA_ARG_C_TFACTOR1_BLUE     (27<<10)
-#endif
 #define     R200_TXA_ARG_C_MASK			(31 << 10)
 #define     R200_TXA_ARG_C_SHIFT			10
 #define     R200_TXA_COMP_ARG_A                    (1 << 16)

@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: gethost.c,v 1.5 2001/02/09 02:05:38 xorgcvs Exp $
  * 
 Copyright 1989, 1998  The Open Group
 
@@ -25,7 +33,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Jim Fulton, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xauth/gethost.c,v 3.23 2005/03/23 03:11:28 dawes Exp $ */
+/* $XFree86: xc/programs/xauth/gethost.c,v 3.22 2004/04/03 22:26:25 dawes Exp $ */
 
 /* sorry, streams support does not really work yet */
 #if defined(STREAMSCONN) && defined(SVR4)
@@ -109,7 +117,7 @@ get_hostname (auth)
     Xauth *auth;
 {
     static struct hostent *hp;
-    volatile int af;
+    int af;
 #ifdef DNETCONN
     struct nodeent *np;
     static char nodeaddr[4 + 2 * DN_MAXADDL];

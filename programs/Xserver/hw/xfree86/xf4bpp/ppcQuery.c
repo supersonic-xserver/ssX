@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcQuery.c,v 1.3 1999/06/06 08:49:01 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,12 +28,18 @@
  * SOFTWARE.
  *
 */
+/* $XConsortium: ppcQuery.c /main/3 1996/02/21 17:58:18 kaleb $ */
 
 #include "xf4bpp.h"
 
 void
-xf4bppQueryBestSize(int class, unsigned short *pwidth, unsigned short *pheight,
-		    ScreenPtr pScreen)
+xf4bppQueryBestSize
+(
+	register int class,
+	register unsigned short *pwidth,
+	register unsigned short *pheight,
+	ScreenPtr pScreen
+)
 {
 if ( class == CursorShape )
   *pwidth = *pheight = 32 ; /* ppc's cursor max out at 32 by 32 */

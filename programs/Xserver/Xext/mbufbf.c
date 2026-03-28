@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/mbufbf.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/mbufbf.c,v 3.6 2003/11/10 18:21:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -25,11 +32,13 @@ in this Software without prior written authorization from The Open Group.
 
 */
 
+/* $Xorg: mbufbf.c,v 1.4 2001/02/09 02:04:32 xorgcvs Exp $ */
+
 #define NEED_REPLIES
 #define NEED_EVENTS
 #include <stdio.h>
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "windowstr.h"
@@ -47,7 +56,7 @@ in this Software without prior written authorization from The Open Group.
 
 #define _MULTIBUF_SERVER_	/* don't want Xlib structures */
 #define _MULTIBUF_BUFFER_
-#include <X11/extensions/multibufst.h>
+#include "multibufst.h"
 
 /* 
 Support for doublebuffer hardare

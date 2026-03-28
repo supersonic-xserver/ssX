@@ -1,5 +1,12 @@
-/* $Xorg: sunKbd.c,v 1.3 2000/08/17 19:48:30 cpqbld Exp $ */
-/*-
+/* $XFree86: xc/programs/Xserver/hw/sun/sunKbd.c,v 1.12 2006/12/27 04:20:25 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*
  * Copyright 1987 by the Regents of the University of California
  *
  * Permission to use, copy, modify, and distribute this
@@ -22,11 +29,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -39,7 +46,6 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/hw/sun/sunKbd.c,v 1.9 2003/11/17 22:20:36 dawes Exp $ */
 
 #define NEED_EVENTS
 #include "sun.h"
@@ -47,27 +53,20 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <X11/Sunkeysym.h>
 #include "mi.h"
 
+#ifdef XKB
 #include <X11/extensions/XKB.h>
-#include "xkbsrv.h"
-#include "xkbstr.h"
-
-#ifdef __sun
-#define SUN_LED_MASK	0x0f
-#else
-#define SUN_LED_MASK	0x07
+#include <X11/extensions/XKBstr.h>
+#include <X11/extensions/XKBsrv.h>
 #endif
+
+#define SUN_LED_MASK	0x0f
 #define MIN_KEYCODE	7	/* necessary to avoid the mouse buttons */
-#define MAX_KEYCODE	255	/* limited by the protocol */
-#define NUM_KEYCODES	(MAX_KEYCODE - MIN_KEYCODE + 1)
-#ifndef KB_SUN4
+#ifndef KB_SUN4 
 #define KB_SUN4		4
 #endif
 
-#define Meta_Mask	Mod1Mask
-#define Mode_switch_Mask Mod2Mask
-#define Alt_Mask	Mod3Mask
-#define Num_Lock_Mask	Mod4Mask
-#define ScrollLockMask	Mod5Mask
+#define AUTOREPEAT_INITIATE	400
+#define AUTOREPEAT_DELAY	50
 
 #define tvminus(tv, tv1, tv2)   /* tv = tv1 - tv2 */ \
 		if ((tv1).tv_usec < (tv2).tv_usec) { \
@@ -85,59 +84,19 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 		    (tv).tv_sec += 1; \
 		}
 
-/*
- * Data private to any sun keyboard.
- */
-typedef struct {
-    int		fd;
-    int		type;		/* Type of keyboard */
-    int		layout;		/* The layout of the keyboard */
-    int		click;		/* kbd click save state */
-    Leds	leds;		/* last known LED state */
-    KeySymsRec  keysym;		/* working keysym */
-    Firm_event	evbuf[SUN_MAXEVENTS];	/* Buffer for Firm_events */
-} sunKbdPrivRec, *sunKbdPrivPtr;
+extern KeySymsRec sunKeySyms[];
+extern SunModmapRec* sunModMaps[];
 
-static void sunKbdEvents(int, int, void *);
-static void sunKbdWait(void);
-static void SwapLKeys(KeySymsRec *);
-static void SetLights(KeybdCtrl *, int);
-static void bell(int, int);
-static KeyCode LookupKeyCode(KeySym, XkbDescPtr, KeySymsPtr);
-static void pseudoKey(DeviceIntPtr, Bool, KeyCode);
-static void DoLEDs(DeviceIntPtr, KeybdCtrl *, sunKbdPrivPtr);
-static void sunKbdCtrl(DeviceIntPtr, KeybdCtrl *);
-static void sunInitKbdNames(XkbRMLVOSet *, sunKbdPrivPtr);
-static int getKbdType(int);
-static void sunInitModMap(const KeySymsRec *, CARD8 *);
-static int sunKbdGetEvents(DeviceIntPtr);
-static void sunKbdEnqueueEvent(DeviceIntPtr, Firm_event *);
-static int sunChangeKbdTranslation(int, Bool);
+long	  	  sunAutoRepeatInitiate = 1000 * AUTOREPEAT_INITIATE;
+long	  	  sunAutoRepeatDelay = 1000 * AUTOREPEAT_DELAY;
 
-DeviceIntPtr	sunKeyboardDevice = NULL;
+static int		autoRepeatKeyDown = 0;
+static int		autoRepeatReady;
+static int		autoRepeatFirst;
+static struct timeval	autoRepeatLastKeyDownTv;
+static struct timeval	autoRepeatDeltaTv;
 
-static void
-sunKbdEvents(int fd, int ready, void *data)
-{
-    int i, numEvents;
-    DeviceIntPtr device = (DeviceIntPtr)data;
-    DevicePtr pKeyboard = &device->public;
-    sunKbdPrivPtr pPriv = pKeyboard->devicePrivate;
-
-    input_lock();
-
-    do {
-	numEvents = sunKbdGetEvents(device);
-	for (i = 0; i < numEvents; i++) {
-	    sunKbdEnqueueEvent(device, &pPriv->evbuf[i]);
-	}
-    } while (numEvents == SUN_MAXEVENTS);
-
-    input_unlock();
-}
-
-static void
-sunKbdWait(void)
+void sunKbdWait()
 {
     static struct timeval lastChngKbdTransTv;
     struct timeval tv;
@@ -162,8 +121,8 @@ sunKbdWait(void)
     lastChngKbdTransTv = tv;
 }
 
-static
-void SwapLKeys(KeySymsRec* keysyms)
+static void SwapLKeys(keysyms)
+    KeySymsRec* keysyms;
 {
     unsigned int i;
     KeySym k;
@@ -186,13 +145,13 @@ void SwapLKeys(KeySymsRec* keysyms)
 	}
 }
 
-static void
-SetLights(KeybdCtrl* ctrl, int fd)
+static void SetLights (ctrl, fd)
+    KeybdCtrl*	ctrl;
+    int fd;
 {
 #ifdef KIOCSLED
     static unsigned char led_tab[16] = {
 	0,
-#ifdef __sun
 	LED_NUM_LOCK,
 	LED_SCROLL_LOCK,
 	LED_SCROLL_LOCK | LED_NUM_LOCK,
@@ -208,31 +167,32 @@ SetLights(KeybdCtrl* ctrl, int fd)
 	LED_CAPS_LOCK | LED_COMPOSE | LED_NUM_LOCK,
 	LED_CAPS_LOCK | LED_COMPOSE | LED_SCROLL_LOCK,
 	LED_CAPS_LOCK | LED_COMPOSE | LED_SCROLL_LOCK | LED_NUM_LOCK
-#else
-	LED_CAPS_LOCK,
-	LED_NUM_LOCK,
-	LED_NUM_LOCK | LED_CAPS_LOCK,
-	LED_SCROLL_LOCK,
-	LED_SCROLL_LOCK | LED_CAPS_LOCK,
-	LED_SCROLL_LOCK | LED_NUM_LOCK,
-	LED_SCROLL_LOCK | LED_NUM_LOCK | LED_CAPS_LOCK,
-	LED_COMPOSE,
-	LED_COMPOSE | LED_CAPS_LOCK,
-	LED_COMPOSE | LED_NUM_LOCK,
-	LED_COMPOSE | LED_NUM_LOCK | LED_CAPS_LOCK,
-	LED_COMPOSE | LED_SCROLL_LOCK,
-	LED_COMPOSE | LED_SCROLL_LOCK | LED_CAPS_LOCK,
-	LED_COMPOSE | LED_SCROLL_LOCK | LED_NUM_LOCK,
-	LED_COMPOSE | LED_SCROLL_LOCK | LED_NUM_LOCK | LED_CAPS_LOCK,
-#endif
     };
-    if (ioctl (fd, KIOCSLED, (caddr_t)&led_tab[ctrl->leds & SUN_LED_MASK]) == -1)
-	LogMessage(X_ERROR, "Failed to set keyboard lights\n");
+    if (ioctl (fd, KIOCSLED, (caddr_t)&led_tab[ctrl->leds & 0x0f]) == -1)
+	Error("Failed to set keyboard lights");
 #endif
 }
 
 
-/*-
+static void ModLight (device, on, led)
+    DeviceIntPtr device;
+    Bool	on;
+    int		led;
+{
+    KeybdCtrl*	ctrl = &device->kbdfeed->ctrl;
+    sunKbdPrivPtr pPriv = (sunKbdPrivPtr) device->public.devicePrivate;
+
+    if(on) {
+	ctrl->leds |= led;
+	pPriv->leds |= led;
+    } else {
+	ctrl->leds &= ~led;
+	pPriv->leds &= ~led;
+    }
+    SetLights (ctrl, pPriv->fd);
+}
+
+/*
  *-----------------------------------------------------------------------
  * sunBell --
  *	Ring the terminal/keyboard bell
@@ -247,79 +207,84 @@ SetLights(KeybdCtrl* ctrl, int fd)
  *-----------------------------------------------------------------------
  */
 
-static void
-bell(int fd, int duration)
+static void bell (
+    int fd,
+    int duration)
 {
     int		    kbdCmd;   	    /* Command to give keyboard */
 
     kbdCmd = KBD_CMD_BELL;
     if (ioctl (fd, KIOCCMD, &kbdCmd) == -1) {
- 	LogMessage(X_ERROR, "Failed to activate bell\n");
+ 	Error("Failed to activate bell");
 	return;
     }
     if (duration) usleep (duration);
     kbdCmd = KBD_CMD_NOBELL;
     if (ioctl (fd, KIOCCMD, &kbdCmd) == -1)
-	LogMessage(X_ERROR, "Failed to deactivate bell\n");
+	Error ("Failed to deactivate bell");
 }
 
-static void
-sunBell(int percent, DeviceIntPtr device, void *ctrl, int unused)
+static void sunBell (
+    int		    percent,
+    DeviceIntPtr    device,
+    pointer	    ctrl,
+    int		    unused)
 {
     KeybdCtrl*      kctrl = (KeybdCtrl*) ctrl;
     sunKbdPrivPtr   pPriv = (sunKbdPrivPtr) device->public.devicePrivate;
-
+ 
     if (percent == 0 || kctrl->bell == 0)
  	return;
 
     bell (pPriv->fd, kctrl->bell_duration * 1000);
 }
 
-void
-DDXRingBell(int volume, int pitch, int duration)
+static void sunEnqueueEvent (xE)
+    xEvent* xE;
 {
-    DeviceIntPtr device;
-    DevicePtr pKeyboard;
-    sunKbdPrivPtr pPriv;
+#ifndef i386
+    sigset_t holdmask;
 
-    device = sunKeyboardDevice;
-    if (device != NULL) {
-	pKeyboard = &device->public;
-	if (pKeyboard->on) {
-	    pPriv = pKeyboard->devicePrivate;
-	    bell(pPriv->fd, duration * 1000);
-	}
-    }
+#ifdef SVR4
+    (void) sigaddset (&holdmask, SIGPOLL);
+#else
+    (void) sigaddset (&holdmask, SIGIO);
+#endif
+    (void) sigprocmask (SIG_BLOCK, &holdmask, (sigset_t*)NULL);
+    mieqEnqueue (xE);
+    (void) sigprocmask (SIG_UNBLOCK, &holdmask, (sigset_t*)NULL);
+#else
+    int oldmask = sigblock (sigmask (SIGIO));
+
+    mieqEnqueue (xE);
+    sigsetmask (oldmask);
+#endif
 }
 
 
-#ifdef __sun
 #define XLED_NUM_LOCK    0x1
 #define XLED_COMPOSE     0x4
 #define XLED_SCROLL_LOCK 0x2
 #define XLED_CAPS_LOCK   0x8
-#else
-#define XLED_NUM_LOCK    0x2
-#define XLED_COMPOSE     0x8
-#define XLED_SCROLL_LOCK 0x4
-#define XLED_CAPS_LOCK   0x1
-#endif
 
-static KeyCode
-LookupKeyCode(KeySym keysym, XkbDescPtr xkb, KeySymsPtr syms)
+static KeyCode LookupKeyCode (keysym, keysymsrec)
+    KeySym keysym;
+    KeySymsPtr keysymsrec;
 {
     KeyCode i;
     int ii, index = 0;
 
-    for (i = xkb->min_key_code; i < xkb->max_key_code; i++)
-	for (ii = 0; ii < syms->mapWidth; ii++)
-	    if (syms->map[index++] == keysym)
+    for (i = keysymsrec->minKeyCode; i < keysymsrec->maxKeyCode; i++)
+	for (ii = 0; ii < keysymsrec->mapWidth; ii++)
+	    if (keysymsrec->map[index++] == keysym)
 		return i;
     return 0;
 }
 
-static void
-pseudoKey(DeviceIntPtr device, Bool down, KeyCode keycode)
+static void pseudoKey(device, down, keycode)
+    DeviceIntPtr device;
+    Bool down;
+    KeyCode keycode;
 {
     int bit;
     CARD8 modifiers;
@@ -328,14 +293,16 @@ pseudoKey(DeviceIntPtr device, Bool down, KeyCode keycode)
 
     kptr = &device->key->down[keycode >> 3];
     bit = 1 << (keycode & 7);
-    modifiers = device->key->xkbInfo->desc->map->modmap[keycode];
+    modifiers = device->key->modifierMap[keycode];
     if (down) {
 	/* fool dix into thinking this key is now "down" */
 	int i;
 	*kptr |= bit;
+	device->key->prev_state = device->key->state;
 	for (i = 0, mask = 1; modifiers; i++, mask <<= 1)
 	    if (mask & modifiers) {
 		device->key->modifierKeyCount[i]++;
+		device->key->state += mask;
 		modifiers &= ~mask;
 	    }
     } else {
@@ -343,9 +310,11 @@ pseudoKey(DeviceIntPtr device, Bool down, KeyCode keycode)
 	if (*kptr & bit) {
 	    int i;
 	    *kptr &= ~bit;
+	    device->key->prev_state = device->key->state;
 	    for (i = 0, mask = 1; modifiers; i++, mask <<= 1)
 		if (mask & modifiers) {
 		    if (--device->key->modifierKeyCount[i] <= 0) {
+			device->key->state &= ~mask;
 			device->key->modifierKeyCount[i] = 0;
 		    }
 		    modifiers &= ~mask;
@@ -354,60 +323,53 @@ pseudoKey(DeviceIntPtr device, Bool down, KeyCode keycode)
     }
 }
 
-static void
-DoLEDs(
-    DeviceIntPtr    device,	    /* Keyboard to alter */
-    KeybdCtrl* ctrl,
-    sunKbdPrivPtr pPriv
-)
+static void DoLEDs(device, ctrl, pPriv)
+    DeviceIntPtr    device;	    /* Keyboard to alter */
+    KeybdCtrl* ctrl;
+    sunKbdPrivPtr pPriv; 
 {
-    XkbDescPtr xkb;
-    KeySymsPtr syms;
-
-    xkb = device->key->xkbInfo->desc;
-    syms = XkbGetCoreMap(device);
-    if (!syms)
-	return;	/* XXX */
-
+#ifdef XKB
+    if (noXkbExtension) {
+#endif
     if ((ctrl->leds & XLED_CAPS_LOCK) && !(pPriv->leds & XLED_CAPS_LOCK))
 	    pseudoKey(device, TRUE,
-		LookupKeyCode(XK_Caps_Lock, xkb, syms));
+		LookupKeyCode(XK_Caps_Lock, &device->key->curKeySyms));
 
     if (!(ctrl->leds & XLED_CAPS_LOCK) && (pPriv->leds & XLED_CAPS_LOCK))
 	    pseudoKey(device, FALSE,
-		LookupKeyCode(XK_Caps_Lock, xkb, syms));
+		LookupKeyCode(XK_Caps_Lock, &device->key->curKeySyms));
 
     if ((ctrl->leds & XLED_NUM_LOCK) && !(pPriv->leds & XLED_NUM_LOCK))
 	    pseudoKey(device, TRUE,
-		LookupKeyCode(XK_Num_Lock, xkb, syms));
+		LookupKeyCode(XK_Num_Lock, &device->key->curKeySyms));
 
     if (!(ctrl->leds & XLED_NUM_LOCK) && (pPriv->leds & XLED_NUM_LOCK))
 	    pseudoKey(device, FALSE,
-		LookupKeyCode(XK_Num_Lock, xkb, syms));
+		LookupKeyCode(XK_Num_Lock, &device->key->curKeySyms));
 
     if ((ctrl->leds & XLED_SCROLL_LOCK) && !(pPriv->leds & XLED_SCROLL_LOCK))
 	    pseudoKey(device, TRUE,
-		LookupKeyCode(XK_Scroll_Lock, xkb, syms));
+		LookupKeyCode(XK_Scroll_Lock, &device->key->curKeySyms));
 
     if (!(ctrl->leds & XLED_SCROLL_LOCK) && (pPriv->leds & XLED_SCROLL_LOCK))
 	    pseudoKey(device, FALSE,
-		LookupKeyCode(XK_Scroll_Lock, xkb, syms));
+		LookupKeyCode(XK_Scroll_Lock, &device->key->curKeySyms));
 
     if ((ctrl->leds & XLED_COMPOSE) && !(pPriv->leds & XLED_COMPOSE))
 	    pseudoKey(device, TRUE,
-		LookupKeyCode(SunXK_Compose, xkb, syms));
+		LookupKeyCode(SunXK_Compose, &device->key->curKeySyms));
 
     if (!(ctrl->leds & XLED_COMPOSE) && (pPriv->leds & XLED_COMPOSE))
 	    pseudoKey(device, FALSE,
-		LookupKeyCode(SunXK_Compose, xkb, syms));
-
-    pPriv->leds = ctrl->leds & SUN_LED_MASK;
+		LookupKeyCode(SunXK_Compose, &device->key->curKeySyms));
+#ifdef XKB
+    }
+#endif
+    pPriv->leds = ctrl->leds & 0x0f;
     SetLights (ctrl, pPriv->fd);
-    free(syms->map);
-    free(syms);
 }
 
-/*-
+/*
  *-----------------------------------------------------------------------
  * sunKbdCtrl --
  *	Alter some of the keyboard control parameters
@@ -421,8 +383,9 @@ DoLEDs(
  *-----------------------------------------------------------------------
  */
 
-static void
-sunKbdCtrl(DeviceIntPtr device, KeybdCtrl* ctrl)
+static void sunKbdCtrl (
+    DeviceIntPtr    device,
+    KeybdCtrl*	    ctrl)
 {
     sunKbdPrivPtr pPriv = (sunKbdPrivPtr) device->public.devicePrivate;
 
@@ -434,13 +397,13 @@ sunKbdCtrl(DeviceIntPtr device, KeybdCtrl* ctrl)
 	pPriv->click = ctrl->click;
 	kbdClickCmd = pPriv->click ? KBD_CMD_CLICK : KBD_CMD_NOCLICK;
     	if (ioctl (pPriv->fd, KIOCCMD, &kbdClickCmd) == -1)
- 	    LogMessage(X_ERROR, "Failed to set keyclick\n");
+ 	    Error("Failed to set keyclick");
     }
-    if ((pPriv->type == KB_SUN4) && (pPriv->leds != (ctrl->leds & SUN_LED_MASK)))
+    if ((pPriv->type == KB_SUN4) && (pPriv->leds != (ctrl->leds & 0x0f)))
 	DoLEDs(device, ctrl, pPriv);
 }
 
-/*-
+/*
  *-----------------------------------------------------------------------
  * sunInitKbdNames --
  *	Handle the XKB initialization
@@ -448,7 +411,7 @@ sunKbdCtrl(DeviceIntPtr device, KeybdCtrl* ctrl)
  * Results:
  *	None.
  *
- * Comments:
+ * Comments: 
  *     This function needs considerable work, in conjunctions with
  *     the need to add geometry descriptions of Sun Keyboards.
  *     It would also be nice to have #defines for all the keyboard
@@ -457,10 +420,11 @@ sunKbdCtrl(DeviceIntPtr device, KeybdCtrl* ctrl)
  *
  *-----------------------------------------------------------------------
  */
-static void
-sunInitKbdNames(XkbRMLVOSet *rmlvo, sunKbdPrivPtr pKbd)
+#ifdef XKB
+static void sunInitKbdNames (
+    XkbComponentNamesRec* names,
+    sunKbdPrivPtr pKbd)
 {
-#if 0 /* XXX to be revisited later */
 #ifndef XKBBUFSIZE
 #define XKBBUFSIZE 64
 #endif
@@ -492,7 +456,7 @@ sunInitKbdNames(XkbRMLVOSet *rmlvo, sunKbdPrivPtr pKbd)
 	break;
     case KB_SUN4:
 	/* First, catch "fully known" models */
-	switch (pKbd->layout) {
+	switch (pKbd->layout) {	
 	case 11:		/* type4, Sweden */
 	    (void) strcat (names->geometry, "sun(type4_se)");
 	    (void) strcat (names->keycodes,
@@ -558,46 +522,46 @@ sunInitKbdNames(XkbRMLVOSet *rmlvo, sunKbdPrivPtr pKbd)
 
     if (pKbd->type == KB_SUN4) {
 	switch (pKbd->layout) {
-	case  4: case 36: case 83:
-	case  5: case 37: case 84:
-	case  6: case 38: case 85:
-	case  8: case 40: case 87:
-	case  9: case 41: case 88:
-	case 10: case 42: case 89:
+	case  4: case 36: case 83: 
+	case  5: case 37: case 84: 
+	case  6: case 38: case 85: 
+	case  8: case 40: case 87: 
+	case  9: case 41: case 88: 
+	case 10: case 42: case 89: 
 /*	case 11: case 43: case 90: */ /* handled earlier */
-	case 12: case 44: case 91:
-	case 13: case 45: case 92:
-	case 14: case 46: case 93:
+	case 12: case 44: case 91: 
+	case 13: case 45: case 92: 
+	case 14: case 46: case 93: 
 	    (void) strcat (names->symbols, "+iso9995-3(basic)"); break;
 	}
     }
 
     if (pKbd->type == KB_SUN4) {
 	switch (pKbd->layout) {
-	case  0: case  1: case 33: case 34: case 80: case 81:
+	case  0: case  1: case 33: case 34: case 80: case 81: 
 	    break;
 	case  3:
 	    (void) strcat (names->symbols, "+ca"); break;
-	case  4: case 36: case 83:
+	case  4: case 36: case 83: 
 	    (void) strcat (names->symbols, "+dk"); break;
-	case  5: case 37: case 84:
+	case  5: case 37: case 84: 
 	    (void) strcat (names->symbols, "+de"); break;
-	case  6: case 38: case 85:
+	case  6: case 38: case 85: 
 	    (void) strcat (names->symbols, "+it"); break;
-	case  8: case 40: case 87:
+	case  8: case 40: case 87: 
 	    (void) strcat (names->symbols, "+no"); break;
-	case  9: case 41: case 88:
+	case  9: case 41: case 88: 
 	    (void) strcat (names->symbols, "+pt"); break;
-	case 10: case 42: case 89:
+	case 10: case 42: case 89: 
 	    (void) strcat (names->symbols, "+es"); break;
 	    /* case 11: case 43: */ /* handled earlier */
-	case 90:
-	    (void) strcat (names->symbols, "+se"); break;
-	case 12: case 44: case 91:
+	case 90: 
+	    (void) strcat (names->symbols, "+se"); break; 
+	case 12: case 44: case 91: 
 	    (void) strcat (names->symbols, "+fr_CH"); break;
-	case 13: case 45: case 92:
+	case 13: case 45: case 92: 
 	    (void) strcat (names->symbols, "+de_CH"); break;
-	case 14: case 46: case 93:
+	case 14: case 46: case 93: 
 	    (void) strcat (names->symbols, "+gb"); break; /* s/b en_UK */
 	case 52:
 	    (void) strcat (names->symbols, "+pl"); break;
@@ -609,86 +573,31 @@ sunInitKbdNames(XkbRMLVOSet *rmlvo, sunKbdPrivPtr pKbd)
 	/* don't have symbols defined for these yet, let them default */
 	case  2:
 	    (void) strcat (names->symbols, "+fr_BE"); break;
-	case  7: case 39: case 86:
+	case  7: case 39: case 86: 
 	    (void) strcat (names->symbols, "+nl"); break;
 	case 50: case 97:
 	    (void) strcat (names->symbols, "+fr_CA"); break;
-	case 16: case 47: case 94:
+	case 16: case 47: case 94: 
 	    (void) strcat (names->symbols, "+ko"); break;
-	case 17: case 48: case 95:
+	case 17: case 48: case 95: 
 	    (void) strcat (names->symbols, "+tw"); break;
-	case 32: case 49: case 96:
+	case 32: case 49: case 96: 
 	    (void) strcat (names->symbols, "+jp"); break;
 	case 51:
 	    (void) strcat (names->symbols, "+hu"); break;
 #endif
-	/*
+	/* 
 	 * by setting the symbols to NULL XKB will use the symbols in
 	 * the "default" keymap.
 	 */
-	default:
+	default: 
 	    names->symbols = NULL; return; break;
 	}
     }
-#else
-    rmlvo->rules = "base";
-    rmlvo->model = "empty";
-    rmlvo->layout = "empty";
-    rmlvo->variant = NULL;
-    rmlvo->options = NULL;
-#endif
 }
+#endif /* XKB */
 
-static int
-getKbdType(int fd)
-{
 /*
- * The Sun 386i has system include files that preclude this pre SunOS 4.1
- * test for the presence of a type 4 keyboard however it really doesn't
- * matter since no 386i has ever been shipped with a type 3 keyboard.
- * SunOS 4.1 no longer needs this kludge.
- */
-#if !defined(i386) && !defined(KIOCGKEY)
-#define TYPE4KEYBOARDOVERRIDE
-#endif
-
-    int ii, type;
-
-    for (ii = 0; ii < 3; ii++) {
-	sunKbdWait();
-	(void)ioctl(fd, KIOCTYPE, &type);
-#ifdef TYPE4KEYBOARDOVERRIDE
-	/*
-	 * Magic. Look for a key which is non-existent on a real type
-	 * 3 keyboard but does exist on a type 4 keyboard.
-	 */
-	if (type == KB_SUN3) {
-	    struct kiockeymap key;
-
-	    key.kio_tablemask = 0;
-	    key.kio_station = 118;
-	    if (ioctl(fd, KIOCGKEY, &key) == -1) {
-		LogMessage(X_ERROR, "ioctl KIOCGKEY\n" );
-		FatalError("Can't KIOCGKEY on fd %d\n", fd);
-	    }
-	    if (key.kio_entry != HOLE)
-		type = KB_SUN4;
-	}
-#endif
-	switch (type) {
-	case KB_SUN2:
-	case KB_SUN3:
-	case KB_SUN4:
-	    return type;
-	default:
-	    sunChangeKbdTranslation(fd, FALSE);
-	    continue;
-	}
-    }
-    return -1;
-}
-
-/*-
  *-----------------------------------------------------------------------
  * sunKbdProc --
  *	Handle the initialization, etc. of a keyboard.
@@ -699,113 +608,75 @@ getKbdType(int fd)
  *-----------------------------------------------------------------------
  */
 
-int
-sunKbdProc(DeviceIntPtr device, int what)
+int sunKbdProc (
+    DeviceIntPtr  device,
+    int	    	  what)
 {
-    DevicePtr pKeyboard = &device->public;
+    int i;
+    DevicePtr pKeyboard = (DevicePtr) device;
     sunKbdPrivPtr pPriv;
     KeybdCtrl*	ctrl = &device->kbdfeed->ctrl;
-    XkbRMLVOSet rmlvo;
-    CARD8 workingModMap[MAP_LENGTH];
-    int type = -1, layout = -1, mapsize;
-    KeySymsPtr keysym;
-    KeySym *map;
+    extern int XkbDfltRepeatDelay, XkbDfltRepeatInterval;
+
+    static CARD8 *workingModMap = NULL;
+    static KeySymsRec *workingKeySyms;
 
     switch (what) {
     case DEVICE_INIT:
-	pPriv = malloc(sizeof(*pPriv));
-	if (pPriv == NULL) {
-	    LogMessage(X_ERROR, "Cannot allocate private data for keyboard\n");
-	    return !Success;
+	if (pKeyboard != LookupKeyboardDevice()) {
+	    ErrorF ("Cannot open non-system keyboard\n");
+	    return (!Success);
 	}
-	pPriv->fd = open("/dev/kbd", O_RDWR | O_NONBLOCK, 0);
-	if (pPriv->fd < 0) {
-	    LogMessage(X_ERROR, "Cannot open /dev/kbd, error %d\n", errno);
-	    free(pPriv);
-	    return !Success;
-	}
+	    
+	if (!workingKeySyms) {
+	    workingKeySyms = &sunKeySyms[sunKbdPriv.type];
 
-	type = getKbdType(pPriv->fd);
-	if (type < 0)
-	    FatalError("Unsupported keyboard type %d\n", type);
+	    if (sunKbdPriv.type == KB_SUN4 && sunSwapLkeys)
+		SwapLKeys(workingKeySyms);
 
-	switch (type) {
-	case KB_SUN2:
-	case KB_SUN3:
-	    /* No layout variation */
-	    LogMessage(X_INFO, "Sun type %d Keyboard\n", type);
-	    break;
-	case KB_SUN4:
-#define LAYOUT_US5	33
-	    (void)ioctl(pPriv->fd, KIOCLAYOUT, &layout);
-	    if (layout < 0 ||
-		layout > sunMaxLayout ||
-		sunType4KeyMaps[layout] == NULL)
-		FatalError("Unsupported keyboard type 4 layout %d\n", layout);
-	    /* Type 5 keyboard also treated as Type 4 layout variants */
-	    LogMessage(X_INFO, "Sun type %d Keyboard, layout %d\n",
-		layout >= LAYOUT_US5 ? 5 : 4, layout);
-	    break;
-	default:
-	    LogMessage(X_INFO, "Unknown keyboard type\n");
-	    break;
-        }
-
-	keysym = &sunKeySyms[type];
-	mapsize = ((int)keysym->maxKeyCode - (int)keysym->minKeyCode + 1)
-	    * keysym->mapWidth * sizeof(keysym->map[0]);
-	map = malloc(mapsize);
-	if (map == NULL) {
-	    LogMessage(X_ERROR, "Failed to allocate KeySym map\n");
-	    close(pPriv->fd);
-	    free(pPriv);
-	    return !Success;
-        }
-	if (type == KB_SUN4) {
-	    memcpy(map, sunType4KeyMaps[layout], mapsize);
-	} else {
-	    memcpy(map, sunKeySyms[type].map, mapsize);
+	    if (workingKeySyms->minKeyCode < MIN_KEYCODE) {
+		workingKeySyms->minKeyCode += MIN_KEYCODE;
+		workingKeySyms->maxKeyCode += MIN_KEYCODE;
+	    }
 	}
 
-	pPriv->type = type;
-	pPriv->layout = layout;
-	pPriv->click = 0;
-	pPriv->leds = (Leds)0;
-	pPriv->keysym.map = map;
-	pPriv->keysym.minKeyCode = keysym->minKeyCode;
-	pPriv->keysym.maxKeyCode = keysym->maxKeyCode;
-	pPriv->keysym.mapWidth = keysym->mapWidth;
+	if (!workingModMap) {
+	    workingModMap=(CARD8 *)xalloc(MAP_LENGTH);
+	    (void) memset(workingModMap, 0, MAP_LENGTH);
+	    for(i=0; sunModMaps[sunKbdPriv.type][i].key != 0; i++)
+		workingModMap[sunModMaps[sunKbdPriv.type][i].key + MIN_KEYCODE] = 
+		sunModMaps[sunKbdPriv.type][i].modifiers;
+	}
 
-	/* sunKbdCtrl() callback refers pKeyboard->devicePrivate */
-	pKeyboard->devicePrivate = pPriv;
+	(void) memset ((void *) defaultKeyboardControl.autoRepeats,
+			~0, sizeof defaultKeyboardControl.autoRepeats);
+
+#ifdef XKB
+	if (noXkbExtension) {
+	    sunAutoRepeatInitiate = XkbDfltRepeatDelay * 1000;
+	    sunAutoRepeatDelay = XkbDfltRepeatInterval * 1000;
+#endif
+	autoRepeatKeyDown = 0;
+#ifdef XKB
+	}
+#endif
+	pKeyboard->devicePrivate = (pointer)&sunKbdPriv;
 	pKeyboard->on = FALSE;
 
-	if (type == KB_SUN4 && sunSwapLkeys) {
-	    /* This could update pPriv->keysym.map */
-	    SwapLKeys(&pPriv->keysym);
-	}
-
-	if (pPriv->keysym.minKeyCode < MIN_KEYCODE) {
-	    pPriv->keysym.minKeyCode += MIN_KEYCODE;
-	    pPriv->keysym.maxKeyCode += MIN_KEYCODE;
-	}
-	if (pPriv->keysym.maxKeyCode > MAX_KEYCODE)
-	    pPriv->keysym.maxKeyCode = MAX_KEYCODE;
-
-	sunInitModMap(&pPriv->keysym, workingModMap);
-
-	sunInitKbdNames(&rmlvo, pPriv);
-#if 0 /* XXX needs more work for Xorg xkb */
-	InitKeyboardDeviceStruct(device, &rmlvo,
+#ifdef XKB
+	if (noXkbExtension) {
+#endif
+	InitKeyboardDeviceStruct(pKeyboard, 
+				 workingKeySyms, workingModMap,
 				 sunBell, sunKbdCtrl);
-#else
-	InitKeyboardDeviceStruct(device, NULL,
-				 sunBell, sunKbdCtrl);
-	XkbApplyMappingChange(device, &pPriv->keysym,
-			      pPriv->keysym.minKeyCode,
-			      pPriv->keysym.maxKeyCode -
-			      pPriv->keysym.minKeyCode + 1,
-			      workingModMap, serverClient);
+#ifdef XKB
+	} else {
+	    XkbComponentNamesRec names;
+	    sunInitKbdNames (&names, &sunKbdPriv);
+	    XkbInitKeyboardDeviceStruct((DeviceIntPtr) pKeyboard, &names,
+					workingKeySyms, workingModMap,
+					sunBell, sunKbdCtrl);
+	}
 #endif
 	break;
 
@@ -815,14 +686,13 @@ sunKbdProc(DeviceIntPtr device, int what)
 	 * Set the keyboard into "direct" mode and turn on
 	 * event translation.
 	 */
-	if (sunChangeKbdTranslation(pPriv->fd, TRUE) == -1)
+	if (sunChangeKbdTranslation(pPriv->fd,TRUE) == -1)
 	    FatalError("Can't set keyboard translation\n");
-
-	SetNotifyFd(pPriv->fd, sunKbdEvents, X_NOTIFY_READ, device);
-
+	AddEnabledDevice(pPriv->fd);
 	pKeyboard->on = TRUE;
 	break;
 
+    case DEVICE_CLOSE:
     case DEVICE_OFF:
 	pPriv = (sunKbdPrivPtr)pKeyboard->devicePrivate;
 	if (pPriv->type == KB_SUN4) {
@@ -834,155 +704,233 @@ sunKbdProc(DeviceIntPtr device, int what)
 	/*
 	 * Restore original keyboard directness and translation.
 	 */
-	if (sunChangeKbdTranslation(pPriv->fd, FALSE) == -1)
+	if (sunChangeKbdTranslation(pPriv->fd,FALSE) == -1)
 	    FatalError("Can't reset keyboard translation\n");
-	RemoveNotifyFd(pPriv->fd);
+	RemoveEnabledDevice(pPriv->fd);
 	pKeyboard->on = FALSE;
 	break;
-
-    case DEVICE_CLOSE:
-	pPriv = (sunKbdPrivPtr)pKeyboard->devicePrivate;
-	free(pPriv->keysym.map);
-	close(pPriv->fd);
-	free(pPriv);
-	pKeyboard->devicePrivate = NULL;
-	break;
-
-    case DEVICE_ABORT:
-	/*
-	 * Restore original keyboard directness and translation.
-	 */
-	pPriv = (sunKbdPrivPtr)pKeyboard->devicePrivate;
-	(void)sunChangeKbdTranslation(pPriv->fd, FALSE);
-	break;
+    default:
+	FatalError("Unknown keyboard operation\n");
     }
     return Success;
 }
 
-/*-------------------------------------------------------------------------
- * sunInitModMap --
- *	Initialize ModMap per specified KeyMap table.
- *
- * Results:
- * 	None.
- *
- * Side Effects:
- *	None.
- *-----------------------------------------------------------------------*/
-static void
-sunInitModMap(
-    const KeySymsRec *KeySyms,	/* KeyMap data to set ModMap */
-    CARD8 *ModMap		/* ModMap to be initialized */
-)
-{
-    KeySym *k;
-    int i, min, max, width;
-
-    for (i = 0; i < MAP_LENGTH; i++)
-        ModMap[i] = NoSymbol;
-
-    min   = KeySyms->minKeyCode;
-    max   = KeySyms->maxKeyCode;
-    width = KeySyms->mapWidth;
-    for (i = min, k = KeySyms->map; i < max; i++, k += width) {
-	switch (*k) {
-
-	case XK_Shift_L:
-	case XK_Shift_R:
-	    ModMap[i] = ShiftMask;
-	    break;
-
-	case XK_Control_L:
-	case XK_Control_R:
-	    ModMap[i] = ControlMask;
-	    break;
-
-	case XK_Caps_Lock:
-	    ModMap[i] = LockMask;
-	    break;
-
-	case XK_Alt_L:
-	case XK_Alt_R:
-	    ModMap[i] = Alt_Mask;
-	    break;
-
-	case XK_Num_Lock:
-	    ModMap[i] = Num_Lock_Mask;
-	    break;
-
-	case XK_Scroll_Lock:
-	    ModMap[i] = ScrollLockMask;
-	    break;
-
-	case XK_Meta_L:
-	case XK_Meta_R:
-	    ModMap[i] = Meta_Mask;
-	    break;
-
-	case SunXK_AltGraph:
-	    ModMap[i] = Mode_switch_Mask;
-	    break;
-        }
-    }
-}
-
-/*-
+/*
  *-----------------------------------------------------------------------
  * sunKbdGetEvents --
  *	Return the events waiting in the wings for the given keyboard.
  *
  * Results:
- *	Update Firm_event buffer in DeviceIntPtr if events are received.
- *	Return the number of received Firm_events in the buffer.
+ *	A pointer to an array of Firm_events or (Firm_event *)0 if no events
+ *	The number of events contained in the array.
+ *	A boolean as to whether more events might be available.
  *
  * Side Effects:
  *	None.
  *-----------------------------------------------------------------------
  */
 
-static int
-sunKbdGetEvents(DeviceIntPtr device)
+Firm_event* sunKbdGetEvents (
+    int		fd,
+    Bool	on,
+    int*	pNumEvents,
+    Bool*	pAgain)
 {
-    DevicePtr pKeyboard = &device->public;
-    sunKbdPrivPtr pPriv = pKeyboard->devicePrivate;
-    int	nBytes;	 	   /* number of bytes of events available. */
-    int NumEvents = 0;
+    int	    	  nBytes;	    /* number of bytes of events available. */
+    static Firm_event	evBuf[MAXEVENTS];   /* Buffer for Firm_events */
 
-    nBytes = read(pPriv->fd, pPriv->evbuf, sizeof(pPriv->evbuf));
-    if (nBytes == -1) {
-	if (errno != EWOULDBLOCK) {
-	    LogMessage(X_ERROR, "Unexpected error on reading keyboard\n");
-	    FatalError("Could not read the keyboard");
+    if ((nBytes = read (fd, evBuf, sizeof(evBuf))) == -1) {
+	if (errno == EWOULDBLOCK) {
+	    *pNumEvents = 0;
+	    *pAgain = FALSE;
+	} else {
+	    Error ("Reading keyboard");
+	    FatalError ("Could not read the keyboard");
 	}
     } else {
-	NumEvents = nBytes / sizeof(pPriv->evbuf[0]);
+	if (on) {
+	    *pNumEvents = nBytes / sizeof (Firm_event);
+	    *pAgain = (nBytes == sizeof (evBuf));
+	} else {
+	    *pNumEvents = 0;
+	    *pAgain = FALSE;
+	}
     }
-    return NumEvents;
+    return evBuf;
 }
 
-/*-
+/*
  *-----------------------------------------------------------------------
  * sunKbdEnqueueEvent --
  *
  *-----------------------------------------------------------------------
  */
+static xEvent	autoRepeatEvent;
+static int	composeCount;
 
-static void
-sunKbdEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
+static Bool DoSpecialKeys(device, xE, fe)
+    DeviceIntPtr  device;
+    xEvent*       xE;
+    Firm_event* fe;
 {
-    BYTE		keycode;
-    int			type;
+    int	shift_index, map_index, bit;
+    KeySym ksym;
+    BYTE* kptr;
+    sunKbdPrivPtr pPriv = (sunKbdPrivPtr)device->public.devicePrivate;
+    BYTE keycode = xE->u.u.detail;
+    CARD8 keyModifiers = device->key->modifierMap[keycode];
 
-    keycode = (fe->id & 0x7f) + MIN_KEYCODE;
-    type = ((fe->value == VKEY_UP) ? KeyRelease : KeyPress);
-    QueueKeyboardEvents(device, type, keycode);
+    /* look up the present idea of the keysym */
+    shift_index = 0;
+    if (device->key->state & ShiftMask) 
+	shift_index ^= 1;
+    if (device->key->state & LockMask) 
+	shift_index ^= 1;
+    map_index = (fe->id - 1) * device->key->curKeySyms.mapWidth;
+    ksym = device->key->curKeySyms.map[shift_index + map_index];
+    if (ksym == NoSymbol)
+	ksym = device->key->curKeySyms.map[map_index];
+
+    /*
+     * Toggle functionality is hardcoded. This is achieved by always
+     * discarding KeyReleases on these keys, and converting every other
+     * KeyPress into a KeyRelease.
+     */
+    if (xE->u.u.type == KeyRelease 
+	&& (ksym == XK_Num_Lock 
+	|| ksym == XK_Scroll_Lock 
+	|| ksym == SunXK_Compose
+	|| (keyModifiers & LockMask))) 
+	return TRUE;
+
+    kptr = &device->key->down[keycode >> 3];
+    bit = 1 << (keycode & 7);
+    if ((*kptr & bit) &&
+	(ksym == XK_Num_Lock || ksym == XK_Scroll_Lock ||
+	ksym == SunXK_Compose || (keyModifiers & LockMask)))
+	xE->u.u.type = KeyRelease;
+
+    if (pPriv->type == KB_SUN4) {
+	if (ksym == XK_Num_Lock) {
+	    ModLight (device, xE->u.u.type == KeyPress, XLED_NUM_LOCK);
+	} else if (ksym == XK_Scroll_Lock) {
+	    ModLight (device, xE->u.u.type == KeyPress, XLED_SCROLL_LOCK);
+	} else if (ksym == SunXK_Compose) {
+	    ModLight (device, xE->u.u.type == KeyPress, XLED_COMPOSE);
+	    if (xE->u.u.type == KeyPress) composeCount = 2;
+	    else composeCount = 0;
+	} else if (keyModifiers & LockMask) {
+	    ModLight (device, xE->u.u.type == KeyPress, XLED_CAPS_LOCK);
+	}
+	if (xE->u.u.type == KeyRelease) {
+	    if (composeCount > 0 && --composeCount == 0) {
+		pseudoKey(device, FALSE,
+		    LookupKeyCode(SunXK_Compose, &device->key->curKeySyms));
+		ModLight (device, FALSE, XLED_COMPOSE);
+	    }
+	}
+    }
+
+    if ((xE->u.u.type == KeyPress) && (keyModifiers == 0)) {
+	/* initialize new AutoRepeater event & mark AutoRepeater on */
+	autoRepeatEvent = *xE;
+	autoRepeatFirst = TRUE;
+	autoRepeatKeyDown++;
+	autoRepeatLastKeyDownTv = fe->time;
+    }
+    return FALSE;
 }
 
+void sunKbdEnqueueEvent (
+    DeviceIntPtr  device,
+    Firm_event	  *fe)
+{
+    xEvent		xE;
+    BYTE		keycode;
+    CARD8		keyModifiers;
 
-/*-
+    keycode = (fe->id & 0x7f) + MIN_KEYCODE;
+
+    keyModifiers = device->key->modifierMap[keycode];
+#ifdef XKB
+    if (noXkbExtension) {
+#endif
+    if (autoRepeatKeyDown && (keyModifiers == 0) &&
+	((fe->value == VKEY_DOWN) || (keycode == autoRepeatEvent.u.u.detail))) {
+	/*
+	 * Kill AutoRepeater on any real non-modifier key down, or auto key up
+	 */
+	autoRepeatKeyDown = 0;
+    }
+#ifdef XKB
+    }
+#endif
+    xE.u.keyButtonPointer.time = TVTOMILLI(fe->time);
+    xE.u.u.type = ((fe->value == VKEY_UP) ? KeyRelease : KeyPress);
+    xE.u.u.detail = keycode;
+#ifdef XKB
+    if (noXkbExtension) {
+#endif
+    if (DoSpecialKeys(device, &xE, fe))
+	return;
+#ifdef XKB
+    }
+#endif /* ! XKB */
+    mieqEnqueue (&xE);
+}
+
+void sunEnqueueAutoRepeat ()
+{
+    int	delta;
+    int	i, mask;
+    DeviceIntPtr device = (DeviceIntPtr)LookupKeyboardDevice();
+    KeybdCtrl* ctrl = &device->kbdfeed->ctrl;
+    sunKbdPrivPtr   pPriv = (sunKbdPrivPtr) device->public.devicePrivate;
+
+    if (ctrl->autoRepeat != AutoRepeatModeOn) {
+	autoRepeatKeyDown = 0;
+	return;
+    }
+    i=(autoRepeatEvent.u.u.detail >> 3);
+    mask=(1 << (autoRepeatEvent.u.u.detail & 7));
+    if (!(ctrl->autoRepeats[i] & mask)) {
+	autoRepeatKeyDown = 0;
+	return;
+    }
+
+    /*
+     * Generate auto repeat event.	XXX one for now.
+     * Update time & pointer location of saved KeyPress event.
+     */
+
+    delta = TVTOMILLI(autoRepeatDeltaTv);
+    autoRepeatFirst = FALSE;
+
+    /*
+     * Fake a key up event and a key down event
+     * for the last key pressed.
+     */
+    autoRepeatEvent.u.keyButtonPointer.time += delta;
+    autoRepeatEvent.u.u.type = KeyRelease;
+
+    /*
+     * hold off any more inputs while we get these safely queued up
+     * further SIGIO are 
+     */
+    sunEnqueueEvent (&autoRepeatEvent);
+    autoRepeatEvent.u.u.type = KeyPress;
+    sunEnqueueEvent (&autoRepeatEvent);
+    if (ctrl->click) bell (pPriv->fd, 0);
+
+    /* Update time of last key down */
+    tvplus(autoRepeatLastKeyDownTv, autoRepeatLastKeyDownTv, 
+		    autoRepeatDeltaTv);
+}
+
+/*
  *-----------------------------------------------------------------------
  * sunChangeKbdTranslation
- *	Makes operating system calls to set keyboard translation
+ *	Makes operating system calls to set keyboard translation 
  *	and direction on or off.
  *
  * Results:
@@ -993,9 +941,11 @@ sunKbdEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
  *
  *-----------------------------------------------------------------------
  */
-static int
-sunChangeKbdTranslation(int fd, Bool makeTranslated)
-{
+int sunChangeKbdTranslation(
+    int fd,
+    Bool makeTranslated)
+
+{   
     int 	tmp;
 #ifndef i386 /* { */
     sigset_t	hold_mask, old_mask;
@@ -1020,12 +970,12 @@ sunChangeKbdTranslation(int fd, Bool makeTranslated)
          */
 	tmp = 1;
 	if (ioctl (fd, KIOCSDIRECT, &tmp) == -1) {
-	    ErrorF("Setting keyboard direct mode\n");
+	    Error ("Setting keyboard direct mode");
 	    return -1;
 	}
 	tmp = TR_UNTRANS_EVENT;
 	if (ioctl (fd, KIOCTRANS, &tmp) == -1) {
-	    ErrorF("Setting keyboard translation\n");
+	    Error ("Setting keyboard translation");
 	    ErrorF ("sunChangeKbdTranslation: kbdFd=%d\n", fd);
 	    return -1;
 	}
@@ -1049,9 +999,72 @@ sunChangeKbdTranslation(int fd, Bool makeTranslated)
 	}
     }
 #ifndef i386 /* { */
-    (void) sigprocmask(SIG_SETMASK, &old_mask, NULL);
+    (void) sigprocmask(SIG_SETMASK, &old_mask, (sigset_t *)NULL);
 #else /* }{ */
     sigsetmask (old_mask);
 #endif /* } */
     return 0;
+}
+
+/*ARGSUSED*/
+Bool LegalModifier(key, pDev)
+    unsigned int key;
+    DevicePtr	pDev;
+{
+    return TRUE;
+}
+
+/*ARGSUSED*/
+void sunBlockHandler(nscreen, pbdata, pptv, pReadmask)
+    int nscreen;
+    pointer pbdata;
+    struct timeval **pptv;
+    pointer pReadmask;
+{
+    KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
+    static struct timeval artv = { 0, 0 };	/* autorepeat timeval */
+
+    if (!autoRepeatKeyDown)
+	return;
+
+    if (ctrl->autoRepeat != AutoRepeatModeOn)
+	return;
+
+    if (autoRepeatFirst == TRUE)
+	artv.tv_usec = sunAutoRepeatInitiate;
+    else
+	artv.tv_usec = sunAutoRepeatDelay;
+    *pptv = &artv;
+
+}
+
+/*ARGSUSED*/
+void sunWakeupHandler(nscreen, pbdata, err, pReadmask)
+    int nscreen;
+    pointer pbdata;
+    unsigned long err;
+    pointer pReadmask;
+{
+    KeybdCtrl* ctrl = &((DeviceIntPtr)LookupKeyboardDevice())->kbdfeed->ctrl;
+    struct timeval tv;
+
+    if (ctrl->autoRepeat != AutoRepeatModeOn)
+	return;
+
+    if (autoRepeatKeyDown) {
+	X_GETTIMEOFDAY(&tv);
+	tvminus(autoRepeatDeltaTv, tv, autoRepeatLastKeyDownTv);
+	if (autoRepeatDeltaTv.tv_sec > 0 ||
+			(!autoRepeatFirst && autoRepeatDeltaTv.tv_usec >
+				sunAutoRepeatDelay) ||
+			(autoRepeatDeltaTv.tv_usec >
+				sunAutoRepeatInitiate))
+		autoRepeatReady++;
+    }
+    
+    if (autoRepeatReady)
+    {
+	sunEnqueueAutoRepeat ();
+	autoRepeatReady = 0;
+    }
 }

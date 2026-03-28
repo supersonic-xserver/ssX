@@ -1,0 +1,17 @@
+/Color.c/1.1.1.1/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Composite.c/1.1.1.3/Sat Jun  9 14:56:07 2001//Tnetbsd-5-2-3-RELEASE
+/Cursor.c/1.1.1.1/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/FillRect.c/1.1.1.4/Sat Jan 19 14:57:32 2002//Tnetbsd-5-2-3-RELEASE
+/FillRects.c/1.1.1.4/Sat Jan 19 14:57:32 2002//Tnetbsd-5-2-3-RELEASE
+/Filter.c/1.1.1.1/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Glyph.c/1.1.1.5/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.5/Fri Mar 18 13:04:48 2005//Tnetbsd-5-2-3-RELEASE
+/Picture.c/1.1.1.5/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Poly.c/1.1.1.1/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Trap.c/1.1.1.1/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Tri.c/1.1.1.1/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Xrender-def.cpp/1.1.1.6/Fri Mar 18 13:04:48 2005//Tnetbsd-5-2-3-RELEASE
+/Xrender.c/1.1.1.5/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Xrender.h/1.1.1.5/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+/Xrenderint.h/1.1.1.4/Fri Feb 28 13:18:52 2003//Tnetbsd-5-2-3-RELEASE
+D

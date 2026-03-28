@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   Copyright (c) 1997 by Mark Leisher
   Copyright (c) 1998-2002 by Juliusz Chroboczek
 
@@ -21,19 +28,19 @@
   THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/FreeType/fttools.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/lib/font/FreeType/fttools.c,v 1.8 2004/10/23 15:29:26 dawes Exp $ */
 
 #include "fontmisc.h"
 #ifndef FONTMODULE
 #include <ctype.h>
 #include <string.h>
 #else
-#include <X11/Xmd.h>
-#include <X11/Xdefs.h>
+#include "Xmd.h"
+#include "Xdefs.h"
 #include "xf86_ansic.h"
 #endif
 
-#include <X11/fonts/font.h>
+#include "font.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SFNT_NAMES_H
@@ -122,8 +129,6 @@ FTGetEnglishName(FT_Face face, int nid, char *name_return, int name_len)
     FT_SfntName name;
     int len;
 
-    name_len--;
-
     if(FTGetName(face, nid, 
                  TT_PLATFORM_MICROSOFT, TT_MS_ID_UNICODE_CS, &name) ||
        FTGetName(face, nid, 
@@ -137,7 +142,6 @@ FTGetEnglishName(FT_Face face, int nid, char *name_return, int name_len)
         if(len > name_len)
             len = name_len;
         memcpy(name_return, name.string, len);
-        name_return[len] = 0;
         return len;
     }
 

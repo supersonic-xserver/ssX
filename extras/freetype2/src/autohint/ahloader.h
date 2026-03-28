@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahloader.h                                                             */
 /*                                                                         */
@@ -17,7 +24,7 @@
 /*  Note that this license is compatible with the FreeType license.        */
 /*                                                                         */
 /***************************************************************************/
-/* $XFree86$ */
+/* $XFree86: xc/extras/freetype2/src/autohint/ahloader.h,v 1.2 2003/01/12 03:55:45 tsi Exp $ */
 
 
   /*************************************************************************/

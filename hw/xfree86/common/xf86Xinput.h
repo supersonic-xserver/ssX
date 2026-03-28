@@ -1,3 +1,19 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.h,v 3.40 2006/03/16 16:49:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1995-1999 by Frederic Lepied, France. <Lepied@XFree86.org>
  *                                                                            
@@ -22,32 +38,51 @@
  */
 
 /*
- * Copyright (c) 2000-2002 by The XFree86 Project, Inc.
+ * Copyright (c) 2000-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 
 #ifndef _xf86Xinput_h
 #define _xf86Xinput_h
@@ -85,9 +120,15 @@
 #define XI_PRIVATE(dev) \
 	(((LocalDevicePtr)((dev)->public.devicePrivate))->private)
 
-/* Stupid API backwards-compatibility. */
-#define TS_Raw 60
-#define TS_Scaled 61
+#ifdef DBG
+#undef DBG
+#endif
+#define DBG(lvl, f) {if ((lvl) <= xf86GetVerbosity()) f;}
+
+#ifdef HAS_MOTION_HISTORY
+#undef HAS_MOTION_HISTORY
+#endif
+#define HAS_MOTION_HISTORY(local) ((local)->dev->valuator && (local)->dev->valuator->numMotionEvents)
 
 #ifdef XINPUT
 /* This holds the input driver entry and module information. */
@@ -100,7 +141,7 @@ typedef struct _InputDriverRec {
     void		    (*UnInit)(struct _InputDriverRec *drv,
 				      struct _LocalDeviceRec *pInfo,
 				      int flags);
-    pointer		    module;
+    ModuleDescPtr	    module;
     int			    refCount;
 } InputDriverRec, *InputDriverPtr;
 #endif
@@ -111,7 +152,7 @@ typedef struct _LocalDeviceRec {
     struct _LocalDeviceRec *next;
     char *		    name;
     int			    flags;
-
+    
     Bool		    (*device_control)(DeviceIntPtr device, int what);
     void		    (*read_input)(struct _LocalDeviceRec *local);
     int			    (*control_proc)(struct _LocalDeviceRec *local,
@@ -126,27 +167,27 @@ typedef struct _LocalDeviceRec {
     Bool		    (*reverse_conversion_proc)(
 					struct _LocalDeviceRec *local,
 					int x, int y, int *valuators);
-    int                     (*set_device_valuators)
-				(struct _LocalDeviceRec *local,
-				 int *valuators, int first_valuator,
-				 int num_valuators);
-
+    
     int			    fd;
     Atom		    atom;
     DeviceIntPtr	    dev;
     pointer		    private;
     int			    private_flags;
+    pointer		    motion_history;
+    ValuatorMotionProcPtr   motion_history_proc;
+    unsigned int	    history_size;   /* only for configuration purpose */
     unsigned int	    first;
     unsigned int	    last;
     int			    old_x;
     int			    old_y;
+    float		    dxremaind;
+    float		    dyremaind;
     char *		    type_name;
     IntegerFeedbackPtr	    always_core_feedback;
     IDevPtr		    conf_idev;
     InputDriverPtr	    drv;
-    pointer		    module;
+    ModuleDescPtr	    module;
     pointer		    options;
-    unsigned int            history_size;
 } LocalDeviceRec, *LocalDevicePtr, InputInfoRec, *InputInfoPtr;
 
 typedef struct _DeviceAssocRec 
@@ -159,11 +200,18 @@ typedef struct _DeviceAssocRec
 extern InputInfoPtr xf86InputDevs;
 
 /* xf86Xinput.c */
+int xf86IsCorePointer(DeviceIntPtr dev);
+int xf86IsCoreKeyboard(DeviceIntPtr dev);
+void xf86XInputSetSendCoreEvents(LocalDevicePtr local, Bool always);
+#define xf86AlwaysCore(a,b) xf86XInputSetSendCoreEvents(a,b)
+
 void InitExtInput(void);
+Bool xf86eqInit(DevicePtr pKbd, DevicePtr pPtr);
+void xf86eqEnqueue(struct _xEvent *event);
+void xf86eqProcessInputEvents (void);
+void xf86eqSwitchScreen(ScreenPtr pScreen, Bool fromDIX);
 void xf86PostMotionEvent(DeviceIntPtr device, int is_absolute,
 			 int first_valuator, int num_valuators, ...);
-void xf86PostMotionEventP(DeviceIntPtr device, int is_absolute,
-			 int first_valuator, int num_valuators, int *valuators);
 void xf86PostProximityEvent(DeviceIntPtr device, int is_in,
 			    int first_valuator, int num_valuators, ...);
 void xf86PostButtonEvent(DeviceIntPtr device, int is_absolute, int button,
@@ -174,8 +222,11 @@ void xf86PostKeyEvent(DeviceIntPtr device, unsigned int key_code, int is_down,
 		      ...);
 void xf86PostKeyboardEvent(DeviceIntPtr device, unsigned int key_code,
                            int is_down);
+void xf86MotionHistoryAllocate(LocalDevicePtr local);
+int xf86GetMotionEvents(DeviceIntPtr dev, xTimecoord *buff,
+			unsigned long start, unsigned long stop,
+			ScreenPtr pScreen);
 void xf86XinputFinalizeInit(DeviceIntPtr dev);
-void xf86ActivateDevice(LocalDevicePtr local);
 Bool xf86CheckButton(int button, int down);
 void xf86SwitchCoreDevice(LocalDevicePtr device, DeviceIntPtr core);
 LocalDevicePtr xf86FirstLocalDevice(void);
@@ -188,28 +239,15 @@ void xf86InitValuatorAxisStruct(DeviceIntPtr dev, int axnum, int minval,
 void xf86InitValuatorDefaults(DeviceIntPtr dev, int axnum);
 void xf86AddEnabledDevice(InputInfoPtr pInfo);
 void xf86RemoveEnabledDevice(InputInfoPtr pInfo);
-void xf86DisableDevice(DeviceIntPtr dev, Bool panic);
-void xf86EnableDevice(DeviceIntPtr dev);
 
 /* xf86Helper.c */
-void xf86AddInputDriver(InputDriverPtr driver, pointer module, int flags);
+void xf86AddInputDriver(InputDriverPtr driver, ModuleDescPtr module, int flags);
 void xf86DeleteInputDriver(int drvIndex);
 InputInfoPtr xf86AllocateInput(InputDriverPtr drv, int flags);
-InputDriverPtr xf86LookupInputDriver(const char *name);
-InputInfoPtr xf86LookupInput(const char *name);
 void xf86DeleteInput(InputInfoPtr pInp, int flags);
-void xf86MotionHistoryAllocate(LocalDevicePtr local);
-int xf86GetMotionEvents(DeviceIntPtr dev, xTimecoord *buff,
-                        unsigned long start, unsigned long stop,
-                        ScreenPtr pScreen);
 
 /* xf86Option.c */
 void xf86CollectInputOptions(InputInfoPtr pInfo, const char **defaultOpts,
 			     pointer extraOpts);
-
-
-/* Legacy hatred */
-#define SendCoreEvents 59
-#define DontSendCoreEvents 60
 
 #endif /* _xf86Xinput_h */

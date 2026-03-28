@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -45,10 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/dix/grabs.c,v 3.7 2005/10/14 15:16:22 tsi Exp $ */
 
 #include <X11/X.h>
 #include "misc.h"
@@ -67,18 +78,11 @@ SOFTWARE.
 #define GETBIT(buf, i) (MASKWORD(buf, i) & BITMASK(i))
 
 GrabPtr
-CreateGrab(
-    int client,
-    DeviceIntPtr device,
-    WindowPtr window,
-    Mask eventMask,
-    Bool ownerEvents, Bool keyboardMode, Bool pointerMode,
-    DeviceIntPtr modDevice,
-    unsigned short modifiers,
-    int type,
-    KeyCode keybut,	/* key or button */
-    WindowPtr confineTo,
-    CursorPtr cursor)
+CreateGrab(int client, DeviceIntPtr device, WindowPtr window, Mask eventMask,
+	   Bool ownerEvents, Bool keyboardMode, Bool pointerMode,
+	   DeviceIntPtr modDevice, unsigned short modifiers, int type,
+	   KeyCode keybut,	/* key or button */
+	   WindowPtr confineTo, CursorPtr cursor)
 {
     GrabPtr grab;
 
@@ -125,6 +129,7 @@ FreeGrab(GrabPtr pGrab)
     xfree(pGrab);
 }
 
+/*ARGSUSED*/
 int
 DeletePassiveGrab(pointer value, XID id)
 {
@@ -171,10 +176,8 @@ DeleteDetailFromMask(Mask *pDetailMask, unsigned short detail)
 }
 
 static Bool
-IsInGrabMask(
-    DetailRec firstDetail,
-    DetailRec secondDetail,
-    unsigned short exception)
+IsInGrabMask(DetailRec firstDetail, DetailRec secondDetail,
+	     unsigned short exception)
 {
     if (firstDetail.exact == exception)
     {
@@ -193,10 +196,8 @@ IsInGrabMask(
 }
 
 static Bool 
-IdenticalExactDetails(
-    unsigned short firstExact,
-    unsigned short secondExact,
-    unsigned short exception)
+IdenticalExactDetails(unsigned short firstExact, unsigned short secondExact,
+		      unsigned short exception)
 {
     if ((firstExact == exception) || (secondExact == exception))
 	return FALSE;
@@ -208,10 +209,8 @@ IdenticalExactDetails(
 }
 
 static Bool 
-DetailSupersedesSecond(
-    DetailRec firstDetail,
-    DetailRec secondDetail,
-    unsigned short exception)
+DetailSupersedesSecond(DetailRec firstDetail, DetailRec secondDetail,
+		       unsigned short exception)
 {
     if (IsInGrabMask(firstDetail, secondDetail, exception))
 	return TRUE;
@@ -269,42 +268,6 @@ GrabMatchesSecond(GrabPtr pFirstGrab, GrabPtr pSecondGrab)
     return FALSE;
 }
 
-static Bool
-GrabsAreIdentical(GrabPtr pFirstGrab, GrabPtr pSecondGrab)
-{
-    if (pFirstGrab->device != pSecondGrab->device || 
-	(pFirstGrab->modifierDevice != pSecondGrab->modifierDevice) ||
-	(pFirstGrab->type != pSecondGrab->type))
-	return FALSE;
-
-    if (!(DetailSupersedesSecond(pFirstGrab->detail, 
-                               pSecondGrab->detail, 
-                               (unsigned short)AnyKey) && 
-        DetailSupersedesSecond(pSecondGrab->detail,
-                               pFirstGrab->detail,
-                               (unsigned short)AnyKey)))
-        return FALSE;
-
-    if (!(DetailSupersedesSecond(pFirstGrab->modifiersDetail, 
-                               pSecondGrab->modifiersDetail, 
-                               (unsigned short)AnyModifier) && 
-        DetailSupersedesSecond(pSecondGrab->modifiersDetail,
-                               pFirstGrab->modifiersDetail,
-                               (unsigned short)AnyModifier)))
-        return FALSE;
-
-    return TRUE;
-}
-
-
-/**
- * Prepend the new grab to the list of passive grabs on the window.
- * Any previously existing grab that matches the new grab will be removed.
- * Adding a new grab that would override another client's grab will result in
- * a BadAccess.
- * 
- * @return Success or X error code on failure.
- */
 int
 AddPassiveGrabToList(GrabPtr pGrab)
 {
@@ -322,22 +285,11 @@ AddPassiveGrabToList(GrabPtr pGrab)
 	}
     }
 
-    /* Remove all grabs that match the new one exactly */
-    for (grab = wPassiveGrabs(pGrab->window); grab; grab = grab->next)
-    {
-	if (GrabsAreIdentical(pGrab, grab))
-	{
-            DeletePassiveGrabFromList(grab);
-            break;
-	} 
-    }
-
     if (!pGrab->window->optional && !MakeWindowOptional (pGrab->window))
     {
 	FreeGrab(pGrab);
 	return BadAlloc;
     }
-
     pGrab->next = pGrab->window->optional->passiveGrabs;
     pGrab->window->optional->passiveGrabs = pGrab;
     if (AddResource(pGrab->resource, RT_PASSIVEGRAB, (pointer)pGrab))

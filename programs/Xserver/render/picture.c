@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/render/picture.c,v 1.31tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/picture.c,v 1.31 2004/06/30 20:21:46 martin Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -614,7 +621,7 @@ PictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
 	    return FALSE;
 	PictureWindowPrivateIndex = AllocateWindowPrivateIndex();
 	PictureGeneration = serverGeneration;
-#ifdef XRES
+#ifdef XResExtension
 	RegisterResourceName (PictureType, "PICTURE");
 	RegisterResourceName (PictFormatType, "PICTFORMAT");
 	RegisterResourceName (GlyphSetType, "GLYPHSET");

@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,6 +58,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/include/window.h,v 1.7 2006/01/09 15:00:34 dawes Exp $ */
 
 #ifndef WINDOW_H
 #define WINDOW_H
@@ -51,7 +66,7 @@ SOFTWARE.
 #include "misc.h"
 #include "region.h"
 #include "screenint.h"
-#include <X11/Xproto.h>
+#include "X11/Xproto.h"
 
 #define TOTALLY_OBSCURED 0
 #define UNOBSCURED 1
@@ -92,9 +107,13 @@ extern Bool CreateRootWindow(
 extern void InitRootWindow(
     WindowPtr /*pWin*/);
 
-typedef WindowPtr (* RealChildHeadProc) (WindowPtr pWin);
-
-void RegisterRealChildHeadProc (RealChildHeadProc proc);
+extern void ClippedRegionFromBox(
+    WindowPtr /*pWin*/,
+    RegionPtr /*Rgn*/,
+    int /*x*/,
+    int /*y*/,
+    int /*w*/,
+    int /*h*/);
 
 extern WindowPtr RealChildHead(
     WindowPtr /*pWin*/);
@@ -196,6 +215,12 @@ extern void UnmapSubwindows(
 extern void HandleSaveSet(
     ClientPtr /*client*/);
 
+extern Bool VisibleBoundingBoxFromPoint(
+    WindowPtr /*pWin*/,
+    int /*x*/,
+    int /*y*/,
+    BoxPtr /*box*/);
+
 extern Bool PointInWindowIsVisible(
     WindowPtr /*pWin*/,
     int /*x*/,
@@ -220,6 +245,9 @@ extern void CheckWindowOptionalNeed(
 extern Bool MakeWindowOptional(
     WindowPtr /*pWin*/);
 
+extern void DisposeWindowOptional(
+    WindowPtr /*pWin*/);
+
 extern WindowPtr MoveWindowInStack(
     WindowPtr /*pWin*/,
     WindowPtr /*pNextSib*/);
@@ -236,22 +264,5 @@ void ResizeChildrenWinSize(
     int /*dy*/,
     int /*dw*/,
     int /*dh*/);
-
-extern void ShapeExtensionInit(void);
-
-extern void SendShapeNotify(
-    WindowPtr /* pWin */,
-    int /* which */ );
-
-extern RegionPtr CreateBoundingShape(
-    WindowPtr /* pWin */ );
-
-extern RegionPtr CreateClipShape(
-    WindowPtr /* pWin */ );
-
-extern void DisableMapUnmapEvents(
-    WindowPtr /* pWin */ );
-extern void EnableMapUnmapEvents(
-    WindowPtr /* pWin */ );
 
 #endif /* WINDOW_H */

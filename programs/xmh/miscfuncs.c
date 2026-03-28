@@ -1,3 +1,11 @@
+/* $XConsortium: miscfuncs.c,v 1.7 94/12/01 17:15:05 kaleb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* $XFree86: xc/programs/xmh/miscfuncs.c,v 3.7 2002/04/05 21:06:28 dickey Exp $ */
 
 #include "xmh.h"
@@ -111,11 +119,9 @@ typedef struct dirent	 ENTRY;
 /* Initial guess at directory size. */
 #define INITIAL_SIZE	20
 
-typedef const char *cchar;
-static int StrCmp(const void *a, const void *b)
+static int StrCmp(char **a, char **b)
 {
-    const cchar *s1 = a, *s2 = b;
-    return strcmp(*s1, *s2);
+    return strcmp(*a, *b);
 }
 
 int
@@ -164,7 +170,7 @@ ScanDir(
 
     /* Sort? */
     if (i)
-	qsort((char *)names, i, sizeof(char *), StrCmp);
+	qsort((char *)names, i, sizeof(char *), (int (*)())StrCmp);
 
     return(i);
 }

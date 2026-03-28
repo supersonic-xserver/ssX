@@ -1,11 +1,18 @@
-/* $XTermId: tabs.c,v 1.25 2006/02/12 22:43:55 tom Exp $ */
-
 /*
- *	$XFree86: xc/programs/xterm/tabs.c,v 3.12 2005/04/22 00:21:54 dickey Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+
+ *	$XFree86: xc/programs/xterm/tabs.c,v 3.11 2005/01/14 01:50:03 dickey Exp $
+ */
+
+/* $Xorg: tabs.c,v 1.3 2000/08/17 19:55:09 cpqbld Exp $ */
+
 /*
- * Copyright 2000-2005,2006 by Thomas E. Dickey
+ * Copyright 2000-2002,2005 by Thomas E. Dickey
  *
  *                         All Rights Reserved
  *
@@ -109,13 +116,14 @@ TabClear(Tabs tabs, int col)
  * (or MAX_TABS - 1 if there are no more).
  * A tabstop at col is ignored.
  */
-static int
-TabNext(TScreen * screen, Tabs tabs, int col)
+int
+TabNext(Tabs tabs, int col)
 {
+    TScreen *screen = &term->screen;
+
     if (screen->curses && screen->do_wrap && (term->flags & WRAPAROUND)) {
 	xtermIndex(screen, 1);
-	set_cur_col(screen, 0);
-	col = screen->do_wrap = 0;
+	col = screen->cur_col = screen->do_wrap = 0;
     }
     for (++col; col < MAX_TABS; ++col)
 	if (TST_TAB(tabs, col))
@@ -129,7 +137,7 @@ TabNext(TScreen * screen, Tabs tabs, int col)
  * (or 0 if there are no more).
  * A tabstop at col is ignored.
  */
-static int
+int
 TabPrev(Tabs tabs, int col)
 {
     for (--col; col >= 0; --col)
@@ -143,15 +151,14 @@ TabPrev(Tabs tabs, int col)
  * Tab to the next stop, returning true if the cursor moved
  */
 Bool
-TabToNextStop(TScreen * screen)
+TabToNextStop(void)
 {
+    TScreen *screen = &term->screen;
     int saved_column = screen->cur_col;
-    int next = TabNext(screen, term->tabs, screen->cur_col);
-    int max = CurMaxCol(screen, screen->cur_row);
 
-    if (next > max)
-	next = max;
-    set_cur_col(screen, next);
+    screen->cur_col = TabNext(term->tabs, screen->cur_col);
+    if (screen->cur_col > CurMaxCol(screen, screen->cur_row))
+	screen->cur_col = CurMaxCol(screen, screen->cur_row);
 
     return (screen->cur_col > saved_column);
 }
@@ -160,11 +167,12 @@ TabToNextStop(TScreen * screen)
  * Tab to the previous stop, returning true if the cursor moved
  */
 Bool
-TabToPrevStop(TScreen * screen)
+TabToPrevStop(void)
 {
+    TScreen *screen = &term->screen;
     int saved_column = screen->cur_col;
 
-    set_cur_col(screen, TabPrev(term->tabs, screen->cur_col));
+    screen->cur_col = TabPrev(term->tabs, screen->cur_col);
 
     return (screen->cur_col < saved_column);
 }

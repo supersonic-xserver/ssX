@@ -1,5 +1,11 @@
-/* $XFree86$ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -31,7 +37,6 @@
 
 
 #ifdef DEBUG  /* This code only used for debugging */
-
 
 /* Comment this out to deactivate the cycle counter.
  * NOTE: it works only on CPUs which know the 'rdtsc' command (586 or higher)
@@ -194,8 +199,8 @@ extern char *mesa_profile;
 #define  BEGIN_RACE(x)                                                        \
 x = LONG_MAX;                                                                 \
 for (cycle_i = 0; cycle_i <10; cycle_i++) {                                   \
-   register long cycle_tmp1 __asm__("l0");				      \
-   register long cycle_tmp2 __asm__("l1");				      \
+   register long cycle_tmp1 asm("l0");					      \
+   register long cycle_tmp2 asm("l1");					      \
    /* rd %tick, %l0 */							      \
    __asm__ __volatile__ (".word 0xa1410000" : "=r" (cycle_tmp1));  /*  save timestamp   */
 
@@ -224,6 +229,10 @@ x -= counter_overhead;
 
 static GLfloat rnd( void )
 {
+#ifndef RAND_MAX
+/* XXX: Too hard to include <stdlib.h> here. */
+#define RAND_MAX 0x7fffffff
+#endif
    GLfloat f = (GLfloat)rand() / (GLfloat)RAND_MAX;
    GLfloat gran = (GLfloat)(1 << 13);
 

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Screen.c,v 1.31 2006/08/09 20:53:16 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -26,38 +34,54 @@
  * 
  */
 /*
- * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 
 /* View/edit this file with tab stops set to 4 */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include "xf86Parser.h"
 #include "xf86tokens.h"
@@ -78,12 +102,13 @@ static xf86ConfigSymTabRec DisplayTab[] =
 	{BPP, "fbbpp"},
 	{WEIGHT, "weight"},
 	{OPTION, "option"},
+	{MONITOR, "monitor"},
 	{-1, ""},
 };
 
 #define CLEANUP xf86freeDisplayList
 
-static XF86ConfDisplayPtr
+XF86ConfDisplayPtr
 xf86parseDisplaySubSection (void)
 {
 	int token;
@@ -92,6 +117,7 @@ xf86parseDisplaySubSection (void)
 	ptr->disp_black.red = ptr->disp_black.green = ptr->disp_black.blue = -1;
 	ptr->disp_white.red = ptr->disp_white.green = ptr->disp_white.blue = -1;
 	ptr->disp_frameX0 = ptr->disp_frameY0 = -1;
+	ptr->monitor_num = -1;
 	while ((token = xf86getToken (DisplayTab)) != ENDSUBSECTION)
 	{
 		switch (token)
@@ -128,7 +154,7 @@ xf86parseDisplaySubSection (void)
 		case VISUAL:
 			if (xf86getSubToken (&(ptr->disp_comment)) != STRING)
 				Error (QUOTE_MSG, "Display");
-			ptr->disp_visual = val.str;
+			ptr->disp_visual = xf86configStrdup(val.str);
 			break;
 		case WEIGHT:
 			if (xf86getSubToken (&(ptr->disp_comment)) != NUMBER)
@@ -170,7 +196,7 @@ xf86parseDisplaySubSection (void)
 				while ((token = xf86getSubTokenWithTab (&(ptr->disp_comment), DisplayTab)) == STRING)
 				{
 					mptr = xf86confcalloc (1, sizeof (XF86ModeRec));
-					mptr->mode_name = val.str;
+					mptr->mode_name = xf86configStrdup(val.str);
 					mptr->list.next = NULL;
 					ptr->disp_mode_lst = (XF86ModePtr)
 						xf86addListItem ((glp) ptr->disp_mode_lst, (glp) mptr);
@@ -181,7 +207,11 @@ xf86parseDisplaySubSection (void)
 		case OPTION:
 			ptr->disp_option_lst = xf86parseOption(ptr->disp_option_lst);
 			break;
-			
+		case MONITOR:
+			if (xf86getSubToken (&(ptr->disp_comment)) != NUMBER)
+				Error (NUMBER_MSG, "Display");
+			ptr->monitor_num = val.num;
+			break;
 		case EOF_TOKEN:
 			Error (UNEXPECTED_EOF_MSG, NULL);
 			break;
@@ -219,6 +249,7 @@ static xf86ConfigSymTabRec ScreenTab[] =
 };
 
 #define CLEANUP xf86freeScreenList
+
 XF86ConfScreenPtr
 xf86parseScreenSection (void)
 {
@@ -238,7 +269,7 @@ xf86parseScreenSection (void)
 		case IDENTIFIER:
 			if (xf86getSubToken (&(ptr->scrn_comment)) != STRING)
 				Error (QUOTE_MSG, "Identifier");
-			ptr->scrn_identifier = val.str;
+			ptr->scrn_identifier = xf86configStrdup(val.str);
 			if (has_ident || has_driver)
 				Error (ONLY_ONE_MSG,"Identifier or Driver");
 			has_ident = TRUE;
@@ -246,7 +277,7 @@ xf86parseScreenSection (void)
 		case OBSDRIVER:
 			if (xf86getSubToken (&(ptr->scrn_comment)) != STRING)
 				Error (QUOTE_MSG, "Driver");
-			ptr->scrn_obso_driver = val.str;
+			ptr->scrn_obso_driver = xf86configStrdup(val.str);
 			if (has_ident || has_driver)
 				Error (ONLY_ONE_MSG,"Identifier or Driver");
 			has_driver = TRUE;
@@ -269,12 +300,36 @@ xf86parseScreenSection (void)
 		case MDEVICE:
 			if (xf86getSubToken (&(ptr->scrn_comment)) != STRING)
 				Error (QUOTE_MSG, "Device");
-			ptr->scrn_device_str = val.str;
+			ptr->scrn_device_str = xf86configStrdup(val.str);
 			break;
 		case MONITOR:
-			if (xf86getSubToken (&(ptr->scrn_comment)) != STRING)
-				Error (QUOTE_MSG, "Monitor");
-			ptr->scrn_monitor_str = val.str;
+			{
+				XF86ConfMonitorListPtr mlptr;
+
+				mlptr = xf86confcalloc (1, sizeof (XF86ConfMonitorListRec));
+				mlptr->list.next = NULL;
+				mlptr->monitor_num = -1;
+				if ((token = xf86getSubToken (&(ptr->scrn_comment))) == NUMBER)
+					mlptr->monitor_num = val.num;
+				else
+					xf86unGetToken (token);
+				token = xf86getSubToken(&(ptr->scrn_comment));
+				if (token != STRING)
+					Error (MONITOR_MSG, NULL);
+				mlptr->monitor_str = xf86configStrdup(val.str);
+
+				/*
+				 * For compatibility, set scrn_monitor_str to the first
+				 * Monitor name.
+				 */
+				if (!ptr->scrn_monitor_lst)
+				{
+					ptr->scrn_monitor_str =
+						xf86configStrdup(mlptr->monitor_str);
+				}
+				ptr->scrn_monitor_lst = (XF86ConfMonitorListPtr)
+					xf86addListItem ((glp) ptr->scrn_monitor_lst, (glp) mlptr);
+			}
 			break;
 		case VIDEOADAPTOR:
 			{
@@ -293,7 +348,7 @@ xf86parseScreenSection (void)
 				{
 					aptr = xf86confcalloc (1, sizeof (XF86ConfAdaptorLinkRec));
 					aptr->list.next = NULL;
-					aptr->al_adaptor_str = val.str;
+					aptr->al_adaptor_str = xf86configStrdup(val.str);
 					ptr->scrn_adaptor_lst = (XF86ConfAdaptorLinkPtr)
 						xf86addListItem ((glp) ptr->scrn_adaptor_lst, (glp) aptr);
 				}
@@ -306,7 +361,6 @@ xf86parseScreenSection (void)
 			if (xf86getSubToken (&(ptr->scrn_comment)) != STRING)
 				Error (QUOTE_MSG, "SubSection");
 			{
-				xf86conffree(val.str);
 				HANDLE_LIST (scrn_display_lst, xf86parseDisplaySubSection,
 							 XF86ConfDisplayPtr);
 			}
@@ -335,6 +389,7 @@ xf86printScreenSection (FILE * cf, XF86ConfScreenPtr ptr)
 {
 	XF86ConfAdaptorLinkPtr aptr;
 	XF86ConfDisplayPtr dptr;
+	XF86ConfMonitorListPtr monlptr;
 	XF86ModePtr mptr;
 
 	while (ptr)
@@ -348,8 +403,24 @@ xf86printScreenSection (FILE * cf, XF86ConfScreenPtr ptr)
 			fprintf (cf, "\tDriver     \"%s\"\n", ptr->scrn_obso_driver);
 		if (ptr->scrn_device_str)
 			fprintf (cf, "\tDevice     \"%s\"\n", ptr->scrn_device_str);
-		if (ptr->scrn_monitor_str)
-			fprintf (cf, "\tMonitor    \"%s\"\n", ptr->scrn_monitor_str);
+		if (ptr->scrn_monitor_lst)
+		{
+			for (monlptr = ptr->scrn_monitor_lst; monlptr;
+				 monlptr = monlptr->list.next)
+			{
+				fprintf (cf, "\tMonitor  ");
+				if (monlptr->monitor_num != -1)
+					fprintf (cf, "%d  ", monlptr->monitor_num);
+				else
+					fprintf (cf, "   ");
+				fprintf (cf, "\"%s\"\n", monlptr->monitor_str);
+			}
+		}
+		else
+		{
+			if (ptr->scrn_monitor_str)
+				fprintf (cf, "\tMonitor    \"%s\"\n", ptr->scrn_monitor_str);
+		}
 		if (ptr->scrn_defaultdepth)
 			fprintf (cf, "\tDefaultDepth     %d\n",
 					 ptr->scrn_defaultdepth);
@@ -497,6 +568,7 @@ xf86validateScreen (XF86ConfigPtr p)
 	XF86ConfMonitorPtr monitor;
 	XF86ConfDevicePtr device;
 	XF86ConfAdaptorLinkPtr adaptor;
+	XF86ConfMonitorListPtr mlist;
 
 	if (!screen)
 	{
@@ -524,6 +596,21 @@ xf86validateScreen (XF86ConfigPtr p)
 				if (!xf86validateMonitor(p, screen))
 					return (FALSE);
 			}
+		}
+
+		mlist = screen->scrn_monitor_lst;
+		while (mlist)
+		{
+			monitor = xf86findMonitor (mlist->monitor_str, p->conf_monitor_lst);
+			if (!monitor)
+			{
+				xf86validationError (UNDEFINED_MONITOR_MSG,
+						 mlist->monitor_str, screen->scrn_identifier);
+				return (FALSE);
+			}
+			else
+				mlist->monitor = monitor;
+			mlist = mlist->list.next;
 		}
 
 		device = xf86findDevice (screen->scrn_device_str, p->conf_device_lst);

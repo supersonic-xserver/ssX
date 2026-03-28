@@ -1,0 +1,17 @@
+/Imakefile/1.1.1.6/Fri Mar 18 13:12:38 2005//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.3/Sat Jun  9 15:08:40 2001//Tnetbsd-5-2-3-RELEASE
+/os2_VTsw.c/1.1.1.6/Fri Mar 18 13:12:38 2005//Tnetbsd-5-2-3-RELEASE
+/os2_bios.c/1.1.1.4/Fri Feb 28 13:20:21 2003//Tnetbsd-5-2-3-RELEASE
+/os2_diag.c/1.1.1.4/Fri Feb 28 13:20:21 2003//Tnetbsd-5-2-3-RELEASE
+/os2_init.c/1.1.1.5/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_io.c/1.1.1.5/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_ioperm.c/1.1.1.3/Sat Jun  9 15:08:40 2001//Tnetbsd-5-2-3-RELEASE
+/os2_kbd.c/1.1.1.1/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_kbdEv.c/1.1.1.5/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_mouse.c/1.1.1.5/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_select.c/1.1.1.4/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_select.h/1.1.1.4/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_serial.c/1.1.1.4/Fri Feb 28 13:20:21 2003//Tnetbsd-5-2-3-RELEASE
+/os2_stubs.c/1.1.1.5/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+/os2_video.c/1.1.1.5/Fri Mar  5 14:29:21 2004//Tnetbsd-5-2-3-RELEASE
+D/int10////

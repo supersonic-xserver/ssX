@@ -66,6 +66,7 @@ if get_option('secure-rpc')
     srcs_os += 'rpcauth.c'
 endif
 
+
 libxlibc = []
 if srcs_libc.length() > 0
     libxlibc = static_library('libxlibc',
@@ -77,15 +78,24 @@ if srcs_libc.length() > 0
     )
 endif
 
+# Add xtrans include path for X11/Xtrans.h
+xtrans_inc = include_directories('/usr/include/X11')
+
 libxserver_os = static_library('libxserver_os',
     srcs_os,
-    include_directories: inc,
+    include_directories: [inc, xtrans_inc],
     dependencies: [
         common_dep,
         dl_dep,
         sha1_dep,
         rpc_dep,
-        dependency('xau')
+        dependency('xau'),
+        dependency('openssl')
     ],
     link_with: libxlibc,
+    c_args: [
+        '-D_GNU_SOURCE',
+        '-D_DEFAULT_SOURCE',
+        '-DSSX_LEGACY_MODE',
+    ],
 )

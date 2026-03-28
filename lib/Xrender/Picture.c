@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/Xrender/Picture.c,v 1.6 2000/12/05 07:42:29 keithp Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/Xrender/Picture.c,v 1.9 2002/09/26 02:56:52 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *

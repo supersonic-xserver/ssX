@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/tables.c,v 3.7 2005/10/14 15:16:22 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,10 +53,6 @@ SOFTWARE.
 
 ******************************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #define NEED_EVENTS
 #define NEED_REPLIES
@@ -61,6 +65,11 @@ SOFTWARE.
 #include "swaprep.h"
 #include "swapreq.h"
 
+#ifdef K5AUTH
+extern int
+    k5_stage1(), k5_stage2(), k5_stage3(), k5_bad();
+#endif
+
 int (* InitialVector[3]) (
 	ClientPtr /* client */
     ) =
@@ -70,7 +79,7 @@ int (* InitialVector[3]) (
     ProcEstablishConnection
 };
 
-_X_EXPORT int (* ProcVector[256]) (
+int (* ProcVector[256]) (
 	ClientPtr /* client */
     ) =
 {
@@ -338,7 +347,7 @@ int (* SwappedProcVector[256]) (
     SProcNoOperation
 };
 
-_X_EXPORT EventSwapPtr EventSwapVector[128] =
+EventSwapPtr EventSwapVector[128] =
 {
     (EventSwapPtr)SErrorEvent,
     NotImplemented,
@@ -378,7 +387,7 @@ _X_EXPORT EventSwapPtr EventSwapVector[128] =
 };
 
 
-_X_EXPORT ReplySwapPtr ReplySwapVector[256] =
+ReplySwapPtr ReplySwapVector[256] =
 {
     ReplyNotSwappd,
     ReplyNotSwappd,
@@ -510,3 +519,13 @@ _X_EXPORT ReplySwapPtr ReplySwapVector[256] =
     ReplyNotSwappd,				/* NoOperation */
     ReplyNotSwappd
 };
+
+#ifdef K5AUTH
+int (*k5_Vector[256])() =
+{
+    k5_bad,
+    k5_stage1,
+    k5_bad,
+    k5_stage3
+};
+#endif

@@ -1,3 +1,11 @@
+/* $Xorg: process.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -64,6 +72,7 @@ Author: Ralph Mor, X Consortium
     IceDisposeCompleteMessage (_iceConn, _pStart);\
     return (0)
 
+
 /*
  * IceProcessMessages:
  *
@@ -119,8 +128,12 @@ Author: Ralph Mor, X Consortium
  */
 
 IceProcessMessagesStatus
-IceProcessMessages(IceConn iceConn, IceReplyWaitInfo *replyWait,
-		   Bool *replyReadyRet)
+IceProcessMessages (iceConn, replyWait, replyReadyRet)
+
+IceConn		 iceConn;
+IceReplyWaitInfo *replyWait;
+Bool		 *replyReadyRet;
+
 {
     iceMsg		*header;
     Bool		replyReady = False;
@@ -362,9 +375,15 @@ IceProcessMessages(IceConn iceConn, IceReplyWaitInfo *replyWait,
 }
 
 
+
 static void
-AuthRequired(IceConn iceConn, int authIndex, int authDataLen,
-	     IcePointer authData)
+AuthRequired (iceConn, authIndex, authDataLen, authData)
+
+IceConn		iceConn;
+int  		authIndex;
+int  		authDataLen;
+IcePointer	authData;
+
 {
     iceAuthRequiredMsg *pMsg;
 
@@ -384,8 +403,14 @@ AuthRequired(IceConn iceConn, int authIndex, int authDataLen,
 }
 
 
+
 static void
-AuthReply(IceConn iceConn, int authDataLen, IcePointer authData)
+AuthReply (iceConn, authDataLen, authData)
+
+IceConn		iceConn;
+int 		authDataLen;
+IcePointer	authData;
+
 {
     iceAuthReplyMsg *pMsg;
 
@@ -404,8 +429,14 @@ AuthReply(IceConn iceConn, int authDataLen, IcePointer authData)
 }
 
 
+
 static void
-AuthNextPhase(IceConn iceConn, int authDataLen, IcePointer authData)
+AuthNextPhase (iceConn, authDataLen, authData)
+
+IceConn		iceConn;
+int  		authDataLen;
+IcePointer	authData;
+
 {
     iceAuthNextPhaseMsg *pMsg;
 
@@ -424,8 +455,13 @@ AuthNextPhase(IceConn iceConn, int authDataLen, IcePointer authData)
 }
 
 
+
 static void
-AcceptConnection(IceConn iceConn, int versionIndex)
+AcceptConnection (iceConn, versionIndex)
+
+IceConn iceConn;
+int 	versionIndex;
+
 {
     iceConnectionReplyMsg	*pMsg;
     char			*pData;
@@ -448,9 +484,17 @@ AcceptConnection(IceConn iceConn, int versionIndex)
 }
 
 
+
 static void
-AcceptProtocol(IceConn iceConn, int hisOpcode, int myOpcode, int versionIndex,
-	       char *vendor, char *release)
+AcceptProtocol (iceConn, hisOpcode, myOpcode, versionIndex, vendor, release)
+
+IceConn iceConn;
+int  	hisOpcode;
+int  	myOpcode;
+int  	versionIndex;
+char 	*vendor;
+char 	*release;
+
 {
     iceProtocolReplyMsg	*pMsg;
     char		*pData;
@@ -481,17 +525,27 @@ AcceptProtocol(IceConn iceConn, int hisOpcode, int myOpcode, int versionIndex,
 }
 
 
+
 static void
-PingReply(IceConn iceConn)
+PingReply (iceConn)
+
+IceConn iceConn;
+
 {
     IceSimpleMessage (iceConn, 0, ICE_PingReply);
     IceFlush (iceConn);
 }
 
 
+
 static Bool
-ProcessError(IceConn iceConn, unsigned long length, Bool swap,
-	     IceReplyWaitInfo *replyWait)
+ProcessError (iceConn, length, swap, replyWait)
+
+IceConn		 iceConn;
+unsigned long	 length;
+Bool		 swap;
+IceReplyWaitInfo *replyWait;
+
 {
     int		invokeHandler = 0;
     Bool	errorReturned = False;
@@ -757,8 +811,14 @@ ProcessError(IceConn iceConn, unsigned long length, Bool swap,
 }
 
 
+
 static int
-ProcessConnectionSetup(IceConn iceConn, unsigned long length, Bool swap)
+ProcessConnectionSetup (iceConn, length, swap)
+
+IceConn		iceConn;
+unsigned long	length;
+Bool		swap;
+
 {
     iceConnectionSetupMsg *message;
     int  myVersionCount, hisVersionCount;
@@ -1006,9 +1066,15 @@ ProcessConnectionSetup(IceConn iceConn, unsigned long length, Bool swap)
 }
 
 
+
 static Bool
-ProcessAuthRequired(IceConn iceConn, unsigned long length, Bool swap,
-		    IceReplyWaitInfo *replyWait)
+ProcessAuthRequired (iceConn, length, swap, replyWait)
+
+IceConn			iceConn;
+unsigned long	 	length;
+Bool			swap;
+IceReplyWaitInfo	*replyWait;
+
 {
     iceAuthRequiredMsg  *message;
     int			authDataLen;
@@ -1195,8 +1261,14 @@ ProcessAuthRequired(IceConn iceConn, unsigned long length, Bool swap,
 }
 
 
+
 static int
-ProcessAuthReply(IceConn iceConn, unsigned long length, Bool swap)
+ProcessAuthReply (iceConn, length, swap)
+
+IceConn		iceConn;
+unsigned long	length;
+Bool		swap;
+
 {
     iceAuthReplyMsg 	*message;
     int			replyDataLen;
@@ -1485,9 +1557,15 @@ ProcessAuthReply(IceConn iceConn, unsigned long length, Bool swap)
 }
 
 
+
 static Bool
-ProcessAuthNextPhase(IceConn iceConn, unsigned long length, Bool swap,
-		     IceReplyWaitInfo *replyWait)
+ProcessAuthNextPhase (iceConn, length, swap, replyWait)
+
+IceConn		  	iceConn;
+unsigned long	 	length;
+Bool			swap;
+IceReplyWaitInfo	*replyWait;
+
 {
     iceAuthNextPhaseMsg *message;
     int 		authDataLen;
@@ -1612,9 +1690,15 @@ ProcessAuthNextPhase(IceConn iceConn, unsigned long length, Bool swap,
 }
 
 
+
 static Bool
-ProcessConnectionReply(IceConn iceConn, unsigned long length, Bool swap,
-		       IceReplyWaitInfo *replyWait)
+ProcessConnectionReply (iceConn, length, swap, replyWait)
+
+IceConn			iceConn;
+unsigned long	 	length;
+Bool			swap;
+IceReplyWaitInfo 	*replyWait;
+
 {
     iceConnectionReplyMsg 	*message;
     char 			*pData, *pStart, *pEnd;
@@ -1709,8 +1793,14 @@ ProcessConnectionReply(IceConn iceConn, unsigned long length, Bool swap,
 }
 
 
+
 static int
-ProcessProtocolSetup(IceConn iceConn, unsigned long length, Bool swap)
+ProcessProtocolSetup (iceConn, length, swap)
+
+IceConn		iceConn;
+unsigned long	length;
+Bool		swap;
+
 {
     iceProtocolSetupMsg	*message;
     _IcePaProtocol 	*myProtocol;
@@ -2101,9 +2191,15 @@ ProcessProtocolSetup(IceConn iceConn, unsigned long length, Bool swap)
 }
 
 
+
 static Bool
-ProcessProtocolReply(IceConn iceConn, unsigned long length, Bool swap,
-		     IceReplyWaitInfo *replyWait)
+ProcessProtocolReply (iceConn, length, swap, replyWait)
+
+IceConn		  	iceConn;
+unsigned long	 	length;
+Bool			swap;
+IceReplyWaitInfo 	*replyWait;
+
 {
     iceProtocolReplyMsg *message;
     char		*pData, *pStart, *pEnd;
@@ -2210,8 +2306,13 @@ ProcessProtocolReply(IceConn iceConn, unsigned long length, Bool swap,
 }
 
 
+
 static int
-ProcessPing(IceConn iceConn, unsigned long length)
+ProcessPing (iceConn, length)
+
+IceConn 	iceConn;
+unsigned long	length;
+
 {
     CHECK_SIZE_MATCH (iceConn, ICE_Ping,
 	length, SIZEOF (icePingMsg), IceFatalToConnection, 0);
@@ -2222,8 +2323,13 @@ ProcessPing(IceConn iceConn, unsigned long length)
 }
 
 
+
 static int
-ProcessPingReply(IceConn iceConn, unsigned long length)
+ProcessPingReply (iceConn, length)
+
+IceConn 	iceConn;
+unsigned long	length;
+
 {
     CHECK_SIZE_MATCH (iceConn, ICE_PingReply,
 	length, SIZEOF (icePingReplyMsg), IceFatalToConnection, 0);
@@ -2247,9 +2353,14 @@ ProcessPingReply(IceConn iceConn, unsigned long length)
 }
 
 
+
 static int
-ProcessWantToClose(IceConn iceConn, unsigned long length,
-		   Bool *connectionClosedRet)
+ProcessWantToClose (iceConn, length, connectionClosedRet)
+
+IceConn 	iceConn;
+unsigned long	length;
+Bool		*connectionClosedRet;
+
 {
     *connectionClosedRet = False;
 
@@ -2302,8 +2413,13 @@ ProcessWantToClose(IceConn iceConn, unsigned long length,
 }
 
 
+
 static int
-ProcessNoClose(IceConn iceConn, unsigned long length)
+ProcessNoClose (iceConn, length)
+
+IceConn 	iceConn;
+unsigned long	length;
+
 {
     CHECK_SIZE_MATCH (iceConn, ICE_NoClose,
 	length, SIZEOF (iceNoCloseMsg), IceFatalToConnection, 0);
@@ -2326,10 +2442,19 @@ ProcessNoClose(IceConn iceConn, unsigned long length)
 }
 
 
+
 void
-_IceProcessCoreMessage(IceConn iceConn, int opcode, unsigned long length,
-		       Bool swap, IceReplyWaitInfo *replyWait,
-		       Bool *replyReadyRet, Bool *connectionClosedRet)
+_IceProcessCoreMessage (iceConn, opcode, length, swap,
+    replyWait, replyReadyRet, connectionClosedRet)
+
+IceConn 	 iceConn;
+int     	 opcode;
+unsigned long	 length;
+Bool    	 swap;
+IceReplyWaitInfo *replyWait;
+Bool		 *replyReadyRet;
+Bool		 *connectionClosedRet;
+
 {
     Bool replyReady = False;
 

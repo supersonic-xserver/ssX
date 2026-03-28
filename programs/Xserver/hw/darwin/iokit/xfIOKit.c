@@ -1,4 +1,11 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * IOKit support for the Darwin X Server
  *
@@ -33,10 +40,10 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.c,v 1.4 2004/06/17 23:27:41 torrey Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "os.h"
 #include "servermd.h"
 #include "inputstr.h"
@@ -59,7 +66,7 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hidsystem/IOHIDShared.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
-#include <IOKit/hidsystem/event_status_driver.h>
+#include <drivers/event_status_driver.h>
 
 // Define this to work around bugs in the display drivers for
 // older PowerBook G3's. If the X server starts without this
@@ -651,7 +658,7 @@ Bool DarwinModeSetupScreen(
  */
 void DarwinModeInitOutput(
     int argc,
-    const char **argv)
+    char **argv)
 {
     static unsigned long    generation = 0;
     kern_return_t           kr;
@@ -740,7 +747,7 @@ void DarwinModeInitOutput(
  */
 void DarwinModeInitInput(
     int argc,
-    const char **argv)
+    char **argv)
 {
     kern_return_t           kr;
     int                     fd[2];

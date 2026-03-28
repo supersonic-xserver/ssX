@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.2
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -80,20 +87,6 @@
    "GLX_SGI_video_sync " \
    "GLX_SGIX_fbconfig " \
    "GLX_SGIX_pbuffer "
-/*
-   "GLX_ARB_render_texture"
-*/
-
-/* Silence compiler warnings */
-extern void Fake_glXDummyFunc( void );
-void Fake_glXDummyFunc( void )
-{
-   (void) kernel8;
-   (void) DitherValues;
-   (void) HPCR_DRGB;
-   (void) kernel1;
-}
-
 
 /*
  * Our fake GLX context will contain a "real" GLX context and an XMesa context.
@@ -154,7 +147,8 @@ typedef struct _OverlayInfo {
 /*
  * Test if the given XVisualInfo is usable for Mesa rendering.
  */
-static GLboolean is_usable_visual( XVisualInfo *vinfo )
+static GLboolean
+is_usable_visual( XVisualInfo *vinfo )
 {
    switch (vinfo->CLASS) {
       case StaticGray:
@@ -191,7 +185,8 @@ static GLboolean is_usable_visual( XVisualInfo *vinfo )
  *            >0 = overlay planes
  *            <0 = underlay planes
  */
-static int level_of_visual( Display *dpy, XVisualInfo *vinfo )
+static int
+level_of_visual( Display *dpy, XVisualInfo *vinfo )
 {
    Atom overlayVisualsAtom;
    OverlayInfo *overlay_info = NULL;
@@ -262,7 +257,7 @@ save_glx_visual( Display *dpy, XVisualInfo *vinfo,
                  GLint depth_size, GLint stencil_size,
                  GLint accumRedSize, GLint accumGreenSize,
                  GLint accumBlueSize, GLint accumAlphaSize,
-                 GLint level )
+                 GLint level, GLint numAuxBuffers )
 {
    GLboolean ximageFlag = GL_TRUE;
    XMesaVisual xmvis;
@@ -292,11 +287,16 @@ save_glx_visual( Display *dpy, XVisualInfo *vinfo,
    else
       comparePointers = GL_FALSE;
 
+   /* Force the visual to have an alpha channel */
+   if (rgbFlag && _mesa_getenv("MESA_GLX_FORCE_ALPHA"))
+      alphaFlag = GL_TRUE;
+
    /* First check if a matching visual is already in the list */
    for (i=0; i<NumVisuals; i++) {
       XMesaVisual v = VisualTable[i];
       if (v->display == dpy
-          && v->level == level
+          && v->mesa_visual.level == level
+          && v->mesa_visual.numAuxBuffers == numAuxBuffers
           && v->ximage_flag == ximageFlag
           && v->mesa_visual.rgbMode == rgbFlag
           && v->mesa_visual.doubleBufferMode == dbFlag
@@ -337,8 +337,31 @@ save_glx_visual( Display *dpy, XVisualInfo *vinfo,
       /* add xmvis to the list */
       VisualTable[NumVisuals] = xmvis;
       NumVisuals++;
+      /* XXX minor hack, because XMesaCreateVisual doesn't support an
+       * aux buffers parameter.
+       */
+      xmvis->mesa_visual.numAuxBuffers = numAuxBuffers;
    }
    return xmvis;
+}
+
+
+/**
+ * Return the default number of bits for the Z buffer.
+ * If defined, use the MESA_GLX_DEPTH_BITS env var value.
+ * Otherwise, use the DEFAULT_SOFTWARE_DEPTH_BITS constant.
+ * XXX probably do the same thing for stencil, accum, etc.
+ */
+static GLint
+default_depth_bits(void)
+{
+   int zBits;
+   const char *zEnv = _mesa_getenv("MESA_GLX_DEPTH_BITS");
+   if (zEnv)
+      zBits = _mesa_atoi(zEnv);
+   else
+      zBits = DEFAULT_SOFTWARE_DEPTH_BITS;
+   return zBits;
 }
 
 
@@ -355,6 +378,7 @@ static XMesaVisual
 create_glx_visual( Display *dpy, XVisualInfo *visinfo )
 {
    int vislevel;
+   GLint zBits = default_depth_bits();
 
    vislevel = level_of_visual( dpy, visinfo );
    if (vislevel) {
@@ -367,7 +391,8 @@ create_glx_visual( Display *dpy, XVisualInfo *visinfo )
                               0,         /* depth bits */
                               0,         /* stencil bits */
                               0,0,0,0,   /* accum bits */
-                              vislevel   /* level */
+                              vislevel,  /* level */
+                              0          /* numAux */
                             );
    }
    else if (is_usable_visual( visinfo )) {
@@ -378,13 +403,14 @@ create_glx_visual( Display *dpy, XVisualInfo *visinfo )
                                  GL_FALSE,  /* alpha */
                                  GL_TRUE,   /* double */
                                  GL_FALSE,  /* stereo */
-                                 DEFAULT_SOFTWARE_DEPTH_BITS,
+                                 zBits,
                                  8 * sizeof(GLstencil),
                                  0 * sizeof(GLaccum), /* r */
                                  0 * sizeof(GLaccum), /* g */
                                  0 * sizeof(GLaccum), /* b */
                                  0 * sizeof(GLaccum), /* a */
-                                 0          /* level */
+                                 0,         /* level */
+                                 0          /* numAux */
                                );
       }
       else {
@@ -396,13 +422,14 @@ create_glx_visual( Display *dpy, XVisualInfo *visinfo )
                                  GL_FALSE,  /* alpha */
                                  GL_TRUE,   /* double */
                                  GL_FALSE,  /* stereo */
-                                 DEFAULT_SOFTWARE_DEPTH_BITS,
+                                 zBits,
                                  8 * sizeof(GLstencil),
                                  8 * sizeof(GLaccum), /* r */
                                  8 * sizeof(GLaccum), /* g */
                                  8 * sizeof(GLaccum), /* b */
                                  8 * sizeof(GLaccum), /* a */
-                                 0          /* level */
+                                 0,         /* level */
+                                 0          /* numAux */
                                );
       }
    }
@@ -447,7 +474,8 @@ find_glx_visual( Display *dpy, XVisualInfo *vinfo )
  * Input:  glxvis - the glx_visual
  * Return:  a pixel value or -1 if no transparent pixel
  */
-static int transparent_pixel( XMesaVisual glxvis )
+static int
+transparent_pixel( XMesaVisual glxvis )
 {
    Display *dpy = glxvis->display;
    XVisualInfo *vinfo = glxvis->visinfo;
@@ -512,8 +540,8 @@ static int transparent_pixel( XMesaVisual glxvis )
 /*
  * Try to get an X visual which matches the given arguments.
  */
-static XVisualInfo *get_visual( Display *dpy, int scr,
-			        unsigned int depth, int xclass )
+static XVisualInfo *
+get_visual( Display *dpy, int scr, unsigned int depth, int xclass )
 {
    XVisualInfo temp, *vis;
    long mask;
@@ -566,7 +594,8 @@ static XVisualInfo *get_visual( Display *dpy, int scr,
  *         varname - the name of the environment variable
  * Return:  an XVisualInfo pointer to NULL if error.
  */
-static XVisualInfo *get_env_visual(Display *dpy, int scr, const char *varname)
+static XVisualInfo *
+get_env_visual(Display *dpy, int scr, const char *varname)
 {
    char value[100], type[100];
    int depth, xclass = -1;
@@ -611,9 +640,9 @@ static XVisualInfo *get_env_visual(Display *dpy, int scr, const char *varname)
  *         preferred_class - preferred GLX visual class or DONT_CARE
  * Return:  pointer to an XVisualInfo or NULL.
  */
-static XVisualInfo *choose_x_visual( Display *dpy, int screen,
-				     GLboolean rgba, int min_depth,
-                                     int preferred_class )
+static XVisualInfo *
+choose_x_visual( Display *dpy, int screen, GLboolean rgba, int min_depth,
+                 int preferred_class )
 {
    XVisualInfo *vis;
    int xclass, visclass = 0;
@@ -781,12 +810,10 @@ static XVisualInfo *choose_x_visual( Display *dpy, int screen,
  *         preferred_class - preferred GLX visual class or DONT_CARE
  * Return:  pointer to an XVisualInfo or NULL.
  */
-static XVisualInfo *choose_x_overlay_visual( Display *dpy, int scr,
-                                             GLboolean rgbFlag,
-                                             int level, int trans_type,
-                                             int trans_value,
-                                             int min_depth,
-                                             int preferred_class )
+static XVisualInfo *
+choose_x_overlay_visual( Display *dpy, int scr, GLboolean rgbFlag,
+                         int level, int trans_type, int trans_value,
+                         int min_depth, int preferred_class )
 {
    Atom overlayVisualsAtom;
    OverlayInfo *overlay_info;
@@ -911,13 +938,15 @@ static XVisualInfo *choose_x_overlay_visual( Display *dpy, int scr,
 /**********************************************************************/
 
 
-static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
+static XMesaVisual
+choose_visual( Display *dpy, int screen, const int *list,
+               GLboolean rgbModeDefault )
 {
    const int *parselist;
    XVisualInfo *vis;
    int min_ci = 0;
    int min_red=0, min_green=0, min_blue=0;
-   GLboolean rgb_flag = GL_FALSE;
+   GLboolean rgb_flag = rgbModeDefault;
    GLboolean alpha_flag = GL_FALSE;
    GLboolean double_flag = GL_FALSE;
    GLboolean stereo_flag = GL_FALSE;
@@ -933,6 +962,8 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
    int trans_value = DONT_CARE;
    GLint caveat = DONT_CARE;
    XMesaVisual xmvis = NULL;
+   int desiredVisualID = -1;
+   int numAux = 0;
 
    parselist = list;
 
@@ -965,7 +996,9 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
 	 case GLX_AUX_BUFFERS:
 	    /* ignore */
 	    parselist++;
-	    parselist++;
+            numAux = *parselist++;
+            if (numAux > MAX_AUX_BUFFERS)
+               return NULL;
 	    break;
 	 case GLX_RED_SIZE:
 	    parselist++;
@@ -1088,8 +1121,13 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
             }
             parselist++;
             break;
+         case GLX_FBCONFIG_ID:
+            parselist++;
+            desiredVisualID = *parselist;
+            break;
 
 	 case None:
+            /* end of list */
 	    break;
 
 	 default:
@@ -1109,7 +1147,24 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
     * double buffering, depth buffer, etc. will be associated with the X
     * visual and stored in the VisualTable[].
     */
-   if (level==0) {
+   if (desiredVisualID != -1) {
+      /* try to get a specific visual, by visualID */
+      XVisualInfo temp;
+      int n;
+      temp.visualid = desiredVisualID;
+      temp.screen = screen;
+      vis = XGetVisualInfo(dpy, VisualIDMask | VisualScreenMask, &temp, &n);
+      if (vis) {
+         /* give the visual some useful GLX attributes */
+         double_flag = GL_TRUE;
+         if (vis->depth > 8)
+            rgb_flag = GL_TRUE;
+         depth_size = default_depth_bits();
+         stencil_size = STENCIL_BITS;
+         /* XXX accum??? */
+      }
+   }
+   else if (level==0) {
       /* normal color planes */
       if (rgb_flag) {
          /* Get an RGB visual */
@@ -1155,8 +1210,9 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
          depth_size = 31;   /* 32 causes int overflow problems */
       else if (depth_size > 16)
          depth_size = 24;
-      else if (depth_size > 0)
-         depth_size = DEFAULT_SOFTWARE_DEPTH_BITS; /*16*/
+      else if (depth_size > 0) {
+         depth_size = default_depth_bits();
+      }
 
       /* we only support one size of stencil and accum buffers. */
       if (stencil_size > 0)
@@ -1172,7 +1228,7 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
       xmvis = save_glx_visual( dpy, vis, rgb_flag, alpha_flag, double_flag,
                                stereo_flag, depth_size, stencil_size,
                                accumRedSize, accumGreenSize,
-                               accumBlueSize, accumAlphaSize, level );
+                               accumBlueSize, accumAlphaSize, level, numAux );
    }
 
    return xmvis;
@@ -1182,7 +1238,7 @@ static XMesaVisual choose_visual( Display *dpy, int screen, const int *list )
 static XVisualInfo *
 Fake_glXChooseVisual( Display *dpy, int screen, int *list )
 {
-   XMesaVisual xmvis = choose_visual(dpy, screen, list);
+   XMesaVisual xmvis = choose_visual(dpy, screen, list, GL_FALSE);
    if (xmvis) {
 #if 0
       return xmvis->vishandle;
@@ -1344,13 +1400,11 @@ Fake_glXMakeContextCurrent( Display *dpy, GLXDrawable draw,
 }
 
 
-
 static Bool
 Fake_glXMakeCurrent( Display *dpy, GLXDrawable drawable, GLXContext ctx )
 {
    return Fake_glXMakeContextCurrent( dpy, drawable, drawable, ctx );
 }
-
 
 
 static GLXPixmap
@@ -1415,7 +1469,6 @@ Fake_glXDestroyGLXPixmap( Display *dpy, GLXPixmap pixmap )
 }
 
 
-
 static void
 Fake_glXCopyContext( Display *dpy, GLXContext src, GLXContext dst,
                      unsigned long mask )
@@ -1427,7 +1480,6 @@ Fake_glXCopyContext( Display *dpy, GLXContext src, GLXContext dst,
    (void) dpy;
    _mesa_copy_context( &(xm_src->mesa), &(xm_dst->mesa), (GLuint) mask );
 }
-
 
 
 static Bool
@@ -1462,7 +1514,6 @@ Fake_glXDestroyContext( Display *dpy, GLXContext ctx )
    XMesaDestroyContext( glxCtx->xmesaContext );
    XMesaGarbageCollect();
 }
-
 
 
 static Bool
@@ -1506,7 +1557,6 @@ Fake_glXCopySubBufferMESA( Display *dpy, GLXDrawable drawable,
 }
 
 
-
 static Bool
 Fake_glXQueryVersion( Display *dpy, int *maj, int *min )
 {
@@ -1517,7 +1567,6 @@ Fake_glXQueryVersion( Display *dpy, int *maj, int *min )
    *min = MIN2( CLIENT_MINOR_VERSION, SERVER_MINOR_VERSION );
    return True;
 }
-
 
 
 /*
@@ -1535,7 +1584,7 @@ get_config( XMesaVisual xmvis, int attrib, int *value, GLboolean fbconfig )
 	 *value = xmvis->visinfo->depth;
 	 return 0;
       case GLX_LEVEL:
-	 *value = xmvis->level;
+	 *value = xmvis->mesa_visual.level;
 	 return 0;
       case GLX_RGBA:
 	 if (xmvis->mesa_visual.rgbMode) {
@@ -1552,7 +1601,7 @@ get_config( XMesaVisual xmvis, int attrib, int *value, GLboolean fbconfig )
 	 *value = (int) xmvis->mesa_visual.stereoMode;
 	 return 0;
       case GLX_AUX_BUFFERS:
-	 *value = (int) False;
+	 *value = xmvis->mesa_visual.numAuxBuffers;
 	 return 0;
       case GLX_RED_SIZE:
          *value = xmvis->mesa_visual.redBits;
@@ -1599,11 +1648,11 @@ get_config( XMesaVisual xmvis, int attrib, int *value, GLboolean fbconfig )
          }
          return 0;
       case GLX_TRANSPARENT_TYPE_EXT:
-         if (xmvis->level==0) {
+         if (xmvis->mesa_visual.level==0) {
             /* normal planes */
             *value = GLX_NONE_EXT;
          }
-         else if (xmvis->level>0) {
+         else if (xmvis->mesa_visual.level>0) {
             /* overlay */
             if (xmvis->mesa_visual.rgbMode) {
                *value = GLX_TRANSPARENT_RGB_EXT;
@@ -1612,7 +1661,7 @@ get_config( XMesaVisual xmvis, int attrib, int *value, GLboolean fbconfig )
                *value = GLX_TRANSPARENT_INDEX_EXT;
             }
          }
-         else if (xmvis->level<0) {
+         else if (xmvis->mesa_visual.level<0) {
             /* underlay */
             *value = GLX_NONE_EXT;
          }
@@ -1644,8 +1693,8 @@ get_config( XMesaVisual xmvis, int attrib, int *value, GLboolean fbconfig )
        */
       case GLX_VISUAL_CAVEAT_EXT:
          /* test for zero, just in case */
-         if (xmvis->VisualCaveat > 0)
-            *value = xmvis->VisualCaveat;
+         if (xmvis->mesa_visual.visualRating > 0)
+            *value = xmvis->mesa_visual.visualRating;
          else
             *value = GLX_NONE_EXT;
          return 0;
@@ -1850,7 +1899,7 @@ static GLXFBConfig *
 Fake_glXChooseFBConfig( Display *dpy, int screen,
                         const int *attribList, int *nitems )
 {
-   XMesaVisual xmvis = choose_visual(dpy, screen, attribList);
+   XMesaVisual xmvis = choose_visual(dpy, screen, attribList, GL_TRUE);
    if (xmvis) {
       GLXFBConfig *config = (GLXFBConfig *) _mesa_malloc(sizeof(XMesaVisual));
       if (!config) {
@@ -1935,9 +1984,16 @@ static GLXWindow
 Fake_glXCreateWindow( Display *dpy, GLXFBConfig config, Window win,
                       const int *attribList )
 {
+   XMesaVisual xmvis = (XMesaVisual) config;
+   XMesaBuffer xmbuf;
+   if (!xmvis)
+      return 0;
+
+   xmbuf = XMesaCreateWindowBuffer2(xmvis, win, NULL);
+   if (!xmbuf)
+      return 0;
+
    (void) dpy;
-   (void) config;
-   (void) win;
    (void) attribList;  /* Ignored in GLX 1.3 */
 
    return win;  /* A hack for now */
@@ -2367,7 +2423,7 @@ Fake_glXCreateGLXPbufferSGIX(Display *dpy, GLXFBConfigSGIX config,
 
    (void) dpy;
 
-   for (attrib = attribList; *attrib; attrib++) {
+   for (attrib = attribList; attrib && *attrib; attrib++) {
       switch (*attrib) {
          case GLX_PRESERVED_CONTENTS_SGIX:
             attrib++;
@@ -2683,9 +2739,19 @@ Fake_glXDrawableAttribARB( Display *dpy, GLXDrawable draw, const int *attribList
 }
 
 
-
+/* silence warning */
 extern struct _glxapi_table *_mesa_GetGLXDispatchTable(void);
-struct _glxapi_table *_mesa_GetGLXDispatchTable(void)
+
+
+/**
+ * Create a new GLX API dispatch table with its function pointers
+ * initialized to point to Mesa's "fake" GLX API functions.
+ * Note: there's a similar function (_real_GetGLXDispatchTable) that
+ * returns a new dispatch table with all pointers initalized to point
+ * to "real" GLX functions (which understand GLX wire protocol, etc).
+ */
+struct _glxapi_table *
+_mesa_GetGLXDispatchTable(void)
 {
    static struct _glxapi_table glx;
 

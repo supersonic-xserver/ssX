@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/dummy/dummy_driver.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/dummy/dummy_driver.c,v 1.9 2004/10/23 15:29:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 2002, SuSE Linux AG, Author: Egbert Eich
@@ -30,7 +44,7 @@
 #include "picturestr.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /*
  * Driver data structures.
@@ -38,20 +52,20 @@
 #include "dummy.h"
 
 /* These need to be checked */
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "servermd.h"
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 /* Mandatory functions */
 static const OptionInfoRec *	DUMMYAvailableOptions(int chipid, int busid);
 static void     DUMMYIdentify(int flags);
 static Bool     DUMMYProbe(DriverPtr drv, int flags);
 static Bool     DUMMYPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool     DUMMYScreenInit(int Index, ScreenPtr pScreen,
-                                const int argc, const char **argv);
+static Bool     DUMMYScreenInit(int Index, ScreenPtr pScreen, int argc,
+                                  char **argv);
 static Bool     DUMMYEnterVT(int scrnIndex, int flags);
 static void     DUMMYLeaveVT(int scrnIndex, int flags);
 static Bool     DUMMYCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -115,8 +129,8 @@ static const OptionInfoRec DUMMYOptions[] = {
  * List of symbols from other modules that this module references.  This
  * list is used to tell the loader that it is OK for symbols here to be
  * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderModReqSymbols() or
- * xf86LoaderModReqSymLists().  The purpose is this is to avoid warnings about
+ * told that they are essential via a call to xf86LoaderReqSymbols() or
+ * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
  * unresolved symbols that are not required.
  */
 
@@ -152,7 +166,7 @@ static XF86ModuleVersionInfo dummyVersRec =
 XF86ModuleData dummyModuleData = { &dummyVersRec, dummySetup, NULL };
 
 static pointer
-dummySetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+dummySetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -160,7 +174,11 @@ dummySetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	setupDone = TRUE;
         xf86AddDriver(&DUMMY, module, 0);
 
-	xf86LoaderModRefSymLists(module, fbSymbols, NULL);
+	/*
+	 * Modules that this driver always requires can be loaded here
+	 * by calling LoadSubModule().
+	 */
+
 	/*
 	 * The return value must be non-NULL on success even though there
 	 * is no TearDownProc.
@@ -279,7 +297,6 @@ DUMMYPreInit(ScrnInfoPtr pScrn, int flags)
     int i;
     int maxClock = 230000;
     GDevPtr device = xf86GetEntityInfo(pScrn->entityList[0])->device;
-    ModuleDescPtr pMod;
 
     if (flags & PROBE_DETECT) 
 	return TRUE;
@@ -427,10 +444,10 @@ DUMMYPreInit(ScrnInfoPtr pScrn, int flags)
     /* If monitor resolution is set on the command line, use it */
     xf86SetDpi(pScrn, 0, 0);
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	RETURN
     }
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
     return TRUE;
 }
@@ -494,8 +511,7 @@ DUMMYLoadPalette(
 
 /* Mandatory */
 static Bool
-DUMMYScreenInit(int scrnIndex, ScreenPtr pScreen,
-                const int argc, const char **argv)
+DUMMYScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     DUMMYPtr dPtr;

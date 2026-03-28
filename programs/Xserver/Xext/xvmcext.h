@@ -1,8 +1,22 @@
-/* $XFree86: xc/programs/Xserver/Xext/xvmcext.h,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xvmcext.h,v 1.2 2003/07/17 16:04:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _XVMC_H
 #define _XVMC_H
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "xvdix.h"
 
 typedef struct {
@@ -102,7 +116,7 @@ typedef struct {
   XvMCDestroySubpictureProcPtr      DestroySubpicture;
 } XvMCAdaptorRec, *XvMCAdaptorPtr;
 
-void XvMCExtensionInit(INITARGS);
+void XvMCExtensionInit(void);
 
 int XvMCScreenInit(ScreenPtr pScreen, int num, XvMCAdaptorPtr adapt);
 

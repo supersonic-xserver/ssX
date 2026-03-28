@@ -1,3 +1,19 @@
+/* $Xorg: FSErrDis.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* @(#)FSErrDis.c	4.1	91/05/02
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -22,7 +38,6 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86$ */
 
 /*
 
@@ -72,9 +87,13 @@ int         FSErrorListSize = sizeof(FSErrorList);
 
 
 /* ARGSUSED */
-int
-FSGetErrorDatabaseText(FSServer *svr, char *name, char *type, char *defaultp,
-		       char *buffer, int nbytes)
+int FSGetErrorDatabaseText(svr, name, type, defaultp, buffer, nbytes)
+    register char *name,
+               *type;
+    char       *defaultp;
+    FSServer     *svr;
+    char       *buffer;
+    int         nbytes;
 {
     if (nbytes == 0)
 	return 0;
@@ -84,8 +103,11 @@ FSGetErrorDatabaseText(FSServer *svr, char *name, char *type, char *defaultp,
     return 1;
 }
 
-int
-FSGetErrorText(FSServer *svr, int code, char *buffer, int nbytes)
+int FSGetErrorText(svr, code, buffer, nbytes)
+    register int code;
+    register FSServer *svr;
+    char       *buffer;
+    int         nbytes;
 {
 
     char       *defaultp = NULL;

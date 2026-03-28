@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_probe.h,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_probe.h,v 1.14 2003/11/10 18:41:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000 ATI Technologies Inc., Markham, Ontario, and
  *                VA Linux Systems Inc., Fremont, California.
@@ -43,77 +50,7 @@
 #include "xf86DDC.h"
 
 #define _XF86MISC_SERVER_
-#include <X11/extensions/xf86misc.h>
-
-typedef enum
-{
-    DDC_NONE_DETECTED,
-    DDC_MONID,
-    DDC_DVI,
-    DDC_VGA,
-    DDC_CRT2
-} RADEONDDCType;
-
-typedef enum
-{
-    MT_UNKNOWN = -1,
-    MT_NONE    = 0,
-    MT_CRT     = 1,
-    MT_LCD     = 2,
-    MT_DFP     = 3,
-    MT_CTV     = 4,
-    MT_STV     = 5
-} RADEONMonitorType;
-
-typedef enum
-{
-    CONNECTOR_NONE,
-    CONNECTOR_PROPRIETARY,
-    CONNECTOR_CRT,
-    CONNECTOR_DVI_I,
-    CONNECTOR_DVI_D,
-    CONNECTOR_CTV,
-    CONNECTOR_STV,
-    CONNECTOR_UNSUPPORTED
-} RADEONConnectorType;
-
-typedef enum
-{
-    CONNECTOR_NONE_ATOM,
-    CONNECTOR_VGA_ATOM,
-    CONNECTOR_DVI_I_ATOM,
-    CONNECTOR_DVI_D_ATOM,
-    CONNECTOR_DVI_A_ATOM,
-    CONNECTOR_STV_ATOM,
-    CONNECTOR_CTV_ATOM,
-    CONNECTOR_LVDS_ATOM,
-    CONNECTOR_DIGITAL_ATOM,
-    CONNECTOR_UNSUPPORTED_ATOM
-} RADEONConnectorTypeATOM;
-
-typedef enum
-{
-    DAC_UNKNOWN = -1,
-    DAC_PRIMARY = 0,
-    DAC_TVDAC   = 1
-} RADEONDacType;
-
-typedef enum
-{
-    TMDS_UNKNOWN = -1,
-    TMDS_INT     = 0,
-    TMDS_EXT     = 1
-} RADEONTmdsType;
-
-typedef struct
-{
-    RADEONDDCType DDCType;
-    RADEONDacType DACType;
-    RADEONTmdsType TMDSType;
-    RADEONConnectorType ConnectorType;
-    RADEONMonitorType MonType;
-    xf86MonPtr MonInfo;
-} RADEONConnector;
+#include "xf86misc.h"
 
 typedef struct
 {
@@ -129,13 +66,12 @@ typedef struct
     ScrnInfoPtr pSecondaryScrn;
     ScrnInfoPtr pPrimaryScrn;
 
-    RADEONMonitorType MonType1;
-    RADEONMonitorType MonType2;
+    int MonType1;
+    int MonType2;
     xf86MonPtr MonInfo1;
     xf86MonPtr MonInfo2;
     Bool ReversedDAC;	  /* TVDAC used as primary dac */
     Bool ReversedTMDS;    /* DDC_DVI is used for external TMDS */
-    RADEONConnector PortInfo[2];
 } RADEONEntRec, *RADEONEntPtr;
 
 /* radeon_probe.c */
@@ -151,12 +87,11 @@ extern PciChipsets          RADEONPciChipsets[];
 
 /* radeon_driver.c */
 extern void                 RADEONLoaderRefSymLists
-			    FunctionPrototype((ModuleDescPtr));
+			    FunctionPrototype((void));
 extern Bool                 RADEONPreInit
 			    FunctionPrototype((ScrnInfoPtr, int));
 extern Bool                 RADEONScreenInit
-			    FunctionPrototype((int, ScreenPtr, const int,
-					       const char **));
+			    FunctionPrototype((int, ScreenPtr, int, char **));
 extern Bool                 RADEONSwitchMode
 			    FunctionPrototype((int, DisplayModePtr, int));
 #ifdef X_XF86MiscPassMessage

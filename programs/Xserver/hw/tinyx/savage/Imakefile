@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/savage/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/savage/Imakefile,v 1.1 2004/06/02 22:43:02 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,7 +52,7 @@ SRCS = 	s3.c s3clock.c s3cmap.c s3curs.c s3draw.c s3gc.c s3reg.c s3stub.c
 
 OBJS = 	s3.o s3clock.o s3cmap.o s3curs.o s3draw.o s3gc.o s3reg.o s3stub.o
 
-INCLUDES = $(TINYXINCLUDES)
+INCLUDES = -I. $(TINYXINCLUDES)
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(savage,$(OBJS))

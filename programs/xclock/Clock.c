@@ -1,3 +1,19 @@
+/* $Xorg: Clock.c,v 1.4 2001/02/09 02:05:39 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/xclock/Clock.c,v 3.29tsi Exp $ */
+/* $XFree86: xc/programs/xclock/Clock.c,v 3.27 2004/10/23 15:29:32 dawes Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/StringDefs.h>
@@ -439,9 +455,7 @@ TimeString (ClockWidget w, struct tm *tm)
       tsec = time(NULL);
       sprintf (utime, "%10lu seconds since Epoch", (unsigned long)tsec);
       return utime;
-   }
-   else if (*w->clock.strftime)
-   {
+   } else if (*w->clock.strftime) {
      /*Note: this code is probably excessively paranoid 
        about buffer overflow.  The extra size 10 padding
        is also meant as a further guard against programmer 
@@ -467,7 +481,7 @@ static void
 Initialize (Widget request, Widget new, ArgList args, Cardinal *num_args)
 {
     ClockWidget w = (ClockWidget)new;
-    XtGCMask	valuemask;
+    XtGCMask		valuemask;
     XGCValues	myXGCV;
     int min_height, min_width;
 
@@ -867,7 +881,7 @@ static void
 RenderHands (ClockWidget w, struct tm *tm, Boolean draw)
 {
     RenderHand (w, tm->tm_hour * 300 + tm->tm_min*5, HOUR_HAND_FRACT, &w->clock.hour_color, draw);
-    RenderHand (w, tm->tm_min * 60 /* + tm->tm_sec */, MINUTE_HAND_FRACT, &w->clock.min_color, draw);
+    RenderHand (w, tm->tm_min * 60 + tm->tm_sec, MINUTE_HAND_FRACT, &w->clock.min_color, draw);
 }
 
 static void

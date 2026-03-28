@@ -1,7 +1,15 @@
 /* This is simple demonstration of how to use expat. This program
-reads an XML document from standard input and writes a line with the
-name of each element to standard output indenting child elements by
-one tab stop more than their parent element. */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   reads an XML document from standard input and writes a line with
+   the name of each element to standard output indenting child
+   elements by one tab stop more than their parent element.
+*/
 
 #include <stdio.h>
 #include "expat.h"
@@ -36,11 +44,11 @@ main(int argc, char *argv[])
   do {
     size_t len = fread(buf, 1, sizeof(buf), stdin);
     done = len < sizeof(buf);
-    if (!XML_Parse(parser, buf, len, done)) {
+    if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
       fprintf(stderr,
-	      "%s at line %d\n",
-	      XML_ErrorString(XML_GetErrorCode(parser)),
-	      XML_GetCurrentLineNumber(parser));
+              "%s at line %d\n",
+              XML_ErrorString(XML_GetErrorCode(parser)),
+              XML_GetCurrentLineNumber(parser));
       return 1;
     }
   } while (!done);

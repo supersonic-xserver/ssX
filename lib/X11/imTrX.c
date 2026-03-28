@@ -1,3 +1,11 @@
+/* $Xorg: imTrX.c,v 1.4 2000/08/17 19:45:15 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************
 
            Copyright 1992 by Sun Microsystems, Inc.
@@ -27,7 +35,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
                                fujiwara@a80.tech.yk.fujitsu.co.jp
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/imTrX.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/lib/X11/imTrX.c,v 1.4 2003/11/17 22:20:12 dawes Exp $ */
 
 #include <string.h>
 #include <X11/Xatom.h>
@@ -432,7 +440,7 @@ _XimXRead(Xim im, XPointer recv_buf, int buf_len, int *ret_len)
 {
     XEvent	*ev;
     XEvent	 event;
-    int		 len = 0;
+    int		 len;
     XSpecRec	*spec = (XSpecRec *)im->private.proto.spec;
     XPointer	  arg = spec->ev;
 

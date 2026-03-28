@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbblt.c,v 3.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbblt.c,v 3.1 2001/10/28 03:32:57 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * afb copy area
  */
@@ -31,10 +38,11 @@ in this Software without prior written authorization from the X Consortium.
 Author: Keith Packard
 
 */
+/* $XConsortium: afbblt.c,v 1.11 94/04/17 20:28:16 dpw Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "afb.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -46,41 +54,44 @@ Author: Keith Packard
 #include "mergerop.h"
 
 void
-MROP_NAME(afbDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
-		       RegionPtr prgnDst, DDXPointPtr pptSrc,
-		       unsigned long planemask)
+MROP_NAME(afbDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
+	DrawablePtr pSrc, pDst;
+	int alu;
+	RegionPtr prgnDst;
+	DDXPointPtr pptSrc;
+	unsigned long planemask;
 {
 	PixelType *psrcBase, *pdstBase;	/* start of src and dst bitmaps */
-	int widthSrc, widthDst;		/* add to get to same position in next line */
+	int widthSrc, widthDst;			/* add to get to same position in next line */
 	int sizeSrc, sizeDst;
 
 	BoxPtr pbox;
 	int nbox;
 
 	BoxPtr pboxTmp, pboxNext, pboxBase, pboxNew1, pboxNew2;
-				/* temporaries for shuffling rectangles */
+												/* temporaries for shuffling rectangles */
 	DDXPointPtr pptTmp, pptNew1, pptNew2;
-				/* shuffling boxes entails shuffling the
-				source points too */
+												/* shuffling boxes entails shuffling the
+													source points too */
 	int w, h;
-	int xdir;		/* 1 = left right, -1 = right left/ */
-	int ydir;		/* 1 = top down, -1 = bottom up */
+	int xdir;						/* 1 = left right, -1 = right left/ */
+	int ydir;						/* 1 = top down, -1 = bottom up */
 
 	PixelType *psrcLine, *pdstLine;
 										/* pointers to line with current src and dst */
-	PixelType *psrc;	/* pointer to current src longword */
-	PixelType *pdst;	/* pointer to current dst longword */
+	register PixelType *psrc;	/* pointer to current src longword */
+	register PixelType *pdst;	/* pointer to current dst longword */
 
 	MROP_DECLARE_REG()
 
-				/* following used for looping through a line */
-	PixelType startmask, endmask;	/* masks for writing ends of dst */
-	int nlMiddle;			/* whole longwords in dst */
+										/* following used for looping through a line */
+	PixelType startmask, endmask;		/* masks for writing ends of dst */
+	int nlMiddle;					/* whole longwords in dst */
 	int xoffSrc, xoffDst;
-	int leftShift, rightShift;
-	PixelType bits;
-	PixelType bits1;
-	int nl;				/* temp copy of nlMiddle */
+	register int leftShift, rightShift;
+	register PixelType bits;
+	register PixelType bits1;
+	register int nl;				/* temp copy of nlMiddle */
 
 	int careful;
 	int depthSrc;
@@ -89,9 +100,9 @@ MROP_NAME(afbDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
 	MROP_INITIALIZE(alu,0);
 
 	afbGetPixelWidthSizeDepthAndPointer(pSrc, widthSrc, sizeSrc, depthSrc,
-						 psrcBase);
+													 psrcBase);
 	afbGetPixelWidthSizeDepthAndPointer(pDst, widthDst, sizeDst, depthDst,
-						 pdstBase);
+													 pdstBase);
 
 	/* Special case where depth of dest pixmap is 1 but source pixmap isn't
 	 * Used for GetImage to copy a plane from a source pixmap to a particular

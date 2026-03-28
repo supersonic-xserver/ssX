@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/sigio.c,v 1.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/sigio.c,v 1.19 2005/01/24 21:27:10 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* sigio.c -- Support for SIGIO handler installation and removal
  * Created: Thu Jun  3 15:39:18 1999 by faith@precisioninsight.com
@@ -80,7 +94,7 @@
  */
 
 #ifdef XFree86Server
-# include <X11/X.h>
+# include "X.h"
 # include "xf86.h"
 # include "xf86Priv.h"
 # include "xf86_OSlib.h"

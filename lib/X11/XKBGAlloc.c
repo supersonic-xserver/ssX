@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/X11/XKBGAlloc.c,v 3.5tsi Exp $ */
+/* $Xorg: XKBGAlloc.c,v 1.3 2000/08/17 19:45:01 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,6 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/lib/X11/XKBGAlloc.c,v 3.5 2003/11/17 22:20:09 dawes Exp $ */
 
 #define	NEED_EVENTS
 #define	NEED_REPLIES
@@ -39,12 +47,12 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #else 
 
 #include <stdio.h>
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "inputstr.h"
-#include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XKBgeom.h>
+#include "XKBsrv.h"
+#include "XKBgeom.h"
 
 #endif /* XKB_IN_SERVER */
 

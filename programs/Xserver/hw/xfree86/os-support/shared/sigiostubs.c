@@ -1,6 +1,13 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/sigiostubs.c,v 1.6 2004/12/15 01:26:50 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1999-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1999-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -52,7 +59,6 @@
 # endif
 # include "misc.h"
 #endif
-#include "xf86_OSproc.h"
 
 int
 xf86InstallSIGIOHandler(int fd, void (*f)(int, void *), void *closure)

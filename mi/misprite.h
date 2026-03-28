@@ -1,11 +1,17 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * misprite.h
  *
  * software-sprite/sprite drawing interface spec
  *
  * mi versions of these routines exist.
  */
-
 
 /*
 
@@ -31,6 +37,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
+/* $XFree86: xc/programs/Xserver/mi/misprite.h,v 1.4 2006/01/09 15:00:38 dawes Exp $ */
 
 typedef struct {
     Bool	(*RealizeCursor)(

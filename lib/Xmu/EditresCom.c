@@ -1,3 +1,19 @@
+/* $Xorg: EditresCom.c,v 1.4 2001/02/09 02:03:52 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/EditresCom.c,v 1.23tsi Exp $ */
+/* $XFree86: xc/lib/Xmu/EditresCom.c,v 1.22 2004/01/23 02:36:34 dawes Exp $ */
 
 /*
  * Author:  Chris D. Peterson, Dave Sternlicht, MIT X Consortium
@@ -277,7 +293,7 @@ BuildEvent(Widget w, Atom sel, XtPointer data, ResIdent ident,
 {
   EditresEvent *event;
     ProtocolStream alloc_stream, *stream;
-    unsigned char temp = 0;
+    unsigned char temp;
     register unsigned int i;
 
   stream = &alloc_stream;

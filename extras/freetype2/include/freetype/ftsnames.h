@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftsnames.h                                                             */
 /*                                                                         */
@@ -7,7 +14,7 @@
 /*                                                                         */
 /*    This is _not_ used to retrieve glyph names!                          */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -25,6 +32,12 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
+#endif
 
 
 FT_BEGIN_HEADER
@@ -113,7 +126,8 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    The number of strings in the `name' table.                         */
   /*                                                                       */
-  FT_EXPORT( FT_UInt )  FT_Get_Sfnt_Name_Count( FT_Face  face );
+  FT_EXPORT( FT_UInt )
+  FT_Get_Sfnt_Name_Count( FT_Face  face );
 
 
   /*************************************************************************/
@@ -127,7 +141,7 @@ FT_BEGIN_HEADER
   /* <Input>                                                               */
   /*    face  :: A handle to the source face.                              */
   /*                                                                       */
-  /*    index :: The index of the `name' string.                           */
+  /*    idx   :: The index of the `name' string.                           */
   /*                                                                       */
   /* <Output>                                                              */
   /*    aname :: The indexed FT_SfntName structure.                        */
@@ -143,9 +157,10 @@ FT_BEGIN_HEADER
   /*    `name' table entries, then do a loop until you get the right       */
   /*    platform, encoding, and name ID.                                   */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Get_Sfnt_Name( FT_Face       face,
-                                           FT_UInt       index,
-                                           FT_SfntName  *aname );
+  FT_EXPORT( FT_Error )
+  FT_Get_Sfnt_Name( FT_Face       face,
+                    FT_UInt       idx,
+                    FT_SfntName  *aname );
 
 
   /* */

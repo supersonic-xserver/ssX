@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/newmmio.h,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/newmmio.h,v 1.6 2004/02/13 23:58:43 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (C) 1994-1999 The XFree86 Project, Inc.
@@ -72,7 +86,9 @@
 #define S3_NEWMMIO_REGSIZE	  0x10000  /* 64KB */
 #define S3V_MMIO_REGSIZE	   0x8000  /* 32KB */
 
-#include <X11/Xmd.h>
+
+/* #include <Xmd.h> */
+
 
 #define int16	CARD16
 #define int32	CARD32

@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
 Copyright 2003 Eric Anholt
@@ -24,7 +38,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_texstate.c,v 1.1.1.2 2004/06/10 14:23:16 alanh Exp $ */
 
 /*
  * Authors:
@@ -317,7 +331,7 @@ sis_set_texobj_parm( GLcontext *ctx, struct gl_texture_object *texObj,
       lastLevel = texObj->BaseLevel + (GLint)(texObj->MaxLod + 0.5);
       lastLevel = MAX2(lastLevel, texObj->BaseLevel);
       lastLevel = MIN2(lastLevel, texObj->BaseLevel +
-         texObj->Image[texObj->BaseLevel]->MaxLog2);
+         texObj->Image[0][texObj->BaseLevel]->MaxLog2);
       lastLevel = MIN2(lastLevel, texObj->MaxLevel);
       lastLevel = MAX2(firstLevel, lastLevel); /* need at least one level */
    }
@@ -437,9 +451,9 @@ sis_set_texobj_parm( GLcontext *ctx, struct gl_texture_object *texObj,
    }
 
    current->texture[hw_unit].hwTextureSet |=
-      texObj->Image[firstLevel]->WidthLog2 << 4;
+      texObj->Image[0][firstLevel]->WidthLog2 << 4;
    current->texture[hw_unit].hwTextureSet |=
-      texObj->Image[firstLevel]->HeightLog2;
+      texObj->Image[0][firstLevel]->HeightLog2;
 
    if (hw_unit == 0)
       smesa->GlobalFlag |= GFLAG_TEXTUREADDRESS;

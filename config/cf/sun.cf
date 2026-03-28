@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/sun.cf,v 3.83tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/sun.cf,v 3.79 2005/02/06 23:48:14 dawes Exp $
 
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
@@ -71,8 +71,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  *
  * For SunPro C, define HasSunC to YES in site.def.  
  * For CenterLine C, define HasCenterLineC to YES in site.def
- * For gcc, gcc2, gcc3 or gcc4, define HasGcc, HasGcc2, HasGcc3 or HasGcc4 to
- *    YES in site.def
+ * For gcc, gcc2 or gcc3, define HasGcc, HasGcc2 or HasGcc3 to YES in site.def
  * For other compilers, define HasSunC to NO in site.def, then 
  *    provide appropriate values for the various compiler related
  *    configuration varibles used here.
@@ -98,11 +97,8 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  *
  */
 
-#ifndef HasGcc4
-#define HasGcc4 NO
-#endif
 #ifndef HasGcc3
-#define HasGcc3 HasGcc4
+#define HasGcc3 NO
 #endif
 #ifndef HasGcc2
 #define HasGcc2 HasGcc3
@@ -112,8 +108,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 
 #ifndef HasSunC
-# if HasCenterLineC || HasGcc || HasGcc2 || HasGcc3 || HasGcc4 || \
-     (OSMajorVersion < 5)
+# if HasCenterLineC || HasGcc || HasGcc2 || HasGcc3 || (OSMajorVersion < 5)
 #  define HasSunC NO
 # else
 #  define HasSunC YES
@@ -189,11 +184,6 @@ XCOMM SunPro C++ CplusplusCompilerMajorVersion./**/CplusplusCompilerMinorVersion
 # ifndef CplusplusOptions
 #  define CplusplusOptions -Xa
 # endif
-#endif
-
-/* This might need to key off of compiler and/or OS version */
-#ifndef UseElfFormat
-#define UseElfFormat YES
 #endif
 
 #if OSMajorVersion < 4 || (OSMajorVersion == 4 && OSMinorVersion < 1)
@@ -386,6 +376,9 @@ XCOMM SunPro C++ CplusplusCompilerMajorVersion./**/CplusplusCompilerMinorVersion
 # ifndef XsunMonoServer
 #  define XsunMonoServer	  NO		/* monochrome only */
 # endif
+# ifndef BuildPexExt
+#  define BuildPexExt	  (XsunServer || Xsun24Server)
+# endif
 # undef BuildXF86DRI
 # define BuildXF86DRI     NO
 # if (OSMajorVersion > 4)
@@ -442,9 +435,6 @@ XCOMM SunPro C++ CplusplusCompilerMajorVersion./**/CplusplusCompilerMinorVersion
 #    define OptimizedCDebugFlags DefaultGcc2i386Opt
 #   endif
 #   ifdef SparcArchitecture
-#    ifndef DefaultGcc2SparcOpt
-#     define DefaultGcc2SparcOpt -O2 GccAliasingArgs
-#    endif
 #    define OptimizedCDebugFlags DefaultGcc2SparcOpt
 #   endif
 #   ifndef OptimizedCDebugFlags
@@ -506,6 +496,9 @@ XCOMM SunPro C++ CplusplusCompilerMajorVersion./**/CplusplusCompilerMinorVersion
 #  endif
 # endif
 
+
+# define PexCCOptions DefaultCCOptions
+
 # ifndef AsCmd
 #  ifdef SparcArchitecture
 #   define AsCmd as
@@ -537,18 +530,26 @@ man_keywords::								@@\
 	catman -M $(DESTDIR)manpath -w
 #endif
 
+#if !defined(UsePamLibrary)
+# if (OSMajorVersion > 5) || ((OSMajorVersion == 5) && (OSMinorVersion >= 4))
+#  define UsePamLibrary		YES
+# endif
+#endif
+
 /* PAM appeared in SunOS 5.6 */
-/*
- * WARNING:  Binaries generated with PAM support will not run on older systems.
- */
-#ifndef HasPam
+#if !defined(HasPam)
 # if (OSMajorVersion > 5) || (OSMajorVersion == 5 && OSMinorVersion >= 6)
 #  define HasPam		YES
 # endif
 #endif
 
+#ifndef PamLibraries
+#define PamLibraries		-lpam
+#endif
+
 #define MotifDefines			\
 	-DNO_ISDIR -DNO_REGCOMP -DNO_ALLOCA -DBOGUS_MB_MAX -DNO_CONST
+#define PamUnixDefines		-DPAM_NIS
 #define TtLargePICTable		YES
 #define DtSvcDefines		-DXK_MISCELLANY -DMULTIBYTE -DNO_REGCOMP
 #define DtSearchDefines		-DI18N_MSG DtSvcDefines

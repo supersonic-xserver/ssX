@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * TCX framebuffer - defines.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suntcx/tcx.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suntcx/tcx.h,v 1.3 2004/12/05 23:06:38 tsi Exp $ */
 
 #ifndef TCX_H
 #define TCX_H
@@ -29,7 +36,7 @@
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"
 #include "xf86RamDac.h"
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "gcstruct.h"
 #include "xf86sbusBus.h"
 #include "tcx_regs.h"
@@ -43,6 +50,7 @@
 #define TCX_THC_VOFF		0x70004000
 #define TCX_DHC_VOFF		0x70008000
 #define TCX_ALT_VOFF		0x7000a000
+#define TCX_SYNC_VOFF		0x7000e000
 
 typedef struct {
 	unsigned char	*fb;

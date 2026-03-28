@@ -1,9 +1,15 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -137,7 +143,7 @@ static GLboolean run_validate_normal_stage( GLcontext *ctx,
 static void check_normal_transform( GLcontext *ctx,
 				    struct tnl_pipeline_stage *stage )
 {
-   stage->active = !ctx->VertexProgram.Enabled &&
+   stage->active = !ctx->VertexProgram._Enabled &&
       (ctx->Light.Enabled || (ctx->Texture._GenFlags & TEXGEN_NEED_NORMALS));
 
    /* Don't clobber the initialize function:
@@ -179,6 +185,7 @@ static void free_normal_data( struct tnl_pipeline_stage *stage )
 
 #define _TNL_NEW_NORMAL_TRANSFORM        (_NEW_MODELVIEW| \
 					  _NEW_TRANSFORM| \
+					  _NEW_PROGRAM| \
                                           _MESA_NEW_NEED_NORMALS| \
                                           _MESA_NEW_NEED_EYE_COORDS)
 

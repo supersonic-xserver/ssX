@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/main/Imakefile,v 1.2tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/main/Imakefile,v 1.2 2004/12/10 16:06:58 alanh Exp $
 
 #include <Threads.tmpl>
 
@@ -42,7 +42,8 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 
       DEFINES = $(ALLOC_DEFINES) GlxDefines \
 		$(MESA_ASM_DEFINES) $(MATH_DEFINES)
-     INCLUDES = -I$(MESASRCDIR)/src/mesa/glapi \
+     INCLUDES = /*-I$(INCLUDESRC) -I$(EXTINCSRC) */ -I$(XINCLUDESRC) \
+		-I$(MESASRCDIR)/src/mesa/glapi \
 		-I$(MESASRCDIR)/src/mesa/math \
 		-I$(MESASRCDIR)/src/mesa/main \
 		-I$(MESASRCDIR)/src/mesa/shader \

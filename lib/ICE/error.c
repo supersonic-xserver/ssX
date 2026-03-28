@@ -1,3 +1,11 @@
+/* $Xorg: error.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -35,8 +43,13 @@ Author: Ralph Mor, X Consortium
 
 
 void
-_IceErrorBadMinor(IceConn iceConn, int majorOpcode, int offendingMinor,
-		  int severity)
+_IceErrorBadMinor (iceConn, majorOpcode, offendingMinor, severity)
+
+IceConn	iceConn;
+int	majorOpcode;
+int	offendingMinor;
+int	severity;
+
 {
     IceErrorHeader (iceConn,
 	majorOpcode, offendingMinor,
@@ -50,8 +63,13 @@ _IceErrorBadMinor(IceConn iceConn, int majorOpcode, int offendingMinor,
 
 
 void
-_IceErrorBadState(IceConn iceConn, int majorOpcode, int offendingMinor,
-		  int severity)
+_IceErrorBadState (iceConn, majorOpcode, offendingMinor, severity)
+
+IceConn	iceConn;
+int	majorOpcode;
+int	offendingMinor;
+int	severity;
+
 {
     IceErrorHeader (iceConn,
 	majorOpcode, offendingMinor,
@@ -65,8 +83,13 @@ _IceErrorBadState(IceConn iceConn, int majorOpcode, int offendingMinor,
 
 
 void
-_IceErrorBadLength(IceConn iceConn, int majorOpcode, int offendingMinor,
-		   int severity)
+_IceErrorBadLength (iceConn, majorOpcode, offendingMinor, severity)
+
+IceConn	iceConn;
+int	majorOpcode;
+int	offendingMinor;
+int	severity;
+
 {
     IceErrorHeader (iceConn,
 	majorOpcode, offendingMinor,
@@ -80,8 +103,15 @@ _IceErrorBadLength(IceConn iceConn, int majorOpcode, int offendingMinor,
 
 
 void
-_IceErrorBadValue(IceConn iceConn, int majorOpcode, int offendingMinor,
-		  int offset, int length, IcePointer value)
+_IceErrorBadValue (iceConn, majorOpcode, offendingMinor, offset, length, value)
+
+IceConn		iceConn;
+int		majorOpcode;
+int		offendingMinor;
+int		offset;
+int		length;		/* in bytes */
+IcePointer	value;
+
 {
     IceErrorHeader (iceConn,
 	majorOpcode, offendingMinor,
@@ -102,7 +132,11 @@ _IceErrorBadValue(IceConn iceConn, int majorOpcode, int offendingMinor,
 
 
 void
-_IceErrorNoAuthentication(IceConn iceConn, int offendingMinor)
+_IceErrorNoAuthentication (iceConn, offendingMinor)
+
+IceConn	iceConn;
+int	offendingMinor;
+
 {
     int severity = (offendingMinor == ICE_ConnectionSetup) ?
 	IceFatalToConnection : IceFatalToProtocol;
@@ -119,7 +153,11 @@ _IceErrorNoAuthentication(IceConn iceConn, int offendingMinor)
 
 
 void
-_IceErrorNoVersion(IceConn iceConn, int offendingMinor)
+_IceErrorNoVersion (iceConn, offendingMinor)
+
+IceConn	iceConn;
+int	offendingMinor;
+
 {
     int severity = (offendingMinor == ICE_ConnectionSetup) ?
 	IceFatalToConnection : IceFatalToProtocol;
@@ -136,7 +174,12 @@ _IceErrorNoVersion(IceConn iceConn, int offendingMinor)
 
 
 void
-_IceErrorSetupFailed(IceConn iceConn, int offendingMinor, char *reason)
+_IceErrorSetupFailed (iceConn, offendingMinor, reason)
+
+IceConn	iceConn;
+int	offendingMinor;
+char	*reason;
+
 {
     char *pBuf, *pStart;
     int bytes;
@@ -163,8 +206,12 @@ _IceErrorSetupFailed(IceConn iceConn, int offendingMinor, char *reason)
 
 
 void
-_IceErrorAuthenticationRejected(IceConn iceConn, int offendingMinor,
-				char *reason)
+_IceErrorAuthenticationRejected (iceConn, offendingMinor, reason)
+
+IceConn	iceConn;
+int	offendingMinor;
+char	*reason;
+
 {
     char *pBuf, *pStart;
     int bytes;
@@ -189,7 +236,12 @@ _IceErrorAuthenticationRejected(IceConn iceConn, int offendingMinor,
 
 
 void
-_IceErrorAuthenticationFailed(IceConn iceConn, int offendingMinor, char *reason)
+_IceErrorAuthenticationFailed (iceConn, offendingMinor, reason)
+
+IceConn	iceConn;
+int	offendingMinor;
+char	*reason;
+
 {
     char *pBuf, *pStart;
     int bytes;
@@ -214,7 +266,11 @@ _IceErrorAuthenticationFailed(IceConn iceConn, int offendingMinor, char *reason)
 
 
 void
-_IceErrorProtocolDuplicate(IceConn iceConn, char *protocolName)
+_IceErrorProtocolDuplicate (iceConn, protocolName)
+
+IceConn	iceConn;
+char	*protocolName;
+
 {
     char *pBuf, *pStart;
     int bytes;
@@ -239,7 +295,11 @@ _IceErrorProtocolDuplicate(IceConn iceConn, char *protocolName)
 
 
 void
-_IceErrorMajorOpcodeDuplicate(IceConn iceConn, int majorOpcode)
+_IceErrorMajorOpcodeDuplicate (iceConn, majorOpcode)
+
+IceConn	iceConn;
+int	majorOpcode;
+
 {
     char mOp = (char) majorOpcode;
 
@@ -256,7 +316,11 @@ _IceErrorMajorOpcodeDuplicate(IceConn iceConn, int majorOpcode)
 
 
 void
-_IceErrorUnknownProtocol(IceConn iceConn, char *protocolName)
+_IceErrorUnknownProtocol (iceConn, protocolName)
+
+IceConn	iceConn;
+char	*protocolName;
+
 {
     char *pBuf, *pStart;
     int bytes;
@@ -281,8 +345,13 @@ _IceErrorUnknownProtocol(IceConn iceConn, char *protocolName)
 
 
 void
-_IceErrorBadMajor(IceConn iceConn, int offendingMajor, int offendingMinor,
-		  int severity)
+_IceErrorBadMajor (iceConn, offendingMajor, offendingMinor, severity)
+
+IceConn	iceConn;
+int     offendingMajor;
+int     offendingMinor;
+int	severity;
+
 {
     char maj = (char) offendingMajor;
 
@@ -298,14 +367,23 @@ _IceErrorBadMajor(IceConn iceConn, int offendingMajor, int offendingMinor,
 }
 
 
+
 /*
  * Default error handler.
  */
 
 void
-_IceDefaultErrorHandler(IceConn iceConn, Bool swap, int offendingMinorOpcode,
-			unsigned long offendingSequence, int errorClass,
-			int severity, IcePointer values)
+_IceDefaultErrorHandler (iceConn, swap,
+    offendingMinorOpcode, offendingSequence, errorClass, severity, values)
+
+IceConn		iceConn;
+Bool		swap;
+int		offendingMinorOpcode;
+unsigned long	offendingSequence;
+int 		errorClass;
+int		severity;
+IcePointer	values;
+
 {
     char *str;
     char *pData = (char *) values;
@@ -499,6 +577,7 @@ _IceDefaultErrorHandler(IceConn iceConn, Bool swap, int offendingMinorOpcode,
 }
 
 
+
 /* 
  * This procedure sets the ICE error handler to be the specified
  * routine.  If NULL is passed in the default error handler is restored.
@@ -506,7 +585,10 @@ _IceDefaultErrorHandler(IceConn iceConn, Bool swap, int offendingMinorOpcode,
  */
  
 IceErrorHandler
-IceSetErrorHandler(IceErrorHandler handler)
+IceSetErrorHandler (handler)
+
+IceErrorHandler handler;
+
 {
     IceErrorHandler oldHandler = _IceErrorHandler;
 
@@ -519,12 +601,16 @@ IceSetErrorHandler(IceErrorHandler handler)
 }
 
 
+
 /*
  * Default IO error handler.
  */
 
 void
-_IceDefaultIOErrorHandler(IceConn iceConn)
+_IceDefaultIOErrorHandler (iceConn)
+
+IceConn iceConn;
+
 {
     fprintf (stderr,
 	"ICE default IO error handler doing an exit(), pid = %ld, errno = %d\n",
@@ -534,6 +620,7 @@ _IceDefaultIOErrorHandler(IceConn iceConn)
 }
 
 
+
 /* 
  * This procedure sets the ICE fatal I/O error handler to be the
  * specified routine.  If NULL is passed in the default error
@@ -542,7 +629,10 @@ _IceDefaultIOErrorHandler(IceConn iceConn)
  */
  
 IceIOErrorHandler
-IceSetIOErrorHandler(IceIOErrorHandler handler)
+IceSetIOErrorHandler (handler)
+
+IceIOErrorHandler handler;
+
 {
     IceIOErrorHandler oldHandler = _IceIOErrorHandler;
 

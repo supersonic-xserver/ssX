@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/colormapst.h,v 1.3 2006/01/09 15:00:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1998  The Open Group
@@ -48,8 +56,6 @@ SOFTWARE.
 #ifndef CMAPSTRUCT_H
 #define CMAPSTRUCT_H 1
 
-#include <X11/Xarch.h>
-
 #include "colormap.h"
 #include "screenint.h"
 
@@ -90,26 +96,15 @@ typedef struct _CMEntry
     Bool	fShared;
 } Entry;
 
-/*
- * COLORMAPs can be used for either Direct or Pseudo color.  PseudoColor
+/* COLORMAPs can be used for either Direct or Pseudo color.  PseudoColor
  * only needs one cell table, we arbitrarily pick red.  We keep track
- * of that table with freeRed, numPixelsRed, and clientPixelsRed
- *
- * The padN variables are unfortunate ABI BC. See fdo bug #6924.
- */
+ * of that table with freeRed, numPixelsRed, and clientPixelsRed */
 
 typedef struct _ColormapRec
 {
     VisualPtr	pVisual;
     short	class;		/* PseudoColor or DirectColor */
-#if defined(_XSERVER64)
-    short	pad0;
-    XID		pad1;
-#endif
-    XID		mid;		/* client's name for colormap */
-#if defined(_XSERVER64) && (X_BYTE_ORDER == X_LITTLE_ENDIAN)
-    XID		pad2;
-#endif
+    long	mid;		/* client's name for colormap */
     ScreenPtr	pScreen;	/* screen map is associated with */
     short	flags;		/* 1 = IsDefault
 				 * 2 = AllAllocated */

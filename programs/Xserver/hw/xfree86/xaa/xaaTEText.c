@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaTEText.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaTEText.c,v 1.7 1999/05/30 03:03:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /********************************************************************
 
@@ -23,8 +37,8 @@
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
-#include <X11/fonts/font.h>
+#include "X.h"
+#include "font.h"
 #include "scrnintstr.h"
 #include "dixfontstr.h"
 #include "xf86str.h"
@@ -249,7 +263,6 @@ XAAGlyphBltTEColorExpansion(
 	RightEdge = min(Right, pbox->x2);
 
 	if(RightEdge > LeftEdge) {	/* we have something to draw */
-	    unsigned int *fallbackBits = NULL;
 	    ytop = max(Top, pbox->y1);
 	    ybot = min(Bottom, pbox->y2);
 	    
@@ -262,22 +275,9 @@ XAAGlyphBltTEColorExpansion(
 		int count;
 		glyphs = (unsigned int**)(infoRec->PreAllocMem);
 
-		for(count = 0; count < nglyph; count++) {
+		for(count = 0; count < nglyph; count++) 
  			glyphs[count] = (unsigned int*) 
 				FONTGLYPHBITS(gBase,*ppci++);
-			if (!glyphs[count]) {
-			    /* Glyphs with NULL bits do exist in the wild.
-			       Replace with blank bits in that case */
-			    
-			    if (!fallbackBits) {
-				int fontHeight = Bottom - Top + 1;
-				fallbackBits = xcalloc (glyphWidth * fontHeight, 1);
-				if (!fallbackBits)
-				    return;
-			    }
-			    glyphs[count] = fallbackBits;
-			}
-		}
 
 		/* our new unrolled TE code only writes DWORDS at a time 
 		   so it can read up to 6 characters past the last one 
@@ -290,15 +290,12 @@ XAAGlyphBltTEColorExpansion(
 		glyphs[count + 5] = glyphs[0];
 	    }
 
-    /* x, y, w, h, skipleft, skiptop, glyphp, glyphWidth, fg, bg, rop, pm */
+   /* x, y, w, h, skipleft, skiptop, glyphp, glyphWidth, fg, bg, rop, pm */
 
 	    (*infoRec->TEGlyphRenderer)( pScrn, 
 		LeftEdge, ytop, RightEdge - LeftEdge, ybot - ytop, 
 		skippix, ytop - Top, glyphs + skipglyphs, glyphWidth, 
-		fg, bg, rop, planemask);
-
-	    if (fallbackBits)
-		xfree (fallbackBits);
+		fg, bg, rop, planemask); 
 	}
 
 	nbox--; pbox++;

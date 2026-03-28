@@ -1,7 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * mfb copy area
  */
-/* $XFree86: xc/programs/Xserver/mfb/mfbblt.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbblt.c,v 3.4 2001/12/14 20:00:04 dawes Exp $ */
 
 /*
 
@@ -30,10 +37,11 @@ in this Software without prior written authorization from The Open Group.
 Author: Keith Packard
 
 */
+/* $Xorg: mfbblt.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"mfb.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
@@ -45,8 +53,11 @@ Author: Keith Packard
 #include	"mergerop.h"
 
 void
-MROP_NAME(mfbDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
-		       RegionPtr prgnDst, DDXPointPtr pptSrc)
+MROP_NAME(mfbDoBitblt)(pSrc, pDst, alu, prgnDst, pptSrc)
+    DrawablePtr	    pSrc, pDst;
+    int		    alu;
+    RegionPtr	    prgnDst;
+    DDXPointPtr	    pptSrc;
 {
     PixelType *psrcBase, *pdstBase;	
 				/* start of src and dst bitmaps */
@@ -66,8 +77,8 @@ MROP_NAME(mfbDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
 
     PixelType *psrcLine, *pdstLine;	
 				/* pointers to line with current src and dst */
-    PixelType *psrc;/* pointer to current src longword */
-    PixelType *pdst;/* pointer to current dst longword */
+    register PixelType *psrc;/* pointer to current src longword */
+    register PixelType *pdst;/* pointer to current dst longword */
 
     MROP_DECLARE_REG()
 
@@ -75,10 +86,10 @@ MROP_NAME(mfbDoBitblt)(DrawablePtr pSrc, DrawablePtr pDst, int alu,
     PixelType startmask, endmask;	/* masks for writing ends of dst */
     int nlMiddle;		/* whole longwords in dst */
     int xoffSrc, xoffDst;
-    int leftShift, rightShift;
-    PixelType bits;
-    PixelType bits1;
-    int nl;		/* temp copy of nlMiddle */
+    register int leftShift, rightShift;
+    register PixelType bits;
+    register PixelType bits1;
+    register int nl;		/* temp copy of nlMiddle */
     int careful;
 
     MROP_INITIALIZE(alu,0);
@@ -281,11 +292,11 @@ psrc += UNROLL;
 		     */
 		    while ((nl -= 6) >= 0)
 		    {
-			__asm__ __volatile__ (
-			    "moveml %1+,#0x0c0f;moveml#0x0c0f,%0"
-			    : "=m" (*(char *)pdst)
-			    : "m" (*(char *)psrc)
-			    : "d0", "d1", "d2", "d3", "a2", "a3");
+			asm ("moveml %1+,#0x0c0f;moveml#0x0c0f,%0"
+			     : "=m" (*(char *)pdst)
+			     : "m" (*(char *)psrc)
+			     : "d0", "d1", "d2", "d3",
+			       "a2", "a3");
 			pdst += 6;
 		    }
 		    nl += 6;

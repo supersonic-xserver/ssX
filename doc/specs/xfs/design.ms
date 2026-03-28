@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: design.ms,v 1.3 2000/08/17 19:42:51 cpqbld Exp $
 .\" roff -ms
 .de Ip
 .IP \(bu 3

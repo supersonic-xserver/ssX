@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/fonts.h,v 1.2tsi Exp $ */
+/* $Xorg: fonts.h,v 1.3 2000/08/17 19:46:30 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -37,7 +44,7 @@
 #define   CopyText(t)     t
 #define   I_DumpText(t)
 #define   CoerceText(t)   t
-#define   TextDelta(t,pt) (pt)->x = (pt)->y = 0;
+#define   TextDelta(t,pt)
 #define   XformText(p,s)
 #define   GimeSpace()     FALSE
  

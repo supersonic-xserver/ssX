@@ -1,7 +1,14 @@
 /* Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    See the file COPYING for copying permission.
 */
-/* $XFree86: xc/extras/expat/lib/xmlparse.c,v 1.2 2003/05/27 16:47:34 tsi Exp $ */
+/* $XFree86: xc/extras/expat/lib/xmlparse.c,v 1.3 2003/09/29 23:39:30 alanh Exp $ */
 
 #include <stddef.h>
 #include <string.h>                     /* memset(), memcpy() */
@@ -3253,6 +3260,9 @@ doProlog(XML_Parser parser,
         return XML_ERROR_UNCLOSED_TOKEN;
       case XML_TOK_PARTIAL_CHAR:
         return XML_ERROR_PARTIAL_CHAR;
+      case -XML_TOK_PROLOG_S:
+	tok = -tok;
+	break;
       case XML_TOK_NONE:
 #ifdef XML_DTD
         if (enc != encoding)

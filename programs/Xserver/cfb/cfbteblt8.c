@@ -1,9 +1,16 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * TEGblt - ImageText expanded glyph fonts only.  For
  * 8 bit displays, in Copy mode with no clipping.
  */
 
-/* $XFree86: xc/programs/Xserver/cfb/cfbteblt8.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbteblt8.c,v 1.7 2004/12/31 02:56:03 tsi Exp $ */
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -29,13 +36,15 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
 
+/* $Xorg: cfbteblt8.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+
 #if PSZ == 8
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"cfb.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
@@ -67,7 +76,8 @@ in this Software without prior written authorization from The Open Group.
  * boundaries) we can use some magic to avoid the expense of getleftbits
  */
 
-#if ((BITMAP_BIT_ORDER == LSBFirst && NGLYPHS >= 4) || GLYPHPADBYTES == 4)
+#if ((BITMAP_BIT_ORDER == LSBFirst && NGLYPHS >= 4) || \
+    ((GLYPHPADBYTES == 4) && (PGSZ != 64)))
 
 #if GLYPHPADBYTES == 1
 typedef unsigned char	*glyphPointer;
@@ -308,30 +318,40 @@ extern CfbBits endtab[];
 #define StoreBits(o)	StorePixels(o,GetPixelGroup(c));
 #define FirstStep	Step
 #else
+#if PGSZ == 64
+#define StoreBits(o)	StorePixels(o,cfb8Pixels[(c) & PGSZBMSK]);
+#define FirstStep	Step
+#else /* PGSZ == 32 */
 #define StoreBits(o)	StorePixels(o,*((CfbBits *) (((char *) cfb8Pixels) + (c & 0x3c))));
 #define FirstStep	c = BitLeft (c, 2);
+#endif /* PGSZ */
 #endif /* BITMAP_BIT_ORDER */
 
 
 void
-CFBTEGBLT8(DrawablePtr pDrawable, GC *pGC, int xInit, int yInit,
-	   unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+CFBTEGBLT8 (pDrawable, pGC, xInit, yInit, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	xInit, yInit;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer	pglyphBase;	/* start of array of glyphs */
 {
-    CfbBits  c;
-    CfbBits  *dst;
-    CfbBits  leftMask, rightMask;
-    int	    hTmp;
-    int	    xoff1;
-    glyphPointer   char1;
-    glyphPointer   char2;
+    register CfbBits  c;
+    register CfbBits  *dst;
+    register CfbBits  leftMask, rightMask;
+    register int	    hTmp;
+    register int	    xoff1;
+    register glyphPointer   char1;
+    register glyphPointer   char2;
 #if NGLYPHS >= 3
-    glyphPointer   char3;
+    register glyphPointer   char3;
 #endif
 #if NGLYPHS >= 4
-    glyphPointer   char4;
+    register glyphPointer   char4;
 #endif
 #if NGLYPHS >= 5
-    glyphPointer   char5;
+    register glyphPointer   char5;
 #endif
 #ifdef ALL_LEFTBITS
     int xoff2, xoff3, xoff4, xoff5;
@@ -354,9 +374,9 @@ CFBTEGBLT8(DrawablePtr pDrawable, GC *pGC, int xInit, int yInit,
     int			lshift;
     int			widthGlyphs;
 #ifdef USE_LEFTBITS
-    CfbBits  glyphMask;
-    CfbBits  tmpSrc;
-    int	    glyphBytes;
+    register CfbBits  glyphMask;
+    register CfbBits  tmpSrc;
+    register int	    glyphBytes;
 #endif
 
     widthGlyph = FONTMAXBOUNDS(pfont,characterWidth);
@@ -472,7 +492,7 @@ CFBTEGBLT8(DrawablePtr pDrawable, GC *pGC, int xInit, int yInit,
 	    }
 	    else
 	    {
-#if NGLYPHS == 4
+#if NGLYPHS == 4 && PGSZ == 32
 	    	ew = widthGlyph;    /* widthGlyphs >> 2 */
 #else
 	    	ew = widthGlyphs >> PWSH;

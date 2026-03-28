@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/exglobals.h,v 3.3 1998/12/05 14:39:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -28,47 +36,48 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Globals referenced elsewhere in the server.
  *
  */
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #ifndef EXGLOBALS_H
 #define EXGLOBALS_H 1
 
-extern int IReqCode;
-extern int BadDevice;
-extern int BadMode;
-extern int DeviceBusy;
-extern int BadClass;
+extern	int 	IReqCode;
+extern	int	BadDevice;
+extern	int	BadEvent;
+extern	int	BadMode;
+extern	int	DeviceBusy;
+extern	int	BadClass;
 
-extern Mask DevicePointerMotionMask;
-extern Mask DevicePointerMotionHintMask;
-extern Mask DeviceFocusChangeMask;
-extern Mask DeviceStateNotifyMask;
-extern Mask DeviceMappingNotifyMask;
-extern Mask DeviceOwnerGrabButtonMask;
-extern Mask DeviceButtonGrabMask;
-extern Mask DeviceButtonMotionMask;
-extern Mask DevicePresenceNotifyMask;
-extern Mask PropagateMask[];
+extern	Mask	DevicePointerMotionMask;
+extern	Mask	DevicePointerMotionHintMask;
+extern	Mask	DeviceFocusChangeMask;
+extern	Mask	DeviceStateNotifyMask;
+extern	Mask	ChangeDeviceNotifyMask;
+extern	Mask	DeviceMappingNotifyMask;
+extern	Mask	DeviceOwnerGrabButtonMask;
+extern	Mask	DeviceButtonGrabMask;
+extern	Mask	DeviceButtonMotionMask;
+extern	Mask	PropagateMask[];
 
-extern int DeviceValuator;
-extern int DeviceKeyPress;
-extern int DeviceKeyRelease;
-extern int DeviceButtonPress;
-extern int DeviceButtonRelease;
-extern int DeviceMotionNotify;
-extern int DeviceFocusIn;
-extern int DeviceFocusOut;
-extern int ProximityIn;
-extern int ProximityOut;
-extern int DeviceStateNotify;
-extern int DeviceKeyStateNotify;
-extern int DeviceButtonStateNotify;
-extern int DeviceMappingNotify;
-extern int ChangeDeviceNotify;
-extern int DevicePresenceNotify;
+extern	int	DeviceValuator;
+extern	int	DeviceKeyPress;
+extern	int	DeviceKeyRelease;
+extern	int	DeviceButtonPress;
+extern	int	DeviceButtonRelease;
+extern	int	DeviceMotionNotify;
+extern	int	DeviceFocusIn;
+extern	int	DeviceFocusOut;
+extern	int	ProximityIn;
+extern	int	ProximityOut;
+extern	int	DeviceStateNotify;
+extern	int	DeviceKeyStateNotify;
+extern	int	DeviceButtonStateNotify;
+extern	int	DeviceMappingNotify;
+extern	int	ChangeDeviceNotify;
 
-extern int RT_INPUTCLIENT;
+extern	int	RT_INPUTCLIENT;
+
+#if 0
+/* FIXME: in dix */
+extern	InputInfo inputInfo;
+#endif
 
 #endif /* EXGLOBALS_H */

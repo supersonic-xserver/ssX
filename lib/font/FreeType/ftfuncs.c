@@ -1,5 +1,11 @@
-/* $XFree86: xc/lib/font/FreeType/ftfuncs.c,v 1.46tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1997 by Mark Leisher
 Copyright (c) 1998-2003 by Juliusz Chroboczek
 Copyright (c) 1998 Go Watanabe, All rights reserved.
@@ -27,20 +33,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/* $XFree86: xc/lib/font/FreeType/ftfuncs.c,v 1.45 2004/04/14 15:32:43 dawes Exp $ */
+
 #include "fontmisc.h"
 
 #ifndef FONTMODULE
 #include <string.h>
 #include <math.h>
 #else
-#include <X11/Xmd.h>
-#include <X11/Xdefs.h>
+#include "Xmd.h"
+#include "Xdefs.h"
 #include "xf86_ansic.h"
 #endif
 
 #include "fntfilst.h"
 #include "fontutil.h"
-#include <X11/fonts/FSproto.h>
+#include "FSproto.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SIZES_H
@@ -49,7 +57,10 @@ THE SOFTWARE.
 #include FT_TYPE1_TABLES_H
 #include FT_XFREE86_H
 #include FT_BBOX_H
+#include FT_INTERNAL_TRUETYPE_TYPES_H
 #include FT_TRUETYPE_TAGS_H
+#include FT_INTERNAL_SFNT_H
+#include FT_INTERNAL_STREAM_H
 /*
  *  If you want to use FT_Outline_Get_CBox instead of 
  *  FT_Outline_Get_BBox, define here.
@@ -113,25 +124,6 @@ static char *xlfd_props[] = {
     "CHARSET_REGISTRY",
     "CHARSET_ENCODING",
 };
-
-
-/* read 2-byte value from a SFNT table */
-static FT_UShort
-sfnt_get_ushort( FT_Face     face,
-                 FT_ULong    table_tag,
-                 FT_ULong    table_offset )
-{
-  FT_Byte    buff[2];
-  FT_ULong   len = sizeof(buff);
-  FT_UShort  result = 0;
-
-  if ( !FT_Load_Sfnt_Table( face, table_tag, table_offset, buff, &len ) );
-    result = (FT_UShort)( (buff[0] << 8) | buff[1] );
-
-  return result;
-}
-
-#define  sfnt_get_short(f,t,o)  ((FT_Short)sfnt_get_ushort((f),(t),(o)))
 
 
 static int ftypeInitP = 0;      /* is the engine initialised? */
@@ -222,10 +214,6 @@ FreeTypeOpenFace(FTFacePtr *facep, char *FTFileName, char *realFileName, int fac
         if(maxp && maxp->maxContours == 0)
             face->bitmap = 1;
     }
-
-    face->num_hmetrics = (FT_UInt) sfnt_get_ushort( face->face,
-                                                    TTAG_hhea, 34 );
-
     /* Insert face in hashtable and return it */
     face->next = faceTable[bucket];
     faceTable[bucket] = face;
@@ -477,32 +465,30 @@ FreeTypeOpenInstance(FTInstancePtr *instance_return, FTFacePtr face,
     }
 
     if( FT_IS_SFNT( face->face ) ) {
-        FT_F26Dot6  tt_char_width, tt_char_height, tt_dim_x, tt_dim_y;
-        FT_UInt     nn;
-
-        instance->strike_index=0xFFFFU;
-
-        tt_char_width  = (FT_F26Dot6)(trans->scale*(1<<6) + 0.5);
-        tt_char_height = (FT_F26Dot6)(trans->scale*(1<<6) + 0.5);
-
-        tt_dim_x = FLOOR64( ( tt_char_width  * trans->xres + 36 ) / 72 + 32 );
-        tt_dim_y = FLOOR64( ( tt_char_height * trans->yres + 36 ) / 72 + 32 );
-
-	if ( tt_dim_x && !tt_dim_y )
-	    tt_dim_y = tt_dim_x;
-	else if ( !tt_dim_x && tt_dim_y )
-	    tt_dim_x = tt_dim_y;
-
-        for ( nn = 0; nn < face->face->num_fixed_sizes; nn++ )
-        {
-          FT_Bitmap_Size*  sz = &face->face->available_sizes[nn];
-
-          if ( tt_dim_x == FLOOR64(sz->x_ppem + 32) && tt_dim_y == FLOOR64(sz->y_ppem + 32) )
-          {
-            instance->strike_index = nn;
-            break;
-          }
-        }
+	/* See Set_Char_Sizes() in ttdriver.c */
+	FT_Error err;
+	TT_Face tt_face;
+	FT_Long tt_dim_x, tt_dim_y;
+	FT_UShort tt_x_ppem, tt_y_ppem;
+	FT_F26Dot6  tt_char_width, tt_char_height;
+	SFNT_Service sfnt;
+	tt_face=(TT_Face)face->face;
+	tt_char_width  = (int)(trans->scale*(1<<6) + 0.5);
+	tt_char_height = (int)(trans->scale*(1<<6) + 0.5);
+	if ( ( tt_face->header.Flags & 8 ) != 0 ) {
+	    tt_dim_x = ( ( tt_char_width  * trans->xres + (36+32*72) ) / 72 ) & -64;
+	    tt_dim_y = ( ( tt_char_height * trans->yres + (36+32*72) ) / 72 ) & -64;
+	}
+	else{
+	    tt_dim_x = ( ( tt_char_width  * trans->xres + 36 ) / 72 );
+	    tt_dim_y = ( ( tt_char_height * trans->yres + 36 ) / 72 );
+	}
+	tt_x_ppem  = (FT_UShort)( tt_dim_x >> 6 );
+	tt_y_ppem  = (FT_UShort)( tt_dim_y >> 6 );
+	/* See Reset_SBit_Size() in ttobjs.c */
+	sfnt   = (SFNT_Service)tt_face->sfnt;
+	err = sfnt->set_sbit_strike(tt_face,tt_x_ppem,tt_y_ppem,&instance->strike_index);
+	if ( err ) instance->strike_index=0xFFFFU;
     }
 
     /* maintain a linked list of instances */
@@ -820,61 +806,31 @@ ft_make_up_italic_bitmap( char *raster, int bpr, int ht, int shift,
  * parse the htmx field in TrueType font.
  */
 
+/* from src/truetype/ttgload.c */
 static void
-tt_get_metrics( FT_Face         face,
+tt_get_metrics( TT_HoriHeader*  header,
 		FT_UInt         idx,
-		FT_UInt         num_hmetrics,
 		FT_Short*       bearing,
 		FT_UShort*      advance )
+/*  Copyright 1996-2001, 2002 by                      */
+/*  David Turner, Robert Wilhelm, and Werner Lemberg. */
 {
-   /* read the metrics directly from the horizontal header, we
-    * parse the SFNT table directly through the standard FreeType API.
-    * this works with any version of the library and doesn't need to
-    * peek at its internals. Maybe a bit less
-    */
-    FT_UInt  count  = num_hmetrics;
-    FT_ULong length = 0;
-    FT_ULong offset = 0;
-    FT_Error error;
+    TT_LongMetrics  longs_m;
+    FT_UShort       k = header->number_Of_HMetrics;
 
-    error = FT_Load_Sfnt_Table( face, TTAG_hmtx, 0, NULL, &length );
+    if ( k == 0 ) {
+	*bearing = *advance = 0;
+	return;
+    }
 
-    if ( count == 0 || error )
-    {
-      *advance = 0;
-      *bearing = 0;
+    if ( idx < (FT_UInt)k ) {
+	longs_m  = (TT_LongMetrics )header->long_metrics + idx;
+	*bearing = longs_m->bearing;
+	*advance = longs_m->advance;
     }
-    else if ( idx < count )
-    {
-	offset = idx * 4L;
-	if ( offset + 4 > length )
-	{
-	    *advance = 0;
-	    *bearing = 0;
-	}
-	else
-	{
-	    *advance = sfnt_get_ushort( face, TTAG_hmtx, offset );
-	    *bearing = sfnt_get_short ( face, TTAG_hmtx, offset+2 );
-	}
-    }
-    else
-    {
-	offset = 4L * (count - 1);
-	if ( offset + 4 > length )
-	{
-	    *advance = 0;
-	    *bearing = 0;
-	}
-	else
-	{
-	    *advance = sfnt_get_ushort ( face, TTAG_hmtx, offset );
-	    offset += 4 + 2 * ( idx - count );
-	    if ( offset + 2 > length)
-		*bearing = 0;
-	    else
-		*bearing = sfnt_get_short ( face, TTAG_hmtx, offset );
-    }
+    else {
+	*bearing = ((TT_ShortMetrics*)header->short_metrics)[idx - k];
+	*advance = ((TT_LongMetrics )header->long_metrics)[k - 1].advance;
     }
 }
 
@@ -882,7 +838,6 @@ static int
 ft_get_very_lazy_bbox( FT_UInt index,
 		       FT_Face face,
 		       FT_Size size,
-		       FT_UInt num_hmetrics,
 		       double slant,
 		       FT_Matrix *matrix,
 		       FT_BBox *bbox,
@@ -890,14 +845,15 @@ ft_get_very_lazy_bbox( FT_UInt index,
 		       FT_Long *vertAdvance)
 {
     if ( FT_IS_SFNT( face ) ) {
+	TT_Face   ttface = (TT_Face)face;
 	FT_Size_Metrics *smetrics = &size->metrics;
 	FT_Short  leftBearing = 0;
 	FT_UShort advance = 0;
 	FT_Vector p0, p1, p2, p3;
 
 	/* horizontal */
-	tt_get_metrics( face, index, num_hmetrics,
-		       &leftBearing, &advance );
+	tt_get_metrics(&ttface->horizontal, index,
+		       &leftBearing, &advance);
 
 #if 0
 	fprintf(stderr,"x_scale=%f y_scale=%f\n",
@@ -956,25 +912,69 @@ static FT_Error
 FT_Do_SBit_Metrics( FT_Face ft_face, FT_Size ft_size, FT_ULong strike_index,
 		    FT_UShort glyph_index, FT_Glyph_Metrics *metrics_return )
 {
-   if ( strike_index != 0xFFFFU && ft_face->available_sizes != NULL )
-   {
-     FT_Error         error;
-     FT_Bitmap_Size*  sz = &ft_face->available_sizes[strike_index];
+    SFNT_Service       sfnt;
+    TT_Face            face;
+    FT_Error           error;
+    FT_Stream          stream;
+    TT_SBit_Strike     strike;
+    TT_SBit_Range      range;
+    TT_SBit_MetricsRec elem_metrics;
+    FT_ULong           ebdt_pos;
+    FT_ULong           glyph_offset;
+    ;
 
-     error = FT_Set_Pixel_Sizes( ft_face, sz->x_ppem/64, sz->y_ppem/64 );
-     if ( !error )
-     {
-       error = FT_Load_Glyph( ft_face, glyph_index, FT_LOAD_SBITS_ONLY );
-       if ( !error )
-       {
-         if ( metrics_return != NULL )
-           *metrics_return = ft_face->glyph->metrics;
+    if ( ! FT_IS_SFNT( ft_face ) )
+    {
+        error=-1;
+        goto Exit;
+    }
 
-         return 0;
-       }
-     }
-   }
-   return -1;
+    face = (TT_Face)ft_face;
+    sfnt   = (SFNT_Service)face->sfnt;
+
+    if ( strike_index != 0xFFFFU && sfnt->load_sbits ) {
+        /* Check whether there is a glyph sbit for the current index */
+        error = sfnt->find_sbit_image( face, glyph_index, strike_index,
+                                       &range, &strike, &glyph_offset );
+    }
+    else error=-1;
+    if ( error ) goto Exit;
+
+    if ( metrics_return == NULL ) goto Exit;
+
+    stream = face->root.stream;
+
+    /* now, find the location of the `EBDT' table in */
+    /* the font file                                 */
+    error = face->goto_table( face, TTAG_EBDT, stream, 0 );
+    if ( error )
+      error = face->goto_table( face, TTAG_bdat, stream, 0 );
+    if (error)
+      goto Exit;
+
+    ebdt_pos = FT_STREAM_POS();
+
+    /* place stream at beginning of glyph data and read metrics */
+    if ( FT_STREAM_SEEK( ebdt_pos + glyph_offset ) )
+      goto Exit;
+
+    error = sfnt->load_sbit_metrics( stream, range, &elem_metrics );
+    if ( error )
+      goto Exit;
+
+    metrics_return->width  = (FT_Pos)elem_metrics.width  << 6;
+    metrics_return->height = (FT_Pos)elem_metrics.height << 6;
+
+    metrics_return->horiBearingX = (FT_Pos)elem_metrics.horiBearingX << 6;
+    metrics_return->horiBearingY = (FT_Pos)elem_metrics.horiBearingY << 6;
+    metrics_return->horiAdvance  = (FT_Pos)elem_metrics.horiAdvance  << 6;
+    
+    metrics_return->vertBearingX = (FT_Pos)elem_metrics.vertBearingX << 6;
+    metrics_return->vertBearingY = (FT_Pos)elem_metrics.vertBearingY << 6;
+    metrics_return->vertAdvance  = (FT_Pos)elem_metrics.vertAdvance  << 6;
+
+  Exit:
+      return error;
 }
 
 int
@@ -1030,7 +1030,6 @@ FreeTypeRasteriseGlyph(unsigned idx, int flags, CharInfoPtr tgp,
 	    if( bitmap_metrics == NULL ) {
 		if ( instance->ttcap.flags & TTCAP_IS_VERY_LAZY ) {
 		    if( ft_get_very_lazy_bbox( idx, face->face, instance->size, 
-					       face->num_hmetrics,
 					       instance->ttcap.vl_slant,
 					       &instance->transformation.matrix,
 					       &bbox, &outline_hori_advance, 
@@ -1191,26 +1190,9 @@ FreeTypeRasteriseGlyph(unsigned idx, int flags, CharInfoPtr tgp,
 	}
 
 	if( face->face->glyph->format != FT_GLYPH_FORMAT_BITMAP ) {
-#ifdef USE_GET_CBOX
-	    FT_Outline_Get_CBox(&face->face->glyph->outline, &bbox);
-	    ftrc = 0;
-#else
-	    ftrc = FT_Outline_Get_BBox(&face->face->glyph->outline, &bbox);
-#endif
-	    if( ftrc != 0 ) return FTtoXReturnCode(ftrc);
-	    bbox.yMin = FLOOR64( bbox.yMin );
-	    bbox.yMax = CEIL64 ( bbox.yMax );
-	    ht_actual = ( bbox.yMax - bbox.yMin ) >> 6;
-	    /* FreeType think a glyph with 0 height control box is invalid. 
-	     * So just let X to create a empty bitmap instead. */
-	    if ( ht_actual == 0 )
-		is_outline = -1;
-	    else
-	    {
 	    ftrc = FT_Render_Glyph(face->face->glyph,FT_RENDER_MODE_MONO);
 	    if( ftrc != 0 ) return FTtoXReturnCode(ftrc);
 	    is_outline = 1;
-	}
 	}
 	else{
 	    is_outline=0;
@@ -1222,7 +1204,6 @@ FreeTypeRasteriseGlyph(unsigned idx, int flags, CharInfoPtr tgp,
 	if( is_outline == 1 ){
 	    if( correct ){
 		if( ft_get_very_lazy_bbox( idx, face->face, instance->size, 
-					   face->num_hmetrics,
 					   instance->ttcap.vl_slant,
 					   &instance->transformation.matrix,
 					   &bbox, &outline_hori_advance, 

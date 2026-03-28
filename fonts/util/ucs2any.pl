@@ -11,6 +11,7 @@
 # storing the same fonts in many different encodings is clearly
 # a waste of storage capacity).
 #
+# Id: ucs2any.pl,v 1.12 2001-02-17 15:21:05+00 mgk25 Rel
 # $XFree86: xc/fonts/util/ucs2any.pl,v 1.5 2002/10/12 16:06:42 herrb Exp $
 
 use strict 'subs';

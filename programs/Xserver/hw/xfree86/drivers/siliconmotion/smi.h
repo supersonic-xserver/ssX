@@ -1,3 +1,19 @@
+/* Header:   //Mercury/Projects/archives/XFree86/4.0/smi.h-arc   1.51   29 Nov 2000 17:45:16   Frido  $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) 1994-1999 The XFree86 Project, Inc.  All Rights Reserved.
 Copyright (C) 2000 Silicon Motion, Inc.  All Rights Reserved.
@@ -24,10 +40,12 @@ Silicon Motion shall not be used in advertising or otherwise to promote the
 sale, use or other dealings in this Software without prior written
 authorization from the XFree86 Project and Silicon Motion.
 */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi.h,v 1.18tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi.h,v 1.14 2003/10/08 11:13:01 eich Exp $ */
 
 #ifndef _SMI_H
 #define _SMI_H
+
+#define USE_FB
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -42,7 +60,16 @@ authorization from the XFree86 Project and Silicon Motion.
 #include "mipointer.h"
 #include "micmap.h"
 
+#ifdef USE_FB
 #include "fb.h"
+#else
+
+#define PSZ 8
+#include "cfb.h"
+#undef PSZ
+#include "cfb16.h"
+#include "cfb24.h"
+#endif
 
 #include "xaa.h"
 #include "xf86cmap.h"
@@ -52,7 +79,7 @@ authorization from the XFree86 Project and Silicon Motion.
 #include "vbe.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /******************************************************************************/
 /*			D E F I N I T I O N S				      */
@@ -81,12 +108,12 @@ typedef struct
 	CARD8	CR90[16], CR9F_2;
 	CARD8	CRA0[14];
 	CARD8	smiDACMask, smiDacRegs[256][3];
-	/* CZ 2.11.2001: for gamma correction */
-	CARD8	CCR66;
-	/* end CZ */
+    /* CZ 2.11.2001: for gamma correction */
+    CARD8   CCR66;
+    /* end CZ */
 	CARD8	smiFont[8192];
 	CARD32	DPR10, DPR1C, DPR20, DPR24, DPR28, DPR2C, DPR30, DPR3C, DPR40,
-		DPR44;
+			DPR44;
 	CARD32	VPR00, VPR0C, VPR10;
 	CARD32	CPR00;
 	CARD32	FPR00_, FPR0C_, FPR10_;
@@ -133,12 +160,7 @@ typedef struct
 	CARD8 *			DPRBase;	/* Base of DPR registers */
 	CARD8 *			VPRBase;	/* Base of VPR registers */
 	CARD8 *			CPRBase;	/* Base of CPR registers */
-	CARD8 *			FPRBase;	/* Base of FPR registers -
-						   for 0730 chipset */
-	CARD8 *			DCRBase;	/* Base of DCR registers -
-						   for 501 chipset */
-	CARD8 *			SCRBase;	/* Base of SCR registers -
-						   for 501 chipset */
+    CARD8 *			FPRBase;    /* Base of FPR registers - for 0730 chipset */
 	CARD8 *			DataPortBase;	/* Base of data port */
 	int			DataPortSize;	/* Size of data port */
 	CARD8 *			IOBase;		/* Base of MMIO VGA ports */
@@ -149,7 +171,7 @@ typedef struct
 	CARD32			FBCursorOffset;	/* Cursor storage location */
 	CARD32			FBReserved;	/* Reserved memory in frame
 						   buffer */
-
+	
 	Bool			PrimaryVidMapped;	/* Flag indicating if
 							   vgaHWMapMem was used
 							   successfully for
@@ -175,7 +197,7 @@ typedef struct
 	Bool			ShowCache;	/* Debugging option */
 	Bool			useBIOS;	/* Use BIOS for mode sets */
 	Bool			zoomOnLCD;	/* Zoom on LCD */
-
+	
 	CloseScreenProcPtr	CloseScreen;	/* Pointer used to save wrapped
 						   CloseScreen function */
 	XAAInfoRecPtr		AccelInfoRec;	/* XAA info Rec */
@@ -252,25 +274,21 @@ typedef struct
 /*			M A C R O S					      */
 /******************************************************************************/
 
-#if SMI_DEBUG || defined(DEBUG)
-# define VERBLEV 1
-# define ENTER_PROC(PROCNAME)						\
-	 xf86ErrorFVerb(VERBLEV, "ENTER\t" PROCNAME "(%d)\n", __LINE__);\
-	 xf86Break1()
-# define DEBUG_PROC(PROCNAME)						\
-	 xf86ErrorFVerb(VERBLEV, "DEBUG\t" PROCNAME "(%d)\n", __LINE__);\
-	 xf86Break2()
-# define LEAVE_PROC(PROCNAME)						\
-	 xf86ErrorFVerb(VERBLEV, "LEAVE\t" PROCNAME "(%d)\n", __LINE__);\
-	 xf86Break1()
-# undef  DEBUG
-# define DEBUG(arg)	xf86ErrorFVerb arg
+#if SMI_DEBUG
+#	define VERBLEV 1
+#	define ENTER_PROC(PROCNAME)	xf86ErrorFVerb(VERBLEV, "ENTER\t" PROCNAME \
+									"(%d)\n", __LINE__); xf86Break1()
+#	define DEBUG_PROC(PROCNAME)	xf86ErrorFVerb(VERBLEV, "DEBUG\t" PROCNAME \
+									"(%d)\n", __LINE__); xf86Break2()
+#	define LEAVE_PROC(PROCNAME)	xf86ErrorFVerb(VERBLEV, "LEAVE\t" PROCNAME \
+									"(%d)\n", __LINE__); xf86Break1()
+#	define DEBUGX(arg)				xf86ErrorFVerb arg
 #else
-# define VERBLEV 4
-# define ENTER_PROC(PROCNAME)
-# define DEBUG_PROC(PROCNAME)
-# define LEAVE_PROC(PROCNAME)
-# define DEBUG(arg)
+#	define VERBLEV	4
+#	define ENTER_PROC(PROCNAME)
+#	define DEBUG_PROC(PROCNAME)
+#	define LEAVE_PROC(PROCNAME)
+#	define DEBUGX(arg)
 #endif
 
 /* Some Silicon Motion structs & registers */
@@ -322,9 +340,9 @@ do									\
 /******************************************************************************/
 
 /* smi_dac.c */
-void SMI_CommonCalcClock(int scrnIndex, long freq, int min_m, int min_n1,
-			 int max_n1, int min_n2, int max_n2, long freq_min,
-			 long freq_max, unsigned char * mdiv,
+void SMI_CommonCalcClock(int scrnIndex, long freq, int min_m, int min_n1, 
+			 int max_n1, int min_n2, int max_n2, long freq_min, 
+			 long freq_max, unsigned char * mdiv, 
 			 unsigned char * ndiv);
 
 /* smi_i2c */

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997,1998 by UCHIYAMA Yasushi
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,11 +27,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/hurd/hurd_mouse.c,v 1.10 2005/10/14 15:17:03 tsi Exp $ */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
+#define NEED_EVENTS
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "inputstr.h"
@@ -35,7 +40,6 @@
 #include "xf86Xinput.h"
 #include "xf86OSmouse.h"
 #include "xf86_OSlib.h"
-#include "xisb.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -43,10 +47,7 @@
 #include <sys/file.h>
 #include <assert.h>
 #include <mach.h>
-#include <hurd.h>
 #include <sys/ioctl.h>
-
-#define DEFAULT_MOUSE_DEV	"/dev/mouse"
 
 typedef unsigned short kev_type;		/* kd event type */
 typedef unsigned char Scancode;
@@ -76,6 +77,85 @@ typedef struct {
 #define KEYBD_EVENT	5		/* key up/down */
 
 #define NUMEVENTS	64
+
+/*
+ * OsMouseProc --
+ *      Handle the initialization, etc. of a mouse
+ */
+static int
+OsMouseProc(DeviceIntPtr pPointer, int what)
+{
+    InputInfoPtr pInfo;
+    MouseDevPtr pMse;
+    unsigned char map[MSE_MAXBUTTONS + 1];
+    int nbuttons;
+
+    pInfo = pPointer->public.devicePrivate;
+    pMse = pInfo->private;
+    pMse->device = pPointer;
+
+    switch (what) {
+    case DEVICE_INIT: 
+	pPointer->public.on = FALSE;
+
+	for (nbuttons = 0; nbuttons < MSE_MAXBUTTONS; ++nbuttons)
+	    map[nbuttons + 1] = nbuttons + 1;
+
+	InitPointerDeviceStruct((DevicePtr)pPointer, 
+				map, 
+				min(pMse->buttons, MSE_MAXBUTTONS),
+				miPointerGetMotionEvents, 
+				pMse->Ctrl,
+				miPointerGetMotionBufferSize());
+
+	/* X valuator */
+	xf86InitValuatorAxisStruct(pPointer, 0, 0, -1, 1, 0, 1);
+	xf86InitValuatorDefaults(pPointer, 0);
+	/* Y valuator */
+	xf86InitValuatorAxisStruct(pPointer, 1, 0, -1, 1, 0, 1);
+	xf86InitValuatorDefaults(pPointer, 1);
+	xf86MotionHistoryAllocate(pInfo);
+	break;
+
+    case DEVICE_ON:
+	pInfo->fd = xf86OpenSerial(pInfo->options);
+	if (pInfo->fd == -1)
+	    xf86Msg(X_WARNING, "%s: cannot open input device\n", pInfo->name);
+	else {
+	    pMse->buffer = XisbNew(pInfo->fd,
+				   NUMEVENTS * sizeof(kd_event));
+	    if (!pMse->buffer) {
+		xfree(pMse);
+		pInfo->private = NULL;
+		xf86CloseSerial(pInfo->fd);
+		pInfo->fd = -1;
+	    } else {
+		xf86FlushInput(pInfo->fd);
+		AddEnabledDevice(pInfo->fd);
+	    }
+	}
+	pMse->lastButtons = 0;
+	pMse->emulateState = 0;
+	pPointer->public.on = TRUE;
+	break;
+
+    case DEVICE_OFF:
+    case DEVICE_CLOSE:
+	if (pInfo->fd != -1) {
+	    RemoveEnabledDevice(pInfo->fd);
+	    if (pMse->buffer) {
+		XisbFree(pMse->buffer);
+		pMse->buffer = NULL;
+	    }
+	    xf86CloseSerial(pInfo->fd);
+	    pInfo->fd = -1;
+	}
+	pPointer->public.on = FALSE;
+	usleep(300000);
+	break;
+    }
+    return Success;
+}
 
 /*
  * OsMouseReadInput --
@@ -152,6 +232,7 @@ OsMousePreInit(InputInfoPtr pInfo, const char *protocol, int flags)
 	else {
 	    xf86Msg(X_ERROR, "%s: cannot open input device\n", pInfo->name);
 	    xfree(pMse);
+	    pInfo->private = NULL;
 	    return FALSE;
 	}
     }
@@ -162,30 +243,11 @@ OsMousePreInit(InputInfoPtr pInfo, const char *protocol, int flags)
     pMse->CommonOptions(pInfo);
 
     /* Setup the local procs. */
+    pInfo->device_control = OsMouseProc;
     pInfo->read_input = OsMouseReadInput;
     
     pInfo->flags |= XI86_CONFIGURED;
     return TRUE;
-}
-
-static const char *
-FindDevice(InputInfoPtr pInfo, const char *protocol, int flags)
-{
-    const char path[] = DEFAULT_MOUSE_DEV;
-    int fd;
-
-    SYSCALL (fd = open(path, O_RDWR | O_NONBLOCK | O_EXCL));
-
-    if (fd == -1)
-	return NULL;
-
-    close(fd);
-    pInfo->conf_idev->commonOptions =
-	xf86AddNewOption(pInfo->conf_idev->commonOptions, "Device", path);
-    xf86Msg(X_INFO, "%s: Setting Device option to \"%s\"\n", pInfo->name,
-	    path);
-
-    return path;
 }
 
 static int
@@ -217,6 +279,7 @@ CheckProtocol(const char *protocol)
     return FALSE;
 }
 
+/* XXX Is this appropriate?  If not, this function should be removed. */
 static const char *
 DefaultProtocol(void)
 {
@@ -233,9 +296,9 @@ xf86OSMouseInit(int flags)
 	return NULL;
     p->SupportedInterfaces = SupportedInterfaces;
     p->BuiltinNames = BuiltinNames;
-    p->FindDevice = FindDevice;
     p->DefaultProtocol = DefaultProtocol;
     p->CheckProtocol = CheckProtocol;
     p->PreInit = OsMousePreInit;
     return p;
 }
+

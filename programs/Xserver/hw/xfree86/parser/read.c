@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/read.c,v 1.27 2005/01/26 05:31:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -165,81 +172,113 @@ xf86parseConfigFile (XF86ConfigPtr ptr)
 			xf86setSection (val.str);
 			if (xf86nameCompare (val.str, "files") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_files_lst, xf86parseFilesSection,
 							   XF86ConfFilesPtr);
 			}
 			else if (xf86nameCompare (val.str, "serverflags") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_flags_lst, xf86parseFlagsSection,
 							 XF86ConfFlagsPtr);
 			}
 			else if (xf86nameCompare (val.str, "keyboard") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_input_lst, xf86parseKeyboardSection,
 							 XF86ConfInputPtr);
 			}
 			else if (xf86nameCompare (val.str, "pointer") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_input_lst, xf86parsePointerSection,
 							 XF86ConfInputPtr);
 			}
 			else if (xf86nameCompare (val.str, "videoadaptor") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_videoadaptor_lst, xf86parseVideoAdaptorSection,
 							 XF86ConfVideoAdaptorPtr);
 			}
 			else if (xf86nameCompare (val.str, "device") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_device_lst, xf86parseDeviceSection,
 							 XF86ConfDevicePtr);
 			}
 			else if (xf86nameCompare (val.str, "monitor") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_monitor_lst, xf86parseMonitorSection,
 							 XF86ConfMonitorPtr);
 			}
 			else if (xf86nameCompare (val.str, "modes") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_modes_lst, xf86parseModesSection,
 							 XF86ConfModesPtr);
 			}
 			else if (xf86nameCompare (val.str, "screen") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_screen_lst, xf86parseScreenSection,
 							 XF86ConfScreenPtr);
 			}
 			else if (xf86nameCompare(val.str, "inputdevice") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_input_lst, xf86parseInputSection,
 							 XF86ConfInputPtr);
 			}
 			else if (xf86nameCompare (val.str, "module") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_modules_lst, xf86parseModuleSection,
 							 XF86ConfModulePtr);
 			}
 			else if (xf86nameCompare (val.str, "serverlayout") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_layout_lst, xf86parseLayoutSection,
 							 XF86ConfLayoutPtr);
 			}
 			else if (xf86nameCompare (val.str, "vendor") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_vendor_lst, xf86parseVendorSection,
 							 XF86ConfVendorPtr);
 			}
 			else if (xf86nameCompare (val.str, "dri") == 0)
 			{
+				xf86conffree(val.str);
+				val.str = NULL;
 				HANDLE_LIST (conf_dri_lst, xf86parseDRISection,
 							   XF86ConfDRIPtr);
 			}
 			else
 			{
 				Error (INVALID_SECTION_MSG, xf86tokenString ());
+				xf86conffree(val.str);
+				val.str = NULL;
 			}
 			break;
 		default:
 			Error (INVALID_KEYWORD_MSG, xf86tokenString ());
+			xf86conffree(val.str);
+			val.str = NULL;
 		}
 	}
 	return ptr;

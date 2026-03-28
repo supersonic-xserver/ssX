@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxinit.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxinit.c,v 1.7 2005/03/07 16:39:17 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -54,7 +61,7 @@
 #include "dmxpict.h"
 #endif
 
-#include <X11/Xos.h>                /* For gettimeofday */
+#include "Xos.h"                /* For gettimeofday */
 #include "dixstruct.h"
 #include "panoramiXsrv.h"
 
@@ -64,8 +71,8 @@
 #include <GL/glx.h>
 #include <GL/glxint.h>
 #include "dmx_glxvisuals.h"
-#include <X11/extensions/Xext.h>
-#include <X11/extensions/extutil.h>
+#include "Xext.h"
+#include "extutil.h"
 
 extern void GlxSetVisualConfigs(
     int               nconfigs,
@@ -73,6 +80,9 @@ extern void GlxSetVisualConfigs(
     void              **configprivs
 );
 #endif /* GLXPROXY */
+
+extern void SetVendorRelease(int release); /* in dix/main.c */
+extern void SetVendorString(char *string); /* in dix/main.c */
 
 /* Global variables available to all Xserver/hw/dmx routines. */
 int             dmxNumScreens;
@@ -519,9 +529,9 @@ static const char *dmxExecOS(void)
 
     if (!initialized++) {
         memset(buffer, 0, sizeof(buffer));
-        if (uname(&u) >= 0)
-	    XmuSnprintf(buffer, sizeof(buffer)-1, "%s %s %s",
-			u.sysname, u.release, u.version);
+        uname(&u);
+        XmuSnprintf(buffer, sizeof(buffer)-1, "%s %s %s",
+                    u.sysname, u.release, u.version);
     }
     return buffer;
 }
@@ -563,7 +573,7 @@ static const char *dmxExecHost(void)
 }
 
 /** This routine is called in Xserver/dix/main.c from \a main(). */
-void InitOutput(ScreenInfo *pScreenInfo, const int argc, const char *argv[])
+void InitOutput(ScreenInfo *pScreenInfo, int argc, char *argv[])
 {
     int                  i;
     static unsigned long dmxGeneration = 0;
@@ -816,7 +826,7 @@ void InitOutput(ScreenInfo *pScreenInfo, const int argc, const char *argv[])
 /* RATS: Assuming the fp string (which comes from the command-line argv
          vector) is NULL-terminated, the buffer is large enough for the
          strcpy. */ 
-static void dmxSetDefaultFontPath(const char *fp)
+static void dmxSetDefaultFontPath(char *fp)
 {
     int fplen = strlen(fp) + 1;
     
@@ -887,7 +897,7 @@ void ddxInitGlobals(void)
 #endif
 
 /** Process our command line arguments. */
-int ddxProcessArgument(int argc, const char *argv[], int i)
+int ddxProcessArgument(int argc, char *argv[], int i)
 {
     int retval = 0;
     
@@ -1065,7 +1075,7 @@ CARD32 GetTimeInMillis(void)
 
 #ifdef __DARWIN__
 void
-DarwinHandleGUI(int argc, const char *argv[], char *envp[])
+DarwinHandleGUI(int argc, char *argv[])
 {
 }
 #endif

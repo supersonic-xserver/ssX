@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/setfocus.c,v 3.4 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,21 +60,17 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "windowstr.h"	/* focus struct      */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "windowstr.h"			/* focus struct      */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 
 #include "dixevents.h"
 
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
 
 #include "setfocus.h"
@@ -78,17 +82,18 @@ SOFTWARE.
  */
 
 int
-SProcXSetDeviceFocus(ClientPtr client)
-{
-    char n;
+SProcXSetDeviceFocus(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xSetDeviceFocusReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xSetDeviceFocusReq);
     swapl(&stuff->focus, n);
     swapl(&stuff->time, n);
-    return (ProcXSetDeviceFocus(client));
-}
+    return(ProcXSetDeviceFocus(client));
+    }
 
 /***********************************************************************
  *
@@ -97,24 +102,26 @@ SProcXSetDeviceFocus(ClientPtr client)
  */
 
 int
-ProcXSetDeviceFocus(ClientPtr client)
-{
-    int ret;
-    DeviceIntPtr dev;
+ProcXSetDeviceFocus(client)
+    register ClientPtr client;
+    {
+    int				ret;
+    register DeviceIntPtr	dev;
 
     REQUEST(xSetDeviceFocusReq);
     REQUEST_SIZE_MATCH(xSetDeviceFocusReq);
 
-    dev = LookupDeviceIntRec(stuff->device);
-    if (dev == NULL || !dev->focus) {
+    dev = LookupDeviceIntRec (stuff->device);
+    if (dev==NULL || !dev->focus)
+	{
 	SendErrorToClient(client, IReqCode, X_SetDeviceFocus, 0, BadDevice);
 	return Success;
-    }
+	}
 
-    ret = SetInputFocus(client, dev, stuff->focus, stuff->revertTo,
-			stuff->time, TRUE);
+    ret = SetInputFocus (client, dev, stuff->focus, stuff->revertTo, 
+	stuff->time, TRUE);
     if (ret != Success)
 	SendErrorToClient(client, IReqCode, X_SetDeviceFocus, 0, ret);
 
     return Success;
-}
+    }

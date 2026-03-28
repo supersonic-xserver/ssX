@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1989-95 GROUPE BULL
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +29,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from GROUPE BULL.
  */
-/* $XFree86: xc/extras/Xpm/lib/XpmI.h,v 1.11 2004/11/18 21:30:51 herrb Exp $ */
+/* $XFree86: xc/extras/Xpm/lib/XpmI.h,v 1.7 2001/11/01 23:35:25 dawes Exp $ */
 
 /*****************************************************************************\
 * XpmI.h:                                                                     *
@@ -325,8 +332,5 @@ FUNC(xpmstrcasecmp, int, (char *s1, char *s2));
 
 FUNC(xpmatoui, unsigned int,
      (char *p, unsigned int l, unsigned int *ui_return));
-
-FUNC(s_popen, FILE *, (char *cmd, const char *type));
-
 
 #endif

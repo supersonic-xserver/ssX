@@ -1,3 +1,11 @@
+/* $Xorg: replywait.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -25,14 +33,17 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86$ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"
 
 
 void
-_IceAddReplyWait(IceConn iceConn, IceReplyWaitInfo *replyWait)
+_IceAddReplyWait (iceConn, replyWait)
+
+IceConn			iceConn;
+IceReplyWaitInfo	*replyWait;
+
 {
     /*
      * Add this replyWait to the end of the list (only if the
@@ -68,8 +79,13 @@ _IceAddReplyWait(IceConn iceConn, IceReplyWaitInfo *replyWait)
 }
 
 
+
 IceReplyWaitInfo *
-_IceSearchReplyWaits(IceConn iceConn, int majorOpcode)
+_IceSearchReplyWaits (iceConn, majorOpcode)
+
+IceConn	iceConn;
+int	majorOpcode;
+
 {
     /*
      * Return the first replyWait in the list with the given majorOpcode
@@ -87,8 +103,13 @@ _IceSearchReplyWaits(IceConn iceConn, int majorOpcode)
 }
 
 
+
 void
-_IceSetReplyReady(IceConn iceConn, IceReplyWaitInfo *replyWait)
+_IceSetReplyReady (iceConn, replyWait)
+
+IceConn			iceConn;
+IceReplyWaitInfo	*replyWait;
+
 {
     /*
      * The replyWait specified has a reply ready.
@@ -104,8 +125,13 @@ _IceSetReplyReady(IceConn iceConn, IceReplyWaitInfo *replyWait)
 }
 
 
+
 Bool
-_IceCheckReplyReady(IceConn iceConn, IceReplyWaitInfo *replyWait)
+_IceCheckReplyReady (iceConn, replyWait)
+
+IceConn			iceConn;
+IceReplyWaitInfo	*replyWait;
+
 {
     _IceSavedReplyWait	*savedReplyWait = iceConn->saved_reply_waits;
     _IceSavedReplyWait	*prev = NULL;

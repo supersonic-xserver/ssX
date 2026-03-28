@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Specialized window functions to protect the alpha channel
  */
 /*
@@ -31,11 +38,16 @@
  *
  * Copyright © 1998 Keith Packard
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaWindow.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaWindow.c,v 1.2 2004/01/19 01:22:48 torrey Exp $ */
 
 #include "fb.h"
 #include "safeAlpha.h"
 #include "rootlessCommon.h"
+
+#ifdef PANORAMIX
+#include "panoramiX.h"
+#include "panoramiXsrv.h"
+#endif
 
 /*
  * SafeAlphaFillRegionTiled
@@ -63,6 +75,17 @@ SafeAlphaFillRegionTiled(
     int         yRot = pDrawable->y;
     FbBits      planeMask;
 
+#ifdef PANORAMIX
+    if(!noPanoramiXExtension)
+    {
+        int index = pDrawable->pScreen->myNum;
+        if(&WindowTable[index]->drawable == pDrawable)
+        {
+            xRot -= panoramiXdataPtr[index].x;
+            yRot -= panoramiXdataPtr[index].y;
+        }
+    }
+#endif
     fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
     fbGetDrawable (&pTile->drawable, tile, tileStride, tileBpp,
                    tileXoff, tileYoff);

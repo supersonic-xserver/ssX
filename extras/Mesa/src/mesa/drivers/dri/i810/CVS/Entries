@@ -1,0 +1,22 @@
+/Makefile/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810_3d_reg.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810context.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810context.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810ioctl.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810ioctl.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810render.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810screen.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810screen.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810span.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810span.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/i810state.c/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810state.h/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810tex.c/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810tex.h/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810texmem.c/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810texstate.c/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810tris.c/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810tris.h/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810vb.c/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+/i810vb.h/1.1.1.1/Fri Mar 18 13:06:26 2005//Tnetbsd-5-2-3-RELEASE
+D/server////

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -24,6 +31,7 @@
 #include <xorg-config.h>
 #endif
 
+#include "scrnintstr.h"
 #include "present_priv.h"
 
 int present_request;
@@ -46,7 +54,7 @@ present_get_window_priv(WindowPtr window, Bool create)
     xorg_list_init(&window_priv->vblank);
     xorg_list_init(&window_priv->notifies);
     window_priv->crtc = PresentCrtcNeverSet;
-    dixSetPrivate(&window->devPrivates, &present_window_private_key, window_priv);
+    dixSetPrivate((PrivateRec **)&window->devPrivates, &present_window_private_key, window_priv);
     return window_priv;
 }
 
@@ -54,14 +62,14 @@ present_get_window_priv(WindowPtr window, Bool create)
  * Hook the close screen function to clean up our screen private
  */
 static Bool
-present_close_screen(ScreenPtr screen)
+present_close_screen(int index, ScreenPtr screen)
 {
     present_screen_priv_ptr screen_priv = present_screen_priv(screen);
 
     present_flip_destroy(screen);
 
     unwrap(screen_priv, screen, CloseScreen);
-    (*screen->CloseScreen) (screen);
+    (*screen->CloseScreen) (index, screen);
     free(screen_priv);
     return TRUE;
 }
@@ -129,24 +137,18 @@ present_destroy_window(WindowPtr window)
 /*
  * Hook the config notify screen function to deliver present config notify events
  */
-static int
-present_config_notify(WindowPtr window,
-                   int x, int y, int w, int h, int bw,
-                   WindowPtr sibling)
+static void
+present_config_notify(ScreenPtr screen, int x, int y)
 {
-    int ret;
-    ScreenPtr screen = window->drawable.pScreen;
+    WindowPtr pWin = screen->root;
     present_screen_priv_ptr screen_priv = present_screen_priv(screen);
 
-    present_send_config_notify(window, x, y, w, h, bw, sibling);
+    present_send_config_notify(pWin, x, y, screen->width, screen->height, 0, NULL);
 
     unwrap(screen_priv, screen, ConfigNotify);
     if (screen->ConfigNotify)
-        ret = screen->ConfigNotify (window, x, y, w, h, bw, sibling);
-    else
-        ret = 0;
+        (*screen->ConfigNotify) (screen, x, y);
     wrap(screen_priv, screen, ConfigNotify, present_config_notify);
-    return ret;
 }
 
 /*
@@ -160,9 +162,9 @@ present_clip_notify(WindowPtr window, int dx, int dy)
     present_screen_priv_ptr screen_priv = present_screen_priv(screen);
 
     present_check_flip_window(window);
-    unwrap(screen_priv, screen, ClipNotify)
+    unwrap(screen_priv, screen, ClipNotify);
     if (screen->ClipNotify)
-        screen->ClipNotify (window, dx, dy);
+        (*screen->ClipNotify) (window, dx, dy);
     wrap(screen_priv, screen, ClipNotify, present_clip_notify);
 }
 
@@ -185,12 +187,12 @@ present_screen_init(ScreenPtr screen, present_screen_info_ptr info)
 
         wrap(screen_priv, screen, CloseScreen, present_close_screen);
         wrap(screen_priv, screen, DestroyWindow, present_destroy_window);
-        wrap(screen_priv, screen, ConfigNotify, present_config_notify);
-        wrap(screen_priv, screen, ClipNotify, present_clip_notify);
+        wrap(screen_priv, screen, ConfigNotify, (ConfigNotifyProcPtr)present_config_notify);
+        wrap(screen_priv, screen, ClipNotify, (ClipNotifyProcPtr)present_clip_notify);
 
         screen_priv->info = info;
 
-        dixSetPrivate(&screen->devPrivates, &present_screen_private_key, screen_priv);
+        dixSetPrivate((PrivateRec **)&screen->devPrivates, &present_screen_private_key, screen_priv);
 
         present_fake_screen_init(screen);
     }

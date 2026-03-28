@@ -22,13 +22,13 @@ sOrdinals       = 0;
 sASDFeatureId   = '';
 sCountryCode    = '';
 sDateTime       = left(' 'date()' 'time(), 26);
-sDescription    = 'XFree86 4.6';
+sDescription    = 'XFree86 4.5';
 sFixPakVer      = '';
 sHostname       = strip(substr(VALUE('HOSTNAME',,'OS2ENVIRONMENT'), 1, 11));
 sLanguageCode   = '';
 sMiniVer        = '';
 sVendor         = 'XFree86';
-sVersion        = '4.6.0';
+sVersion        = '4.5.0';
 
 
 /*

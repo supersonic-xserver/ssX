@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbclip.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbclip.c,v 1.6 2003/07/16 01:38:55 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mfbclip.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
+#include "X.h"
 #include "regionstr.h"
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -89,18 +96,19 @@ if (((rx1) < (rx2)) && ((ry1) < (ry2)) &&			\
  * at the same X coordinates.
  */
 RegionPtr
-mfbPixmapToRegion(PixmapPtr pPix)
+mfbPixmapToRegion(pPix)
+    PixmapPtr	pPix;
 {
-    RegionPtr	pReg;
-    PixelType	*pw, w;
-    int	ib;
+    register RegionPtr	pReg;
+    register PixelType	*pw, w;
+    register int	ib;
     int			width, h, base, rx1 = 0, crects;
     PixelType		*pwLineEnd;
     int			irectPrevStart, irectLineStart;
-    BoxPtr	prectO, prectN;
+    register BoxPtr	prectO, prectN;
     BoxPtr		FirstRect, rects, prectLineStart;
     Bool		fInBox, fSame;
-    PixelType	mask0 = mask[0];
+    register PixelType	mask0 = mask[0];
     PixelType		*pwLine;
     int			nWidth;
 

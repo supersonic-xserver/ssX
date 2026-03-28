@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/drm/kernel/drm.h,v 1.0tsi Exp $ */
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file drm.h 
  * Header for the Direct Rendering Manager
  * 
@@ -43,6 +49,7 @@
 #endif
 
 #if defined(__linux__)
+#include <linux/config.h>
 #include <asm/ioctl.h>		/* For _IO* macros */
 #define DRM_IOCTL_NR(n)		_IOC_NR(n)
 #define DRM_IOC_VOID		_IOC_NONE

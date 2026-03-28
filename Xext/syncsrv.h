@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1991, 1993, 1994, 1998  The Open Group
 
@@ -54,6 +68,9 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <X11/Xproto.h>
 #include <stdint.h>
 
+/* Flag that sync server types are defined - used by misyncstr.h to prevent redefinition */
+#define SYNC_SERVER_TYPES_DEFINED
+
 /* --- Primitives Fix ---
  * We define these only if they haven't been seen yet
  * to stop the 'Unknown type name' errors.
@@ -80,14 +97,14 @@ typedef XID XSyncAlarm;
 
 /* --- CARD64 / XSyncValue FIX ---
  * To avoid 'redefinition with different types', we check if CARD64 exists.
- * If your Xmd.h defines CARD64 as 'unsigned long', we use that to keep
- * the compiler from complaining.
+ * If Xmd.h already defines CARD64, don't redefine it.
+ * Otherwise, use the appropriate type based on architecture.
  */
 #ifndef CARD64
-#if defined(__alpha__) || defined(__alpha) || defined(_XSERVER64)
-typedef long CARD64;
+#ifdef _XSERVER64
+typedef unsigned long CARD64;
 #else
-typedef int64_t CARD64;
+typedef uint32_t CARD64;
 #endif
 #endif
 

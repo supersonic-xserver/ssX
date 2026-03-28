@@ -1,5 +1,11 @@
-/* $Xorg: kbd_mode.c,v 1.3 2000/08/17 19:48:29 cpqbld Exp $ */
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
                     All Rights Reserved
@@ -10,11 +16,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -27,11 +33,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/hw/sun/kbd_mode.c,v 3.12 2003/10/07 21:39:43 herrb Exp $ */
-
-/*
-static  char sccsid[] = "@(#)kbd_mode.c 7.1 87/04/13";
- */
+/* $XFree86: xc/programs/Xserver/hw/sun/kbd_mode.c,v 3.13 2006/01/09 14:59:49 dawes Exp $ */
 
 /*
  * Copyright 1986 by Sun Microsystems, Inc.

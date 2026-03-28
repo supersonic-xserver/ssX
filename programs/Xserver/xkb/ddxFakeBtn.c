@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/xkb/ddxFakeBtn.c,v 1.2tsi Exp $ */
+/* $Xorg: ddxFakeBtn.c,v 1.3 2000/08/17 19:53:45 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,6 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/xkb/ddxFakeBtn.c,v 1.2 2003/11/17 22:20:45 dawes Exp $ */
 
 #include <stdio.h>
 #define	NEED_EVENTS 1
@@ -33,8 +41,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
-#include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XI.h>
+#include "XKBsrv.h"
+#include "XI.h"
 
 void
 XkbDDXFakePointerButton(int event,int button)

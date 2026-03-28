@@ -1,3 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/edid.h,v 1.7 2000/04/20 21:28:26 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* edid.h: defines to parse an EDID block 
  *
@@ -10,7 +25,9 @@
  */
 
 #ifndef _EDID_H_
-#define _EDID_H_ 
+#define _EDID_H_ 1
+
+#include "vdif.h"
 
 /* read complete EDID record */
 #define EDID1_LEN 128
@@ -123,9 +140,7 @@
 #define SETUP _SETUP(GET(D_INPUT))
 #define _SYNC(x) (x  & 0x0F)
 #define SYNC _SYNC(GET(D_INPUT))
-#define _DFP(x) (x & 0x01)
-#define DFP _DFP(GET(D_INPUT))
-#define _GAMMA(x) (x == 0xff ? 1.0 : ((x + 100.0)/100.0))
+#define _GAMMA(x) ((x + 100.0)/100.0)
 #define GAMMA _GAMMA(GET(D_GAMMA))
 #define HSIZE_MAX GET(D_HSIZE)
 #define VSIZE_MAX GET(D_VSIZE)
@@ -157,27 +172,20 @@
 #define T_MANU GET(E_TMANU)
 
 /* extract information from estabished timing section */
-#define _VALID_TIMING(x) !(((x[0] == 0x01) && (x[1] == 0x01)) \
-                        || ((x[0] == 0x00) && (x[1] == 0x00)) \
-                        || ((x[0] == 0x20) && (x[1] == 0x20)) )
-#define VALID_TIMING _VALID_TIMING(c)
 #define _HSIZE1(x) ((x[0] + 31) * 8)
 #define HSIZE1 _HSIZE1(c)
 #define RATIO(x) ((x[1] & 0xC0) >> 6)
 #define RATIO1_1 0
-/* EDID Ver. 1.3 redefined this */
-#define RATIO16_10 RATIO1_1
 #define RATIO4_3 1
 #define RATIO5_4 2
 #define RATIO16_9 3
-#define _VSIZE1(x,y,r) switch(RATIO(x)){ \
-  case RATIO1_1: y =  ((v->version > 1 || v->revision > 2) \
-		       ? (_HSIZE1(x) * 10) / 16 : _HSIZE1(x)); break; \
+#define _VSIZE1(x,y) switch(RATIO(x)){ \
+  case RATIO1_1: y = _HSIZE1(x); break; \
   case RATIO4_3: y = _HSIZE1(x) * 3 / 4; break; \
   case RATIO5_4: y = _HSIZE1(x) * 4 / 5; break; \
   case RATIO16_9: y = _HSIZE1(x) * 9 / 16; break; \
   }
-#define VSIZE1(x) _VSIZE1(c,x,v)
+#define VSIZE1(x) _VSIZE1(c,x)
 #define _REFRESH_R(x) (x[1] & 0x3F) + 60
 #define REFRESH_R  _REFRESH_R(c)
 #define _ID_LOW(x) x[0]
@@ -189,7 +197,7 @@
 #define NEXT_STD_TIMING _NEXT_STD_TIMING(c)
 
 
-/* EDID Ver. >= 1.2 */
+/* EDID Ver. > 1.2 */
 #define _IS_MONITOR_DESC(x) (x[0] == 0 && x[1] == 0 && x[2] == 0 && x[4] == 0)
 #define IS_MONITOR_DESC _IS_MONITOR_DESC(c)
 #define _PIXEL_CLOCK(x) (x[0] + (x[1] << 8)) * 10000
@@ -220,13 +228,11 @@
 #define V_BORDER _V_BORDER(c)
 #define _INTERLACED(x) ((x[17] & 0x80) >> 7)
 #define INTERLACED _INTERLACED(c)
-#define _STEREO(x) ((x[17] & 0x60) >> 5)
+#define _STEREO(x) ((x[17] & 0x60) >> 6)
 #define STEREO _STEREO(c)
-#define _STEREO1(x) (x[17] & 0x1)
-#define STEREO1 _STEREO(c)
-#define _SYNC_T(x) ((x[17] & 0x18) >> 3)
+#define _SYNC_T(x) ((x[17] & 0x18) >> 4)
 #define SYNC_T _SYNC_T(c)
-#define _MISC(x) ((x[17] & 0x06) >> 1)
+#define _MISC(x) ((x[17] & 0x06) >> 2)
 #define MISC _MISC(c)
 
 #define _MONITOR_DESC_TYPE(x) x[3]
@@ -244,18 +250,6 @@
 #define MAX_H _MAX_H(c) 
 #define _MAX_CLOCK(x) x[9]
 #define MAX_CLOCK _MAX_CLOCK(c) 
-#define _HAVE_2ND_GTF(x) (x[10] == 0x02)
-#define HAVE_2ND_GTF _HAVE_2ND_GTF(c)
-#define _F_2ND_GTF(x) (x[12] * 2)
-#define F_2ND_GTF _F_2ND_GTF(c)
-#define _C_2ND_GTF(x) (x[13] / 2)
-#define C_2ND_GTF _C_2ND_GTF(c)
-#define _M_2ND_GTF(x) (x[14] + (x[15] << 8))
-#define M_2ND_GTF _M_2ND_GTF(c)
-#define _K_2ND_GTF(x) (x[16])
-#define K_2ND_GTF _K_2ND_GTF(c)
-#define _J_2ND_GTF(x) (x[17] / 2)
-#define J_2ND_GTF _J_2ND_GTF(c)
 #define MONITOR_NAME 0xFC
 #define ADD_COLOR_POINT 0xFB
 #define WHITEX F_CC(I_CC((GET(D_BW_LOW)),(GET(D_WHITEX)),2))
@@ -275,7 +269,6 @@
 #define _WHITE_GAMMA2(x) _GAMMA(x[14])
 #define WHITE_GAMMA2 _WHITE_GAMMA2(c)
 #define ADD_STD_TIMINGS 0xFA
-#define ADD_DUMMY 0x10
 
 #define _NEXT_DT_MD_SECTION(x) (x = (x + DET_TIMING_INFO_LEN))
 #define NEXT_DT_MD_SECTION _NEXT_DT_MD_SECTION(c)
@@ -284,9 +277,6 @@
 
 /* input type */
 #define DIGITAL(x) x
-
-/* DFP */
-#define DFP1(x) x
 
 /* input voltage level */
 #define V070 0  /* 0.700V/0.300V */
@@ -321,12 +311,8 @@
 /* detailed timing misc */
 #define IS_INTERLACED(x)  (x) 
 #define IS_STEREO(x)  (x) 
-#define IS_RIGHT_STEREO(x) (x & 0x01)
-#define IS_LEFT_STEREO(x) (x & 0x02)
-#define IS_4WAY_STEREO(x) (x & 0x03)
-#define IS_RIGHT_ON_SYNC(x) IS_RIGHT_STEREO(x)
-#define IS_LEFT_ON_SYNC(x) IS_LEFT_STEREO(x)
-
+#define IS_RIGHT_ON_SYNC(x) (x & 0x01)
+#define IS_LEFT_ON_SYNC(x) (x & 0x02)
 
 typedef unsigned int Uint;
 typedef unsigned char Uchar;
@@ -349,7 +335,6 @@ struct disp_features {
   unsigned int input_voltage:2;
   unsigned int input_setup:1;
   unsigned int input_sync:5;
-  unsigned int input_dfp:1;
   int hsize;
   int vsize;
   float gamma;
@@ -397,7 +382,6 @@ struct detailed_timings {
   unsigned int stereo:2;
   unsigned int sync:2;
   unsigned int misc:2;
-  unsigned int stereo_1:1;
 };
 
 #define DT 0
@@ -407,8 +391,6 @@ struct detailed_timings {
 #define DS_RANGES 0xFD
 #define DS_WHITE_P 0xFB
 #define DS_STD_TIMINGS 0xFA
-#define DS_DUMMY 0x10
-#define DS_UNKOWN 0x100 /* type is an int */
 
 struct monitor_ranges {
   int min_v;
@@ -416,11 +398,6 @@ struct monitor_ranges {
   int min_h;
   int max_h;
   int max_clock;
-  int gtf_2nd_f;
-  int gtf_2nd_c;
-  int gtf_2nd_m;
-  int gtf_2nd_k;
-  int gtf_2nd_j;
 };
 
 struct whitePoints{
@@ -451,7 +428,7 @@ typedef struct {
   struct established_timings timings1;
   struct std_timings timings2[8];
   struct detailed_monitor_section det_mon[4];
-  void *vdif; /* unused */
+  xf86vdifPtr vdif;
   int no_sections;
   Uchar *rawData;
 } xf86Monitor, *xf86MonPtr;

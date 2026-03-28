@@ -1,3 +1,11 @@
+/* $Xorg: xtest1di.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *	File:  xtest1di.c
  *
@@ -51,7 +59,7 @@ Telephone and Telegraph Company or of the Regents of the
 University of California.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/xtest1di.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xtest1di.c,v 3.6 2003/11/17 22:20:28 dawes Exp $ */
 
 /*****************************************************************************
  * include files
@@ -61,8 +69,8 @@ University of California.
 #define	 NEED_REPLIES
 
 #include <stdio.h>
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "gcstruct.h"   
@@ -70,7 +78,7 @@ University of California.
 #include "dixstruct.h"
 #include "opaque.h"
 #define  XTestSERVER_SIDE
-#include <X11/extensions/xtestext1.h>
+#include "xtestext1.h"
 #include "modinit.h"
 
 #include "xtest1dd.h"
@@ -225,7 +233,8 @@ XTestExtension1Init(INITARGS)
  *
  */
 static int
-ProcXTestDispatch(ClientPtr client)
+ProcXTestDispatch(client)
+	register ClientPtr	client;
 {
 	REQUEST(xReq);
 	if (stuff->data == X_TestFakeInput)
@@ -266,7 +275,8 @@ ProcXTestDispatch(ClientPtr client)
  *
  */
 static int
-SProcXTestDispatch(ClientPtr client)
+SProcXTestDispatch(client)
+	register ClientPtr	client;
 {
 	REQUEST(xReq);
 	if (stuff->data == X_TestFakeInput)
@@ -307,12 +317,13 @@ SProcXTestDispatch(ClientPtr client)
  *
  */
 static int
-SProcTestFakeInput(ClientPtr client)
+SProcTestFakeInput(client)
+	register ClientPtr	client;
 {
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 	/*
 	 * index counter
 	 */
@@ -428,12 +439,13 @@ SProcTestFakeInput(ClientPtr client)
  *
  */
 static int
-SProcTestGetInput(ClientPtr client)
+SProcTestGetInput(client)
+	register ClientPtr	client;
 {
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 
 	REQUEST(xTestGetInputReq);
 	/*
@@ -451,12 +463,13 @@ SProcTestGetInput(ClientPtr client)
  *
  */
 static int
-SProcTestStopInput(ClientPtr client)
+SProcTestStopInput(client)
+	register ClientPtr	client;
 {
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 
 	REQUEST(xTestStopInputReq);
 	/*
@@ -473,12 +486,13 @@ SProcTestStopInput(ClientPtr client)
  *
  */
 static int
-SProcTestReset(ClientPtr client)
+SProcTestReset(client)
+	register ClientPtr	client;
 {
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 
 	REQUEST(xTestResetReq);
 	/*
@@ -495,12 +509,13 @@ SProcTestReset(ClientPtr client)
  *
  */
 static int
-SProcTestQueryInputSize(ClientPtr client)
+SProcTestQueryInputSize(client)
+	register ClientPtr	client;
 {
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 
 	REQUEST(xTestQueryInputSizeReq);
 	/*
@@ -517,7 +532,8 @@ SProcTestQueryInputSize(ClientPtr client)
  *
  */
 static int
-ProcTestFakeInput(ClientPtr client)
+ProcTestFakeInput(client)
+	register ClientPtr	client;
 {
 	REQUEST(xTestFakeInputReq);
 	REQUEST_SIZE_MATCH(xTestFakeInputReq);
@@ -565,7 +581,8 @@ ProcTestFakeInput(ClientPtr client)
  *
  */
 static int
-ProcTestGetInput(ClientPtr client)
+ProcTestGetInput(client)
+	register ClientPtr	client;
 {
 	REQUEST(xTestGetInputReq);
 	REQUEST_SIZE_MATCH(xTestGetInputReq);
@@ -618,7 +635,8 @@ ProcTestGetInput(ClientPtr client)
  *
  */
 static int
-ProcTestStopInput(ClientPtr client)
+ProcTestStopInput(client)
+	register ClientPtr	client;
 {
 	REQUEST_SIZE_MATCH(xTestStopInputReq);
 	if (on_steal_input && (current_xtest_client == client)) 
@@ -655,7 +673,8 @@ ProcTestStopInput(ClientPtr client)
  *
  */
 static int
-ProcTestReset(ClientPtr client)
+ProcTestReset(client)
+	register ClientPtr	client;
 {
 	REQUEST_SIZE_MATCH(xTestResetReq);
 	on_steal_input = FALSE;
@@ -678,7 +697,8 @@ ProcTestReset(ClientPtr client)
  *
  */
 static int
-ProcTestQueryInputSize(ClientPtr client)
+ProcTestQueryInputSize(client)
+	register ClientPtr	client;
 {
 	REQUEST_SIZE_MATCH(xTestQueryInputSizeReq);
 	/*
@@ -765,7 +785,7 @@ SReplyXTestDispatch(client_ptr, size, reply_ptr)
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 	/*
 	 * pointer to xTestQueryInputSizeReply
 	 */
@@ -798,7 +818,7 @@ SEventXTestDispatch(from, to)
 	/*
 	 * used in the swaps and swapl macros for temporary storage space
 	 */
-	char	n;
+	register char	n;
 	/*
 	 * index counter
 	 */

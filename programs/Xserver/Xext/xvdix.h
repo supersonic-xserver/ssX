@@ -1,4 +1,11 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
 
@@ -21,7 +28,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/xvdix.h,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xvdix.h,v 1.8 2001/07/25 15:05:00 dawes Exp $ */
 
 #ifndef XVDIX_H
 #define XVDIX_H
@@ -54,8 +61,7 @@ SOFTWARE.
 */
 
 #include "scrnintstr.h"
-#include "extnsionst.h"
-#include <X11/extensions/Xvproto.h>
+#include "Xvproto.h"
 
 extern int  XvScreenIndex;
 extern unsigned long XvExtensionGeneration;
@@ -242,7 +248,7 @@ typedef struct {
 extern int ProcXvDispatch(ClientPtr);
 extern int SProcXvDispatch(ClientPtr);
 
-extern void XvExtensionInit(INITARGS);
+extern void XvExtensionInit(void);
 extern int XvScreenInit(ScreenPtr);
 extern int XvGetScreenIndex(void);
 extern unsigned long XvGetRTPort(void);

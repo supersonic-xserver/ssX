@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/cygwin.tmpl,v 3.20tsi Exp $
+XCOMM $XFree86: xc/config/cf/cygwin.tmpl,v 3.19 2003/12/24 18:58:41 dickey Exp $
 
 #if UseCygIPC
 # define SharedX11Reqs		-lcygipc
@@ -14,12 +14,14 @@ XCOMM $XFree86: xc/config/cf/cygwin.tmpl,v 3.20tsi Exp $
 #define SharedXmuReqs 		$(LDPRELIB) $(XTOOLLIB) $(XLIB)
 #define SharedXextReqs		$(LDPRELIB) $(XONLYLIB)
 #define SharedXiReqs		$(LDPRELIB) $(XLIB)
+#define SharedPexReqs		$(LDPRELIB) $(XONLYLIB)
 #define SharedXtstReqs		$(LDPRELIB) $(XLIB)
+#define SharedXieReqs		$(LDPRELIB) $(XONLYLIB)
 #define SharedSMReqs		$(LDPRELIB) $(ICELIB)
 #define SharedXpReqs		$(LDPRELIB) $(XAUTHLIB) $(XLIB)
 #define SharedXvReqs		$(LDPRELIB) $(XLIB)
 #define SharedGLReqs		$(LDPRELIB) $(XLIB)
-#define SharedGLUReqs		$(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) $(XLIB)
+#define SharedGLUReqs		$(LDPRELIB) $(XLIB) $(GLXLIB)
 #define SharedXfontReqs		$(LDPRELIB) $(FONTSTUBLIB) GzipLibrary $(FREETYPE2LIB)
 #define SharedFontencReqs	$(LDPRELIB) GzipLibrary
 #define SharedXxf86vmReqs	$(LDPRELIB) $(XLIB) 

@@ -1,9 +1,16 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** xgc
 **
 ** record.c
 */
-/* $XFree86: xc/programs/xgc/record.c,v 1.3 2000/02/17 14:00:37 dawes Exp $ */
+/* $XFree86: xc/programs/xgc/record.c,v 1.4 2003/05/07 21:02:07 herrb Exp $ */
 
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>

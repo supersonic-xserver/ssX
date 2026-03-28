@@ -1,7 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhwstub.c,v 1.13 2003/10/30 17:37:16 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "xf86.h"
 #include "xf86cmap.h"
@@ -171,27 +182,3 @@ fbdevHWSaveScreen(ScreenPtr pScreen, int mode)
 {
 	return FALSE;
 }
-
-xf86SwitchModeProc *
-fbdevHWSwitchModeWeak(void) { return fbdevHWSwitchMode; }
-
-xf86AdjustFrameProc *
-fbdevHWAdjustFrameWeak(void) { return fbdevHWAdjustFrame; }
-
-xf86EnterVTProc *
-fbdevHWEnterVTWeak(void) { return fbdevHWEnterVT; }
-
-xf86LeaveVTProc *
-fbdevHWLeaveVTWeak(void) { return fbdevHWLeaveVT; }
-
-xf86ValidModeProc *
-fbdevHWValidModeWeak(void) { return fbdevHWValidMode; }
-
-xf86DPMSSetProc *
-fbdevHWDPMSSetWeak(void) { return fbdevHWDPMSSet; }
-
-xf86LoadPaletteProc *
-fbdevHWLoadPaletteWeak(void) { return fbdevHWLoadPalette; }
-
-SaveScreenProcPtr
-fbdevHWSaveScreenWeak(void) { return fbdevHWSaveScreen; }

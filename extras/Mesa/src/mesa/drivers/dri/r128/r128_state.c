@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r128/r128_state.c,v 1.11 2002/10/30 12:51:39 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_state.c,v 1.1.1.3 2004/12/10 15:05:53 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1999, 2000 ATI Technologies Inc. and Precision Insight, Inc.,
@@ -38,7 +45,6 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r128_state.h"
 #include "r128_ioctl.h"
 #include "r128_tris.h"
-#include "r128_vb.h"
 #include "r128_tex.h"
 
 #include "context.h"
@@ -55,6 +61,76 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* =============================================================
  * Alpha blending
  */
+
+
+/**
+ * Calculate the hardware blend factor setting.  This same function is used
+ * for source and destination of both alpha and RGB.  
+ *
+ * \returns
+ * The hardware register value for the specified blend factor.  This value
+ * will need to be shifted into the correct position for either source or
+ * destination factor.
+ *
+ * \todo
+ * Since the two cases where source and destination are handled differently
+ * are essentially error cases, they should never happen.  Determine if these
+ * cases can be removed.
+ */
+static int blend_factor( r128ContextPtr rmesa, GLenum factor, GLboolean is_src )
+{
+   int   func;
+
+   switch ( factor ) {
+   case GL_ZERO:
+      func = R128_ALPHA_BLEND_ZERO;
+      break;
+   case GL_ONE:
+      func = R128_ALPHA_BLEND_ONE;
+      break;
+
+   case GL_SRC_COLOR:
+      func = R128_ALPHA_BLEND_SRCCOLOR;
+      break;
+   case GL_ONE_MINUS_SRC_COLOR:
+      func = R128_ALPHA_BLEND_INVSRCCOLOR;
+      break;
+   case GL_SRC_ALPHA:
+      func = R128_ALPHA_BLEND_SRCALPHA;
+      break;
+   case GL_ONE_MINUS_SRC_ALPHA:
+      func = R128_ALPHA_BLEND_INVSRCALPHA;
+      break;
+   case GL_SRC_ALPHA_SATURATE:
+      func = (is_src) ? R128_ALPHA_BLEND_SAT : R128_ALPHA_BLEND_ZERO;
+      break;
+
+   case GL_DST_COLOR:
+      func = R128_ALPHA_BLEND_DSTCOLOR;
+      break;
+   case GL_ONE_MINUS_DST_COLOR:
+      func = R128_ALPHA_BLEND_INVDSTCOLOR;
+      break;
+   case GL_DST_ALPHA:
+      func = R128_ALPHA_BLEND_DSTALPHA;
+      break;
+   case GL_ONE_MINUS_DST_ALPHA:
+      func = R128_ALPHA_BLEND_INVDSTALPHA;
+      break;
+
+   case GL_CONSTANT_COLOR:
+   case GL_ONE_MINUS_CONSTANT_COLOR:
+   case GL_CONSTANT_ALPHA:
+   case GL_ONE_MINUS_CONSTANT_ALPHA:
+   default:
+      FALLBACK( rmesa, R128_FALLBACK_BLEND_FUNC, GL_TRUE );
+      func = (is_src) ? R128_ALPHA_BLEND_ONE : R128_ALPHA_BLEND_ZERO;
+      break;
+   }
+   
+   return func;
+}
+
 
 static void r128UpdateAlphaMode( GLcontext *ctx )
 {
@@ -105,67 +181,24 @@ static void r128UpdateAlphaMode( GLcontext *ctx )
    FALLBACK( rmesa, R128_FALLBACK_BLEND_FUNC, GL_FALSE );
 
    if ( ctx->Color.BlendEnabled ) {
-      a &= ~(R128_ALPHA_BLEND_SRC_MASK | R128_ALPHA_BLEND_DST_MASK);
+      a &= ~((R128_ALPHA_BLEND_MASK << R128_ALPHA_BLEND_SRC_SHIFT) |
+	     (R128_ALPHA_BLEND_MASK << R128_ALPHA_BLEND_DST_SHIFT)
+	     | R128_ALPHA_COMB_FCN_MASK);
 
-      switch ( ctx->Color.BlendSrcRGB ) {
-      case GL_ZERO:
-	 a |= R128_ALPHA_BLEND_SRC_ZERO;
+      a |= blend_factor( rmesa, ctx->Color.BlendSrcRGB, GL_TRUE ) 
+	  << R128_ALPHA_BLEND_SRC_SHIFT;
+      a |= blend_factor( rmesa, ctx->Color.BlendDstRGB, GL_FALSE ) 
+	  << R128_ALPHA_BLEND_DST_SHIFT;
+
+      switch (ctx->Color.BlendEquationRGB) {
+      case GL_FUNC_ADD:
+	 a |= R128_ALPHA_COMB_ADD_CLAMP;
 	 break;
-      case GL_ONE:
-	 a |= R128_ALPHA_BLEND_SRC_ONE;
-	 break;
-      case GL_DST_COLOR:
-	 a |= R128_ALPHA_BLEND_SRC_DESTCOLOR;
-	 break;
-      case GL_ONE_MINUS_DST_COLOR:
-	 a |= R128_ALPHA_BLEND_SRC_INVDESTCOLOR;
-	 break;
-      case GL_SRC_ALPHA:
-	 a |= R128_ALPHA_BLEND_SRC_SRCALPHA;
-	 break;
-      case GL_ONE_MINUS_SRC_ALPHA:
-	 a |= R128_ALPHA_BLEND_SRC_INVSRCALPHA;
-	 break;
-      case GL_DST_ALPHA:
-	 a |= R128_ALPHA_BLEND_SRC_DESTALPHA;
-	 break;
-      case GL_ONE_MINUS_DST_ALPHA:
-	 a |= R128_ALPHA_BLEND_SRC_INVDESTALPHA;
-	 break;
-      case GL_SRC_ALPHA_SATURATE:
-	 a |= R128_ALPHA_BLEND_SRC_SRCALPHASAT;
+      case GL_FUNC_SUBTRACT:
+	 a |= R128_ALPHA_COMB_SUB_SRC_DST_CLAMP;
 	 break;
       default:
-         FALLBACK( rmesa, R128_FALLBACK_BLEND_FUNC, GL_TRUE );
-      }
-
-      switch ( ctx->Color.BlendDstRGB ) {
-      case GL_ZERO:
-	 a |= R128_ALPHA_BLEND_DST_ZERO;
-	 break;
-      case GL_ONE:
-	 a |= R128_ALPHA_BLEND_DST_ONE;
-	 break;
-      case GL_SRC_COLOR:
-	 a |= R128_ALPHA_BLEND_DST_SRCCOLOR;
-	 break;
-      case GL_ONE_MINUS_SRC_COLOR:
-	 a |= R128_ALPHA_BLEND_DST_INVSRCCOLOR;
-	 break;
-      case GL_SRC_ALPHA:
-	 a |= R128_ALPHA_BLEND_DST_SRCALPHA;
-	 break;
-      case GL_ONE_MINUS_SRC_ALPHA:
-	 a |= R128_ALPHA_BLEND_DST_INVSRCALPHA;
-	 break;
-      case GL_DST_ALPHA:
-	 a |= R128_ALPHA_BLEND_DST_DESTALPHA;
-	 break;
-      case GL_ONE_MINUS_DST_ALPHA:
-	 a |= R128_ALPHA_BLEND_DST_INVDESTALPHA;
-	 break;
-      default:
-         FALLBACK( rmesa, R128_FALLBACK_BLEND_FUNC, GL_TRUE );
+	 FALLBACK( rmesa, R128_FALLBACK_BLEND_EQ, GL_TRUE );
       }
 
       t |=  R128_ALPHA_ENABLE;
@@ -191,10 +224,12 @@ static void r128DDAlphaFunc( GLcontext *ctx, GLenum func, GLfloat ref )
    rmesa->new_state |= R128_NEW_ALPHA;
 }
 
-static void r128DDBlendEquation( GLcontext *ctx, GLenum mode )
+static void r128DDBlendEquationSeparate( GLcontext *ctx, 
+					 GLenum modeRGB, GLenum modeA )
 {
    r128ContextPtr rmesa = R128_CONTEXT(ctx);
 
+   assert( modeRGB == modeA );
    FLUSH_BATCH( rmesa );
 
    /* BlendEquation sets ColorLogicOpEnabled in an unexpected
@@ -206,16 +241,8 @@ static void r128DDBlendEquation( GLcontext *ctx, GLenum mode )
 
    /* Can only do blend addition, not min, max, subtract, etc. */
    FALLBACK( R128_CONTEXT(ctx), R128_FALLBACK_BLEND_EQ,
-	     mode != GL_FUNC_ADD_EXT);
+	     (modeRGB != GL_FUNC_ADD) && (modeRGB != GL_FUNC_SUBTRACT));
 
-   rmesa->new_state |= R128_NEW_ALPHA;
-}
-
-static void r128DDBlendFunc( GLcontext *ctx, GLenum sfactor, GLenum dfactor )
-{
-   r128ContextPtr rmesa = R128_CONTEXT(ctx);
-
-   FLUSH_BATCH( rmesa );
    rmesa->new_state |= R128_NEW_ALPHA;
 }
 
@@ -694,10 +721,10 @@ static void r128DDDrawBuffer( GLcontext *ctx, GLenum mode )
     * _DrawDestMask is easier to cope with than <mode>.
     */
    switch ( ctx->Color._DrawDestMask ) {
-   case FRONT_LEFT_BIT:
+   case DD_FRONT_LEFT_BIT:
       FALLBACK( rmesa, R128_FALLBACK_DRAW_BUFFER, GL_FALSE );
       break;
-   case BACK_LEFT_BIT:
+   case DD_BACK_LEFT_BIT:
       FALLBACK( rmesa, R128_FALLBACK_DRAW_BUFFER, GL_FALSE );
       break;
    default:
@@ -730,7 +757,7 @@ static void r128DDPolygonStipple( GLcontext *ctx, const GLubyte *mask )
 {
    r128ContextPtr rmesa = R128_CONTEXT(ctx);
    GLuint stipple[32], i;
-   drmR128Stipple stippleRec;
+   drm_r128_stipple_t stippleRec;
 
    for (i = 0; i < 32; i++) {
       stipple[31 - i] = ((mask[i*4+0] << 24) |
@@ -744,7 +771,7 @@ static void r128DDPolygonStipple( GLcontext *ctx, const GLubyte *mask )
 
    stippleRec.mask = stipple;
    drmCommandWrite( rmesa->driFd, DRM_R128_STIPPLE, 
-                    &stippleRec, sizeof(drmR128Stipple) );
+                    &stippleRec, sizeof(stippleRec) );
 
    UNLOCK_HARDWARE( rmesa );
 
@@ -912,8 +939,8 @@ static void r128DDPrintDirty( const char *msg, GLuint state )
  */
 void r128EmitHwStateLocked( r128ContextPtr rmesa )
 {
-   R128SAREAPrivPtr sarea = rmesa->sarea;
-   r128_context_regs_t *regs = &(rmesa->setup);
+   drm_r128_sarea_t *sarea = rmesa->sarea;
+   drm_r128_context_regs_t *regs = &(rmesa->setup);
    const r128TexObjPtr t0 = rmesa->CurrentTexObj[0];
    const r128TexObjPtr t1 = rmesa->CurrentTexObj[1];
 
@@ -926,11 +953,11 @@ void r128EmitHwStateLocked( r128ContextPtr rmesa )
 			R128_UPLOAD_MASKS |
 			R128_UPLOAD_WINDOW |
 			R128_UPLOAD_CORE) ) {
-      memcpy( &sarea->ContextState, regs, sizeof(sarea->ContextState) );
+      memcpy( &sarea->context_state, regs, sizeof(sarea->context_state) );
    }
 
    if ( (rmesa->dirty & R128_UPLOAD_TEX0) && t0 ) {
-      r128_texture_regs_t *tex = &sarea->TexState[0];
+      drm_r128_texture_regs_t *tex = &sarea->tex_state[0];
 
       tex->tex_cntl		= t0->setup.tex_cntl;
       tex->tex_combine_cntl	= rmesa->tex_combine[0];
@@ -941,7 +968,7 @@ void r128EmitHwStateLocked( r128ContextPtr rmesa )
    }
 
    if ( (rmesa->dirty & R128_UPLOAD_TEX1) && t1 ) {
-      r128_texture_regs_t *tex = &sarea->TexState[1];
+      drm_r128_texture_regs_t *tex = &sarea->tex_state[1];
 
       tex->tex_cntl		= t1->setup.tex_cntl;
       tex->tex_combine_cntl	= rmesa->tex_combine[1];
@@ -1125,8 +1152,8 @@ void r128DDInitState( r128ContextPtr rmesa )
 					  R128_MISC_SCALE_PIX_REPLICATE |
 					  R128_ALPHA_COMB_ADD_CLAMP |
 					  R128_FOG_VERTEX |
-					  R128_ALPHA_BLEND_SRC_ONE |
-					  R128_ALPHA_BLEND_DST_ZERO |
+					  (R128_ALPHA_BLEND_ONE << R128_ALPHA_BLEND_SRC_SHIFT) |
+					  (R128_ALPHA_BLEND_ZERO << R128_ALPHA_BLEND_DST_SHIFT) |
 					  R128_ALPHA_TEST_ALWAYS);
 
    rmesa->setup.texture_clr_cmp_clr_c = 0x00000000;
@@ -1171,8 +1198,8 @@ void r128DDInitState( r128ContextPtr rmesa )
 				 R128_SCALE_PIX_REPLICATE |
 				 R128_ALPHA_COMB_ADD_CLAMP |
 				 R128_FOG_VERTEX |
-				 R128_ALPHA_BLEND_SRC_ONE |
-				 R128_ALPHA_BLEND_DST_ZERO |
+				 (R128_ALPHA_BLEND_ONE << R128_ALPHA_BLEND_SRC_SHIFT) |
+				 (R128_ALPHA_BLEND_ZERO << R128_ALPHA_BLEND_DST_SHIFT) |
 				 R128_ALPHA_TEST_ALWAYS |
 				 R128_COMPOSITE_SHADOW_CMP_EQUAL |
 				 R128_TEX_MAP_ALPHA_IN_TEXTURE |
@@ -1195,8 +1222,7 @@ void r128DDInitStateFuncs( GLcontext *ctx )
    ctx->Driver.IndexMask		= NULL;
    ctx->Driver.ColorMask		= r128DDColorMask;
    ctx->Driver.AlphaFunc		= r128DDAlphaFunc;
-   ctx->Driver.BlendEquation		= r128DDBlendEquation;
-   ctx->Driver.BlendFunc		= r128DDBlendFunc;
+   ctx->Driver.BlendEquationSeparate	= r128DDBlendEquationSeparate;
    ctx->Driver.BlendFuncSeparate	= r128DDBlendFuncSeparate;
    ctx->Driver.ClearDepth		= r128DDClearDepth;
    ctx->Driver.CullFace			= r128DDCullFace;

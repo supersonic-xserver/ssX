@@ -1,3 +1,11 @@
+/* $Xorg: watch.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -25,14 +33,17 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86$ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"
 
 
 Status
-IceAddConnectionWatch(IceWatchProc watchProc, IcePointer clientData)
+IceAddConnectionWatch (watchProc, clientData)
+
+IceWatchProc	watchProc;
+IcePointer	clientData;
+
 {
     /*
      * watchProc will be called each time an ICE connection is
@@ -85,8 +96,13 @@ IceAddConnectionWatch(IceWatchProc watchProc, IcePointer clientData)
 }
 
 
+
 void
-IceRemoveConnectionWatch(IceWatchProc watchProc, IcePointer clientData)
+IceRemoveConnectionWatch (watchProc, clientData)
+
+IceWatchProc	watchProc;
+IcePointer	clientData;
+
 {
     _IceWatchProc	*currWatchProc = _IceWatchProcs;
     _IceWatchProc	*prevWatchProc = NULL;
@@ -121,8 +137,12 @@ IceRemoveConnectionWatch(IceWatchProc watchProc, IcePointer clientData)
 }
 
 
+
 void
-_IceConnectionOpened(IceConn iceConn)
+_IceConnectionOpened (iceConn)
+
+IceConn	iceConn;
+
 {
     _IceWatchProc *watchProc = _IceWatchProcs;
 
@@ -152,8 +172,12 @@ _IceConnectionOpened(IceConn iceConn)
 }
 
 
+
 void
-_IceConnectionClosed(IceConn iceConn)
+_IceConnectionClosed (iceConn)
+
+IceConn	iceConn;
+
 {
     _IceWatchProc *watchProc = _IceWatchProcs;
 

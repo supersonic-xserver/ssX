@@ -1,4 +1,11 @@
 /* Automaticallly generated -- do not edit */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef _GLINT_CLIENT_H_
 #define _GLINT_CLIENT_H_
 /* **********************************************************************/
@@ -31,7 +38,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  * 
- * $XFree86: xc/lib/GL/mesa/src/drv/gamma/gamma_client.h,v 1.3 2002/02/22 21:33:00 dawes Exp $
+ * $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/gamma/gamma_client.h,v 1.1.1.1 2004/04/08 09:16:54 alanh Exp $
  * 
  */
 

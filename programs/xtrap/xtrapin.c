@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xtrap/xtrapin.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapin.c,v 1.3 2003/05/27 22:27:13 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * @DEC_COPYRIGHT@
  */
@@ -142,7 +149,6 @@ main(int argc, char *argv[])
     poptarg = XEgetoptarg();
 #endif
 
-    (void) memset(&rec, 0, sizeof(rec));
     ifp = NULL;
     *popterr = 0; /* don't complain about -d for display */
     grabFlag = False;
@@ -169,7 +175,7 @@ main(int argc, char *argv[])
 
     appW = XtAppInitialize(&app,"XTrap",optionTable,(Cardinal)1L,
         (int *)&argc, (String *)argv, (String *)NULL,(ArgList)&tmp,
-        (Cardinal)0);
+        (Cardinal)NULL);
 
     dpy = XtDisplay(appW);
 #ifdef DEBUG

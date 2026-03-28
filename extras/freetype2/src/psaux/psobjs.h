@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  psobjs.h                                                               */
 /*                                                                         */
 /*    Auxiliary functions for PostScript fonts (specification).            */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,15 +23,15 @@
 /***************************************************************************/
 
 
-#ifndef PSOBJS_H
-#define PSOBJS_H
-
-#include <freetype/internal/psaux.h>
+#ifndef __PSOBJS_H__
+#define __PSOBJS_H__
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#include <ft2build.h>
+#include FT_INTERNAL_POSTSCRIPT_AUX_H
+
+
+FT_BEGIN_HEADER
 
 
   /*************************************************************************/
@@ -37,32 +44,32 @@
 
 
   FT_CALLBACK_TABLE
-  const PS_Table_Funcs  ps_table_funcs;
+  const PS_Table_FuncsRec    ps_table_funcs;
 
   FT_CALLBACK_TABLE
-  const T1_Parser_Funcs  t1_parser_funcs;
+  const PS_Parser_FuncsRec   ps_parser_funcs;
 
   FT_CALLBACK_TABLE
-  const T1_Builder_Funcs  t1_builder_funcs;
+  const T1_Builder_FuncsRec  t1_builder_funcs;
 
 
-  FT_LOCAL
-  FT_Error  PS_Table_New( PS_Table*  table,
-                          FT_Int     count,
-                          FT_Memory  memory );
+  FT_LOCAL( FT_Error )
+  ps_table_new( PS_Table   table,
+                FT_Int     count,
+                FT_Memory  memory );
 
-  FT_LOCAL
-  FT_Error  PS_Table_Add( PS_Table*  table,
-                          FT_Int     index,
-                          void*      object,
-                          FT_Int     length );
+  FT_LOCAL( FT_Error )
+  ps_table_add( PS_Table    table,
+                FT_Int      idx,
+                void*       object,
+                FT_PtrDist  length );
 
-  FT_LOCAL
-  void  PS_Table_Done( PS_Table*  table );
+  FT_LOCAL( void )
+  ps_table_done( PS_Table  table );
 
 
-  FT_LOCAL
-  void  PS_Table_Release( PS_Table*  table );
+  FT_LOCAL( void )
+  ps_table_release( PS_Table  table );
 
 
   /*************************************************************************/
@@ -74,65 +81,73 @@
   /*************************************************************************/
 
 
-  FT_LOCAL
-  void  T1_Skip_Spaces( T1_Parser*  parser );
+  FT_LOCAL( void )
+  ps_parser_skip_spaces( PS_Parser  parser );
 
-  FT_LOCAL
-  void  T1_Skip_Alpha( T1_Parser*  parser );
+  FT_LOCAL( void )
+  ps_parser_skip_PS_token( PS_Parser  parser );
 
-  FT_LOCAL
-  void  T1_ToToken( T1_Parser*  parser,
-                    T1_Token*   token );
+  FT_LOCAL( void )
+  ps_parser_to_token( PS_Parser  parser,
+                      T1_Token   token );
 
-  FT_LOCAL
-  void  T1_ToTokenArray( T1_Parser*  parser,
-                         T1_Token*   tokens,
-                         FT_UInt     max_tokens,
-                         FT_Int*     pnum_tokens );
+  FT_LOCAL( void )
+  ps_parser_to_token_array( PS_Parser  parser,
+                            T1_Token   tokens,
+                            FT_UInt    max_tokens,
+                            FT_Int*    pnum_tokens );
 
-  FT_LOCAL
-  FT_Error  T1_Load_Field( T1_Parser*       parser,
-                           const T1_Field*  field,
-                           void**           objects,
-                           FT_UInt          max_objects,
-                           FT_ULong*        pflags );
+  FT_LOCAL( FT_Error )
+  ps_parser_load_field( PS_Parser       parser,
+                        const T1_Field  field,
+                        void**          objects,
+                        FT_UInt         max_objects,
+                        FT_ULong*       pflags );
 
-  FT_LOCAL
-  FT_Error  T1_Load_Field_Table( T1_Parser*       parser,
-                                 const T1_Field*  field,
-                                 void**           objects,
-                                 FT_UInt          max_objects,
-                                 FT_ULong*        pflags );
+  FT_LOCAL( FT_Error )
+  ps_parser_load_field_table( PS_Parser       parser,
+                              const T1_Field  field,
+                              void**          objects,
+                              FT_UInt         max_objects,
+                              FT_ULong*       pflags );
 
-  FT_LOCAL
-  FT_Long  T1_ToInt( T1_Parser*  parser );
-
-
-  FT_LOCAL
-  FT_Fixed  T1_ToFixed( T1_Parser*  parser,
-                        FT_Int      power_ten );
+  FT_LOCAL( FT_Long )
+  ps_parser_to_int( PS_Parser  parser );
 
 
-  FT_LOCAL
-  FT_Int  T1_ToCoordArray( T1_Parser*  parser,
-                           FT_Int      max_coords,
-                           FT_Short*   coords );
-
-  FT_LOCAL
-  FT_Int  T1_ToFixedArray( T1_Parser*  parser,
-                           FT_Int      max_values,
-                           FT_Fixed*   values,
-                           FT_Int      power_ten );
+  FT_LOCAL( FT_Error )
+  ps_parser_to_bytes( PS_Parser  parser,
+                      FT_Byte*   bytes,
+                      FT_Long    max_bytes,
+                      FT_Long*   pnum_bytes,
+                      FT_Bool    delimiters );
 
 
-  FT_LOCAL
-  void  T1_Init_Parser( T1_Parser*  parser,
-                        FT_Byte*    base,
-                        FT_Byte*    limit,
-                        FT_Memory   memory );
+  FT_LOCAL( FT_Fixed )
+  ps_parser_to_fixed( PS_Parser  parser,
+                      FT_Int     power_ten );
 
-  FT_LOCAL
-  void  T1_Done_Parser( T1_Parser*  parser );
+
+  FT_LOCAL( FT_Int )
+  ps_parser_to_coord_array( PS_Parser  parser,
+                            FT_Int     max_coords,
+                            FT_Short*  coords );
+
+  FT_LOCAL( FT_Int )
+  ps_parser_to_fixed_array( PS_Parser  parser,
+                            FT_Int     max_values,
+                            FT_Fixed*  values,
+                            FT_Int     power_ten );
+
+
+  FT_LOCAL( void )
+  ps_parser_init( PS_Parser  parser,
+                  FT_Byte*   base,
+                  FT_Byte*   limit,
+                  FT_Memory  memory );
+
+  FT_LOCAL( void )
+  ps_parser_done( PS_Parser  parser );
 
 
   /*************************************************************************/
@@ -143,42 +158,43 @@
   /*************************************************************************/
   /*************************************************************************/
 
-  FT_LOCAL
-  void  T1_Builder_Init( T1_Builder*   builder,
-                         FT_Face       face,
-                         FT_Size       size,
-                         FT_GlyphSlot  glyph );
+  FT_LOCAL( void )
+  t1_builder_init( T1_Builder    builder,
+                   FT_Face       face,
+                   FT_Size       size,
+                   FT_GlyphSlot  glyph,
+                   FT_Bool       hinting );
 
-  FT_LOCAL
-  void  T1_Builder_Done( T1_Builder*  builder );
+  FT_LOCAL( void )
+  t1_builder_done( T1_Builder  builder );
 
-  FT_LOCAL
-  FT_Error  T1_Builder_Check_Points( T1_Builder*  builder,
-                                     FT_Int       count );
+  FT_LOCAL( FT_Error )
+  t1_builder_check_points( T1_Builder  builder,
+                           FT_Int      count );
 
-  FT_LOCAL
-  void  T1_Builder_Add_Point( T1_Builder*  builder,
-                              FT_Pos       x,
-                              FT_Pos       y,
-                              FT_Byte      flag );
+  FT_LOCAL( void )
+  t1_builder_add_point( T1_Builder  builder,
+                        FT_Pos      x,
+                        FT_Pos      y,
+                        FT_Byte     flag );
 
-  FT_LOCAL
-  FT_Error  T1_Builder_Add_Point1( T1_Builder*  builder,
-                                   FT_Pos       x,
-                                   FT_Pos       y );
+  FT_LOCAL( FT_Error )
+  t1_builder_add_point1( T1_Builder  builder,
+                         FT_Pos      x,
+                         FT_Pos      y );
 
-  FT_LOCAL
-  FT_Error  T1_Builder_Add_Contour( T1_Builder*  builder );
-
-
-  FT_LOCAL
-  FT_Error  T1_Builder_Start_Point( T1_Builder*  builder,
-                                    FT_Pos       x,
-                                    FT_Pos       y );
+  FT_LOCAL( FT_Error )
+  t1_builder_add_contour( T1_Builder  builder );
 
 
-  FT_LOCAL
-  void  T1_Builder_Close_Contour( T1_Builder*  builder );
+  FT_LOCAL( FT_Error )
+  t1_builder_start_point( T1_Builder  builder,
+                          FT_Pos      x,
+                          FT_Pos      y );
+
+
+  FT_LOCAL( void )
+  t1_builder_close_contour( T1_Builder  builder );
 
 
   /*************************************************************************/
@@ -189,18 +205,15 @@
   /*************************************************************************/
   /*************************************************************************/
 
-  FT_LOCAL
-  void  T1_Decrypt( FT_Byte*   buffer,
-                    FT_Int     length,
-                    FT_UShort  seed );
+  FT_LOCAL( void )
+  t1_decrypt( FT_Byte*   buffer,
+              FT_Offset  length,
+              FT_UShort  seed );
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-
-#endif /* PSOBJS_H */
+#endif /* __PSOBJS_H__ */
 
 
 /* END */

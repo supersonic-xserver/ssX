@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_video.c,v 3.17 2005/10/14 15:17:06 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_video.c,v 3.16 2003/03/25 04:18:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (c) Copyright 1994,1999 by Holger Veit
  *			<Holger.Veit@gmd.de>
@@ -27,9 +34,10 @@
  * in this Software without prior written authorization from Holger Veit.
  *
  */
+/* $XConsortium: os2_video.c /main/8 1996/10/27 11:49:02 kaleb $ */
 
 #define I_NEED_OS2_H
-#include <X11/X.h>
+#include "X.h"
 #include "input.h"
 #include "scrnintstr.h"
 

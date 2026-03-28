@@ -1,3 +1,19 @@
+/* $Xorg: sm_misc.c,v 1.4 2001/02/09 02:03:30 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -23,7 +39,6 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86$ */
 
 /*
  * Author: Ralph Mor, X Consortium
@@ -38,7 +53,10 @@ in this Software without prior written authorization from The Open Group.
  */
 
 void
-SmFreeProperty(SmProp *prop)
+SmFreeProperty (prop)
+
+SmProp	*prop;
+
 {
     if (prop)
     {
@@ -66,7 +84,11 @@ SmFreeProperty(SmProp *prop)
  */
 
 void
-SmFreeReasons(int count, char **reasonMsgs)
+SmFreeReasons (count, reasonMsgs)
+
+int 	count;
+char 	**reasonMsgs;
+
 {
     if (reasonMsgs)
     {
@@ -80,26 +102,36 @@ SmFreeReasons(int count, char **reasonMsgs)
 }
 
 
+
 /*
  * Smc informational functions
  */
 
 int
-SmcProtocolVersion(SmcConn smcConn)
+SmcProtocolVersion (smcConn)
+
+SmcConn smcConn;
+
 {
     return (smcConn->proto_major_version);
 }
 
 
 int
-SmcProtocolRevision(SmcConn smcConn)
+SmcProtocolRevision (smcConn)
+
+SmcConn smcConn;
+
 {
     return (smcConn->proto_minor_version);
 }
 
 
 char *
-SmcVendor(SmcConn smcConn)
+SmcVendor (smcConn)
+
+SmcConn smcConn;
+
 {
     char *string = (char *) malloc (strlen (smcConn->vendor) + 1);
 
@@ -110,7 +142,10 @@ SmcVendor(SmcConn smcConn)
 
 
 char *
-SmcRelease(SmcConn smcConn)
+SmcRelease (smcConn)
+
+SmcConn smcConn;
+
 {
     char *string = (char *) malloc (strlen (smcConn->release) + 1);
 
@@ -121,7 +156,10 @@ SmcRelease(SmcConn smcConn)
 
 
 char *
-SmcClientID(SmcConn smcConn)
+SmcClientID (smcConn)
+
+SmcConn smcConn;
+
 {
     char *clientId = (char *) malloc (strlen (smcConn->client_id) + 1);
 
@@ -132,32 +170,45 @@ SmcClientID(SmcConn smcConn)
 
 
 IceConn
-SmcGetIceConnection(SmcConn smcConn)
+SmcGetIceConnection (smcConn)
+
+SmcConn smcConn;
+
 {
     return (smcConn->iceConn);
 }
 
 
+
 /*
  * Sms informational functions
  */
 
 int
-SmsProtocolVersion(SmsConn smsConn)
+SmsProtocolVersion (smsConn)
+
+SmsConn smsConn;
+
 {
     return (smsConn->proto_major_version);
 }
 
 
 int
-SmsProtocolRevision(SmsConn smsConn)
+SmsProtocolRevision (smsConn)
+
+SmsConn smsConn;
+
 {
     return (smsConn->proto_minor_version);
 }
 
 
 char *
-SmsClientID(SmsConn smsConn)
+SmsClientID (smsConn)
+
+SmsConn smsConn;
+
 {
     char *clientId = (char *) malloc (strlen (smsConn->client_id) + 1);
 
@@ -168,7 +219,10 @@ SmsClientID(SmsConn smsConn)
 
 
 IceConn
-SmsGetIceConnection(SmsConn smsConn)
+SmsGetIceConnection (smsConn)
+
+SmsConn smsConn;
+
 {
     return (smsConn->iceConn);
 }

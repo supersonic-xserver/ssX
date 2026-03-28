@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/vesa/vm86.h,v 1.4tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/vesa/vm86.h,v 1.4 2005/01/31 04:32:48 dawes Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -65,9 +72,9 @@ static void ErrorF(char*, ...);
 #define xcalloc(a,b) calloc(a,b)
 #define xfree(a) free(a)
 #else
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/Xos.h>
+#include "X.h"
+#include "Xproto.h"
+#include "Xos.h"
 #include "os.h"
 #endif
 

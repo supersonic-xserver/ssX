@@ -1,3 +1,11 @@
+/* $Xorg: Args.c,v 1.3 2000/08/17 19:53:26 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,10 +19,10 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Args.c,v 1.4 2005/10/14 15:17:14 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Args.c,v 1.2 2003/11/16 05:05:20 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "screenint.h"
 #include "input.h"
 #include "misc.h"
@@ -26,7 +34,7 @@ is" without express or implied warranty.
 #include "Display.h"
 #include "Args.h"
 
-const char *xnestDisplayName = NULL;        
+char *xnestDisplayName = NULL;        
 Bool xnestSynchronize = False;
 Bool xnestFullGeneration = False;
 int xnestDefaultClass;                
@@ -41,14 +49,13 @@ unsigned int xnestHeight;
 int xnestUserGeometry = 0;
 int xnestBorderWidth; 
 Bool xnestUserBorderWidth = False;
-const char *xnestWindowName = NULL;        
+char *xnestWindowName = NULL;        
 int xnestNumScreens = 0;
 Bool xnestDoDirectColormaps = False;
 Window xnestParentWindow = 0;
-Bool xnestInputEnabled = True;
 
 int
-ddxProcessArgument (int argc, const char *argv[], int i)
+ddxProcessArgument (int argc, char *argv[], int i)
 {
   if (!strcmp(argv[i], "-display")) {
     if (++i < argc) {
@@ -122,10 +129,6 @@ ddxProcessArgument (int argc, const char *argv[], int i)
     xnestSoftwareScreenSaver = True;
     return 1;
   }
-  if (!strcmp(argv[i], "-noinput")) {
-    xnestInputEnabled = False;
-    return 1;
-  }
   if (!strcmp(argv[i], "-geometry")) {
     if (++i < argc) {
       xnestUserGeometry = XParseGeometry(argv[i],
@@ -189,5 +192,4 @@ void ddxUseMsg()
   ErrorF("-name string           window name\n");
   ErrorF("-scrns int             number of screens to generate\n");
   ErrorF("-install               instal colormaps directly\n");
-  ErrorF("-noinput               do not capture mouse or keyboard events\n");
 }

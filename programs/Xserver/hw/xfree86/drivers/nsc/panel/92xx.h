@@ -1,5 +1,15 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/92xx.h,v 1.1 2002/12/10 15:12:28 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: 92xx.h $
+ * $Revision: 1.1.1.1 $
+ *
  * File Contents: This header file defines the Durango routines and 
  *                variables used to access the memory mapped regions.
  *

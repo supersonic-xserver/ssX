@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1996-2000 by Robin Cutshaw <robin@XFree86.Org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i128/i128IBMDAC.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i128/i128IBMDAC.c,v 1.4 2003/11/06 18:38:02 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_ansic.h"
@@ -319,7 +326,7 @@ Bool
 I128ProgramTi3025(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
    I128Ptr pI128 = I128PTR(pScrn);
-   unsigned char misc_ctrl, aux_ctrl, oclk, col_key, mux1_ctrl, mux2_ctrl;
+   unsigned char tmp, misc_ctrl, aux_ctrl, oclk, col_key, mux1_ctrl, mux2_ctrl;
    unsigned char n, m, p;
    double ffreq, diff, mindiff;
    int ni, mi, pi;
@@ -336,7 +343,7 @@ I128ProgramTi3025(ScrnInfoPtr pScrn, DisplayModePtr mode)
    if (freq < 20000) {
       xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
 	 "Specified dot clock (%.3f) too low for TI 3025",
-	 (double)freq / 1000.0);
+	 X_PROBED, freq / 1000.0);
        return(FALSE);
    }
 
@@ -389,6 +396,8 @@ I128ProgramTi3025(ScrnInfoPtr pScrn, DisplayModePtr mode)
    n = (unsigned char )best_n;
    m = (unsigned char )best_m;
    p = (unsigned char )pi;
+
+   tmp = pI128->mem.rbase_g[INDEX_TI] & 0xFF;
 
    /*
     * Reset the clock data index

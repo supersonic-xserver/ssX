@@ -1,4 +1,12 @@
 /* Xplugin.h -- windowing API for rootless X11 server
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   $Id: Xplugin.h,v 1.1.1.1 2004/03/05 14:28:16 tron Exp $
 
    Copyright (c) 2002 Apple Computer, Inc. All rights reserved.
 
@@ -29,7 +37,7 @@
 
    Note that these interfaces are provided solely for the use of the
    X11 server. Any other uses are unsupported and strongly discouraged. */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/Xplugin.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/Xplugin.h,v 1.3 2003/06/27 20:21:42 torrey Exp $ */
 
 #ifndef XPLUGIN_H
 #define XPLUGIN_H 1
@@ -525,7 +533,7 @@ extern xp_error xp_frame_hit_test (int class, int x, int y,
 extern xp_error xp_frame_draw (xp_window_id wid, int class, unsigned int attr,
 			       const xp_box *outer, const xp_box *inner,
 			       unsigned int title_len,
-			       const char *title_bytes);
+			       const unsigned char *title_bytes);
 
 
 

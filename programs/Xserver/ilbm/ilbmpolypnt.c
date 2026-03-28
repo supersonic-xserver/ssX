@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmpolypnt.c,v 3.2 2005/10/14 15:17:17 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmpolypnt.c,v 3.1 1998/03/20 21:08:03 hohndel Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,12 +54,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ilbmpolypnt.c,v 5.6 94/04/17 20:28:30 dpw Exp $ */
 
 /* Modified jun 95 by Geert Uytterhoeven (Geert.Uytterhoeven@cs.kuleuven.ac.be)
    to use interleaved bitplanes instead of normal bitplanes */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"

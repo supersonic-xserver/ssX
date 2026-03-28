@@ -1,3 +1,19 @@
+/* $Xorg: Viewport.h,v 1.4 2001/02/09 02:03:47 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1987, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/lib/Xaw/Viewport.h,v 1.8 2006/01/09 14:59:05 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Viewport.h,v 1.7 2001/12/14 19:54:46 dawes Exp $ */
 
 #ifndef _XawViewport_h
 #define _XawViewport_h
@@ -112,18 +128,6 @@ void XawViewportSetCoordinates
  Position		x,
  Position		y
 #endif
- );
-
-void XawViewportScrollHoriz
-(
- Widget			gw,
- float			percent
- );
-
-void XawViewportScrollVert
-(
- Widget			gw,
- float			percent
  );
 
 _XFUNCPROTOEND

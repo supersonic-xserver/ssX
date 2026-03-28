@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -54,7 +61,7 @@ typedef struct dri3_screen_priv {
 static inline dri3_screen_priv_ptr
 dri3_screen_priv(ScreenPtr screen)
 {
-    return (dri3_screen_priv_ptr)dixLookupPrivate(&(screen)->devPrivates, &dri3_screen_private_key);
+    return (dri3_screen_priv_ptr)dixLookupPrivate((PrivateRec **)&(screen)->devPrivates, &dri3_screen_private_key);
 }
 
 int

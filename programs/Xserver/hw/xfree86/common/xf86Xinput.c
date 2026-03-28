@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.c,v 3.72 2005/10/14 15:16:33 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.c,v 3.71 2004/02/13 23:58:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1995-1999 by Frederic Lepied, France. <Lepied@XFree86.org>
  *                                                                            
@@ -67,12 +74,13 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/* $XConsortium: xf86Xinput.c /main/14 1996/10/27 11:05:25 kaleb $ */
 
-#include <X11/Xfuncproto.h>
-#include <X11/Xmd.h>
+#include "Xfuncproto.h"
+#include "Xmd.h"
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #endif
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -85,7 +93,7 @@
 
 #ifdef DPMSExtension
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 #include "dpmsproc.h"
 #endif
 
@@ -105,7 +113,7 @@
 #include <stdarg.h>
 
 #include "osdep.h"		/* EnabledDevices */
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include "xf86_OSproc.h"	/* sigio stuff */
 
 /******************************************************************************

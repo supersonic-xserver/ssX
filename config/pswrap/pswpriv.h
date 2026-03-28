@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *  pswpriv.h
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/pswpriv.h,v 1.9 2005/03/28 02:50:58 dawes Exp $ */
+/* $XFree86: xc/config/pswrap/pswpriv.h,v 1.7 2001/08/18 02:47:10 dawes Exp $ */
 
 #ifndef PSWPRIV_H
 #define PSWPRIV_H
@@ -147,9 +154,7 @@ extern int outlineno;		/* line number in output file */
 extern int pad;			/* -p flag */
 extern int reentrant;
 extern int reportedPSWName;
-#if !defined(YY_FLEX_LEX_COMPAT)
 extern int yylineno;		/* current line number in pswrap source file */
-#endif
 
 /* lexer.l */
 extern int yylex(void);
@@ -167,9 +172,7 @@ extern void InitHFile(void);
 extern void InitOFile(void);
 
 /* pswparser.y */
-#if !defined(YYBISON) && !(defined(YYBYACC) && defined(__NetBSD__))
 extern int yyparse (void);
-#endif
 
 /* systemnames.c */
 extern void InitWellKnownPSNames(void);

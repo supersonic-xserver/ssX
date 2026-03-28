@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1997 by Silicon Graphics Computer Systems, Inc.
 Permission to use, copy, modify, and distribute this
 software and its documentation for any purpose and without
@@ -20,7 +27,7 @@ DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
 OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ********************************************************/
-/* $XFree86: xc/lib/Xext/XEVI.c,v 1.7 2002/10/16 00:37:27 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/XEVI.c,v 1.8 2005/01/27 02:28:58 dawes Exp $ */
 #define NEED_EVENTS
 #define NEED_REPLIES
 #include <X11/Xlibint.h>

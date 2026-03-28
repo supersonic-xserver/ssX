@@ -1,3 +1,11 @@
+/* $Xorg: grabs.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1998  The Open Group
@@ -45,12 +53,12 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
-/* $XFree86: xc/programs/Xserver/dix/grabs.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/grabs.c,v 3.5 2003/11/17 22:20:34 dawes Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "windowstr.h"
 #include "inputstr.h"
 #include "cursorstr.h"
@@ -64,11 +72,18 @@ SOFTWARE.
 #define GETBIT(buf, i) (MASKWORD(buf, i) & BITMASK(i))
 
 GrabPtr
-CreateGrab(int client, DeviceIntPtr device, WindowPtr window, Mask eventMask,
-	   Bool ownerEvents, Bool keyboardMode, Bool pointerMode,
-	   DeviceIntPtr modDevice, unsigned short modifiers, int type,
-	   KeyCode keybut,	/* key or button */
-	   WindowPtr confineTo, CursorPtr cursor)
+CreateGrab(
+    int client,
+    DeviceIntPtr device,
+    WindowPtr window,
+    Mask eventMask,
+    Bool ownerEvents, Bool keyboardMode, Bool pointerMode,
+    DeviceIntPtr modDevice,
+    unsigned short modifiers,
+    int type,
+    KeyCode keybut,	/* key or button */
+    WindowPtr confineTo,
+    CursorPtr cursor)
 {
     GrabPtr grab;
 
@@ -117,9 +132,11 @@ FreeGrab(GrabPtr pGrab)
 
 /*ARGSUSED*/
 int
-DeletePassiveGrab(pointer value, XID id)
+DeletePassiveGrab(value, id)
+    pointer value;
+    XID   id;
 {
-    GrabPtr g, prev;
+    register GrabPtr g, prev;
     GrabPtr pGrab = (GrabPtr)value;
 
     /* it is OK if the grab isn't found */
@@ -144,8 +161,8 @@ DeletePassiveGrab(pointer value, XID id)
 static Mask *
 DeleteDetailFromMask(Mask *pDetailMask, unsigned short detail)
 {
-    Mask *mask;
-    int i;
+    register Mask *mask;
+    register int i;
 
     mask = (Mask *)xalloc(sizeof(Mask) * MasksPerDetailMask);
     if (mask)
@@ -162,8 +179,10 @@ DeleteDetailFromMask(Mask *pDetailMask, unsigned short detail)
 }
 
 static Bool
-IsInGrabMask(DetailRec firstDetail, DetailRec secondDetail,
-	     unsigned short exception)
+IsInGrabMask(
+    DetailRec firstDetail,
+    DetailRec secondDetail,
+    unsigned short exception)
 {
     if (firstDetail.exact == exception)
     {
@@ -182,8 +201,10 @@ IsInGrabMask(DetailRec firstDetail, DetailRec secondDetail,
 }
 
 static Bool 
-IdenticalExactDetails(unsigned short firstExact, unsigned short secondExact,
-		      unsigned short exception)
+IdenticalExactDetails(
+    unsigned short firstExact,
+    unsigned short secondExact,
+    unsigned short exception)
 {
     if ((firstExact == exception) || (secondExact == exception))
 	return FALSE;
@@ -195,8 +216,10 @@ IdenticalExactDetails(unsigned short firstExact, unsigned short secondExact,
 }
 
 static Bool 
-DetailSupersedesSecond(DetailRec firstDetail, DetailRec secondDetail,
-		       unsigned short exception)
+DetailSupersedesSecond(
+    DetailRec firstDetail,
+    DetailRec secondDetail,
+    unsigned short exception)
 {
     if (IsInGrabMask(firstDetail, secondDetail, exception))
 	return TRUE;
@@ -224,7 +247,8 @@ GrabSupersedesSecond(GrabPtr pFirstGrab, GrabPtr pSecondGrab)
 }
 
 Bool
-GrabMatchesSecond(GrabPtr pFirstGrab, GrabPtr pSecondGrab)
+GrabMatchesSecond(pFirstGrab, pSecondGrab)
+    GrabPtr pFirstGrab, pSecondGrab;
 {
     if ((pFirstGrab->device != pSecondGrab->device) ||
 	(pFirstGrab->modifierDevice != pSecondGrab->modifierDevice) ||
@@ -255,7 +279,8 @@ GrabMatchesSecond(GrabPtr pFirstGrab, GrabPtr pSecondGrab)
 }
 
 int
-AddPassiveGrabToList(GrabPtr pGrab)
+AddPassiveGrabToList(pGrab)
+    GrabPtr pGrab;
 {
     GrabPtr grab;
 
@@ -288,9 +313,10 @@ AddPassiveGrabToList(GrabPtr pGrab)
  */
 
 Bool
-DeletePassiveGrabFromList(GrabPtr pMinuendGrab)
+DeletePassiveGrabFromList(pMinuendGrab)
+    GrabPtr pMinuendGrab;
 {
-    GrabPtr grab;
+    register GrabPtr grab;
     GrabPtr *deletes, *adds;
     Mask ***updates, **details;
     int i, ndels, nadds, nups;

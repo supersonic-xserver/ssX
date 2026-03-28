@@ -7,6 +7,8 @@
 # made 06/05/1994 05:08 UTC by root@gamma
 # Source directory /home5/x/XdmConf.svr4
 #
+# $XConsortium: XdmConf.svr4 /main/3 1996/02/21 17:47:15 kaleb $
+#
 # existing files will NOT be overwritten unless -c is specified
 #
 # This shar contains:

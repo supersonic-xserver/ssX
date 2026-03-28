@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/xkb/ddxBeep.c,v 3.11 2005/10/14 15:17:28 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,10 +32,6 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <stdio.h>
 #define	NEED_EVENTS 1
 #include <X11/X.h>
@@ -36,8 +40,14 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
-#include <xkbsrv.h>
+#include <X11/extensions/XKBsrv.h>
 #include <X11/extensions/XI.h>
+
+#if (defined(__osf__) && defined(__alpha))
+#include <sys/sysinfo.h>
+#include <alpha/hal_sysinfo.h>
+#include <alpha/prom.h>
+#endif
 
 /*#define FALLING_TONE	1*/
 /*#define RISING_TONE	1*/
@@ -56,6 +66,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define	HIGH_PITCH	2000
 #define CLICK_PITCH	1500
 
+#ifndef SSX_LEGACY_MODE
 static	unsigned long	atomGeneration= 0;
 static	Atom	featureOn;
 static	Atom	featureOff;
@@ -110,6 +121,32 @@ _XkbDDXBeepInitAtoms(void)
     stickyLock=		MAKE_ATOM(STICKY_LOCK);
     stickyUnlock= 	MAKE_ATOM(STICKY_UNLOCK);
     bounceReject= 	MAKE_ATOM(BOUNCE_REJECT);
+#if (defined(__osf__) && defined(__alpha))
+    /* [[[ WDW - Some bells do not allow for pitch changes.
+     * Maybe this could become part of the keymap? ]]]
+     */
+    {
+	char keyboard[8];
+
+	/* Find the class of keyboard being used.
+	 */
+	keyboard[0] = '\0';
+	if (-1 == getsysinfo(GSI_KEYBOARD, 
+			     keyboard, sizeof(keyboard), 
+			     0, NULL))
+	    keyboard[0] = '\0';
+
+	if ((strcmp(keyboard,"LK201") == 0) ||
+	    (strcmp(keyboard,"LK401") == 0) ||
+	    (strcmp(keyboard,"LK421") == 0) ||
+	    (strcmp(keyboard,"LK443") == 0))
+	    doesPitch = 0;
+    }
+#else
+#if defined(sun)
+    doesPitch = 0;
+#endif
+#endif
     return;
 }
 
@@ -334,3 +371,22 @@ CARD32		 next;
     }
     return 1;
 }
+
+#else /* SSX_LEGACY_MODE */
+
+/*
+ * SSX Legacy Mode: Stub implementations for XKB AccessX beep functions
+ * These rely on xkbInfo which is not available in legacy struct _KeyClassRec
+ */
+
+int
+XkbDDXAccessXBeep(DeviceIntPtr dev, unsigned what, unsigned which)
+{
+    /* Stub - AccessX beep not available in legacy mode */
+    (void)dev;
+    (void)what;
+    (void)which;
+    return 0;
+}
+
+#endif /* SSX_LEGACY_MODE */

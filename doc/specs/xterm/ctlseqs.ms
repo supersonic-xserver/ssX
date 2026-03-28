@@ -1,12 +1,16 @@
 .\"#! troff -ms $1		-*- Nroff -*-
 .\" "Xterm Control Sequences" document
-.\" $XTermId: ctlseqs.ms,v 1.162 2006/03/12 20:26:05 tom Exp $
+.\" $XTermId: ctlseqs.ms,v 1.148 2005/01/08 15:23:27 tom Exp $
 .\"
 .\"
-.\" $XFree86: xc/doc/specs/xterm/ctlseqs.ms,v 3.59 2006/02/13 01:14:56 dickey Exp $
+.\" $Xorg: ctlseqs.ms,v 1.3 2000/08/17 19:42:51 cpqbld Exp $
 .\"
 .\"
-.\" Copyright 1996-2005,2006 by Thomas E. Dickey
+.\"
+.\" $XFree86: xc/doc/specs/xterm/ctlseqs.ms,v 3.55 2005/01/14 01:50:00 dickey Exp $
+.\"
+.\"
+.\" Copyright 1996-2004,2005 by Thomas E. Dickey
 .\"
 .\"                         All Rights Reserved
 .\"
@@ -256,7 +260,6 @@
 .ds Cy \fIC\v'.3m'\h'-.2m'\s-2y\s0\v'-.3m'\fP
 .ds Pb \fIP\v'.3m'\h'-.2m'\s-2b\s0\v'-.3m'\fP
 .ds Pc \fIP\v'.3m'\h'-.2m'\s-2c\s0\v'-.3m'\fP
-.ds Pd \fIP\v'.3m'\h'-.2m'\s-2d\s0\v'-.3m'\fP
 .ds Pe \fIP\v'.3m'\h'-.2m'\s-2e\s0\v'-.3m'\fP
 .ds Pl \fIP\v'.3m'\h'-.2m'\s-2l\s0\v'-.3m'\fP
 .ds Pm \fIP\v'.3m'\h'-.2m'\s-2m\s0\v'-.3m'\fP
@@ -290,7 +293,7 @@ X Consortium (1994)
 .AU
 Thomas Dickey
 .AI
-XFree86 Project (1996-2005)
+XFree86 Project (1996-2004)
 .AU
 .
 .am BT                  \" add page numbers after first page
@@ -662,7 +665,7 @@ Scroll up \*(Ps lines (default = 1) (SU)
 Scroll down \*(Ps lines (default = 1) (SD)
 .
 .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*T
-Initiate highlight mouse tracking.
+Initiate hilite mouse tracking.
 Parameters are [func;startx;starty;firstrow;lastrow].
 See the section \fBMouse Tracking\fP.
 .
@@ -680,7 +683,7 @@ Repeat the preceding graphic character \*(Ps times (REP)
 .
 .IP \\*(Cs\\*(Ps\\*s\\*c
 Send Device Attributes (Primary DA)
-  \*(Ps = \*0 or omitted \(-> request attributes from terminal.
+  \*(Ps = \*0, 1 or omitted \(-> request attributes from terminal.
 The response depends on the \fBdecTerminalID\fP resource setting.
   \(-> \*(Cs\*?\*1\*;\*2\*c (``VT100 with Advanced Video Option'')
   \(-> \*(Cs\*?\*1\*;\*0\*c (``VT101 with No Options'')
@@ -700,7 +703,7 @@ VT220 parameters do, telling the host what features the terminal supports:
 .
 .IP \\*(Cs\\*>\\*(Ps\\*s\\*c
 Send Device Attributes (Secondary DA)
-  \*(Ps = \*0 or omitted \(-> request the terminal's identification code.
+  \*(Ps = \*0, 1 or omitted \(-> request the terminal's identification code.
 The response depends on the \fBdecTerminalID\fP resource setting.
 It should apply only to VT220 and up, but \fIxterm\fP extends this to VT100.
   \(-> \*(Cs\*s\*>\*(Pp\*s\*;\*(Pv\*s\*;\*(Pc\*s\*c
@@ -763,7 +766,7 @@ See the section \fBMouse Tracking\fP.
   \*(Ps = \*4\*7 \(-> Use Alternate Screen Buffer (unless
 disabled by the \fBtiteInhibit\fP resource)
   \*(Ps = \*6\*6 \(-> Application keypad (DECNKM)
-  \*(Ps = \*6\*7 \(-> Backarrow key sends backspace (DECBKM)
+  \*(Ps = \*6\*7 \(-> Backarrow key sends delete (DECBKM)
   \*(Ps = \*1\*0\*0\*0 \(-> Send Mouse X & Y on button press and release.
 See the section \fBMouse Tracking\fP.
   \*(Ps = \*1\*0\*0\*1 \(-> Use Hilite Mouse Tracking.
@@ -789,7 +792,6 @@ Use this with terminfo-based applications rather than the \*4\*7 mode.
   \*(Ps = \*1\*0\*5\*3 \(-> Set SCO function-key mode.
   \*(Ps = \*1\*0\*6\*0 \(-> Set legacy keyboard emulation (X11R6).
   \*(Ps = \*1\*0\*6\*1 \(-> Set Sun/PC keyboard emulation of VT220 keyboard.
-  \*(Ps = \*2\*0\*0\*4 \(-> Set bracketed paste mode.
 .
 .IP \\*(Cs\\*(Pm\\*s\\*i
 Media Copy (MC)
@@ -839,7 +841,7 @@ DEC Private Mode Reset (DECRST)
 (normally disabled by a compile-time option)
   \*(Ps = \*4\*7 \(-> Use Normal Screen Buffer
   \*(Ps = \*6\*6 \(-> Numeric keypad (DECNKM)
-  \*(Ps = \*6\*7 \(-> Backarrow key sends delete (DECBKM)
+  \*(Ps = \*6\*7 \(-> Backarrow key sends backspace (DECBKM)
   \*(Ps = \*1\*0\*0\*0 \(-> Don't Send Mouse X & Y on button press and
 release.
 See the section \fBMouse Tracking\fP.
@@ -867,7 +869,6 @@ Use this with terminfo-based applications rather than the \*4\*7 mode.
   \*(Ps = \*1\*0\*5\*3 \(-> Reset SCO function-key mode.
   \*(Ps = \*1\*0\*6\*0 \(-> Reset legacy keyboard emulation (X11R6).
   \*(Ps = \*1\*0\*6\*1 \(-> Reset Sun/PC keyboard emulation of VT220 keyboard.
-  \*(Ps = \*2\*0\*0\*4 \(-> Reset bracketed paste mode.
 .
 .IP \\*(Cs\\*(Pm\\*s\\*m
 Character Attributes (SGR)
@@ -1004,7 +1005,6 @@ Save DEC Private Mode Values.  \*(Ps values are the same as for DECSET.
 .
 .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Ps\\*s\\*;\\*(Ps\\*s\\*t
 Window manipulation (from \fIdtterm\fP, as well as extensions).
-These controls may be disabled using the \fIallowWindowOps\fP resource.
 Valid values for the first (and any additional parameters) are:
   \*(Ps = \*1 \(-> De-iconify window.
   \*(Ps = \*2 \(-> Iconify window.
@@ -1201,7 +1201,7 @@ were the first means for setting \fBxterm\fR's colors dynamically,
 i.e., after it was started.
 They are not the same as the ANSI colors.
 One or more parameters is expected for \*(Pt.
-Each successive parameter changes the next color in the list.
+Each succesive parameter changes the next color in the list.
 The value of \*(Ps tells the starting point in the list.
 The colors are specified by name or RGB specification as per \fIXParseColor\fP.
 .sp
@@ -1223,40 +1223,11 @@ be given in one control sequence, \fBxterm\fR can make more than one reply.
 .sp
   \*(Ps = \*4\*6 \(-> Change Log File to \*(Pt (normally disabled by a
 compile-time option)
-.sp
   \*(Ps = \*5\*0 \(-> Set Font to \*(Pt
 If \*(Pt begins with a "#", index in the font menu, relative (if the
 next character is a plus or minus sign) or absolute.  A number is
 expected but not required after the sign (the default is the current
 entry for relative, zero for absolute indexing).
-.sp
-  \*(Ps = \*5\*1 (reserved for Emacs shell)
-.sp
-  \*(Ps = \*5\*2 \(-> Manipulate Selection Data.
-These controls may be disabled using the \fIallowWindowOps\fP resource.
-The parameter \*(Pt is parsed as
-.br
-	\*(Pc\*;\*(Pd
-.br
-The first, \*(Pc, may contain any character from the
-set \*c \*p \*(cs \*0 \*1 \*2 \*3 \*4 \*5 \*6 \*7.
-It is used to construct a list of selection parameters for
-clipboard,
-primary,
-select,
-or cut buffers 0 through 8 respectively,
-in the order given.
-If the parameter is empty, \fIxterm\fP uses \*(cs\*0,
-to specify the configurable primary/clipboard selection and cut buffer 0.
-.br
-The second parameter, \*(Pd, gives the selection data.
-Normally this is a string encoded in base64.
-The data becomes the new selection,
-which is then available for pasting by other applications.
-.br
-If the second parameter is a \*?,
-\fIxterm\fP replies to the host with the selection
-data encoded using the same protocol.
 .Ed
 .
 .St
@@ -1592,16 +1563,6 @@ They add other features such as clearing the display for the same reason:
 to make the details of switching independent of the application that
 requests the switch.
 .SH
-Bracketed Paste Mode
-.ds RH Bracketed Paste Mode
-.LP
-When bracketed paste mode is set,
-pasted text is bracketed with control sequences
-so that the program can differentiate pasted text from typed-in text.
-When bracketed paste mode is set,
-the program will receive: ESC [ 200 ~,
-followed by the pasted text, followed by ESC [ 201 ~.
-.SH
 Mouse Tracking
 .ds RH Mouse Tracking
 .LP
@@ -1676,7 +1637,7 @@ as buttons 1 and 2 respectively,
 except that 64 is added to the event code.
 Release events for the wheel buttons are not reported.
 
-Mouse highlight tracking notifies a program of a button press, receives a
+Mouse hilite tracking notifies a program of a button press, receives a
 range of lines from the program, highlights the region covered by
 the mouse within that range until button release, and then sends the
 program the release coordinates.
@@ -1692,7 +1653,7 @@ tracking information.
 received from the pty:\fP
 \*(Cs\*(Ps\*s\*;\*(Ps\*s\*;\*(Ps\*s\*;\*(Ps\*s\*;\*(Ps\*s\*T.
 The parameters are \fIfunc, startx, starty, firstrow,\fP and \fIlastrow.\fP
-\fIfunc\fP is non-zero to initiate highlight tracking and zero to abort.
+\fIfunc\fP is non-zero to initiate hilite tracking and zero to abort.
 \fIstartx\fP and \fIstarty\fP give the starting x and y location for
 the highlighted region.  The ending location tracks the mouse, but
 will never be above row \fIfirstrow\fP and will always be above row
@@ -1835,7 +1796,7 @@ VT52 Mode
 Parameters for cursor movement are at the end of the \*(Es\*Y escape sequence.
 Each ordinate is encoded in a single character as \fIvalue\fP+32.
 For example, \*! is 1.
-The screen coordinate system is 0-based.
+The screen coodinate system is 0-based.
 .St
 .IP \\*(Es\\*A
 Cursor up.

@@ -1,6 +1,20 @@
 /* $XTermId: xutf8.c,v 1.7 2005/01/11 00:10:42 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/xutf8.c,v 1.3 2002/10/09 16:38:20 tsi Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XFree86: xc/programs/xterm/xutf8.c,v 1.4 2005/01/14 01:50:03 dickey Exp $ */
 /*
 Copyright (c) 2001 by Juliusz Chroboczek
 

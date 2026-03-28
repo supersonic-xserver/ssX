@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftgrays.h                                                              */
 /*                                                                         */
 /*    FreeType smooth renderer declaration                                 */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -15,18 +22,22 @@
 /*                                                                         */
 /***************************************************************************/
 
-#ifndef FTGRAYS_H
-#define FTGRAYS_H
+
+#ifndef __FTGRAYS_H__
+#define __FTGRAYS_H__
 
 #ifdef __cplusplus
   extern "C" {
 #endif
 
+
 #ifdef _STANDALONE_
 #include "ftimage.h"
 #else
-#include <freetype/ftimage.h>
+#include <ft2build.h>
+#include FT_IMAGE_H
 #endif
+
 
   /*************************************************************************/
   /*                                                                       */
@@ -42,11 +53,12 @@
 
   FT_EXPORT_VAR( const FT_Raster_Funcs )  ft_grays_raster;
 
+
 #ifdef __cplusplus
   }
 #endif
 
-#endif /* FTGRAYS_H */
+#endif /* __FTGRAYS_H__ */
 
 
 /* END */

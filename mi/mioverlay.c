@@ -1,7 +1,18 @@
+/* $XFree86: xc/programs/Xserver/mi/mioverlay.c,v 3.18 2005/10/14 15:17:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <X11/X.h>
 #include "scrnintstr.h"
@@ -54,8 +65,8 @@ typedef struct {
 } miOverlayScreenRec, *miOverlayScreenPtr;
 
 static unsigned long miOverlayGeneration = 0;
-static int miOverlayWindowIndex = -1;
-static int miOverlayScreenIndex = -1;
+int miOverlayWindowIndex = -1;
+int miOverlayScreenIndex = -1;
 
 static void RebuildTree(WindowPtr);
 static Bool HasUnderlayChildren(WindowPtr);
@@ -102,7 +113,7 @@ static void miOverlayChangeBorderWidth(WindowPtr, unsigned int);
                                     HasBorder(w) && \
                                     (w)->backgroundState == ParentRelative)
 
-_X_EXPORT Bool
+Bool
 miInitOverlay(
     ScreenPtr pScreen, 
     miOverlayInOverlayFunc inOverlayFunc,
@@ -1164,7 +1175,7 @@ miOverlayResizeWindow(
     WindowPtr pChild;
     RegionPtr	gravitate[StaticGravity + 1];
     RegionPtr	gravitate2[StaticGravity + 1];
-    unsigned 	g;
+    unsigned g;
     int		nx, ny;		/* destination x,y */
     int		newx, newy;	/* new inner window position */
     RegionPtr	pRegion = NULL;
@@ -1729,7 +1740,7 @@ miOverlayChangeBorderWidth(
 /*  We need this as an addition since the xf86 common code doesn't
     know about the second tree which is static to this file.  */
 
-_X_EXPORT void
+void
 miOverlaySetRootClip(ScreenPtr pScreen, Bool enable)
 {
     WindowPtr pRoot = WindowTable[pScreen->myNum];
@@ -1817,7 +1828,7 @@ miOverlayClearToBackground(
 /****************************************************************/
 
 /* not used */
-_X_EXPORT Bool
+Bool
 miOverlayGetPrivateClips(
     WindowPtr pWin,
     RegionPtr *borderClip,
@@ -1836,7 +1847,7 @@ miOverlayGetPrivateClips(
     return FALSE;
 }
 
-_X_EXPORT void 
+void 
 miOverlaySetTransFunction (
    ScreenPtr pScreen, 
    miOverlayTransFunc transFunc
@@ -1844,13 +1855,13 @@ miOverlaySetTransFunction (
     MIOVERLAY_GET_SCREEN_PRIVATE(pScreen)->MakeTransparent = transFunc;
 }
 
-_X_EXPORT Bool 
+Bool 
 miOverlayCopyUnderlay(ScreenPtr pScreen)
 {
     return MIOVERLAY_GET_SCREEN_PRIVATE(pScreen)->copyUnderlay;
 }
 
-_X_EXPORT void
+void
 miOverlayComputeCompositeClip(GCPtr pGC, WindowPtr pWin)
 {
     ScreenPtr       pScreen = pGC->pScreen;
@@ -1906,7 +1917,7 @@ miOverlayComputeCompositeClip(GCPtr pGC, WindowPtr pWin)
     }
 }
 
-_X_EXPORT Bool
+Bool
 miOverlayCollectUnderlayRegions(
     WindowPtr pWin,
     RegionPtr *region
@@ -2028,6 +2039,7 @@ HasUnderlayChildren(WindowPtr pWin)
 static Bool
 CollectUnderlayChildrenRegions(WindowPtr pWin, RegionPtr pReg)
 {
+    ScreenPtr pScreen = pWin->drawable.pScreen;
     WindowPtr pChild;
     miOverlayTreePtr pTree;
     Bool hasUnderlay;

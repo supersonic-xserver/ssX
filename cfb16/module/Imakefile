@@ -1,0 +1,8 @@
+XCOMM $XFree86: xc/programs/Xserver/cfb16/module/Imakefile,v 1.3 2005/05/13 21:02:30 dawes Exp $
+
+#define IHaveModules
+
+#define PixelSize	16
+#define LinkDirectory ../../cfb
+
+#include "../../cfb/Imakefile.inc"

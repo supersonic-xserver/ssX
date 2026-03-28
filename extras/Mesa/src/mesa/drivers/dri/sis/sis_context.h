@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
 Copyright 2003 Eric Anholt
@@ -24,7 +38,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_context.h,v 1.1.1.3 2004/12/10 15:05:43 alanh Exp $ */
 
 /*
  * Authors:
@@ -37,7 +51,10 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "context.h"
 #include "dri_util.h"
+#include "drm.h"
+#include "drm_sarea.h"
 #include "xmlconfig.h"
+#include "tnl/t_vertex.h"
 
 #include "sis_screen.h"
 #include "sis_common2.h"
@@ -115,7 +132,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define SIS_MAX_TEXTURE_LEVELS		11
 
 typedef struct {
-   GLbyte *Data;		/* Pointer to texture in offscreen */
+   GLubyte *Data;		/* Pointer to texture in offscreen */
    GLuint memType;		/* VIDEO_TYPE or AGP_TYPE */
    void *handle;		/* Handle for sisFree*() */
    GLuint pitch;
@@ -235,18 +252,26 @@ struct sis_context
   /* This must be first in this structure */
   GLcontext *glCtx;
 
+  /* Vertex state */
+  GLuint vertex_size;
+  struct tnl_attr_map vertex_attrs[VERT_ATTRIB_MAX];
+  GLuint vertex_attr_count;
+  char *verts;			/* points to tnl->clipspace.vertex_buf */
+
+  /* Vertex buffer (in system memory or AGP) state. */
+  unsigned char *vb;		/* Beginning of vertex buffer */
+  unsigned char *vb_cur;	/* Current write location in vertex buffer */
+  unsigned char *vb_last;	/* Last written location in vertex buffer */
+  unsigned char *vb_end;	/* End of vertex buffer */
+  void *vb_agp_handle;
+  GLuint vb_agp_offset;
+  GLboolean using_agp;
+
   GLuint NewGLState;
   GLuint Fallback;
-  GLuint SetupIndex;
-  GLuint SetupNewInputs;
   GLuint RenderIndex;
   GLfloat hw_viewport[16];
   GLfloat depth_scale;
-  GLuint vertex_size;
-  GLuint vertex_stride_shift;
-  GLuint vertex_format;
-  GLuint num_verts;
-  GLubyte *verts;		
 
   unsigned int virtualX, virtualY;
   unsigned int bytesPerPixel;
@@ -286,15 +311,6 @@ struct sis_context
   unsigned char *AGPBase;
   unsigned int AGPAddr;
   
-  /* AGP Command Buffer */
-  /* TODO: use Global variables */                                                                                
-
-  unsigned char *AGPCmdBufBase;
-  GLint AGPCmdBufAddr;
-  unsigned int AGPCmdBufSize;
-  GLint *pAGPCmdBufNext;
-  GLboolean AGPCmdModeEnabled;
-
   /* register 0x89F4 */
   GLint AGPParseSet;
 
@@ -311,9 +327,9 @@ struct sis_context
   GLboolean blockWrite;
 
   GLint GlobalFlag;
+  GLuint last_tcl_state;
 
   /* Stereo */
-  GLboolean isFullScreen;
   GLboolean useStereo;
   GLboolean stereoEnabled;
   int stereo_drawIndex;
@@ -353,8 +369,8 @@ struct sis_context
 
   unsigned int lastStamp;	        /* mirror driDrawable->lastStamp */
 
-  drmContext hHWContext;
-  drmLock *driHwLock;
+  drm_context_t hHWContext;
+  drm_hw_lock_t *driHwLock;
 
   sisScreenPtr sisScreen;		/* Screen private DRI data */
   SISSAREAPrivPtr sarea;		/* Private SAREA data */
@@ -381,7 +397,7 @@ struct sis_context
 
 #define MMIO(reg, value) \
 {\
-  *(GLint *)(GET_IOBase(smesa) + (reg)) = value; \
+   *(volatile GLint *)(smesa->IOBase + (reg)) = value;			\
 }
 
 #define MMIO_READ(reg) *(volatile GLint *)(smesa->IOBase + (reg))
@@ -389,9 +405,15 @@ struct sis_context
 
 #define mEndPrimitive()  \
 {       \
-  *(GET_IOBase(smesa) + REG_3D_EndPrimitiveList) = 0xFF;   \
-  *(GLint *)(GET_IOBase(smesa) + 0x8b60) = (GLint)(-1); \
+   *(volatile GLubyte *)(smesa->IOBase + REG_3D_EndPrimitiveList) = 0xff; \
+   *(volatile GLuint *)(smesa->IOBase + 0x8b60) = 0xffffffff;		\
 }
+
+#define sis_fatal_error(msg)						\
+do {									\
+	fprintf(stderr, "[%s:%d]: %s", __FILE__, __LINE__, msg);	\
+	exit(-1);							\
+} while (0)
 
 /* Lock required */
 #define mWait3DCmdQueue(wLen)						\
@@ -428,7 +450,5 @@ void WaitingFor3dIdle(sisContextPtr smesa, int wLen);
 /* update to hw */
 extern void sis_update_texture_state( sisContextPtr smesa );
 extern void sis_update_render_state( sisContextPtr smesa );
-
-void sis_fatal_error (void);
 
 #endif

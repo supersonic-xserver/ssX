@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/iplpack.c,v 3.0 1996/08/18 01:54:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
@@ -141,7 +148,7 @@ static unsigned long tabp[256] = {
 void
 iplUnpackLine(int planes, int longs, unsigned int *psrc, unsigned short *ipsrc)
 {
-	unsigned long temp,m;
+	unsigned long temp,m,*temp2;
 	unsigned char *t=(unsigned char *) &temp;
 	unsigned char *i=(unsigned char *) ipsrc;
 	unsigned char *s=(unsigned char *) psrc;
@@ -150,10 +157,13 @@ iplUnpackLine(int planes, int longs, unsigned int *psrc, unsigned short *ipsrc)
 	case 2:
 		for (j = 0 ; j < longs ; j++)
 		{
-			*((long *) ipsrc)++=(tabi[s[0]] >>  0) 	|
-			        	    (tabi[s[1]] >>  4) 	|
-					    (tabi[s[2]] >>  8) 	|
-				            (tabi[s[3]] >> 12);
+			temp2=(unsigned long *) ipsrc;
+			*temp2=(tabi[s[0]] >>  0) 	|
+			       (tabi[s[1]] >>  4) 	|
+			       (tabi[s[2]] >>  8) 	|
+			       (tabi[s[3]] >> 12);
+			temp2++;
+			ipsrc=(unsigned short *) temp2;
 			s+=4;
 		}
 		break;

@@ -1,4 +1,3 @@
-.\" $XFree86: xc/extras/ogl-sample/main/doc/man/manglw/glwdrawingareamakecurrent.gl,v 1.0tsi Exp $
 .\" **
 .\" **  (c) Copyright 1993, 1994, 1995, 1996 Silicon Graphics, Inc.
 .\" **
@@ -18,7 +17,7 @@
 .iX "GLwDrawingArea"
 .sp 1
 .SH SYNOPSIS
-\fB#include <GL/GLwDraw.h>\fP
+\fB#include <X11/GLw/GLwDraw.h>\fP
 .br
 void \fBGLwDrawingAreaMakeCurrent\fP( Widget \fIw\fP, 
 					    	  GLXContext \fIctx\fP )

@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -60,17 +60,19 @@ Chapter 16: Application Utility Functions
 Once you have initialized the X system,
 you can use the Xlib utility functions to:
 .IP \(bu 5
-Obtain and classify KeySyms
+Use keyboard utility functions
+.IP \(bu 5
+Use Latin-1 keyboard event functions
 .IP \(bu 5
 Allocate permanent storage
 .IP \(bu 5
-Parse window geometry strings
+Parse the window geometry
 .IP \(bu 5
 Manipulate regions
 .IP \(bu 5
 Use cut buffers
 .IP \(bu 5
-Determine the appropriate visual 
+Determine the appropriate visual type
 .IP \(bu 5
 Manipulate images
 .IP \(bu 5
@@ -83,9 +85,9 @@ the functions discussed in this chapter provide the functionality that
 is frequently needed and that spans toolkits.
 Many of these functions do not generate actual protocol requests to the server.
 .NH 2
-Keyboard Utility Functions
+Using Keyboard Utility Functions
 .XS
-\*(SN Keyboard Utility Functions 
+\*(SN Using Keyboard Utility Functions 
 .XE
 .LP
 This section discusses mapping between KeyCodes and KeySyms,
@@ -216,7 +218,7 @@ occurs.
 The result is to update Xlib's knowledge of the keyboard.
 .LP
 .sp
-To obtain the uppercase and lowercase forms of a KeySym, us
+To obtain the uppercase and lowercase forms of a KeySym, use
 .PN XConvertCase .
 .IN "XConvertCase" "" "@DEF@"
 .sM
@@ -245,7 +247,7 @@ if the KeySym is subject to case conversion;
 otherwise, the specified KeySym is returned to both lower_return and
 upper_return.
 Support for conversion of other than Latin and Cyrillic KeySyms is
-implementation dependent.
+implementation-dependent.
 .LP
 .sp
 KeySyms have string names as well as numeric codes.
@@ -268,10 +270,10 @@ by removing the XK_ prefix from each name.
 KeySyms that are not part of the Xlib standard also may be obtained
 with this function.
 The set of KeySyms that are available in this manner 
-and the mechanisms by which Xlib obtains them is implementation dependent.
+and the mechanisms by which Xlib obtains them is implementation-dependent.
 .LP
 If the KeySym name is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 If the specified string does not match a valid KeySym,
 .PN XStringToKeysym
 returns
@@ -412,9 +414,9 @@ Returns
 .PN True
 if the specified KeySym is a PF key.
 .NH 2
-Latin-1 Keyboard Event Functions
+Using Latin-1 Keyboard Event Functions
 .XS
-\*(SN Latin-1 Keyboard Event Functions 
+\*(SN Using Latin-1 Keyboard Event Functions 
 .XE
 .LP
 Chapter 13 describes internationalized text input facilities,
@@ -490,7 +492,7 @@ that needs preservation across calls to
 to implement compose processing.
 The creation of
 .PN XComposeStatus
-structures is implementation dependent;
+structures is implementation-dependent;
 a portable program must pass NULL for this argument.
 .LP
 .PN XLookupString
@@ -625,7 +627,7 @@ The fields map into the arguments associated with this function.
 items enclosed in {\^} indicate ``choose one of.''
 Note that the brackets should not appear in the actual string.)
 If the string is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 .LP
 The
 .PN XParseGeometry
@@ -843,7 +845,7 @@ The
 .PN XSetRegion
 function sets the clip-mask in the GC to the specified region.
 The region is specified relative to the drawable's origin.
-The resulting GC clip origin is implementation dependent.
+The resulting GC clip origin is implementation-dependent.
 Once it is set in the GC,
 the region can be destroyed.
 .LP 
@@ -1123,8 +1125,8 @@ Specifies the region.
 .ns
 .IP \fIy\fP 1i
 Specify the x and y coordinates\*(Xy.
-.eM
 .LP
+.eM
 The
 .PN XPointInRegion
 function returns 
@@ -1153,7 +1155,7 @@ Specifies the region.
 .ns
 .IP \fIy\fP 1i
 Specify the x and y coordinates\*(Xy.
-.ds Wh , which define the rectangle 
+.ds Wh , which define the rectangle
 .IP \fIwidth\fP 1i
 .br
 .ns
@@ -1179,9 +1181,9 @@ Using Cut Buffers
 .LP
 .IN "Cut Buffers"
 Xlib provides functions to manipulate cut buffers,
-a very simple form of cut and paste inter-client communication.
+a very simple form of cut-and-paste inter-client communication.
 Selections are a much more powerful and useful mechanism for
-interchanging data between clients (see section 4.5),
+interchanging data between clients (see section 4.5)
 and generally should be used instead of cut buffers.
 .LP
 Cut buffers are implemented as properties on the first root window
@@ -1728,7 +1730,7 @@ The
 .PN XGetPixel
 function returns the specified pixel from the named image.
 The pixel value is returned in normalized format (that is,
-the least-significant byte of the long is the least-significant byte
+the least significant byte of the long is the least significant byte
 of the pixel).
 The image must contain the x and y coordinates.
 .LP
@@ -1763,7 +1765,7 @@ The
 .PN XPutPixel
 function overwrites the pixel in the named image with the specified pixel value.
 The input pixel value must be in normalized format
-(that is, the least-significant byte of the long is the least-significant
+(that is, the least significant byte of the long is the least significant
 byte of the pixel).
 The image must contain the x and y coordinates.
 .LP
@@ -1893,7 +1895,7 @@ The lines for the other variables are required.
 The word ``unsigned'' is optional;
 that is, the type of the _bits array can be ``char'' or ``unsigned char''.
 The _bits array must be large enough to contain the size bitmap.
-The bitmap unit is eight.
+The bitmap unit is 8.
 .LP
 .sp
 To read a bitmap from a file and store it in a pixmap, use
@@ -1944,7 +1946,7 @@ The
 function reads in a file containing a bitmap.
 The file is parsed in the encoding of the current locale.
 The ability to read other than the standard format 
-is implementation dependent.
+is implementation-dependent.
 If the file cannot be opened, 
 .PN XReadBitmapFile 
 returns 
@@ -2209,7 +2211,7 @@ bitmap using
 when finished.
 .LP
 .PN XCreateBitmapFromData
-can generate a
+can generate
 .PN BadAlloc
 and
 .PN BadGC

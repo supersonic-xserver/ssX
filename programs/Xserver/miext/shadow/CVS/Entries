@@ -1,0 +1,23 @@
+/Imakefile/1.1.1.6/Fri Mar 18 13:13:15 2005//Tnetbsd-5-2-3-RELEASE
+/shadow.c/1.1.1.6/Fri Mar  5 14:29:42 2004//Tnetbsd-5-2-3-RELEASE
+/shadow.h/1.1.1.5/Fri Feb 28 13:20:27 2003//Tnetbsd-5-2-3-RELEASE
+/shalloc.c/1.1.1.3/Sat Jun  9 15:10:14 2001//Tnetbsd-5-2-3-RELEASE
+/shmodule.c/1.1.1.4/Fri Mar 18 13:13:15 2005//Tnetbsd-5-2-3-RELEASE
+/shpacked.c/1.1.1.4/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shplanar.c/1.1.1.4/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shplanar8.c/1.1.1.4/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot16pack.c/1.1.1.3/Sat Jun  9 15:10:15 2001//Tnetbsd-5-2-3-RELEASE
+/shrot16pack_180.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot16pack_270.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot16pack_90.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot32pack.c/1.1.1.3/Sat Jun  9 15:10:15 2001//Tnetbsd-5-2-3-RELEASE
+/shrot32pack_180.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot32pack_270.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot32pack_90.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot8pack.c/1.1.1.3/Sat Jun  9 15:10:15 2001//Tnetbsd-5-2-3-RELEASE
+/shrot8pack_180.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot8pack_270.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrot8pack_90.c/1.1.1.1/Sat Jan 19 15:14:23 2002//Tnetbsd-5-2-3-RELEASE
+/shrotate.c/1.1.1.2/Fri Feb 28 13:20:27 2003//Tnetbsd-5-2-3-RELEASE
+/shrotpack.h/1.1.1.4/Sat Jan 19 15:14:24 2002//Tnetbsd-5-2-3-RELEASE
+D/module////

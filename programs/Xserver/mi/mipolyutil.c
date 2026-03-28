@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/mi/mipolyutil.c,v 1.10 2003/07/16 01:38:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $Xorg: mipolyutil.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
 #include "regionstr.h"
 #include "gc.h"
 #include "miscanfill.h"
@@ -72,11 +79,15 @@ SOFTWARE.
  *
  */
 Bool
-miInsertEdgeInET(EdgeTable *ET, EdgeTableEntry *ETE, int scanline,
-		 ScanLineListBlock **SLLBlock, int *iSLLBlock)
+miInsertEdgeInET(ET, ETE, scanline, SLLBlock, iSLLBlock)
+    EdgeTable *ET;
+    EdgeTableEntry *ETE;
+    int scanline;
+    ScanLineListBlock **SLLBlock;
+    int *iSLLBlock;
 {
-    EdgeTableEntry *start, *prev;
-    ScanLineList *pSLL, *pPrevSLL;
+    register EdgeTableEntry *start, *prev;
+    register ScanLineList *pSLL, *pPrevSLL;
     ScanLineListBlock *tmpSLLBlock;
 
     /*
@@ -159,12 +170,16 @@ miInsertEdgeInET(EdgeTable *ET, EdgeTableEntry *ETE, int scanline,
  */
 
 Bool
-miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET,
-		 EdgeTableEntry *AET, EdgeTableEntry *pETEs,
-		 ScanLineListBlock *pSLLBlock)
+miCreateETandAET(count, pts, ET, AET, pETEs, pSLLBlock)
+    register int count;
+    register DDXPointPtr pts;
+    EdgeTable *ET;
+    EdgeTableEntry *AET;
+    register EdgeTableEntry *pETEs;
+    ScanLineListBlock   *pSLLBlock;
 {
-    DDXPointPtr top, bottom;
-    DDXPointPtr PrevPt, CurrPt;
+    register DDXPointPtr top, bottom;
+    register DDXPointPtr PrevPt, CurrPt;
     int iSLLBlock = 0;
 
     int dy;
@@ -251,10 +266,11 @@ miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET,
  */
 
 void
-miloadAET(EdgeTableEntry *AET, EdgeTableEntry *ETEs)
+miloadAET(AET, ETEs)
+    register EdgeTableEntry *AET, *ETEs;
 {
-    EdgeTableEntry *pPrevAET;
-    EdgeTableEntry *tmp;
+    register EdgeTableEntry *pPrevAET;
+    register EdgeTableEntry *tmp;
 
     pPrevAET = AET;
     AET = AET->next;
@@ -298,11 +314,12 @@ miloadAET(EdgeTableEntry *AET, EdgeTableEntry *ETEs)
  *
  */
 void
-micomputeWAET(EdgeTableEntry *AET)
+micomputeWAET(AET)
+    register EdgeTableEntry *AET;
 {
-    EdgeTableEntry *pWETE;
-    int inside = 1;
-    int isInside = 0;
+    register EdgeTableEntry *pWETE;
+    register int inside = 1;
+    register int isInside = 0;
 
     AET->nextWETE = (EdgeTableEntry *)NULL;
     pWETE = AET;
@@ -336,12 +353,13 @@ micomputeWAET(EdgeTableEntry *AET)
  */
 
 int
-miInsertionSort(EdgeTableEntry *AET)
+miInsertionSort(AET)
+    register EdgeTableEntry *AET;
 {
-    EdgeTableEntry *pETEchase;
-    EdgeTableEntry *pETEinsert;
-    EdgeTableEntry *pETEchaseBackTMP;
-    int changed = 0;
+    register EdgeTableEntry *pETEchase;
+    register EdgeTableEntry *pETEinsert;
+    register EdgeTableEntry *pETEchaseBackTMP;
+    register int changed = 0;
 
     AET = AET->next;
     while (AET) 
@@ -372,9 +390,10 @@ miInsertionSort(EdgeTableEntry *AET)
  *     Clean up our act.
  */
 void
-miFreeStorage(ScanLineListBlock *pSLLBlock)
+miFreeStorage(pSLLBlock)
+    register ScanLineListBlock   *pSLLBlock;
 {
-    ScanLineListBlock   *tmpSLLBlock;
+    register ScanLineListBlock   *tmpSLLBlock;
 
     while (pSLLBlock) 
     {

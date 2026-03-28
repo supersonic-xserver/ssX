@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * dpsclient.h - Application interface to the Display PostScript Library.
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -131,6 +138,8 @@ typedef enum {dps_context_execution, dps_context_text} DPSContextType;
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
+
+extern void DPSversion(DPSContext ctxt, int bufsize, char buf[]);
 
 extern void DPSDefaultErrorProc(DPSContext ctxt, DPSErrorCode errorCode,
 				long unsigned int arg1,
@@ -358,6 +367,18 @@ extern char *DPSGetOperatorAbbrev(char *op);
 extern DPSContextType DPSGetContextType(DPSContext ctxt);
 
   /* Returns whether a context is a text context or an execution context */
+
+  /* generated functions used in dpstk */
+extern void DPSrectfill(DPSContext ctxt, double x, double y, double w, double h);
+extern void DPSsetcmykcolor(DPSContext ctxt, double c, double m, double y, double k);
+extern void DPSsetgray(DPSContext ctxt, double gray);
+extern void DPSsethsbcolor(DPSContext ctxt, double h, double s, double b);
+extern void DPSsetrgbcolor(DPSContext ctxt, double r, double g, double b);
+extern void DPSsetXoffset(DPSContext ctxt, int x, int y);
+extern void DPSinitviewclip(DPSContext ctxt);
+extern void DPSinitgraphics(DPSContext ctxt);
+extern void DPSscale(DPSContext ctxt, double x, double y);
+extern void DPSinitclip(DPSContext ctxt);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

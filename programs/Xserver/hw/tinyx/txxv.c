@@ -1,4 +1,18 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
    XFree86 Xv DDX written by Mark Vojkovich (markv@valinux.com) 
    Adapted for TinyX by Pontus Lidman <pontus.lidman@nokia.com>
@@ -35,7 +49,7 @@ of the copyright holder.
 
 */
 
-/* $XFree86: xc/programs/Xserver/hw/tinyx/txxv.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/txxv.c,v 1.1 2004/06/02 22:43:00 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -95,8 +109,8 @@ of the copyright holder.
 #include "gcstruct.h"
 #include "dixstruct.h"
 
-#include <X11/extensions/Xv.h>
-#include <X11/extensions/Xvproto.h>
+#include "Xv.h"
+#include "Xvproto.h"
 
 #include "txxv.h"
 

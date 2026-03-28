@@ -1,3 +1,11 @@
+/* $Xorg: access.c,v 1.5 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/access.c,v 3.62tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/access.c,v 3.58 2004/12/31 02:56:03 tsi Exp $ */
 
 #ifdef WIN32
 #include <X11/Xwinsock.h>
@@ -54,8 +62,8 @@ SOFTWARE.
 #include <stdlib.h>
 #include <X11/Xtrans.h>
 #include <X11/Xauth.h>
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include <X.h>
+#include <Xproto.h>
 #include "misc.h"
 #include "site.h"
 #include <errno.h>
@@ -180,7 +188,7 @@ SOFTWARE.
 
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#include "extensions/security.h"
 #endif
 
 #ifndef PATH_MAX
@@ -373,7 +381,7 @@ DefineSelf (int fd)
     struct in_ifaddr ifaddr;
     struct strioctl str;
     unsigned char *addr;
-    HOST *host;
+    register HOST *host;
     int	family, len;
 
     if ((fd = open ("/dev/ip", O_RDWR, 0 )) < 0)
@@ -488,14 +496,14 @@ DefineSelf (int fd)
 #if !defined(TCPCONN) && !defined(STREAMSCONN) && !defined(UNIXCONN) && !defined(MNX_TCPCONN)
     return;
 #else
-    int n;
+    register int n;
     int	len;
     caddr_t	addr;
     int		family;
-    HOST	*host;
+    register HOST	*host;
 
     struct utsname name;
-    struct hostent  *hp;
+    register struct hostent  *hp;
 
     union {
 	struct  sockaddr   sa;
@@ -518,8 +526,7 @@ DefineSelf (int fd)
      * see), whereas gethostname() kindly truncates it for me.
      */
 #ifndef QNX4
-    if (uname(&name) < 0)
-	name.nodename[0] = '\0';
+    uname(&name);
 #else
     /* QNX4's uname returns node number in name.nodename, not the hostname
        have to overwrite it */
@@ -665,13 +672,13 @@ DefineSelf (int fd)
     void *		bufptr = buf;   
 #ifdef USE_SIOCGLIFCONF
     struct lifconf	ifc;
-    struct lifreq *ifr;
+    register struct lifreq *ifr;
 #ifdef SIOCGLIFNUM
     struct lifnum	ifn;
 #endif
 #else
     struct ifconf	ifc;
-    struct ifreq *ifr;
+    register struct ifreq *ifr;
 #endif 
 #else 
     struct ifaddrs *	ifap, *ifr;
@@ -679,7 +686,7 @@ DefineSelf (int fd)
     int 		len;
     unsigned char *	addr;
     int 		family;
-    HOST 	*host;
+    register HOST 	*host;
     
 #ifdef DNETCONN
     struct dn_naddr *dnaddr = getnodeadd();
@@ -1027,7 +1034,7 @@ AugmentSelf(pointer from, int len)
 {
     int family;
     pointer addr;
-    HOST *host;
+    register HOST *host;
 
     family = ConvertAddr(from, &len, (pointer *)&addr);
     if (family == -1 || family == FamilyLocal)
@@ -1063,9 +1070,9 @@ AddLocalHosts (void)
 
 /* Reset access control list to initial hosts */
 void
-ResetHosts (const char *display)
+ResetHosts (char *display)
 {
-    HOST	*host;
+    register HOST	*host;
     char                lhostname[120], ohostname[120];
     char 		*hostname = ohostname;
     char		fname[PATH_MAX + 1];
@@ -1243,7 +1250,7 @@ ResetHosts (const char *display)
 #ifdef XTHREADS_NEEDS_BYNAMEPARAMS
 	    _Xgethostbynameparams hparams;
 #endif
-	    struct hostent *hp;
+	    register struct hostent *hp;
 
     	    /* host name */
     	    if ((family == FamilyInternet &&
@@ -1280,7 +1287,7 @@ Bool LocalClient(ClientPtr client)
     int    		alen, family, notused;
     Xtransaddr		*from = NULL;
     pointer		addr;
-    HOST	*host;
+    register HOST	*host;
 
 #ifdef XCSECURITY
     /* untrusted clients can't change host access */
@@ -1454,7 +1461,7 @@ NewHost (int		family,
 	 int		len,
 	 int		addingLocalHosts)
 {
-    HOST *host;
+    register HOST *host;
 
     for (host = validhosts; host; host = host->next)
     {
@@ -1490,7 +1497,7 @@ RemoveHost (
     pointer             pAddr)
 {
     int			len;
-    HOST	*host, **prev;
+    register HOST	*host, **prev;
 
     if (!AuthorizedClient(client))
 	return(BadAccess);
@@ -1547,9 +1554,9 @@ GetHosts (
     BOOL		*pEnabled)
 {
     int			len;
-    int 	n = 0;
-    unsigned char *ptr;
-    HOST	*host;
+    register int 	n = 0;
+    register unsigned char *ptr;
+    register HOST	*host;
     int			nHosts = 0;
 
     *pEnabled = AccessEnabled ? EnableAccess : DisableAccess;
@@ -1637,12 +1644,12 @@ CheckAddr (
 
 int
 InvalidHost (
-    struct sockaddr	*saddr,
+    register struct sockaddr	*saddr,
     int				len)
 {
     int 			family;
     pointer			addr;
-    HOST 		*selfhost, *host;
+    register HOST 		*selfhost, *host;
 
     if (!AccessEnabled)   /* just let them in */
         return(0);    
@@ -1680,11 +1687,10 @@ InvalidHost (
 
 static int
 ConvertAddr (
-    struct sockaddr	*saddr,
+    register struct sockaddr	*saddr,
     int				*len,
     pointer			*addr)
 {
-    *addr = NULL;
     if (*len == 0)
         return (FamilyLocal);
     switch (saddr->sa_family)

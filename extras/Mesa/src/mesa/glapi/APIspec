@@ -1,3 +1,5 @@
+# $Id: APIspec,v 1.1.1.1 2005/03/18 13:06:39 tron Exp $
+
 # This file describes all the OpenGL functions.
 # We use a number of Python scripts to parse this file and
 # generate some source files.  We used to use the SGI gl.spec

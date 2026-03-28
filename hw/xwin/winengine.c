@@ -1,5 +1,12 @@
 /*
- *Copyright (C) 2001-2004 Harold L Hunt II All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ *Copyright (C) 1994-2001 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -15,24 +22,21 @@
  *THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  *MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *NONINFRINGEMENT. IN NO EVENT SHALL HAROLD L HUNT II BE LIABLE FOR
+ *NONINFRINGEMENT. IN NO EVENT SHALL THE XFREE86 PROJECT BE LIABLE FOR
  *ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  *CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- *Except as contained in this notice, the name of Harold L Hunt II
+ *Except as contained in this notice, the name of the XFree86 Project
  *shall not be used in advertising or otherwise to promote the sale, use
  *or other dealings in this Software without prior written authorization
- *from Harold L Hunt II.
+ *from the XFree86 Project.
  *
  * Authors:	Harold L Hunt II
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winengine.c,v 1.5 2003/07/29 21:25:17 dawes Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include "win.h"
-#include "winmsg.h"
 
 
 /*
@@ -55,7 +59,7 @@ winDetectSupportedEngines ()
   /* Initialize the engine support flags */
   g_dwEnginesSupported = WIN_SERVER_SHADOW_GDI;
 
-#ifdef XWIN_NATIVEGDI
+#if WIN_NATIVE_GDI_SUPPORT
   g_dwEnginesSupported |= WIN_SERVER_NATIVE_GDI;
 #endif
 
@@ -69,12 +73,12 @@ winDetectSupportedEngines ()
     {
     case VER_PLATFORM_WIN32_NT:
       /* Engine 4 is supported on NT only */
-      winErrorFVerb (2, "winDetectSupportedEngines - Windows NT/2000/XP\n");
+      ErrorF ("winDetectSupportedEngines - Windows NT/2000/XP\n");
       break;
 
     case VER_PLATFORM_WIN32_WINDOWS:
       /* Engine 4 is supported on NT only */
-      winErrorFVerb (2, "winDetectSupportedEngines - Windows 95/98/Me\n");
+      ErrorF ("winDetectSupportedEngines - Windows 95/98/Me\n");
       break;
     }
 
@@ -100,23 +104,21 @@ winDetectSupportedEngines ()
       if (FAILED (ddrval))
 	{
 	  /* No DirectDraw support */
-	  winErrorFVerb (2, "winDetectSupportedEngines - DirectDraw not installed\n");
+	  ErrorF ("winDetectSupportedEngines - DirectDraw not installed\n");
 	  return;
 	}
       else
 	{
 	  /* We have DirectDraw */
-	  winErrorFVerb (2, "winDetectSupportedEngines - DirectDraw installed\n");
+	  ErrorF ("winDetectSupportedEngines - DirectDraw installed\n");
 	  g_dwEnginesSupported |= WIN_SERVER_SHADOW_DD;
 
-#ifdef XWIN_PRIMARYFB
 	  /* Allow PrimaryDD engine if NT */
 	  if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT)
 	    {
 	      g_dwEnginesSupported |= WIN_SERVER_PRIMARY_DD;
-	      winErrorFVerb (2, "winDetectSupportedEngines - Allowing PrimaryDD\n");
+	      ErrorF ("winDetectSupportedEngines - Allowing PrimaryDD\n");
 	    }
-#endif
 	}
       
       /* Try to query for DirectDraw4 interface */
@@ -126,7 +128,7 @@ winDetectSupportedEngines ()
       if (SUCCEEDED (ddrval))
 	{
 	  /* We have DirectDraw4 */
-	  winErrorFVerb (2, "winDetectSupportedEngines - DirectDraw4 installed\n");
+	  ErrorF ("winDetectSupportedEngines - DirectDraw4 installed\n");
 	  g_dwEnginesSupported |= WIN_SERVER_SHADOW_DDNL;
 	}
 
@@ -137,8 +139,8 @@ winDetectSupportedEngines ()
 	IDirectDraw_Release (lpdd);
     }
 
-  winErrorFVerb (2, "winDetectSupportedEngines - Returning, supported engines %08x\n",
-	  (unsigned int) g_dwEnginesSupported);
+  ErrorF ("winDetectSupportedEngines - Returning, supported engines %08x\n",
+	  g_dwEnginesSupported);
 }
 
 
@@ -178,7 +180,7 @@ winSetEngine (ScreenPtr pScreen)
   /* ShadowGDI is the only engine that supports windowed PseudoColor */
   if (dwBPP == 8 && !pScreenInfo->fFullScreen)
     {
-      winErrorFVerb (2, "winSetEngine - Windowed && PseudoColor => ShadowGDI\n");
+      ErrorF ("winSetEngine - Windowed && PseudoColor => ShadowGDI\n");
       pScreenInfo->dwEngine = WIN_SERVER_SHADOW_GDI;
 
       /* Set engine function pointers */
@@ -187,20 +189,9 @@ winSetEngine (ScreenPtr pScreen)
     }
 
   /* ShadowGDI is the only engine that supports Multi Window Mode */
-  if (
-#ifdef XWIN_MULTIWINDOWEXTWM
-      pScreenInfo->fMWExtWM
-#else
-      FALSE
-#endif
-#ifdef XWIN_MULTIWINDOW
-      || pScreenInfo->fMultiWindow
-#else
-      || FALSE
-#endif
-      )
+  if (pScreenInfo->fMultiWindow)
     {
-      winErrorFVerb (2, "winSetEngine - Multi Window or Rootless => ShadowGDI\n");
+      ErrorF ("winSetEngine - Multi Window => ShadowGDI\n");
       pScreenInfo->dwEngine = WIN_SERVER_SHADOW_GDI;
 
       /* Set engine function pointers */
@@ -211,8 +202,8 @@ winSetEngine (ScreenPtr pScreen)
   /* If the user's choice is supported, we'll use that */
   if (g_dwEnginesSupported & pScreenInfo->dwEnginePreferred)
     {
-      winErrorFVerb (2, "winSetEngine - Using user's preference: %d\n",
-	      (int) pScreenInfo->dwEnginePreferred);
+      ErrorF ("winSetEngine - Using user's preference: %d\n",
+	      pScreenInfo->dwEnginePreferred);
       pScreenInfo->dwEngine = pScreenInfo->dwEnginePreferred;
 
       /* Setup engine function pointers */
@@ -227,16 +218,12 @@ winSetEngine (ScreenPtr pScreen)
 	case WIN_SERVER_SHADOW_DDNL:
 	  winSetEngineFunctionsShadowDDNL (pScreen);
 	  break;
-#ifdef XWIN_PRIMARYFB
 	case WIN_SERVER_PRIMARY_DD:
 	  winSetEngineFunctionsPrimaryDD (pScreen);
 	  break;
-#endif
-#ifdef XWIN_NATIVEGDI
 	case WIN_SERVER_NATIVE_GDI:
 	  winSetEngineFunctionsNativeGDI (pScreen);
 	  break;
-#endif
 	default:
 	  FatalError ("winSetEngine - Invalid engine type\n");
 	}
@@ -246,7 +233,7 @@ winSetEngine (ScreenPtr pScreen)
   /* ShadowDDNL has good performance, so why not */
   if (g_dwEnginesSupported & WIN_SERVER_SHADOW_DDNL)
     {
-      winErrorFVerb (2, "winSetEngine - Using Shadow DirectDraw NonLocking\n");
+      ErrorF ("winSetEngine - Using Shadow DirectDraw NonLocking\n");
       pScreenInfo->dwEngine = WIN_SERVER_SHADOW_DDNL;
 
       /* Set engine function pointers */
@@ -257,7 +244,7 @@ winSetEngine (ScreenPtr pScreen)
   /* ShadowDD is next in line */
   if (g_dwEnginesSupported & WIN_SERVER_SHADOW_DD)
     {
-      winErrorFVerb (2, "winSetEngine - Using Shadow DirectDraw\n");
+      ErrorF ("winSetEngine - Using Shadow DirectDraw\n");
       pScreenInfo->dwEngine = WIN_SERVER_SHADOW_DD;
 
       /* Set engine function pointers */
@@ -268,7 +255,7 @@ winSetEngine (ScreenPtr pScreen)
   /* ShadowGDI is next in line */
   if (g_dwEnginesSupported & WIN_SERVER_SHADOW_GDI)
     {
-      winErrorFVerb (2, "winSetEngine - Using Shadow GDI DIB\n");
+      ErrorF ("winSetEngine - Using Shadow GDI DIB\n");
       pScreenInfo->dwEngine = WIN_SERVER_SHADOW_GDI;
 
       /* Set engine function pointers */

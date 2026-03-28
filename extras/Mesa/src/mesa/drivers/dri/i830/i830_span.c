@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
 
@@ -25,14 +39,15 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
 
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_span.c,v 1.4 2002/12/10 01:26:53 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_span.c,v 1.1.1.2 2004/12/10 15:05:47 alanh Exp $ */
 
-/*
- * Author:
- *   Jeff Hartmann <jhartmann@2d3d.com>
+/**
+ * \file i830_span.c
  *
- * Heavily based on the I810 driver, which was written by:
- *   Keith Whitwell <keith@tungstengraphics.com>
+ * Heavily based on the I810 driver, which was written by Keith Whitwell.
+ *
+ * \author Jeff Hartmann <jhartmann@2d3d.com>
+ * \author Keith Whitwell <keith@tungstengraphics.com>
  */
 
 #include "glheader.h"
@@ -52,7 +67,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define LOCAL_VARS						\
    i830ContextPtr imesa = I830_CONTEXT(ctx);                    \
-   __DRIdrawablePrivate *dPriv = imesa->driDrawable;		\
+   __DRIdrawablePrivate *dPriv = imesa->mesa_drawable;		\
    i830ScreenPrivate *i830Screen = imesa->i830Screen;		\
    GLuint pitch = i830Screen->backPitch * i830Screen->cpp;	\
    GLuint height = dPriv->h;					\
@@ -67,7 +82,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define LOCAL_DEPTH_VARS					\
    i830ContextPtr imesa = I830_CONTEXT(ctx);                    \
-   __DRIdrawablePrivate *dPriv = imesa->driDrawable;		\
+   __DRIdrawablePrivate *dPriv = imesa->mesa_drawable;		\
    i830ScreenPrivate *i830Screen = imesa->i830Screen;		\
    GLuint pitch = i830Screen->backPitch * i830Screen->cpp;	\
    GLuint height = dPriv->h;					\
@@ -267,10 +282,17 @@ static void i830SetBuffer(GLcontext *ctx, GLframebuffer *colorBuffer,
                           GLuint bufferBit)
 {
    i830ContextPtr imesa = I830_CONTEXT(ctx);
-   if (bufferBit == FRONT_LEFT_BIT) {
+   
+   assert( (colorBuffer == imesa->driDrawable->driverPrivate)
+	   || (colorBuffer == imesa->driReadable->driverPrivate) );
+
+   imesa->mesa_drawable = (colorBuffer == imesa->driDrawable->driverPrivate)
+       ? imesa->driDrawable : imesa->driReadable;
+   
+   if (bufferBit == DD_FRONT_LEFT_BIT) {
       imesa->drawMap = (char *)imesa->driScreen->pFB;
       imesa->readMap = (char *)imesa->driScreen->pFB;
-   } else if (bufferBit == BACK_LEFT_BIT) {
+   } else if (bufferBit == DD_BACK_LEFT_BIT) {
       imesa->drawMap = imesa->i830Screen->back.map;
       imesa->readMap = imesa->i830Screen->back.map;
    } else {

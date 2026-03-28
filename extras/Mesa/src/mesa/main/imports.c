@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file imports.c
  * Standard C library function wrappers.
  * 
@@ -32,9 +39,9 @@
 
 /*
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.2.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -58,6 +65,7 @@
 
 #include "imports.h"
 #include "context.h"
+#include "version.h"
 
 
 #define MAXSTRING 4000  /* for vsnprintf() */
@@ -533,15 +541,15 @@ _mesa_bitcount(unsigned int n)
  * Based on code from:
  * http://www.opengl.org/discussion_boards/ubb/Forum3/HTML/008786.html
  */
-GLhalfNV
+GLhalfARB
 _mesa_float_to_half(float val)
 {
-   const int flt = *((int *) &val);
+   const int flt = *((int *) (void *) &val);
    const int flt_m = flt & 0x7fffff;
    const int flt_e = (flt >> 23) & 0xff;
    const int flt_s = (flt >> 31) & 0x1;
    int s, e, m = 0;
-   GLhalfNV result;
+   GLhalfARB result;
    
    /* sign bit */
    s = flt_s;
@@ -620,7 +628,7 @@ _mesa_float_to_half(float val)
  * http://www.opengl.org/discussion_boards/ubb/Forum3/HTML/008786.html
  */
 float
-_mesa_half_to_float(GLhalfNV val)
+_mesa_half_to_float(GLhalfARB val)
 {
    /* XXX could also use a 64K-entry lookup table */
    const int m = val & 0x3ff;
@@ -662,7 +670,7 @@ _mesa_half_to_float(GLhalfNV val)
    }
 
    flt = (flt_s << 31) | (flt_e << 23) | flt_m;
-   result = *((float *) &flt);
+   result = *((float *) (void *) &flt);
    return result;
 }
 
@@ -905,11 +913,11 @@ _mesa_problem( const GLcontext *ctx, const char *fmtString, ... )
    va_end( args );
 
 #if defined(XFree86LOADER) && defined(IN_MODULE)
-   xf86fprintf(stderr, "Mesa implementation error: %s\n", str);
-   xf86fprintf(stderr, "Please report to the DRI project at dri.sourceforge.net\n");
+   xf86fprintf(stderr, "Mesa %s implementation error: %s\n", MESA_VERSION_STRING, str);
+   xf86fprintf(stderr, "Please report at bugzilla.freedesktop.org\n");
 #else
-   fprintf(stderr, "Mesa implementation error: %s\n", str);
-   fprintf(stderr, "Please report to the Mesa bug database at www.mesa3d.org\n" );
+   fprintf(stderr, "Mesa %s implementation error: %s\n", MESA_VERSION_STRING, str);
+   fprintf(stderr, "Please report at bugzilla.freedesktop.org\n");
 #endif
 }
 
@@ -1004,6 +1012,7 @@ _mesa_debug( const GLcontext *ctx, const char *fmtString, ... )
 {
    char s[MAXSTRING];
    va_list args;
+   (void) ctx;
    va_start(args, fmtString);
    vsnprintf(s, MAXSTRING, fmtString, args);
    va_end(args);
@@ -1094,6 +1103,7 @@ default_sprintf(__GLcontext *gc, char *str, const char *fmt, ...)
 {
    int r;
    va_list args;
+   (void) gc;
    va_start( args, fmt );  
    r = vsprintf( str, fmt, args );
    va_end( args );
@@ -1104,6 +1114,7 @@ default_sprintf(__GLcontext *gc, char *str, const char *fmt, ...)
 static void * CAPI
 default_fopen(__GLcontext *gc, const char *path, const char *mode)
 {
+   (void) gc;
    return fopen(path, mode);
 }
 
@@ -1111,6 +1122,7 @@ default_fopen(__GLcontext *gc, const char *path, const char *mode)
 static int CAPI
 default_fclose(__GLcontext *gc, void *stream)
 {
+   (void) gc;
    return fclose((FILE *) stream);
 }
 
@@ -1120,6 +1132,7 @@ default_fprintf(__GLcontext *gc, void *stream, const char *fmt, ...)
 {
    int r;
    va_list args;
+   (void) gc;
    va_start( args, fmt );  
    r = vfprintf( (FILE *) stream, fmt, args );
    va_end( args );
@@ -1132,6 +1145,7 @@ default_fprintf(__GLcontext *gc, void *stream, const char *fmt, ...)
 static __GLdrawablePrivate *
 default_GetDrawablePrivate(__GLcontext *gc)
 {
+   (void) gc;
    return NULL;
 }
 

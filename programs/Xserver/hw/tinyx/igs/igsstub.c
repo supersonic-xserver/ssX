@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsstub.c,v 1.2tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsstub.c,v 1.1 2004/06/02 22:43:01 dawes Exp $
  *
  * Copyright © 2000 Keith Packard
  *
@@ -72,7 +79,7 @@
 #include "linux.h"
 
 void
-InitCard (const char *name)
+InitCard (char *name)
 {
     KdCardAttr	attr;
     CARD32	count;
@@ -92,19 +99,19 @@ InitCard (const char *name)
 }
 
 void
-InitOutput (ScreenInfo *pScreenInfo, const int argc, const char **argv)
+InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     KdInitOutput (pScreenInfo, argc, argv);
 }
 
 void
-InitInput (const int argc, const char **argv)
+InitInput (int argc, char **argv)
 {
     KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
 }
 
 int
-ddxProcessArgument (int argc, const char **argv, int i)
+ddxProcessArgument (int argc, char **argv, int i)
 {
     return KdProcessArgument (argc, argv, i);
 }

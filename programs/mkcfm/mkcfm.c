@@ -1,4 +1,11 @@
 /* Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * The contents of this file are subject to the CID Font Code Public Licence
  * Version 1.0 (the "License"). You may not use this file except in compliance
@@ -15,7 +22,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
-/* $XFree86: xc/programs/mkcfm/mkcfm.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/mkcfm/mkcfm.c,v 1.14 2005/01/11 23:01:14 tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,12 +34,12 @@
 #include "os.h"
 
 #include "fntfilst.h"
-#include <X11/fonts/FSproto.h>
-#include <X11/fonts/FS.h>
-#include <X11/fonts/font.h>
-#include <X11/fonts/fontenc.h>
-#include <X11/fonts/fontstruct.h>
-#include <X11/fonts/fsmasks.h>
+#include "FSproto.h"
+#include "FS.h"
+#include "font.h"
+#include "fontenc.h"
+#include "fontstruct.h"
+#include "fsmasks.h"
 #include "range.h"
 #include "objects.h"
 #include "spaces.h"

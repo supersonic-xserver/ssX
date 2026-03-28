@@ -2,7 +2,7 @@
 
                           The XFree86 Project, Inc
 
-                               13 October 2005
+                              19 December 2003
 
 NOTE: This is a DRAFT document, and the interfaces described here are subject
 to change without notice.
@@ -1926,7 +1926,7 @@ be set with the xf86SetOperatingState() function:
           during OPERATING state.  Note that the resource ranges
           have to match those specified during registration.  If a
           range has been specified starting at A and ending at B
-          and suppose C is a value satisfying A < C < B one may not
+          and suppose C us a value satisfying A < C < B one may not
           specify the resource range (A,B) by splitting it into two
           ranges (A,C) and (C,B).
 
@@ -2313,7 +2313,7 @@ All modules must NOT include any system include files, or the following:
 
      "xf86_OSlib.h"
 
-     <X11/Xos.h>
+     "Xos.h"
 
 In addition, "xf86_libc.h" must not be included explicitly.  It is included
 implicitly by "xf86_ansic.h".
@@ -3566,13 +3566,11 @@ XFree86 common layer.
           modreq
 
                An optional XF86ModReqInfo* containing ver-
-               sion/ABI/vendor information specifying require-
-               ments to check the newly loaded module against.
-               The main purpose of this is to allow the loader
-               to verify that a module of the correct
-               type/version before running its SetupProc func-
-               tion.
-
+               sion/ABI/vendor information to requirements to
+               check the newly loaded module against.  The
+               main purpose of this is to allow the loader to
+               verify that a module of the correct type/ver-
+               sion before running its SetupProc function.
                The XF86ModReqInfo struct is defined as fol-
                lows:
 
@@ -3815,9 +3813,9 @@ global scope, be compile-time initialised, and is of the following type:
           } XF86ModuleData;
 
 The vers parameter must be initialised to a pointer to a correctly ini-
-tialised XF86ModuleVersionInfo struct.  The other two parameters are
-optional, and should be initialised to NULL when not required.  The other
-parameters are defined as
+tialised XF86ModuleVersionInfo struct.  The other two parameter are optional,
+and should be initialised to NULL when not required.  The other parameters
+are defined as
 
      typedef pointer (*ModuleSetupProc)(pointer, pointer, int *, int *)
 
@@ -3858,11 +3856,6 @@ parameters are defined as
 
 The following is the Loader interface that is available to any part of the
 server, and may also be used from within modules.
-
-Some of these have xf86* wrappers with simpler interfaces declared in
-"xf86.h".  These wrappers are the preferred interface for modules, given that
-they are also available in a statically built server, whereas the functions
-below are not.
 
      pointer LoadSubModule(pointer parent, const char *module,
 
@@ -3952,20 +3945,20 @@ below are not.
           depend on runtime factors.  The end of the argument list
           is indicated by a NULL argument.
 
-     int LoaderCheckUnresolved(int dummy)
+     int LoaderCheckUnresolved(int delayflag)
 
           This function checks for unresolved symbols.  It gener-
           ates warnings for unresolved symbols that have not been
-          registered with LoaderRefSymLists().  All such symbols
-          are automatically mapped to a dummy function.  If unre-
-          solved symbols are found that have been registered with
-          LoaderReqSymLists() or LoaderReqSymbols() then this func-
-          tion returns a non-zero value.  If none of these symbols
-          are unresolved the return value is zero, indicating suc-
-          cess.
+          registered with LoaderRefSymLists(), and maps them to a
+          dummy function.  This behaviour may change in future.  If
+          unresolved symbols are found that have been registered
+          with LoaderReqSymLists() or LoaderReqSymbols() then this
+          function returns a non-zero value.  If none of these sym-
+          bols are unresolved the return value is zero, indicating
+          success.
 
-          The dummy parameter is not used, and should be set to 0.
-          It is kept only for compatibility purposes.
+          The delayflag parameter should normally be set to
+          LD_RESOLV_IFDONE.
 
      LoaderErrorMsg(const char *name, const char *modname,
 
@@ -3976,18 +3969,6 @@ below are not.
           a message specific to the errmaj value, and the value if
           errmin.  If name is non-NULL, it is printed as an identi-
           fying prefix to the message (followed by a `:').
-
-     LoaderSetParentModuleRequirements(pointer module,
-
-               pointer req);
-
-          This function is intended to be called from a module's
-          Setup function.  It associates an XF86ModReqInfo struc-
-          ture occurrence (addressed by req) with the module being
-          loaded (specified by module).  This structure occurrence
-          will then be used to check this module's parent modules
-          against.  This mechanism allows a module to ensure its
-          callers are compatible.
 
 17.5  Special Registration Functions
 
@@ -4830,7 +4811,7 @@ These functions can be used to select the appropriate config file entries
 that match the detected hardware.  They are described above in the Probe
 (section 5.8, page 1) and Available Functions (section 9.3, page 1) sections.
 
-18.7  Probing discrete clocks on older hardware
+18.7  Probing discrete clocks on old hardware
 
 The xf86GetClocks() function may be used to assist in finding the discrete
 pixel clock values on older hardware.
@@ -4856,9 +4837,9 @@ pixel clock values on older hardware.
           CLK_REG_RESTORE.  ProtectRegs is a function that does
           whatever is required to protect the hardware state while
           selecting a new clock.  BlankScreen is a function that
-          blanks the screen.  vertsyncreg and maskval are the I/O
-          register and bitmask to check for the presence of verti-
-          cal sync pulses.  knownclkindex and knownclkvalue are the
+          blanks the screen.  vertsyncreg and maskval are the reg-
+          ister and bitmask to check for the presence of vertical
+          sync pulses.  knownclkindex and knownclkvalue are the
           index and value of a known clock.  These are the known
           references on which the comparative measurements are
           based.  The number of clocks probed is set in pScrn->num-
@@ -5335,8 +5316,8 @@ NOTE: some parts of this are not up to date
 
 The following is an outline for writing a basic unaccelerated driver for a
 PCI video card with a linear mapped framebuffer, and which has a VGA core.
-It includes some general information that is relevant to most drivers (even
-those which don't fit that basic description).
+It is includes some general information that is relevant to most drivers
+(even those which don't fit that basic description).
 
 The information here is based on the initial conversion of the Matrox Millen-
 nium driver to the ``new design''.  For a fleshing out and sample implementa-
@@ -5348,9 +5329,7 @@ Each driver must reserve a unique driver name, and a string that is used to
 prefix all of its externally visible symbols.  This is to avoid name space
 clashes when loading multiple drivers.  The examples here are for the ``ZZZ''
 driver, which uses the ``ZZZ'' or ``zzz'' prefix for its externally visible
-symbols, with preference given to the uppercase prefix.  Internal symbols
-should also follow this convention to facilitate the debugging of a stati-
-cally built server.
+symbols.
 
 20.1  Include files
 
@@ -5437,7 +5416,7 @@ Drivers must NOT include the following:
 
      "xf86_OSlib.h"
 
-     <X11/Xos.h>
+     "Xos.h"
 
      any OS header
 
@@ -6391,7 +6370,7 @@ eScreen() function.
          ZZZFreeRec(xf86Screens[scrnIndex]);
      }
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DESIGN.sgml,v 1.62 dawes Exp $
+     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DESIGN.sgml,v 1.57 dawes Exp $
 
 
-$XFree86$
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/DESIGN,v 1.54 2004/12/08 22:32:05 dawes Exp $

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1999 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +34,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/lib/Xaw/Tip.c,v 1.6 2005/05/12 00:51:56 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Tip.c,v 1.5 2000/05/18 16:29:53 dawes Exp $ */
 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
@@ -308,33 +315,6 @@ XawTipRealize(Widget w, Mask *mask, XSetWindowAttributes *attr)
 				*mask, attr);
 }
 
-#undef XawEncoding
-#define XawEncoding(tw)		((tw)->tip.encoding)
-
-#undef XawDrawString
-#define XawDrawString(tw, label, len)				\
-    ((XawEncoding(tw) == XtTextEncodingChar2b) ?		\
-        XDrawString16(XtDisplay(w), XtWindow(w), gc,		\
-                      tip->tip.left_margin, y,			\
-                      (XChar2b*)label, len / 2) :		\
-        XDrawString(XtDisplay(w), XtWindow(w), gc,		\
-                    tip->tip.left_margin, y, label, len))
-
-#undef XawTextWidth
-#define XawTextWidth(tw, label, len)			\
-    ((XawEncoding(tw) == XtTextEncodingChar2b) ?	\
-        XTextWidth16(fs, (XChar2b*)label, len / 2) :	\
-        XTextWidth(fs, label, len));
-
-#undef XawCharIndex
-#define XawCharIndex(tw, label, c) \
-    XtCharIndexEx(XawEncoding(tw), label, c)
-
-#undef XawStringLength
-#define XawStringLength(tw, label) \
-    XtStringLengthEx(XawEncoding(tw), label)
-
-
 static void
 XawTipExpose(Widget w, XEvent *event, Region region)
 {
@@ -353,34 +333,40 @@ XawTipExpose(Widget w, XEvent *event, Region region)
 
 	ksy += XawAbs(ext->max_ink_extent.y);
 
-	while ((nl = XawCharIndex(tip, label, '\n')) != NULL) {
+	while ((nl = index(label, '\n')) != NULL) {
 	    XmbDrawString(XtDisplay(w), XtWindow(w), tip->tip.fontset,
 			  gc, tip->tip.left_margin, ksy, label,
 			  (int)(nl - label));
-
 	    ksy += ext->max_ink_extent.height;
-
-	    MOVE_FORWARD(XawEncoding(tip), label, nl);
+	    label = nl + 1;
 	}
-	len = XawStringLength(tip, label);
-
+	len = strlen(label);
 	if (len)
 	    XmbDrawString(XtDisplay(w), XtWindow(w), tip->tip.fontset, gc,
 			  tip->tip.left_margin, ksy, label, len);
     }
     else {
-	while ((nl = XawCharIndex(tip, label, '\n')) != NULL) {
-	    XawDrawString(tip, label, (nl - label));
-
+	while ((nl = index(label, '\n')) != NULL) {
+	    if (tip->tip.encoding)
+		XDrawString16(XtDisplay(w), XtWindow(w), gc,
+			      tip->tip.left_margin, y,
+			      (XChar2b*)label, (int)(nl - label) >> 1);
+	    else
+		XDrawString(XtDisplay(w), XtWindow(w), gc,
+			    tip->tip.left_margin, y, label, (int)(nl - label));
 	    y += tip->tip.font->max_bounds.ascent + 
 		 tip->tip.font->max_bounds.descent;
-
-	    MOVE_FORWARD(XawEncoding(tip), label, nl);
+	    label = nl + 1;
 	}
-	len = XawStringLength(tip, label);
-
-	if (len)
-	    XawDrawString(tip, label, len);
+	len = strlen(label);
+	if (len) {
+	    if (tip->tip.encoding)
+		XDrawString16(XtDisplay(w), XtWindow(w), gc,
+			      tip->tip.left_margin, y, (XChar2b*)label, len >> 1);
+	    else
+		XDrawString(XtDisplay(w), XtWindow(w), gc,
+			    tip->tip.left_margin, y, label, len);
+	}
     }
 }
 
@@ -416,68 +402,62 @@ XawTipSetValues(Widget current, Widget request, Widget cnew,
 static void
 TipLayout(XawTipInfo *info)
 {
-    int width, height, w;
+    XFontStruct	*fs = info->tip->tip.font;
+    int width = 0, height;
     char *nl, *label = info->tip->tip.label;
-    TipWidget tw = (TipWidget) info->tip;
 
-    if (tw->tip.international == True) {
-	XFontSet fset = tw->tip.fontset;
+    if (info->tip->tip.international == True) {
+	XFontSet fset = info->tip->tip.fontset;
 	XFontSetExtents *ext = XExtentsOfFontSet(fset);
 
 	height = ext->max_ink_extent.height;
-	width = 0;
+	if ((nl = index(label, '\n')) != NULL) {
+	    /*CONSTCOND*/
+	    while (True) {
+		int w = XmbTextEscapement(fset, label, (int)(nl - label));
 
-	if ((nl = XawCharIndex(tw, label, '\n')) != NULL) {
-	    for (; nl != NULL; nl = XawCharIndex(tw, label, '\n')) {
-		w = XmbTextEscapement(fset, label, (int)(nl - label));
-		width = XawMax(width, w);
-
-		MOVE_FORWARD(XawEncoding(tw), label, nl);
-
-		if (NOT_AT_EOL(XawEncoding(tw), label))
+		if (w > width)
+		    width = w;
+		if (*nl == '\0')
+		    break;
+		label = nl + 1;
+		if (*label)
 		    height += ext->max_ink_extent.height;
-	    }
-
-	    if (NOT_AT_EOL(XawEncoding(tw), label)) {
-		w = XmbTextEscapement(fset, label, XawStringLength(tw, label));
-		width = XawMax(width, w);
+		if ((nl = index(label, '\n')) == NULL)
+		    nl = index(label, '\0');
 	    }
 	}
-	else {
-	    width = XmbTextEscapement(fset, label, XawStringLength(tw, label));
-	}
+	else
+	    width = XmbTextEscapement(fset, label, strlen(label));
     }
     else {
-	XFontStruct	*fs = tw->tip.font;
-
 	height = fs->max_bounds.ascent + fs->max_bounds.descent;
-	width = 0;
-
-	if ((nl = XawCharIndex(tw, label, '\n')) != NULL) {
-	    for (; nl != NULL; nl = XawCharIndex(tw, label, '\n')) {
-		w = XawTextWidth(tw, label, (nl - label));
-		width = XawMax(width, w);
-
-		MOVE_FORWARD(XawEncoding(tw), label, nl);
-		
-		if (NOT_AT_EOL(XawEncoding(tw), label))
+	if ((nl = index(label, '\n')) != NULL) {
+	    /*CONSTCOND*/
+	    while (True) {
+		int w = info->tip->tip.encoding ?
+		    XTextWidth16(fs, (XChar2b*)label, (int)(nl - label) >> 1) :
+		    XTextWidth(fs, label, (int)(nl - label));
+		if (w > width)
+		    width = w;
+		if (*nl == '\0')
+		    break;
+		label = nl + 1;
+		if (*label)
 		    height += fs->max_bounds.ascent + fs->max_bounds.descent;
-	    }
-
-	    if (NOT_AT_EOL(XawEncoding(tw), label)) {
-		w = XawTextWidth(tw, label, XawStringLength(tw, label));
-		width = XawMax(width, w);
+		if ((nl = index(label, '\n')) == NULL)
+		    nl = index(label, '\0');
 	    }
 	}
-	else {
-	    width = XawTextWidth(tw, label, XawStringLength(tw, label));
-	}
+	else
+	    width = info->tip->tip.encoding ?
+		XTextWidth16(fs, (XChar2b*)label, strlen(label) >> 1) :
+		XTextWidth(fs, label, strlen(label));
     }
-
-    XtWidth(tw) = width + info->tip->tip.left_margin +
-	info->tip->tip.right_margin;
-    XtHeight(tw) = height + info->tip->tip.top_margin +
-	info->tip->tip.bottom_margin;
+    XtWidth(info->tip) = width + info->tip->tip.left_margin +
+			 info->tip->tip.right_margin;
+    XtHeight(info->tip) = height + info->tip->tip.top_margin +
+			  info->tip->tip.bottom_margin;
 }
 
 #define	DEFAULT_TIP_Y_OFFSET	12
@@ -579,22 +559,15 @@ static void
 TipTimeoutCallback(XtPointer closure, XtIntervalId *id)
 {
     XawTipInfo *info = (XawTipInfo*)closure;
-    Arg args[4];
+    Arg args[3];
 
     info->tip->tip.label = NULL;
     info->tip->tip.international = False;
     info->tip->tip.encoding = 0;
-    info->tip->tip.getLabelProc = NULL;
     XtSetArg(args[0], XtNtip, &info->tip->tip.label);
     XtSetArg(args[1], XtNinternational, &info->tip->tip.international);
     XtSetArg(args[2], XtNencoding, &info->tip->tip.encoding);
-    XtSetArg(args[3], XtNtipCallback, &info->tip->tip.getLabelProc);
-    XtGetValues(info->widget, args, 4);
-
-    if (info->tip->tip.label == NULL &&
-	info->tip->tip.getLabelProc != NULL) {
-	(info->tip->tip.getLabelProc) (info->widget, &info->tip->tip.label, NULL);
-    }
+    XtGetValues(info->widget, args, 3);
 
     if (info->tip->tip.label) {
 	TipLayout(info);

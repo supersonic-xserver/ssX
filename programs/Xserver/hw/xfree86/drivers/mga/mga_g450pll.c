@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_g450pll.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_g450pll.c,v 1.9 2003/11/03 05:11:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* All drivers should typically include these */
 #include "xf86.h"
@@ -137,8 +151,7 @@ static CARD32 G450FindNextPLLParam(ScrnInfoPtr pScrn, CARD32 ulFout,
       *pulPLLMNP |= (CARD32)ucP;
       
 #ifdef DEBUG
-      ErrorF("FINS_S: VCO = %ld, S = %02X, *pulPLLMNP = %08lX\n",
-	(unsigned long)ulVCO, ucS, (unsigned long)*pulPLLMNP);
+      ErrorF("FINS_S: VCO = %d, S = %02X, *pulPLLMNP = %08X\n", ulVCO, (CARD32)ucS, *pulPLLMNP);
 #endif
   }
 
@@ -320,7 +333,7 @@ double MGAG450SetPLLFreq(ScrnInfoPtr pScrn, long f_out)
    MGAPtr pMga = MGAPTR(pScrn);
 
 #ifdef DEBUG
-   xf86DrvMsg(pScrn->scrnIndex,X_INFO, "Restoring PLLClk = %ld\n",f_out);
+   xf86DrvMsg(pScrn->scrnIndex,X_INFO, "Restoring PLLClk = %d\n",f_out);
 #endif
    G450FindFirstPLLParam(pScrn, f_out, &ulMNP);
    ulMNPTable[0] = ulMNP;

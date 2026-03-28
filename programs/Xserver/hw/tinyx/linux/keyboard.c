@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * $XFree86: xc/programs/Xserver/hw/tinyx/linux/keyboard.c,v 1.1 2004/06/02 22:43:01 dawes Exp $
  *
  * Copyright © 1999 Keith Packard
@@ -76,12 +83,6 @@
 #include <X11/keysym.h>
 #include <termios.h>
 #include <sys/ioctl.h>
-
-#ifdef FNONBLOCK
-#define NOBLOCK FNONBLOCK
-#else
-#define NOBLOCK FNDELAY
-#endif
 
 extern int  LinuxConsoleFd;
 
@@ -455,7 +456,6 @@ LinuxKeyboardEnable (int fd, void *closure)
     struct termios nTty;
     unsigned char   buf[256];
     int		    n;
-    int		    flags;
 
     ioctl (fd, KDGKBMODE, &LinuxKbdTrans);
     tcgetattr (fd, &LinuxTermios);
@@ -474,9 +474,6 @@ LinuxKeyboardEnable (int fd, void *closure)
     /*
      * Flush any pending keystrokes
      */
-    flags = fcntl (fd, F_GETFL);
-    flags |= NOBLOCK;
-    fcntl (fd, F_SETFL, flags);
     while ((n = read (fd, buf, sizeof (buf))) > 0)
 	;
     return fd;

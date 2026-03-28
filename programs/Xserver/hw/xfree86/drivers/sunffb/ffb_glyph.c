@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - Glyph rops.
  *
  * Copyright (C) 1998,1999 Jakub Jelinek (jakub@redhat.com)
@@ -24,18 +31,17 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_glyph.c,v 1.3 2005/10/14 15:16:46 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_glyph.c,v 1.2 2000/05/23 04:47:45 dawes Exp $ */
 
 #include "ffb.h"
 #include "ffb_regs.h"
 #include "ffb_rcache.h"
 #include "ffb_fifo.h"
 #include "ffb_loops.h"
-#include "ffb_gc.h"
 
 #include "pixmapstr.h"
 #include "scrnintstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 
 #define PSZ 8

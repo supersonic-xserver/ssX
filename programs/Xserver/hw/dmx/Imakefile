@@ -1,15 +1,22 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/dmx/Imakefile,v 1.10tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/dmx/Imakefile,v 1.9 2005/02/07 01:38:24 tsi Exp $
 
 #include <Server.tmpl>
 #include <lnxdoc.rules>
 
-#define IHaveSubdirs
-
 #if BuildGlxInDmx
-GLX_SRCS = dmx_glxvisuals.c
-GLX_OBJS = dmx_glxvisuals.o
-GLXPROXY_SUBDIR = glxProxy
+#if BuildXinerama
+PANORAMIX_SRCS = panoramiX.c
+PANORAMIX_OBJS = panoramiX.o
 #endif
+GLX_SRCS = dmx_glxvisuals.c $(PANORAMIX_SRCS)
+GLX_OBJS = dmx_glxvisuals.o $(PANORAMIX_OBJS)
+DMX_GLX_DEFINES = $(GLX_DEFINES) -DGLXPROXY
+GLXPROXY_SUBDIR = glxProxy
+#else
+DMX_GLX_DEFINES = -UGLXEXT
+#endif
+
+#define IHaveSubdirs
 
 #if !BuildServersOnly || BuildDmxDevelTools
 EXAMPLEDIR = examples
@@ -18,12 +25,12 @@ DMXDOCDIR = doc
 #endif
 #endif
 
+SUBDIRS = input config $(DMXDOCDIR) $(EXAMPLEDIR) $(GLXPROXY_SUBDIR)
+
 #if BuildRender
 RENDER_SRCS = dmxpict.c
 RENDER_OBJS = dmxpict.o
 #endif
-
-SUBDIRS = dix os Xext input config $(DMXDOCDIR) $(EXAMPLEDIR) $(GLXPROXY_SUBDIR)
 
 #ifdef OS2Architecture
 SRCS1 = os2_stubs.c
@@ -96,12 +103,14 @@ VENDOR_DEFINES = $(VENDOR_STRING) $(VENDOR_RELEASE)
       OSVENDOR = OSVendor
 OSNAME_DEFINES = -DOSNAME='"$(OSNAME)"' -DOSVENDOR='"$(OSVENDOR)"'
 
-INCLUDES = -I$(SERVERSRC)/include -I$(SERVERSRC)/os -I$(SERVERSRC)/mi \
-	   -I$(SERVERSRC)/fb -I$(SERVERSRC)/miext/shadow \
-	   -I$(SERVERSRC)/render -I$(SERVERSRC)/Xext
+INCLUDES = -I. -I$(XBUILDINCDIR) -I$(FONTINCSRC) \
+	   -I../../mi -I../../include -I../../os \
+	   -I../../fb -I../../miext/shadow -I../../render \
+	   -I$(EXTINCSRC) -I$(XINCLUDESRC) -I$(SERVERSRC)/Xext
 
-DEFINES = $(OS_DEFINES) $(EXT_DEFINES) -DDMXEXT $(DMX_DEFINES) \
-	  $(VENDOR_DEFINES) $(OSNAME_DEFINES)
+DEFINES = $(OS_DEFINES) $(EXT_DEFINES) -DDMXEXT -DXTEST \
+	  $(DMX_GLX_DEFINES) $(DMX_DEFINES) $(VENDOR_DEFINES) \
+	  $(OSNAME_DEFINES)
 
 all:: $(OBJS)
 
@@ -110,6 +119,11 @@ DependSubdirs($(SUBDIRS))
 
 LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
 SpecialCObjectRule(miinitext,$(ICONFIGFILES),-DDMXSERVER)
+
+#if BuildGlxInDmx && BuildXinerama
+LinkSourceFile(panoramiX.c,$(SERVERSRC)/Xext)
+SpecialCObjectRule(panoramiX,$(ICONFIGFILES),$(_NOOP_))
+#endif
 
 #ifdef OS2Architecture
 LinkSourceFile(os2_stubs.c,$(SERVERSRC)/hw/xfree86/os-support/os2)

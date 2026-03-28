@@ -1,0 +1,18 @@
+/Jamfile/1.1.1.2/Fri Mar  5 14:26:26 2004//Tnetbsd-5-2-3-RELEASE
+/ciderrs.h/1.1.1.1/Sat Jan 19 15:26:19 2002//Tnetbsd-5-2-3-RELEASE
+/cidgload.c/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidgload.h/1.1.1.5/Fri Mar  5 14:26:26 2004//Tnetbsd-5-2-3-RELEASE
+/cidload.c/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidload.h/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidobjs.c/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidobjs.h/1.1.1.5/Fri Mar  5 14:26:26 2004//Tnetbsd-5-2-3-RELEASE
+/cidparse.c/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidparse.h/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidriver.c/1.1.1.6/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/cidriver.h/1.1.1.4/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/cidtoken.h/1.1.1.3/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/descrip.mms/1.1.1.2/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/module.mk/1.1.1.1/Mon Jan  1 12:49:46 2001//Tnetbsd-5-2-3-RELEASE
+/rules.mk/1.1.1.5/Fri Mar 18 13:07:33 2005//Tnetbsd-5-2-3-RELEASE
+/type1cid.c/1.1.1.3/Sat Jan 19 15:26:20 2002//Tnetbsd-5-2-3-RELEASE
+D

@@ -1,0 +1,197 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/Imakefile,v 1.10 2006/08/31 01:31:44 dawes Exp $
+/*
+ * Copyright (c) 2004-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include "TinyX.tmpl"
+
+#define IHaveSubdirs
+
+#if BuildRender
+RENDERSRCS=txpict.c
+RENDEROBJS=txpict.o
+RENDERSUBDIRS = render
+#endif
+
+#if BuildRandR
+RANDRSUBDIRS = randr
+#endif
+
+#if BuildXvExt
+XVSRCS=txxv.c
+XVOBJS=txxv.o 
+#endif
+
+#if (defined(XSavageServer) && XSavageServer) || \
+    (defined(XIgsServer) && XIgsServer)
+VGASRC = vga.c
+VGAOBJ = vga.o
+#endif
+
+#ifdef TinyDIXDefines
+TINY_DEFINES = TinyDIXDefines
+#endif
+
+#if XipaqServer
+IPAQ_DEFINES = -DXIPAQ
+#endif
+
+#if HasMTRRSupport
+MTRR_DEFINES = -DHAS_MTRR
+#endif
+
+#if defined(LinuxArchitecture)
+OSDIRS = linux
+#elif defined(VXWORKS)
+OSDIRS = vxworks
+#endif
+
+#if defined(XfbdevServer) && XfbdevServer
+FBDEVDIR = fbdev
+#endif
+#if defined(XSavageServer) && XSavageServer
+SAVAGEDIR = savage
+#endif
+#if defined(XIgsServer) && XIgsServer
+IGSDIR = igs
+#endif
+#if defined(XTridentServer) && XTridentServer
+FBDEVDIR = fbdev
+VESADIR = vesa
+TRIDENTDIR = trident
+#endif
+#if defined(XchipsServer) && XchipsServer
+VESADIR = vesa
+CHIPSDIR = chips
+#endif
+#if defined(Xmach64Server) && Xmach64Server
+VESADIR = vesa
+MACH64DIR = mach64
+#endif
+#if defined(Xi810Server) && Xi810Server
+FBDEVDIR = fbdev
+VESADIR = vesa
+I810DIR = i810
+#endif
+#if defined(XSis530Server) && XSis530Server
+SIS530DIR = sis530
+#endif
+#if defined(XTrioServer) && XTrioServer
+TRIODIR = trio
+#endif
+#if defined(XipaqServer) && XipaqServer
+FBDEVDIR = fbdev
+PCMCIADIR = pcmcia
+IPAQDIR = ipaq
+#endif
+#if defined(XTS300Server) && XTS300Server
+TRIODIR = trio
+SIS530DIR = sis530
+TS300DIR = ts300
+#endif
+#if defined(XItsyServer) && XItsyServer
+ITSYDIR = itsy
+#endif
+#if defined(XvesaServer) && XvesaServer
+VESADIR = vesa
+#endif
+
+
+SUBDIRS = sys dix os Xext $(RENDERSUBDIRS) $(RANDRSUBDIRS) $(OSDIRS) \
+	$(CHIPSDIR) $(FBDEVDIR) $(I810DIR) $(IGSDIR) $(IPAQDIR) $(ITSYDIR) \
+	$(MACH64DIR) $(PCMCIADIR) $(SAVAGEDIR) $(SIS530DIR) $(TRIDENTDIR) \
+	$(TRIODIR) $(TS300DIR) $(VESADIR) 
+
+DEFINES = $(EXT_DEFINES) $(IPAQ_DEFINES) $(TINY_DEFINES) $(MTRR_DEFINES)
+
+SRCS = txaa.c txcmap.c tinyx.c txinfo.c txinput.c txmap.c txnoop.c \
+	txtest.c $(VGASRC) txasync.c txmode.c txcurscol.c txshadow.c \
+	$(RENDERSRCS) $(XVSRCS) miinitext.c
+
+OBJS = txaa.o txcmap.o tinyx.o txinfo.o txinput.o txmap.o txnoop.o \
+	txtest.o $(VGAOBJ) txasync.o txmode.o txcurscol.o txshadow.o \
+	$(RENDEROBJS) $(XVOBJS)
+
+INCLUDES = $(TINYXINCLUDES)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(tinyx,$(OBJS))
+
+AllTarget(miinitext.o)
+LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),NullParameter)
+
+TINYX_FONT_DEFS = TinyXFontDefines
+#if TinyXSpeedo
+TINYX_SPEEDO_DEFINES = -DBUILD_SPEEDO
+#endif
+#if TinyXType1
+TINYX_TYPE1_DEFINES = -DBUILD_TYPE1
+#endif
+#if TinyXCID
+TINYX_CID_DEFINES = -DBUILD_CID
+#endif
+#if TinyXFreeType
+TINYX_FREETYPE_DEFINES = -DBUILD_FREETYPE
+#endif
+
+TINY_FONT_DEFINES = $(TINYX_FONT_DEFS) $(TINYX_SPEEDO_DEFINES) \
+	$(TINYX_TYPE1_DEFINES) $(TINYX_CID_DEFINES) $(TINYX_FREETYPE_DEFINES)
+
+
+AllTarget(register.o)
+LinkSourceFile(register.c,$(FONTLIBSRC)/fontfile)
+SpecialCObjectRule(register,$(ICONFIGFILES),-I$(FONTLIBSRC)/include $(TINY_FONT_DEFINES))
+AllTarget(ffcheck.o)
+LinkSourceFile(ffcheck.c,$(FONTLIBSRC)/fontfile)
+SpecialCObjectRule(ffcheck,$(ICONFIGFILES),-I$(FONTLIBSRC)/include $(TINY_FONT_DEFINES))
+
+InstallManPage(TinyX,$(MANDIR))
+InstallManPageAliases(TinyX,$(MANDIR),Xchips Xi810 Xigs Xipaq Xmach64 Xsavage Xsis530 Xtrident Xtrio Xts300 Xkdrive kdrive)
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

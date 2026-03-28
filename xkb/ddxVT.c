@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/xkb/ddxVT.c,v 1.5 2005/10/14 15:17:28 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,22 +32,39 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <stdio.h>
-#define NEED_EVENTS
+#define	NEED_EVENTS 1
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
-#include <xkbsrv.h>
+#include <X11/extensions/XKBsrv.h>
+#include <X11/extensions/XI.h>
+
+#ifdef XF86DDXACTIONS
+#include "xf86.h"
+#endif
 
 int
 XkbDDXSwitchScreen(DeviceIntPtr dev,KeyCode key,XkbAction *act)
 {
+#ifdef XF86DDXACTIONS
+    {
+	int scrnnum = XkbSAScreen(&act->screen);
+
+	if (act->screen.flags & XkbSA_SwitchApplication) {
+	    if (act->screen.flags & XkbSA_SwitchAbsolute)
+		xf86ProcessActionEvent(ACTION_SWITCHSCREEN,(void *) &scrnnum);
+	    else {
+		if (scrnnum < 0)
+		    xf86ProcessActionEvent(ACTION_SWITCHSCREEN_PREV,NULL);
+		else
+		    xf86ProcessActionEvent(ACTION_SWITCHSCREEN_NEXT,NULL);
+	    }
+	}
+    }
+#endif
     return 1;
 }

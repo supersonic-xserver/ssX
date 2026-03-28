@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/cursor.c,v 3.12 2006/09/02 16:44:04 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,12 +53,6 @@ SOFTWARE.
 
 ******************************************************************/
 
-
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include "servermd.h"
@@ -69,10 +71,6 @@ typedef struct _GlyphShare {
 } GlyphShare, *GlyphSharePtr;
 
 static GlyphSharePtr sharedGlyphs = (GlyphSharePtr)NULL;
-
-#ifdef XFIXES
-static CARD32	cursorSerial;
-#endif
 
 static void
 FreeCursorBits(CursorBitsPtr bits)
@@ -102,12 +100,11 @@ FreeCursorBits(CursorBitsPtr bits)
     }
 }
 
-/**
- * To be called indirectly by DeleteResource; must use exactly two args.
- *
- *  \param value must conform to DeleteType
+/*
+ * To be called indirectly by DeleteResource; must use exactly two args
  */
-_X_EXPORT int
+/*ARGSUSED*/
+int
 FreeCursor(pointer value, XID cid)
 {
     int		nscr;
@@ -153,19 +150,15 @@ CheckForEmptyMask(CursorBitsPtr bits)
     bits->emptyMask = TRUE;
 }
 
-/**
+/*
  * does nothing about the resource table, just creates the data structure.
  * does not copy the src and mask bits
- *
- *  \param psrcbits  server-defined padding
- *  \param pmaskbits server-defined padding
- *  \param argb      no padding
  */
 CursorPtr 
-AllocCursorARGB(unsigned char *psrcbits, unsigned char *pmaskbits, CARD32 *argb, 
-                CursorMetricPtr cm,
-                unsigned foreRed, unsigned foreGreen, unsigned foreBlue, 
-                unsigned backRed, unsigned backGreen, unsigned backBlue)
+AllocCursorARGB(unsigned char *psrcbits, unsigned char *pmaskbits,
+		CARD32 *argb, CursorMetricPtr cm,
+		unsigned foreRed, unsigned foreGreen, unsigned foreBlue,
+		unsigned backRed, unsigned backGreen, unsigned backBlue)
 {
     CursorBitsPtr  bits;
     CursorPtr 	pCurs;
@@ -194,10 +187,6 @@ AllocCursorARGB(unsigned char *psrcbits, unsigned char *pmaskbits, CARD32 *argb,
 
     pCurs->bits = bits;
     pCurs->refcnt = 1;		
-#ifdef XFIXES
-    pCurs->serialNumber = ++cursorSerial;
-    pCurs->name = None;
-#endif
 
     pCurs->foreRed = foreRed;
     pCurs->foreGreen = foreGreen;
@@ -228,16 +217,11 @@ AllocCursorARGB(unsigned char *psrcbits, unsigned char *pmaskbits, CARD32 *argb,
     return pCurs;
 }
 
-/**
- *
- * \param psrcbits   server-defined padding
- * \param pmaskbits  server-defined padding
- */
 CursorPtr 
-AllocCursor(unsigned char *psrcbits, unsigned char *pmaskbits, 
-            CursorMetricPtr cm,
-            unsigned foreRed, unsigned foreGreen, unsigned foreBlue,
-            unsigned backRed, unsigned backGreen, unsigned backBlue)
+AllocCursor(unsigned char *psrcbits, unsigned char *pmaskbits,
+	    CursorMetricPtr cm,
+	    unsigned foreRed, unsigned foreGreen, unsigned foreBlue,
+	    unsigned backRed, unsigned backGreen, unsigned backBlue)
 {
     return AllocCursorARGB (psrcbits, pmaskbits, (CARD32 *) 0, cm,
 			    foreRed, foreGreen, foreBlue,
@@ -245,10 +229,11 @@ AllocCursor(unsigned char *psrcbits, unsigned char *pmaskbits,
 }
 
 int
-AllocGlyphCursor(Font source, unsigned sourceChar, Font mask, unsigned maskChar,
-                unsigned foreRed, unsigned foreGreen, unsigned foreBlue, 
-                unsigned backRed, unsigned backGreen, unsigned backBlue,
-                CursorPtr *ppCurs, ClientPtr client)
+AllocGlyphCursor(Font source, unsigned int sourceChar,
+		 Font mask, unsigned int maskChar,
+		 unsigned foreRed, unsigned foreGreen, unsigned foreBlue,
+		 unsigned backRed, unsigned backGreen, unsigned backBlue,
+		 CursorPtr *ppCurs, ClientPtr client)
 {
     FontPtr  sourcefont, maskfont;
     unsigned char   *srcbits;
@@ -262,9 +247,9 @@ AllocGlyphCursor(Font source, unsigned sourceChar, Font mask, unsigned maskChar,
     GlyphSharePtr pShare;
 
     sourcefont = (FontPtr) SecurityLookupIDByType(client, source, RT_FONT,
-						  DixReadAccess);
+						  SecurityReadAccess);
     maskfont = (FontPtr) SecurityLookupIDByType(client, mask, RT_FONT,
-						DixReadAccess);
+						SecurityReadAccess);
 
     if (!sourcefont)
     {
@@ -385,10 +370,6 @@ AllocGlyphCursor(Font source, unsigned sourceChar, Font mask, unsigned maskChar,
     CheckForEmptyMask(bits);
     pCurs->bits = bits;
     pCurs->refcnt = 1;
-#ifdef XFIXES
-    pCurs->serialNumber = ++cursorSerial;
-    pCurs->name = None;
-#endif
 
     pCurs->foreRed = foreRed;
     pCurs->foreGreen = foreGreen;
@@ -420,7 +401,8 @@ AllocGlyphCursor(Font source, unsigned sourceChar, Font mask, unsigned maskChar,
     return Success;
 }
 
-/** CreateRootCursor
+/***********************************************************
+ * CreateRootCursor
  *
  * look up the name of a font
  * open the font
@@ -430,41 +412,25 @@ AllocGlyphCursor(Font source, unsigned sourceChar, Font mask, unsigned maskChar,
  *************************************************************/
 
 CursorPtr 
-CreateRootCursor(char *unused1, unsigned int unused2)
+CreateRootCursor(char *pfilename, unsigned int glyph)
 {
     CursorPtr 	curs;
-#ifdef NULL_ROOT_CURSOR
-    CursorMetricRec cm;
-#else
     FontPtr 	cursorfont;
     int	err;
     XID		fontID;
-#endif
 
-#ifdef NULL_ROOT_CURSOR
-    cm.width = 0;
-    cm.height = 0;
-    cm.xhot = 0;
-    cm.yhot = 0;
-
-    curs = AllocCursor(NULL, NULL, &cm, 0, 0, 0, 0, 0, 0);
-
-    if (curs == NullCursor)
-        return NullCursor;
-#else
     fontID = FakeClientID(0);
     err = OpenFont(serverClient, fontID, FontLoadAll | FontOpenSync,
-	(unsigned)strlen(defaultCursorFont), defaultCursorFont);
+	(unsigned)strlen( pfilename), pfilename);
     if (err != Success)
 	return NullCursor;
 
     cursorfont = (FontPtr)LookupIDByType(fontID, RT_FONT);
     if (!cursorfont)
 	return NullCursor;
-    if (AllocGlyphCursor(fontID, 0, fontID, 1,
+    if (AllocGlyphCursor(fontID, glyph, fontID, glyph + 1,
 			 0, 0, 0, ~0, ~0, ~0, &curs, serverClient) != Success)
 	return NullCursor;
-#endif
 
     if (!AddResource(FakeClientID(0), RT_CURSOR, (pointer)curs))
 	return NullCursor;

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/glxext.c,v 1.3tsi Exp $
+/* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/glxext.c,v 1.1 2004/06/30 20:21:44 martin Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** The contents of this file are subject to the GLX Public License Version 1.0
 ** (the "License"). You may not use this file except in compliance with the
 ** License. You may obtain a copy of the License at Silicon Graphics, Inc.,
@@ -31,10 +38,6 @@
 #include "glxvisuals.h"
 #include "micmap.h"
 #include "glxswap.h"
-
-extern void GlxSetVisualConfigs(int nconfigs, __GLXvisualConfig *configs,
-				void **privates);
-extern void GlxWrapInitVisuals(miInitVisualsProcPtr *initVisProc);
 
 /*
 ** Forward declarations.
@@ -259,7 +262,7 @@ GLboolean __glXFreeContext(__GLXcontext *cx)
 /*
 ** Initialize the GLX extension.
 */
-void GlxExtensionInit(INITARGS)
+void GlxExtensionInit(void)
 {
     ExtensionEntry *extEntry;
     int i;
@@ -518,17 +521,3 @@ void __glXNoSuchRenderOpcode(GLbyte *pc)
     return;
 }
 
-#ifdef __DARWIN__
-void
-DarwinGlxExtensionInit(INITARGS)
-{
-    GlxExtensionInit();
-}
-
-void
-DarwinGlxWrapInitVisuals(
-    void *procPtr)
-{
-    GlxWrapInitVisuals(procPtr);
-}
-#endif

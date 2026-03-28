@@ -1,3 +1,19 @@
+/* $Xorg: xwd.c,v 1.5 2001/02/09 02:06:03 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xwd/xwd.c,v 3.13tsi Exp $ */
+/* $XFree86: xc/programs/xwd/xwd.c,v 3.12 2002/09/19 00:19:56 dawes Exp $ */
 
 /*
  * xwd.c MIT Project Athena, X Window system window raster image dumper.
@@ -93,7 +109,6 @@ typedef unsigned long Pixel;
 int format = ZPixmap;
 Bool nobdrs = False;
 Bool on_root = False;
-Bool rect = False;
 Bool standard_out = True;
 Bool debug = False;
 Bool silent = False;
@@ -103,7 +118,6 @@ long add_pixel_value = 0;
 
 extern int main(int, char **);
 extern void Window_Dump(Window, FILE *);
-extern void Rectangle_Dump(XRectangle, FILE *);
 extern int Image_Size(XImage *);
 extern int Get_XColors(XWindowAttributes *, XColor **);
 extern void _swapshort(register char *, register unsigned);
@@ -136,13 +150,15 @@ main(argc, argv)
 {
     register int i;
     Window target_win;
-    XRectangle target_rect;
     FILE *out_file = stdout;
     Bool frame_only = False;
 
     INIT_NAME;
 
     Setup_Display_And_Screen(&argc, argv);
+
+    /* Get window select on command line, if any */
+    target_win = Select_Window_Args(&argc, argv);
 
     for (i = 1; i < argc; i++) {
 	if (!strcmp(argv[i], "-nobdrs")) {
@@ -170,10 +186,6 @@ main(argc, argv)
 	    on_root = True;
 	    continue;
 	}
-	if (!strcmp(argv[i], "-rect")) {
-	    rect = True;
-	    continue;
-	}
 	if (!strcmp(argv[i], "-icmap")) {
 	    use_installed = True;
 	    continue;
@@ -193,299 +205,60 @@ main(argc, argv)
 	}
 	usage();
     }
-
 #ifdef WIN32
     if (standard_out)
 	_setmode(fileno(out_file), _O_BINARY);
 #endif
-
-    if (rect) {
-	/*
-	 * Let the user select the target rect.
-	 */
-	target_rect = Select_Rect(dpy);
-	Rectangle_Dump(target_rect, out_file);
-    } else {
-	/* Get window select on command line, if any */
-	target_win = Select_Window_Args(&argc, argv);
-	if (!target_win) {
-	    /*
-	     * Let the user select the target window.
-	     */
-	    target_win = Select_Window(dpy);
-	    if (target_win != None && !frame_only) {
-		Window root;
-		int dummyi;
-		unsigned int dummy;
-
-		if (XGetGeometry (dpy, target_win, &root, &dummyi, &dummyi,
-				  &dummy, &dummy, &dummy, &dummy) &&
-		    target_win != root) {
-		    target_win = XmuClientWindow (dpy, target_win);
-		}
-	    }
-	}
-	Window_Dump(target_win, out_file);
+    
+    /*
+     * Let the user select the target window.
+     */
+    if (!target_win) {
+	target_win = Select_Window(dpy);
     }
+    
+    if (target_win != None && !frame_only) {
+        Window root;
+        int dummyi;
+        unsigned int dummy;
+
+        if (XGetGeometry (dpy, target_win, &root, &dummyi, &dummyi,
+			      &dummy, &dummy, &dummy, &dummy) &&
+                              target_win != root) {
+	      target_win = XmuClientWindow (dpy, target_win);
+	}
+    }
+
+
+    /*
+     * Dump it!
+     */
+    Window_Dump(target_win, out_file);
 
     XCloseDisplay(dpy);
     if (fclose(out_file)) {
 	perror("xwd");
 	exit(1);
     }
-
     exit(0);
 }
 
 static int
 Get24bitDirectColors(colors)
-    XColor **colors;
+XColor **colors ;
 {
-    int i, ncolors = 256;
-    XColor *tcol;
+    int i , ncolors = 256 ;
+    XColor *tcol ;
 
-    *colors = tcol = (XColor*) malloc(sizeof(XColor) * ncolors);
+    *colors = tcol = (XColor *)malloc(sizeof(XColor) * ncolors) ;
 
-    for (i = 0; i < ncolors; i++) {
-	tcol[i].pixel = i << 16 | i << 8 | i;
-	tcol[i].red = tcol[i].green = tcol[i].blue = i << 8 | i;
-    }
-
-    return ncolors;
-}
-
-
-/*
- * Rectangle_Dump: dump a rectangle region of a screen to a file which
- *              must already be open for writting.
- */
-
-void
-Rectangle_Dump(rect, out)
-     XRectangle rect;
-     FILE *out;
-{
-    unsigned long swaptest = 1;
-    XColor *colors;
-    unsigned buffer_size;
-    int win_name_size;
-    int header_size;
-    int ncolors, i;
-    char *win_name;
-    XWindowAttributes win_info;
-    XImage *image;
-    int x, y;
-    unsigned width, height;
-    XWDFileHeader header;
-    XWDColor xwdcolor;
-    
-    int                 transparentOverlays , multiVis;
-    int                 numVisuals;
-    XVisualInfo         *pVisuals;
-    int                 numOverlayVisuals;
-    OverlayInfo         *pOverlayVisuals;
-    int                 numImageVisuals;
-    XVisualInfo         **pImageVisuals;
-    list_ptr            vis_regions;    /* list of regions to read from */
-    list_ptr            vis_image_regions ;
-    Visual		vis_h,*vis ;
-    int			allImage = 0 ;
-
-    /*
-     * Inform the user not to alter the screen.
-     */
-    if (!silent) {
-#ifdef XKB
-	XkbStdBell(dpy,None,50,XkbBI_Wait);
-#else
-	XBell(dpy,FEEP_VOLUME);
-#endif
-	XFlush(dpy);
-    }
-
-    if (!XGetWindowAttributes(dpy, RootWindow(dpy, screen), &win_info)) 
-      Fatal_Error("Can't get target window attributes.");
-
-    /*
-     * Get the parameters of the window being dumped.
-     */
-    x = rect.x;
-    y = rect.y;
-    width = rect.width;
-    height = rect.height;
-
-    win_name = "xwdump";
-
-    /* sizeof(char) is included for the null string terminator. */
-    win_name_size = strlen(win_name) + sizeof(char);
-
-    /*
-     * Snarf the pixmap with XGetImage.
-     */
-
-    multiVis = GetMultiVisualRegions(dpy,RootWindow(dpy, screen),x,y, 
-	       width,height,&transparentOverlays,&numVisuals,&pVisuals,
-               &numOverlayVisuals,&pOverlayVisuals,&numImageVisuals,
-               &pImageVisuals,&vis_regions,&vis_image_regions,&allImage) ;
-    if (on_root || multiVis)
+    for(i=0 ; i < ncolors ; i++)
     {
-	if (!multiVis)
-	    image = XGetImage (dpy, RootWindow(dpy, screen), x, y, 
-                    width, height, AllPlanes, format);
-	else
-	    image = ReadAreaToImage(dpy, RootWindow(dpy, screen), x, y, 
-                width, height,
-    		numVisuals,pVisuals,numOverlayVisuals,pOverlayVisuals,
-                numImageVisuals, pImageVisuals,vis_regions,
-                vis_image_regions,format,allImage);
-    }
-    else
-	image = XGetImage (dpy, RootWindow(dpy, screen), x, y, 
-			   width, height, AllPlanes, format);
-    if (!image) {
-	fprintf (stderr, "%s:  unable to get image at %dx%d+%d+%d\n",
-		 program_name, width, height, x, y);
-	exit (1);
+	tcol[i].pixel = i << 16 | i << 8 | i ;
+	tcol[i].red = tcol[i].green = tcol[i].blue = i << 8   | i ;
     }
 
-    if (add_pixel_value != 0) XAddPixel (image, add_pixel_value);
-
-    /*
-     * Determine the pixmap size.
-     */
-    buffer_size = Image_Size(image);
-
-    if (debug) outl("xwd: Getting Colors.\n");
-
-    if (!multiVis)
-    {
-       ncolors = Get_XColors(&win_info, &colors);
-       vis = win_info.visual ;
-    }
-    else
-    {
-       ncolors = Get24bitDirectColors(&colors) ;
-       initFakeVisual(&vis_h) ;
-       vis = &vis_h ;
-    }
-
-    /*
-     * Inform the user that the image has been retrieved.
-     */
-    if (!silent) {
-#ifdef XKB
-	XkbStdBell(dpy,window,FEEP_VOLUME,XkbBI_Proceed);
-	XkbStdBell(dpy,window,FEEP_VOLUME,XkbBI_RepeatingLastBell);
-#else
-	XBell(dpy, FEEP_VOLUME);
-	XBell(dpy, FEEP_VOLUME);
-#endif
-	XFlush(dpy);
-    }
-
-    /*
-     * Calculate header size.
-     */
-    if (debug) outl("xwd: Calculating header size.\n");
-    header_size = SIZEOF(XWDheader) + win_name_size;
-
-    /*
-     * Write out header information.
-     */
-    if (debug) outl("xwd: Constructing and dumping file header.\n");
-    header.header_size = (CARD32) header_size;
-    header.file_version = (CARD32) XWD_FILE_VERSION;
-    header.pixmap_format = (CARD32) format;
-    header.pixmap_depth = (CARD32) image->depth;
-    header.pixmap_width = (CARD32) image->width;
-    header.pixmap_height = (CARD32) image->height;
-    header.xoffset = (CARD32) image->xoffset;
-    header.byte_order = (CARD32) image->byte_order;
-    header.bitmap_unit = (CARD32) image->bitmap_unit;
-    header.bitmap_bit_order = (CARD32) image->bitmap_bit_order;
-    header.bitmap_pad = (CARD32) image->bitmap_pad;
-    header.bits_per_pixel = (CARD32) image->bits_per_pixel;
-    header.bytes_per_line = (CARD32) image->bytes_per_line;
-    /****
-    header.visual_class = (CARD32) win_info.visual->class;
-    header.red_mask = (CARD32) win_info.visual->red_mask;
-    header.green_mask = (CARD32) win_info.visual->green_mask;
-    header.blue_mask = (CARD32) win_info.visual->blue_mask;
-    header.bits_per_rgb = (CARD32) win_info.visual->bits_per_rgb;
-    header.colormap_entries = (CARD32) win_info.visual->map_entries;
-    *****/
-    header.visual_class = (CARD32) vis->class;
-    header.red_mask = (CARD32) vis->red_mask;
-    header.green_mask = (CARD32) vis->green_mask;
-    header.blue_mask = (CARD32) vis->blue_mask;
-    header.bits_per_rgb = (CARD32) vis->bits_per_rgb;
-    header.colormap_entries = (CARD32) vis->map_entries;
-
-    header.ncolors = ncolors;
-    header.window_width = (CARD32) width;
-    header.window_height = (CARD32) height;
-    header.window_x = x;
-    header.window_y = y;
-    header.window_bdrwidth = (CARD32) win_info.border_width;
-
-    if (*(char *) &swaptest) {
-	_swaplong((char *) &header, sizeof(header));
-	for (i = 0; i < ncolors; i++) {
-	    _swaplong((char *) &colors[i].pixel, sizeof(CARD32));
-	    _swapshort((char *) &colors[i].red, 3 * sizeof(short));
-	}
-    }
-
-    if (fwrite((char *)&header, SIZEOF(XWDheader), 1, out) != 1 ||
-	fwrite(win_name, win_name_size, 1, out) != 1) {
-	perror("xwd");
-	exit(1);
-    }
-
-    /*
-     * Write out the color maps, if any
-     */
-
-    if (debug) outl("xwd: Dumping %d colors.\n", ncolors);
-    for (i = 0; i < ncolors; i++) {
-	xwdcolor.pixel = colors[i].pixel;
-	xwdcolor.red = colors[i].red;
-	xwdcolor.green = colors[i].green;
-	xwdcolor.blue = colors[i].blue;
-	xwdcolor.flags = colors[i].flags;
-	if (fwrite((char *) &xwdcolor, SIZEOF(XWDColor), 1, out) != 1) {
-	    perror("xwd");
-	    exit(1);
-	}
-    }
-
-    /*
-     * Write out the buffer.
-     */
-    if (debug) outl("xwd: Dumping pixmap.  bufsize=%d\n",buffer_size);
-
-    /*
-     *    This copying of the bit stream (data) to a file is to be replaced
-     *  by an Xlib call which hasn't been written yet.  It is not clear
-     *  what other functions of xwd will be taken over by this (as yet)
-     *  non-existant X function.
-     */
-    if (fwrite(image->data, (int) buffer_size, 1, out) != 1) {
-	perror("xwd");
-	exit(1);
-    }
-
-    /*
-     * free the color buffer.
-     */
-
-    if (debug && ncolors > 0) outl("xwd: Freeing colors.\n");
-    if (ncolors > 0) free(colors);
-
-    /*
-     * Free image
-     */
-    XDestroyImage(image);
+    return ncolors ;
 }
 
 
@@ -545,14 +318,15 @@ Window_Dump(window, out)
      * Get the parameters of the window being dumped.
      */
     if (debug) outl("xwd: Getting target window information.\n");
-    if (!XGetWindowAttributes(dpy, window, &win_info)) 
+    if(!XGetWindowAttributes(dpy, window, &win_info)) 
       Fatal_Error("Can't get target window attributes.");
 
     /* handle any frame window */
     if (!XTranslateCoordinates (dpy, window, RootWindow (dpy, screen), 0, 0,
 				&absx, &absy, &dummywin)) {
-	fprintf (stderr, "%s:  unable to translate window "
-		 "coordinates (%d,%d)\n", program_name, absx, absy);
+	fprintf (stderr, 
+		 "%s:  unable to translate window coordinates (%d,%d)\n",
+		 program_name, absx, absy);
 	exit (1);
     }
     win_info.x = absx;
@@ -596,13 +370,14 @@ Window_Dump(window, out)
     x = absx - win_info.x;
     y = absy - win_info.y;
 
-    multiVis = GetMultiVisualRegions(dpy,RootWindow(dpy, screen),absx,absy, 
-	       width,height,&transparentOverlays,&numVisuals,&pVisuals,
+    multiVis = GetMultiVisualRegions(dpy,RootWindow(dpy, screen), 
+               absx, absy, 
+	       width, height,&transparentOverlays,&numVisuals, &pVisuals,
                &numOverlayVisuals,&pOverlayVisuals,&numImageVisuals,
                &pImageVisuals,&vis_regions,&vis_image_regions,&allImage) ;
     if (on_root || multiVis)
     {
-	if (!multiVis)
+	if(!multiVis)
 	    image = XGetImage (dpy, RootWindow(dpy, screen), absx, absy, 
                     width, height, AllPlanes, format);
 	else
@@ -613,8 +388,7 @@ Window_Dump(window, out)
                 vis_image_regions,format,allImage);
     }
     else
-	image = XGetImage (dpy, window, x, y, width, height,
-			   AllPlanes, format);
+	image = XGetImage (dpy, window, x, y, width, height, AllPlanes, format);
     if (!image) {
 	fprintf (stderr, "%s:  unable to get image at %dx%d+%d+%d\n",
 		 program_name, width, height, x, y);
@@ -630,7 +404,7 @@ Window_Dump(window, out)
 
     if (debug) outl("xwd: Getting Colors.\n");
 
-    if (!multiVis)
+    if( !multiVis)
     {
        ncolors = Get_XColors(&win_info, &colors);
        vis = win_info.visual ;
@@ -641,7 +415,6 @@ Window_Dump(window, out)
        initFakeVisual(&vis_h) ;
        vis = &vis_h ;
     }
-
     /*
      * Inform the user that the image has been retrieved.
      */
@@ -752,8 +525,8 @@ Window_Dump(window, out)
      * free the color buffer.
      */
 
-    if (debug && ncolors > 0) outl("xwd: Freeing colors.\n");
-    if (ncolors > 0) free(colors);
+    if(debug && ncolors > 0) outl("xwd: Freeing colors.\n");
+    if(ncolors > 0) free(colors);
 
     /*
      * Free window name string.
@@ -767,18 +540,16 @@ Window_Dump(window, out)
     XDestroyImage(image);
 }
 
-
 /*
  * Report the syntax for calling xwd.
  */
-
 void
 usage()
 {
-    fprintf (stderr, "usage: %s [-display host:dpy] [-debug] "
-	     "[-help] [-root | -id <id> | -name <name> | -rect] "
-	     "[-nobdrs] [-out <file>] [-xy] [-add value] [-frame] "
-	     "[-screen]\n", program_name);
+    fprintf (stderr,
+"usage: %s [-display host:dpy] [-debug] [-help] %s [-nobdrs] [-out <file>]",
+	   program_name, "[{-root|-id <id>|-name <name>}]");
+    fprintf (stderr, " [-xy] [-add value] [-frame]\n");
     exit(1);
 }
 

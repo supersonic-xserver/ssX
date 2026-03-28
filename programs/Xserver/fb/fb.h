@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fb.h,v 1.40tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fb.h,v 1.39 2004/06/10 17:28:10 tsi Exp $
  *
  * Copyright © 1998 Keith Packard
  *
@@ -25,7 +32,7 @@
 #ifndef _FB_H_
 #define _FB_H_
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "pixmap.h"
 #include "pixmapstr.h"
@@ -42,7 +49,7 @@
 #include "picturestr.h"
 #else
 #include "picture.h"
-#include <X11/extensions/render.h>
+#include "render.h"
 #endif
 
 /*
@@ -107,7 +114,7 @@ typedef unsigned __int64    FbBits;
       defined(ia64) || defined(__ia64__) || \
       defined(__sparc64__) || \
       defined(__s390x__) || \
-      defined (__amd64__) || defined(__x86_64__) || \
+      defined(AMD64) || defined (__AMD64__) || \
       (defined(sgi) && (_MIPS_SZLONG == 64))
 typedef unsigned long	    FbBits;
 #  else

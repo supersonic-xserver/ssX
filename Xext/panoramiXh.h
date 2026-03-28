@@ -1,7 +1,29 @@
+/* $XFree86: xc/programs/Xserver/Xext/panoramiXh.h,v 1.5 2006/01/29 16:27:35 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *	Server dispatcher function replacements
  */
+
+#ifndef PANORAMIXH_H
+#define PANORAMIXH_H 1
+
+#include <X11/Xproto.h>
+#include "dixstruct.h"
+#include "scrnintstr.h"
 
 extern int PanoramiXCreateWindow(ClientPtr client);
 extern int PanoramiXChangeWindowAttributes(ClientPtr client);
@@ -19,10 +41,10 @@ extern int PanoramiXGetGeometry(ClientPtr client);
 extern int PanoramiXTranslateCoords(ClientPtr client);	
 extern int PanoramiXCreatePixmap(ClientPtr client);
 extern int PanoramiXFreePixmap(ClientPtr client);
+extern int PanoramiXCreateGC(ClientPtr client);
 extern int PanoramiXChangeGC(ClientPtr client);
 extern int PanoramiXCopyGC(ClientPtr client);
 extern int PanoramiXCopyColormapAndFree(ClientPtr client);
-extern int PanoramiXCreateGC(ClientPtr client);
 extern int PanoramiXSetDashes(ClientPtr client);
 extern int PanoramiXSetClipRectangles(ClientPtr client);
 extern int PanoramiXFreeGC(ClientPtr client);
@@ -71,4 +93,7 @@ extern char *ConnectionInfo;
 extern int connBlockScreenStart;
 extern xConnSetupPrefix connSetupPrefix;
 
+extern ScreenInfo *GlobalScrInfo;
 extern int (* SavedProcVector[256]) (ClientPtr client);
+
+#endif

@@ -1,6 +1,11 @@
-/* $XFree86$ */
-/*
- * Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * The contents of this file are subject to the CID Font Code Public Licence
  * Version 1.0 (the "License"). You may not use this file except in compliance
@@ -26,9 +31,6 @@ typedef struct spacerange_code {
     unsigned int srcCodeHi;
 } spacerangecode;
 
-#define MAX_CID_SPACERANGECODES \
-    ((int)((unsigned int)(-1) / (2 * sizeof(spacerangecode))))
-
 typedef struct space_range {
     struct space_range *next;
     int rangecnt;
@@ -40,9 +42,6 @@ typedef struct cidrange_code {
     unsigned int srcCodeHi;
     unsigned int dstCIDLo;
 } cidrangecode;
-
-#define MAX_CID_CIDRANGECODES \
-    ((int)((unsigned int)(-1) / (2 * sizeof(cidrangecode))))
 
 typedef struct cid_range {
     struct cid_range *next;

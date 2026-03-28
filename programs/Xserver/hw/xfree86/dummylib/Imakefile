@@ -1,9 +1,9 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/dummylib/Imakefile,v 1.7 2005/10/14 15:16:50 tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/dummylib/Imakefile,v 1.6 2005/03/01 03:48:53 dawes Exp $
 
 #include <Server.tmpl>
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-	   -I$(SERVERSRC)/include -I$(DRMINCLUDESDIR)
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+	   -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(DRMINCLUDESDIR)
 
 SRCS = \
 	fatalerror.c \
@@ -52,12 +52,6 @@ OBJS = \
 	xf86servisinit.o \
 	xf86verbose.o \
 	sigiostubs.o
-
-#if HasAsprintf
-ASPRINTF_DEFINES = -DHAS_ASPRINTF
-#endif
-
-DEFINES = $(ASPRINTF_DEFINES)
 
 LinkSourceFile(sigiostubs.c,../os-support/shared)
 NormalLibraryObjectRule()

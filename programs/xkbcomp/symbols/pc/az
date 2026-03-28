@@ -2,7 +2,7 @@
 // symbols definition for a very simple Azerbaidjani keyboard layout.
 // 2001 - Pablo Saratxaga <pablo@mandrakesoft.com>
 
-// $XFree86$
+// $XFree86: xc/programs/xkbcomp/symbols/pc/az,v 1.1 2004/05/08 07:26:54 pascal Exp $
 
 partial default alphanumeric_keys
 xkb_symbols "latin" {

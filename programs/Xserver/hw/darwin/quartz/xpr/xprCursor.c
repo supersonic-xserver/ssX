@@ -1,4 +1,11 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Xplugin cursor support
  *
@@ -30,7 +37,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprCursor.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprCursor.c,v 1.2 2003/09/16 00:36:15 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "xpr.h"
@@ -55,7 +62,9 @@ typedef struct {
 static int darwinCursorScreenIndex = -1;
 static unsigned long darwinCursorGeneration = 0;
 
-#define CURSOR_PRIV(pScreen) pScreen->devPrivates[darwinCursorScreenIndex].ptr
+#define CURSOR_PRIV(pScreen) \
+    ((QuartzCursorScreenPtr)pScreen->devPrivates[darwinCursorScreenIndex].ptr)
+
 
 static Bool
 load_cursor(CursorPtr src, int screen)

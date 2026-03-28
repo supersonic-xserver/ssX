@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/chgkmap.c,v 3.5 2008/03/18 19:50:45 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -50,19 +58,15 @@ SOFTWARE.
  *
  */
 
-#define	 NEED_EVENTS	/* for inputstr.h    */
+#define	 NEED_EVENTS			/* for inputstr.h    */
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exevents.h"
 #include "exglobals.h"
 
@@ -76,8 +80,9 @@ SOFTWARE.
  */
 
 int
-SProcXChangeDeviceKeyMapping(ClientPtr client)
-{
+SProcXChangeDeviceKeyMapping(client)
+    ClientPtr client;
+    {
     char n;
     unsigned int count;
 
@@ -86,9 +91,9 @@ SProcXChangeDeviceKeyMapping(ClientPtr client)
     REQUEST_AT_LEAST_SIZE(xChangeDeviceKeyMappingReq);
     count = stuff->keyCodes * stuff->keySymsPerKeyCode;
     REQUEST_FIXED_SIZE(xChangeDeviceKeyMappingReq, count * sizeof(CARD32));
-    SwapLongs((CARD32 *) (&stuff[1]), count);
-    return (ProcXChangeDeviceKeyMapping(client));
-}
+    SwapLongs((CARD32 *)(&stuff[1]), count);
+    return(ProcXChangeDeviceKeyMapping(client));
+    }
 
 /***********************************************************************
  *
@@ -97,9 +102,10 @@ SProcXChangeDeviceKeyMapping(ClientPtr client)
  */
 
 int
-ProcXChangeDeviceKeyMapping(ClientPtr client)
-{
-    int ret;
+ProcXChangeDeviceKeyMapping(client)
+    register ClientPtr client;
+    {
+    int	ret;
     unsigned len;
     DeviceIntPtr dev;
     unsigned int count;
@@ -109,19 +115,22 @@ ProcXChangeDeviceKeyMapping(ClientPtr client)
 
     count = stuff->keyCodes * stuff->keySymsPerKeyCode;
     REQUEST_FIXED_SIZE(xChangeDeviceKeyMappingReq, count * sizeof(CARD32));
-    dev = LookupDeviceIntRec(stuff->deviceid);
-    if (dev == NULL) {
-	SendErrorToClient(client, IReqCode, X_ChangeDeviceKeyMapping, 0,
-			  BadDevice);
-	return Success;
-    }
-    len = stuff->length - (sizeof(xChangeDeviceKeyMappingReq) >> 2);
 
-    ret = ChangeKeyMapping(client, dev, len, DeviceMappingNotify,
-			   stuff->firstKeyCode, stuff->keyCodes,
-			   stuff->keySymsPerKeyCode, (KeySym *) & stuff[1]);
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	SendErrorToClient (client, IReqCode, X_ChangeDeviceKeyMapping, 0, 
+		BadDevice);
+	return Success;
+	}
+    len = stuff->length - (sizeof(xChangeDeviceKeyMappingReq) >> 2);  
+
+    ret = ChangeKeyMapping (client, dev, len, DeviceMappingNotify, 
+	stuff->firstKeyCode, stuff->keyCodes, stuff->keySymsPerKeyCode, 
+	(KeySym *)&stuff[1]);
 
     if (ret != Success)
-	SendErrorToClient(client, IReqCode, X_ChangeDeviceKeyMapping, 0, ret);
+	SendErrorToClient (client, IReqCode, X_ChangeDeviceKeyMapping, 0, 
+		ret);
     return Success;
-}
+    }

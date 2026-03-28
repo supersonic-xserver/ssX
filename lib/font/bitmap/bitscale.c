@@ -1,3 +1,11 @@
+/* $Xorg: bitscale.c,v 1.5 2001/02/09 02:04:02 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1991, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/bitmap/bitscale.c,v 3.31tsi Exp $ */
+/* $XFree86: xc/lib/font/bitmap/bitscale.c,v 3.30 2003/05/27 22:26:48 tsi Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium
@@ -732,7 +740,6 @@ ComputeScaledProperties(FontInfoPtr sourceFontInfo, /* the font to be scaled */
     fp = (FontPropPtr) xalloc(sizeof(FontPropRec) * nProps);
     *pProps = fp;
     if (!fp) {
-	*pIsStringProp = NULL;
 	fprintf(stderr, "Error: Couldn't allocate font properties (%ld*%d)\n",
 		(unsigned long)sizeof(FontPropRec), nProps);
 	return 1;

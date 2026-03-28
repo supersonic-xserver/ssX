@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xaw/ListP.h,v 1.9tsi Exp $ */
+/* $Xorg: ListP.h,v 1.4 2001/02/09 02:03:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 Copyright 1989, 1994, 1998  The Open Group
@@ -23,12 +37,14 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
+/* $XFree86: xc/lib/Xaw/ListP.h,v 1.9 2001/12/14 19:54:40 dawes Exp $ */
 
-/*
+
+/* 
  * This is a List widget.  It allows the user to select an item in a list and
  * notifies the application through a callback function.
  *
- *	Created:	8/13/88
+ *	Created: 	8/13/88
  *	By:		Chris D. Peterson
  *                      MIT - Project Athena
  */
@@ -100,7 +116,7 @@ typedef struct {
     int selected;
     Boolean show_current;
     char pad1[(sizeof(XtPointer) - sizeof(Boolean)) +
-	      (sizeof(XtPointer) - sizeof(int))];
+		 (sizeof(XtPointer) - sizeof(int))];
     XtPointer pad2[2];	/* for future use and keep binary compatability */
 #endif
 } ListPart;

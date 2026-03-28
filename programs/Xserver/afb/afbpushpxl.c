@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbpushpxl.c,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbpushpxl.c,v 3.2 2003/07/16 01:38:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,8 +53,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbpushpxl.c,v 5.6 94/04/17 20:28:31 dpw Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "gcstruct.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -55,7 +63,6 @@ SOFTWARE.
 #include "maskbits.h"
 #include "afb.h"
 
-#if 0
 /*  afbSolidPP is courtesy of xhacks@csri.toronto.edu
 
 	For fillStyle==FillSolid, a monochrome PushPixels can be reduced to
@@ -94,15 +101,18 @@ For src=1: newRop = 0x4|(rop&3)
  * has a zero bit or outside the area covered by the stencil.
  */
 void
-afbSolidPP(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
-	   int dx, int dy, int xOrg, int yOrg)
+afbSolidPP(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
+	GCPtr		pGC;
+	PixmapPtr		pBitMap;
+	DrawablePtr pDrawable;
+	int				dx, dy, xOrg, yOrg;
 {
 	unsigned char alu;
 	RegionRec rgnDst;
 	DDXPointPtr pptSrc;
 	BoxRec srcBox;
-	DDXPointPtr ppt;
-	BoxPtr pbox;
+	register DDXPointPtr ppt;
+	register BoxPtr pbox;
 	int i;
 
 	if (!pGC->planemask & 1) return;
@@ -138,7 +148,6 @@ afbSolidPP(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
 	}
 	REGION_UNINIT(pGC->pScreen, &rgnDst);
 }
-#endif
 
 #define NPT 128
 
@@ -150,16 +159,19 @@ afbSolidPP(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
  * has a zero bit or outside the area covered by the stencil.
  */
 void
-afbPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
-	      int dx, int dy, int xOrg, int yOrg)
+afbPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
+	GCPtr pGC;
+	PixmapPtr pBitMap;
+	DrawablePtr pDrawable;
+	int dx, dy, xOrg, yOrg;
 {
 	int h, dxDivPPW, ibEnd;
 	PixelType *pwLineStart;
-	PixelType *pw, *pwEnd;
-	PixelType mask;
-	int ib;
-	PixelType w;
-	int ipt;				/* index into above arrays */
+	register PixelType *pw, *pwEnd;
+	register PixelType mask;
+	register int ib;
+	register PixelType w;
+	register int ipt;				/* index into above arrays */
 	Bool fInBox;
 	DDXPointRec pt[NPT];
 	int width[NPT];

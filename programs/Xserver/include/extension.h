@@ -1,3 +1,11 @@
+/* $Xorg: extension.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/extension.h,v 1.7 2006/01/09 15:00:33 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/extension.h,v 1.6 2003/04/27 21:31:04 herrb Exp $ */
 
 #ifndef EXTENSION_H
 #define EXTENSION_H 
@@ -55,7 +63,7 @@ extern unsigned short StandardMinorOpcode(ClientPtr /*client*/);
 
 extern unsigned short MinorOpcodeOfRequest(ClientPtr /*client*/);
 
-extern void InitExtensions(int argc, const char *argv[]);
+extern void InitExtensions(int argc, char **argv);
 
 extern void InitVisualWrap(void);
 

@@ -1,6 +1,18 @@
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kmod.c,v 3.2 2002/11/29 17:47:24 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <errno.h>
 #include <fcntl.h>
@@ -9,6 +21,7 @@
 #include <sys/linker.h>
 
 #include "xf86_OSproc.h"
+#include "xf86_ansic.h"
 
 /*
  * Load a FreeBSD kernel module.
@@ -19,7 +32,7 @@
  * Return:
  *    0 for failure, 1 for success
  */
-_X_EXPORT int xf86LoadKernelModule(const char *modName)
+int xf86LoadKernelModule(const char *modName)
 {
     if (kldload(modName) != -1)
 	return 1;

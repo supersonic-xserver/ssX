@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_compat.c,v 1.1.1.2 2004/12/10 15:06:20 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2002 ATI Technologies Inc., Ontario, Canada, and
@@ -73,15 +80,15 @@ static struct {
 static void radeonCompatEmitPacket( radeonContextPtr rmesa, 
 				    struct radeon_state_atom *state )
 {
-   RADEONSAREAPrivPtr sarea = rmesa->sarea;
-   radeon_context_regs_t *ctx = &sarea->ContextState;
-   radeon_texture_regs_t *tex0 = &sarea->TexState[0];
-   radeon_texture_regs_t *tex1 = &sarea->TexState[1];
+   drm_radeon_sarea_t *sarea = rmesa->sarea;
+   drm_radeon_context_regs_t *ctx = &sarea->context_state;
+   drm_radeon_texture_regs_t *tex0 = &sarea->tex_state[0];
+   drm_radeon_texture_regs_t *tex1 = &sarea->tex_state[1];
    int i;
    int *buf = state->cmd;
 
    for ( i = 0 ; i < state->cmd_size ; ) {
-      drmRadeonCmdHeader *header = (drmRadeonCmdHeader *)&buf[i++];
+      drm_radeon_cmd_header_t *header = (drm_radeon_cmd_header_t *)&buf[i++];
 
       if (RADEON_DEBUG & DEBUG_STATE)
 	 fprintf(stderr, "%s %d: %s\n", __FUNCTION__, header->packet.packet_id,
@@ -202,42 +209,40 @@ static void radeonCompatEmitPacket( radeonContextPtr rmesa,
 
 static void radeonCompatEmitStateLocked( radeonContextPtr rmesa )
 {
-   struct radeon_state_atom *state, *tmp;
+   struct radeon_state_atom *atom;
 
    if (RADEON_DEBUG & (DEBUG_STATE|DEBUG_PRIMS))
       fprintf(stderr, "%s\n", __FUNCTION__);
 
-   if (rmesa->lost_context) {
-      if (RADEON_DEBUG & (DEBUG_STATE|DEBUG_PRIMS|DEBUG_IOCTL))
-	 fprintf(stderr, "%s - lost context\n", __FUNCTION__); 
+   if (!rmesa->hw.is_dirty && !rmesa->hw.all_dirty)
+      return;
 
-      foreach_s( state, tmp, &(rmesa->hw.clean) ) 
-	 move_to_tail(&(rmesa->hw.dirty), state );
-
-      rmesa->lost_context = 0;
+   foreach(atom, &rmesa->hw.atomlist) {
+      if (rmesa->hw.all_dirty)
+	 atom->dirty = GL_TRUE;
+      if (atom->is_tcl)
+	 atom->dirty = GL_FALSE;
+      if (atom->dirty)
+	 radeonCompatEmitPacket(rmesa, atom);
    }
-
-   foreach_s( state, tmp, &(rmesa->hw.dirty) ) {
-      if (!state->is_tcl)
-	 radeonCompatEmitPacket( rmesa, state );
-      move_to_head( &(rmesa->hw.clean), state );
-   }
+ 
+   rmesa->hw.is_dirty = GL_FALSE;
+   rmesa->hw.all_dirty = GL_FALSE;
 }
-
 
 
 static void radeonCompatEmitPrimitiveLocked( radeonContextPtr rmesa,
 					     GLuint hw_primitive,
 					     GLuint nverts,
-					     XF86DRIClipRectPtr pbox,
+					     drm_clip_rect_t *pbox,
 					     GLuint nbox )
 {
    int i;
 
    for ( i = 0 ; i < nbox ; ) {
       int nr = MIN2( i + RADEON_NR_SAREA_CLIPRECTS, nbox );
-      XF86DRIClipRectPtr b = rmesa->sarea->boxes;
-      drmRadeonVertex vtx;
+      drm_clip_rect_t *b = rmesa->sarea->boxes;
+      drm_radeon_vertex_t vtx;
       
       rmesa->sarea->dirty |= RADEON_UPLOAD_CLIPRECTS;
       rmesa->sarea->nbox = nr - i;

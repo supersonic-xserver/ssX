@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclMisc.c,v 1.11tsi Exp $ */
+/* $Xorg: PclMisc.c,v 1.3 2000/08/17 19:48:08 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -44,12 +51,13 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclMisc.c,v 1.11 2003/10/29 22:11:00 tsi Exp $ */
 
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <X11/Xos.h>	/* for SIGCLD on pre-POSIX systems */
+#include "Xos.h"	/* for SIGCLD on pre-POSIX systems */
 #include "Pcl.h"
 
 #include "cursor.h"

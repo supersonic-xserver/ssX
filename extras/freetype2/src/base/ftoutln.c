@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/base/ftoutln.c,v 1.0tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftoutln.c                                                              */
 /*                                                                         */
@@ -726,8 +732,6 @@
       xmax.pos = ymax.pos = -32768L;
 
       xmin.index = ymin.index = xmax.index = ymax.index = -1;
-      xmin.first = ymin.first = xmax.first = ymax.first = 0;
-      xmin.last  = ymin.last  = xmax.last  = ymax.last  = 0;
 
       first = 0;
       for ( n = 0; n < outline->n_contours; n++, first = last + 1 )

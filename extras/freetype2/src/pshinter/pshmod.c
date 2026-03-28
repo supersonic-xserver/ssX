@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  pshmod.c                                                               */
 /*                                                                         */
 /*    FreeType PostScript hinter module implementation (body).             */
 /*                                                                         */
-/*  Copyright 2001 by                                                      */
+/*  Copyright 2001, 2002 by                                                */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -91,8 +98,8 @@
   }
 
 
-  FT_CALLBACK_DEF( PSHinter_Interface )
-  pshinter_interface =
+  static
+  const PSHinter_Interface  pshinter_interface =
   {
     pshinter_get_globals_funcs,
     pshinter_get_t1_funcs,

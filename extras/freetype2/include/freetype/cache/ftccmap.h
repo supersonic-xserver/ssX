@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftccmap.h                                                              */
 /*                                                                         */
 /*    FreeType charmap cache (specification).                              */
 /*                                                                         */
-/*  Copyright 2000-2001 by                                                 */
+/*  Copyright 2000-2001, 2003 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -28,8 +35,15 @@ FT_BEGIN_HEADER
 
   /*************************************************************************/
   /*                                                                       */
+  /* <Section>                                                             */
+  /*    cache_subsystem                                                    */
+  /*                                                                       */
+  /*************************************************************************/
+
+  /*************************************************************************/
+  /*                                                                       */
   /* @type:                                                                */
-  /*    FTC_CmapCache                                                      */
+  /*    FTC_CMapCache                                                      */
   /*                                                                       */
   /* @description:                                                         */
   /*    An opaque handle used to manager a charmap cache.  This cache is   */
@@ -47,8 +61,8 @@ FT_BEGIN_HEADER
   /*    A handle to an @FTC_CMapDescRec structure used to describe a given */
   /*    charmap in a charmap cache.                                        */
   /*                                                                       */
-  /*    Each @FTC_CMapDesc describes which charmap (of which @FTC_Face) we */
-  /*    want to use in @FTC_CMapCache_Lookup.                              */
+  /*    Each @FTC_CMapDesc describes which charmap (of which @FTC_FaceID)  */
+  /*    we want to use in @FTC_CMapCache_Lookup.                           */
   /*                                                                       */
   typedef struct FTC_CMapDescRec_*  FTC_CMapDesc;
 
@@ -59,8 +73,8 @@ FT_BEGIN_HEADER
   /*    FTC_CMapType                                                       */
   /*                                                                       */
   /* @description:                                                         */
-  /*    The list of valid @FTC_CMap types.  They indicate how we want to   */
-  /*    address a charmap within an @FTC_FaceID.                           */
+  /*    The list of valid @FTC_CMapDesc types.  They indicate how we want  */
+  /*    to address a charmap within an @FTC_FaceID.                        */
   /*                                                                       */
   /* @values:                                                              */
   /*    FTC_CMAP_BY_INDEX ::                                               */

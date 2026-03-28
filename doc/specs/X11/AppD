@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -48,8 +48,6 @@
 \s+1\fBCompatibility Functions\fP\s-1
 .sp 2
 .na
-.EF ''\fB % \fP''
-.OF ''\fB % \fP''
 .LP
 .XS
 Appendix D: Compatibility Functions
@@ -139,7 +137,7 @@ to communicate more information than is possible with
 .PN XSetStandardProperties .
 (Typically, argv is the argv array of your main program.)
 If the strings are not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 .LP
 .PN XSetStandardProperties
 can generate
@@ -155,7 +153,7 @@ The functions discussed in this section use the flags and the
 .PN XSizeHints 
 structure, as defined in the
 .hN X11/Xutil.h
-header file, and use the WM_NORMAL_HINTS property.
+header file and use the WM_NORMAL_HINTS property.
 .LP
 .sp
 To set the size hints for a given window in its normal state, use
@@ -358,7 +356,7 @@ structure for the named property and the specified window.
 This is used by
 .PN XSetNormalHints
 and
-.PN XSetZoomHints ,
+.PN XSetZoomHints
 and can be used to set the value of any property of type WM_SIZE_HINTS.
 Thus, it may be useful if other properties of that type get defined.
 .LP
@@ -618,7 +616,7 @@ the screen width and height, padding as specified by xadder and yadder,
 and the fheight and fwidth times the width and height from the
 geometry specifications.
 .SH
-Obtaining the X Environment Defaults
+Getting the X Environment Defaults
 .LP
 The
 .PN XGetDefault
@@ -728,7 +726,7 @@ X Version 10 functions
 and
 .PN XDrawTiled .  
 .IN "X10 compatibility" "XDrawTiled"
-They are as compatible as possible given X Version 11's new line drawing 
+They are as compatible as possible given X Version 11's new line-drawing 
 functions.  
 One thing to note, however, is that
 .PN VertexDrawLastPoint 
@@ -822,7 +820,7 @@ typedef struct _Vertex {
 .LP
 .eM
 The x and y members are the coordinates of the vertex 
-that are relative to either the upper-left inside corner of the drawable 
+that are relative to either the upper left inside corner of the drawable 
 (if 
 .PN VertexRelative 
 is zero) or the previous vertex (if 

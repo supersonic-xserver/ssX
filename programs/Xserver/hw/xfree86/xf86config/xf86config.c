@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v 3.72 2004/10/25 21:23:58 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * This is a configuration program that will create a base XF86Config
@@ -93,6 +107,7 @@
  *  - Add font path "/fonts/TrueType/" and "/fonts/freefont/".
  *  Chisato Yamauchi(cyamauch@phyas.aichi-edu.ac.jp)
  */
+/* $XConsortium: xf86config.c /main/21 1996/10/28 05:43:57 kaleb $ */
 
 #include <stdlib.h>
 #include <stdio.h>

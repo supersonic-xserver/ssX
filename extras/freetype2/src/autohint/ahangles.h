@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahangles.h                                                             */
 /*                                                                         */
 /*    A routine used to compute vector angles with limited accuracy        */
 /*    and very high speed (specification).                                 */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001, 2002 Catharon Productions Inc.                    */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -20,27 +27,16 @@
 /***************************************************************************/
 
 
-#ifndef AHANGLES_H
-#define AHANGLES_H
+#ifndef __AHANGLES_H__
+#define __AHANGLES_H__
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
+#include FT_INTERNAL_OBJECTS_H
 #include "ahtypes.h"
 
-#else
 
-#include <autohint/ahtypes.h>
-
-#endif
-
-
-#include <freetype/internal/ftobjs.h>
-
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
   /* PI expressed in ah_angles -- we don't really need an important */
@@ -58,16 +54,18 @@
   const AH_Angle  ah_arctan[1L << AH_ATAN_BITS];
 
 
-  FT_LOCAL
-  AH_Angle  ah_angle( FT_Vector*  v );
+  FT_LOCAL( AH_Angle )
+  ah_angle( FT_Vector*  v );
 
 
-#ifdef __cplusplus
-  }
-#endif
+  FT_LOCAL( AH_Angle )
+  ah_angle_diff( AH_Angle  angle1,
+                 AH_Angle  angle2 );
 
 
-#endif /* AHANGLES_H */
+FT_END_HEADER
+
+#endif /* __AHANGLES_H__ */
 
 
 /* END */

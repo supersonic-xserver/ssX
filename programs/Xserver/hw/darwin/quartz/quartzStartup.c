@@ -1,10 +1,17 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Startup code for the Quartz Darwin X Server
  *
  **************************************************************/
 /*
- * Copyright (c) 2001-2004 Torrey T. Lyons. All Rights Reserved.
+ * Copyright (c) 2001-2003 Torrey T. Lyons. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -28,7 +35,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzStartup.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzStartup.c,v 1.9 2003/11/15 00:07:09 torrey Exp $ */
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -45,7 +52,7 @@ char **envpGlobal;      // argcGlobal and argvGlobal
                         // are from dix/globals.c
 
 // GLX bundle function pointers
-typedef void (*GlxExtensionInitPtr)(INITARGS); 
+typedef void (*GlxExtensionInitPtr)(void); 
 static GlxExtensionInitPtr GlxExtensionInit = NULL;
 
 typedef void (*GlxWrapInitVisualsPtr)(miInitVisualsProcPtr *);
@@ -64,7 +71,7 @@ typedef Bool (*QuartzModeBundleInitPtr)(void);
  */
 void DarwinHandleGUI(
     int         argc,
-    const char  *argv[],
+    char        *argv[],
     char        *envp[] )
 {
     static Bool been_here = FALSE;
@@ -107,7 +114,7 @@ void DarwinHandleGUI(
         }
     }
 
-    main_exit = NSApplicationMain(argc, (char **)argv);
+    main_exit = NSApplicationMain(argc, argv);
     exit(main_exit);
 }
 
@@ -234,7 +241,7 @@ static void LoadGlxBundle(void)
  * DarwinGlxExtensionInit
  *  Initialize the GLX extension.
  */
-void DarwinGlxExtensionInit(INITARGS)
+void DarwinGlxExtensionInit(void)
 {
     if (!GlxExtensionInit)
         LoadGlxBundle();
@@ -256,7 +263,7 @@ void DarwinGlxWrapInitVisuals(
 }
 
 
-int DarwinModeProcessArgument( int argc, const char *argv[], int i )
+int DarwinModeProcessArgument( int argc, char *argv[], int i )
 {
     // fullscreen: CoreGraphics full-screen mode
     // rootless: Cocoa rootless mode
@@ -264,16 +271,28 @@ int DarwinModeProcessArgument( int argc, const char *argv[], int i )
 
     if ( !strcmp( argv[i], "-fullscreen" ) ) {
         ErrorF( "Running full screen in parallel with Mac OS X Quartz window server.\n" );
+#ifdef QUARTZ_SAFETY_DELAY
+        ErrorF( "Quitting in %d seconds if no controller is found.\n",
+                QUARTZ_SAFETY_DELAY );
+#endif
         return 1;
     }
 
     if ( !strcmp( argv[i], "-rootless" ) ) {
         ErrorF( "Running rootless inside Mac OS X window server.\n" );
+#ifdef QUARTZ_SAFETY_DELAY
+        ErrorF( "Quitting in %d seconds if no controller is found.\n",
+                QUARTZ_SAFETY_DELAY );
+#endif
         return 1;
     }
 
     if ( !strcmp( argv[i], "-quartz" ) ) {
         ErrorF( "Running in parallel with Mac OS X Quartz window server.\n" );
+#ifdef QUARTZ_SAFETY_DELAY
+        ErrorF( "Quitting in %d seconds if no controller is found.\n",
+                QUARTZ_SAFETY_DELAY );
+#endif
         return 1;
     }
 

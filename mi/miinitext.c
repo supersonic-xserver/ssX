@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/miinitext.c,v 3.79 2006/09/02 16:44:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -22,17 +30,18 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
+
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -44,275 +53,500 @@ SOFTWARE.
 
 ******************************************************************/
 
-/*
- * Copyright (c) 2000 by The XFree86 Project, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
- */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#include "xf86Extensions.h"
-#endif
-
-#ifdef HAVE_DMX_CONFIG_H
-#include <dmx-config.h>
-#undef XV
-#undef DBE
-#undef SCREENSAVER
-#undef RANDR
-#undef DAMAGE
-#undef COMPOSITE
-#undef MITSHM
-#endif
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#undef COMPOSITE
-#undef DPMSExtension
-#endif
-
 #include "misc.h"
-#include "extension.h"
-#include "extinit.h"
+#include "extnsionst.h"
 #include "micmap.h"
-#include "os.h"
-#include "globals.h"
 
-#include "miinitext.h"
+#ifdef PANORAMIX
+extern Bool noPanoramiXExtension;
+#endif
+extern Bool noTestExtensions;
+#ifdef XKB
+extern Bool noXkbExtension;
+#endif
 
-/* List of built-in (statically linked) extensions */
-static const ExtensionModule staticExtensions[] = {
-    {GEExtensionInit, "Generic Event Extension", &noGEExtension},
-    {ShapeExtensionInit, "SHAPE", NULL},
+#ifdef DMXSERVER
+extern Bool dmxNoRender;
+#endif
+
+#ifdef XFree86LOADER
+#include "loaderProcs.h"
+#endif
+
 #ifdef MITSHM
-    {ShmExtensionInit, "MIT-SHM", &noMITShmExtension},
+#define _XSHM_SERVER_
+#include <X11/extensions/shmstr.h>
 #endif
-    {XInputExtensionInit, "XInputExtension", NULL},
 #ifdef XTEST
-    {XTestExtensionInit, "XTEST", &noTestExtensions},
+#define _XTEST_SERVER_
+#include <X11/extensions/XTest.h>
 #endif
-    {BigReqExtensionInit, "BIG-REQUESTS", NULL},
-    {SyncExtensionInit, "SYNC", NULL},
-    {XkbExtensionInit, "XKEYBOARD", NULL},
-    {XCMiscExtensionInit, "XC-MISC", NULL},
+#ifdef XKB
+#include <X11/extensions/XKB.h>
+#endif
+#ifdef LBX
+#define _XLBX_SERVER_
+#include <X11/extensions/lbxstr.h>
+#endif
+#ifdef XPRINT
+#undef  _XP_PRINT_SERVER_
+#define _XP_PRINT_SERVER_
+#include <X11/extensions/Print.h>
+#endif
+#ifdef XAPPGROUP
+#define _XAG_SERVER_
+#include <X11/extensions/Xagstr.h>
+#endif
 #ifdef XCSECURITY
-    {SecurityExtensionInit, "SECURITY", &noSecurityExtension},
+#define _SECURITY_SERVER
+#include <X11/extensions/securstr.h>
 #endif
 #ifdef PANORAMIX
-    {PanoramiXExtensionInit, "XINERAMA", &noPanoramiXExtension},
+#include <X11/extensions/panoramiXproto.h>
 #endif
-    /* must be before Render to layer DisplayCursor correctly */
-    {XFixesExtensionInit, "XFIXES", &noXFixesExtension},
 #ifdef XF86BIGFONT
-    {XFree86BigfontExtensionInit, "XFree86-Bigfont", &noXFree86BigfontExtension},
+#include <X11/extensions/xf86bigfstr.h>
 #endif
-    {RenderExtensionInit, "RENDER", &noRenderExtension},
-#ifdef RANDR
-    {RRExtensionInit, "RANDR", &noRRExtension},
-#endif
-#ifdef COMPOSITE
-    {CompositeExtensionInit, "COMPOSITE", &noCompositeExtension},
-#endif
-#ifdef DAMAGE
-    {DamageExtensionInit, "DAMAGE", &noDamageExtension},
-#endif
-#ifdef SCREENSAVER
-    {ScreenSaverExtensionInit, "MIT-SCREEN-SAVER", &noScreenSaverExtension},
-#endif
-#ifdef DBE
-    {DbeExtensionInit, "DOUBLE-BUFFER", &noDbeExtension},
+
+#ifndef XFree86LOADER
+#ifdef RES
+#include <X11/extensions/XResproto.h>
 #endif
 #ifdef XRECORD
-    {RecordExtensionInit, "RECORD", &noTestExtensions},
+#include "recordproc.h"
 #endif
-#ifdef DPMSExtension
-    {DPMSExtensionInit, "DPMS", &noDPMSExtension},
+#ifdef DBE
+#define DBE_EXT_INIT_ONLY
+#include "dbeproc.h"
 #endif
-#ifdef PRESENT
-    {present_extension_init, "Present", NULL},
 #endif
-#ifdef DRI3
-    {dri3_extension_init, "DRI3", NULL},
+
+/* FIXME: this whole block of externs should be from the appropriate headers */
+#ifdef MITSHM
+extern void ShmExtensionInit(INITARGS);
 #endif
-#ifdef RES
-    {ResExtensionInit, "X-Resource", &noResExtension},
+#ifdef XTESTEXT1
+extern void XTestExtension1Init(INITARGS);
+#endif
+#ifdef PANORAMIX
+extern void PanoramiXExtensionInit(INITARGS);
+#endif
+#ifdef XTEST
+extern void XTestExtensionInit(INITARGS);
+#endif
+#ifdef XKB
+extern void XkbExtensionInit(INITARGS);
+#endif
+#ifdef XINPUT
+extern void XInputExtensionInit(INITARGS);
+#endif
+#ifdef LBX
+extern void LbxExtensionInit(INITARGS);
+#endif
+#ifdef XAPPGROUP
+extern void XagExtensionInit(INITARGS);
+#endif
+#ifdef XCSECURITY
+extern void SecurityExtensionInit(INITARGS);
+#endif
+#ifdef XPRINT
+extern void XpExtensionInit(INITARGS);
+#endif
+#ifdef XF86BIGFONT
+extern void XFree86BigfontExtensionInit(INITARGS);
+#endif
+#ifdef RENDER
+extern void RenderExtensionInit(INITARGS);
+#endif
+#ifdef RANDR
+extern void RRExtensionInit(INITARGS);
+#endif
+
+#ifndef XFree86LOADER
+#ifdef SHAPE
+extern void ShapeExtensionInit(INITARGS);
+#endif
+#ifdef EVI
+extern void EVIExtensionInit(INITARGS);
+#endif
+#ifdef MULTIBUFFER
+extern void MultibufferExtensionInit(INITARGS);
+#endif
+#ifdef BIGREQS
+extern void BigReqExtensionInit(INITARGS);
+#endif
+#ifdef MITMISC
+extern void MITMiscExtensionInit(INITARGS);
+#endif
+#ifdef XTRAP
+extern void DEC_XTRAPInit(INITARGS);
+#endif
+#ifdef SCREENSAVER
+extern void ScreenSaverExtensionInit (INITARGS);
 #endif
 #ifdef XV
-    {XvExtensionInit, "XVideo", &noXvExtension},
-    {XvMCExtensionInit, "XVideo-MotionCompensation", &noXvExtension},
+extern void XvExtensionInit(INITARGS);
 #endif
-#ifdef XSELINUX
-    {SELinuxExtensionInit, "SELinux", &noSELinuxExtension},
+#ifdef XVMC
+extern void XvMCExtensionInit(INITARGS);
+#endif
+#ifdef XSYNC
+extern void SyncExtensionInit(INITARGS);
+#endif
+#ifdef XCMISC
+extern void XCMiscExtensionInit(INITARGS);
+#endif
+#ifdef XF86VIDMODE
+extern void XFree86VidModeExtensionInit(INITARGS);
+#endif
+#ifdef XF86MISC
+extern void XFree86MiscExtensionInit(INITARGS);
+#endif
+#ifdef XFreeXDGA
+extern void XFree86DGAExtensionInit(INITARGS);
 #endif
 #ifdef GLXEXT
-    {GlxExtensionInit, "GLX", &noGlxExtension},
+#ifndef __DARWIN__
+extern void GlxExtensionInit(INITARGS);
+extern void GlxWrapInitVisuals(miInitVisualsProcPtr *);
+#else
+extern void DarwinGlxExtensionInit(INITARGS);
+extern void DarwinGlxWrapInitVisuals(miInitVisualsProcPtr *);
 #endif
+#endif
+#ifdef XF86DRI
+extern void XFree86DRIExtensionInit(INITARGS);
+#endif
+#ifdef TOGCUP
+extern void XcupExtensionInit(INITARGS);
+#endif
+#ifdef DPMSExtension
+extern void DPMSExtensionInit(INITARGS);
+#endif
+#ifdef DPSEXT
+extern void DPSExtensionInit(INITARGS);
+#endif
+#ifdef FONTCACHE
+extern void FontCacheExtensionInit(INITARGS);
+#endif
+#ifdef RES
+extern void ResExtensionInit(INITARGS);
+#endif
+#ifdef DMXEXT
+extern void DMXExtensionInit(INITARGS);
+#endif
+
+/*ARGSUSED*/
+void
+InitExtensions(int argc, const char *argv[])
+{
+#ifdef PANORAMIX
+  if (!noPanoramiXExtension) PanoramiXExtensionInit();
+#endif
+#ifdef XTESTEXT1
+    if (!noTestExtensions) XTestExtension1Init();
+#endif
+#ifdef SHAPE
+    ShapeExtensionInit();
+#endif
+#ifdef MITSHM
+    ShmExtensionInit();
+#endif
+#ifdef EVI
+    EVIExtensionInit();
+#endif
+#ifdef MULTIBUFFER
+    MultibufferExtensionInit();
+#endif
+#ifdef XINPUT
+    XInputExtensionInit();
+#endif
+#ifdef XTEST
+    if (!noTestExtensions) XTestExtensionInit();
+#endif
+#ifdef BIGREQS
+    BigReqExtensionInit();
+#endif
+#ifdef MITMISC
+    MITMiscExtensionInit();
+#endif
+#ifdef XTRAP
+    if (!noTestExtensions) DEC_XTRAPInit();
+#endif
+#ifdef SCREENSAVER
+    ScreenSaverExtensionInit ();
+#endif
+#ifdef XV
+    XvExtensionInit();
+#endif
+#ifdef XVMC
+    XvMCExtensionInit();
+#endif
+#ifdef XSYNC
+    SyncExtensionInit();
+#endif
+#ifdef XKB
+    if (!noXkbExtension) XkbExtensionInit();
+#endif
+#ifdef XCMISC
+    XCMiscExtensionInit();
+#endif
+#ifdef XRECORD
+    if (!noTestExtensions) RecordExtensionInit(); 
+#endif
+#ifdef LBX
+    LbxExtensionInit();
+#endif
+#ifdef DBE
+    DbeExtensionInit();
+#endif
+#ifdef XAPPGROUP
+    XagExtensionInit();
+#endif
+#ifdef XCSECURITY
+    SecurityExtensionInit();
+#endif
+#ifdef XPRINT
+    XpExtensionInit();
+#endif
+#ifdef TOGCUP
+    XcupExtensionInit();
+#endif
+#ifdef DPMSExtension
+    DPMSExtensionInit();
+#endif
+#ifdef FONTCACHE
+    FontCacheExtensionInit();
+#endif
+#ifdef XF86BIGFONT
+    XFree86BigfontExtensionInit();
+#endif
+#ifdef XF86VIDMODE
+    XFree86VidModeExtensionInit();
+#endif
+#ifdef XF86MISC
+    XFree86MiscExtensionInit();
+#endif
+#ifdef XFreeXDGA
+    XFree86DGAExtensionInit();
+#endif
+#ifdef XF86DRI
+    XFree86DRIExtensionInit();
+#endif
+#ifdef GLXEXT
+#ifndef __DARWIN__
+    GlxExtensionInit();
+#else
+    DarwinGlxExtensionInit();
+#endif
+#endif
+#ifdef DPSEXT
+    DPSExtensionInit();
+#endif
+#ifdef RENDER
+#ifdef DMXSERVER
+    if (!dmxNoRender)
+#endif
+    RenderExtensionInit();
+#endif
+#ifdef RANDR
+    RRExtensionInit();
+#endif
+#ifdef RES
+    ResExtensionInit();
+#endif
+#ifdef DMXEXT
+    DMXExtensionInit();
+#endif
+}
+
+void
+InitVisualWrap()
+{
+    miResetInitVisuals();
+#ifdef GLXEXT
+#ifndef __DARWIN__
+    GlxWrapInitVisuals(&miInitVisualsProc);
+#else
+    DarwinGlxWrapInitVisuals(&miInitVisualsProc);
+#endif
+#endif
+}
+
+#else /* XFree86LOADER */
+
+/* List of built-in (statically linked) extensions */
+static ExtensionModule staticExtensions[] = {
+#ifdef XTESTEXT1
+    {
+	XTestExtension1Init,
+	"XTEST1",
+	&noTestExtensions,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef MITSHM
+    {
+	ShmExtensionInit,
+	SHMNAME,
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XINPUT
+    {
+	XInputExtensionInit,
+	"XInputExtension",
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XTEST
+    {
+	XTestExtensionInit,
+	XTestExtensionName,
+	&noTestExtensions,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XKB
+    {
+	XkbExtensionInit,
+	XkbName,
+	&noXkbExtension,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef LBX
+    {
+	LbxExtensionInit,
+	LBXNAME,
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XAPPGROUP
+    {
+	XagExtensionInit,
+	XAGNAME,
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XCSECURITY
+    {
+	SecurityExtensionInit,
+	SECURITY_EXTENSION_NAME,
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XPRINT
+    {
+	XpExtensionInit,
+	XP_PRINTNAME,
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef PANORAMIX
+    {
+	PanoramiXExtensionInit,
+	PANORAMIX_PROTOCOL_NAME,
+	&noPanoramiXExtension,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef XF86BIGFONT
+    {
+	XFree86BigfontExtensionInit,
+	XF86BIGFONTNAME,
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef RENDER
+    {
+	RenderExtensionInit,
+	"RENDER",
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+#ifdef RANDR
+    {
+	RRExtensionInit,
+	"RANDR",
+	NULL,
+	NULL,
+	NULL
+    },
+#endif
+    {
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL
+    }
 };
-
+    
+/*ARGSUSED*/
 void
-ListStaticExtensions(void)
-{
-    const ExtensionModule *ext;
-    int i;
-
-    ErrorF(" Only the following extensions can be run-time enabled/disabled:\n");
-    for (i = 0; i < ARRAY_SIZE(staticExtensions); i++) {
-        ext = &staticExtensions[i];
-        if (ext->disablePtr != NULL) {
-            ErrorF("\t%s\n", ext->name);
-        }
-    }
-}
-
-Bool
-EnableDisableExtension(const char *name, Bool enable)
-{
-    const ExtensionModule *ext;
-    int i;
-
-    for (i = 0; i < ARRAY_SIZE(staticExtensions); i++) {
-        ext = &staticExtensions[i];
-        if (strcasecmp(name, ext->name) == 0) {
-            if (ext->disablePtr != NULL) {
-                *ext->disablePtr = !enable;
-                return TRUE;
-            }
-            else {
-                /* Extension is always on, impossible to disable */
-                return enable;  /* okay if they wanted to enable,
-                                   fail if they tried to disable */
-            }
-        }
-    }
-
-    return FALSE;
-}
-
-void
-EnableDisableExtensionError(const char *name, Bool enable)
-{
-    const ExtensionModule *ext;
-    int i;
-    Bool found = FALSE;
-
-    for (i = 0; i < ARRAY_SIZE(staticExtensions); i++) {
-        ext = &staticExtensions[i];
-        if ((strcmp(name, ext->name) == 0) && (ext->disablePtr == NULL)) {
-            ErrorF("[mi] Extension \"%s\" can not be disabled\n", name);
-            found = TRUE;
-            break;
-        }
-    }
-    if (found == FALSE) {
-        ErrorF("[mi] Extension \"%s\" is not recognized\n", name);
-        /* Disabling a non-existing extension is a no-op anyway */
-        if (enable == FALSE)
-            return;
-    }
-    ListStaticExtensions();
-}
-
-static ExtensionModule *ExtensionModuleList = NULL;
-static int numExtensionModules = 0;
-
-static void
-AddStaticExtensions(void)
-{
-    static Bool listInitialised = FALSE;
-
-    if (listInitialised)
-        return;
-    listInitialised = TRUE;
-
-    /* Add built-in extensions to the list. */
-    LoadExtensionList(staticExtensions, ARRAY_SIZE(staticExtensions), TRUE);
-}
-
-void
-InitExtensions(int argc, char *argv[])
+InitExtensions(int argc, const char *argv[])
 {
     int i;
     ExtensionModule *ext;
+    static Bool listInitialised = FALSE;
 
-    AddStaticExtensions();
+    if (!listInitialised) {
+	/* Add built-in extensions to the list. */
+	for (i = 0; staticExtensions[i].name; i++)
+	    LoadExtension(&staticExtensions[i], TRUE);
 
-    for (i = 0; i < numExtensionModules; i++) {
-        ext = &ExtensionModuleList[i];
-        if (ext->initFunc != NULL &&
-            (ext->disablePtr == NULL || !*ext->disablePtr)) {
-            LogMessageVerb(X_INFO, 3, "Initializing extension %s\n",
-                           ext->name);
+	/* Sort the extensions according the init dependencies. */
+	LoaderSortExtensions();
+	listInitialised = TRUE;
+    }
 
-            (ext->initFunc) ();
-        }
+    for (i = 0; ExtensionModuleList[i].name != NULL; i++) {
+	ext = &ExtensionModuleList[i];
+	if (ext->initFunc != NULL && 
+	    (ext->disablePtr == NULL || 
+	     (ext->disablePtr != NULL && !*ext->disablePtr))) {
+	    (ext->initFunc)();
+	}
     }
 }
 
-static ExtensionModule *
-NewExtensionModuleList(int size)
-{
-    ExtensionModule *save = ExtensionModuleList;
-    int n;
-
-    /* Sanity check */
-    if (!ExtensionModuleList)
-        numExtensionModules = 0;
-
-    n = numExtensionModules + size;
-    ExtensionModuleList = reallocarray(ExtensionModuleList, n,
-                                       sizeof(ExtensionModule));
-    if (ExtensionModuleList == NULL) {
-        ExtensionModuleList = save;
-        return NULL;
-    }
-    else {
-        numExtensionModules += size;
-        return ExtensionModuleList + (numExtensionModules - size);
-    }
-}
+static void (*__miHookInitVisualsFunction)(miInitVisualsProcPtr *);
 
 void
-LoadExtensionList(const ExtensionModule ext[], int size, Bool builtin)
+InitVisualWrap()
 {
-    ExtensionModule *newext;
-    int i;
-
-    /* Make sure built-in extensions get added to the list before those
-     * in modules. */
-    AddStaticExtensions();
-
-    if (!(newext = NewExtensionModuleList(size)))
-        return;
-
-    for (i = 0; i < size; i++, newext++) {
-        newext->name = ext[i].name;
-        newext->initFunc = ext[i].initFunc;
-        newext->disablePtr = ext[i].disablePtr;
-    }
+    miResetInitVisuals();
+    if (__miHookInitVisualsFunction)
+	(*__miHookInitVisualsFunction)(&miInitVisualsProc);
 }
+
+void miHookInitVisuals(void (**old)(miInitVisualsProcPtr *),
+		       void (*new)(miInitVisualsProcPtr *))
+{
+    if (old)
+	*old = __miHookInitVisualsFunction;
+    __miHookInitVisualsFunction = new;
+}
+
+#endif /* XFree86LOADER */

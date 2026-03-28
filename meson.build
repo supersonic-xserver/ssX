@@ -19,6 +19,37 @@ if get_option('static_loader')
     add_project_arguments('-DCONFIG_STATIC_LOADER', language: 'c')
 endif
 
+# Legacy Build Mode: Use 2009-era headers
+legacy_mode = get_option('legacy_build')
+
+if legacy_mode
+    message('Building in LEGACY MODE with 2009-era protocol headers')
+    add_project_arguments('-DSSX_LEGACY_MODE', language: 'c')
+    add_project_arguments('-fcommon', language: 'c') # Required for legacy XFree86 globals
+    # Legacy code needs default visibility for driver interop (XFree86 4.8.0 style)
+    add_project_arguments('-fvisibility=default', language: 'c')
+    
+    # Suppress implicit function declaration warnings for legacy code
+    add_project_arguments('-Wno-implicit-function-declaration', language: 'c')
+    
+    # Force-include site.h and privates.h for all translation units
+    # This ensures XFree86 4.8.0 definitions are visible everywhere without manual includes
+    add_project_arguments('-include', meson.source_root() + '/include/site.h', language: 'c')
+    add_project_arguments('-include', meson.source_root() + '/include/privates.h', language: 'c')
+    # Define HAVE_HOTPLUG as 0 to stub out modern hotplugging
+    add_project_arguments('-DHAVE_HOTPLUG=0', language: 'c')
+    
+    # Force-disable modern hotplugging that didn't exist in 2009
+    build_udev = false
+    build_hal = false
+    build_systemd_logind = false
+    build_dbus = false
+    
+    # Define legacy security stubs if DixReadAccess is missing
+    add_project_arguments('-DDixReadAccess=1', language: 'c')
+    add_project_arguments('-DDixWriteAccess=2', language: 'c')
+endif
+
 if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     test_wflags = [
         '-Wall',
@@ -49,6 +80,11 @@ foreach wflag: test_wflags
 endforeach
 
 add_global_arguments(common_wflags, language : 'c')
+
+# Legacy mode: Add compatibility flags for 2009-era X11 code
+if legacy_mode
+    add_global_arguments('-Wno-error=incompatible-pointer-types', language : 'c')
+endif
 
 xproto_dep = dependency('xproto', version: '>= 7.0.31')
 randrproto_dep = dependency('randrproto', version: '>= 1.6.0')
@@ -230,7 +266,21 @@ if build_udev and build_hal
     error('Hotplugging through both libudev and hal not allowed')
 endif
 
-build_dbus = build_hal or build_systemd_logind
+build_dbus = false  # Disable D-Bus by default - not needed for ssX
+build_udev = false  # Disable udev by default - conflicts with legacy headers
+
+# Legacy Build Mode overrides - must come AFTER normal option processing
+if legacy_mode
+    # Force-disable modern hotplugging that didn't exist in 2009
+    build_udev = false
+    build_hal = false
+    build_systemd_logind = false
+    build_dbus = false
+    
+    # Disable DRI3 - not compatible with XFree86 4.8.0 header set
+    # XAA (XFree86 Acceleration Architecture) is preferred over DRI3
+    build_dri3 = false
+endif
 
 udev_dep = dependency('', required:false)
 if build_udev
@@ -403,63 +453,160 @@ build_xf86vidmode = xf86vidmodeproto_dep.found()
 m_dep = cc.find_library('m', required : false)
 dl_dep = cc.find_library('dl', required : false)
 
-common_dep = [
-    xproto_dep,
-    randrproto_dep,
-    renderproto_dep,
-    xextproto_dep,
-    inputproto_dep,
-    kbproto_dep,
-    fontsproto_dep,
-    fixesproto_dep,
-    damageproto_dep,
-    xcmiscproto_dep,
-    bigreqsproto_dep,
-    xtrans_dep,
+# Build common_dep with only found dependencies to avoid "is not a target" errors
+# in hw/vfb and other targets that use common_dep
+common_dep = []
+if xproto_dep.found()
+    common_dep += xproto_dep
+endif
+if randrproto_dep.found()
+    common_dep += randrproto_dep
+endif
+if renderproto_dep.found()
+    common_dep += renderproto_dep
+endif
+if xextproto_dep.found()
+    common_dep += xextproto_dep
+endif
+if inputproto_dep.found()
+    common_dep += inputproto_dep
+endif
+if kbproto_dep.found()
+    common_dep += kbproto_dep
+endif
+if fontsproto_dep.found()
+    common_dep += fontsproto_dep
+endif
+if fixesproto_dep.found()
+    common_dep += fixesproto_dep
+endif
+if damageproto_dep.found()
+    common_dep += damageproto_dep
+endif
+if xcmiscproto_dep.found()
+    common_dep += xcmiscproto_dep
+endif
+if bigreqsproto_dep.found()
+    common_dep += bigreqsproto_dep
+endif
+if xtrans_dep.found()
+    common_dep += xtrans_dep
+endif
 
-    videoproto_dep,
-    compositeproto_dep,
-    recordproto_dep,
-    scrnsaverproto_dep,
-    resourceproto_dep,
-    xf86driproto_dep,
-    dri2proto_dep,
-    dri3proto_dep,
-    xineramaproto_dep,
-    xf86bigfontproto_dep,
-    xf86dgaproto_dep,
-    xf86vidmodeproto_dep,
-    windowswmproto_dep,
-    applewmproto_dep,
+if videoproto_dep.found()
+    common_dep += videoproto_dep
+endif
+if compositeproto_dep.found()
+    common_dep += compositeproto_dep
+endif
+if recordproto_dep.found()
+    common_dep += recordproto_dep
+endif
+if scrnsaverproto_dep.found()
+    common_dep += scrnsaverproto_dep
+endif
+if resourceproto_dep.found()
+    common_dep += resourceproto_dep
+endif
+if xf86driproto_dep.found()
+    common_dep += xf86driproto_dep
+endif
+if dri2proto_dep.found()
+    common_dep += dri2proto_dep
+endif
+if dri3proto_dep.found()
+    common_dep += dri3proto_dep
+endif
+if xineramaproto_dep.found()
+    common_dep += xineramaproto_dep
+endif
+if xf86bigfontproto_dep.found()
+    common_dep += xf86bigfontproto_dep
+endif
+if xf86dgaproto_dep.found()
+    common_dep += xf86dgaproto_dep
+endif
+if xf86vidmodeproto_dep.found()
+    common_dep += xf86vidmodeproto_dep
+endif
+if windowswmproto_dep.found()
+    common_dep += windowswmproto_dep
+endif
+if applewmproto_dep.found()
+    common_dep += applewmproto_dep
+endif
 
-    pixman_dep,
-    libbsd_dep,
-    xkbfile_dep,
-    xfont2_dep,
-    xdmcp_dep,
-]
+if pixman_dep.found()
+    common_dep += pixman_dep
+endif
+if libbsd_dep.found()
+    common_dep += libbsd_dep
+endif
+if xkbfile_dep.found()
+    common_dep += xkbfile_dep
+endif
+if xfont2_dep.found()
+    common_dep += xfont2_dep
+endif
+if xdmcp_dep.found()
+    common_dep += xdmcp_dep
+endif
 
-inc = include_directories(
-    'Xext',
-    'Xi',
-    'composite',
-    'damageext',
-    'exa',
-    'fb',
-    'glamor',
-    'mi',
-    'miext/damage',
-    'miext/shadow',
-    'miext/sync',
-    'dbe',
-    'dri3',
-    'include',
-    'present',
-    'randr',
-    'render',
-    'xfixes',
-    'programs/Xserver/include',
-)
+# Build include directories - legacy directories come first for priority
+# Also add system X11 include path for Xtrans and other external headers
+x11_sys_inc = include_directories('/usr/include/X11')
+
+if legacy_mode
+    inc = include_directories(
+        'include/legacy-proto',
+        'include/legacy-proto/X11',
+        'include/fonts',
+        'programs/Xserver/include',
+        'dix',
+        'Xext',
+        'Xi',
+        'composite',
+        'damageext',
+        'exa',
+        'fb',
+        'glamor',
+        'mi',
+        'miext/damage',
+        'miext/shadow',
+        'miext/sync',
+        'dbe',
+        'dri3',
+        'include',
+        'present',
+        'randr',
+        'render',
+        'xfixes',
+        'programs/Xserver/include',
+    )
+else
+    inc = include_directories(
+        'dix',
+        'Xext',
+        'Xi',
+        'composite',
+        'damageext',
+        'exa',
+        'fb',
+        'glamor',
+        'mi',
+        'miext/damage',
+        'miext/shadow',
+        'miext/sync',
+        'dbe',
+        'dri3',
+        'include',
+        'present',
+        'randr',
+        'render',
+        'xfixes',
+        'programs/Xserver/include',
+    )
+endif
 
 glx_inc = include_directories('glx')
 
@@ -539,25 +686,26 @@ endif
 libxserver = [
     libxserver_mi,
     libxserver_dix,
-
-    libxserver_composite,
-    libxserver_damageext,
-    libxserver_dbe,
-    libxserver_randr,
-    libxserver_miext_damage,
-    libxserver_render,
-    libxserver_present,
+    libxserver_fb, # Added this to the core list
+    libxserver_os,
     libxserver_xext,
-    libxserver_miext_sync,
-    libxserver_xfixes,
     libxserver_xi,
     libxserver_xkb,
+    libxserver_render,
+    libxserver_randr,
+    libxserver_present,
+    libxserver_damageext,
+    libxserver_miext_damage,
+    libxserver_miext_sync,
+    libxserver_xfixes,
+    libxserver_dbe,
     libxserver_record,
-
-    libxserver_os,
 ]
 
-libxserver += libxserver_dri3
+# Add DRI3 if it was built
+if build_dri3
+    libxserver += libxserver_dri3
+endif
 
 subdir('hw')
 subdir('test')

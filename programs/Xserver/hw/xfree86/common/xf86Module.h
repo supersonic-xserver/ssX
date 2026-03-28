@@ -1,7 +1,21 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Module.h,v 1.47tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Module.h,v 1.41 2005/01/21 02:03:12 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -65,13 +79,10 @@
 
 #include "misc.h"
 #include "xf86Version.h"
-#include "extnsionst.h"
-
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
 
-/* These are redundant, and kept for compatibility purposes only. */
 typedef enum {
     LD_RESOLV_IFDONE		= 0,	/* only check if no more
 					   delays pending */
@@ -107,11 +118,11 @@ typedef enum {
  * changed.  The minor revision mask is 0x0000FFFF and the major revision
  * mask is 0xFFFF0000.
  */
-#define ABI_ANSIC_VERSION	SET_ABI_VERSION(0,  4)
-#define ABI_VIDEODRV_VERSION	SET_ABI_VERSION(0, 11)
-#define ABI_XINPUT_VERSION	SET_ABI_VERSION(0,  5)
-#define ABI_EXTENSION_VERSION	SET_ABI_VERSION(0,  4)
-#define ABI_FONT_VERSION	SET_ABI_VERSION(0,  5)
+#define ABI_ANSIC_VERSION	SET_ABI_VERSION(0, 3)
+#define ABI_VIDEODRV_VERSION	SET_ABI_VERSION(0, 8)
+#define ABI_XINPUT_VERSION	SET_ABI_VERSION(0, 5)
+#define ABI_EXTENSION_VERSION	SET_ABI_VERSION(0, 3)
+#define ABI_FONT_VERSION	SET_ABI_VERSION(0, 5)
 
 #define MODINFOSTRING1	0xef23fdc5
 #define MODINFOSTRING2	0x10dc023a
@@ -199,6 +210,10 @@ typedef struct {
 #define GET_MODULE_MINOR_VERSION(vers)	(((vers) >> 16) & 0xFF)
 #define GET_MODULE_PATCHLEVEL(vers)	((vers) & 0xFFFF)
 
+#define INITARGS void
+
+typedef void (*InitExtension)(INITARGS);
+
 typedef struct {
     InitExtension	initFunc;
     const char *	name;
@@ -207,18 +222,18 @@ typedef struct {
     const char **	initDependencies;
 } ExtensionModule;
 
-typedef struct module_desc *ModuleDescPtr;
-typedef struct font_module *FontModulePtr;
-
 extern ExtensionModule *ExtensionModuleList;
 
 /* Prototypes for Loader functions that are exported to modules */
-ModuleDescPtr LoadSubModule(ModuleDescPtr, const char *, const char **,
-			    const char **, pointer, const XF86ModReqInfo *,
-			    int *, int *);
-void UnloadSubModule(ModuleDescPtr);
-void UnloadModule (ModuleDescPtr);
-void LoadFont(FontModulePtr);
+#ifndef IN_LOADER
+/* Prototypes with opaque pointers for use by modules */
+pointer LoadSubModule(pointer, const char *, const char **,
+		      const char **, pointer, const XF86ModReqInfo *,
+		      int *, int *);
+void UnloadSubModule(pointer);
+void LoadFont(pointer);
+void UnloadModule (pointer);
+#endif
 pointer LoaderSymbol(const char *);
 char **LoaderListDirs(const char **, const char **);
 void LoaderFreeDirList(char **);
@@ -228,16 +243,12 @@ void LoaderRefSymLists(const char **, ...);
 void LoaderRefSymbols(const char *, ...);
 void LoaderReqSymLists(const char **, ...);
 void LoaderReqSymbols(const char *, ...);
-void LoaderModRefSymLists(ModuleDescPtr, const char **, ...);
-void LoaderModRefSymbols(ModuleDescPtr, const char *, ...);
-int LoaderModReqSymLists(ModuleDescPtr, const char **, ...);
-int LoaderModReqSymbols(ModuleDescPtr, const char *, ...);
 int LoaderCheckUnresolved(int);
 void LoaderGetOS(const char **name, int *major, int *minor, int *teeny);
 
-typedef pointer (*ModuleSetupProc)(ModuleDescPtr, pointer, int *, int *);
+typedef pointer (*ModuleSetupProc)(pointer, pointer, int *, int *);
 typedef void (*ModuleTearDownProc)(pointer);
-#define MODULESETUPPROTO(func) pointer func(ModuleDescPtr, pointer, int*, int*)
+#define MODULESETUPPROTO(func) pointer func(pointer, pointer, int*, int*)
 #define MODULETEARDOWNPROTO(func) void func(pointer)
 
 typedef struct {
@@ -246,4 +257,4 @@ typedef struct {
     ModuleTearDownProc		teardown;
 } XF86ModuleData;
 
-#endif /* _XF86MODULE_H */
+#endif /* _XF86STR_H */

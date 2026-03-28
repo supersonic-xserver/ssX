@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/extinit.h,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/include/extinit.h,v 3.3 2003/11/17 22:20:43 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -34,7 +41,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "extnsionst.h"
 
 void
-XInputExtensionInit(INITARGS);
+XInputExtensionInit(
+	void
+	);
+
 
 int
 ProcIDispatch (

@@ -28,11 +28,8 @@
  *
  * Authors:     Earle F. Philhower, III
  */
-/* $XFree86: $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winprefsyacc.y,v 1.1 2003/10/02 13:30:11 eich Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +39,7 @@
 #define YYERROR_VERBOSE 1
 
 /* The global pref settings */
-WINPREFS pref;
+WINMULTIWINDOWPREFS pref;
 
 /* The working menu */  
 static MENUPARSED menu;
@@ -54,25 +51,24 @@ static void SetIconDirectory (char *path);
 static void SetDefaultIcon (char *fname);
 static void SetRootMenu (char *menu);
 static void SetDefaultSysMenu (char *menu, int pos);
-static void SetTrayIcon (char *fname);
 
 static void OpenMenu(char *menuname);
 static void AddMenuLine(char *name, MENUCOMMANDTYPE cmd, char *param);
-static void CloseMenu(void);
+static void CloseMenu();
 
-static void OpenIcons(void);
+static void OpenIcons();
 static void AddIconLine(char *matchstr, char *iconfile);
-static void CloseIcons(void);
+static void CloseIcons();
 
-static void OpenSysMenu(void);
+static void OpenSysMenu();
 static void AddSysMenuLine(char *matchstr, char *menuname, int pos);
-static void CloseSysMenu(void);
+static void CloseSysMenu();
 
 static int yyerror (char *s);
 
 extern void ErrorF (const char* /*f*/, ...);
 extern char *yytext;
-extern int yylex(void);
+extern int yylex();
 
 %}
 
@@ -83,7 +79,7 @@ extern int yylex(void);
 
 %token NEWLINE MENU LB RB ICONDIRECTORY DEFAULTICON ICONS DEFAULTSYSMENU
 %token SYSMENU ROOTMENU SEPARATOR ATSTART ATEND EXEC ALWAYSONTOP DEBUG
-%token RELOAD TRAYICON SILENTEXIT
+%token RELOAD
 
 %token <sVal> STRING
 %type <iVal>  atspot
@@ -111,11 +107,6 @@ command:	defaulticon
 	| rootmenu
 	| defaultsysmenu
 	| debug
-	| trayicon
-	| silentexit
-	;
-
-trayicon:	TRAYICON STRING NEWLINE { SetTrayIcon($2); free($2); }
 	;
 
 rootmenu:	ROOTMENU STRING NEWLINE { SetRootMenu($2); free($2); }
@@ -169,9 +160,6 @@ sysmenulist:	sysmenuline
 sysmenu:	SYSMENU LB NEWLINE {OpenSysMenu();} newline_or_nada sysmenulist RB {CloseSysMenu();}
 	;
 
-silentexit:	SILENTEXIT NEWLINE { pref.fSilentExit = TRUE; }
-	;
-
 debug: 	DEBUG STRING NEWLINE { ErrorF("LoadPreferences: %s\n", $2); free($2); }
 	;
 
@@ -202,13 +190,6 @@ SetDefaultIcon (char *fname)
 {
   strncpy (pref.defaultIconName, fname, NAME_MAX);
   pref.defaultIconName[NAME_MAX] = 0;
-}
-
-static void
-SetTrayIcon (char *fname)
-{
-  strncpy (pref.trayIconName, fname, NAME_MAX);
-  pref.trayIconName[NAME_MAX] = 0;
 }
 
 static void
@@ -259,7 +240,7 @@ AddMenuLine (char *text, MENUCOMMANDTYPE cmd, char *param)
 }
 
 static void
-CloseMenu (void)
+CloseMenu ()
 {
   if (menu.menuItem==NULL || menu.menuItems==0)
     {
@@ -280,7 +261,7 @@ CloseMenu (void)
 }
 
 static void 
-OpenIcons (void)
+OpenIcons ()
 {
   if (pref.icon != NULL) {
     ErrorF("LoadPreferences: Redefining icon mappings\n");
@@ -311,12 +292,12 @@ AddIconLine (char *matchstr, char *iconfile)
 }
 
 static void 
-CloseIcons (void)
+CloseIcons ()
 {
 }
 
 static void
-OpenSysMenu (void)
+OpenSysMenu ()
 {
   if (pref.sysMenu != NULL) {
     ErrorF("LoadPreferences: Redefining system menu\n");
@@ -347,7 +328,7 @@ AddSysMenuLine (char *matchstr, char *menuname, int pos)
 }
 
 static void
-CloseSysMenu (void)
+CloseSysMenu ()
 {
 }
 

@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/miext/shadow/shrotpack.h,v 1.5 2005/10/14 15:17:25 tsi Exp $
  *
- * Copyright Â© 2000 Keith Packard
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -25,12 +33,6 @@
  * Thanks to Daniel Chemko <dchemko@intrinsyc.com> for making the 90 and 180
  * orientations work.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stdlib.h>
 
 #include    <X11/X.h>
 #include    "scrnintstr.h"
@@ -97,7 +99,7 @@ void
 FUNC (ScreenPtr	    pScreen,
       shadowBufPtr  pBuf)
 {
-    RegionPtr	damage = shadowDamage (pBuf);
+    RegionPtr	damage = &pBuf->damage;
     PixmapPtr	pShadow = pBuf->pPixmap;
     int		nbox = REGION_NUM_RECTS (damage);
     BoxPtr	pbox = REGION_RECTS (damage);

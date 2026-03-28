@@ -1,0 +1,70 @@
+XCOMM
+XCOMM Copyright (c) 2005 ASPEED Technology Inc.
+XCOMM 
+XCOMM Permission to use, copy, modify, distribute, and sell this software and its
+XCOMM documentation for any purpose is hereby granted without fee, provided that
+XCOMM the above copyright notice appear in all copies and that both that
+XCOMM copyright notice and this permission notice appear in supporting
+XCOMM documentation, and that the name of the authors not be used in
+XCOMM advertising or publicity pertaining to distribution of the software without
+XCOMM specific, written prior permission.  The authors makes no representations
+XCOMM about the suitability of this software for any purpose.  It is provided
+XCOMM "as is" without express or implied warranty.
+XCOMM 
+XCOMM THE AUTHORS DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+XCOMM INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+XCOMM EVENT SHALL THE AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+XCOMM CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+XCOMM DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+XCOMM TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+XCOMM PERFORMANCE OF THIS SOFTWARE.
+XCOMM
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/aspeed/Imakefile,v 1.1 2006/04/14 00:50:38 dawes Exp $
+
+#define IHaveModules
+#include <Server.tmpl>
+
+SRCS = ast_driver.c ast_mode.c ast_accel.c ast_tool.c ast_vgatool.c \
+       ast_2dtool.c ast_cursor.c
+OBJS = ast_driver.o ast_mode.o ast_accel.o ast_tool.o ast_vgatool.o \
+       ast_2dtool.o ast_cursor.o
+
+#if defined(XF86DriverSDK)
+INCLUDES = -I../../include
+#else
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
+	   -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c -I$(XF86SRC)/int10 \
+	   -I$(XF86SRC)/rac -I$(XF86SRC)/ramdac -I$(XF86SRC)/vbe \
+	   -I$(XF86SRC)/vgahw -I$(XF86SRC)/xaa \
+	   -I$(SERVERSRC)/fb -I$(SERVERSRC)/render -I$(SERVERSRC)/mi \
+	   -I$(SERVERSRC)/Xext -I$(SERVERSRC)/include
+#endif
+
+#if MakeHasPosixVariableSubstitutions
+SubdirLibraryRule($(OBJS))
+#endif
+
+ModuleObjectRule()
+
+ObjectModuleTarget(aspeed,$(OBJS),drivers)
+
+InstallObjectModule(aspeed,$(MODULEDIR),drivers)
+
+DependTarget()
+
+InstallDriverSDKNonExecFile(Imakefile,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast.h,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_driver.c,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_mode.h,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_mode.c,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_accel.c,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_tool.h,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_tool.c,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_vgatool.h,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_vgatool.c,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_2dtool.h,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_2dtool.c,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_cursor.h,$(DRIVERSDKDIR)/drivers/aspeed)
+InstallDriverSDKNonExecFile(ast_cursor.c,$(DRIVERSDKDIR)/drivers/aspeed)
+
+InstallDriverSDKObjectModule(aspeed,$(DRIVERSDKMODULEDIR),drivers)

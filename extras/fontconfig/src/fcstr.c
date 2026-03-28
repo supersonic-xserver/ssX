@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -426,7 +433,7 @@ FcStrCopyFilename (const FcChar8 *s)
     
     if (*s == '~')
     {
-	FcChar8	*home = FcGetHomeDir ();
+	FcChar8	*home = (FcChar8 *) getenv ("HOME");
 	int	size;
 	if (!home)
 	    return 0;
@@ -437,7 +444,6 @@ FcStrCopyFilename (const FcChar8 *s)
 	FcMemAlloc (FC_MEM_STRING, size);
 	strcpy ((char *) new, (char *) home);
 	strcat ((char *) new, (char *) s + 1);
-	FcStrFree (home);
     }
     else
     {

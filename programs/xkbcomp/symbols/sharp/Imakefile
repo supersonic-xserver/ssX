@@ -1,7 +1,8 @@
-XCOMM $XFree86: xc/programs/xkbcomp/symbols/sharp/Imakefile,v 1.1tsi Exp $
+XCOMM $XConsortium: Imakefile /main/1 1996/01/30 14:27:50 kaleb $
 
-    DATAFILES = jp
+     DATAFILES = jp
 
 all::
 
 InstallMultiple($(DATAFILES),$(LIBDIR)/xkb/symbols/sharp)
+DependTarget()

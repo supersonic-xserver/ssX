@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimach64io.h,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimach64io.h,v 1.17 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -39,10 +46,9 @@
  * inl/outl     32-bit R/W through PIO space.  The register is specified as the
  *              actual PIO address.  These are actually defined in compiler.h.
  *
- * inw/outw     16-bit counterparts to inl/outl.  Not currently used for Mach64
- *              support.  Also defined in compiler.h.
+ * inw/outw     16-bit counterparts to inl/outl.  Not used for Mach64 support.
  *
- * inb/outb     8-bit counterparts to inl/outl.  Defined in compiler.h.
+ * inb/outb     8-bit counterparts to inl/outl.
  *
  * inm/outm     32-bit R/W through MMIO space.  The register is specified as
  *              the actual MMIO offset (with Block 1 following Block 0), which,
@@ -63,16 +69,12 @@
  *              256 bytes of MMIO space (in Block 0).  Note that all of these
  *              registers are non-FIFO'ed.
  *
- * inh/outh     16-bit counterparts to inr/outr.  Not currently used for Mach64
- *              support.
- *
  * in8/out8     8-bit counterparts to inr/outr.
  *
- * For portability reasons, inr/outr/inh/outh/in8/out8 should be used in
- * preference to inl/outl/inw/outw/inb/outb to/from any register space starting
- * with CRTC_H_TOTAL_DISP but before DST_OFF_PITCH (in the order defined by
- * atiregs.h).  None of inm/outm/outf should ever be used for these registers.
- * Also, all I/O from/to FIFO'ed registers must be 32-bit.
+ * For portability reasons, inr/outr/in8/out8 should be used in preference to
+ * inl/outl/inb/outb to/from any register space starting with CRTC_H_TOTAL_DISP
+ * but before DST_OFF_PITCH (in the order defined by atiregs.h).  None of
+ * inm/outm/outf should ever be used for these registers.
  *
  * outf()'s should be grouped together as much as possible, while respecting
  * any ordering constraints the engine might impose.  Groups larger than 16
@@ -97,62 +99,54 @@
     MMIO_OUT32(pATI->pBlock[GetBits(_Register, BLOCK_SELECT)],           \
                (_Register) & MM_IO_SELECT, _Value)
 
-#define ATIIOPort(_PortTag)                                \
-    (((pATI->IODecoding == SPARSE_IO) ?                    \
-      ((_PortTag) & (SPARSE_IO_SELECT | IO_BYTE_SELECT)) : \
-      ((_PortTag) & (BLOCK_IO_SELECT | IO_BYTE_SELECT))) + \
-     pATI->CPIOBase)
+#ifdef AVOID_CPIO
 
-#define inr(_Register)                                       \
-    ((pATI->IODecoding != MEMORY_IO) ?                       \
-     inl(ATIIOPort(_Register & IO_LONG_PORT)) :              \
-     MMIO_IN32(pATI->pBlock[0], (_Register) & MM_IO_SELECT))
-#define outr(_Register, _Value)                                               \
-    do                                                                        \
-    {                                                                         \
-        CARD32 __Value = (_Value);                                            \
-                                                                              \
-        if (pATI->IODecoding != MEMORY_IO)                                    \
-            outl(ATIIOPort(_Register & IO_LONG_PORT), __Value);               \
-        else                                                                  \
-            MMIO_OUT32(pATI->pBlock[0], (_Register) & MM_IO_SELECT, __Value); \
-    } while (0)
+#   define inr(_Register) \
+        MMIO_IN32(pATI->pBlock[0], (_Register) & MM_IO_SELECT)
+#   define outr(_Register, _Value) \
+        MMIO_OUT32(pATI->pBlock[0], (_Register) & MM_IO_SELECT, _Value)
 
-#define inh(_Register)                                         \
-    ((pATI->IODecoding != MEMORY_IO) ?                         \
-     inw(ATIIOPort(_Register & IO_WORD_PORT)) :                \
-     MMIO_IN16(pATI->pBlock[0],                                \
-               (_Register) & (MM_IO_SELECT | IO_WORD_SELECT)))
-#define outh(_Register, _Value)                                       \
-    do                                                                \
-    {                                                                 \
-        CARD16 __Value = (_Value);                                    \
-                                                                      \
-        if (pATI->IODecoding != MEMORY_IO)                            \
-            outw(ATIIOPort(_Register & IO_WORD_PORT), __Value);       \
-        else                                                          \
-            MMIO_OUT16(pATI->Block[0],                                \
-                       (_Register) & (MM_IO_SELECT | IO_WORD_SELECT), \
-                       __Value);                                      \
-    } while (0)
+#   define in8(_Register)                                                \
+        MMIO_IN8(pATI->pBlock[0],                                        \
+                 (_Register) & (MM_IO_SELECT | IO_BYTE_SELECT))
+#   define out8(_Register, _Value)                                       \
+        MMIO_OUT8(pATI->pBlock[0],                                       \
+                  (_Register) & (MM_IO_SELECT | IO_BYTE_SELECT), _Value)
 
-#define in8(_Register)                                        \
-    ((pATI->IODecoding != MEMORY_IO) ?                        \
-     inb(ATIIOPort(_Register)) :                              \
-     MMIO_IN8(pATI->pBlock[0],                                \
-              (_Register) & (MM_IO_SELECT | IO_BYTE_SELECT)))
-#define out8(_Register, _Value)                                      \
-    do                                                               \
-    {                                                                \
-        CARD8 __Value = (_Value);                                    \
-                                                                     \
-        if (pATI->IODecoding != MEMORY_IO)                           \
-            outb(ATIIOPort(_Register), __Value);                     \
-        else                                                         \
-            MMIO_OUT8(pATI->pBlock[0],                               \
-                      (_Register) & (MM_IO_SELECT | IO_BYTE_SELECT), \
-                      __Value);                                      \
-    } while (0)
+/* Cause a cpp syntax error if any of these are used */
+#undef inb
+#undef inw
+#undef inl
+#undef outb
+#undef outw
+#undef outl
+
+#define inb()            /* Nothing */
+#define inw()            /* Nothing */
+#define inl()            /* Nothing */
+#define outb()           /* Nothing */
+#define outw()           /* Nothing */
+#define outl()           /* Nothing */
+
+#else /* AVOID_CPIO */
+
+#   define ATIIOPort(_PortTag)                                 \
+        (((pATI->CPIODecoding == SPARSE_IO) ?                  \
+          ((_PortTag) & (SPARSE_IO_SELECT | IO_BYTE_SELECT)) : \
+          ((_PortTag) & (BLOCK_IO_SELECT | IO_BYTE_SELECT))) | \
+         pATI->CPIOBase)
+
+#   define inr(_Register) \
+        inl(ATIIOPort(_Register))
+#   define outr(_Register, _Value) \
+        outl(ATIIOPort(_Register), _Value)
+
+#   define in8(_Register) \
+        inb(ATIIOPort(_Register))
+#   define out8(_Register, _Value) \
+        outb(ATIIOPort(_Register), _Value)
+
+#endif /* AVOID_CPIO */
 
 extern void ATIMach64PollEngineStatus FunctionPrototype((ATIPtr));
 
@@ -215,7 +209,7 @@ extern void ATIMach64PollEngineStatus FunctionPrototype((ATIPtr));
 
 /*
  * An outf() variant to write two registers such that the second register is
- * always written whenever either is to be changed.
+ * is always written whenever either is to be changed.
  */
 #define outq(_Register1, _Register2, _Value1, _Value2)                  \
     do                                                                  \
@@ -263,32 +257,28 @@ extern void ATIMach64AccessPLLReg FunctionPrototype((ATIPtr, const CARD8,
         out8(CLOCK_CNTL + 2, _Value);               \
     } while (0)
 
-extern void ATIMach64AccessLCDReg FunctionPrototype((ATIPtr, const CARD8));
-
-#define ATIMach64GetLCDReg(_Index)           \
-    (                                        \
-        ATIMach64AccessLCDReg(pATI, _Index), \
-        inr(LCD_DATA)                        \
+#define ATIMach64GetLCDReg(_Index)                       \
+    (                                                    \
+        out8(LCD_INDEX, SetBits(_Index, LCD_REG_INDEX)), \
+        inr(LCD_DATA)                                    \
     )
-#define ATIMach64PutLCDReg(_Index, _Value)   \
-    do                                       \
-    {                                        \
-        ATIMach64AccessLCDReg(pATI, _Index); \
-        outr(LCD_DATA, _Value);              \
+#define ATIMach64PutLCDReg(_Index, _Value)               \
+    do                                                   \
+    {                                                    \
+        out8(LCD_INDEX, SetBits(_Index, LCD_REG_INDEX)); \
+        outr(LCD_DATA, _Value);                          \
     } while (0)
 
-extern void ATIMach64AccessTVReg  FunctionPrototype((ATIPtr, const CARD8));
-
-#define ATIMach64GetTVReg(_Index)           \
-    (                                       \
-        ATIMach64AccessTVReg(pATI, _Index), \
-        inr(TV_OUT_DATA)                    \
+#define ATIMach64GetTVReg(_Index)                          \
+    (                                                      \
+        out8(TV_OUT_INDEX, SetBits(_Index, TV_REG_INDEX)), \
+        inr(TV_OUT_DATA)                                   \
     )
-#define ATIMach64PutTVReg(_Index, _Value)   \
-    do                                      \
-    {                                       \
-        ATIMach64AccessTVReg(pATI, _Index); \
-        outr(TV_OUT_DATA, _Value);          \
+#define ATIMach64PutTVReg(_Index, _Value)                  \
+    do                                                     \
+    {                                                      \
+        out8(TV_OUT_INDEX, SetBits(_Index, TV_REG_INDEX)); \
+        outr(TV_OUT_DATA, _Value);                         \
     } while (0)
 
 /*
@@ -296,9 +286,7 @@ extern void ATIMach64AccessTVReg  FunctionPrototype((ATIPtr, const CARD8));
  */
 
 #if defined(GCCUSESGAS) && \
-    (defined(i386) || defined(__i386) || defined(__i386__) || \
-     defined(amd64) || defined(__amd64) || defined(__amd64__) || \
-     defined(x86_64) || defined(__x86_64) || defined(__x86_64__))
+    (defined(i386) || defined(__i386) || defined(__i386__))
 
 #define ATIMove32(_pDst, _pSrc, _nCount) \
     do                                   \

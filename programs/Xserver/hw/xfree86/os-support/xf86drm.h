@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file xf86drm.h 
  * OS-independent header for DRM user-level library interface.
  *
@@ -31,7 +38,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86drm.h,v 1.30 2005/06/29 01:14:11 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86drm.h,v 1.29 2004/12/10 16:07:03 alanh Exp $ */
 
 #ifndef _XF86DRM_H_
 #define _XF86DRM_H_
@@ -285,7 +292,7 @@ typedef struct _drmSetVersion {
 #define DRM_LOCK_CONT  0x40000000 /**< Hardware lock is contended */
 
 #if defined(__GNUC__) && (__GNUC__ >= 2)
-# if defined(__i386) || defined(__amd64__) || defined(__x86_64__)
+# if defined(__i386) || defined(__amd64__)
 				/* Reflect changes here to drmP.h */
 #define DRM_CAS(lock,old,new,__ret)                                    \
 	do {                                                           \
@@ -304,26 +311,26 @@ typedef struct _drmSetVersion {
 
 #define	DRM_CAS(lock, old, new, ret) 		\
  	do {					\
- 		register int old32;		\
- 		register int cur32;		\
+ 		int old32;                      \
+ 		int cur32;			\
  		__asm__ __volatile__(		\
-		"       mb\n"			\
-		"       zap   %4, 0xF0, %0\n"	\
-		"       ldl_l %1, %2\n"		\
-		"       zap   %1, 0xF0, %1\n"	\
-		"       cmpeq %0, %1, %1\n"	\
-		"       beq   %1, 1f\n"		\
-		"       bis   %5, %5, %1\n"	\
-		"       stl_c %1, %2\n"		\
-		"1:     xor   %1, 1, %1\n"	\
-		"       stl   %1, %3"		\
-		: "=r" (old32),			\
-		  "=&r" (cur32),		\
-		  "=m" (__drm_dummy_lock(lock)),\
-		  "=m" (ret)			\
-		: "r" (old),			\
-		  "r" (new));			\
-	} while(0)
+ 		"       mb\n"			\
+ 		"       zap   %4, 0xF0, %0\n"   \
+ 		"       ldl_l %1, %2\n"		\
+ 		"       zap   %1, 0xF0, %1\n"   \
+                "       cmpeq %0, %1, %1\n"	\
+                "       beq   %1, 1f\n"		\
+ 		"       bis   %5, %5, %1\n"	\
+                "       stl_c %1, %2\n"		\
+                "1:     xor   %1, 1, %1\n"	\
+                "       stl   %1, %3"		\
+                : "+r" (old32),                 \
+		  "+&r" (cur32),		\
+                   "=m" (__drm_dummy_lock(lock)),\
+                   "=m" (ret)			\
+ 		: "r" (old),			\
+ 		  "r" (new));			\
+ 	} while(0)
 
 #elif defined(__sparc__)
 

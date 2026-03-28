@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/os/mitauth.c,v 1.6 2005/10/14 15:17:26 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -31,34 +39,33 @@ from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include "os.h"
 #include "osdep.h"
 #include "dixstruct.h"
 
 static struct auth {
-    struct auth *next;
-    unsigned short len;
-    char *data;
-    XID id;
+    struct auth	*next;
+    unsigned short	len;
+    char	*data;
+    XID		id;
 } *mit_auth;
 
 int
-MitAddCookie(unsigned short data_length, const char *data, XID id)
+MitAddCookie (
+    unsigned short	data_length,
+    char		*data,
+    XID			id)
 {
-    struct auth *new;
+    struct auth	*new;
 
-    new = malloc(sizeof(struct auth));
+    new = (struct auth *) xalloc (sizeof (struct auth));
     if (!new)
-        return 0;
-    new->data = malloc((unsigned) data_length);
+	return 0;
+    new->data = (char *) xalloc ((unsigned) data_length);
     if (!new->data) {
-        free(new);
-        return 0;
+	xfree(new);
+	return 0;
     }
     new->next = mit_auth;
     mit_auth = new;
@@ -69,93 +76,126 @@ MitAddCookie(unsigned short data_length, const char *data, XID id)
 }
 
 XID
-MitCheckCookie(unsigned short data_length,
-               const char *data, ClientPtr client, const char **reason)
+MitCheckCookie (
+    unsigned short	data_length,
+    char		*data,
+    ClientPtr		client,
+    char		**reason)
 {
-    struct auth *auth;
+    struct auth	*auth;
 
-    for (auth = mit_auth; auth; auth = auth->next) {
+    for (auth = mit_auth; auth; auth=auth->next) {
         if (data_length == auth->len &&
-            timingsafe_memcmp(data, auth->data, (int) data_length) == 0)
-            return auth->id;
+	   memcmp (data, auth->data, (int) data_length) == 0)
+	    return auth->id;
     }
     *reason = "Invalid MIT-MAGIC-COOKIE-1 key";
     return (XID) -1;
 }
 
 int
-MitResetCookie(void)
+MitResetCookie (void)
 {
-    struct auth *auth, *next;
+    struct auth	*auth, *next;
 
-    for (auth = mit_auth; auth; auth = next) {
-        next = auth->next;
-        free(auth->data);
-        free(auth);
+    for (auth = mit_auth; auth; auth=next) {
+	next = auth->next;
+	xfree (auth->data);
+	xfree (auth);
     }
     mit_auth = 0;
     return 0;
 }
 
-int
-MitFromID(XID id, unsigned short *data_lenp, char **datap)
+XID
+MitToID (
+	unsigned short	data_length,
+	char		*data)
 {
-    struct auth *auth;
+    struct auth	*auth;
 
-    for (auth = mit_auth; auth; auth = auth->next) {
-        if (id == auth->id) {
-            *data_lenp = auth->len;
-            *datap = auth->data;
-            return 1;
-        }
+    for (auth = mit_auth; auth; auth=auth->next) {
+	if (data_length == auth->len &&
+	    memcmp (data, auth->data, data_length) == 0)
+	    return auth->id;
+    }
+    return (XID) -1;
+}
+
+int
+MitFromID (
+	XID		id,
+	unsigned short	*data_lenp,
+	char		**datap)
+{
+    struct auth	*auth;
+
+    for (auth = mit_auth; auth; auth=auth->next) {
+	if (id == auth->id) {
+	    *data_lenp = auth->len;
+	    *datap = auth->data;
+	    return 1;
+	}
     }
     return 0;
 }
 
 int
-MitRemoveCookie(unsigned short data_length, const char *data)
+MitRemoveCookie (
+	unsigned short	data_length,
+	char		*data)
 {
-    struct auth *auth, *prev;
+    struct auth	*auth, *prev;
 
     prev = 0;
-    for (auth = mit_auth; auth; prev = auth, auth = auth->next) {
-        if (data_length == auth->len &&
-            memcmp(data, auth->data, data_length) == 0) {
-            if (prev)
-                prev->next = auth->next;
-            else
-                mit_auth = auth->next;
-            free(auth->data);
-            free(auth);
-            return 1;
-        }
+    for (auth = mit_auth; auth; prev = auth, auth=auth->next) {
+	if (data_length == auth->len &&
+	    memcmp (data, auth->data, data_length) == 0)
+ 	{
+	    if (prev)
+		prev->next = auth->next;
+	    else
+		mit_auth = auth->next;
+	    xfree (auth->data);
+	    xfree (auth);
+	    return 1;
+	}
     }
     return 0;
 }
 
-static char cookie[16];         /* 128 bits */
+#ifdef XCSECURITY
+
+static char cookie[16]; /* 128 bits */
 
 XID
-MitGenerateCookie(unsigned data_length,
-                  const char *data,
-                  XID id, unsigned *data_length_return, char **data_return)
+MitGenerateCookie (
+    unsigned	data_length,
+    char	*data,
+    XID		id,
+    unsigned	*data_length_return,
+    char	**data_return)
 {
     int i = 0;
     int status;
 
-    while (data_length--) {
-        cookie[i++] += *data++;
-        if (i >= sizeof(cookie))
-            i = 0;
+    while (data_length--)
+    {
+	cookie[i++] += *data++;
+	if (i >= sizeof (cookie)) i = 0;
     }
-    GenerateRandomData(sizeof(cookie), cookie);
-    status = MitAddCookie(sizeof(cookie), cookie, id);
-    if (!status) {
-        id = -1;
+    GenerateRandomData(sizeof (cookie), cookie);
+    status = MitAddCookie(sizeof (cookie), cookie, id);
+    if (!status)
+    {
+	id = -1;
     }
-    else {
-        *data_return = cookie;
-        *data_length_return = sizeof(cookie);
+    else
+    {
+	*data_return = cookie;
+	*data_length_return = sizeof (cookie);
     }
     return id;
 }
+
+#endif /* XCSECURITY */

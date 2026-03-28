@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/linux/tslib.c,v 1.1tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/linux/tslib.c,v 1.1 2004/06/02 22:43:02 dawes Exp $
  * TSLIB based touchscreen driver for TinyX
  * Derived from ts.c by Keith Packard
  * Derived from ps2.c by Jim Gettys
@@ -47,12 +54,12 @@
 
 
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "tinyx.h"
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include <sys/ioctl.h>
 #include <tslib.h>
 

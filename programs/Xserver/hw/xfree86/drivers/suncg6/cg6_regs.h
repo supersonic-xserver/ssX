@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GX and Turbo GX framebuffer - hardware registers.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg6/cg6_regs.h,v 1.1 2000/05/23 04:47:43 dawes Exp $ */
 
 #ifndef CG6_REGS_H
 #define CG6_REGS_H
@@ -98,6 +105,14 @@
 
 #define CG6_FBC_INDEX_MOD		0x00000040
 #define CG6_FBC_INDEX_MASK		0x00000030
+/* 
+ * about the mode register:
+ * do NOT attempt to read-modify-write it - the bit groups above
+ * can all be written independently, if the corresponding bits are all 0
+ * the bits in the register aren't modified.
+ * besides that the BREAD, BWRITE and BDISP flags are apparently bogus 
+ */
+
 
 /* THC definitions */
 #define CG6_THC_MISC_REV_SHIFT       16

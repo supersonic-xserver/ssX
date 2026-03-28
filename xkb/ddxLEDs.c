@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/xkb/ddxLEDs.c,v 1.3 2005/10/14 15:17:28 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,10 +32,6 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <stdio.h>
 #define	NEED_EVENTS 1
 #include <X11/X.h>
@@ -36,10 +40,10 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
-#include <xkbsrv.h>
+#include <X11/extensions/XKBsrv.h>
 #include <X11/extensions/XI.h>
 
-static void
+void
 XkbDDXUpdateIndicators(DeviceIntPtr dev,CARD32 new)
 {
     dev->kbdfeed->ctrl.leds= new;

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/dix.h,v 3.30 2006/02/19 15:51:31 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/include/dix.h,v 3.27 2003/04/27 21:31:04 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: dix.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
 
 #ifndef DIX_H
 #define DIX_H
@@ -88,9 +96,15 @@ SOFTWARE.
     ((client->lastDrawableID == did) ? \
      client->lastDrawable : (DrawablePtr)LookupDrawable(did, client))
 
+#ifdef XCSECURITY
+
 #define SECURITY_VERIFY_DRAWABLE(pDraw, did, client, mode)\
-    do {\
-	pDraw = SecurityVerifyDrawable(did, client, mode);\
+    if (client->lastDrawableID == did && !client->trustLevel)\
+	pDraw = client->lastDrawable;\
+    else \
+    {\
+	pDraw = (DrawablePtr) SecurityLookupIDByClass(client, did, \
+						      RC_DRAWABLE, mode);\
 	if (!pDraw) \
 	{\
 	    client->errorValue = did; \
@@ -98,27 +112,32 @@ SOFTWARE.
 	}\
 	if (pDraw->type == UNDRAWABLE_WINDOW)\
 	    return BadMatch;\
-    } while (0)
+    }
 
 #define SECURITY_VERIFY_GEOMETRABLE(pDraw, did, client, mode)\
-    do {\
-	pDraw = SecurityVerifyDrawable(did, client, mode);\
+    if (client->lastDrawableID == did && !client->trustLevel)\
+	pDraw = client->lastDrawable;\
+    else \
+    {\
+	pDraw = (DrawablePtr) SecurityLookupIDByClass(client, did, \
+						      RC_DRAWABLE, mode);\
 	if (!pDraw) \
 	{\
 	    client->errorValue = did; \
 	    return BadDrawable;\
 	}\
-    } while (0)
+    }
 
 #define SECURITY_VERIFY_GC(pGC, rid, client, mode)\
-    do {\
-	pGC = SecurityVerifyGC(rid, client, mode);\
-	if (!pGC)\
-	{\
-	    client->errorValue = rid;\
-	    return BadGC;\
-	}\
-    } while (0)
+    if (client->lastGCID == rid && !client->trustLevel)\
+        pGC = client->lastGC;\
+    else\
+	pGC = (GC *) SecurityLookupIDByType(client, rid, RT_GC, mode);\
+    if (!pGC)\
+    {\
+	client->errorValue = rid;\
+	return (BadGC);\
+    }
 
 #define VERIFY_DRAWABLE(pDraw, did, client)\
 	SECURITY_VERIFY_DRAWABLE(pDraw, did, client, SecurityUnknownAccess)
@@ -129,91 +148,109 @@ SOFTWARE.
 #define VERIFY_GC(pGC, rid, client)\
 	SECURITY_VERIFY_GC(pGC, rid, client, SecurityUnknownAccess)
 
-/*
- * We think that most hardware implementations of DBE will want
- * LookupID*(dbe_back_buffer_id) to return the window structure that the id is
- * a back buffer for.  Since both front and back buffers will return the same
- * structure, you need to be able to distinguish somewhere what kind of buffer
- * (front/back) was being asked for, so that ddx can render to the right place.
- * That's the problem that the following code solves.  Note:  we couldn't embed
- * this in the LookupID* functions because the VALIDATE_DRAWABLE_AND_GC() macro
- * often circumvents those functions by checking a one-element cache.  That's
- * why we're mucking with VALIDATE_DRAWABLE_AND_GC.
- * 
- * If you put -DNEED_DBE_BUF_BITS into PervasiveDBEDefines, the window
- * structure will have two additional bits defined, srcBuffer and dstBuffer,
- * and their values will be maintained via the macros SET_DBE_DSTBUF() and
- * SET_DBE_SRCBUF() (below).  If you also put -DNEED_DBE_BUF_VALIDATE into
- * PervasiveDBEDefines, the function DbeValidateBuffer() will be called any
- * time the bits change to give you a chance to do some setup.  If you further
- * put -DNEED_DBE_BUF_REVALIDATE into PervasiveDBEDefines, DbeValidateBuffer()
- * will instead be called whenever a (front or back) buffer XID is seen by the
- * protocol, this whether or not the window structure's srcBuffer and/or
- * dstBuffer bits have been changed.  See the DBE code for more details on this
- * function.  We put in these levels of conditionality so that you can do just
- * what you need to do, and no more.  If none of these defines are used, the
- * bits won't be there, and VALIDATE_DRAWABLE_AND_GC will be unchanged.
- *	dpw
- */
+#else /* not XCSECURITY */
 
-#if defined(DBE) && defined(NEED_DBE_BUF_BITS)
-
-#if defined(NEED_DBE_BUF_VALIDATE)
-
-#if defined(XFree86LOADER)
-# if !defined(IN_DBE)
-#  define DbeValidateBuffer xf86DbeValidateBuffer
-# endif
-extern void xf86DbeRegisterValidateBuffer(void);
-#endif
-
-/* #include'ing "dbeproc.h" here causes circular #include's */
-extern void DbeValidateBuffer(WindowPtr pWin, XID drawID, Bool dstbuf);
-
-#if defined(NEED_DBE_BUF_REVALIDATE)
-
-#define SET_DBE_BUF(_pDraw, _drawID, _whichBuffer, _dstbuf) \
-    if (_pDraw->type == DRAWABLE_WINDOW)\
+#define VERIFY_DRAWABLE(pDraw, did, client)\
+    if (client->lastDrawableID == did)\
+	pDraw = client->lastDrawable;\
+    else \
     {\
-	((WindowPtr)_pDraw)->_whichBuffer = (_pDraw->id == _drawID);\
-	DbeValidateBuffer((WindowPtr)_pDraw, _drawID, _dstbuf);\
+	pDraw = (DrawablePtr) LookupIDByClass(did, RC_DRAWABLE);\
+	if (!pDraw) \
+	{\
+	    client->errorValue = did; \
+	    return BadDrawable;\
+	}\
+	if (pDraw->type == UNDRAWABLE_WINDOW)\
+	    return BadMatch;\
     }
 
-#else
+#define VERIFY_GEOMETRABLE(pDraw, did, client)\
+    if (client->lastDrawableID == did)\
+	pDraw = client->lastDrawable;\
+    else \
+    {\
+	pDraw = (DrawablePtr) LookupIDByClass(did, RC_DRAWABLE);\
+	if (!pDraw) \
+	{\
+	    client->errorValue = did; \
+	    return BadDrawable;\
+	}\
+    }
 
+#define VERIFY_GC(pGC, rid, client)\
+    if (client->lastGCID == rid)\
+        pGC = client->lastGC;\
+    else\
+	pGC = (GC *)LookupIDByType(rid, RT_GC);\
+    if (!pGC)\
+    {\
+	client->errorValue = rid;\
+	return (BadGC);\
+    }
+
+#define SECURITY_VERIFY_DRAWABLE(pDraw, did, client, mode)\
+	VERIFY_DRAWABLE(pDraw, did, client)
+
+#define SECURITY_VERIFY_GEOMETRABLE(pDraw, did, client, mode)\
+	VERIFY_GEOMETRABLE(pDraw, did, client)
+
+#define SECURITY_VERIFY_GC(pGC, rid, client, mode)\
+	VERIFY_GC(pGC, rid, client)
+
+#endif /* XCSECURITY */
+
+/*
+ * We think that most hardware implementations of DBE will want
+ * LookupID*(dbe_back_buffer_id) to return the window structure that the
+ * id is a back buffer for.  Since both front and back buffers will
+ * return the same structure, you need to be able to distinguish
+ * somewhere what kind of buffer (front/back) was being asked for, so
+ * that ddx can render to the right place.  That's the problem that the
+ * following code solves.  Note: we couldn't embed this in the LookupID*
+ * functions because the VALIDATE_DRAWABLE_AND_GC macro often circumvents
+ * those functions by checking a one-element cache.  That's why we're
+ * mucking with VALIDATE_DRAWABLE_AND_GC.
+ * 
+ * If you put -DNEED_DBE_BUF_BITS into PervasiveDBEDefines, the window
+ * structure will have two additional bits defined, srcBuffer and
+ * dstBuffer, and their values will be maintained via the macros
+ * SET_DBE_DSTBUF and SET_DBE_SRCBUF (below).  If you also
+ * put -DNEED_DBE_BUF_VALIDATE into PervasiveDBEDefines, the function
+ * DbeValidateBuffer will be called any time the bits change to give you
+ * a chance to do some setup.  See the DBE code for more details on this
+ * function.  We put in these levels of conditionality so that you can do
+ * just what you need to do, and no more.  If neither of these defines
+ * are used, the bits won't be there, and VALIDATE_DRAWABLE_AND_GC will
+ * be unchanged.	dpw
+ */
+
+#if defined(NEED_DBE_BUF_BITS)
+#define SET_DBE_DSTBUF(_pDraw, _drawID) \
+        SET_DBE_BUF(_pDraw, _drawID, dstBuffer, TRUE)
+#define SET_DBE_SRCBUF(_pDraw, _drawID) \
+        SET_DBE_BUF(_pDraw, _drawID, srcBuffer, FALSE)
+#if defined (NEED_DBE_BUF_VALIDATE)
 #define SET_DBE_BUF(_pDraw, _drawID, _whichBuffer, _dstbuf) \
     if (_pDraw->type == DRAWABLE_WINDOW)\
     {\
 	int thisbuf = (_pDraw->id == _drawID);\
 	if (thisbuf != ((WindowPtr)_pDraw)->_whichBuffer)\
 	{\
-	    ((WindowPtr)_pDraw)->_whichBuffer = thisbuf;\
-	    DbeValidateBuffer((WindowPtr)_pDraw, _drawID, _dstbuf);\
+	     ((WindowPtr)_pDraw)->_whichBuffer = thisbuf;\
+	     DbeValidateBuffer((WindowPtr)_pDraw, _drawID, _dstbuf);\
 	}\
-    }
-
-#endif /* NEED_DBE_BUF_REVALIDATE */
-
+     }
 #else /* want buffer bits, but don't need to call DbeValidateBuffer */
-
 #define SET_DBE_BUF(_pDraw, _drawID, _whichBuffer, _dstbuf) \
     if (_pDraw->type == DRAWABLE_WINDOW)\
     {\
 	((WindowPtr)_pDraw)->_whichBuffer = (_pDraw->id == _drawID);\
     }
-
 #endif /* NEED_DBE_BUF_VALIDATE */
-
-#define SET_DBE_DSTBUF(_pDraw, _drawID) \
-        SET_DBE_BUF(_pDraw, _drawID, dstBuffer, TRUE)
-#define SET_DBE_SRCBUF(_pDraw, _drawID) \
-        SET_DBE_BUF(_pDraw, _drawID, srcBuffer, FALSE)
-
 #else /* don't want buffer bits in window */
-
 #define SET_DBE_DSTBUF(_pDraw, _drawID) /**/
 #define SET_DBE_SRCBUF(_pDraw, _drawID) /**/
-
 #endif /* NEED_DBE_BUF_BITS */
 
 #define VALIDATE_DRAWABLE_AND_GC(drawID, pDraw, pGC, client)\
@@ -349,6 +386,8 @@ extern void CopyISOLatin1Lowered(
     unsigned char * /*source*/,
     int /*length*/);
 
+#ifdef XCSECURITY
+
 extern WindowPtr SecurityLookupWindow(
     XID /*rid*/,
     ClientPtr /*client*/,
@@ -367,19 +406,27 @@ extern pointer LookupDrawable(
     XID /*rid*/,
     ClientPtr /*client*/);
 
-extern ClientPtr LookupClient(
+#else
+
+extern WindowPtr LookupWindow(
     XID /*rid*/,
     ClientPtr /*client*/);
 
-extern DrawablePtr SecurityVerifyDrawable(
-    XID /*did*/,
-    ClientPtr /*client*/,
-    Mask /*access_mode*/);
-
-extern GCPtr SecurityVerifyGC(
+extern pointer LookupDrawable(
     XID /*rid*/,
-    ClientPtr /*client*/,
-    Mask /*access_mode*/);
+    ClientPtr /*client*/);
+
+#define SecurityLookupWindow(rid, client, access_mode) \
+	LookupWindow(rid, client)
+
+#define SecurityLookupDrawable(rid, client, access_mode) \
+	LookupDrawable(rid, client)
+
+#endif /* XCSECURITY */
+
+extern ClientPtr LookupClient(
+    XID /*rid*/,
+    ClientPtr /*client*/);
 
 extern void NoopDDA(void);
 
@@ -420,10 +467,10 @@ extern void ProcessWorkQueue(void);
 
 extern void ProcessWorkQueueZombies(void);
 
-typedef Bool (*WorkQueueProcPtr)(ClientPtr pClient, pointer closure);
-
 extern Bool QueueWorkProc(
-    WorkQueueProcPtr /*function*/,
+    Bool (* /*function*/)(
+        ClientPtr /*clientUnused*/,
+        pointer /*closure*/),
     ClientPtr /*client*/,
     pointer /*closure*/
 );
@@ -638,16 +685,12 @@ extern int TryClientEvents(
     Mask /*filter*/,
     GrabPtr /*grab*/);
 
-extern Bool IsXineramaActive(void);
-
 extern void WindowsRestructured(void);
 
-#ifdef PANORAMIX
-extern void ReinitializeRootWindow(WindowPtr win, int xoff, int yoff);
-#endif
 
 #ifdef RANDR
-extern void ScreenRestructured (ScreenPtr pScreen);
+void
+ScreenRestructured (ScreenPtr pScreen);
 #endif
 
 extern void ResetClientPrivates(void);
@@ -748,8 +791,5 @@ typedef struct {
     xEventPtr events;
     int count;
 } DeviceEventInfoRec;
-
-extern void SetVendorRelease(int release);
-extern void SetVendorString(const char *string);
 
 #endif /* DIX_H */

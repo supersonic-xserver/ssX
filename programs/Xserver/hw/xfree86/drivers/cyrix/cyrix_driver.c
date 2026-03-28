@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000 by Richard A. Hecker, California, United States
  * Copyright 2002 by Red Hat Inc.
  *
@@ -50,7 +57,7 @@
  *		(note that most of the data books have been released by
  *		 NatSemi and are downloadable for free as pdf files)
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_driver.c,v 1.37tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_driver.c,v 1.32 2004/11/26 11:48:47 tsi Exp $ */
 
 #include "fb.h"
 #include "mibank.h"
@@ -74,18 +81,18 @@
 #include "cyrix.h"
 
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 #include "opaque.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 static const OptionInfoRec * CYRIXAvailableOptions(int chip, int busid);
 static void	CYRIXIdentify(int flags);
 static Bool	CYRIXProbe(DriverPtr drv, int flags);
 static Bool	CYRIXPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	CYRIXScreenInit(int Index, ScreenPtr pScreen,
-				const int argc, const char **argv);
+static Bool	CYRIXScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	CYRIXEnterVT(int scrnIndex, int flags);
 static void	CYRIXLeaveVT(int scrnIndex, int flags);
 static Bool	CYRIXCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -108,6 +115,11 @@ static void	CYRIXRestore(ScrnInfoPtr pScrn);
 static Bool	CYRIXModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode);
 static void	CYRIXRestorePalette(ScrnInfoPtr pScrn);
 static void	CYRIXSavePalette(ScrnInfoPtr pScrn);
+
+/* Misc additional routines */
+void     CYRIXSetRead(int bank);
+void     CYRIXSetWrite(int bank);
+void     CYRIXSetReadWrite(int bank);
 
 #define VERSION 4000
 #define CYRIX_NAME "CYRIX"
@@ -202,12 +214,14 @@ static const char *shadowSymbols[] = {
     NULL
 };
 
+#ifdef XFree86LOADER
 static const char *vbeSymbols[] = {
     "VBEInit",
     "vbeDoEDID",
     "vbeFree",
     NULL
 };
+#endif
 
 /* access to the MediaGX video hardware registers */
 
@@ -237,15 +251,14 @@ static XF86ModuleVersionInfo cyrixVersRec =
 XF86ModuleData cyrixModuleData = { &cyrixVersRec, cyrixSetup, NULL };
 
 pointer
-cyrixSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+cyrixSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
     if (!setupDone) {
 	setupDone = TRUE;
 	xf86AddDriver(&CYRIX, module, 0);
-	LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, xaaSymbols,
-			     vbeSymbols, shadowSymbols, NULL);
+	LoaderRefSymLists(vgahwSymbols, fbSymbols, xaaSymbols, vbeSymbols, shadowSymbols, NULL);
 	return (pointer)TRUE;
     } 
 
@@ -527,14 +540,10 @@ static void
 CYRIXProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
 	pVbe = VBEInit(NULL,index);
 	ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 	
@@ -553,7 +562,6 @@ CYRIXPreInit(ScrnInfoPtr pScrn, int flags)
     unsigned char gcr;
     static int accelWidths[3]= {2,1024, 2048};
     const char *s;
-    ModuleDescPtr pMod;
 
     /* Allocate the CYRIXRec driverPrivate */
     if (!CYRIXGetRec(pScrn)) return FALSE;
@@ -583,9 +591,9 @@ CYRIXPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /* The vgahw module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     /*
      * Allocate a vgaHWRec
@@ -935,20 +943,20 @@ CYRIXPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /* Load fb module */
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	CYRIXFreeRec(pScrn);
 	return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
     /* Load XAA if needed */
     if (!pCyrix->NoAccel) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    CYRIXFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
 
         switch (pScrn->displayWidth * pScrn->bitsPerPixel / 8) {
 	    case 512:
@@ -965,11 +973,11 @@ CYRIXPreInit(ScrnInfoPtr pScrn, int flags)
 
     /* Load shadowfb if needed */
     if (pCyrix->ShadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 	    CYRIXFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
 
     return TRUE;
@@ -1133,8 +1141,7 @@ static void CYRIXRestorePalette(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 static Bool
-CYRIXScreenInit(int scrnIndex, ScreenPtr pScreen,
-		const int argc, const char **argv)
+CYRIXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     /* The vgaHW references will disappear one day */
     ScrnInfoPtr pScrn;

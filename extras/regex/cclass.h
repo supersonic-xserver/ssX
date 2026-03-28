@@ -1,33 +1,38 @@
-/* $XFree86$ */
-
 /* character-class table */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 static struct cclass {
 	char *name;
 	char *chars;
 	char *multis;
 } cclasses[] = {
-	{"alnum",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
-0123456789",				""},
-	{"alpha",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-					""},
-	{"blank",	" \t",		""},
-	{"cntrl",	"\007\b\t\n\v\f\r\1\2\3\4\5\6\16\17\20\21\22\23\24\
-\25\26\27\30\31\32\33\34\35\36\37\177",	""},
-	{"digit",	"0123456789",	""},
-	{"graph",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+	"alnum",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+0123456789",				"",
+	"alpha",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+					"",
+	"blank",	" \t",		"",
+	"cntrl",	"\007\b\t\n\v\f\r\1\2\3\4\5\6\16\17\20\21\22\23\24\
+\25\26\27\30\31\32\33\34\35\36\37\177",	"",
+	"digit",	"0123456789",	"",
+	"graph",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-					""},
-	{"lower",	"abcdefghijklmnopqrstuvwxyz",
-					""},
-	{"print",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+					"",
+	"lower",	"abcdefghijklmnopqrstuvwxyz",
+					"",
+	"print",	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
-					""},
-	{"punct",	"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-					""},
-	{"space",	"\t\n\v\f\r ",	""},
-	{"upper",	"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-					""},
-	{"xdigit",	"0123456789ABCDEFabcdef",
-					""},
-	{NULL,		0,		""}
+					"",
+	"punct",	"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+					"",
+	"space",	"\t\n\v\f\r ",	"",
+	"upper",	"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+					"",
+	"xdigit",	"0123456789ABCDEFabcdef",
+					"",
+	NULL,		0,		""
 };

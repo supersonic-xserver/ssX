@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 XRecord.c - client-side library for RECORD extension
 
 Copyright 1995, 1998  The Open Group
@@ -56,6 +63,7 @@ from The Open Group.
 #define NEED_REPLIES
 #include <X11/Xlibint.h>
 #include <X11/extensions/Xext.h>
+#include <X11/Xtrans.h>
 #include <X11/extensions/extutil.h>
 #include <X11/extensions/recordstr.h>
 

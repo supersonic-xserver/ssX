@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcGC.c,v 1.8 2003/02/18 21:29:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987  X Consortium
@@ -69,11 +76,12 @@ SOFTWARE.
 
 */
 
+/* $XConsortium: ppcGC.c /main/6 1996/02/21 17:57:38 kaleb $ */
+
 #include "xf4bpp.h"
 #include "mfbmap.h"
 #include "mfb.h"
 #include "mi.h"
-#include "migc.h"
 #include "scrnintstr.h"
 #include "ppcGCstr.h"
 #include "vgaVideo.h"
@@ -90,8 +98,8 @@ SOFTWARE.
  */
 static GCFuncs vgaGCFuncs = {
 	xf4bppValidateGC,
-	miChangeGC,
-	miCopyGC,
+	(void (*)())NoopDDA,
+	(void (*)())NoopDDA,
 	xf4bppDestroyGC,
 	xf4bppChangeClip,
 	xf4bppDestroyClip,
@@ -146,7 +154,8 @@ static GCOps vgaGCOps = {
 };
 
 Bool
-xf4bppCreateGC(GCPtr pGC)
+xf4bppCreateGC( pGC )
+register GCPtr pGC ;
 {
 	ppcPrivGC *pPriv ;
 	GCOps *pOps ;
@@ -193,7 +202,9 @@ xf4bppCreateGC(GCPtr pGC)
 }
 
 void
-xf4bppDestroyGC(GCPtr pGC)
+xf4bppDestroyGC( pGC )
+    register GC	*pGC ;
+
 {
     TRACE( ( "xf4bppDestroyGC(pGC=0x%x)\n", pGC ) ) ;
 
@@ -211,10 +222,14 @@ xf4bppDestroyGC(GCPtr pGC)
 }
 
 static Mask
-ppcChangePixmapGC(GC *pGC, Mask changes)
+ppcChangePixmapGC
+(
+	register GC *pGC,
+	register Mask changes
+)
 {
-ppcPrivGCPtr devPriv = (ppcPrivGCPtr) (pGC->devPrivates[mfbGCPrivateIndex].ptr ) ;
-unsigned long int idx ; /* used for stepping through bitfields */
+register ppcPrivGCPtr devPriv = (ppcPrivGCPtr) (pGC->devPrivates[mfbGCPrivateIndex].ptr ) ;
+register unsigned long int idx ; /* used for stepping through bitfields */
 
 #define LOWBIT( x ) ( x & - x ) /* Two's complement */
 while ((idx = LOWBIT(changes))) {
@@ -287,9 +302,12 @@ return 0 ;
 */
 
 void
-xf4bppValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
+xf4bppValidateGC( pGC, changes, pDrawable )
+    GCPtr         pGC;
+    unsigned long changes;
+    DrawablePtr   pDrawable;
 {
-    ppcPrivGCPtr devPriv ;
+    register ppcPrivGCPtr devPriv ;
     WindowPtr pWin ;
 
     devPriv = (ppcPrivGCPtr) (pGC->devPrivates[mfbGCPrivateIndex].ptr ) ;

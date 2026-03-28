@@ -36,6 +36,8 @@
 /*
  * backend.c++
  *
+ * $Date: 2004/03/05 14:26:35 $ $Revision: 1.1.1.2 $
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/backend.cc,v 1.1.1.2 2004/03/05 14:26:35 tron Exp $
  */
 
 /* Bezier surface backend

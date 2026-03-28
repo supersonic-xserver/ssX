@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,11 @@
  */
 
 #include "randrstr.h"
+#include "dixstruct.h"
+#include "windowstr.h"
 #include "swaprep.h"
+#include "randr_compat_proto.h"
+#include "dixaccess.h"
 
 RESTYPE	RRCrtcType;
 
@@ -118,6 +129,7 @@ RRCrtcNotify (RRCrtcPtr	    crtc,
 	      int	    x,
 	      int	    y,
 	      Rotation	    rotation,
+	      RRTransformPtr transform,
 	      int	    numOutputs,
 	      RROutputPtr   *outputs)
 {
@@ -311,7 +323,7 @@ RRCrtcSet (RRCrtcPtr    crtc,
 
 		if (!mode)
 		{
-		    RRCrtcNotify (crtc, NULL, x, y, rotation, 0, NULL);
+		    RRCrtcNotify (crtc, NULL, x, y, rotation, NULL, 0, NULL);
 		    ret = TRUE;
 		}
 		else
@@ -337,7 +349,7 @@ RRCrtcSet (RRCrtcPtr    crtc,
 		     */
 		    if (ret)
 		    {
-			RRCrtcNotify (crtc, mode, x, y, rotation, 1, outputs);
+			RRCrtcNotify (crtc, mode, x, y, rotation, NULL, 1, outputs);
 			RRScreenSizeNotify (pScreen);
 		    }
 		}
@@ -576,7 +588,7 @@ ProcRRGetCrtcInfo (ClientPtr client)
     {
 	outputs[i] = crtc->outputs[i]->id;
 	if (client->swapped)
-	    swapl (&outputs[i], n);
+	    swapl (&outputs[i]);
     }
     k = 0;
     for (i = 0; i < pScrPriv->numOutputs; i++)
@@ -585,23 +597,23 @@ ProcRRGetCrtcInfo (ClientPtr client)
 	    {
 		possible[k] = pScrPriv->outputs[i]->id;
 		if (client->swapped)
-		    swapl (&possible[k], n);
+		    swapl (&possible[k]);
 		k++;
 	    }
     
     if (client->swapped) {
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.timestamp, n);
-	swaps(&rep.x, n);
-	swaps(&rep.y, n);
-	swaps(&rep.width, n);
-	swaps(&rep.height, n);
-	swapl(&rep.mode, n);
-	swaps(&rep.rotation, n);
-	swaps(&rep.rotations, n);
-	swaps(&rep.nOutput, n);
-	swaps(&rep.nPossibleOutput, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.timestamp);
+	swaps(&rep.x);
+	swaps(&rep.y);
+	swaps(&rep.width);
+	swaps(&rep.height);
+	swapl(&rep.mode);
+	swaps(&rep.rotation);
+	swaps(&rep.rotations);
+	swaps(&rep.nOutput);
+	swaps(&rep.nPossibleOutput);
     }
     WriteToClient(client, sizeof(xRRGetCrtcInfoReply), (char *)&rep);
     if (extraLen)
@@ -851,9 +863,9 @@ sendReply:
     if (client->swapped) 
     {
 	int n;
-    	swaps(&rep.sequenceNumber, n);
-    	swapl(&rep.length, n);
-	swapl(&rep.newTimestamp, n);
+    	swaps(&rep.sequenceNumber);
+    	swapl(&rep.length);
+	swapl(&rep.newTimestamp);
     }
     WriteToClient(client, sizeof(xRRSetCrtcConfigReply), (char *)&rep);
     
@@ -878,9 +890,9 @@ ProcRRGetCrtcGammaSize (ClientPtr client)
     reply.length = 0;
     reply.size = crtc->gammaSize;
     if (client->swapped) {
-	swaps (&reply.sequenceNumber, n);
-	swapl (&reply.length, n);
-	swaps (&reply.size, n);
+	swaps (&reply.sequenceNumber);
+	swapl (&reply.length);
+	swaps (&reply.size);
     }
     WriteToClient (client, sizeof (xRRGetCrtcGammaSizeReply), (char *) &reply);
     return client->noClientException;
@@ -907,9 +919,9 @@ ProcRRGetCrtcGamma (ClientPtr client)
     reply.length = (len + 3) >> 2;
     reply.size = crtc->gammaSize;
     if (client->swapped) {
-	swaps (&reply.sequenceNumber, n);
-	swapl (&reply.length, n);
-	swaps (&reply.size, n);
+	swaps (&reply.sequenceNumber);
+	swapl (&reply.length);
+	swaps (&reply.size);
     }
     WriteToClient (client, sizeof (xRRGetCrtcGammaReply), (char *) &reply);
     if (crtc->gammaSize)

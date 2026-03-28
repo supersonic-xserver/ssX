@@ -1,30 +1,46 @@
-/* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.2 2003/09/13 21:33:04 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#include "extnsionst.h"
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#ifndef INITARGS
+#define INITARGS void
+#endif
 
 #ifdef SHAPE
 extern void ShapeExtensionInit(INITARGS);
 #define _SHAPE_SERVER_  /* don't want Xlib structures */
-#include <X11/extensions/shapestr.h>
+#include "shapestr.h"
 #endif
 
 #ifdef MULTIBUFFER
 extern void MultibufferExtensionInit(INITARGS);
 #define _MULTIBUF_SERVER_	/* don't want Xlib structures */
-#include <X11/extensions/multibufst.h>
+#include "multibufst.h"
 #endif
 
 #ifdef MITMISC
 extern void MITMiscExtensionInit(INITARGS);
 #define _MITMISC_SERVER_
-#include <X11/extensions/mitmiscstr.h>
+#include "mitmiscstr.h"
 #endif
 
 #ifdef XTEST
 extern void XTestExtensionInit(INITARGS);
 #define _XTEST_SERVER_
-#include <X11/extensions/XTest.h>
-#include <X11/extensions/xteststr.h>
+#include "XTest.h"
+#include "xteststr.h"
 #endif
 
 #if 1
@@ -33,92 +49,92 @@ extern void XTestExtension1Init(INITARGS);
 
 #ifdef BIGREQS
 extern void BigReqExtensionInit(INITARGS);
-#include <X11/extensions/bigreqstr.h>
+#include "bigreqstr.h"
 #endif
 
 #ifdef XSYNC
 extern void SyncExtensionInit(INITARGS);
 #define _SYNC_SERVER
-#include <X11/extensions/sync.h>
-#include <X11/extensions/syncstr.h>
+#include "sync.h"
+#include "syncstr.h"
 #endif
 
 #ifdef SCREENSAVER
 extern void ScreenSaverExtensionInit (INITARGS);
-#include <X11/extensions/saver.h>
+#include "saver.h"
 #endif
 
 #ifdef XCMISC
 extern void XCMiscExtensionInit(INITARGS);
-#include <X11/extensions/xcmiscstr.h>
+#include "xcmiscstr.h"
 #endif
 
 #ifdef XF86VIDMODE
-extern void XFree86VidModeExtensionInit(INITARGS);
+extern void	XFree86VidModeExtensionInit(INITARGS);
 #define _XF86VIDMODE_SERVER_
-#include <X11/extensions/xf86vmstr.h>
+#include "xf86vmstr.h"
 #endif
 
 #ifdef XF86MISC
 extern void XFree86MiscExtensionInit(INITARGS);
 #define _XF86MISC_SERVER_
 #define _XF86MISC_SAVER_COMPAT_
-#include <X11/extensions/xf86mscstr.h>
+#include "xf86mscstr.h"
 #endif
 
 #ifdef XFreeXDGA
 extern void XFree86DGAExtensionInit(INITARGS);
 extern void XFree86DGARegister(INITARGS);
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "xf86dgastr.h"
 #endif
 
 #ifdef DPMSExtension
 extern void DPMSExtensionInit(INITARGS);
-#include <X11/extensions/dpmsstr.h>
+#include "dpmsstr.h"
 #endif
 
 #ifdef FONTCACHE
 extern void FontCacheExtensionInit(INITARGS);
 #define _FONTCACHE_SERVER_
-#include <X11/extensions/fontcacheP.h>
-#include <X11/extensions/fontcachstr.h>
+#include "fontcacheP.h"
+#include "fontcachstr.h"
 #endif
 
 #ifdef TOGCUP
 extern void XcupExtensionInit(INITARGS);
 #define _XCUP_SERVER_
-#include <X11/extensions/Xcupstr.h>
+#include "Xcupstr.h"
 #endif
 
 #ifdef EVI
 extern void EVIExtensionInit(INITARGS);
 #define _XEVI_SERVER_
-#include <X11/extensions/XEVIstr.h>
+#include "XEVIstr.h"
 #endif
 
 #ifdef XV
 extern void XvExtensionInit(INITARGS);
-extern void XvRegister(INITARGS);
-#include <X11/extensions/Xv.h>
-#endif
-#ifdef XVMC
 extern void XvMCExtensionInit(INITARGS);
-#include <X11/extensions/XvMC.h>
+extern void XvRegister(INITARGS);
+#include "Xv.h"
+#include "XvMC.h"
 #endif
 
 #ifdef RES
 extern void ResExtensionInit(INITARGS);
-#include <X11/extensions/XResproto.h>
+#include "XResproto.h"
 #endif
 
-#ifdef MITSHM
+#ifdef SHM
 extern void ShmExtensionInit(INITARGS);
-#define _XSHM_SERVER_
-#include <X11/extensions/shmstr.h>
+#include "shmstr.h"
 extern void ShmSetPixmapFormat(
     ScreenPtr pScreen,
     int format);
+extern void ShmRegisterFuncs(
+    ScreenPtr pScreen,
+    ShmFuncsPtr funcs);
 #endif
 
 #if 1
@@ -134,7 +150,7 @@ extern void XpExtensionInit(INITARGS);
 #endif
 
 #if 1
-extern void PanoramiXExtensionInit(INITARGS);
+extern void PanoramiXExtensionInit(int argc, char *argv[]);
 #endif
 
 #if 1

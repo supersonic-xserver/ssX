@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*- */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (c) Copyright IBM Corporation 2002
  * All Rights Reserved.
@@ -25,7 +32,7 @@
  * Authors:
  *    Ian Romanick <idr@us.ibm.com>
  */
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/vblank.h,v 1.1.1.3 2004/12/10 15:06:14 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/vblank.h,v 1.5 2004/12/10 15:30:09 alanh Exp $ */
 
 #ifndef DRI_VBLANK_H
 #define DRI_VBLANK_H

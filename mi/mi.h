@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mi.h,v 3.11 2005/10/14 15:17:22 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -47,7 +55,7 @@ SOFTWARE.
 
 #ifndef MI_H
 #define MI_H
-#include <X11/X.h>
+#include "X11/X.h"
 #include "region.h"
 #include "validate.h"
 #include "window.h"
@@ -55,6 +63,23 @@ SOFTWARE.
 #include <X11/fonts/font.h>
 #include "input.h"
 #include "cursor.h"
+
+/*
+ * Legacy miCopyProc type for Machine Independent layer
+ * XFree86 4.8.0 / NetBSD 5.2.3 uses 8 arguments (legacy signature)
+ */
+#ifndef miCopyProc
+typedef void (*miCopyProc)(
+    DrawablePtr pSrc,
+    DrawablePtr pDst,
+    GCPtr       pGC,
+    BoxPtr      pBox,
+    int         nbox,
+    int         dx,
+    int         dy,
+    void        *closure
+);
+#endif
 
 #define MiBits	CARD32
 
@@ -83,6 +108,18 @@ extern RegionPtr miCopyArea(
     int /*heightSrc*/,
     int /*xOut*/,
     int /*yOut*/
+);
+
+extern void miOpqStipDrawable(
+    DrawablePtr /*pDraw*/,
+    GCPtr /*pGC*/,
+    RegionPtr /*prgnSrc*/,
+    MiBits * /*pbits*/,
+    int /*srcx*/,
+    int /*w*/,
+    int /*h*/,
+    int /*dstx*/,
+    int /*dsty*/
 );
 
 extern RegionPtr miCopyPlane(
@@ -122,6 +159,16 @@ extern void miPutImage(
     char * /*pImage*/
 );
 
+/* miclipn.c */
+
+extern void miClipNotify(
+    void (* /*func*/)(
+	WindowPtr /* pWin */,
+	int /* dx */,
+	int /* dy */
+	)
+);
+
 /* micursor.c */
 
 extern void miRecolorCursor(
@@ -131,6 +178,15 @@ extern void miRecolorCursor(
 );
 
 /* midash.c */
+
+extern miDashPtr miDashLine(
+    int /*npt*/,
+    DDXPointPtr /*ppt*/,
+    unsigned int /*nDash*/,
+    unsigned char * /*pDash*/,
+    unsigned int /*offset*/,
+    int * /*pnseg*/
+);
 
 extern void miStepDash(
     int /*dist*/,
@@ -148,11 +204,11 @@ typedef struct _DeviceRec *DevicePtr;
 #endif
 
 extern Bool mieqInit(
-    void
+    DevicePtr /*pKbd*/,
+    DevicePtr /*pPtr*/
 );
 
 extern void mieqEnqueue(
-    DeviceIntPtr /*pDev*/,
     xEventPtr /*e*/
 );
 
@@ -164,9 +220,6 @@ extern void mieqSwitchScreen(
 extern void mieqProcessInputEvents(
     void
 );
-
-typedef void (*mieqHandler)(int, xEventPtr, DeviceIntPtr, int);
-void mieqSetHandler(int event, mieqHandler handler);
 
 /* miexpose.c */
 
@@ -305,6 +358,16 @@ extern void miPolySegment(
 
 /* mipolytext.c */
 
+extern int miPolyText(
+    DrawablePtr /*pDraw*/,
+    GCPtr /*pGC*/,
+    int /*x*/,
+    int /*y*/,
+    int /*count*/,
+    char * /*chars*/,
+    FontEncoding /*fontEncoding*/
+);
+
 extern int miPolyText8(
     DrawablePtr /*pDraw*/,
     GCPtr /*pGC*/,
@@ -321,6 +384,16 @@ extern int miPolyText16(
     int /*y*/,
     int /*count*/,
     unsigned short * /*chars*/
+);
+
+extern int miImageText(
+    DrawablePtr /*pDraw*/,
+    GCPtr /*pGC*/,
+    int /*x*/,
+    int /*y*/,
+    int /*count*/,
+    char * /*chars*/,
+    FontEncoding /*fontEncoding*/
 );
 
 extern void miImageText8(
@@ -362,6 +435,10 @@ extern Bool miRectAlloc(
     int /*n*/
 );
 
+extern void miSetExtents(
+    RegionPtr /*pReg*/
+);
+
 extern int miFindMaxBand(
     RegionPtr /*prgn*/
 );
@@ -372,6 +449,7 @@ extern Bool miValidRegion(
 );
 #endif
 
+extern Bool miRegionDataCopy(RegionPtr dst, RegionPtr src);
 extern Bool miRegionBroken(RegionPtr pReg);
 
 /* miscrinit.c */
@@ -384,6 +462,11 @@ extern Bool miModifyPixmapHeader(
     int /*bitsPerPixel*/,
     int /*devKind*/,
     pointer /*pPixData*/
+);
+
+extern Bool miCloseScreen(
+    int /*index*/,
+    ScreenPtr /*pScreen*/
 );
 
 extern Bool miCreateScreenResources(
@@ -435,16 +518,6 @@ extern int miShapedWindowIn(
     int /*y*/
 );
 
-typedef void 
-(*SetRedirectBorderClipProcPtr) (WindowPtr pWindow, RegionPtr pRegion);
-
-typedef RegionPtr
-(*GetRedirectBorderClipProcPtr) (WindowPtr pWindow);
-
-void
-miRegisterRedirectBorderClipProc (SetRedirectBorderClipProcPtr setBorderClip,
-				  GetRedirectBorderClipProcPtr getBorderClip);
-
 extern int miValidateTree(
     WindowPtr /*pParent*/,
     WindowPtr /*pChild*/,
@@ -465,6 +538,14 @@ extern void miWideDash(
     int /*mode*/,
     int /*npt*/,
     DDXPointPtr /*pPts*/
+);
+
+extern void miMiter(
+    void
+);
+
+extern void miNotMiter(
+    void
 );
 
 /* miwindow.c */

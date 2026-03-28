@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xaw/AsciiSink.c,v 1.28tsi Exp $ */
+/* $Xorg: AsciiSink.c,v 1.4 2001/02/09 02:03:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /***********************************************************
 
@@ -27,15 +41,15 @@ in this Software without prior written authorization from The Open Group.
 
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
 
-			All Rights Reserved
+                        All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -46,6 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/lib/Xaw/AsciiSink.c,v 1.28 2002/09/08 02:29:47 paulo Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -330,7 +345,7 @@ void CalculateBearing(TextWidget ctx, XawTextPosition position, int x, int y,
  *	   |   ####	 |
  *	   |  ####	 |
  *	   | ####	 |
- *	   |###		 |
+ *	   |### 	 |
  *	 ####		 |
  *	   |		 |
  *
@@ -368,7 +383,7 @@ void CalculateBearing(TextWidget ctx, XawTextPosition position, int x, int y,
 		    c = ' ';
 	    }
 	    if (font->per_char &&
-		(c >= font->min_char_or_byte2 && c <= font->max_char_or_byte2))
+	 	(c >= font->min_char_or_byte2 && c <= font->max_char_or_byte2))
 		rbearing = font->per_char[c - font->min_char_or_byte2].rbearing -
 			   font->per_char[c - font->min_char_or_byte2].width;
 	    if (rbearing > 0) {
@@ -404,7 +419,7 @@ void CalculateBearing(TextWidget ctx, XawTextPosition position, int x, int y,
 		    c = ' ';
 	    }
 	    if (font->per_char &&
-		(c >= font->min_char_or_byte2 && c <= font->max_char_or_byte2))
+	 	(c >= font->min_char_or_byte2 && c <= font->max_char_or_byte2))
 		lbearing = font->per_char[c - font->min_char_or_byte2].lbearing;
 	    if (lbearing < 0) {
 		paint = XtNew(XawTextPaintStruct);
@@ -1302,13 +1317,14 @@ InsertCursor(Widget w, int x, int y, XawTextInsertState state)
 		fheight = font->ascent + font->descent;
 		if (state == XawisOn) {
 		    if (ctx->text.hasfocus)
-			XFillRectangle(XtDisplay(ctx), XtWindow(ctx),
-				       sink->ascii_sink.xorgc, x, y,
-				       width + 1, fheight + 1);
+		    XFillRectangle(XtDisplay(ctx), XtWindow(ctx),
+				   sink->ascii_sink.xorgc, x, y,
+				   width + 1, fheight + 1);
 		    else
 			XDrawRectangle(XtDisplay(ctx), XtWindow(ctx),
 				       sink->ascii_sink.xorgc, x, y,
 				       width, fheight);
+
 		}
 		else
 		    _XawTextSinkClearToBackground(w, x, y,

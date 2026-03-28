@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -30,6 +37,24 @@
 #include "pixmap.h"
 #include "pixmapstr.h"
 #include "windowstr.h"
+#include "regionstr.h"
+#include "misc.h"
+
+/*
+ * Explicit extern declarations for legacy region functions
+ * These ensure proper pointer types on 64-bit systems
+ */
+extern BoxPtr RegionRects(RegionPtr pRegion);
+extern int RegionNumRects(RegionPtr pRegion);
+extern RegionPtr RegionCreate(BoxPtr pBox, int n);
+extern void RegionNull(RegionPtr pRegion);
+extern void RegionInit(RegionPtr pRegion, BoxPtr pBox, int n);
+extern void RegionIntersect(RegionPtr pDest, RegionPtr pSource1, RegionPtr pSource2);
+extern void RegionTranslate(RegionPtr pRegion, int x, int y);
+extern int RegionNotEmpty(RegionPtr pRegion);
+extern void RegionUninit(RegionPtr pRegion);
+extern void RegionDestroy(RegionPtr pRegion);
+extern RegionPtr miGetCompositeClip(GCPtr pGC);
 
 void
 miCopyRegion (DrawablePtr   pSrcDrawable,
@@ -140,7 +165,7 @@ miCopyRegion (DrawablePtr   pSrcDrawable,
 		 pbox,
 		 nbox,
 		 dx, dy,
-		 reverse, upsidedown, bitPlane, closure);
+		 closure);
     
     free(pboxNew1);
     free(pboxNew2);

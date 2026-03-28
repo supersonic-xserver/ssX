@@ -1,4 +1,11 @@
 /*****************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +29,7 @@ shall not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from Digital
 Equipment Corporation.
 ******************************************************************/
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/Xext/panoramiXSwap.c,v 3.13 2006/02/19 15:51:16 tsi Exp $ */
 
 #include <stdio.h>
 #include <X11/X.h>
@@ -51,11 +55,13 @@ Equipment Corporation.
 #include "globals.h"
 #include "panoramiXh.h"
 
+#ifdef PANORAMIX
+
 static int
-SProcPanoramiXQueryVersion (ClientPtr client)
+SProcPanoramiXQueryVersion(ClientPtr client)
 {
 	REQUEST(xPanoramiXQueryVersionReq);
-	register int n;
+	int n;
 
 	swaps(&stuff->length,n);
 	REQUEST_SIZE_MATCH (xPanoramiXQueryVersionReq);
@@ -66,11 +72,10 @@ static int
 SProcPanoramiXGetState(ClientPtr client)
 {
 	REQUEST(xPanoramiXGetStateReq);
-	register int n;
+	int n;
 
  	swaps (&stuff->length, n);	
 	REQUEST_SIZE_MATCH(xPanoramiXGetStateReq);
-	swapl (&stuff->window, n);
 	return ProcPanoramiXGetState(client);
 }
 
@@ -78,11 +83,10 @@ static int
 SProcPanoramiXGetScreenCount(ClientPtr client)
 {
 	REQUEST(xPanoramiXGetScreenCountReq);
-	register int n;
+	int n;
 
 	swaps (&stuff->length, n);
 	REQUEST_SIZE_MATCH(xPanoramiXGetScreenCountReq);
-	swapl (&stuff->window, n);
 	return ProcPanoramiXGetScreenCount(client);
 }
 
@@ -90,12 +94,10 @@ static int
 SProcPanoramiXGetScreenSize(ClientPtr client)
 {
 	REQUEST(xPanoramiXGetScreenSizeReq);
-	register int n;
+	int n;
 
 	swaps (&stuff->length, n);
 	REQUEST_SIZE_MATCH(xPanoramiXGetScreenSizeReq);
-	swapl (&stuff->window, n);
-	swapl (&stuff->screen, n);
 	return ProcPanoramiXGetScreenSize(client);
 }
 
@@ -104,7 +106,7 @@ static int
 SProcXineramaIsActive(ClientPtr client)
 {
 	REQUEST(xXineramaIsActiveReq);
-	register int n;
+	int n;
 
 	swaps (&stuff->length, n);
 	REQUEST_SIZE_MATCH(xXineramaIsActiveReq);
@@ -116,7 +118,7 @@ static int
 SProcXineramaQueryScreens(ClientPtr client)
 {
 	REQUEST(xXineramaQueryScreensReq);
-	register int n;
+	int n;
 
 	swaps (&stuff->length, n);
 	REQUEST_SIZE_MATCH(xXineramaQueryScreensReq);
@@ -144,3 +146,5 @@ SProcPanoramiXDispatch (ClientPtr client)
     }
     return BadRequest;
 }
+
+#endif /* PANORAMIX */

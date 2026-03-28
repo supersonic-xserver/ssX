@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1990, 1991 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1992 by David Dawes <dawes@XFree86.org>
  * Copyright 1992 by Jim Tsillas <jtsilla@damon.ccs.northeastern.edu>
@@ -64,7 +71,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_OSproc.h,v 3.58 2005/09/22 12:32:32 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_OSproc.h,v 3.57 2003/10/07 23:14:54 herrb Exp $ */
 
 #ifndef _XF86_OSPROC_H
 #define _XF86_OSPROC_H
@@ -194,7 +201,6 @@ extern Bool xf86AcquireGART(int screenNum);
 extern Bool xf86ReleaseGART(int screenNum);
 extern int xf86AllocateGARTMemory(int screenNum, unsigned long size, int type,
 				  unsigned long *physical);
-extern Bool xf86DeallocateGARTMemory(int screenNum, int key);
 extern Bool xf86BindGARTMemory(int screenNum, int key, unsigned long offset);
 extern Bool xf86UnbindGARTMemory(int screenNum, int key);
 extern Bool xf86EnableAGP(int screenNum, CARD32 mode);
@@ -221,7 +227,7 @@ extern Bool xf86VTSwitchPending(void);
 extern Bool xf86VTSwitchAway(void);
 extern Bool xf86VTSwitchTo(void);
 extern void xf86VTRequest(int sig);
-extern int xf86ProcessArgument(int, const char **, int);
+extern int xf86ProcessArgument(int, char **, int);
 extern void xf86UseMsg(void);
 extern void xf86SetKbdLeds(int);
 extern int xf86GetKbdLeds(void);

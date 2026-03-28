@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/xf86Pci.h,v 1.50 2008/04/24 20:54:54 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *
@@ -69,30 +77,50 @@
  *
  */
 /*
- * Copyright (c) 1999-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1999-2007 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 
@@ -118,20 +146,31 @@
 
 /* Command and status register */
 #define PCI_CMD_STAT_REG		0x04
-#define PCI_CMD_BASE_REG		0x10
-#define PCI_CMD_BIOS_REG		0x30
-#define PCI_CMD_MASK			0xffff
-#define PCI_CMD_IO_ENABLE		0x01
-#define PCI_CMD_MEM_ENABLE		0x02
-#define PCI_CMD_MASTER_ENABLE		0x04
-#define PCI_CMD_SPECIAL_ENABLE		0x08
-#define PCI_CMD_INVALIDATE_ENABLE	0x10
-#define PCI_CMD_PALETTE_ENABLE		0x20
-#define PCI_CMD_PARITY_ENABLE		0x40
-#define PCI_CMD_STEPPING_ENABLE		0x80
-#define PCI_CMD_SERR_ENABLE		0x100
-#define PCI_CMD_BACKTOBACK_ENABLE	0x200
-#define PCI_CMD_BIOS_ENABLE		0x01
+#define PCI_CMD_MASK			0x0000ffff
+#define PCI_CMD_IO_ENABLE		0x0001
+#define PCI_CMD_MEM_ENABLE		0x0002
+#define PCI_CMD_MASTER_ENABLE		0x0004
+#define PCI_CMD_SPECIAL_ENABLE		0x0008
+#define PCI_CMD_INVALIDATE_ENABLE	0x0010
+#define PCI_CMD_PALETTE_ENABLE		0x0020
+#define PCI_CMD_PARITY_ENABLE		0x0040
+#define PCI_CMD_STEPPING_ENABLE		0x0080
+#define PCI_CMD_SERR_ENABLE		0x0100
+#define PCI_CMD_BACKTOBACK_ENABLE	0x0200
+#define PCI_CMD_INTERRUPT_DISABLE	0x0400
+#define PCI_STAT_MASK			0xffff0000
+#define PCI_STAT_INTERRUPT_PENDING	0x00080000
+#define PCI_STAT_CAPABILITY		0x00100000
+#define PCI_STAT_66MHZ			0x00200000
+#define PCI_STAT_UDF			0x00400000
+#define PCI_STAT_BACKTOBACK		0x00800000
+#define PCI_STAT_PARITY			0x01000000
+#define PCI_STAT_DEVSEL			0x06000000
+#define PCI_STAT_SIG_TARGET_ABORT	0x08000000
+#define PCI_STAT_REC_TARGET_ABORT	0x10000000
+#define PCI_STAT_MASTER_ABORT		0x20000000
+#define PCI_STAT_SERR			0x40000000
+#define PCI_STAT_BAD_PARITY		0x80000000
 
 /* base class */
 #define PCI_CLASS_REG		0x08
@@ -169,62 +208,117 @@
 
 /* Sub class values */
 /* 0x00 prehistoric subclasses */
-#define PCI_SUBCLASS_PREHISTORIC_MISC	0x00
-#define PCI_SUBCLASS_PREHISTORIC_VGA	0x01
+#define PCI_SUBCLASS_PREHISTORIC_MISC		0x00
+#define PCI_SUBCLASS_PREHISTORIC_VGA		0x01
 
 /* 0x01 mass storage subclasses */
 #define PCI_SUBCLASS_MASS_STORAGE_SCSI		0x00
 #define PCI_SUBCLASS_MASS_STORAGE_IDE		0x01
+#define PCI_IF_MASS_STORAGE_IDE_PRIMARY_MODE		0x01
+#define PCI_IF_MASS_STORAGE_IDE_PRIMARY_INDICATOR	0x02
+#define PCI_IF_MASS_STORAGE_IDE_SECONDARY_MODE		0x04
+#define PCI_IF_MASS_STORAGE_IDE_SECONDARY_INDICATOR	0x08
+#define PCI_IF_MASS_STORAGE_IDE_MASTER			0x80
 #define PCI_SUBCLASS_MASS_STORAGE_FLOPPY	0x02
 #define PCI_SUBCLASS_MASS_STORAGE_IPI		0x03
+#define PCI_SUBCLASS_MASS_STORAGE_RAID		0x04
+#define PCI_SUBCLASS_MASS_STORAGE_ATA		0x05
+#define PCI_IF_MASS_STORAGE_ATA_SINGLE_DMA		0x20
+#define PCI_IF_MASS_STORAGE_ATA_CHAINED_DMA		0x30
 #define PCI_SUBCLASS_MASS_STORAGE_MISC		0x80
 
 /* 0x02 network subclasses */
-#define PCI_SUBCLASS_NETWORK_ETHERNET	0x00
-#define PCI_SUBCLASS_NETWORK_TOKENRING	0x01
-#define PCI_SUBCLASS_NETWORK_FDDI	0x02
-#define PCI_SUBCLASS_NETWORK_MISC	0x80
+#define PCI_SUBCLASS_NETWORK_ETHERNET		0x00
+#define PCI_SUBCLASS_NETWORK_TOKENRING		0x01
+#define PCI_SUBCLASS_NETWORK_FDDI		0x02
+#define PCI_SUBCLASS_NETWORK_ATM		0x03
+#define PCI_SUBCLASS_NETWORK_ISDN		0x04
+#define PCI_SUBCLASS_NETWORK_WORLDFIP		0x05
+#define PCI_SUBCLASS_NETWORK_PICMIG		0x06
+#define PCI_SUBCLASS_NETWORK_MISC		0x80
 
 /* 0x03 display subclasses */
-#define PCI_SUBCLASS_DISPLAY_VGA	0x00
-#define PCI_SUBCLASS_DISPLAY_XGA	0x01
-#define PCI_SUBCLASS_DISPLAY_MISC	0x80
+#define PCI_SUBCLASS_DISPLAY_VGA		0x00
+#define PCI_IF_DISPLAY_VGA				0x00
+#define PCI_IF_DISPLAY_8514				0x01
+#define PCI_SUBCLASS_DISPLAY_XGA		0x01
+#define PCI_SUBCLASS_DISPLAY_3D			0x02
+#define PCI_SUBCLASS_DISPLAY_MISC		0x80
 
 /* 0x04 multimedia subclasses */
-#define PCI_SUBCLASS_MULTIMEDIA_VIDEO	0x00
-#define PCI_SUBCLASS_MULTIMEDIA_AUDIO	0x01
-#define PCI_SUBCLASS_MULTIMEDIA_MISC	0x80
+#define PCI_SUBCLASS_MULTIMEDIA_VIDEO		0x00
+#define PCI_SUBCLASS_MULTIMEDIA_AUDIO		0x01
+#define PCI_SUBCLASS_MULTIMEDIA_TELEPHONY	0x02
+#define PCI_SUBCLASS_MULTIMEDIA_MISC		0x80
 
 /* 0x05 memory subclasses */
-#define PCI_SUBCLASS_MEMORY_RAM		0x00
-#define PCI_SUBCLASS_MEMORY_FLASH	0x01
-#define PCI_SUBCLASS_MEMORY_MISC	0x80
+#define PCI_SUBCLASS_MEMORY_RAM			0x00
+#define PCI_SUBCLASS_MEMORY_FLASH		0x01
+#define PCI_SUBCLASS_MEMORY_MISC		0x80
 
 /* 0x06 bridge subclasses */
-#define PCI_SUBCLASS_BRIDGE_HOST	0x00
-#define PCI_SUBCLASS_BRIDGE_ISA		0x01
-#define PCI_SUBCLASS_BRIDGE_EISA	0x02
-#define PCI_SUBCLASS_BRIDGE_MC		0x03
-#define PCI_SUBCLASS_BRIDGE_PCI		0x04
-#define PCI_SUBCLASS_BRIDGE_PCMCIA	0x05
-#define PCI_SUBCLASS_BRIDGE_NUBUS	0x06
-#define PCI_SUBCLASS_BRIDGE_CARDBUS	0x07
-#define PCI_SUBCLASS_BRIDGE_RACEWAY	0x08
-#define PCI_SUBCLASS_BRIDGE_MISC	0x80
-#define PCI_IF_BRIDGE_PCI_SUBTRACTIVE	0x01
+#define PCI_SUBCLASS_BRIDGE_HOST		0x00
+#define PCI_SUBCLASS_BRIDGE_ISA			0x01
+#define PCI_SUBCLASS_BRIDGE_EISA		0x02
+#define PCI_SUBCLASS_BRIDGE_MC			0x03
+#define PCI_SUBCLASS_BRIDGE_PCI			0x04
+#define PCI_IF_BRIDGE_PCI_SUBTRACTIVE			0x01
+#define PCI_SUBCLASS_BRIDGE_PCMCIA		0x05
+#define PCI_SUBCLASS_BRIDGE_NUBUS		0x06
+#define PCI_SUBCLASS_BRIDGE_CARDBUS		0x07
+#define PCI_SUBCLASS_BRIDGE_RACEWAY		0x08
+#define PCI_IF_BRIDGE_RACEWAY_TRANSPARENT		0x00
+#define PCI_IF_BRIDGE_RACEWAY_ENDPOINT			0x01
+#define PCI_SUBCLASS_BRIDGE_PCI_SEMITRANSPARENT	0x09
+#define PCI_IF_BRIDGE_PCI_SEMITRANSPARENT_PRIMARY	0x40
+#define PCI_IF_BRIDGE_PCI_SEMITRANSPARENT_SECONDARY	0x80
+#define PCI_SUBCLASS_BRIDGE_INFINIBAND		0x0a
+#define PCI_SUBCLASS_BRIDGE_MISC		0x80
 
 /* 0x07 communications controller subclasses */
 #define PCI_SUBCLASS_COMMUNICATIONS_SERIAL	0x00
+#define PCI_IF_COMMUNICATIONS_SERIAL_XT			0x00
+#define PCI_IF_COMMUNICATIONS_SERIAL_16450		0x01
+#define PCI_IF_COMMUNICATIONS_SERIAL_16550		0x02
+#define PCI_IF_COMMUNICATIONS_SERIAL_16650		0x03
+#define PCI_IF_COMMUNICATIONS_SERIAL_16750		0x04
+#define PCI_IF_COMMUNICATIONS_SERIAL_16850		0x05
+#define PCI_IF_COMMUNICATIONS_SERIAL_16950		0x06
 #define PCI_SUBCLASS_COMMUNICATIONS_PARALLEL	0x01
+#define PCI_IF_COMMUNICATIONS_PARALLEL_GENERIC		0x00
+#define PCI_IF_COMMUNICATIONS_PARALLEL_BIDIRECTIONAL	0x01
+#define PCI_IF_COMMUNICATIONS_PARALLEL_ECP		0x02
+#define PCI_IF_COMMUNICATIONS_PARALLEL_IEEE1284		0x03
+#define PCI_IF_COMMUNICATIONS_PARALLEL_IEEE1284_TARGET	0xfe
 #define PCI_SUBCLASS_COMMUNICATIONS_MULTISERIAL	0x02
 #define PCI_SUBCLASS_COMMUNICATIONS_MODEM	0x03
+#define PCI_IF_COMMUNICATIONS_MODEM_GENERIC		0x00
+#define PCI_IF_COMMUNICATIONS_MODEM_16450		0x01
+#define PCI_IF_COMMUNICATIONS_MODEM_16550		0x02
+#define PCI_IF_COMMUNICATIONS_MODEM_16650		0x03
+#define PCI_IF_COMMUNICATIONS_MODEM_16750		0x04
+#define PCI_SUBCLASS_COMMUNICATIONS_GPIB	0x04
+#define PCI_SUBCLASS_COMMUNICATIONS_SMARTCARD	0x05
 #define PCI_SUBCLASS_COMMUNICATIONS_MISC	0x80
 
 /* 0x08 generic system peripherals subclasses */
 #define PCI_SUBCLASS_SYSPERIPH_PIC	0x00
+#define PCI_IF_SYSPERIPH_PIC_8259		0x00
+#define PCI_IF_SYSPERIPH_PIC_ISA		0x01
+#define PCI_IF_SYSPERIPH_PIC_EISA		0x02
+#define PCI_IF_SYSPERIPH_PIC_IO_APIC		0x10
+#define PCI_IF_SYSPERIPH_PIC_IOx_APIC		0x20
 #define PCI_SUBCLASS_SYSPERIPH_DMA	0x01
+#define PCI_IF_SYSPERIPH_DMA_8237		0x00
+#define PCI_IF_SYSPERIPH_DMA_ISA		0x01
+#define PCI_IF_SYSPERIPH_DMA_EISA		0x02
 #define PCI_SUBCLASS_SYSPERIPH_TIMER	0x02
+#define PCI_IF_SYSPERIPH_TIMER_8254		0x00
+#define PCI_IF_SYSPERIPH_TIMER_ISA		0x01
+#define PCI_IF_SYSPERIPH_TIMER_EISA		0x02
 #define PCI_SUBCLASS_SYSPERIPH_RTC	0x03
+#define PCI_IF_SYSPERIPH_RTC_GENERIC		0x00
+#define PCI_IF_SYSPERIPH_RTC_ISA		0x01
 #define PCI_SUBCLASS_SYSPERIPH_HOTPCI	0x04
 #define PCI_SUBCLASS_SYSPERIPH_MISC	0x80
 
@@ -234,6 +328,8 @@
 #define PCI_SUBCLASS_INPUT_MOUSE	0x02
 #define PCI_SUBCLASS_INPUT_SCANNER	0x03
 #define PCI_SUBCLASS_INPUT_GAMEPORT	0x04
+#define PCI_IF_INPUT_GAMEPORT_GENERIC		0x00
+#define PCI_IF_INPUT_GAMEPORT_EXTENDED		0x10
 #define PCI_SUBCLASS_INPUT_MISC		0x80
 
 /* 0x0a docking station subclasses */
@@ -251,16 +347,33 @@
 
 /* 0x0c serial bus controller subclasses */
 #define PCI_SUBCLASS_SERIAL_FIREWIRE		0x00
+#define PCI_IF_SERIAL_FIREWIRE_IEEE1394			0x00
+#define PCI_IF_SERIAL_FIREWIRE_IEEE1394_OPENHCI		0x10
 #define PCI_SUBCLASS_SERIAL_ACCESS		0x01
 #define PCI_SUBCLASS_SERIAL_SSA			0x02
 #define PCI_SUBCLASS_SERIAL_USB			0x03
+#define PCI_IF_SERIAL_USB_UHCS				0x00
+#define PCI_IF_SERIAL_USB_OHCS				0x10
+#define PCI_IF_SERIAL_USB_OTHER				0x80
+#define PCI_IF_SERIAL_USB_DEVICE			0xfe
 #define PCI_SUBCLASS_SERIAL_FIBRECHANNEL	0x04
 #define PCI_SUBCLASS_SERIAL_SMBUS		0x05
+#define PCI_SUBCLASS_SERIAL_INFINIBAND		0x06
+#define PCI_SUBCLASS_SERIAL_IPMI		0x07
+#define PCI_IF_SERIAL_IPMI_SMIC				0x00
+#define PCI_IF_SERIAL_IPMI_KYBD				0x01
+#define PCI_IF_SERIAL_IPMI_BLOCK			0x02
+#define PCI_SUBCLASS_SERIAL_SERCOS		0x08
+#define PCI_SUBCLASS_SERIAL_CANBUS		0x09
 
 /* 0x0d wireless controller subclasses */
 #define PCI_SUBCLASS_WIRELESS_IRDA		0x00
 #define PCI_SUBCLASS_WIRELESS_CONSUMER_IR	0x01
-#define PCI_SUBCLASS_WIRELESS_RF		0x02
+#define PCI_SUBCLASS_WIRELESS_RF		0x10
+#define PCI_SUBCLASS_WIRELESS_BLUETOOTH		0x11
+#define PCI_SUBCLASS_WIRELESS_BROADBAND		0x12
+#define PCI_SUBCLASS_WIRELESS_802_11A		0x20
+#define PCI_SUBCLASS_WIRELESS_802_11B		0x21
 #define PCI_SUBCLASS_WIRELESS_MISC		0x80
 
 /* 0x0e intelligent I/O controller subclasses */
@@ -279,29 +392,15 @@
 
 /* 0x11 data acquisition and signal processing controller subclasses */
 #define PCI_SUBCLASS_DATAACQ_DPIO	0x00
+#define PCI_SUBCLASS_DATAACQ_COUNTER	0x01
+#define PCI_SUBCLASS_DATAACQ_SYNCHRO	0x10
+#define PCI_SUBCLASS_DATAACQ_MANAGEMENT	0x20
 #define PCI_SUBCLASS_DATAACQ_MISC	0x80
 
 
 /* Header */
 #define PCI_HEADER_MISC			0x0c
 #define PCI_HEADER_MULTIFUNCTION	0x00800000
-
-/* Interrupt configration register */
-#define PCI_INTERRUPT_REG		0x3c
-#define PCI_INTERRUPT_PIN_MASK		0x0000ff00
-#define PCI_INTERRUPT_PIN_EXTRACT(x)	\
-	((((x) & PCI_INTERRUPT_PIN_MASK) >> 8) & 0xff)
-#define PCI_INTERRUPT_PIN_NONE		0x00
-#define PCI_INTERRUPT_PIN_A		0x01
-#define PCI_INTERRUPT_PIN_B		0x02
-#define PCI_INTERRUPT_PIN_C		0x03
-#define PCI_INTERRUPT_PIN_D		0x04
-
-#define PCI_INTERRUPT_LINE_MASK		0x000000ff
-#define PCI_INTERRUPT_LINE_EXTRACT(x)	\
-	((((x) & PCI_INTERRUPT_LINE_MASK) >> 0) & 0xff)
-#define PCI_INTERRUPT_LINE_INSERT(x,v)	\
-	(((x) & ~PCI_INTERRUPT_LINE_MASK) | ((v) << 0))
 
 /* Base registers */
 #define PCI_MAP_REG_START		0x10
@@ -331,7 +430,7 @@
 	(((b) & PCI_MAP_MEMORY_TYPE) == PCI_MAP_MEMORY_TYPE_64BIT)
 
 #define PCIGETMEMORY(b)		((b) & PCI_MAP_MEMORY_ADDRESS_MASK)
-#define PCIGETMEMORY64HIGH(b)	(*((CARD32*)&(b) + 1))
+#define PCIGETMEMORY64HIGH(b)	(*((CARD32*)&b + 1))
 #define PCIGETMEMORY64(b)	\
 	(PCIGETMEMORY(b) | ((CARD64)PCIGETMEMORY64HIGH(b) << 32))
 
@@ -344,6 +443,26 @@
 
 #define PCIGETROM(b)		((b) & PCI_MAP_ROM_ADDRESS_MASK)
 
+/* Pointer to first capability */
+#define PCI_CAP_PTR			0x34
+
+/* Interrupt configuration register */
+#define PCI_INTERRUPT_REG		0x3c
+#define PCI_INTERRUPT_PIN_MASK		0x0000ff00
+#define PCI_INTERRUPT_PIN_EXTRACT(x)	\
+	((((x) & PCI_INTERRUPT_PIN_MASK) >> 8) & 0xff)
+#define PCI_INTERRUPT_PIN_NONE		0x00
+#define PCI_INTERRUPT_PIN_A		0x01
+#define PCI_INTERRUPT_PIN_B		0x02
+#define PCI_INTERRUPT_PIN_C		0x03
+#define PCI_INTERRUPT_PIN_D		0x04
+
+#define PCI_INTERRUPT_LINE_MASK		0x000000ff
+#define PCI_INTERRUPT_LINE_EXTRACT(x)	\
+	((((x) & PCI_INTERRUPT_LINE_MASK) >> 0) & 0xff)
+#define PCI_INTERRUPT_LINE_INSERT(x,v)	\
+	(((x) & ~PCI_INTERRUPT_LINE_MASK) | ((v) << 0))
+
 /* PCI-PCI bridge mapping registers */
 #define PCI_PCI_BRIDGE_BUS_REG		0x18
 #define PCI_SUBORDINATE_BUS_MASK	0x00ff0000
@@ -353,6 +472,7 @@
 #define PCI_PCI_BRIDGE_IO_REG		0x1c
 #define PCI_PCI_BRIDGE_MEM_REG		0x20
 #define PCI_PCI_BRIDGE_PMEM_REG		0x24
+#define PCI_PCI_BRIDGE_ROM_REG		0x38
 
 #define PCI_PPB_IOBASE_EXTRACT(x)	(((x) << 8) & 0xFF00)
 #define PCI_PPB_IOLIMIT_EXTRACT(x)	(((x) << 0) & 0xFF00)
@@ -361,20 +481,22 @@
 #define PCI_PPB_MEMLIMIT_EXTRACT(x)	(((x) <<  0) & 0xFFFF0000)
 
 #define PCI_PCI_BRIDGE_CONTROL_REG	0x3E
-#define PCI_PCI_BRIDGE_PARITY_EN	0x01
-#define PCI_PCI_BRIDGE_SERR_EN		0x02
-#define PCI_PCI_BRIDGE_ISA_EN		0x04
-#define PCI_PCI_BRIDGE_VGA_EN		0x08
-#define PCI_PCI_BRIDGE_MASTER_ABORT_EN	0x20
-#define PCI_PCI_BRIDGE_SECONDARY_RESET	0x40
-#define PCI_PCI_BRIDGE_FAST_B2B_EN	0x80
+#define PCI_PCI_BRIDGE_PARITY_EN	0x0001
+#define PCI_PCI_BRIDGE_SERR_EN		0x0002
+#define PCI_PCI_BRIDGE_ISA_EN		0x0004
+#define PCI_PCI_BRIDGE_VGA_EN		0x0008
+#define PCI_PCI_BRIDGE_VGA16_EN		0x0010
+#define PCI_PCI_BRIDGE_MASTER_ABORT_EN	0x0020
+#define PCI_PCI_BRIDGE_SECONDARY_RESET	0x0040
+#define PCI_PCI_BRIDGE_FAST_B2B_EN	0x0080
 /* header type 2 extensions */
-#define PCI_CB_BRIDGE_CTL_CB_RESET	0x40	/* CardBus reset */
-#define PCI_CB_BRIDGE_CTL_16BIT_INT	0x80	/* Enable interrupt for 16-bit cards */
-#define PCI_CB_BRIDGE_CTL_PREFETCH_MEM0	0x100
-#define PCI_CB_BRIDGE_CTL_PREFETCH_MEM1	0x200
-#define PCI_CB_BRIDGE_CTL_POST_WRITES	0x400
+#define PCI_CB_BRIDGE_CTL_CB_RESET	0x0040	/* CardBus reset */
+#define PCI_CB_BRIDGE_CTL_16BIT_INT	0x0080	/* Enable interrupt for 16-bit cards */
+#define PCI_CB_BRIDGE_CTL_PREFETCH_MEM0	0x0100
+#define PCI_CB_BRIDGE_CTL_PREFETCH_MEM1	0x0200
+#define PCI_CB_BRIDGE_CTL_POST_WRITES	0x0400
 
+#define PCI_CB_CAP_PTR			0x14
 #define PCI_CB_SEC_STATUS_REG		0x16	/* Secondary status */
 #define PCI_CB_PRIMARY_BUS_REG		0x18	/* PCI bus number */
 #define PCI_CB_CARD_BUS_REG		0x19	/* CardBus bus number */
@@ -401,11 +523,96 @@
 #define PCI_REG_USERCONFIG		0x40
 #define PCI_OPTION_REG			0x40
 
+/* Capability IDs */
+#define PCI_CAP_PM_ID		0x01	/* Power Management */
+#define PCI_CAP_AGP_ID		0x02	/* Accelerated Graphics Port */
+#define PCI_CAP_VPD_ID		0x03	/* Vital Product Data */
+#define PCI_CAP_SLOT_ID		0x04	/* Slot identification */
+#define PCI_CAP_MSI_ID		0x05	/* Message Signaled Interrupts */
+#define PCI_CAP_CHSWP_ID	0x06	/* CompactPCI HotSwap */
+#define PCI_CAP_PCIX_ID		0x07	/* PCI-X */
+#define PCI_CAP_HT_ID		0x08	/* HyperTransport */
+#define PCI_CAP_VENDOR_ID	0x09	/* Vendor-specific */
+#define PCI_CAP_DEBUG_ID	0x0a	/* Debug port */
+#define PCI_CAP_CCRC		0x0b	/* CompactPCI central resource cntrl */
+#define PCI_CAP_SHPC_ID		0x0c	/* Standard Hot-Plug Controller */
+#define PCI_CAP_AGP8_ID		0x0e	/* AGP 8x */
+#define PCI_CAP_SECURE_ID	0x0f	/* Secure device */
+#define PCI_CAP_PCIE_ID		0x10	/* PCI Express */
+#define PCI_CAP_MSIX_ID		0x11	/* MSI-X */
+
+/* Capability header */
+#define PCI_CAP_ID		0x00	/* Capability ID */
+#define PCI_CAP_NEXT		0x01	/* Next capability pointer */
+
+/* Power Management Capability (incomplete) */
+#define PCI_CAP_PM_REG		0x02	/* 16 bits of R/O Flags */
+#define PCI_CAP_PM_CSR		0x04	/* Control & Status */
+#define PCI_CAP_PM_MODE_MASK	0x03	/* Current mode (D0 to D3) */
+
+/* PCI-X Capability (incomplete) */
+#define PCI_CAP_PCIX_STAT	0x02	/* PCI-X status register */
+#define PCI_CAP_PCIX_STAT_MODE	0x03C0	/* Secondary mode & frequency */
+#define PCI_CAP_PCIX_STAT_PCIX2_MIN 8	/* Min. of above for PCI-X mode 2 */
+
+/* PCI Express Capability (incomplete) */
+#define PCI_CAP_PCIE_REG	0x02	/* 16 bits of R/O information */
+#define PCI_CAP_PCIE_DEVTYPE	0x00F0	/* PCI Express device type */
+#define PCI_CAP_PCIE_DEVTYPE_END      0x0 /* Endpoint with no I/O */
+#define PCI_CAP_PCIE_DEVTYPE_END_IO   0x1 /* Endpoint with I/O */
+#define PCI_CAP_PCIE_DEVTYPE_ROOT     0x4 /* Root port */
+#define PCI_CAP_PCIE_DEVTYPE_UP       0x5 /* Upstream port of switch */
+#define PCI_CAP_PCIE_DEVTYPE_DOWN     0x6 /* Downstream port of switch */
+#define PCI_CAP_PCIE_DEVTYPE_PCIE_PCI 0x7 /* PCI Express to PCI/PCI-X bridge */
+#define PCI_CAP_PCIE_DEVTYPE_PCI_PCIE 0x8 /* PCI/PCI-X to PCI Express bridge */
+#define PCI_CAP_PCIE_DEV_CAP	0x04	/* 32 more bits of R/O information */
+#define PCI_CAP_PCIE_DEV_CTL	0x08	/* Device control */
+#define PCI_CAP_PCIE_CR_EN	0x0001	/* Correctable error reporting en */
+#define PCI_CAP_PCIE_NFR_EN	0x0002	/* Non-fatal error reporting enable */
+#define PCI_CAP_PCIE_FR_EN	0x0004	/* Fatal error reporting enable */
+#define PCI_CAP_PCIE_URR_EN	0x0008	/* Unsupported request reporting en */
+
+/* PCI Express extended capability IDs */
+#define PCIE_CAP_AER_ID		0x0001	/* Advanced Error Reporting */
+#define PCIE_CAP_VC_ID		0x0002	/* Virtual Channel */
+#define PCIE_CAP_DSN_ID		0x0003	/* Device Serial Number */
+#define PCIE_CAP_PB_ID		0x0004	/* Power Budgeting */
+
+#define PCIE_CAP_HEADER		0x000	/* Capability Header */
+#define PCIE_CAP_ID		0x0000FFFF	/* Capability ID */
+#define PCIE_CAP_VERSION	0x000F0000	/* Capability Version */
+#define PCIE_CAP_NEXT		0xFFF00000	/* Next capability pointer */
+
+#define PCIE_CAP_FIRST		0x100	/* First capability pointer */
+
+/* Advanced Error Reporting Capability (incomplete) */
+#define PCIE_CAP_AER_UE_STATUS	0x004	/* Uncorrectable Error status */
+#define PCIE_CAP_AER_UE_MASK	0x008	/* Uncorrectable Error mask */
+#define PCIE_CAP_AER_UE_SEV	0x00c	/* Uncorrectable Error severity */
+/* The following bit valid for all three of the preceeding (incomplete) */
+#define PCIE_CAP_AER_UE_URE	0x00100000	/* Unsupported Request Error */
+#define PCIE_CAP_AER_CE_STATUS	0x010	/* Correctable Error status */
+#define PCIE_CAP_AER_CE_MASK	0x014	/* Correctable Error mask */
+#define PCIE_CAP_AER_CTL	0x018	/* AER control */
+#define PCIE_CAP_AER_HEADERLOG	0x01c	/* 4 Header Log registers */
+/* These exist only in PCI Express to PCI/PCI-X bridges */
+#define PCIE_CAP_AER_SUE_STATUS	0x02c	/* UE Secondary status */
+#define PCIE_CAP_AER_SUE_MASK	0x030	/* UE Secondary mask */
+#define PCIE_CAP_AER_SUE_SEV	0x034	/* UE Secondary severity */
+/* The following bits valid for all three of the preceeding (incomplete) */
+#define PCIE_CAP_AER_SUE_MA_SPLIT 0x0002 /* Master Abort on split status */
+#define PCIE_CAP_AER_SUE_MA	  0x0008 /* Master Abort */
+#define PCIE_CAP_AER_SUE_SAD	  0x1000 /* SERR# Assertion detected */
+#define PCIE_CAP_AER_SUE_MASTER_ABORT /* Convenience macro */ \
+	(PCIE_CAP_AER_SUE_MA | \
+	 PCIE_CAP_AER_SUE_MA_SPLIT | \
+	 PCIE_CAP_AER_SUE_SAD)
+
 /*
  * Typedefs, etc...
  */
 
-/* Primitive Types */
+/* Basic Types */
 typedef unsigned long ADDRESS;		/* Memory/PCI address */
 typedef unsigned long IOADDRESS;	/* Must be large enough for a pointer */
 typedef unsigned long PCITAG;
@@ -479,7 +686,8 @@ typedef struct pci_cfg_regs {
 	    CARD32 cg_rsrvd1;			/* 0x10 */
 #if X_BYTE_ORDER == X_BIG_ENDIAN
 	    CARD16 secondary_status;		/* 0x16 */
-	    CARD16 cg_rsrvd2;			/* 0x14 */
+	    CARD8 cg_rsrvd2;			/* 0x15 */
+	    CARD8 cg_capptr;			/* 0x14 */
 
 	    union {
 		CARD32 cg_bus_reg;
@@ -491,7 +699,8 @@ typedef struct pci_cfg_regs {
 		} cgbr;
 	    } cgbr;
 #else
-	    CARD16 cg_rsrvd2;			/* 0x14 */
+	    CARD8 cg_capptr;			/* 0x14 */
+	    CARD8 cg_rsrvd2;			/* 0x15 */
 	    CARD16 secondary_status;		/* 0x16 */
 
 	    union {
@@ -599,10 +808,17 @@ typedef struct pci_cfg_regs {
 #endif
 		} b_u_io;
 	    } uio_rom;
-	    struct {
-		CARD32 rsvd3;		/* Offset 0x34 - 0x37 */
+#if X_BYTE_ORDER == X_BIG_ENDIAN
+	    CARD8 rsvd3[3];		/* Offset 0x35 - 0x37 */
+	    CARD8 capptr;		/* Offset 0x34 */
+#else
+	    CARD8 capptr;		/* Offset 0x34 */
+	    CARD8 rsvd3[3];		/* Offset 0x35 - 0x37 */
+#endif
+	    union {
 		CARD32 rsvd4;		/* Offset 0x38 - 0x3b */
-	    } rsvd;
+		CARD32 br_rom;
+	    } ubr_rom;
 	} cd;
     } cx;
     union {				/* Offset 0x3c - 0x3f */
@@ -622,15 +838,15 @@ typedef struct pci_cfg_regs {
 #endif
 	    } mmii;
 	} mmii;
-	struct {				/* header type 1 */
+	struct {				/* header type 1 & 2 */
 #if X_BYTE_ORDER == X_BIG_ENDIAN
-	    CARD16 bridge_control;	/* upper 8 bits reserved */
-	    CARD8  rsvd2;
-	    CARD8  rsvd1;
+	    CARD16 bridge_control;
+	    CARD8  int_pin;
+	    CARD8  int_line;
 #else
-	    CARD8  rsvd1;
-	    CARD8  rsvd2;
-	    CARD16 bridge_control;	/* upper 8 bits reserved */
+	    CARD8  int_line;
+	    CARD8  int_pin;
+	    CARD16 bridge_control;
 #endif
 	} bctrl;
     } bm;
@@ -657,9 +873,18 @@ typedef struct pci_device {
     int	      funcnum;
     pciCfgSpc cfgspc;
     int	      basesize[7];	/* number of bits in base addr allocations */
-    Bool      minBasesize;
+    int       minBasesize;	/* was a Bool, now a bit mask */
+    CARD32    listed_class;
     pointer   businfo;		/* pointer to secondary's bus info structure */
     Bool      fakeDevice;	/* Device added by system chipset support */
+    CARD16    pcie_cap_ptr;	/* PCI Express capability pointer */
+    CARD16    pcie_dev_ctl;	/* PCI Express device control */
+    CARD16    pcie_devtype;	/* PCI Express device type */
+    CARD16    aer_cap_ptr;	/* Advanced Error Reporting capability ptr */
+    CARD32    aer_ue_mask;	/* Uncorrectable Error mask */
+    CARD32    aer_ue_severity;	/* Uncorrectable Error severity */
+    CARD32    aer_sue_mask;	/* Uncorrectable Error Secondary mask */
+    CARD32    aer_sue_severity;	/* Uncorrectable Error Secondary severity */
 } pciDevice, *pciConfigPtr;
 
 typedef enum {
@@ -690,6 +915,7 @@ typedef enum {
 #define pci_header_type		      cfgspc.regs.bhlc.bhlc.header_type
 #define pci_bist		      cfgspc.regs.bhlc.bhlc.bist
 #define pci_cb_secondary_status	      cfgspc.regs.cx.cg.secondary_status
+#define pci_cb_capptr		      cfgspc.regs.cx.cg.cg_capptr
 #define pci_cb_bus_register           cfgspc.regs.cx.cg.cgbr.cg_bus_reg
 #define pci_cb_primary_bus_number     cfgspc.regs.cx.cg.cgbr.cgbr.primary_bus_number
 #define pci_cb_cardbus_bus_number     cfgspc.regs.cx.cg.cgbr.cgbr.cardbus_bus_number
@@ -732,6 +958,8 @@ typedef enum {
 #define pci_prefetch_upper_mem_limit  cfgspc.regs.cx.cd.um_ssys_id.pftch_umem_limit
 #define pci_upper_io_base	      cfgspc.regs.cx.cd.uio_rom.b_u_io.io_ubase
 #define pci_upper_io_limit	      cfgspc.regs.cx.cd.uio_rom.b_u_io.io_ulimit
+#define pci_capptr		      cfgspc.regs.cx.cd.capptr
+#define pci_br_rom		      cfgspc.regs.cx.cd.ubr_rom.br_rom
 #define pci_int_line		      cfgspc.regs.bm.mmii.mmii.int_line
 #define pci_int_pin		      cfgspc.regs.bm.mmii.mmii.int_pin
 #define pci_min_gnt		      cfgspc.regs.bm.mmii.mmii.min_gnt
@@ -746,8 +974,9 @@ typedef enum {
 
 typedef enum {
   PCI_BIOS_PC = 0,
-  PCI_BIOS_OPEN_FIRMWARE,
+  PCI_BIOS_OPEN_FIRMARE,
   PCI_BIOS_HP_PA_RISC,
+  PCI_BIOS_EFI,
   PCI_BIOS_OTHER
 } PciBiosType;
 
@@ -766,15 +995,23 @@ void	      pciSetBitsByte(PCITAG tag, int offset, CARD8 mask, CARD8 val);
 ADDRESS	      pciBusAddrToHostAddr(PCITAG tag, PciAddrType type, ADDRESS addr);
 ADDRESS	      pciHostAddrToBusAddr(PCITAG tag, PciAddrType type, ADDRESS addr);
 PCITAG	      pciTag(int busnum, int devnum, int funcnum);
-PCITAG	      pciDomTag(int domnum, int busnum, int devnum, int funcnum);
-int	      pciGetBaseSize(PCITAG tag, int indx, Bool destructive, Bool *min);
-CARD32	      pciCheckForBrokenBase(PCITAG tag,int basereg);
+int	      pciGetBaseSize(pciConfigPtr device, int indx,
+			     Bool destructive, int *min);
+Bool          xf86LocatePciMemoryArea(PCITAG tag,
+				      char **devName, unsigned int *devOffset,
+				      unsigned int *fbSize,
+				      unsigned int *fbOffset,
+				      unsigned int *flags);
 pointer	      xf86MapPciMem(int ScreenNum, int Flags, PCITAG Tag,
-				ADDRESS Base, unsigned long Size);
+			    ADDRESS Base, unsigned long Size);
 int	      xf86ReadPciBIOS(unsigned long Offset, PCITAG Tag, int basereg,
-				unsigned char *Buf, int Len);
+			      unsigned char *Buf, int Len);
+int	      xf86ReadPciBIOSByType(unsigned long Offset, PCITAG Tag,
+				    int basereg, unsigned char *Buf,
+				    int Len, PciBiosType Type);
+int	      xf86GetAvailablePciBIOSTypes(PCITAG Tag, int basereg,
+					   PciBiosType *Buf);
 pciConfigPtr *xf86scanpci(int flags);
-pciConfigPtr xf86GetPciConfigFromTag(PCITAG Tag);
 
 extern int pciNumBuses;
 

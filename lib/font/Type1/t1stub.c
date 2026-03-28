@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/t1stub.c,v 1.9tsi Exp $ */
+/* $Xorg: t1stub.c,v 1.3 2000/08/17 19:46:34 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -27,10 +34,11 @@
  * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
  * SOFTWARE.
  */
+/* $XFree86: xc/lib/font/Type1/t1stub.c,v 1.9 2002/02/18 20:51:57 herrb Exp $ */
 
 #ifdef FONTMODULE
-#include <X11/Xdefs.h>	/* Bool declaration */
-#include <X11/Xmd.h>	/* INT32 declaration */
+#include "Xdefs.h"	/* Bool declaration */
+#include "Xmd.h"	/* INT32 declaration */
 #include "os.h"
 #include "xf86_ansic.h"
 #else 

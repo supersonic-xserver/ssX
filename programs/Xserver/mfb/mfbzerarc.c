@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbzerarc.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbzerarc.c,v 3.8 2003/07/16 01:38:55 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -25,14 +32,16 @@ in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
 
+/* $Xorg: mfbzerarc.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+
 /* Derived from:
  * "Algorithm for drawing ellipses or hyperbolae with a digital plotter"
  * by M. L. V. Pitteway
  * The Computer Journal, November 1967, Volume 10, Number 3, pp. 282-289
  */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "regionstr.h"
 #include "gcstruct.h"
 #include "pixmapstr.h"
@@ -70,18 +79,21 @@ in this Software without prior written authorization from The Open Group.
 #define DoPix(bit,base,yoff,xoff) if (mask & bit) Pixelate(base,yoff,xoff);
 
 static void
-mfbZeroArcSS(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
+mfbZeroArcSS(
+    DrawablePtr pDraw,
+    GCPtr pGC,
+    xArc *arc)
 {
     miZeroArcRec info;
     Bool do360;
-    int x, y, a, b, d, mask;
-    int k1, k3, dx, dy;
+    register int x, y, a, b, d, mask;
+    register int k1, k3, dx, dy;
     PixelType *addrl;
     PixelType *yorgl, *yorgol;
     PixelType pixel;
     int nlwidth, yoffset, dyoffset;
     PixelType pmask;
-    PixelType *paddr;
+    register PixelType *paddr;
 
     if (((mfbPrivGC *)(pGC->devPrivates[mfbGCPrivateIndex].ptr))->rop ==
 	RROP_BLACK)
@@ -201,10 +213,14 @@ mfbZeroArcSS(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
 }
 
 void
-mfbZeroPolyArcSS(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
+mfbZeroPolyArcSS(pDraw, pGC, narcs, parcs)
+    DrawablePtr	pDraw;
+    GCPtr	pGC;
+    int		narcs;
+    xArc	*parcs;
 {
-    xArc *arc;
-    int i;
+    register xArc *arc;
+    register int i;
     BoxRec box;
     int x2, y2;
     RegionPtr cclip;

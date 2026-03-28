@@ -1,5 +1,13 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfballpriv.c,v 1.13tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: cfballpriv.c,v 1.4 2001/02/09 02:04:37 xorgcvs Exp $
+ *
 Copyright 1991, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -24,9 +32,10 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
+/* $XFree86: xc/programs/Xserver/cfb/cfballpriv.c,v 1.12 2001/12/14 19:59:21 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -51,7 +60,9 @@ static unsigned long cfbGeneration = 0;
 
 
 Bool
-cfbAllocatePrivates(ScreenPtr pScreen, int *window_index, int *gc_index)
+cfbAllocatePrivates(pScreen, window_index, gc_index)
+    ScreenPtr	pScreen;
+    int		*window_index, *gc_index;
 {
     if (!window_index || !gc_index ||
 	(*window_index == -1 && *gc_index == -1))

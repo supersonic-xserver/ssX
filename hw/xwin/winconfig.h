@@ -1,6 +1,11 @@
-#ifndef __WIN_CONFIG_H__
-#define __WIN_CONFIG_H__
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -29,11 +34,12 @@
  *
  * Authors: Alexander Gottwald	
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winconfig.h,v 1.2 2007/01/04 02:02:19 tsi Exp $ */
+#ifndef __WIN_CONFIG_H__
+#define __WIN_CONFIG_H__
 
 #include "win.h"
-#ifdef XWIN_XF86CONFIG
-#include "../xfree86/parser/xf86Parser.h"
-#endif
+#include "xf86Parser.h"
 
 
 /* These are taken from hw/xfree86/common/xf86str.h */
@@ -186,23 +192,14 @@ serverLayoutRec, *serverLayoutPtr;
 typedef struct
 {
   /* Files */
-#ifdef XWIN_XF86CONFIG
   char *configFile;
-#endif
   char *fontPath;
   char *rgbPath;
   /* input devices - keyboard */
-#ifdef XWIN_XF86CONFIG
   char *keyboard;
-#endif
 #ifdef XKB
   Bool noXkbExtension;
   char *xkbMap;
-  char *xkbRules; 
-  char *xkbModel;
-  char *xkbLayout;
-  char *xkbVariant;
-  char *xkbOptions;
 #endif
   /* layout */
   char *screenname;
@@ -215,9 +212,8 @@ WinCmdlineRec, *WinCmdlinePtr;
 
 
 extern WinCmdlineRec g_cmdline;
-#ifdef XWIN_XF86CONFIG
+
 extern XF86ConfigPtr g_xf86configptr;
-#endif
 extern serverLayoutRec g_winConfigLayout;
 
 
@@ -293,10 +289,9 @@ char *winSetStrOption (pointer optlist, const char *name, char *deflt);
 int winSetBoolOption (pointer optlist, const char *name, int deflt);
 int winSetIntOption (pointer optlist, const char *name, int deflt);
 double winSetRealOption (pointer optlist, const char *name, double deflt);
-#ifdef XWIN_XF86CONFIG
+
 XF86OptionPtr winFindOption (XF86OptionPtr list, const char *name);
 char *winFindOptionValue (XF86OptionPtr list, const char *name);
-#endif
 int winNameCompare (const char *s1, const char *s2);
 char *winNormalizeName (const char *s);
 

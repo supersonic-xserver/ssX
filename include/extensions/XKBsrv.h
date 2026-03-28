@@ -1,3 +1,11 @@
+/* $Xorg: XKBsrv.h,v 1.3 2000/08/18 04:05:45 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/include/extensions/XKBsrv.h,v 3.24 2006/01/09 14:58:17 dawes Exp $ */
+/* $XFree86: xc/include/extensions/XKBsrv.h,v 3.23 2003/11/17 22:20:02 dawes Exp $ */
 
 #ifndef _XKBSRV_H_
 #define	_XKBSRV_H_
@@ -242,7 +250,7 @@ extern int	XkbReqCode;
 extern int	XkbEventBase;
 extern int	XkbKeyboardErrorCode;
 extern int	XkbDisableLockActions;
-extern const char *	XkbBaseDirectory;
+extern char *	XkbBaseDirectory;
 extern char *	XkbInitialMap;
 extern int	_XkbClientMajor;
 extern int	_XkbClientMinor;
@@ -318,7 +326,7 @@ extern void XkbUseMsg(
 
 extern int XkbProcessArguments(
     int				/* argc */,
-    const char **		/* argv */,
+    char **			/* argv */,
     int				/* i */
 );
 
@@ -1114,9 +1122,9 @@ extern	Bool XkbDDXNamesFromRules(
 );
 
 extern	FILE *XkbDDXOpenConfigFile(
-	const char *	/* mapName */,
-	char *		/* fileNameRtrn */,
-	int		/* fileNameRtrnLen */
+	char *	/* mapName */,
+	char *	/* fileNameRtrn */,
+	int	/* fileNameRtrnLen */
 );
 
 extern	Bool XkbDDXApplyConfig(

@@ -1,5 +1,11 @@
-/* $Xorg: sunMouse.c,v 1.3 2000/08/17 19:48:32 cpqbld Exp $ */
 /*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1987 by the Regents of the University of California
  *
  * Permission to use, copy, modify, and distribute this
@@ -22,11 +28,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -45,68 +51,28 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Permission to use, copy, modify, and distribute this
  * software and its documentation for any purpose and without
  * fee is hereby granted, provided that the above copyright
- * notice appear in all copies.  Kaleb S. Keithley makes no
- * representations about the suitability of this software for
- * any purpose.  It is provided "as is" without express or
+ * notice appear in all copies.  Kaleb S. Keithley makes no 
+ * representations about the suitability of this software for 
+ * any purpose.  It is provided "as is" without express or 
  * implied warranty.
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunMouse.c,v 1.4 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunMouse.c,v 1.5 2006/01/09 14:59:49 dawes Exp $ */
 
 #define NEED_EVENTS
 #include    "sun.h"
 #include    "mi.h"
-#include    "cursor.h"
-#include    "input.h"
-#include    "inpututils.h"
-#include    "exevents.h"
-#include    "xserver-properties.h"
-
-/*
- * Data private to any sun pointer device.
- */
-typedef struct {
-    int		fd;
-    int		bmask;		/* last known button state */
-    int		oformat;	/* saved value of VUIDGFORMAT */
-    Firm_event	evbuf[SUN_MAXEVENTS];	/* Buffer for Firm_events */
-} sunPtrPrivRec, *sunPtrPrivPtr;
 
 Bool sunActiveZaphod = TRUE;
-DeviceIntPtr sunPointerDevice = NULL;
 
-static void sunMouseEvents(int, int, void *);
-static void sunMouseCtrl(DeviceIntPtr, PtrCtrl *);
-static int sunMouseGetEvents(DeviceIntPtr);
-static void sunMouseEnqueueEvent(DeviceIntPtr, Firm_event *);
-static Bool sunCursorOffScreen(ScreenPtr *, int *, int *);
-static void sunCrossScreen(ScreenPtr, int);
-static void sunWarpCursor(DeviceIntPtr, ScreenPtr, int, int);
+static Bool sunCursorOffScreen();
+static void sunCrossScreen();
+static void sunWarpCursor();
 
 miPointerScreenFuncRec sunPointerScreenFuncs = {
     sunCursorOffScreen,
     sunCrossScreen,
     sunWarpCursor,
 };
-
-static void
-sunMouseEvents(int fd, int ready, void *data)
-{
-    int i, numEvents;
-    DeviceIntPtr device = (DeviceIntPtr)data;
-    DevicePtr pMouse = &device->public;
-    sunPtrPrivPtr pPriv = pMouse->devicePrivate;
-
-    input_lock();
-
-    do {
-	numEvents = sunMouseGetEvents(device);
-	for (i = 0; i < numEvents; i++) {
-	    sunMouseEnqueueEvent(device, &pPriv->evbuf[i]);
-	}
-    } while (numEvents == SUN_MAXEVENTS);
-
-    input_unlock();
-}
 
 /*-
  *-----------------------------------------------------------------------
@@ -124,8 +90,10 @@ sunMouseEvents(int fd, int ready, void *data)
  *-----------------------------------------------------------------------
  */
 /*ARGSUSED*/
-static void
-sunMouseCtrl(DeviceIntPtr device, PtrCtrl *ctrl)
+static 
+void sunMouseCtrl (
+    DeviceIntPtr    device,
+    PtrCtrl*	    ctrl)
 {
 }
 
@@ -148,135 +116,141 @@ sunMouseCtrl(DeviceIntPtr device, PtrCtrl *ctrl)
  *
  *-----------------------------------------------------------------------
  */
-int
-sunMouseProc(DeviceIntPtr device, int what)
+int sunMouseProc (
+    DeviceIntPtr  device,
+    int	    	  what)
 {
-    DevicePtr	  pMouse = &device->public;
-    sunPtrPrivPtr pPriv;
+    DevicePtr	  pMouse = (DevicePtr) device;
     int	    	  format;
+    static int	  oformat;
     BYTE    	  map[4];
-    Atom btn_labels[3] = {0};
-    Atom axes_labels[2] = { 0, 0 };
 
     switch (what) {
 	case DEVICE_INIT:
-	    pPriv = malloc(sizeof(*pPriv));
-	    if (pPriv == NULL) {
-		LogMessage(X_ERROR, "Cannot allocate private data for mouse\n");
+	    if (pMouse != LookupPointerDevice()) {
+		ErrorF ("Cannot open non-system mouse");	
 		return !Success;
 	    }
-	    pPriv->fd = open("/dev/mouse", O_RDWR | O_NONBLOCK, 0);
-	    if (pPriv->fd < 0) {
-		LogMessage(X_ERROR, "Cannot open /dev/mouse, error %d\n",
-		    errno);
-		free(pPriv);
+	    if (sunPtrPriv.fd == -1)
 		return !Success;
-	    }
-	    pPriv->bmask = 0;
-	    pPriv->oformat = 0;
-	    pMouse->devicePrivate = pPriv;
+	    pMouse->devicePrivate = (pointer) &sunPtrPriv;
 	    pMouse->on = FALSE;
-	    
 	    map[1] = 1;
 	    map[2] = 2;
 	    map[3] = 3;
-	    btn_labels[0] = XIGetKnownProperty(BTN_LABEL_PROP_BTN_LEFT);
-	    btn_labels[1] = XIGetKnownProperty(BTN_LABEL_PROP_BTN_MIDDLE);
-	    btn_labels[2] = XIGetKnownProperty(BTN_LABEL_PROP_BTN_RIGHT);
-	    axes_labels[0] = XIGetKnownProperty(AXIS_LABEL_PROP_REL_X);
-	    axes_labels[1] = XIGetKnownProperty(AXIS_LABEL_PROP_REL_Y);
-
-	    InitPointerDeviceStruct(pMouse, map, 3, btn_labels,
-		sunMouseCtrl, GetMotionHistorySize(),
-		2, axes_labels);
-
-	    /* X valuator */
-	    InitValuatorAxisStruct(device, 0, axes_labels[0],
-		NO_AXIS_LIMITS, NO_AXIS_LIMITS, 1, 0, 1, Relative);
-            device->valuator->axisVal[0] = screenInfo.screens[0]->width / 2;
-            device->last.valuators[0] = device->valuator->axisVal[0];
-
-	    /* Y valuator */
-	    InitValuatorAxisStruct(device, 1, axes_labels[1],
-		NO_AXIS_LIMITS, NO_AXIS_LIMITS, 1, 0, 1, Relative);
-            device->valuator->axisVal[1] = screenInfo.screens[0]->height / 2;
-            device->last.valuators[1] = device->valuator->axisVal[1];
-
+	    InitPointerDeviceStruct(
+		pMouse, map, 3, miPointerGetMotionEvents,
+ 		sunMouseCtrl, miPointerGetMotionBufferSize());
 	    break;
 
 	case DEVICE_ON:
-	    pPriv = (sunPtrPrivPtr)pMouse->devicePrivate;
-	    if (ioctl(pPriv->fd, VUIDGFORMAT, &pPriv->oformat) == -1) {
-		LogMessage(X_ERROR, "sunMouseProc ioctl VUIDGFORMAT\n");
+	    if (ioctl (sunPtrPriv.fd, VUIDGFORMAT, &oformat) == -1) {
+		Error ("sunMouseProc ioctl VUIDGFORMAT");
 		return !Success;
 	    }
 	    format = VUID_FIRM_EVENT;
-	    if (ioctl(pPriv->fd, VUIDSFORMAT, &format) == -1) {
-		LogMessage(X_ERROR, "sunMouseProc ioctl VUIDSFORMAT\n");
+	    if (ioctl (sunPtrPriv.fd, VUIDSFORMAT, &format) == -1) {
+		Error ("sunMouseProc ioctl VUIDSFORMAT");
 		return !Success;
 	    }
-
-	    SetNotifyFd(pPriv->fd, sunMouseEvents, X_NOTIFY_READ, device);
-
-	    pPriv->bmask = 0;
+	    sunPtrPriv.bmask = 0;
+	    AddEnabledDevice (sunPtrPriv.fd);
 	    pMouse->on = TRUE;
 	    break;
 
-	case DEVICE_OFF:
-	    pPriv = (sunPtrPrivPtr)pMouse->devicePrivate;
-	    RemoveNotifyFd(pPriv->fd);
-	    if (ioctl(pPriv->fd, VUIDSFORMAT, &pPriv->oformat) == -1)
-		LogMessage(X_ERROR, "sunMouseProc ioctl VUIDSFORMAT\n");
-	    pMouse->on = FALSE;
-	    break;
-
 	case DEVICE_CLOSE:
-	    pPriv = (sunPtrPrivPtr)pMouse->devicePrivate;
-	    close(pPriv->fd);
-	    free(pPriv);
-	    pMouse->devicePrivate = NULL;
+	    pMouse->on = FALSE;
+	    if (ioctl (sunPtrPriv.fd, VUIDSFORMAT, &oformat) == -1)
+		Error ("sunMouseProc ioctl VUIDSFORMAT");
 	    break;
 
-	case DEVICE_ABORT:
+	case DEVICE_OFF:
+	    pMouse->on = FALSE;
+	    RemoveEnabledDevice (sunPtrPriv.fd);
 	    break;
     }
     return Success;
 }
-
+    
 /*-
  *-----------------------------------------------------------------------
  * sunMouseGetEvents --
  *	Return the events waiting in the wings for the given mouse.
  *
  * Results:
- *      Update Firm_event buffer in DeviceIntPtr if events are received.
- *      Return the number of received Firm_events in the buffer.
+ *	A pointer to an array of Firm_events or (Firm_event *)0 if no events
+ *	The number of events contained in the array.
+ *	A boolean as to whether more events might be available.
  *
  * Side Effects:
  *	None.
  *-----------------------------------------------------------------------
  */
 
-static int
-sunMouseGetEvents(DeviceIntPtr device)
+Firm_event* sunMouseGetEvents (
+    int		fd,
+    Bool	on,
+    int*	pNumEvents,
+    Bool*	pAgain)
 {
-    DevicePtr pMouse = &device->public;
-    sunPtrPrivPtr pPriv = pMouse->devicePrivate;
-    int nBytes;		    /* number of bytes of events available. */
-    int NumEvents = 0;
+    int	    	  nBytes;	    /* number of bytes of events available. */
+    static Firm_event	evBuf[MAXEVENTS];   /* Buffer for Firm_events */
 
-    nBytes = read(pPriv->fd, pPriv->evbuf, sizeof(pPriv->evbuf));
-    if (nBytes == -1) {
-	if (errno != EWOULDBLOCK) {
-	    LogMessage(X_ERROR, "Unexpected error on reading mouse\n");
-	    FatalError("Could not read from mouse");
+    if ((nBytes = read (fd, (char *)evBuf, sizeof(evBuf))) == -1) {
+	if (errno == EWOULDBLOCK) {
+	    *pNumEvents = 0;
+	    *pAgain = FALSE;
+	} else {
+	    Error ("sunMouseGetEvents read");
+	    FatalError ("Could not read from mouse");
 	}
     } else {
-	NumEvents = nBytes / sizeof(pPriv->evbuf[0]);
+	if (on) {
+	    *pNumEvents = nBytes / sizeof (Firm_event);
+	    *pAgain = (nBytes == sizeof (evBuf));
+	} else {
+	    *pNumEvents = 0;
+	    *pAgain = FALSE;
+	}
     }
-    return NumEvents;
+    return evBuf;
 }
 
+
+/*-
+ *-----------------------------------------------------------------------
+ * MouseAccelerate --
+ *	Given a delta and a mouse, return the acceleration of the delta.
+ *
+ * Results:
+ *	The corrected delta
+ *
+ * Side Effects:
+ *	None.
+ *
+ *-----------------------------------------------------------------------
+ */
+static short
+MouseAccelerate (device, delta)
+    DeviceIntPtr  device;
+    int	    	  delta;
+{
+    int  sgn = sign(delta);
+    PtrCtrl *pCtrl;
+    short ret;
+
+    delta = abs(delta);
+    pCtrl = &device->ptrfeed->ctrl;
+    if (delta > pCtrl->threshold) {
+	ret = 
+	    (short) sgn * 
+		(pCtrl->threshold + ((delta - pCtrl->threshold) * pCtrl->num) /
+		    pCtrl->den);
+    } else {
+	ret = (short) sgn * delta;
+    }
+    return ret;
+}
 
 /*-
  *-----------------------------------------------------------------------
@@ -293,18 +267,19 @@ sunMouseGetEvents(DeviceIntPtr device)
  *-----------------------------------------------------------------------
  */
 
-static void
-sunMouseEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
+void sunMouseEnqueueEvent (
+    DeviceIntPtr  device,
+    Firm_event	  *fe)
 {
+    xEvent		xE;
     sunPtrPrivPtr	pPriv;	/* Private data for pointer */
     int			bmask;	/* Temporary button mask */
+    unsigned long	time;
     int			x, y;
-    double		tmpx, tmpy;
-    int			type, buttons, flag;
-    int			valuators[2];
-    ValuatorMask	mask;
 
     pPriv = (sunPtrPrivPtr)device->public.devicePrivate;
+
+    time = xE.u.keyButtonPointer.time = TVTOMILLI(fe->time);
 
     switch (fe->id) {
     case MS_LEFT:
@@ -317,33 +292,27 @@ sunMouseEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
 	 *
 	 * Mouse buttons start at 1.
 	 */
-	buttons = (fe->id - MS_LEFT) + 1;
-	bmask = 1 << buttons;
+	xE.u.u.detail = (fe->id - MS_LEFT) + 1;
+	bmask = 1 << xE.u.u.detail;
 	if (fe->value == VKEY_UP) {
 	    if (pPriv->bmask & bmask) {
-		type = ButtonRelease;
+		xE.u.u.type = ButtonRelease;
 		pPriv->bmask &= ~bmask;
 	    } else {
 		return;
 	    }
 	} else {
 	    if ((pPriv->bmask & bmask) == 0) {
-		type = ButtonPress;
+		xE.u.u.type = ButtonPress;
 		pPriv->bmask |= bmask;
 	    } else {
 		return;
 	    }
 	}
-	flag = POINTER_RELATIVE;
-	valuator_mask_zero(&mask);
-	QueuePointerEvents(device, type, buttons, flag, &mask);
+	mieqEnqueue (&xE);
 	break;
     case LOC_X_DELTA:
-	valuators[0] = fe->value;
-	valuators[1] = 0;
-	valuator_mask_set_range(&mask, 0, 2, valuators);
-	flag = POINTER_RELATIVE | POINTER_ACCELERATE;
-	QueuePointerEvents(device, MotionNotify, 0, flag, &mask);
+	miPointerDeltaCursor (MouseAccelerate(device,fe->value),0,time);
 	break;
     case LOC_Y_DELTA:
 	/*
@@ -351,23 +320,15 @@ sunMouseEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
 	 * and motion down a negative delta, so we must subtract
 	 * here instead of add...
 	 */
-	valuators[0] = 0;
-	valuators[1] = -fe->value;
-	valuator_mask_set_range(&mask, 0, 2, valuators);
-	flag = POINTER_RELATIVE | POINTER_ACCELERATE;
-	QueuePointerEvents(device, MotionNotify, 0, flag, &mask);
+	miPointerDeltaCursor (0,-MouseAccelerate(device,fe->value),time);
 	break;
     case LOC_X_ABSOLUTE:
-	miPointerGetPosition(device, &x, &y);
-	tmpx = fe->value;
-	tmpy = y;
-	miPointerSetPosition(device, Absolute, &tmpx, &tmpy, NULL, NULL);
+	miPointerPosition (&x, &y);
+	miPointerAbsoluteCursor (fe->value, y, time);
 	break;
     case LOC_Y_ABSOLUTE:
-	miPointerGetPosition(device, &x, &y);
-	tmpx = x;
-	tmpy = fe->value;
-	miPointerSetPosition(device, Absolute, &tmpx, &tmpy, NULL, NULL);
+	miPointerPosition (&x, &y);
+	miPointerAbsoluteCursor (x, fe->value, time);
 	break;
     default:
 	FatalError ("sunMouseEnqueueEvent: unrecognized id\n");
@@ -377,13 +338,14 @@ sunMouseEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
 
 /*ARGSUSED*/
 static Bool
-sunCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
+sunCursorOffScreen (pScreen, x, y)
+    ScreenPtr	*pScreen;
+    int		*x, *y;
 {
     int	    index, ret = FALSE;
-    DeviceIntPtr device = sunPointerDevice;	/* XXX */
+    extern Bool PointerConfinedToScreen();
 
-    if (device && PointerConfinedToScreen(device))
-	return TRUE;
+    if (PointerConfinedToScreen()) return TRUE;
     /*
      * Active Zaphod implementation:
      *    increment or decrement the current screen
@@ -408,16 +370,36 @@ sunCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
 }
 
 static void
-sunCrossScreen(ScreenPtr pScreen, int entering)
+sunCrossScreen (pScreen, entering)
+    ScreenPtr	pScreen;
+    Bool	entering;
 {
     if (sunFbs[pScreen->myNum].EnterLeave)
 	(*sunFbs[pScreen->myNum].EnterLeave) (pScreen, entering ? 0 : 1);
 }
 
 static void
-sunWarpCursor(DeviceIntPtr pDev, ScreenPtr pScreen, int x, int y)
+sunWarpCursor (pScreen, x, y)
+    ScreenPtr	pScreen;
+    int		x, y;
 {
-    input_lock();
-    miPointerWarpCursor (pDev, pScreen, x, y);
-    input_unlock();
+#ifndef i386
+    sigset_t newsigmask;
+
+    (void) sigemptyset (&newsigmask);
+#ifdef SVR4
+    (void) sigaddset (&newsigmask, SIGPOLL);
+#else
+    (void) sigaddset (&newsigmask, SIGIO);
+#endif
+    (void) sigprocmask (SIG_BLOCK, &newsigmask, (sigset_t *)NULL);
+    miPointerWarpCursor (pScreen, x, y);
+    (void) sigprocmask (SIG_UNBLOCK, &newsigmask, (sigset_t *)NULL);
+#else
+    int oldmask;
+
+    oldmask = sigblock (sigmask (SIGIO));
+    miPointerWarpCursor (pScreen, x, y);
+    sigsetmask (oldmask);
+#endif
 }

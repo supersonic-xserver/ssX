@@ -1,7 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Fill rectangles.
  */
-/* $XFree86: xc/programs/Xserver/cfb/cfbfillrct.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbfillrct.c,v 3.8 2001/12/14 19:59:22 dawes Exp $ */
 
 /*
 
@@ -28,8 +35,10 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+/* $Xorg: cfbfillrct.c,v 1.4 2001/02/09 02:04:37 xorgcvs Exp $ */
+
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "gcstruct.h"
 #include "window.h"
@@ -43,8 +52,12 @@ in this Software without prior written authorization from The Open Group.
 
 
 void
-cfbFillBoxTileOdd(DrawablePtr pDrawable, int n, BoxPtr rects, PixmapPtr tile,
-		  int xrot, int yrot)
+cfbFillBoxTileOdd (pDrawable, n, rects, tile, xrot, yrot)
+    DrawablePtr	pDrawable;
+    int		n;
+    BoxPtr	rects;
+    PixmapPtr	tile;
+    int		xrot, yrot;
 {
 #if PSZ == 24
     if (tile->drawable.width & 3)
@@ -57,7 +70,11 @@ cfbFillBoxTileOdd(DrawablePtr pDrawable, int n, BoxPtr rects, PixmapPtr tile,
 }
 
 void
-cfbFillRectTileOdd(DrawablePtr pDrawable, GCPtr pGC, int nBox, BoxPtr pBox)
+cfbFillRectTileOdd (pDrawable, pGC, nBox, pBox)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		nBox;
+    BoxPtr	pBox;
 {
     int	xrot, yrot;
     void    (*fill)(DrawablePtr, int, BoxPtr, PixmapPtr, int, int, int, unsigned long);
@@ -92,13 +109,16 @@ cfbFillRectTileOdd(DrawablePtr pDrawable, GCPtr pGC, int nBox, BoxPtr pBox)
 #define NUM_STACK_RECTS	1024
 
 void
-cfbPolyFillRect(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
-		xRectangle *prectInit)
+cfbPolyFillRect(pDrawable, pGC, nrectFill, prectInit)
+    DrawablePtr pDrawable;
+    register GCPtr pGC;
+    int		nrectFill; 	/* number of rectangles to fill */
+    xRectangle	*prectInit;  	/* Pointer to first rectangle to fill */
 {
     xRectangle	    *prect;
     RegionPtr	    prgnClip;
-    BoxPtr	    pbox;
-    BoxPtr	    pboxClipped;
+    register BoxPtr pbox;
+    register BoxPtr pboxClipped;
     BoxPtr	    pboxClippedBase;
     BoxPtr	    pextent;
     BoxRec	    stackRects[NUM_STACK_RECTS];

@@ -1,5 +1,12 @@
 /*
- * Copyright (c) 2001-2004 Torrey T. Lyons. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright (c) 2001-2003 Torrey T. Lyons. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,7 +30,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/darwin.h,v 1.22tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/darwin.h,v 1.20 2003/11/15 00:07:09 torrey Exp $ */
 
 #ifndef _DARWIN_H
 #define _DARWIN_H
@@ -31,8 +38,7 @@
 #include <IOKit/IOTypes.h>
 #include "inputstr.h"
 #include "scrnintstr.h"
-#include "extnsionst.h"
-#include <X11/extensions/XKB.h>
+#include "extensions/XKB.h"
 
 typedef struct {
     void                *framebuffer;
@@ -70,9 +76,9 @@ int DarwinModifierStringToNXKey(const char *string);
 // Mode specific functions
 Bool DarwinModeAddScreen(int index, ScreenPtr pScreen);
 Bool DarwinModeSetupScreen(int index, ScreenPtr pScreen);
-void DarwinModeInitOutput(int argc, const char **argv);
-void DarwinModeInitInput(int argc, const char **argv);
-int DarwinModeProcessArgument(int argc, const char *argv[], int i);
+void DarwinModeInitOutput(int argc,char **argv);
+void DarwinModeInitInput(int argc, char **argv);
+int DarwinModeProcessArgument(int argc, char *argv[], int i);
 void DarwinModeProcessEvent(xEvent *xe);
 void DarwinModeGiveUp(void);
 void DarwinModeBell(int volume, DeviceIntPtr pDevice, pointer ctrl, int class);
@@ -84,7 +90,8 @@ void DarwinModeBell(int volume, DeviceIntPtr pDevice, pointer ctrl, int class);
 #define kern_assert(x) { if ((x) != KERN_SUCCESS) \
     FatalError("assert failed on line %d of %s with kernel return 0x%x!\n", \
                 __LINE__, __FILE__, x); }
-#define SCREEN_PRIV(pScreen) pScreen->devPrivates[darwinScreenIndex].ptr
+#define SCREEN_PRIV(pScreen) \
+    ((DarwinFramebufferPtr)pScreen->devPrivates[darwinScreenIndex].ptr)
 
 
 #define MIN_KEYCODE XkbMinLegalKeyCode     // unfortunately, this isn't 0...
@@ -98,17 +105,13 @@ extern int              darwinScreensFound;
 extern io_connect_t     darwinParamConnect;
 extern int              darwinEventReadFD;
 extern int              darwinEventWriteFD;
-extern DeviceIntPtr     darwinPointer;
-extern DeviceIntPtr     darwinKeyboard;
 
 // User preferences
 extern int              darwinMouseAccelChange;
 extern int              darwinFakeButtons;
 extern int              darwinFakeMouse2Mask;
 extern int              darwinFakeMouse3Mask;
-extern int              darwinSwapAltMeta;
 extern char            *darwinKeymapFile;
-extern int              darwinSyncKeymap;
 extern unsigned int     darwinDesiredWidth, darwinDesiredHeight;
 extern int              darwinDesiredDepth;
 extern int              darwinDesiredRefresh;

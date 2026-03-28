@@ -17,69 +17,70 @@
 We recommend using gcc to build XFree86, but XFree86 generally builds with
 the native compiler for each OS platform.
 
-1.  How to get the XFree86 4.7.0 source
+1.  How to get the XFree86 4.5.0 source
 
-The recommended way of getting the XFree86 4.7.0 source is to obtain it
+The recommended way of getting the XFree86 4.5.0 source is to obtain it
 directly from the XFree86 CVS repository.  There are several ways of doing
 that, and they are described at our CVS web page
 <URL:http://www.xfree86.org/cvs/>.
 
-The CVS tag for this release is "xf-4_7_0".  The tag for the maintenance
-branch for this release is "xf-4_7-branch".
+The CVS tag for this release is "xf-4_5_0".  The tag for the maintenance
+branch for this release is "xf-4_5-branch".
 
-Another method of getting the XFree86 4.7.0 source is to either download the
-4.7.0 source tarballs from the XFree86 ftp site.  The procedure for this is
+Another method of getting the XFree86 4.5.0 source is to either download the
+4.5.0 source tarballs from the XFree86 ftp site.  The procedure for this is
 as follows:
 
-   o The XFree86 4.7.0 source is contained in the files:
+   o The XFree86 4.5.0 source is contained in the files:
 
-          XFree86-4.7.0-src-1.tgz
+          XFree86-4.5.0-src-1.tgz
 
-          XFree86-4.7.0-src-2.tgz
+          XFree86-4.5.0-src-2.tgz
 
-          XFree86-4.7.0-src-3.tgz
+          XFree86-4.5.0-src-3.tgz
 
-          XFree86-4.7.0-src-4.tgz
+          XFree86-4.5.0-src-4.tgz
 
-          XFree86-4.7.0-src-5.tgz
+          XFree86-4.5.0-src-5.tgz
 
-          XFree86-4.7.0-src-6.tgz
+          XFree86-4.5.0-src-6.tgz
 
-          XFree86-4.7.0-src-7.tgz
+          XFree86-4.5.0-src-7.tgz
 
-     These can be found at ftp://ftp.xfree86.org/pub/XFree86/4.7.0/source/.
-     XFree86-4.7.0-src-4.tgz and XFree86-4.7.0-src-5.tgz contains the fonts.
-     XFree86-4.7.0-src-6.tgz contains the documentation source.
-     XFree86-4.7.0-src-7.tgz contains the hardcopy documentation.
-     XFree86-4.7.0-src-1.tgz, XFree86-4.7.0-src-2.tgz and
-     XFree86-4.7.0-src-3.tgz contains everything else.
+     These can be found at ftp://ftp.xfree86.org/pub/XFree86/4.5.0/source/
+     and similar locations on XFree86 mirror sites.  XFree86-4.5.0-src-4.tgz
+     and XFree86-4.5.0-src-5.tgz contains the fonts.  XFree86-4.5.0-src-6.tgz
+     contains the documentation source.  XFree86-4.5.0-src-7.tgz contains the
+     hardcopy documentation.  XFree86-4.5.0-src-1.tgz,
+     XFree86-4.5.0-src-2.tgz and XFree86-4.5.0-src-3.tgz contains everything
+     else.
 
      If you do not need either the documentation or the fonts, then you need
-     only XFree86-4.7.0-src-1.tgz, XFree86-4.7.0-src-2.tgz and
-     XFree86-4.7.0-src-3.tgz.
+     only XFree86-4.5.0-src-1.tgz, XFree86-4.5.0-src-2.tgz and
+     XFree86-4.5.0-src-3.tgz.
 
    o Extract each of these files by running the following from a directory on
      a filesystem containing enough space (the full source requires around
      270MB, with a similar amount being required for the compiled binaries):
 
-          gzip -d < XFree86-4.7.0-src-1.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-1.tgz | tar vxf -
 
-          gzip -d < XFree86-4.7.0-src-2.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-2.tgz | tar vxf -
 
-          gzip -d < XFree86-4.7.0-src-3.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-3.tgz | tar vxf -
 
-          gzip -d < XFree86-4.7.0-src-4.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-4.tgz | tar vxf -
 
-          gzip -d < XFree86-4.7.0-src-5.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-5.tgz | tar vxf -
 
-          gzip -d < XFree86-4.7.0-src-6.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-6.tgz | tar vxf -
 
-          gzip -d < XFree86-4.7.0-src-7.tgz | tar vxf -
+          gzip -d < XFree86-4.5.0-src-7.tgz | tar vxf -
 
-Alternatively, if you already have a pristine copy of the XFree86 4.6.0
+Alternatively, if you already have a pristine copy of the XFree86 4.4.0
 source, you can download patches from
-ftp://ftp.xfree86.org/pub/XFree86/4.7.0/patches/ that will allow you to con-
-vert it to 4.7.0.  Information about which patch files to download and how to
+ftp://ftp.xfree86.org/pub/XFree86/4.5.0/patches/ that will allow you to con-
+vert it to 4.5.0.  Information about which patch files to download and how to
 apply them can be found in the "How to get XFree86" section of the README for
 this release.
 
@@ -102,8 +103,8 @@ easy to create build problems by changing the default configuration unneces-
 sarily.  Before making too many modifications, check the configuration param-
 eters specified in the xc/config/cf/README file.
 
-If you are using just the XFree86-4.7.0-src-1.tgz, XFree86-4.7.0-src-2.tgz
-and XFree86-4.7.0-src-3.tgz parts of the source dist, you will need to define
+If you are using just the XFree86-4.5.0-src-1.tgz, XFree86-4.5.0-src-2.tgz
+and XFree86-4.5.0-src-3.tgz parts of the source dist, you will need to define
 BuildFonts to NO.
 
 3.  Using a shadow directory of symbolic links for the build
@@ -281,7 +282,7 @@ XFree86:
             them manually in host.def and report the problem to
             <XFree86@XFree86.org>.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.20 dawes Exp $
+     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/BUILD.sgml,v 3.19 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/BUILD,v 3.35tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/BUILD,v 3.34 2005/03/17 01:11:54 dawes Exp $

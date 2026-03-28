@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2017 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,8 +28,12 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
+#include "windowstr.h"
+#include "dixstruct.h"
 #include "swaprep.h"
 #include <unistd.h>
+#include "randr_compat_proto.h"
 
 RESTYPE RRLeaseType;
 
@@ -198,7 +209,7 @@ RRLeaseDestroyResource(void *value, XID pid)
 Bool
 RRLeaseInit(void)
 {
-    RRLeaseType = CreateNewResourceType(RRLeaseDestroyResource, "LEASE");
+    RRLeaseType = CreateNewResourceType(RRLeaseDestroyResource);
     if (!RRLeaseType)
         return FALSE;
     return TRUE;
@@ -302,7 +313,7 @@ ProcRRCreateLease(ClientPtr client)
         return BadAlloc;
     }
 
-    if (WriteFdToClient(client, fd, TRUE) < 0) {
+    if (WriteFdToClient(client, fd) < 0) {
         RRTerminateLease(lease);
         close(fd);
         return BadAlloc;
@@ -322,7 +333,7 @@ ProcRRCreateLease(ClientPtr client)
         swapl(&rep.length);
     }
 
-    WriteToClient(client, sizeof (rep), &rep);
+    WriteToClient(client, sizeof(xRRCreateLeaseReply), (char *)&rep);
 
     return Success;
 

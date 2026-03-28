@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/Imakefile,v 1.45 2004/04/08 10:07:32 alanh Exp $
+XCOMM $XFree86: xc/lib/GL/Imakefile,v 1.46 2004/12/10 16:06:55 alanh Exp $
 
 XCOMM
 XCOMM Imake tokens which are significant to building libGL:

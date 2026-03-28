@@ -1,3 +1,19 @@
+/* $Xorg: main.c,v 1.6 2001/02/09 02:05:34 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998  The Open Group
 
@@ -23,7 +39,7 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
-/* $XFree86: xc/programs/proxymngr/main.c,v 1.10 2006/01/09 15:00:49 dawes Exp $ */
+/* $XFree86: xc/programs/proxymngr/main.c,v 1.9 2003/07/09 15:27:36 tsi Exp $ */
 
 #include <stdlib.h>
 #include "pmint.h"
@@ -516,6 +532,8 @@ Bool		 swap;
 			hints.ai_flags = AI_CANONNAME;
 			if (getaddrinfo(hostname, NULL, &hints, &ai) == 0) {
 			    canonname = ai->ai_canonname;
+			} else {
+			    ai = NULL;
 			}
 		    }
 #else

@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: xconsole.c,v 1.5 2001/02/09 02:05:40 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -774,7 +782,7 @@ ScrollLine(Widget w)
 static int
 get_pty(int *pty, int *tty, char *ttydev, char *ptydev)
 {
-#ifdef SVR4
+#if defined(SVR4)
 	if ((*pty = open ("/dev/ptmx", O_RDWR)) < 0)
 	    return 1;
 	grantpt(*pty);
@@ -782,7 +790,9 @@ get_pty(int *pty, int *tty, char *ttydev, char *ptydev)
 	strcpy(ttydev, (char *)ptsname(*pty));
 	if ((*tty = open(ttydev, O_RDWR)) >= 0)
 	{
+#ifdef I_PUSH
 	    (void)ioctl(*tty, I_PUSH, "ttcompat");
+#endif
 	    return 0;
 	}
 	if (*pty >= 0)
@@ -841,6 +851,9 @@ get_pty(int *pty, int *tty, char *ttydev, char *ptydev)
 		return 0;
 	}
 #else
+#if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
+	return openpty(pty, tty, ttydev, NULL, NULL);
+#else
 	strcpy (ttydev, "/dev/ttyxx");
 	strcpy (ptydev, "/dev/ptyxx");
 	while (PTYCHAR1[letter]) {
@@ -867,6 +880,7 @@ get_pty(int *pty, int *tty, char *ttydev, char *ptydev)
 	    devindex = 0;
 	    (void) letter++;
 	}
+#endif /* BSD4_4 else not BSD4_4 */
 #endif /* sgi else not sgi */
 #endif /* CRAY else not CRAY */
 #endif /* umips && SYSTYPE_SYSV */

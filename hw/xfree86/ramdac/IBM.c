@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1998 by Alan Hourihane, Wigan, England.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,13 +30,11 @@
  *
  * IBM RAMDAC routines.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/IBM.c,v 1.14 2004/11/26 11:51:59 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
+#include "xf86_ansic.h"
 
 #include "xf86Cursor.h"
 
@@ -376,10 +381,6 @@ IBMramdac526SetBpp(ScrnInfoPtr pScrn, RamDacRegRecPtr ramdacReg)
     }
 }
 
-IBMramdac526SetBppProc *IBMramdac526SetBppWeak(void) {
-    return IBMramdac526SetBpp;
-}
-
 void
 IBMramdac640SetBpp(ScrnInfoPtr pScrn, RamDacRegRecPtr ramdacReg)
 {
@@ -472,7 +473,8 @@ IBMramdac526ShowCursor(ScrnInfoPtr pScrn)
    RamDacRecPtr ramdacPtr = RAMDACSCRPTR(pScrn);
 
    /* Enable cursor - X11 mode */
-   (*ramdacPtr->WriteDAC)(pScrn, IBMRGB_curs, 0x00, 0x07);
+   (*ramdacPtr->WriteDAC)(pScrn, IBMRGB_curs, 0x00,
+			  CURSOR_SIZE_64 | CURSOR_MODE_2_COLOR);
 }
 
 static void 
@@ -491,7 +493,8 @@ IBMramdac526HideCursor(ScrnInfoPtr pScrn)
    RamDacRecPtr ramdacPtr = RAMDACSCRPTR(pScrn);
 
    /* Disable cursor - X11 mode */
-   (*ramdacPtr->WriteDAC)(pScrn, IBMRGB_curs, 0x00, 0x24);
+   (*ramdacPtr->WriteDAC)(pScrn, IBMRGB_curs, 0x00,
+			  CURSOR_SIZE_64 | PIX_ORDER_LR);
 }
 
 static void

@@ -1,4 +1,18 @@
 /**************************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
  @doc MGA MGA_STRUCT
 
@@ -13,7 +27,7 @@
  @end
 
 ***************************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/HALlib/binding.h,v 1.5 2000/12/06 20:39:52 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/HALlib/binding.h,v 1.6 2004/03/31 16:37:09 tsi Exp $ */
 
 #ifndef _BINDING
 #define _BINDING
@@ -210,8 +224,6 @@ typedef struct TAGMAGMODEINFO {
 #define MGAMODEINFO_FORCE_PITCH        (1L << 5) 
 #define MGAMODEINFO_FORCE_DISPLAYORG   (1L << 6) 
 #define MGAMODEINFO_TV                 (1L << 7)
-#define MGAMODEINFO_FLATPANEL1         (1L << 8)
-#define MGAMODEINFO_FLATPANEL2         (1L << 9)
 #define MGAMODEINFO_TESTONLY           0x80000000
 
 /* Cable Type */
@@ -245,8 +257,7 @@ ULONG MGAOpenLibrary(LPBOARDHANDLE pBoard, LPVOID lpClient, ULONG ulClientSize);
 ULONG MGAGetBOARDHANDLESize(void);
 ULONG MGASetTVStandard(LPBOARDHANDLE pBoard, ULONG ulTVStandard);
 ULONG MGASetTVCableType(LPBOARDHANDLE pBoard, ULONG ulCableType);
-ULONG MGAForceFlatPanel(LPBOARDHANDLE pBoard);
-ULONG HALSetDisplayStart(LPBOARDHANDLE pBoard, ULONG ulX, ULONG ulY, ULONG ulCrtc);
+ULONG MGASetDisplayStart(LPBOARDHANDLE pBoard, ULONG ulX, ULONG ulY, ULONG ulCrtc);
 
 #if defined(__cplusplus)
     }

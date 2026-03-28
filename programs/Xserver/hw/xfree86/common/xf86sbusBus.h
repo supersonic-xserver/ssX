@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SBUS bus-specific declarations
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.h,v 3.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.h,v 3.6 2004/12/07 21:53:46 tsi Exp $ */
 
 #ifndef _XF86_SBUSBUS_H
 #define _XF86_SBUSBUS_H
@@ -41,6 +48,7 @@
 #define SBUS_DEVICE_GT		0x000c
 #define SBUS_DEVICE_MGX		0x000d
 #define SBUS_DEVICE_P9100	0x000e
+#define SBUS_DEVICE_AG10E	0x000f
 
 typedef struct sbus_prom_node {
     int			node;
@@ -63,7 +71,6 @@ typedef struct sbus_device {
     char		*device;
     sbusPromParentPtr	parent;
     void		*OSprivate;
-    int			mmapCount;
 } sbusDevice, *sbusDevicePtr;
 
 extern struct sbus_devtable {
@@ -76,36 +83,18 @@ extern struct sbus_devtable {
 void xf86SbusProbe(void);
 extern sbusDevicePtr *xf86SbusInfo;
 
-Bool xf86ParseSbusBusString(const char *busID, int *fbNum);
-Bool xf86CompareSbusBusString(const char *busID, int fbNum);
-Bool xf86CheckSbusSlot(int fbNum);
-int xf86ClaimSbusSlot(sbusDevicePtr psdp, DriverPtr drvp, GDevPtr dev,
-		      Bool active);
 int xf86MatchSbusInstances(const char *driverName, int sbusDevId, 
 			   GDevPtr *devList, int numDevs, DriverPtr drvp,
 			   int **foundEntities);
 sbusDevicePtr xf86GetSbusInfoForEntity(int entityIndex);
 int xf86GetEntityForSbusInfo(sbusDevicePtr psdp);
 void xf86SbusUseBuiltinMode(ScrnInfoPtr pScrn, sbusDevicePtr psdp);
-Bool xf86LocateSbusMemoryArea(sbusDevicePtr psdp,
-			      char **devName, unsigned int *devOffset,
-			      unsigned int *fbSize, unsigned int *fbOffset,
-			      unsigned int *flags);
 pointer xf86MapSbusMem(sbusDevicePtr psdp, unsigned long offset,
 		       unsigned long size);
 void xf86UnmapSbusMem(sbusDevicePtr psdp, pointer addr, unsigned long size);
-
 void xf86SbusHideOsHwCursor(sbusDevicePtr psdp);
 void xf86SbusSetOsHwCursorCmap(sbusDevicePtr psdp, int bg, int fg);
-void xf86SbusSetOsHwCursorImage(sbusDevicePtr psdp, pointer image,
-				pointer mask);
-void xf86SbusSetOsHwCursor(sbusDevicePtr psdp, Bool onoff);
-void xf86SbusSetOsHwCursorPosition(sbusDevicePtr psdp, int x, int y);
-void xf86SbusSetOsHwCursorHotSpot(sbusDevicePtr psdp, int hotx, int hoty);
-
 Bool xf86SbusHandleColormaps(ScreenPtr pScreen, sbusDevicePtr psdp);
-
-Bool xf86SbusSaveScreen(sbusDevicePtr, int mode);
 
 extern int promRootNode;
 

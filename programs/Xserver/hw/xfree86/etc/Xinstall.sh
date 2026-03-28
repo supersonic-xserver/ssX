@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/etc/Xinstall.sh,v 1.96 2006/05/10 00:25:38 dawes Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/etc/Xinstall.sh,v 1.89 2005/03/17 01:11:56 dawes Exp $
 #
 # Copyright © 2000 by Precision Insight, Inc.
 # Copyright © 2000, 2001 by VA Linux Systems, Inc.
@@ -31,7 +31,7 @@
 #
 
 #
-# Copyright © 1996-2007 by The XFree86 Project, Inc.
+# Copyright © 1996-2005 by The XFree86 Project, Inc.
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -78,7 +78,7 @@
 #
 
 #
-# This script should be used to install XFree86 4.7.0
+# This script should be used to install XFree86 4.5.0.
 #
 # Parts of this script are based on the old preinst.sh and postinst.sh
 # scripts.
@@ -114,11 +114,11 @@ SNAPSHOT=n
 
 if [ $SNAPSHOT = y ]; then
 	FULLPREFIX=XXX
-	VERSION=4.x.xx.xxx
+	VERSION=4.4.99.XXX
 	PATCHLEVEL=0
 	FULLVERSION=$VERSION
 else
-	FULLPREFIX=4.7
+	FULLPREFIX=4.5
 	PATCHLEVEL=0
 	VERSION=$FULLPREFIX.$PATCHLEVEL
 	FULLVERSION=$FULLPREFIX.0
@@ -180,11 +180,6 @@ OLDFILES=" \
 	$RUNDIR/lib/X11/fonts/misc/7x14rk.pcf.gz \
 	$RUNDIR/lib/X11/fonts/misc/7x13euro.pcf.gz \
 	$RUNDIR/lib/X11/fonts/misc/7x13euroB.pcf.gz \
-	$RUNDIR/lib/modules/drivers/ati2_drv.o \
-	$RUNDIR/lib/modules/drivers/ati2_drv.so \
-	$RUNDIR/lib/modules/drivers/sunffb_drv.o \
-	$RUNDIR/lib/modules/drivers/sunffb_drv.so \
-	$RUNDIR/lib/modules/drivers/ast_drv.o \
 	"
 
 OLDDIRS=" \
@@ -278,7 +273,6 @@ WDIR="`pwd`"
 NoEtcX11=
 DOUPDATE=
 DOBASE=
-NEEDSOMETHING=
 
 OPTS=""
 
@@ -756,11 +750,8 @@ FindDistName()
 				3)
 					DistName="Linux-ix86-glibc23"
 					;;
-				4)
-					DistName="Linux-ix86-glibc24"
-					;;
 				*)
-					Message="No dist available for glibc 2.$OsLibcMinor.  Try Linux-ix86-glibc24"
+					Message="No dist available for glibc 2.$OsLibcMinor.  Try Linux-ix86-glibc23"
 					;;
 				esac
 				;;
@@ -790,11 +781,8 @@ FindDistName()
 			6.2)
 				DistName="Linux-alpha-glibc22"
 				;;
-			6.3)
-				DistName="Linux-alpha-glibc23"
-				;;
 			6.*)
-				Message="No Linux/alpha binaries for glibc 2.$OsLibcMinor.  Try Linux-alpha-glibc23"
+				Message="No Linux/alpha binaries for glibc 2.$OsLibcMinor.  Try Linux-alpha-glibc22"
 				;;
 			*)
 				Message="No Linux/alpha binaries for this libc version"
@@ -816,11 +804,8 @@ FindDistName()
 			6.2)
 				DistName="Linux-amd64-glibc22"
 				;;
-			6.3)
-				DistName="Linux-amd64-glibc23"
-				;;
 			6.[3-9]*)
-				Message="No dist available for glibc 2.$OsLibcMinor.  Try Linux-amd64-glibc23"
+				Message="No dist available for glibc 2.$OsLibcMinor.  Try Linux-amd64-glibc22"
 				;;
 			*)
 				Message="No Linux/AMD64 binaries for this libc version"
@@ -852,9 +837,6 @@ FindDistName()
 				;;
 			2.*)
 				DistName="NetBSD-2.0"
-				;;
-			3.*)
-				DistName="NetBSD-3.0"
 				;;
 			*)
 				Message="No NetBSD/i386 binaries available for this version"
@@ -1056,45 +1038,6 @@ CheckInstallType()
 	GetBindistVersion
 }
 
-ModifyXterm()
-{
-	# Make xterm setgid or setuid depending on utmp permissions.  This might
-	# not be entirely portable.
-
-	if [ -w /var/run/utmp ]; then
-
-		CheckUtil ls
-		CheckUtil awk
-		CheckUtil cut
-		CheckUtil chmod
-
-		LS="`ls -l /var/run/utmp`"
-		if [ "`echo ${LS} | cut -b 1`" = "l" ]; then
-			LS="`ls -lL /var/run/utmp`"
-		fi
-		UA="`echo ${LS} | cut -b 3`"
-		GA="`echo ${LS} | cut -b 6`"
-		USR="`echo ${LS} | awk '{print $3}'`"
-		GRP="`echo ${LS} | awk '{print $4}'`"
-
-		if [ "${GA}" = "w" ]; then
-
-			CheckUtil chgrp
-
-			chgrp ${GRP} ${RUNDIR}/bin/xterm
-			chmod 2755 ${RUNDIR}/bin/xterm
-
-		elif [ "${UA}" = "w" ]; then
-
-			CheckUtil chown
-
-			chown ${USR} ${RUNDIR}/bin/xterm
-			chmod 4711 ${RUNDIR}/bin/xterm
-
-		fi
-	fi
-}
-
 InstallUpdate()
 {
 	# Check that there's an existing installation.
@@ -1171,9 +1114,7 @@ InstallUpdate()
 	done
 	# update Fontconfig cache
 	Echo "Updating the index of Freetype fonts..."
-	$RUNDIR/bin/fc-cache -v -f
-
-	ModifyXterm
+	$RUNDIR/bin/fc-cache -v
 
 	echo ""
 	echo "Update installation complete."
@@ -1751,13 +1692,9 @@ Rm -fr .etctmp
 echo ""
 echo "Installing the mandatory parts of the binary distribution"
 echo ""
-
 for i in $BASEDIST $SERVDIST; do
 	(cd $RUNDIR; "$EXTRACT" "$WDIR"/$i)
 done
-
-ModifyXterm
-
 if [ X"$VARDIST" != X ]; then
 	(cd $VARDIR; "$EXTRACT" "$WDIR"/$VARDIST)
 fi
@@ -1808,7 +1745,7 @@ echo "Searching for a termcap file.  This may take a few seconds..."
 TERMCAP1DIR=$ROOTDIR/usr/share
 TERMCAP2=$ROOTDIR/etc/termcap
 if [ -d $TERMCAP1DIR ]; then
-	TERMCAP1=`find $TERMCAP1DIR -type f -name termcap -print | fgrep -v doc 2> /dev/null`
+	TERMCAP1=`find $TERMCAP1DIR -type f -name termcap -print 2> /dev/null`
 	if [ x"$TERMCAP1" != x ]; then
 		TERMCAPFILE="$TERMCAP1"
 	fi
@@ -2016,11 +1953,6 @@ for i in $FONTDIRS $EXTRAFONTDIRS; do
 		echo ""
 	fi
 done
-
-# update Fontconfig cache
-Echo "Updating the index of Freetype fonts..."
-$RUNDIR/bin/fc-cache -v -f
-
 
 
 if [ -f $RUNDIR/bin/rstartd ]; then

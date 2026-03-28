@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1997  Metro Link Incorporated
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,6 +31,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xisb.c,v 1.6 2003/03/25 04:18:21 dawes Exp $ */
 
 /*
 	X Input Serial Buffer routines for use in any XInput driver that accesses
@@ -35,8 +43,8 @@
  *	Standard Headers
  ****************************************************************************/
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
+#ifdef __UNIXOS2__
+#define I_NEED_OS2_H
 #endif
 
 #include <misc.h>
@@ -63,8 +71,8 @@
  *	Function Definitions
  ****************************************************************************/
 
-_X_EXPORT XISBuffer *
-XisbNew (int fd, ssize_t size)
+XISBuffer *
+XisbNew (int fd, xf86ssize_t size)
 {
 	XISBuffer *b;
 
@@ -87,14 +95,14 @@ XisbNew (int fd, ssize_t size)
 	return (b);
 }
 
-_X_EXPORT void
+void
 XisbFree (XISBuffer *b)
 {
 	xfree (b->buf);
 	xfree (b);
 }
 
-_X_EXPORT int
+int
 XisbRead (XISBuffer *b)
 {
 	int ret;
@@ -137,8 +145,8 @@ XisbRead (XISBuffer *b)
 }
 
 /* the only purpose of this function is to provide output tracing */
-_X_EXPORT ssize_t
-XisbWrite (XISBuffer *b, unsigned char *msg, ssize_t len)
+xf86ssize_t
+XisbWrite (XISBuffer *b, unsigned char *msg, xf86ssize_t len)
 {
     if (b->trace)
     {
@@ -150,7 +158,7 @@ XisbWrite (XISBuffer *b, unsigned char *msg, ssize_t len)
 }
 
 /* turn tracing of this buffer on (1) or off (0) */
-_X_EXPORT void
+void
 XisbTrace (XISBuffer *b, int trace)
 {
 	b->trace = trace;
@@ -168,7 +176,7 @@ XisbTrace (XISBuffer *b, int trace)
  * give duration in usecs.
  */
 
-_X_EXPORT void
+void
 XisbBlockDuration (XISBuffer *b, int block_duration)
 {
 	b->block_duration = block_duration;

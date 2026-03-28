@@ -1,7 +1,14 @@
 /* Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    See the file COPYING for copying permission.
 */
-/* $XFree86$ */
+/* $XFree86: xc/extras/expat/lib/expat.h,v 1.2 2003/10/22 16:59:31 tsi Exp $ */
 
 #ifndef XmlParse_INCLUDED
 #define XmlParse_INCLUDED 1

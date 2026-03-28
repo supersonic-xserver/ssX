@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -40,7 +47,7 @@ static inline SyncFdScreenPrivatePtr sync_fd_screen_priv(ScreenPtr pScreen)
 {
     if (!dixPrivateKeyRegistered(&syncFdScreenPrivateKey))
         return NULL;
-    return dixLookupPrivate(&pScreen->devPrivates, &syncFdScreenPrivateKey);
+    return dixLookupPrivate((PrivateRec **)&pScreen->devPrivates, &syncFdScreenPrivateKey);
 }
 
 int
@@ -93,7 +100,7 @@ _X_EXPORT Bool miSyncFdScreenInit(ScreenPtr pScreen,
 
     priv->funcs = *funcs;
 
-    dixSetPrivate(&pScreen->devPrivates, &syncFdScreenPrivateKey, priv);
+    dixSetPrivate((PrivateRec **)&pScreen->devPrivates, &syncFdScreenPrivateKey, priv);
 
     return TRUE;
 }

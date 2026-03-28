@@ -1,0 +1,26 @@
+/Imakefile/1.1.1.4/Fri Mar 18 13:11:49 2005//Tnetbsd-5-2-3-RELEASE
+/durango.c/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+/nsc.h/1.1.1.2/Fri Mar  5 14:28:48 2004//Tnetbsd-5-2-3-RELEASE
+/nsc.man/1.1.1.2/Fri Mar  5 14:28:48 2004//Tnetbsd-5-2-3-RELEASE
+/nsc_driver.c/1.2/Sun Jul  2 19:17:57 2006//Tnetbsd-5-2-3-RELEASE
+/nsc_fourcc.h/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+/nsc_galfns.c/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+/nsc_galstub.c/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+/nsc_gx1_accel.c/1.1.1.3/Fri Mar 18 13:11:50 2005//Tnetbsd-5-2-3-RELEASE
+/nsc_gx1_cursor.c/1.1.1.2/Fri Mar  5 14:28:48 2004//Tnetbsd-5-2-3-RELEASE
+/nsc_gx1_dga.c/1.1.1.2/Fri Mar 18 13:11:51 2005//Tnetbsd-5-2-3-RELEASE
+/nsc_gx1_driver.c/1.2/Sun Jul  2 19:17:57 2006//Tnetbsd-5-2-3-RELEASE
+/nsc_gx1_shadow.c/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+/nsc_gx1_video.c/1.1.1.3/Fri Mar 18 13:11:51 2005//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_accel.c/1.1.1.3/Fri Mar 18 13:11:51 2005//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_cursor.c/1.1.1.2/Fri Mar  5 14:28:48 2004//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_dga.c/1.1.1.2/Fri Mar 18 13:11:51 2005//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_driver.c/1.2/Sun Jul  2 19:17:57 2006//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_shadow.c/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_vga.c/1.1.1.2/Fri Mar  5 14:28:49 2004//Tnetbsd-5-2-3-RELEASE
+/nsc_gx2_video.c/1.1.1.3/Fri Mar 18 13:11:52 2005//Tnetbsd-5-2-3-RELEASE
+/nsc_msr_asm.S/1.1.1.1/Fri Feb 28 13:20:13 2003//Tnetbsd-5-2-3-RELEASE
+/nsc_regacc.c/1.1.1.1/Fri Feb 28 13:20:13 2003//Tnetbsd-5-2-3-RELEASE
+/panel.c/1.1.1.1/Fri Feb 28 13:20:12 2003//Tnetbsd-5-2-3-RELEASE
+D/gfx////
+D/panel////

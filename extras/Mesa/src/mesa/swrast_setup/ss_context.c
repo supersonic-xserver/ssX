@@ -1,9 +1,15 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  4.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2002  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -37,7 +43,10 @@
 #include "tnl/t_pipeline.h"
 #include "tnl/t_vertex.h"
 
-#define _SWSETUP_NEW_RENDERINDEX (_NEW_POLYGON|_NEW_LIGHT)
+/* Need to check lighting state and vertex program state to know
+ * if two-sided lighting is in effect.
+ */
+#define _SWSETUP_NEW_RENDERINDEX (_NEW_POLYGON|_NEW_LIGHT|_NEW_PROGRAM)
 
 
 GLboolean
@@ -223,7 +232,7 @@ _swsetup_Translate( GLcontext *ctx, const void *vertex, SWvertex *dest )
 
    dest->win[0] = m[0]  * tmp[0] + m[12];
    dest->win[1] = m[5]  * tmp[1] + m[13];
-   dest->win[2] = m[10] * tmp[2] + m[15];
+   dest->win[2] = m[10] * tmp[2] + m[14];
    dest->win[3] =         tmp[3];
 
 

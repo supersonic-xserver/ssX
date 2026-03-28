@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/mesa/GLcore/module/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/mesa/GLcore/module/Imakefile,v 1.5 2005/01/06 19:08:12 dawes Exp $
 /*
  * Copyright (c) 2000-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -84,8 +84,10 @@ XCOMM $XFree86: xc/programs/Xserver/GL/mesa/GLcore/module/Imakefile,v 1.5tsi Exp
 		../../swrast_setup/module/DONE ../../tnl/module/DONE \
 		../../shader/module/DONE
 
-     INCLUDES = -I$(MESASRCDIR)/include -I$(GLXLIBSRC)/include \
-		-I$(MESASRCDIR)/src -I$(SERVERSRC)/include
+     INCLUDES = -I$(INCLUDESRC) -I$(XINCLUDESRC) -I$(EXTINCSRC) \
+		-I$(MESASRCDIR)/include -I$(GLXLIBSRC)/include \
+		-I$(MESASRCDIR)/src \
+		-I$(SERVERSRC)/include
 
       DEFINES = $(GLX_DEFINES)
 

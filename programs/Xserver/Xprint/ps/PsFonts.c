@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/ps/PsFonts.c,v 1.7tsi Exp $ */
+/* $Xorg: PsFonts.c,v 1.6 2001/03/06 16:30:15 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -57,6 +64,7 @@ in this Software without prior written authorization from The Open Group.
  * or other dealings in this Software without prior written authorization
  * from said copyright holders.
  */
+/* $XFree86: xc/programs/Xserver/Xprint/ps/PsFonts.c,v 1.7 2003/07/16 01:38:34 dawes Exp $ */
 
 /*******************************************************************
 **
@@ -75,7 +83,7 @@ in this Software without prior written authorization from The Open Group.
 ********************************************************************/
 
 #include "regionstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "scrnintstr.h"
 #include "fontxlfd.h"

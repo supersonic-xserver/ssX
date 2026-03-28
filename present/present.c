@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,6 +30,9 @@
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
 #endif
+
+/* Define _SYNC_SERVER to use our local misyncstr.h instead of system sync headers */
+#define _SYNC_SERVER
 
 #include "present_priv.h"
 #include <gcstruct.h>
@@ -86,9 +96,9 @@ present_copy_region(DrawablePtr drawable,
 
         changes[0].val = x_off;
         changes[1].val = y_off;
-        ChangeGC(serverClient, gc,
+        ChangeGC(gc,
                  GCClipXOrigin|GCClipYOrigin,
-                 changes);
+                  (XID *) changes);
         (*gc->funcs->ChangeClip)(gc, CT_REGION, update, 0);
     }
     ValidateGC(drawable, gc);
@@ -896,12 +906,16 @@ present_pixmap(WindowPtr window,
     vblank->serial = serial;
 
     if (valid) {
-        vblank->valid = RegionDuplicate(valid);
+        vblank->valid = miRegionCreate(NULL, 0);
+        if (vblank->valid && valid)
+            RegionCopy(vblank->valid, valid);
         if (!vblank->valid)
             goto no_mem;
     }
     if (update) {
-        vblank->update = RegionDuplicate(update);
+        vblank->update = miRegionCreate(NULL, 0);
+        if (vblank->update && update)
+            RegionCopy(vblank->update, update);
         if (!vblank->update)
             goto no_mem;
     }

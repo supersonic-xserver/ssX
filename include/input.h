@@ -1,4 +1,18 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,14 +58,15 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/include/input.h,v 3.10 2006/09/02 16:44:23 dawes Exp $ */
 
 #ifndef INPUT_H
 #define INPUT_H
 
 #include "misc.h"
 #include "screenint.h"
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X11/Xmd.h"
+#include "X11/Xproto.h"
 #include "window.h"     /* for WindowPtr */
 
 #define DEVICE_INIT	0
@@ -59,12 +74,6 @@ SOFTWARE.
 #define DEVICE_OFF	2
 #define DEVICE_CLOSE	3
 
-#define POINTER_RELATIVE (1 << 1)
-#define POINTER_ABSOLUTE (1 << 2)
-#define POINTER_ACCELERATE (1 << 3)
-
-#define MAX_BUTTONS     256
-#define MAX_VALUATORS   36
 #define MAP_LENGTH	256
 #define DOWN_LENGTH	32	/* 256/8 => number of bytes to hold 256 bits */
 #define NullGrab ((GrabPtr)NULL)
@@ -95,17 +104,6 @@ typedef void (*ProcessInputProc)(
     xEventPtr /*events*/,
     DeviceIntPtr /*device*/,
     int /*count*/);
-
-typedef Bool (*DeviceHandleProc)(
-    DeviceIntPtr /*device*/,
-    void* /*data*/
-    );
-
-typedef void (*DeviceUnwrapProc)(
-    DeviceIntPtr /*device*/,
-    DeviceHandleProc /*proc*/,
-    void* /*data*/
-    );
 
 typedef struct _DeviceRec {
     pointer	devicePrivate;
@@ -160,52 +158,22 @@ typedef struct {
     unsigned char id;
 } LedCtrl;
 
-/*
- * InputAttributes - device metadata used by the hotplug backends (udev, hal).
- * Added to support config/udev.c and config/hal.c which require this API.
- */
-#include <stdint.h>
-
-#define ATTR_KEYBOARD       (1<<0)
-#define ATTR_POINTER        (1<<1)
-#define ATTR_JOYSTICK       (1<<2)
-#define ATTR_TABLET         (1<<3)
-#define ATTR_TOUCHPAD       (1<<4)
-#define ATTR_TOUCHSCREEN    (1<<5)
-
-typedef struct _InputAttributes {
-    char       *product;
-    char       *vendor;
-    char       *device;
-    char       *pnp_id;
-    char       *usb_id;
-    char      **tags;       /* null-terminated array of tag strings */
-    uint32_t    flags;
-} InputAttributes;
-
-extern int AllocateDevicePrivateIndex(void);
-extern Bool AllocateDevicePrivate(DeviceIntPtr device, int index);
-extern void ResetDevicePrivateIndex(void);
-
 extern KeybdCtrl	defaultKeyboardControl;
 extern PtrCtrl		defaultPointerControl;
 
-typedef struct _InputOption {
-    char                *key;
-    char                *value;
-    struct _InputOption *next;
-} InputOption;
+#undef  AddInputDevice
+extern DevicePtr AddInputDevice(
+    DeviceProc /*deviceProc*/,
+    Bool /*autoStart*/);
 
-extern void InitCoreDevices(void);
+#define AddInputDevice(deviceProc, autoStart) \
+       _AddInputDevice(deviceProc, autoStart)
 
-extern DeviceIntPtr AddInputDevice(
+extern DeviceIntPtr _AddInputDevice(
     DeviceProc /*deviceProc*/,
     Bool /*autoStart*/);
 
 extern Bool EnableDevice(
-    DeviceIntPtr /*device*/);
-
-extern Bool ActivateDevice(
     DeviceIntPtr /*device*/);
 
 extern Bool DisableDevice(
@@ -215,15 +183,29 @@ extern int InitAndStartDevices(void);
 
 extern void CloseDownDevices(void);
 
-extern int RemoveDevice(
+extern void RemoveDevice(
     DeviceIntPtr /*dev*/);
 
 extern int NumMotionEvents(void);
 
+#undef  RegisterPointerDevice
 extern void RegisterPointerDevice(
+    DevicePtr /*device*/);
+
+#define RegisterPointerDevice(device) \
+       _RegisterPointerDevice(device)
+
+extern void _RegisterPointerDevice(
     DeviceIntPtr /*device*/);
 
+#undef  RegisterKeyboardDevice
 extern void RegisterKeyboardDevice(
+    DevicePtr /*device*/);
+
+#define RegisterKeyboardDevice(device) \
+       _RegisterKeyboardDevice(device)
+
+extern void _RegisterKeyboardDevice(
     DeviceIntPtr /*device*/);
 
 extern DevicePtr LookupKeyboardDevice(void);
@@ -264,9 +246,6 @@ extern Bool InitValuatorClassDeviceStruct(
     ValuatorMotionProcPtr /* motionProc */,
     int /*numMotionEvents*/,
     int /*mode*/);
-
-extern Bool InitAbsoluteClassDeviceStruct(
-    DeviceIntPtr /*device*/);
 
 extern Bool InitFocusClassDeviceStruct(
     DeviceIntPtr /*device*/);
@@ -337,8 +316,7 @@ extern Bool InitPointerDeviceStruct(
     int /*numButtons*/,
     ValuatorMotionProcPtr /*motionProc*/,
     PtrCtrlProcPtr /*controlProc*/,
-    int /*numMotionEvents*/,
-    int /*numAxes*/);
+    int /*numMotionEvents*/);
 
 extern Bool InitKeyboardDeviceStruct(
     DevicePtr /*device*/,
@@ -400,85 +378,12 @@ extern void CoreProcessKeyboardEvent(
 
 extern Bool LegalModifier(
     unsigned int /*key*/, 
-    DeviceIntPtr /*pDev*/);
+    DevicePtr /*pDev*/);
 
 extern void ProcessInputEvents(void);
 
 extern void InitInput(
-    int  /*argc*/,
-    char ** /*argv*/);
-
-extern int GetMaximumEventsNum(void);
-
-extern int GetPointerEvents(
-    xEvent *events,
-    DeviceIntPtr pDev,
-    int type,
-    int buttons,
-    int flags,
-    int first_valuator,
-    int num_valuators,
-    int *valuators);
-
-extern int GetKeyboardEvents(
-    xEvent *events,
-    DeviceIntPtr pDev,
-    int type,
-    int key_code);
-
-extern int GetKeyboardValuatorEvents(
-    xEvent *events,
-    DeviceIntPtr pDev,
-    int type,
-    int key_code,
-    int first_valuator,
-    int num_valuator,
-    int *valuators);
-
-extern int GetProximityEvents(
-    xEvent *events,
-    DeviceIntPtr pDev,
-    int type,
-    int first_valuator,
-    int num_valuators,
-    int *valuators);
-
-extern void PostSyntheticMotion(
-    int x,
-    int y,
-    int screen,
-    unsigned long time);
-
-extern int GetMotionHistorySize(
-    void);
-
-extern void AllocateMotionHistory(
-    DeviceIntPtr pDev);
-
-extern int GetMotionHistory(
-    DeviceIntPtr pDev,
-    xTimecoord *buff,
-    unsigned long start,
-    unsigned long stop,
-    ScreenPtr pScreen);
-
-extern void SwitchCoreKeyboard(DeviceIntPtr pDev);
-extern void SwitchCorePointer(DeviceIntPtr pDev);
-
-extern DeviceIntPtr LookupDeviceIntRec(
-    CARD8 deviceid);
-
-/* Implemented by the DDX. */
-extern int NewInputDeviceRequest(
-    InputOption *options,
-    InputAttributes *attrs,
-    DeviceIntPtr *dev);
-extern void DeleteInputDeviceRequest(
-    DeviceIntPtr dev);
-
-extern void DDXRingBell(
-    int volume,
-    int pitch,
-    int duration);
+    const int  /*argc*/,
+    const char ** /*argv*/);
 
 #endif /* INPUT_H */

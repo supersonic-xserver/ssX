@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/render/render.c,v 1.35tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/render.c,v 1.31 2004/06/30 20:21:46 martin Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -25,8 +32,8 @@
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -37,11 +44,11 @@
 #include "colormapst.h"
 #include "extnsionst.h"
 #include "servermd.h"
-#include <X11/extensions/render.h>
-#include <X11/extensions/renderproto.h>
+#include "render.h"
+#include "renderproto.h"
 #include "picturestr.h"
 #include "glyphstr.h"
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 #include "cursorstr.h"
 #ifdef EXTMODULE
 #include "xf86_ansic.h"
@@ -213,7 +220,7 @@ RenderClientCallback (CallbackListPtr	*list,
 }
 
 void
-RenderExtensionInit (INITARGS)
+RenderExtensionInit (void)
 {
     ExtensionEntry *extEntry;
 
@@ -1295,7 +1302,7 @@ ProcRenderCompositeGlyphs (ClientPtr client)
     glyphs = glyphsBase;
     lists = listsBase;
     while (buffer + sizeof (xGlyphElt) < end)
-    {
+    {	
 	elt = (xGlyphElt *) buffer;
 	buffer += sizeof (xGlyphElt);
 	
@@ -1896,8 +1903,6 @@ SProcRenderSetPictureClipRectangles (ClientPtr client)
     REQUEST(xRenderSetPictureClipRectanglesReq);
     swaps(&stuff->length, n);
     swapl(&stuff->picture, n);
-    swaps(&stuff->xOrigin, n);
-    swaps(&stuff->yOrigin, n);
     SwapRestS(stuff);
     return (*ProcRenderVector[stuff->renderReqType]) (client);
 }

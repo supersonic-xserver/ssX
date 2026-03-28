@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.6 2006/04/18 15:57:25 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -22,10 +30,6 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include <X11/X.h>
 #include "xf86.h"
@@ -71,7 +75,7 @@ sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size,
 		     PROT_READ : (PROT_READ | PROT_WRITE),
 		    MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
+		FatalError("%s: could not mmap screen [s=%lx,a=%lx] (%s)",
 			   "xf86MapVidMem", Size, Base, strerror(errno));
 	return base;
 }
@@ -82,7 +86,7 @@ sparc64UnmapVidMem(int ScreenNum, pointer Base, unsigned long Size)
 	munmap(Base, Size);
 }
 
-_X_EXPORT int
+int
 xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 	     int Len)
 {
@@ -94,14 +98,14 @@ xf86ReadBIOS(unsigned long Base, unsigned long Offset, unsigned char *Buf,
 /* Interrupt Handling section                                              */
 /***************************************************************************/
 
-_X_EXPORT Bool
+Bool
 xf86DisableInterrupts()
 {
 
 	return(TRUE);
 }
 
-_X_EXPORT void
+void
 xf86EnableInterrupts()
 {
 

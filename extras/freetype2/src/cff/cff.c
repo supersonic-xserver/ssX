@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cff.c                                                                  */
 /*                                                                         */
 /*    FreeType OpenType driver component (body only).                      */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,23 +25,12 @@
 
 #define FT_MAKE_OPTION_SINGLE_OBJECT
 
-#ifdef FT_FLAT_COMPILE
-
-#include "t2driver.c"    /* driver interface     */
-#include "t2parse.c"     /* token parser         */
-#include "t2load.c"      /* tables loader        */
-#include "t2objs.c"      /* object management    */
-#include "t2gload.c"     /* glyph loader         */
-
-#else
-
-#include <cff/t2driver.c>    /* driver interface     */
-#include <cff/t2parse.c>     /* token parser         */
-#include <cff/t2load.c>      /* tables loader        */
-#include <cff/t2objs.c>      /* object management    */
-#include <cff/t2gload.c>     /* glyph loader         */
-
-#endif
-
+#include <ft2build.h>
+#include "cffdrivr.c"
+#include "cffparse.c"
+#include "cffload.c"
+#include "cffobjs.c"
+#include "cffgload.c"
+#include "cffcmap.c"
 
 /* END */

@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,18 +58,20 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/include/miscstruct.h,v 3.6 2006/01/09 15:00:33 dawes Exp $ */
 
 #ifndef MISCSTRUCT_H
 #define MISCSTRUCT_H 1
 
 #include "misc.h"
-#include <X11/Xprotostr.h>
+#include "X11/Xprotostr.h"
 #include "gc.h"
-#include <pixman.h>
 
 typedef xPoint DDXPointRec;
 
-typedef struct pixman_box16 BoxRec;
+typedef struct _Box {
+    short x1, y1, x2, y2;
+} BoxRec;
 
 typedef union _DevUnion {
     pointer		ptr;

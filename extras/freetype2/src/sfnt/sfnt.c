@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  sfnt.c                                                                 */
 /*                                                                         */
 /*    Single object library component.                                     */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,12 +25,11 @@
 
 #define FT_MAKE_OPTION_SINGLE_OBJECT
 
-
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ttload.c"
-#include "ttcmap.c"
+#include "ttcmap0.c"
 #include "sfobjs.c"
+#include "sfdriver.c"
 
 #ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
 #include "ttsbit.c"
@@ -32,26 +38,6 @@
 #ifdef TT_CONFIG_OPTION_POSTSCRIPT_NAMES
 #include "ttpost.c"
 #endif
-
-#include "sfdriver.c"
-
-#else /* FT_FLAT_COMPILE */
-
-#include <sfnt/ttload.c>
-#include <sfnt/ttcmap.c>
-#include <sfnt/sfobjs.c>
-
-#ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
-#include <sfnt/ttsbit.c>
-#endif
-
-#ifdef TT_CONFIG_OPTION_POSTSCRIPT_NAMES
-#include <sfnt/ttpost.c>
-#endif
-
-#include <sfnt/sfdriver.c>
-
-#endif   /* FT_FLAT_COMPILE */
 
 
 /* END */

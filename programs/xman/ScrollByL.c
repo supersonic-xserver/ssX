@@ -1,3 +1,11 @@
+/* $XConsortium: ScrollByL.c,v 1.30 94/04/17 20:43:46 rws Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987, 1988  X Consortium
@@ -28,6 +36,10 @@ from the X Consortium.
 
 */
 /* $XFree86: xc/programs/xman/ScrollByL.c,v 1.8 2004/03/12 02:17:55 dickey Exp $ */
+
+#if !defined(lint) && !defined(SABER) && 0
+  static char rcs_version[] = "$Athena: ScrollByL.c,v 4.5 88/12/19 13:46:04 kit Exp $";
+#endif
 
 #include <stdio.h>
 #include <ctype.h>

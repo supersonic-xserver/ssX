@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# $XFree86$
-#
 #
 #  this file contains routines used to parse the content of documentation
 #  comment block and build a more structured objects out of them

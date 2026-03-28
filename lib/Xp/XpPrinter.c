@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/Xp/XpPrinter.c,v 1.10tsi Exp $ */
+/* $Xorg: XpPrinter.c,v 1.4 2000/08/17 19:46:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -34,6 +41,7 @@
  **
  ******************************************************************************
  *****************************************************************************/
+/* $XFree86: xc/lib/Xp/XpPrinter.c,v 1.9 2002/10/16 00:37:32 dawes Exp $ */
 
 #define NEED_REPLIES
 
@@ -88,7 +96,7 @@ XpGetPrinterList (
      */
     if ( printer_name == (char *) NULL )
 	req->printerNameLen = 0;
-    else if ( *printer_name == (char) 0 )
+    else if ( *printer_name == (char) NULL )
 	req->printerNameLen = 0;
     else {
 	printer_name_len    = strlen( printer_name );
@@ -98,7 +106,7 @@ XpGetPrinterList (
 
     if ( locale == (char *) NULL )
 	req->localeLen = 0;
-    else if ( *locale == (char) 0 )
+    else if ( *locale == (char) NULL )
 	req->localeLen = 0;
     else {
 	locale_len     = strlen( locale );

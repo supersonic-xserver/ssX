@@ -1,0 +1,20 @@
+/Imakefile/1.1.1.4/Fri Feb 28 13:18:56 2003//Tnetbsd-5-2-3-RELEASE
+/cauthgen.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/csignal.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/delfntcid.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/errorf.c/1.1.1.4/Fri Mar  5 14:24:41 2004//Tnetbsd-5-2-3-RELEASE
+/fatalerror.c/1.1.1.4/Fri Mar  5 14:24:41 2004//Tnetbsd-5-2-3-RELEASE
+/findoldfnt.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/getcres.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/getdefptsize.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/getnewfntcid.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/gettime.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/initfshdl.c/1.1.1.4/Fri Mar  5 14:24:41 2004//Tnetbsd-5-2-3-RELEASE
+/regfpefunc.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/rmfshdl.c/1.1.1.4/Fri Mar  5 14:24:41 2004//Tnetbsd-5-2-3-RELEASE
+/servclient.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/setfntauth.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/stfntcfnt.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+/stubs.h/1.1.1.4/Fri Mar  5 14:24:41 2004//Tnetbsd-5-2-3-RELEASE
+/xpstubs.c/1.1.1.3/Sat Jun  9 14:57:20 2001//Tnetbsd-5-2-3-RELEASE
+D

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -25,6 +32,7 @@
 #endif
 
 #include "xfixesint.h"
+#include "dixaccess.h"
 
 int
 ProcXFixesChangeSaveSet(ClientPtr client)
@@ -55,7 +63,7 @@ ProcXFixesChangeSaveSet(ClientPtr client)
     }
     toRoot = (stuff->target == SaveSetRoot);
     map = (stuff->map == SaveSetMap);
-    return AlterSaveSetForClient(client, pWin, stuff->mode, toRoot, map);
+    return AlterSaveSetForClient(client, pWin, stuff->mode);
 }
 
 int _X_COLD

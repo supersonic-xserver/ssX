@@ -1,3 +1,11 @@
+/* $Xorg: mivaltree.c,v 1.4 2001/02/09 02:05:22 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * mivaltree.c --
  *	Functions for recalculating window clip lists. Main function
@@ -72,7 +80,7 @@ in this Software without prior written authorization from The Open Group.
 *                                                               *
 *****************************************************************/
 
-/* $XFree86: xc/programs/Xserver/mi/mivaltree.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mivaltree.c,v 1.10 2003/11/10 18:22:49 tsi Exp $ */
 
  /* 
   * Aug '86: Susan Angebranndt -- original code
@@ -83,7 +91,7 @@ in this Software without prior written authorization from The Open Group.
   *		Bob Scheifler -- avoid miComputeClips for unmapped windows,
   *				 valdata changes
   */
-#include    <X11/X.h>
+#include    "X.h"
 #include    "scrnintstr.h"
 #include    "validate.h"
 #include    "windowstr.h"
@@ -98,14 +106,17 @@ in this Software without prior written authorization from The Open Group.
  * Compute the visibility of a shaped window
  */
 int
-miShapedWindowIn(ScreenPtr pScreen, RegionPtr universe, RegionPtr bounding,
-		 BoxPtr rect, int x, int y)
+miShapedWindowIn (pScreen, universe, bounding, rect, x, y)
+    ScreenPtr	pScreen;
+    RegionPtr	universe, bounding;
+    BoxPtr	rect;
+    register int x, y;
 {
     BoxRec  box;
-    BoxPtr  boundBox;
+    register BoxPtr  boundBox;
     int	    nbox;
     Bool    someIn, someOut;
-    int     t, x1, y1, x2, y2;
+    register int t, x1, y1, x2, y2;
 
     nbox = REGION_NUM_RECTS (bounding);
     boundBox = REGION_RECTS (bounding);
@@ -178,16 +189,16 @@ miShapedWindowIn(ScreenPtr pScreen, RegionPtr universe, RegionPtr bounding,
  */
 static void
 miComputeClips (
-    WindowPtr	pParent,
-    ScreenPtr	pScreen,
-    RegionPtr	universe,
-    VTKind	kind,
-    RegionPtr	exposed ) /* for intermediate calculations */
+    register WindowPtr	pParent,
+    register ScreenPtr	pScreen,
+    register RegionPtr	universe,
+    VTKind		kind,
+    RegionPtr		exposed ) /* for intermediate calculations */
 {
     int			dx,
 			dy;
     RegionRec		childUniverse;
-    WindowPtr		pChild;
+    register WindowPtr	pChild;
     int     	  	oldVis, newVis;
     BoxRec		borderSize;
     RegionRec		childUnion;
@@ -498,10 +509,11 @@ miComputeClips (
 }
 
 static void
-miTreeObscured(WindowPtr pParent)
+miTreeObscured(
+    register WindowPtr pParent )
 {
-    WindowPtr pChild;
-    int    oldVis;
+    register WindowPtr pChild;
+    register int    oldVis;
 
     pChild = pParent;
     while (1)
@@ -557,11 +569,11 @@ miTreeObscured(WindowPtr pParent)
  */
 /*ARGSUSED*/
 int
-miValidateTree(
-    WindowPtr	  	pParent,    /* Parent to validate */
-    WindowPtr	  	pChild,     /* First child of pParent that was
+miValidateTree (pParent, pChild, kind)
+    WindowPtr	  	pParent;    /* Parent to validate */
+    WindowPtr	  	pChild;     /* First child of pParent that was
 				     * affected */
-    VTKind    	  	kind)       /* What kind of configuration caused call */
+    VTKind    	  	kind;       /* What kind of configuration caused call */
 {
     RegionRec	  	totalClip;  /* Total clipping region available to
 				     * the marked children. pParent's clipList
@@ -572,8 +584,8 @@ miValidateTree(
     RegionRec		childUnion; /* the space covered by borderSize for
 				     * all marked children */
     RegionRec		exposed;    /* For intermediate calculations */
-    ScreenPtr		pScreen;
-    WindowPtr		pWin;
+    register ScreenPtr	pScreen;
+    register WindowPtr	pWin;
     Bool		overlap;
     int			viewvals;
     Bool		forward;

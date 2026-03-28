@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 2000 by Juliusz Chroboczek
  
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -206,7 +213,7 @@ void
 vesaGetColors (ScreenPtr pScreen, int fb, int n, xColorItem *pdefs);
 
 int
-vesaProcessArgument (int argc, const char **argv, int i);
+vesaProcessArgument (int argc, char **argv, int i);
 
 void
 vesaUseMsg (void);

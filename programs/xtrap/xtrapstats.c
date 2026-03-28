@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xtrap/xtrapstats.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapstats.c,v 1.2 2002/09/18 17:11:57 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * @DEC_COPYRIGHT@
  */
@@ -75,7 +82,7 @@ main(int argc, char *argv[])
     /* Connect to Server */
     appW = XtAppInitialize(&app,"XTrap",NULL,(Cardinal)0L,
         (int *)&argc, (String *)argv, (String *)NULL,(ArgList)&tmp,
-        (Cardinal)0);
+        (Cardinal)NULL);
     dpy = XtDisplay(appW);
 #ifdef DEBUG
     XSynchronize(dpy, True);

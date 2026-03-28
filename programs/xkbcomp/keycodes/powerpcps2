@@ -1,3 +1,4 @@
+// $XConsortium: xfree86 /main/4 1996/08/31 12:16:59 kaleb $
 // $XFree86: xc/programs/xkbcomp/keycodes/powerpcps2,v 1.1 2000/09/19 12:46:23 eich Exp $
 default xkb_keycodes "powerpcps2" {
 

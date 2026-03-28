@@ -1,5 +1,18 @@
-/* $Xorg: sunCursor.c,v 1.4 2001/02/09 02:04:43 xorgcvs Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1988  Sun Microsystems, Inc.
 Copyright 1993, 1998  The Open Group
@@ -27,7 +40,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunCursor.c,v 3.6 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunCursor.c,v 3.7 2006/01/09 14:59:49 dawes Exp $ */
 
 /*-
  * sunCursor.c --
@@ -37,44 +50,48 @@ from The Open Group.
 
 #define NEED_EVENTS
 #include    "sun.h"
-#include    "fb.h"
+#include    "cfb.h"
+#include    "mfb.h"
 
 #ifdef FBIOGCURMAX  /* has hardware cursor kernel support */
 
-#define sunGetCursorPrivate(pScreen) \
-    (&(sunGetScreenPrivate(pScreen)->hardwareCursor))
+#define GetCursorPrivate(s) (&(GetScreenPrivate(s)->hardwareCursor))
+#define SetupCursor(s)	    sunCursorPtr pCurPriv = GetCursorPrivate(s)
 
-static Bool sunRealizeCursor(DeviceIntPtr, ScreenPtr, CursorPtr);
-static Bool sunUnrealizeCursor(DeviceIntPtr, ScreenPtr, CursorPtr);
-static void sunCursorRepad (ScreenPtr, CursorBitsPtr, unsigned char *, unsigned char *, DDXPointPtr, int, int);
-static void sunLoadCursor(ScreenPtr, CursorPtr, int, int);
-static void sunSetCursor(DeviceIntPtr, ScreenPtr, CursorPtr, int, int);
-static void sunMoveCursor(DeviceIntPtr, ScreenPtr, int, int);
-static void sunQueryBestSize(int, unsigned short *, unsigned short *, ScreenPtr);
+static void sunLoadCursor();
 
 static Bool
-sunRealizeCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
+sunRealizeCursor (pScreen, pCursor)
+    ScreenPtr	pScreen;
+    CursorPtr	pCursor;
 {
-    sunCursorPtr pCurPriv = sunGetCursorPrivate(pScreen);
+    SetupCursor(pScreen);
     int	    x, y;
 
     /* miRecolorCursor does this */
     if (pCurPriv->pCursor == pCursor)
     {
-	miPointerGetPosition (pDev, &x, &y);
+	miPointerPosition (&x, &y);
 	sunLoadCursor (pScreen, pCursor, x, y);
     }
     return TRUE;
 }
 
 static Bool
-sunUnrealizeCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
+sunUnrealizeCursor (pScreen, pCursor)
+    ScreenPtr	pScreen;
+    CursorPtr	pCursor;
 {
     return TRUE;
 }
 
 static void
-sunCursorRepad(ScreenPtr pScreen, CursorBitsPtr bits, unsigned char *src_bits, unsigned char *dst_bits, DDXPointPtr ptSrc, int w, int h)
+sunCursorRepad (pScreen, bits, src_bits, dst_bits, ptSrc, w, h)
+    ScreenPtr	    pScreen;
+    CursorBitsPtr   bits;
+    unsigned char   *src_bits, *dst_bits;
+    DDXPointPtr	    ptSrc;
+    int		    w, h;
 {
     PixmapPtr	src, dst;
     BoxRec	box;
@@ -107,20 +124,17 @@ sunCursorRepad(ScreenPtr pScreen, CursorBitsPtr bits, unsigned char *src_bits, u
 }
 
 static void
-sunLoadCursor(ScreenPtr pScreen, CursorPtr pCursor, int x, int y)
+sunLoadCursor (pScreen, pCursor, x, y)
+    ScreenPtr	pScreen;
+    CursorPtr	pCursor;
+    int		x, y;
 {
-    sunCursorPtr pCurPriv = sunGetCursorPrivate(pScreen);
+    SetupCursor(pScreen);
     struct fbcursor fbcursor;
     int	w, h;
     unsigned char   r[2], g[2], b[2];
     DDXPointRec	ptSrc;
     unsigned char   source_temp[1024], mask_temp[1024];
-#ifdef INTERNAL_VS_EXTERNAL_PADDING
-    long                widthBytesLine, length;
-    long                widthBytesLineProto, lengthProto;
-    int			linesDone;
-#endif
-
 
     fbcursor.set = FB_CUR_SETALL;
     fbcursor.enable = 1;
@@ -157,57 +171,6 @@ sunLoadCursor(ScreenPtr pScreen, CursorPtr pCursor, int x, int y)
 	fbcursor.image = (char *) source_temp;
 	fbcursor.mask = (char *) mask_temp;
     }
-#ifdef INTERNAL_VS_EXTERNAL_PADDING
-    widthBytesLine = BitmapBytePad(w);
-    length = widthBytesLine * h;
-    widthBytesLineProto = BitmapBytePadProto(w);
-    lengthProto = widthBytesLineProto * h;
-
-    /* for 64-bit server, convert image to pad to 32 bits */
-    if ( widthBytesLine != widthBytesLineProto ) {
-	if (widthBytesLine - widthBytesLineProto  == 4) {
-		register int * sprotoPtr, * mprotoPtr;
-		register int * sbufPtr, * mbufPtr;
-		register int i, j;
-
-		sbufPtr = (int *)fbcursor.image;
-		mbufPtr = (int *)fbcursor.mask;
-		sprotoPtr = (int *)source_temp;
-		mprotoPtr = (int *)mask_temp;
-		for (i=0; i<h; i++) {
-			for (j=0; j<widthBytesLineProto; j+=4) {
-				*sprotoPtr++ = *sbufPtr++;
-				*mprotoPtr++ = *mbufPtr++;
-			}
-			sbufPtr++;
-			mbufPtr++;
-		}
-	} else {
-        register char * sbufPtr, * sprotoPtr;
-        register char * mbufPtr, * mprotoPtr;
-        register int i;
-
-        for (i = 0,
-             sbufPtr = fbcursor.image,
-             sprotoPtr = source_temp,
-             mbufPtr = fbcursor.mask,
-             mprotoPtr = mask_temp;
-             i < h;
-             sbufPtr += widthBytesLine,
-             sprotoPtr += widthBytesLineProto,
-             mbufPtr += widthBytesLine,
-             mprotoPtr += widthBytesLineProto,
-             i++) {
-	    if (sprotoPtr != sbufPtr)
-            	memmove(sprotoPtr, sbufPtr, widthBytesLineProto);
-	    if (mprotoPtr != mbufPtr)
-            	memmove(mprotoPtr, mbufPtr, widthBytesLineProto);
-	}
-} /* else */
-	fbcursor.image = (char *) source_temp;
-	fbcursor.mask = (char *) mask_temp;
-    }
-#endif
     fbcursor.size.x = w;
     fbcursor.size.y = h;
 #ifndef Lynx
@@ -218,9 +181,12 @@ sunLoadCursor(ScreenPtr pScreen, CursorPtr pCursor, int x, int y)
 }
 
 static void
-sunSetCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor, int x, int y)
+sunSetCursor (pScreen, pCursor, x, y)
+    ScreenPtr	pScreen;
+    CursorPtr	pCursor;
+    int		x, y;
 {
-    sunCursorPtr pCurPriv = sunGetCursorPrivate(pScreen);
+    SetupCursor(pScreen);
 
     if (pCursor)
     	sunLoadCursor (pScreen, pCursor, x, y);
@@ -230,7 +196,9 @@ sunSetCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor, int x, int
 }
 
 static void
-sunMoveCursor(DeviceIntPtr pDev, ScreenPtr pScreen, int x, int y)
+sunMoveCursor (pScreen, x, y)
+    ScreenPtr	pScreen;
+    int		x, y;
 {
     struct fbcurpos pos;
 
@@ -251,9 +219,12 @@ miPointerSpriteFuncRec sunPointerSpriteFuncs = {
 };
 
 static void
-sunQueryBestSize(int class, unsigned short *pwidth, unsigned short *pheight, ScreenPtr pScreen)
+sunQueryBestSize (class, pwidth, pheight, pScreen)
+    int	class;
+    unsigned short   *pwidth, *pheight;
+    ScreenPtr	pScreen;
 {
-    sunCursorPtr pCurPriv = sunGetCursorPrivate(pScreen);
+    SetupCursor (pScreen);
 
     switch (class)
     {
@@ -268,18 +239,20 @@ sunQueryBestSize(int class, unsigned short *pwidth, unsigned short *pheight, Scr
 	    *pheight = pScreen->height;
 	break;
     default:
-	fbQueryBestSize (class, pwidth, pheight, pScreen);
+	mfbQueryBestSize (class, pwidth, pheight, pScreen);
 	break;
     }
 }
 
+extern miPointerScreenFuncRec	sunPointerScreenFuncs;
+
 #endif
 
-Bool
-sunCursorInitialize(ScreenPtr pScreen)
+Bool sunCursorInitialize (
+    ScreenPtr	pScreen)
 {
 #ifdef FBIOGCURMAX
-    sunCursorPtr pCurPriv = sunGetCursorPrivate(pScreen);
+    SetupCursor (pScreen);
     struct fbcurpos maxsize;
 
     pCurPriv->has_cursor = FALSE;
@@ -304,11 +277,11 @@ sunCursorInitialize(ScreenPtr pScreen)
 #endif
 }
 
-void
-sunDisableCursor (ScreenPtr pScreen)
+void sunDisableCursor (
+    ScreenPtr	pScreen)
 {
 #ifdef FBIOGCURMAX
-    sunCursorPtr pCurPriv = sunGetCursorPrivate(pScreen);
+    SetupCursor (pScreen);
     struct fbcursor fbcursor;
 
     if (pCurPriv->has_cursor)

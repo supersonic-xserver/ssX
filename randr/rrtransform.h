@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2007 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,6 +30,8 @@
 #ifndef _RRTRANSFORM_H_
 #define _RRTRANSFORM_H_
 
+#include <pixman.h>
+
 #include <X11/extensions/randr.h>
 #include "picturestr.h"
 
@@ -30,8 +39,10 @@ typedef struct _rrTransform RRTransformRec, *RRTransformPtr;
 
 struct _rrTransform {
     PictTransform transform;
-    struct pict_f_transform f_transform;
-    struct pict_f_transform f_inverse;
+#ifdef HAVE_PIXMAN_F_TRANSFORM
+    pixman_f_transform f_transform;
+    pixman_f_transform f_inverse;
+#endif
     PictFilterPtr filter;
     xFixed *params;
     int nparams;
@@ -72,8 +83,11 @@ RRTransformCompute(int x,
                    int height,
                    Rotation rotation,
                    RRTransformPtr rr_transform,
-                   PictTransformPtr transform,
-                   struct pict_f_transform *f_transform,
-                   struct pict_f_transform *f_inverse);
+                   PictTransformPtr transform
+#ifdef HAVE_PIXMAN_F_TRANSFORM
+                   , struct pixman_f_transform *f_transform,
+                   struct pixman_f_transform *f_inverse
+#endif
+);
 
 #endif                          /* _RRTRANSFORM_H_ */

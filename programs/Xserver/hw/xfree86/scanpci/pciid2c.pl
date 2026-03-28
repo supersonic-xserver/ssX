@@ -8,7 +8,7 @@
 #   perl pciid2c.pl ../common/xf86PciInfo.h < pci.ids > xf86PciIds.h
 #
 #
-# Copyright © 2002-2007 by The XFree86 Project, Inc.
+# Copyright © 2002 by The XFree86 Project, Inc.
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -55,7 +55,7 @@
 #
 # Author: David Dawes
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/pciid2c.pl,v 1.5tsi Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/pciid2c.pl,v 1.5 2004/02/14 03:08:16 dawes Exp $
 #
 
 if (@ARGV[0]) {
@@ -171,7 +171,7 @@ print "/* \$$proj\$ */
  *
  * This formatting of the data is:
  *
- * Copyright © 2002-2007 by the XFree86 Project, Inc.
+ * Copyright © 2002 by the XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining

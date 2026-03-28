@@ -1,6 +1,13 @@
 /*
- * Copyright 2003 by David H. Dawes.
- * Copyright 2003 by X-Oz Technologies.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 2003, 2004, 2005 David H. Dawes.
+ * Copyright © 2003, 2004, 2005 X-Oz Technologies.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -10,55 +17,67 @@
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *  2. Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *  3. The end-user documentation included with the redistribution,
+ *     if any, must include the following acknowledgment: "This product
+ *     includes software developed by X-Oz Technologies
+ *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
+ *     appear in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
  *
- * Author: David Dawes <dawes@XFree86.Org>.
+ *  4. Except as contained in this notice, the name of X-Oz
+ *     Technologies shall not be used in advertising or otherwise to
+ *     promote the sale, use or other dealings in this Software without
+ *     prior written authorization from X-Oz Technologies.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Author: David Dawes <dawes@x-oz.com>.
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86AutoConfig.c,v 1.12 2006/06/21 04:03:17 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86Parser.h"
 #include "xf86tokens.h"
 #include "xf86Config.h"
-#include "xf86MatchDrivers.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
-#include "xf86platformBus.h"
-#include "xf86pciBus.h"
-#ifdef __sparc__
-#include "xf86sbusBus.h"
+#include "xf86Bus.h"
+
+#if defined(__sparc__)
+#define SBUS_SUPPORT
 #endif
 
-#ifdef __sun
-#include <sys/visual_io.h>
-#include <ctype.h>
-#endif
+/*
+ * Sections for the default built-in configuration.
+ */
 
-#ifdef __NetBSD__
-#if defined(__sparc__) || defined(__sparc64__)
-#include <dev/sun/fbio.h>
-extern struct sbus_devtable sbusDeviceTable[];
-#endif /* sparc / sparc64 */
-#endif /* NetBSD */
-
-/* Sections for the default built-in configuration. */
+#define BUILTIN_MODULE_SECTION \
+	"Section \"Module\"\n" \
+	"\tIdentifier\t\"Builtin Default Modules\"\n" \
+	"\tLoad\t\"extmod\"\n" \
+	"\tLoad\t\"dbe\"\n" \
+	"\tLoad\t\"glx\"\n" \
+	"\tLoad\t\"freetype\"\n" \
+	"EndSection\n\n"
 
 #define BUILTIN_DEVICE_NAME \
 	"\"Builtin Default %s Device %d\""
@@ -66,7 +85,10 @@ extern struct sbus_devtable sbusDeviceTable[];
 #define BUILTIN_DEVICE_SECTION_PRE \
 	"Section \"Device\"\n" \
 	"\tIdentifier\t" BUILTIN_DEVICE_NAME "\n" \
-	"\tDriver\t\"%s\"\n"
+	"\tDriver\t\"%s\"\n%s"
+
+#define BUILTIN_DEVICE_SECTION_BUSID \
+	"\tBusID\t\"%s\"\n"
 
 #define BUILTIN_DEVICE_SECTION_POST \
 	"EndSection\n\n"
@@ -75,6 +97,15 @@ extern struct sbus_devtable sbusDeviceTable[];
 	BUILTIN_DEVICE_SECTION_PRE \
 	BUILTIN_DEVICE_SECTION_POST
 
+#define BUILTIN_MONITOR_NAME \
+	"\"Builtin Default Monitor\""
+
+#define BUILTIN_MONITOR_SECTION \
+	"Section \"Monitor\"\n" \
+	"\tIdentifier\t" BUILTIN_MONITOR_NAME "\n" \
+	"\tOption\t\"TargetRefresh\"\t\"75.0\"\n" \
+	"EndSection\n\n"
+
 #define BUILTIN_SCREEN_NAME \
 	"\"Builtin Default %s Screen %d\""
 
@@ -82,6 +113,7 @@ extern struct sbus_devtable sbusDeviceTable[];
 	"Section \"Screen\"\n" \
 	"\tIdentifier\t" BUILTIN_SCREEN_NAME "\n" \
 	"\tDevice\t" BUILTIN_DEVICE_NAME "\n" \
+	"\tMonitor\t" BUILTIN_MONITOR_NAME "\n" \
 	"EndSection\n\n"
 
 #define BUILTIN_LAYOUT_SECTION_PRE \
@@ -94,10 +126,25 @@ extern struct sbus_devtable sbusDeviceTable[];
 #define BUILTIN_LAYOUT_SECTION_POST \
 	"EndSection\n\n"
 
+
+#ifndef GET_CONFIG_CMD
+#define GET_CONFIG_CMD			"getconfig"
+#endif
+
+#ifndef GETCONFIG_DIR
+#define GETCONFIG_DIR			PROJECTROOT "/lib/X11/getconfig"
+#endif
+
+#define GETCONFIG_WHITESPACE		" \t\n"
+
 static const char **builtinConfig = NULL;
 static int builtinLines = 0;
-
-static void listPossibleVideoDrivers(XF86MatchedDrivers *md);
+static const char *deviceList[] = {
+	"fbdev",
+	"vesa",
+	"vga",
+	NULL
+};
 
 /*
  * A built-in config file is stored as an array of strings, with each string
@@ -112,15 +159,15 @@ AppendToList(const char *s, const char ***list, int *lines)
 
     str = xnfstrdup(s);
     for (p = strtok(str, "\n"); p; p = strtok(NULL, "\n")) {
-        (*lines)++;
-        *list = xnfreallocarray(*list, *lines + 1, sizeof(**list));
-        newstr = xnfalloc(strlen(p) + 2);
-        strcpy(newstr, p);
-        strcat(newstr, "\n");
-        (*list)[*lines - 1] = newstr;
-        (*list)[*lines] = NULL;
+	(*lines)++;
+	*list = xnfrealloc(*list, (*lines + 1) * sizeof(**list));
+	newstr = xnfalloc(strlen(p) + 2);
+	strcpy(newstr, p);
+	strcat(newstr, "\n");
+	(*list)[*lines - 1] = newstr;
+	(*list)[*lines] = NULL;
     }
-    free(str);
+    xfree(str);
 }
 
 static void
@@ -129,9 +176,10 @@ FreeList(const char ***list, int *lines)
     int i;
 
     for (i = 0; i < *lines; i++) {
-        free((char *) ((*list)[i]));
+	if ((*list)[i])
+	    xfree((*list)[i]);
     }
-    free(*list);
+    xfree(*list);
     *list = NULL;
     *lines = 0;
 }
@@ -148,349 +196,257 @@ AppendToConfig(const char *s)
     AppendToList(s, &builtinConfig, &builtinLines);
 }
 
-void
-xf86AddMatchedDriver(XF86MatchedDrivers *md, const char *driver)
-{
-    int j;
-    int nmatches = md->nmatches;
-
-    for (j = 0; j < nmatches; ++j) {
-        if (xf86NameCmp(md->matches[j], driver) == 0) {
-            // Driver already in matched drivers
-            return;
-        }
-    }
-
-    if (nmatches < MATCH_DRIVERS_LIMIT) {
-        md->matches[nmatches] = xnfstrdup(driver);
-        md->nmatches++;
-    }
-    else {
-        xf86Msg(X_WARNING, "Too many drivers registered, can't add %s\n", driver);
-    }
-}
-
 Bool
 xf86AutoConfig(void)
 {
-    XF86MatchedDrivers md;
-    int i;
-    const char **cp;
+    const char **p;
     char buf[1024];
-    ConfigStatus ret;
+    pciVideoPtr *pciptr, info = NULL;
+    char *driver = NULL;
+    FILE *gp = NULL;
+    XF86ConfigPtr pConfig;
+    char *busId = NULL, *busIdSpec;
+#ifdef SBUS_SUPPORT
+    char *promPath = NULL;
+#endif
 
-    /* Make sure config rec is there */
-    if (xf86allocateConfig() != NULL) {
-        ret = CONFIG_OK;    /* OK so far */
-    }
-    else {
-        xf86Msg(X_ERROR, "Couldn't allocate Config record.\n");
-        return FALSE;
-    }
+    /* Find the primary device, and get some information about it. */
+    if (xf86PciVideoInfo) {
+	for (pciptr = xf86PciVideoInfo; (info = *pciptr); pciptr++) {
+	    if (xf86IsPrimaryPci(info)) {
+		char busnum[8];
 
-    listPossibleVideoDrivers(&md);
-
-    for (i = 0; i < md.nmatches; i++) {
-        snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION,
-                md.matches[i], 0, md.matches[i]);
-        AppendToConfig(buf);
-        snprintf(buf, sizeof(buf), BUILTIN_SCREEN_SECTION,
-                md.matches[i], 0, md.matches[i], 0);
-        AppendToConfig(buf);
-    }
-
-    AppendToConfig(BUILTIN_LAYOUT_SECTION_PRE);
-    for (i = 0; i < md.nmatches; i++) {
-        snprintf(buf, sizeof(buf), BUILTIN_LAYOUT_SCREEN_LINE,
-                md.matches[i], 0);
-        AppendToConfig(buf);
-    }
-    AppendToConfig(BUILTIN_LAYOUT_SECTION_POST);
-
-    for (i = 0; i < md.nmatches; i++) {
-        free(md.matches[i]);
-    }
-
-    xf86MsgVerb(X_DEFAULT, 0,
-                "Using default built-in configuration (%d lines)\n",
-                builtinLines);
-
-    xf86MsgVerb(X_DEFAULT, 3, "--- Start of built-in configuration ---\n");
-    for (cp = builtinConfig; *cp; cp++)
-        xf86ErrorFVerb(3, "\t%s", *cp);
-    xf86MsgVerb(X_DEFAULT, 3, "--- End of built-in configuration ---\n");
-
-    xf86initConfigFiles();
-    xf86setBuiltinConfig(builtinConfig);
-    ret = xf86HandleConfigFile(TRUE);
-    FreeConfig();
-
-    if (ret != CONFIG_OK)
-        xf86Msg(X_ERROR, "Error parsing the built-in default configuration.\n");
-
-    return ret == CONFIG_OK;
-}
-
-static void
-listPossibleVideoDrivers(XF86MatchedDrivers *md)
-{
-    md->nmatches = 0;
-
-/* XXXMRG:  xorg-server 1.10/1.18 -- merge into xf86PlatformMatchDriver()? */
-#ifdef __NetBSD__
-#if defined(__shark)
-    xf86AddMatchedDriver(md, "chips");
-    xf86AddMatchedDriver(md, "igs");
-#elif defined(__sgimips)
-    xf86AddMatchedDriver(md, "crime");
-    xf86AddMatchedDriver(md, "newport");
-#elif defined(__sparc) || defined(__sparc64)
-    /* dig through /dev/fb* */
-    {
-    	struct fbtype fbt;
-	int j = 0, fd = 0, dev;
-	char fbpath[32];
-
-	for (j = 0; j < 10; j++) {
-	    snprintf(fbpath, 31, "/dev/fb%d", j);
-	    xf86Msg(X_ERROR,"%s: trying %s\n", __func__, fbpath);
-	    fd = open(fbpath, O_RDONLY, 0);
-	    if (fd == -1) continue;
-	    memset(&fbt, 0, sizeof(fbt));
-	    if (ioctl(fd, FBIOGTYPE, &fbt) == -1) {
-	    	close(fd);
-		continue;
+		xf86FormatPciBusNumber(info->bus, busnum);
+		xasprintf(&busId, "PCI:%s:%d:%d",
+			  busnum, info->device, info->func);
+		break;
 	    }
-	    close(fd);
-	    dev = 0;
-	    while ((sbusDeviceTable[dev].fbType != 0) &&
-	           (sbusDeviceTable[dev].fbType != fbt.fb_type))
-		dev++;
-	    if (sbusDeviceTable[dev].fbType == fbt.fb_type) {
-		xf86Msg(X_ERROR,"%s: found %s\n", __func__,
-		    sbusDeviceTable[dev].driverName);
-	        xf86AddMatchedDriver(md, sbusDeviceTable[dev].driverName);
+	}
+	if (!info) {
+	    xf86MsgVerb(X_INFO, 3, "AutoConfig: Primary device is not PCI.\n");
+	}
+    } else {
+	xf86MsgVerb(X_INFO, 3, "AutoConfig: xf86PciVideoInfo is not set.\n");
+    }
+#ifdef SBUS_SUPPORT
+    if (!busId) {
+	sbusDevicePtr psdp, *psdpp;
+	Bool useProm = FALSE;
+
+	if (xf86SbusInfo) {
+	    if (sparcPromInit() >= 0)
+		useProm = TRUE;
+	    for (psdpp = xf86SbusInfo; (psdp = *psdpp); psdpp++) {
+		if (psdp->fd == -2)
+		    continue;
+		if (useProm && psdp->node.node)
+		    promPath = sparcPromNode2Pathname(&psdp->node);
+		else
+		    xasprintf(&promPath, "fb%d", psdp->fbNum);
+
+		xasprintf(&busId, "SBUS:%s", promPath);
+		break;
 	    }
+	    if (useProm)
+		sparcPromClose();
+	} else {
+	    xf86MsgVerb(X_INFO, 3, "AutoConfig: xf86SbusInfo is not set.\n");
 	}
     }
 #endif
 
-#else /* !NetBSD */
-#ifdef XSERVER_PLATFORM_BUS
-    xf86PlatformMatchDriver(md);
+    if (!busId) {
+	xf86Msg(X_WARNING,
+		"AutoConfig: Cannot detect the primary video device.\n");
+	busIdSpec = "";
+    } else {
+	char *tmp;
+	char *path = NULL, *a, *b;
+	char *searchPath = NULL;
+
+	/*
+	 * Look for the getconfig program first in the
+	 * xf86FilePaths->modulePath directories, then in BINDIR.
+	 * If it isn't found in any of those locations, just use the normal
+	 * search path.
+	 */
+
+	a = xstrdup(xf86FilePaths->modulePath);
+	if (a) {
+	    b = strtok(a, ",");
+	    while (b) {
+		if (path) {
+		    xfree(path);
+		    path = NULL;
+		}
+		xasprintf(&path, "%s/%s", b, GET_CONFIG_CMD);
+		if (path && access(path, X_OK) == 0)
+		    break;
+		b = strtok(NULL, ",");
+	    }
+	    if (!b && path) {
+		xfree(path);
+		path = NULL;
+	    }
+	    xfree(a);
+	}
+
+#ifdef BINDIR
+	if (!path) {
+	    path = xnfstrdup(BINDIR "/" GET_CONFIG_CMD);
+	    if (access(path, X_OK) != 0) {
+		xfree(path);
+		path = NULL;
+	    }
+	}
 #endif
-#ifdef __sun
-    /* Check for driver type based on /dev/fb type and if valid, use
-       it instead of PCI bus probe results */
-    if (xf86Info.consoleFd >= 0) {
-        struct vis_identifier visid;
-        const char *cp;
-        int iret;
 
-        SYSCALL(iret = ioctl(xf86Info.consoleFd, VIS_GETIDENTIFIER, &visid));
-        if (iret < 0) {
-            int fbfd;
+	if (!path)
+	    path = xnfstrdup(GET_CONFIG_CMD);
 
-            fbfd = open(xf86SolarisFbDev, O_RDONLY);
-            if (fbfd >= 0) {
-                SYSCALL(iret = ioctl(fbfd, VIS_GETIDENTIFIER, &visid));
-                close(fbfd);
-            }
-        }
+	/*
+	 * Build up the config file directory search path:
+	 *
+	 * /etc/X11
+	 * PROJECTROOT/etc/X11
+	 * xf86FilePaths->modulePath
+	 * PROJECTROOT/lib/X11/getconfig  (GETCONFIG_DIR)
+	 */
 
-        if (iret < 0) {
-            xf86Msg(X_WARNING,
-                    "could not get frame buffer identifier from %s\n",
-                    xf86SolarisFbDev);
-        }
-        else {
-            xf86Msg(X_PROBED, "console driver: %s\n", visid.name);
+	searchPath = xnfalloc(strlen("/etc/X11") + 1 +
+			      strlen(PROJECTROOT "/etc/X11") + 1 +
+			      (xf86FilePaths->modulePath ?
+				    strlen(xf86FilePaths->modulePath) : 0)
+				+ 1 +
+			      strlen(GETCONFIG_DIR) + 1);
+	strcpy(searchPath, "/etc/X11," PROJECTROOT "/etc/X11,");
+	if (xf86FilePaths->modulePath && *xf86FilePaths->modulePath) {
+	    strcat(searchPath, xf86FilePaths->modulePath);
+	    strcat(searchPath, ",");
+	}
+	strcat(searchPath, GETCONFIG_DIR);
 
-            /* Special case from before the general case was set */
-            if (strcmp(visid.name, "NVDAnvda") == 0) {
-                xf86AddMatchedDriver(md, "nvidia");
-            }
+	xf86MsgVerb(X_INFO, 3, "AutoConfig: Primary is %s\n", busId);
 
-            /* General case - split into vendor name (initial all-caps
-               prefix) & driver name (rest of the string). */
-            if (strcmp(visid.name, "SUNWtext") != 0) {
-                for (cp = visid.name; (*cp != '\0') && isupper(*cp); cp++) {
-                    /* find end of all uppercase vendor section */
-                }
-                if ((cp != visid.name) && (*cp != '\0')) {
-                    char *vendorName = xnfstrdup(visid.name);
+	if (info) {
+	    snprintf(buf, sizeof(buf), "%s"
+#ifdef DEBUG
+		 " -D"
+#endif
+		 " -X %d"
+		 " -I %s"
+		 " -v 0x%04x -d 0x%04x -r 0x%02x -s 0x%04x"
+		 " -b 0x%04x -c 0x%04x",
+		 path,
+		 (unsigned int)xf86GetVersion(),
+		 searchPath,
+		 info->vendor, info->chipType, info->chipRev,
+		 info->subsysVendor, info->subsysCard,
+		 info->class << 8 | info->subclass);
+	}
+#ifdef SBUS_SUPPORT
+	else if (promPath) {
+	    snprintf(buf, sizeof(buf), "%s"
+#ifdef DEBUG
+		 " -D"
+#endif
+		 " -X %d"
+		 " -I %s"
+		 " -S %s",
+		 path,
+		 (unsigned int)xf86GetVersion(),
+		 searchPath,
+		 promPath);
+	    xfree(promPath);
+	}
+#endif
+	xf86MsgVerb(X_INFO, 3, "AutoConfig: Running \"%s\".\n", buf);
+	gp = Popen(buf, "r");
+	if (gp) {
+	    if (fgets(buf, sizeof(buf) - 1, gp)) {
+		buf[strlen(buf) - 1] = '\0';
+		tmp = strtok(buf, GETCONFIG_WHITESPACE);
+		if (tmp)
+		    driver = xnfstrdup(tmp);
+	    }
+	}
+	xfree(path);
+	xfree(searchPath);
 
-                    vendorName[cp - visid.name] = '\0';
-
-                    xf86AddMatchedDriver(md, vendorName);
-                    xf86AddMatchedDriver(md, cp);
-
-                    free(vendorName);
-                }
-            }
-        }
+	xasprintf(&busIdSpec, BUILTIN_DEVICE_SECTION_BUSID, busId);
     }
-#endif
-#ifdef __sparc__
-    const char *sbusDriver = sparcDriverName();
 
-    if (sbusDriver)
-        xf86AddMatchedDriver(md, sbusDriver);
-#endif
-#endif /* NetBSD */
-#ifdef XSERVER_LIBPCIACCESS
-    xf86PciMatchDriver(md);
-#endif
+    AppendToConfig(BUILTIN_MODULE_SECTION);
+    AppendToConfig(BUILTIN_MONITOR_SECTION);
 
-#if defined(__linux__)
-    xf86AddMatchedDriver(md, "modesetting");
-#endif
-
-#if defined(__NetBSD__) && \
-    (defined(__aarch64__) || defined(__arm__) || \
-     defined(__i386__) || defined(__amd64__))
-    xf86AddMatchedDriver(md, "modesetting");
-#endif
-
-#if defined(__linux__)
-    xf86AddMatchedDriver(md, "fbdev");
-#endif
-
-    /* Fallback to platform default hardware */
-#if defined(__i386__) || defined(__amd64__) || defined(__hurd__)
-    xf86AddMatchedDriver(md, "vesa");
-#elif defined(__sparc__) && !defined(__sun)
-    xf86AddMatchedDriver(md, "sunffb");
-#endif
-    
-#if defined(__NetBSD__)
-    xf86AddMatchedDriver(md, "wsfb");
-#endif
-}
-
-/* copy a screen section and enter the desired driver
- * and insert it at i in the list of screens */
-static Bool
-copyScreen(confScreenPtr oscreen, GDevPtr odev, int i, char *driver)
-{
-    confScreenPtr nscreen;
-    GDevPtr cptr = NULL;
-    char *identifier;
-
-    nscreen = malloc(sizeof(confScreenRec));
-    if (!nscreen)
-        return FALSE;
-    memcpy(nscreen, oscreen, sizeof(confScreenRec));
-
-    cptr = malloc(sizeof(GDevRec));
-    if (!cptr) {
-        free(nscreen);
-        return FALSE;
+    if (driver) {
+	snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION_PRE,
+		 driver, 0, driver, busIdSpec);
+	AppendToConfig(buf);
+	xf86MsgVerb(X_INFO, 3, "AutoConfig: New driver is \"%s\".\n", driver);
+	buf[0] = '\t';
+	while (fgets(buf + 1, sizeof(buf) - 2, gp)) {
+	    AppendToConfig(buf);
+	    xf86MsgVerb(X_INFO, 3, "AutoConfig: Extra line: '%.*s'.\n",
+			(int)strlen(buf) - 2, buf + 1);
+	}
+	AppendToConfig(BUILTIN_DEVICE_SECTION_POST);
+	snprintf(buf, sizeof(buf), BUILTIN_SCREEN_SECTION,
+		 driver, 0, driver, 0);
+	AppendToConfig(buf);
     }
-    memcpy(cptr, odev, sizeof(GDevRec));
 
-    if (asprintf(&identifier, "Autoconfigured Video Device %s", driver)
-        == -1) {
-        free(cptr);
-        free(nscreen);
-        return FALSE;
+    if (gp)
+	Pclose(gp);
+
+    for (p = deviceList; *p; p++) {
+	snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION,
+		 *p, 0, *p, busIdSpec);
+	AppendToConfig(buf);
+	snprintf(buf, sizeof(buf), BUILTIN_SCREEN_SECTION, *p, 0, *p, 0);
+	AppendToConfig(buf);
     }
-    cptr->driver = driver;
-    cptr->identifier = identifier;
 
-    xf86ConfigLayout.screens[i].screen = nscreen;
+    if (busId) {
+	xfree(busId);
+	xfree(busIdSpec);
+    }
 
-    /* now associate the new driver entry with the new screen entry */
-    xf86ConfigLayout.screens[i].screen->device = cptr;
-    cptr->myScreenSection = xf86ConfigLayout.screens[i].screen;
+    AppendToConfig(BUILTIN_LAYOUT_SECTION_PRE);
+    if (driver) {
+	snprintf(buf, sizeof(buf), BUILTIN_LAYOUT_SCREEN_LINE, driver, 0);
+	AppendToConfig(buf);
+    }
+    for (p = deviceList; *p; p++) {
+	snprintf(buf, sizeof(buf), BUILTIN_LAYOUT_SCREEN_LINE, *p, 0);
+	AppendToConfig(buf);
+    }
+    AppendToConfig(BUILTIN_LAYOUT_SECTION_POST);
 
+#ifdef BUILTIN_EXTRA
+    AppendToConfig(BUILTIN_EXTRA);
+#endif
+
+    if (driver)
+	xfree(driver);
+
+    xf86MsgVerb(X_DEFAULT, 0,
+		"Using default built-in configuration (%d lines)\n",
+		builtinLines);
+
+    xf86MsgVerb(X_DEFAULT, 3, "--- Start of built-in configuration ---\n");
+    for (p = builtinConfig; *p; p++)
+	xf86ErrorFVerb(3, "\t%s", *p);
+    xf86MsgVerb(X_DEFAULT, 3, "--- End of built-in configuration ---\n");
+
+    xf86setBuiltinConfig(builtinConfig);
+    pConfig = (XF86ConfigPtr)(xf86Info.config);
+    xf86Info.config = xf86parseConfigFile(pConfig);
+    FreeConfig();
+    if (!xf86Info.config) {
+	xf86Msg(X_ERROR, "Error parsing the built-in default configuration.\n");
+	return FALSE;
+    }
     return TRUE;
 }
 
-GDevPtr
-autoConfigDevice(GDevPtr preconf_device)
-{
-    GDevPtr ptr = NULL;
-    XF86MatchedDrivers md;
-    int num_screens = 0, i;
-    screenLayoutPtr slp;
-
-    if (!xf86configptr) {
-        return NULL;
-    }
-
-    /* If there's a configured section with no driver chosen, use it */
-    if (preconf_device) {
-        ptr = preconf_device;
-    }
-    else {
-        ptr = calloc(1, sizeof(GDevRec));
-        if (!ptr) {
-            return NULL;
-        }
-        ptr->chipID = -1;
-        ptr->chipRev = -1;
-        ptr->irq = -1;
-
-        ptr->active = TRUE;
-        ptr->claimed = FALSE;
-        ptr->identifier = "Autoconfigured Video Device";
-        ptr->driver = NULL;
-    }
-    if (!ptr->driver) {
-        /* get all possible video drivers and count them */
-        listPossibleVideoDrivers(&md);
-        for (i = 0; i < md.nmatches; i++) {
-            xf86Msg(X_DEFAULT, "Matched %s as autoconfigured driver %d\n",
-                    md.matches[i], i);
-        }
-
-        slp = xf86ConfigLayout.screens;
-        if (slp) {
-            /* count the number of screens and make space for
-             * a new screen for each additional possible driver
-             * minus one for the already existing first one
-             * plus one for the terminating NULL */
-            for (; slp[num_screens].screen; num_screens++);
-            xf86ConfigLayout.screens = xnfcalloc(num_screens + md.nmatches,
-                                                 sizeof(screenLayoutRec));
-            xf86ConfigLayout.screens[0] = slp[0];
-
-            /* do the first match and set that for the original first screen */
-            ptr->driver = md.matches[0];
-            if (!xf86ConfigLayout.screens[0].screen->device) {
-                xf86ConfigLayout.screens[0].screen->device = ptr;
-                ptr->myScreenSection = xf86ConfigLayout.screens[0].screen;
-            }
-
-            /* for each other driver found, copy the first screen, insert it
-             * into the list of screens and set the driver */
-            for (i = 1; i < md.nmatches; i++) {
-                if (!copyScreen(slp[0].screen, ptr, i, md.matches[i]))
-                    return NULL;
-            }
-
-            /* shift the rest of the original screen list
-             * to the end of the current screen list
-             *
-             * TODO Handle rest of multiple screen sections */
-            for (i = 1; i < num_screens; i++) {
-                xf86ConfigLayout.screens[i + md.nmatches] = slp[i];
-            }
-            xf86ConfigLayout.screens[num_screens + md.nmatches - 1].screen =
-                NULL;
-            free(slp);
-        }
-        else {
-            /* layout does not have any screens, not much to do */
-            ptr->driver = md.matches[0];
-            for (i = 1; i < md.nmatches; i++) {
-                free(md.matches[i]);
-            }
-        }
-    }
-
-    xf86Msg(X_DEFAULT, "Assigned the driver to the xf86ConfigLayout\n");
-
-    return ptr;
-}

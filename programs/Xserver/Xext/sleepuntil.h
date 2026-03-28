@@ -1,6 +1,13 @@
 /* $XFree86: xc/programs/Xserver/Xext/sleepuntil.h,v 1.3 2004/02/13 23:58:30 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (C) 2001-2005 The XFree86 Project, Inc.
+ * Copyright (C) 2001 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -51,12 +58,13 @@
 
 #include "dix.h"
 
-typedef void (*sleepUntilNotifyFunc)(ClientPtr client, pointer closure);
-
 extern int ClientSleepUntil(
     ClientPtr client,
     TimeStamp *revive,
-    sleepUntilNotifyFunc notifyFunc,
+    void (*notifyFunc)(
+	ClientPtr /* client */,
+	pointer   /* closure */
+	),
     pointer Closure
 );
 

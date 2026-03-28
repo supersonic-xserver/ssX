@@ -1,3 +1,19 @@
+/* $Xorg: FSQuExt.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -22,7 +38,6 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86$ */
 
 /*
 
@@ -53,8 +68,12 @@ in this Software without prior written authorization from The Open Group.
 #include	"FSlibint.h"
 
 Bool
-FSQueryExtension(FSServer *svr, char *name, int *major_opcode,
-		 int *first_event, int *first_error)
+FSQueryExtension(svr, name, major_opcode, first_event, first_error)
+    FSServer   *svr;
+    char       *name;
+    int        *major_opcode;
+    int        *first_event;
+    int        *first_error;
 {
     fsQueryExtensionReply rep;
     fsQueryExtensionReq *req;

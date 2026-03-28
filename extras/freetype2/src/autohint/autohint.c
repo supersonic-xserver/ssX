@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  autohint.c                                                             */
 /*                                                                         */
 /*    Automatic Hinting wrapper (body only).                               */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001 Catharon Productions Inc.                          */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -21,23 +28,12 @@
 
 #define FT_MAKE_OPTION_SINGLE_OBJECT
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ahangles.c"
 #include "ahglyph.c"
 #include "ahglobal.c"
 #include "ahhint.c"
 #include "ahmodule.c"
-
-#else
-
-#include <autohint/ahangles.c>
-#include <autohint/ahglyph.c>
-#include <autohint/ahglobal.c>
-#include <autohint/ahhint.c>
-#include <autohint/ahmodule.c>
-
-#endif
 
 
 /* END */

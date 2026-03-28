@@ -1,3 +1,11 @@
+/* $Xorg: sunInit.c,v 1.4 2000/08/17 19:48:29 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * sunInit.c --
  *	Initialization functions for screen/keyboard/mouse, etc.
@@ -14,7 +22,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunInit.c,v 3.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunInit.c,v 3.14 2004/06/02 22:43:00 dawes Exp $ */
 
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
@@ -65,7 +73,7 @@ extern Bool sunBW2Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define BW2I sunBW2Init
 #endif /* } */
@@ -86,27 +94,27 @@ extern Bool sunCG3Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG3I sunCG3Init
 #if defined(i386) || defined(__bsdi__) /* { */
 #define CG2I NULL
 #define CG4I NULL
 #else /* }{ */
-#if defined(INCLUDE_CG2_HEADER) || !defined(SVR4)
+#ifdef INCLUDE_CG2_HEADER
 extern Bool sunCG2Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG2I sunCG2Init
-#endif /* INCLUDE_CG2_HEADER || !SVR4 */
+#endif /* INCLUDE_CG2_HEADER */
 extern Bool sunCG4Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG4I sunCG4Init
 #endif /* } */
@@ -115,7 +123,7 @@ extern Bool sunCG6Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG6I sunCG6Init
 #else /* }{ */
@@ -126,7 +134,7 @@ extern Bool sunTCXInit(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define TCXI sunTCXInit
 #else /* }{ */
@@ -138,7 +146,7 @@ extern Bool sunCG8Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG8I sunCG8Init
 #else /* }{ */
@@ -186,11 +194,11 @@ sunFbDataRec sunFbData[XFBTYPE_LASTPLUSONE] = {
   { NULL, "SUN1BW        (bw1)" },
   { NULL, "SUN1COLOR     (cg1)" },
   { BW2I, "SUN2BW        (bw2)" },	
-#if defined(INCLUDE_CG2_HEADER) || !defined(SVR4)
+#ifdef INCLUDE_CG2_HEADER
   { CG2I, "SUN2COLOR     (cg2)" },
 #else
   { NULL, "SUN2COLOR     (cg2)" },
-#endif /* INCLUDE_CG2_HEADER || !defined(SVR4) */
+#endif /* INCLUDE_CG2_HEADER */
   { NULL, "SUN2GP        (gp1/gp2)" },
   { NULL, "SUN5COLOR     (cg5/386i accel)" },
   { CG3I, "SUN3COLOR     (cg3)" },
@@ -205,11 +213,21 @@ sunFbDataRec sunFbData[XFBTYPE_LASTPLUSONE] = {
   { NULL, "SUNFB_VIDEO" },
   { NULL, "SUNGIFB" },
   { NULL, "SUNPLAS" },
+#ifdef FBTYPE_SUNGP3
   { NULL, "SUNGP3        (cg12/gs)" },
+#endif
+#ifdef FBTYPE_SUNGT
   { NULL, "SUNGT         (gt)" },
+#endif
+#ifdef FBTYPE_SUNLEO
   { NULL, "SUNLEO        (zx)" },
+#endif
+#ifdef FBTYPE_MDICOLOR
   { NULL, "MDICOLOR      (cgfourteen)" },
+#endif
+#ifdef XFBTYPE_TCX
   { TCXI, "TCX           (tcx)" },
+#endif
 #endif /* } */
 };
 
@@ -269,7 +287,7 @@ static PixmapFormatRec	formats[] = {
 #if SUNMAXDEPTH > 1
     ,{ 8, 8, BITMAP_SCANLINE_PAD} /* 8-bit deep */
 #if SUNMAXDEPTH > 8
-    ,{ 12, 16, BITMAP_SCANLINE_PAD } /* 12-bit deep */
+    ,{ 12, 24, BITMAP_SCANLINE_PAD } /* 12-bit deep */
     ,{ 24, 32, BITMAP_SCANLINE_PAD } /* 24-bit deep */
 #endif
 #endif
@@ -411,7 +429,7 @@ void sunNonBlockConsoleOff(
 
 static char** GetDeviceList (argc, argv)
     int		argc;
-    const char	**argv;
+    char	**argv;
 {
     int		i;
     char	*envList = NULL;
@@ -420,7 +438,7 @@ static char** GetDeviceList (argc, argv)
 
     for (i = 1; i < argc; i++)
 	if (strcmp (argv[i], "-dev") == 0 && i+1 < argc) {
-	    cmdList = (char *)argv[i + 1];
+	    cmdList = argv[i + 1];
 	    break;
 	}
     if (!cmdList)
@@ -570,8 +588,8 @@ void OsVendorFatalError(void)
 
 void InitOutput(pScreenInfo, argc, argv)
     ScreenInfo 	  *pScreenInfo;
-    const int     argc;
-    const char    **argv;
+    int     	  argc;
+    char    	  **argv;
 {
     int     	i, scr;
     int		nonBlockConsole = 0;
@@ -658,8 +676,8 @@ void InitOutput(pScreenInfo, argc, argv)
  *-----------------------------------------------------------------------
  */
 void InitInput(argc, argv)
-    const int     argc;
-    const char    **argv;
+    int     	  argc;
+    char    	  **argv;
 {
     pointer	p, k;
     extern Bool mieqInit();
@@ -933,3 +951,28 @@ sunCfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
 
 #endif  /* SUNMAXDEPTH == 32 */
 #endif  /* SUNMAXDEPTH */
+
+#ifdef DPMSExtension
+/**************************************************************
+ * DPMSSet(), DPMSGet(), DPMSSupported()
+ *
+ * stubs
+ *
+ ***************************************************************/
+
+void DPMSSet (level)
+    int level;
+{
+}
+
+int DPMSGet (level)
+    int* level;
+{
+    return -1;
+}
+
+Bool DPMSSupported ()
+{
+    return FALSE;
+}
+#endif

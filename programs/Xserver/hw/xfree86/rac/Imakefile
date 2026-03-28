@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/rac/Imakefile,v 1.8tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/rac/Imakefile,v 1.8 2004/06/01 00:17:06 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -57,8 +57,9 @@ MODOBJ = xf86RACmodule.o
 SRCS = xf86RAC.c $(MODSRC)
 OBJS = xf86RAC.o $(MODOBJ)
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-           -I$(SERVERSRC)/include -I$(SERVERSRC)/mi -I$(SERVERSRC)/render
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/include -I$(SERVERSRC)/mi -I$(SERVERSRC)/render \
+	   -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
 ModuleObjectRule()
 

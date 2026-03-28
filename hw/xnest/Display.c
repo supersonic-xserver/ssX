@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993 by Davor Matic
 
@@ -11,11 +25,8 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Display.c,v 3.7 2006/09/02 16:44:22 dawes Exp $ */
 
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -39,7 +50,7 @@ XVisualInfo *xnestVisuals;
 int xnestNumVisuals;
 int xnestDefaultVisualIndex;
 Colormap *xnestDefaultColormaps;
-static int xnestNumDefaultColormaps;
+int xnestNumDefaultColormaps;
 int *xnestDepths;
 int xnestNumDepths;
 XPixmapFormatValues *xnestPixmapFormats;
@@ -50,10 +61,11 @@ Drawable xnestDefaultDrawables[MAXDEPTH + 1];
 Pixmap xnestIconBitmap;
 Pixmap xnestScreenSaverPixmap;
 XlibGC xnestBitmapGC;
+Window xnestConfineWindow;
 unsigned long xnestEventMask;
 
 void
-xnestOpenDisplay(int argc, char *argv[])
+xnestOpenDisplay(int argc, const char *argv[])
 {
   XVisualInfo vi;
   long mask;
@@ -137,6 +149,13 @@ xnestOpenDisplay(int argc, char *argv[])
   
   xnestBitmapGC = XCreateGC(xnestDisplay, xnestDefaultDrawables[1], 0L, NULL);
   
+  xnestConfineWindow = XCreateWindow(xnestDisplay, 
+				     DefaultRootWindow(xnestDisplay),
+				     0, 0, 1, 1, 0, 0,
+				     InputOnly,
+				     CopyFromParent,
+				     0L, NULL);
+  
   if (!(xnestUserGeometry & XValue))
     xnestX = 0;
   
@@ -176,7 +195,7 @@ xnestOpenDisplay(int argc, char *argv[])
 }
 
 void
-xnestCloseDisplay(void)
+xnestCloseDisplay()
 {
   if (!xnestDoFullGeneration || !xnestDisplay) return;
 

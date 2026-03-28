@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mifillarc.h,v 3.8 2006/01/09 15:00:37 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -23,7 +31,6 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
-
 
 #ifndef __MIFILLARC_H__
 #define __MIFILLARC_H__
@@ -176,9 +183,33 @@ typedef struct _miArcSlice {
 #define miFillInArcLower(slw) (((iny + dy) != 0) && \
 			       ((slw > 1) || (ine != inxk)))
 
+extern int miFreeArcCache(
+    pointer /*data*/,
+    XID /*id*/
+);
+
+extern struct finalSpan *realAllocSpan(
+    void
+);
+
 extern void miFillArcSetup(
     xArc * /*arc*/,
     miFillArcRec * /*info*/
+);
+
+extern void miFillArcDSetup(
+    xArc * /*arc*/,
+    miFillArcDRec * /*info*/
+);
+
+extern void miEllipseAngleToSlope(
+    int /*angle*/,
+    int /*width*/,
+    int /*height*/,
+    int * /*dxp*/,
+    int * /*dyp*/,
+    double * /*d_dxp*/,
+    double * /*d_dyp*/
 );
 
 extern void miFillArcSliceSetup(

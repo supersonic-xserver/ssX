@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
 Copyright 2003 Eric Anholt
@@ -24,7 +38,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/mesa/src/drv/sis/sis_ctx.c,v 1.3 2000/09/26 15:56:48 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_dd.c,v 1.1.1.3 2004/12/10 15:05:42 alanh Exp $ */
 
 /*
  * Authors:
@@ -38,17 +52,18 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "sis_lock.h"
 #include "sis_alloc.h"
 #include "sis_state.h"
+#include "sis_tris.h"
 
 #include "swrast/swrast.h"
 
 #include "utils.h"
 
-#define DRIVER_DATE	"20030810"
+#define DRIVER_DATE	"20040925"
 
 /* Return the width and height of the given buffer.
  */
 static void
-sisDDGetBufferSize( GLframebuffer *buffer,
+sisGetBufferSize( GLframebuffer *buffer,
 			      GLuint *width, GLuint *height )
 {
    GET_CURRENT_CONTEXT(ctx);
@@ -63,7 +78,7 @@ sisDDGetBufferSize( GLframebuffer *buffer,
 /* Return various strings for glGetString().
  */
 static const GLubyte *
-sisDDGetString( GLcontext *ctx, GLenum name )
+sisGetString( GLcontext *ctx, GLenum name )
 {
    sisContextPtr smesa = SIS_CONTEXT(ctx);
    static char buffer[128];
@@ -85,24 +100,28 @@ sisDDGetString( GLcontext *ctx, GLenum name )
    }
 }
 
-/* Send all commands to the hardware.  No-op, due to mmio.
+/* Send all commands to the hardware.
  */
 static void
-sisDDFlush( GLcontext *ctx )
+sisFlush( GLcontext *ctx )
 {
-   /* Do nothing */
+   sisContextPtr smesa = SIS_CONTEXT(ctx);
+
+   SIS_FIREVERTICES(smesa);
 }
 
 /* Make sure all commands have been sent to the hardware and have
  * completed processing.
  */
 static void
-sisDDFinish( GLcontext *ctx )
+sisFinish( GLcontext *ctx )
 {
    sisContextPtr smesa = SIS_CONTEXT(ctx);
 
-   sisDDFlush( ctx );
+   SIS_FIREVERTICES(smesa);
+   LOCK_HARDWARE();
    WaitEngIdle( smesa );
+   UNLOCK_HARDWARE();
 }
 
 void
@@ -146,7 +165,7 @@ sisUpdateBufferSize( sisContextPtr smesa )
       z_depth = 4;
       break;
    default:
-      assert( 0 );
+      sis_fatal_error("Bad Z format\n");
    }
 
    current->hwZ &= ~MASK_ZBufferPitch;
@@ -165,12 +184,11 @@ sisUpdateBufferSize( sisContextPtr smesa )
 /* Initialize the driver's misc functions.
  */
 void
-sisDDInitDriverFuncs( GLcontext *ctx )
+sisInitDriverFuncs( struct dd_function_table *functions )
 {
-   ctx->Driver.GetBufferSize	= sisDDGetBufferSize;
-   ctx->Driver.ResizeBuffers    = _swrast_alloc_buffers;
-   ctx->Driver.GetString	= sisDDGetString;
-   ctx->Driver.Finish		= sisDDFinish;
-   ctx->Driver.Flush		= sisDDFlush;
-   ctx->Driver.Error		= NULL;
+   functions->GetBufferSize	= sisGetBufferSize;
+   functions->ResizeBuffers    = _swrast_alloc_buffers;
+   functions->GetString	= sisGetString;
+   functions->Finish		= sisFinish;
+   functions->Flush		= sisFlush;
 }

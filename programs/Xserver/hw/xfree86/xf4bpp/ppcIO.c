@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcIO.c,v 1.6 2003/11/03 05:11:57 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1990  X Consortium
@@ -48,6 +55,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
+/* $XConsortium: ppcIO.c /main/8 1996/02/21 17:57:49 kaleb $ */
 
 #include "xf4bpp.h"
 #include "mfbmap.h"
@@ -92,7 +100,11 @@ static BSFuncRec ppcBSFuncRec = {
 
 /*ARGSUSED*/
 static Bool
-vgaScreenClose(int idx, ScreenPtr pScreen)
+vgaScreenClose
+(
+	int       idx,
+	ScreenPtr pScreen
+)
 {
 	pScreen->defColormap = 0 ;
 	return TRUE;
@@ -125,7 +137,10 @@ typedef struct
  * screen pixmap here.
  */
 static Bool
-v16CreateScreenResources(ScreenPtr pScreen)
+v16CreateScreenResources
+(
+    ScreenPtr pScreen
+)
 {
     miScreenInitParmsPtr pScrInitParms;
     pointer value;
@@ -166,8 +181,12 @@ v16CreateScreenResources(ScreenPtr pScreen)
 
 
 Bool
-xf4bppScreenInit(ScreenPtr pScreen, pointer pbits, int virtx, int virty,
-		 int dpix, int dpiy, int width)
+xf4bppScreenInit( pScreen, pbits, virtx, virty, dpix, dpiy, width )
+    ScreenPtr pScreen;
+    pointer pbits;
+    int virtx, virty;
+    int dpix, dpiy;
+    int width;
 {
   Bool ret;
   VisualPtr visuals;

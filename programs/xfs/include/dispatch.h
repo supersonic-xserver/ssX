@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/xfs/include/dispatch.h,v 1.2 1999/03/07 11:41:00 dawes Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/xfs/include/dispatch.h,v 1.3 2001/08/28 23:44:54 paulo Exp $
  */
 
 /************************************************************

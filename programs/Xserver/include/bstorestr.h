@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/bstorestr.h,v 1.2 2001/01/06 20:58:12 tsi Exp $*/
+/* $XFree86: xc/programs/Xserver/include/bstorestr.h,v 1.3 2003/04/27 21:31:04 herrb Exp $*/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1987 by the Regents of the University of California
  *

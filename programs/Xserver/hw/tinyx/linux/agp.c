@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Abstraction of the AGP GART interface.
  *
  * This version is for both Linux and FreeBSD.
@@ -35,7 +42,7 @@ of the copyright holder.
 
  */
 
-/* $XFree86: xc/programs/Xserver/hw/tinyx/linux/agp.c,v 1.4 2005/10/26 20:42:36 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/linux/agp.c,v 1.2 2004/06/23 19:40:16 tsi Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -87,10 +94,10 @@ of the copyright holder.
  * Author: Pontus Lidman <pontus.lidman@nokia.com> (adaption to TinyX) and others
  */
 
-#include <X11/X.h>
+#include "X.h"
 
-#include <X11/Xdefs.h>
-#include <X11/Xmd.h>
+#include "Xdefs.h"
+#include "Xmd.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -107,27 +114,14 @@ of the copyright holder.
 
 #if defined(linux)
 #include <asm/ioctl.h>
-#include <linux/version.h>
 
-#if defined(LINUX_VERSION_CODE) && defined(KERNEL_VERSION)
-# if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,31)
-#  include <linux/agpgart.h>
-# endif
-#endif
+#include "../../xfree86/os-support/linux/agpgart.h"
 
 #elif defined(__FreeBSD__)
-
 #include <sys/ioctl.h>
 #include <sys/agpio.h>
-
 #endif
 
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE 1
-#endif
 #ifndef AGP_DEVICE
 #define AGP_DEVICE		"/dev/agpgart"
 #endif
@@ -138,10 +132,8 @@ of the copyright holder.
 #define AGPGART_MAJOR_VERSION	0
 #define AGPGART_MINOR_VERSION	99
 
-#ifdef AGPIOC_BASE
 static int gartFd = -1;
 static int acquiredScreen = -1;
-#endif
 
 /*
  * Open /dev/agpgart.  Keep it open until server exit.
@@ -150,7 +142,6 @@ static int acquiredScreen = -1;
 static Bool
 GARTInit(void)
 {
-#ifdef AGPIOC_INFO
 	static Bool initDone = FALSE;
 	struct _agp_info agpinf;
 
@@ -202,10 +193,8 @@ GARTInit(void)
             return FALSE;
 	}
 #endif
+	
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
 
 Bool
@@ -217,7 +206,6 @@ KdAgpGARTSupported()
 AgpInfoPtr
 KdGetAGPInfo(int screenNum)
 {
-#ifdef AGPIOC_INFO
 	struct _agp_info agpinf;
 	AgpInfoPtr info;
 
@@ -246,9 +234,6 @@ KdGetAGPInfo(int screenNum)
 	info->usedPages = agpinf.pg_used;
 
 	return info;
-#else
-	return NULL;
-#endif
 }
 
 /*
@@ -259,7 +244,6 @@ KdGetAGPInfo(int screenNum)
 Bool
 KdAcquireGART(int screenNum)
 {
-#ifdef AGPIOC_ACQUIRE
     if (screenNum != -1 && !GARTInit())
         return FALSE;
     
@@ -274,15 +258,11 @@ KdAcquireGART(int screenNum)
     }
     
     return TRUE;
-#else
-    return FALSE;
-#endif
 }
 
 Bool
 KdReleaseGART(int screenNum)
 {
-#ifdef AGPIOC_RELEASE
 	if (screenNum != -1 && !GARTInit())
 		return FALSE;
 
@@ -296,7 +276,6 @@ KdReleaseGART(int screenNum)
 		acquiredScreen = -1;
 		return TRUE;
 	}
-#endif
 	return FALSE;
 }
 
@@ -304,7 +283,6 @@ int
 KdAllocateGARTMemory(int screenNum, unsigned long size, int type,
 			unsigned long *physical)
 {
-#ifdef AGPIOC_ALLOCATE
 	struct _agp_allocate alloc;
 	int pages;
 
@@ -337,9 +315,6 @@ KdAllocateGARTMemory(int screenNum, unsigned long size, int type,
 		*physical = alloc.physical;
 
 	return alloc.key;
-#else
-	return -1;
-#endif
 }
 
 
@@ -347,7 +322,6 @@ KdAllocateGARTMemory(int screenNum, unsigned long size, int type,
 Bool
 KdBindGARTMemory(int screenNum, int key, unsigned long offset)
 {
-#ifdef AGPIOC_BIND
 	struct _agp_bind bind;
 	int pageOffset;
 
@@ -380,9 +354,6 @@ KdBindGARTMemory(int screenNum, int key, unsigned long offset)
 	}
 
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
 
 
@@ -390,7 +361,6 @@ KdBindGARTMemory(int screenNum, int key, unsigned long offset)
 Bool
 KdUnbindGARTMemory(int screenNum, int key)
 {
-#ifdef AGPIOC_UNBIND
 	struct _agp_unbind unbind;
 
 	if (!GARTInit() || acquiredScreen != screenNum)
@@ -413,9 +383,6 @@ KdUnbindGARTMemory(int screenNum, int key)
 	}
 
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
 
 
@@ -423,7 +390,6 @@ KdUnbindGARTMemory(int screenNum, int key)
 Bool
 KdEnableAGP(int screenNum, CARD32 mode)
 {
-#ifdef AGPIOC_SETUP
 	agp_setup setup;
 
 	if (!GARTInit() || acquiredScreen != screenNum)
@@ -438,8 +404,5 @@ KdEnableAGP(int screenNum, CARD32 mode)
 	}
 
 	return TRUE;
-#else
-	return FALSE;
-#endif
 }
 

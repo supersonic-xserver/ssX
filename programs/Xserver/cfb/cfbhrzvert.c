@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbhrzvert.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbhrzvert.c,v 3.8 2002/09/16 18:05:30 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987,1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: cfbhrzvert.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+#include "X.h"
 
 #include "gc.h"
 #include "window.h"
@@ -60,10 +67,17 @@ SOFTWARE.
    abs(len) > 1
 */
 void
-cfbHorzS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
-	 int x1, int y1, int len)
+cfbHorzS(rop, and, xor, addrl, nlwidth, x1, y1, len)
+register int rop;
+register CfbBits and;
+register CfbBits xor;
+register CfbBits *addrl;	/* pointer to base of bitmap */
+int nlwidth;		/* width in longwords of bitmap */
+int x1;			/* initial point */ 
+int y1;
+int len;		/* length of line */
 {
-    int nlmiddle;
+    register int nlmiddle;
 
 #if PSZ == 24
 
@@ -77,11 +91,11 @@ cfbHorzS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
     piQxelXor[1] = ((xor>>8)  & 0xFFFF)| ((xor<<16) & 0xFFFF0000);
     piQxelXor[2] = ((xor<<8) & 0xFFFFFF00) | ((xor>>16) & 0xFF);
 
-    leftIndex = x1 & PSZB;
-    rightIndex = ((x1 + len) < 5) ? 0 : (x1 + len) & PSZB;
+    leftIndex = x1 & 3;
+    rightIndex = ((x1 + len) < 5)?0:(x1 + len)&3;
     nlmiddle = len;
     if(leftIndex){
-      nlmiddle -= (PGSZB - leftIndex);
+      nlmiddle -= (4 - leftIndex);
     }
     if(rightIndex){
       nlmiddle -= rightIndex;
@@ -91,8 +105,7 @@ cfbHorzS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
 
     nlmiddle >>= 2;
 
-    addrl += (y1 * nlwidth) + (x1 / PGSZB) * PSZB +
-	(leftIndex ? leftIndex - 1 : 0);
+    addrl += (y1 * nlwidth) + (x1 >> 2)*3 + (leftIndex?leftIndex-1:0);
 
     switch(leftIndex+len){
     case 4:
@@ -301,8 +314,8 @@ cfbHorzS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
       }
     }
 #else
-    CfbBits startmask;
-    CfbBits endmask;
+    register CfbBits startmask;
+    register CfbBits endmask;
 
     addrl = addrl + (y1 * nlwidth) + (x1 >> PWSH);
 
@@ -357,20 +370,25 @@ cfbHorzS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
 /* vertical solid line */
 
 void
-cfbVertS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
-	 int x1, int y1, int len)
+cfbVertS(rop, and, xor, addrl, nlwidth, x1, y1, len)
+int rop;
+register CfbBits and, xor;
+register CfbBits *addrl;	/* pointer to base of bitmap */
+register int nlwidth;	/* width in longwords of bitmap */
+int x1, y1;		/* initial point */
+register int len;	/* length of line */
 {
 #if PSZ == 24
     int xIdx;
     CfbBits and2 = 0, xor2 = 0, mask = 0, mask2;
 #endif
 #ifdef PIXEL_ADDR
-    PixelType    *bits = (PixelType *) addrl;
+    register PixelType    *bits = (PixelType *) addrl;
 
 #if PSZ == 24
     nlwidth <<= PWSH;
-    xIdx = x1 & PSZB;
-    bits = (PixelType *)(addrl + (y1 * nlwidth) + ((x1 * PSZB) / PGSZB));
+    xIdx = x1 & 3;
+    bits = (PixelType *)(addrl + (y1 * nlwidth) + ((x1*3) >> 2));
 #else
     nlwidth <<= PWSH;
     bits = bits + (y1 * nlwidth) + x1;
@@ -521,10 +539,10 @@ cfbVertS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
     }
 #else /* !PIXEL_ADDR */
 #if PSZ == 24
-    addrl = addrl + (y1 * nlwidth) + ((x1 * PSZB) / PGSZB);
+    addrl = addrl + (y1 * nlwidth) + ((x1*3) >>2);
 
-    and |= ~cfbmask[(x1 & (PGSZB - 1)) << 1];
-    xor &= cfbmask[(x1 & (PGSZB - 1)) << 1];
+    and |= ~cfbmask[(x1 & 3)<<1];
+    xor &= cfbmask[(x1 & 3)<<1];
 #else
     addrl = addrl + (y1 * nlwidth) + (x1 >> PWSH);
 

@@ -1,4 +1,11 @@
 /* $XFree86: xc/lib/Xxf86rush/XF86Rush.c,v 1.6 2002/10/16 00:37:34 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1998 Daryll Strauss
@@ -27,7 +34,7 @@ static char *xf86rush_extension_name = XF86RUSHNAME;
  *                                                                           *
  *****************************************************************************/
 
-static int close_display(Display *dpy, XExtCodes *codes);
+static int close_display();
 static /* const */ XExtensionHooks xf86rush_extension_hooks = {
     NULL,				/* create_gc */
     NULL,				/* copy_gc */

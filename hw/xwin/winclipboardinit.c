@@ -1,5 +1,12 @@
 /*
- *Copyright (C) 2003-2004 Harold L Hunt II All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -15,43 +22,21 @@
  *THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  *MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *NONINFRINGEMENT. IN NO EVENT SHALL HAROLD L HUNT II BE LIABLE FOR
+ *NONINFRINGEMENT. IN NO EVENT SHALL THE XFREE86 PROJECT BE LIABLE FOR
  *ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
  *CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- *Except as contained in this notice, the name of Harold L Hunt II
+ *Except as contained in this notice, the name of the XFree86 Project
  *shall not be used in advertising or otherwise to promote the sale, use
  *or other dealings in this Software without prior written authorization
- *from Harold L Hunt II.
+ *from the XFree86 Project.
  *
  * Authors:	Harold L Hunt II
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winclipboardinit.c,v 1.2 2003/07/29 21:25:16 dawes Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
-#include "dixstruct.h"
 #include "winclipboard.h"
-
-
-/*
- * Local typedefs
- */
-
-typedef int (*winDispatchProcPtr) (ClientPtr);
-
-DISPATCH_PROC(winProcSetSelectionOwner);
-
-
-/*
- * References to external symbols
- */
-
-extern pthread_t		g_ptClipboardProc;
-extern winDispatchProcPtr	winProcSetSelectionOwnerOrig;
-extern Bool			g_fClipboard;
-extern HWND			g_hwndClipboard;
 
 
 /*
@@ -59,22 +44,28 @@ extern HWND			g_hwndClipboard;
  */
 
 Bool
-winInitClipboard ()
+winInitClipboard (pthread_t *ptClipboardProc,
+		  pthread_mutex_t *ppmServerStarted,
+		  DWORD dwScreen)
 {
+  ClipboardProcArgPtr		pArg;
+
   ErrorF ("winInitClipboard ()\n");
 
-  /* Wrap some internal server functions */
-  if (ProcVector[X_SetSelectionOwner] != winProcSetSelectionOwner)
+  /* Allocate the parameter structure */
+  pArg = (ClipboardProcArgPtr) malloc (sizeof (ClipboardProcArgRec));
+  if (pArg == NULL)
     {
-      winProcSetSelectionOwnerOrig = ProcVector[X_SetSelectionOwner];
-      ProcVector[X_SetSelectionOwner] = winProcSetSelectionOwner;
+      ErrorF ("winInitClipboard - malloc for ClipboardProcArgRec failed.\n");
+      return FALSE;
     }
   
+  /* Setup the argument structure for the thread function */
+  pArg->dwScreen = dwScreen;
+  pArg->ppmServerStarted = ppmServerStarted;
+
   /* Spawn a thread for the Clipboard module */
-  if (pthread_create (&g_ptClipboardProc,
-		      NULL,
-		      winClipboardProc,
-		      NULL))
+  if (pthread_create (ptClipboardProc, NULL, winClipboardProc, pArg))
     {
       /* Bail if thread creation failed */
       ErrorF ("winInitClipboard - pthread_create failed.\n");
@@ -92,8 +83,8 @@ winInitClipboard ()
 HWND
 winClipboardCreateMessagingWindow ()
 {
-  WNDCLASS			wc;
-  HWND				hwnd;
+  WNDCLASS		wc;
+  HWND			hwnd;
 
   /* Setup our window class */
   wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -120,7 +111,7 @@ winClipboardCreateMessagingWindow ()
 			  (HWND) NULL,		/* No parent or owner window */
 			  (HMENU) NULL,		/* No menu */
 			  GetModuleHandle (NULL),/* Instance handle */
-			  NULL);		/* Creation data */
+			  NULL);		/* ScreenPrivates */
   assert (hwnd != NULL);
 
   /* I'm not sure, but we may need to call this to start message processing */
@@ -130,14 +121,4 @@ winClipboardCreateMessagingWindow ()
   UpdateWindow (hwnd);
 
   return hwnd;
-}
-
-void
-winFixClipboardChain (void)
-{
-   if (g_fClipboard
-       && g_hwndClipboard)
-     {
-       PostMessage (g_hwndClipboard, WM_WM_REINIT, 0, 0);
-     }
 }

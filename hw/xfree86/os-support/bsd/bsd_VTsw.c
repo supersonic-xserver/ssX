@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_VTsw.c,v 3.8 2006/01/09 15:00:19 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Derived from VTsw_usl.c which is
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -23,10 +31,6 @@
  *
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include <X11/X.h>
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -45,65 +49,50 @@ void
 xf86VTRequest(int sig)
 {
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
-    if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
-        xf86Info.vtRequestsPending = TRUE;
-    }
+	if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
+		xf86Info.vtRequestsPending = TRUE;
+	}	
 #endif
-    return;
+	return;
 }
 
 Bool
 xf86VTSwitchPending()
 {
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
-    if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
-        return xf86Info.vtRequestsPending ? TRUE : FALSE;
-    }
+	if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
+		return(xf86Info.vtRequestsPending ? TRUE : FALSE);
+	}
 #endif
-    return FALSE;
+	return FALSE;
 }
 
 Bool
 xf86VTSwitchAway()
 {
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
-    if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
-#ifdef WSCONS_SUPPORT
-	ioctl(xf86Info.consoleFd, KDSETMODE, KD_TEXT);
+	if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
+		xf86Info.vtRequestsPending = FALSE;
+		if (ioctl(xf86Info.consoleFd, VT_RELDISP, 1) < 0)
+			return(FALSE);
+		else
+			return(TRUE);
+	}
 #endif
-        xf86Info.vtRequestsPending = FALSE;
-        if (ioctl(xf86Info.consoleFd, VT_RELDISP, 1) < 0)
-            return FALSE;
-        else
-            return TRUE;
-    }
-#endif
-    return FALSE;
+	return FALSE;
 }
 
 Bool
 xf86VTSwitchTo()
 {
 #if defined (SYSCONS_SUPPORT) || defined (PCVT_SUPPORT)
-    if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
-#ifdef WSCONS_SUPPORT
-	ioctl(xf86Info.consoleFd, KDSETMODE, KD_GRAPHICS);
+	if (xf86Info.consType == SYSCONS || xf86Info.consType == PCVT) {
+		xf86Info.vtRequestsPending = FALSE;
+		if (ioctl(xf86Info.consoleFd, VT_RELDISP, VT_ACKACQ) < 0)
+			return(FALSE);
+		else
+			return(TRUE);
+	}
 #endif
-        xf86Info.vtRequestsPending = FALSE;
-        if (ioctl(xf86Info.consoleFd, VT_RELDISP, VT_ACKACQ) < 0)
-            return FALSE;
-        else
-            return TRUE;
-    }
-#endif
-    return TRUE;
-}
-
-Bool
-xf86VTActivate(int vtno)
-{
-    if (ioctl(xf86Info.consoleFd, VT_ACTIVATE, vtno) < 0) {
-        return FALSE;
-    }
-    return TRUE;
+	return(TRUE);
 }

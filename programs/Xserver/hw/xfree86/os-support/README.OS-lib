@@ -498,3 +498,9 @@ xf86cos(double x)
 
 
 $XFree86: xc/programs/Xserver/hw/xfree86/os-support/README.OS-lib,v 3.10 2001/12/17 20:00:45 dawes Exp $
+
+
+
+
+
+$XConsortium: README.OS-lib /main/5 1996/02/21 17:50:28 kaleb $

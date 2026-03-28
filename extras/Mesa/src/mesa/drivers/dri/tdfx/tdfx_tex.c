@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 2000 VA Linux Systems Inc., Fremont, California.
  *
@@ -50,7 +57,7 @@
 
 
 /* no borders! can't halve 1x1! (stride > width * comp) not allowed */
-static void
+void
 _mesa_halve2x2_teximage2d ( GLcontext *ctx,
 			    struct gl_texture_image *texImage,
 			    GLuint bytesPerPixel,

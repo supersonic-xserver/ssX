@@ -1,5 +1,14 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fbsolid.c,v 1.8 2001/10/28 03:33:08 tsi Exp $
+ *
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -21,10 +30,6 @@
  */
 
 #define FbSelectPart(xor,o,t)    xor
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "fb.h"
 
@@ -51,6 +56,7 @@ fbSolid (FbBits	    *dst,
 	return;
     }
 #endif
+	
     dst += dstX >> FB_SHIFT;
     dstX &= FB_MASK;
     FbMaskBitsBytes(dstX, width, and == 0, startmask, startbyte, 
@@ -68,12 +74,12 @@ fbSolid (FbBits	    *dst,
 	n = nmiddle;
 	if (!and)
 	    while (n--)
-		WRITE(dst++, xor);
+		*dst++ = xor;
 	else
 	    while (n--)
 	    {
-		WRITE(dst, FbDoRRop (READ(dst), and, xor));
-                dst++;
+		*dst = FbDoRRop (*dst, and, xor);
+		dst++;
 	    }
 	if (endmask)
 	    FbDoRightMaskByteRRop(dst,endbyte,endmask,and,xor);
@@ -158,26 +164,26 @@ fbSolid24 (FbBits   *dst,
     {
 	if (startmask)
 	{
-	    WRITE(dst, FbDoMaskRRop(READ(dst), andS, xorS, startmask));
-            dst++;
+	    *dst = FbDoMaskRRop(*dst, andS, xorS, startmask);
+	    dst++;
 	}
 	n = nmiddle;
 	if (!and0)
 	{
 	    while (n >= 3)
 	    {
-		WRITE(dst++, xor0);
-		WRITE(dst++, xor1);
-		WRITE(dst++, xor2);
+		*dst++ = xor0;
+		*dst++ = xor1;
+		*dst++ = xor2;
 		n -= 3;
 	    }
 	    if (n)
 	    {
-		WRITE(dst++, xor0);
+		*dst++ = xor0;
 		n--;
 		if (n)
 		{
-		    WRITE(dst++, xor1);
+		    *dst++ = xor1;
 		}
 	    }
 	}
@@ -185,28 +191,28 @@ fbSolid24 (FbBits   *dst,
 	{
 	    while (n >= 3)
 	    {
-		WRITE(dst, FbDoRRop (READ(dst), and0, xor0));
-                dst++;
-		WRITE(dst, FbDoRRop (READ(dst), and1, xor1));
-                dst++;
-		WRITE(dst, FbDoRRop (READ(dst), and2, xor2));
-                dst++;
+		*dst = FbDoRRop (*dst, and0, xor0);
+		dst++;
+		*dst = FbDoRRop (*dst, and1, xor1);
+		dst++;
+		*dst = FbDoRRop (*dst, and2, xor2);
+		dst++;
 		n -= 3;
 	    }
 	    if (n)
 	    {
-		WRITE(dst, FbDoRRop (READ(dst), and0, xor0));
-                dst++;
+		*dst = FbDoRRop (*dst, and0, xor0);
+		dst++;
 		n--;
 		if (n)
 		{
-		    WRITE(dst, FbDoRRop (READ(dst), and1, xor1));
-                    dst++;
+		    *dst = FbDoRRop (*dst, and1, xor1);
+		    dst++;
 		}
 	    }
 	}
 	if (endmask)
-	    WRITE(dst, FbDoMaskRRop (READ(dst), andE, xorE, endmask));
+	    *dst = FbDoMaskRRop (*dst, andE, xorE, endmask);
 	dst += dstStride;
     }
 }

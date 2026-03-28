@@ -1,6 +1,6 @@
 XCOMM $XFree86: xc/fonts/scaled/Type1/Imakefile,v 1.19 2004/06/01 00:16:55 dawes Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -73,9 +73,17 @@ FONTINSTDIR = $(FONTDIR)/Type1
 
 MakeFontsScale($(OBJS))
 MakeFontsDir(fonts.scale)
+#if UseFreetype2
 MakeFcCache($(OBJS))
+#endif
 
 InstallFonts($(FONTINSTDIR))
 InstallEncodingsDir($(ENCODINGSSRC),$(FONTINSTDIR))
+#if UseFreetype2
 InstallFcCache($(FONTINSTDIR))
+#endif
 
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif

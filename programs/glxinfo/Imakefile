@@ -1,17 +1,17 @@
-XCOMM $XFree86: xc/programs/glxinfo/Imakefile,v 1.8tsi Exp $
+XCOMM $XFree86: xc/programs/glxinfo/Imakefile,v 1.8 2002/11/22 22:56:03 tsi Exp $
 
 #include <Threads.tmpl>
 
 #if BuildGLULibrary
 
-        DEPLIBS = $(DEPGLULIB) $(DEPGLXLIB) $(DEPXXF86VMLIB) $(DEPXLIB)
-LOCAL_LIBRARIES = $(GLULIB) $(GLXLIB) $(XXF86VMLIB) $(XLIB) 
+        DEPLIBS = $(DEPGLULIB) $(DEPGLXLIB) $(DEPXLIB)
+LOCAL_LIBRARIES = $(GLULIB) $(GLXLIB) $(XLIB) 
         DEFINES = -DDO_GLU
 
 #else
 
-        DEPLIBS = $(DEPGLXLIB) $(DEPXXF86VMLIB) $(DEPXLIB)
-LOCAL_LIBRARIES = $(GLXLIB) $(XXF86VMLIB) $(XLIB) 
+        DEPLIBS = $(DEPGLXLIB) $(DEPXLIB)
+LOCAL_LIBRARIES = $(GLXLIB) $(XLIB) 
 
 #endif
 

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/include/lbx.h,v 1.9tsi Exp $ */
+/* $Xorg: lbx.h,v 1.4 2001/02/09 02:05:32 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -45,13 +52,14 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/lbxproxy/include/lbx.h,v 1.8 2004/04/03 22:38:54 tsi Exp $ */
 
 #ifndef _LBX_H_
 #define _LBX_H_
 #include "misc.h"
 #include "os.h"
 #include "util.h"
-#include <X11/extensions/lbxstr.h>
+#include "lbxstr.h"
 
 /* we keep the ifdefs in the code as a guide to what's going on */
 /* but we want the proxy to work with all possible servers */
@@ -376,6 +384,8 @@ extern int numLargeRequestsInQueue;
 #define	PROTOCOL_FULL	0		/* DEFAULT - best w/ accuracy */
 #define	PROTOCOL_MOST	1		/* cheat on errors */
 #define	PROTOCOL_POOR	2		/* cheat on errors & events */
+
+#undef	DEBUG
 
 #undef	TRACE
 

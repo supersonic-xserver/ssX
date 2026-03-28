@@ -1,3 +1,4 @@
+.\" $Xorg: xmodmap.man,v 1.4 2001/02/09 02:05:56 xorgcvs Exp $
 .\" Copyright 1988, 1989, 1990, 1998  The Open Group
 .\" Copyright 1987 Sun Microsystems, Inc.
 .\" 
@@ -23,7 +24,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\" 
-.\" $XFree86: xc/programs/xmodmap/xmodmap.man,v 1.15tsi Exp $
+.\" $XFree86: xc/programs/xmodmap/xmodmap.man,v 1.14 2005/02/11 03:03:21 dawes Exp $
 .\" 
 .de EX		\"Begin example
 .ne 5

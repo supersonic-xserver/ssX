@@ -1,0 +1,19 @@
+/AttrValid.c/1.1.1.4/Sat Jan 19 15:04:02 2002//Tnetbsd-5-2-3-RELEASE
+/AttrValid.h/1.1.1.4/Sat Jan 19 15:04:02 2002//Tnetbsd-5-2-3-RELEASE
+/DiPrint.h/1.1.1.3/Sat Jun  9 15:01:39 2001//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.7/Fri Mar 18 13:10:40 2005//Tnetbsd-5-2-3-RELEASE
+/Init.c/1.1.1.5/Fri Mar  5 14:28:06 2004//Tnetbsd-5-2-3-RELEASE
+/Oid.c/1.1.1.5/Fri Mar  5 14:28:06 2004//Tnetbsd-5-2-3-RELEASE
+/Oid.h/1.1.1.3/Sat Jun  9 15:01:41 2001//Tnetbsd-5-2-3-RELEASE
+/OidDefs.h/1.1.1.3/Sat Jan 19 15:04:04 2002//Tnetbsd-5-2-3-RELEASE
+/OidStrs.h/1.1.1.4/Sat Jan 19 15:04:04 2002//Tnetbsd-5-2-3-RELEASE
+/Util.c/1.1.1.4/Sat Jan 19 15:04:04 2002//Tnetbsd-5-2-3-RELEASE
+/ValTree.c/1.1.1.3/Fri Mar  5 14:28:06 2004//Tnetbsd-5-2-3-RELEASE
+/attributes.c/1.1.1.7/Fri Mar 18 13:10:41 2005//Tnetbsd-5-2-3-RELEASE
+/attributes.h/1.1.1.4/Sat Jan 19 15:04:05 2002//Tnetbsd-5-2-3-RELEASE
+/ddxInit.c/1.1.1.6/Fri Mar 18 13:10:41 2005//Tnetbsd-5-2-3-RELEASE
+/mediaSizes.c/1.1.1.4/Sat Jan 19 15:04:06 2002//Tnetbsd-5-2-3-RELEASE
+D/pcl////
+D/pcl-mono////
+D/ps////
+D/raster////

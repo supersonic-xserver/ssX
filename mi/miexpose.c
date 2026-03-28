@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/miexpose.c,v 3.14 2007/04/09 15:37:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,38 +52,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/*****************************************************************
-
-Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
-BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of Digital Equipment Corporation
-shall not be used in advertising or otherwise to promote the sale, use or other
-dealings in this Software without prior written authorization from Digital
-Equipment Corporation.
-
-******************************************************************/
-
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include <X11/X.h>
 #define NEED_EVENTS
@@ -95,11 +71,6 @@ Equipment Corporation.
 #include <X11/Xmd.h>
 
 #include "globals.h"
-
-#ifdef PANORAMIX
-#include "panoramiX.h"
-#include "panoramiXsrv.h"
-#endif
 
 /*
     machine-independent graphics exposure code.  any device that uses
@@ -127,16 +98,10 @@ exposing is done by the backing store's GraphicsExpose function, of course.
 
 */
 
-_X_EXPORT RegionPtr
-miHandleExposures(pSrcDrawable, pDstDrawable,
-		  pGC, srcx, srcy, width, height, dstx, dsty, plane)
-    DrawablePtr			pSrcDrawable;
-    DrawablePtr			pDstDrawable;
-    GCPtr 			pGC;
-    int 			srcx, srcy;
-    int 			width, height;
-    int 			dstx, dsty;
-    unsigned long		plane;
+RegionPtr
+miHandleExposures(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
+		  GCPtr pGC, int srcx, int srcy, int width, int height,
+		  int dstx, int dsty, unsigned long plane)
 {
     ScreenPtr pscr;
     RegionPtr prgnSrcClip;	/* drawable-relative source clip */
@@ -152,7 +117,7 @@ miHandleExposures(pSrcDrawable, pDstDrawable,
 				   the window background
 				*/
     WindowPtr pSrcWin;
-    BoxRec expBox;
+    BoxRec expBox = {0, };
     Bool extents;
 
     /* This prevents warning about pscr not being used. */
@@ -376,13 +341,9 @@ miHandleExposures(pSrcDrawable, pDstDrawable,
 
 /* send GraphicsExpose events, or a NoExpose event, based on the region */
 
-_X_EXPORT void
-miSendGraphicsExpose (client, pRgn, drawable, major, minor)
-    ClientPtr	client;
-    RegionPtr	pRgn;
-    XID		drawable;
-    int	major;
-    int	minor;
+void
+miSendGraphicsExpose(ClientPtr client, RegionPtr pRgn, XID drawable,
+		     int major, int minor)
 {
     if (pRgn && !REGION_NIL(pRgn))
     {
@@ -428,10 +389,7 @@ miSendGraphicsExpose (client, pRgn, drawable, major, minor)
 
 
 void
-miSendExposures(pWin, pRgn, dx, dy)
-    WindowPtr pWin;
-    RegionPtr pRgn;
-    int dx, dy;
+miSendExposures(WindowPtr pWin, RegionPtr pRgn, int dx, int dy)
 {
     BoxPtr pBox;
     int numRects;
@@ -454,46 +412,13 @@ miSendExposures(pWin, pRgn, dx, dy)
 	pe->u.expose.count = i;
     }
 
-#ifdef PANORAMIX
-    if(!noPanoramiXExtension) {
-	int scrnum = pWin->drawable.pScreen->myNum;
-	int x = 0, y = 0;
-	XID realWin = 0;
-
-	if(!pWin->parent) {
-	    x = panoramiXdataPtr[scrnum].x;
-	    y = panoramiXdataPtr[scrnum].y;
-	    pWin = WindowTable[0];
-	    realWin = pWin->drawable.id;
-	} else if (scrnum) {
-	    PanoramiXRes *win;
-	    win = PanoramiXFindIDByScrnum(XRT_WINDOW, 
-			pWin->drawable.id, scrnum);
-	    if(!win) {
-		DEALLOCATE_LOCAL(pEvent);
-		return;
-	    }
-	    realWin = win->info[0].id;
-	    pWin = LookupIDByType(realWin, RT_WINDOW);
-	}
-	if(x || y || scrnum)
-	  for (i = 0; i < numRects; i++) {
-	      pEvent[i].u.expose.window = realWin;
-	      pEvent[i].u.expose.x += x;
-	      pEvent[i].u.expose.y += y;
-	  }
-    }
-#endif
-
     DeliverEvents(pWin, pEvent, numRects, NullWindow);
 
     DEALLOCATE_LOCAL(pEvent);
 }
 
-_X_EXPORT void 
-miWindowExposures(pWin, prgn, other_exposed)
-    WindowPtr pWin;
-    RegionPtr prgn, other_exposed;
+void 
+miWindowExposures(WindowPtr pWin, RegionPtr prgn, RegionPtr other_exposed)
 {
     RegionPtr   exposures = prgn;
     if (pWin->backStorage && prgn)
@@ -627,11 +552,8 @@ tossGC (
 }
 
 
-_X_EXPORT void
-miPaintWindow(pWin, prgn, what)
-WindowPtr pWin;
-RegionPtr prgn;
-int what;
+void
+miPaintWindow(WindowPtr pWin, RegionPtr prgn, int what)
 {
     int	status;
 
@@ -651,9 +573,9 @@ int what;
     ChangeGCVal gcval[7];
     ChangeGCVal newValues [COUNT_BITS];
 
-    BITS32 gcmask, index, mask;
+    BITS32 gcmask = 0, index, mask;
     RegionRec prgnWin;
-    DDXPointRec oldCorner;
+    DDXPointRec oldCorner = {0, 0};
     BoxRec box;
     WindowPtr	pBgWin;
     GCPtr pGC;
@@ -663,7 +585,7 @@ int what;
     xRectangle *prect;
     int numRects;
 
-    gcmask = 0;
+    REGION_NULL(pWin->drawable.pScreen, &prgnWin);
 
     if (what == PW_BACKGROUND)
     {
@@ -881,10 +803,8 @@ int what;
 /* MICLEARDRAWABLE -- sets the entire drawable to the background color of
  * the GC.  Useful when we have a scratch drawable and need to initialize 
  * it. */
-_X_EXPORT void
-miClearDrawable(pDraw, pGC)
-    DrawablePtr	pDraw;
-    GCPtr	pGC;
+void
+miClearDrawable(DrawablePtr pDraw, GCPtr pGC)
 {
     XID fg = pGC->fgPixel;
     XID bg = pGC->bgPixel;

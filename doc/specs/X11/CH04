@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -127,8 +127,8 @@ function returns the root ID, the parent window ID,
 a pointer to the list of children windows
 (NULL when there are no children), 
 and the number of children in the list for the specified window.
-The children are listed in current stacking order, from bottommost 
-(first) to topmost (last).
+The children are listed in current stacking order, from bottom-most 
+(first) to top-most (last).
 .PN XQueryTree
 returns zero if it fails and nonzero if it succeeds.
 To free a non-NULL children list when it is no longer needed, use 
@@ -284,7 +284,7 @@ T}
 .TE
 .LP
 For additional information on gravity,
-see section 3.3.
+see section 3.2.3.
 .LP
 The backing_store member is set to indicate how the X server should maintain
 the contents of a window 
@@ -632,8 +632,6 @@ The atoms for these properties are defined in
 To avoid name clashes with user symbols, the 
 .PN #define 
 name for each atom has the XA_ prefix.
-For definitions of these properties,
-see section 4.3.
 For an explanation of the functions that let you get and set
 much of the information stored in these predefined properties,
 see chapter 14.
@@ -771,7 +769,7 @@ Therefore,
 can return
 .PN None .
 If the atom name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Uppercase and lowercase matter;
 the strings ``thing'', ``Thing'', and ``thinG'' 
 all designate different atoms.  
@@ -825,7 +823,7 @@ The atoms are stored in the atoms_return array supplied by the caller.
 Calling this function is equivalent to calling
 .PN XInternAtom
 for each of the names in turn with the specified value of only_if_exists,
-but this function minimizes the number of round trip protocol exchanges
+but this function minimizes the number of round-trip protocol exchanges
 between the client and the X server.
 .LP
 This function returns a nonzero status if atoms are returned for
@@ -863,7 +861,7 @@ The
 function returns the name associated with the specified atom.
 If the data returned by the server is in the Latin Portable Character Encoding,
 then the returned string is in the Host Portable Character Encoding.
-Otherwise, the result is implementation dependent.
+Otherwise, the result is implementation-dependent.
 To free the resulting string,
 call
 .PN XFree .
@@ -908,7 +906,7 @@ The names are stored in the names_return array supplied by the caller.
 Calling this function is equivalent to calling
 .PN XGetAtomName
 for each of the atoms in turn,
-but this function minimizes the number of round trip protocol exchanges
+but this function minimizes the number of round-trip protocol exchanges
 between the client and the X server.
 .LP
 This function returns a nonzero status if names are returned for

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimode.c,v 1.27tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimode.c,v 1.22 2005/02/10 15:26:37 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -35,6 +42,8 @@
 #include "atiwonder.h"
 #include "atiwonderio.h"
 
+#ifndef AVOID_CPIO
+
 /*
  * ATICopyVGAMemory --
  *
@@ -54,14 +63,8 @@ ATICopyVGAMemory
 
     for (iBank = 0;  iBank < pATIHW->nBank;  iBank++)
     {
-        int i = 0x00010000;
-        volatile CARD8 *t = *to, *f = *from;
-
         (*pATIHW->SetBank)(pATI, iBank);
-
-        while (--i >= 0)
-            *(t++) = *(f++);
-
+        (void)memcpy(*to, *from, 0x00010000U);
         *saveptr = (char *)(*saveptr) + 0x00010000U;
     }
 }
@@ -230,6 +233,8 @@ ATISwap
     }
 }
 
+#endif /* AVOID_CPIO */
+
 /*
  * ATIModePreInit --
  *
@@ -246,6 +251,8 @@ ATIModePreInit
 {
     CARD32 lcd_index;
 
+#ifndef AVOID_CPIO
+
     if (pATI->VGAAdapter != ATI_ADAPTER_NONE)
     {
         /* Fill in VGA data */
@@ -257,6 +264,9 @@ ATIModePreInit
     }
 
     if (pATI->Chip >= ATI_CHIP_88800GXC)
+
+#endif /* AVOID_CPIO */
+
     {
         /* Fill in Mach64 data */
         ATIMach64PreInit(pScreenInfo, pATI, pATIHW);
@@ -356,10 +366,15 @@ ATIModeSave
     ATIHWPtr    pATIHW
 )
 {
+
+#ifndef AVOID_CPIO
+
     int Index;
 
     /* Get back to bank 0 */
     (*pATIHW->SetBank)(pATI, 0);
+
+#endif /* AVOID_CPIO */
 
     /* Save clock data */
     ATIClockSave(pScreenInfo, pATI, pATIHW);
@@ -410,6 +425,8 @@ ATIModeSave
         }
     }
 
+#ifndef AVOID_CPIO
+
     if (pATI->VGAAdapter != ATI_ADAPTER_NONE)
     {
         /* Save VGA data */
@@ -421,6 +438,9 @@ ATIModeSave
     }
 
     if (pATI->Chip >= ATI_CHIP_88800GXC)
+
+#endif /* AVOID_CPIO */
+
     {
         /* Save Mach64 data */
         ATIMach64Save(pATI, pATIHW);
@@ -442,12 +462,16 @@ ATIModeSave
                         (pATIHW->lcd_gen_ctrl & ~CRTC_RW_SELECT) |
                         SHADOW_RW_EN);
 
+#ifndef AVOID_CPIO
+
                 /* Save shadow VGA CRTC registers */
                 for (Index = 0;
                      Index < NumberOf(pATIHW->shadow_vga);
                      Index++)
                     pATIHW->shadow_vga[Index] =
                         GetReg(CRTX(pATI->CPIO_VGABase), Index);
+
+#endif /* AVOID_CPIO */
 
                 /* Save shadow Mach64 CRTC registers */
                 pATIHW->shadow_h_total_disp = inr(CRTC_H_TOTAL_DISP);
@@ -470,23 +494,29 @@ ATIModeSave
             }
         }
         else if (pATI->DAC == ATI_DAC_IBMRGB514)
-        {
             ATIRGB514Save(pATI, pATIHW);
-        }
     }
 
+#ifndef AVOID_CPIO
+
     /*
-     * For some unknown reason, CLKDIV2 needs to be turned off to reliably save
-     * the DAC's LUT on VGA Wonder VLB adapters.
+     * For some unknown reason, CLKDIV2 needs to be turned off to save the
+     * DAC's LUT reliably on VGA Wonder VLB adapters.
      */
     if ((pATI->Adapter == ATI_ADAPTER_NONISA) && (pATIHW->seq[1] & 0x08U))
         PutReg(SEQX, 0x01U, pATIHW->seq[1] & ~0x08U);
 
+#endif /* AVOID_CPIO */
+
     /* Save RAMDAC state */
     ATIDACSave(pATI, pATIHW);
 
+#ifndef AVOID_CPIO
+
     if ((pATI->Adapter == ATI_ADAPTER_NONISA) && (pATIHW->seq[1] & 0x08U))
         PutReg(SEQX, 0x01U, pATIHW->seq[1]);
+
+#endif /* AVOID_CPIO */
 
     /*
      * The server has already saved video memory contents when switching out of
@@ -496,12 +526,22 @@ ATIModeSave
     {
         pATIHW->FeedbackDivider = 0;    /* Don't programme clock */
 
+#ifndef AVOID_CPIO
+
         /* Save video memory */
         ATISwap(pScreenInfo->scrnIndex, pATI, pATIHW, FALSE);
+
+#endif /* AVOID_CPIO */
+
     }
+
+#ifndef AVOID_CPIO
 
     if (pATI->VGAAdapter != ATI_ADAPTER_NONE)
         ATIVGASaveScreen(pATI, SCREEN_SAVER_OFF);       /* Turn on screen */
+
+#endif /* AVOID_CPIO */
+
 }
 
 /*
@@ -540,11 +580,16 @@ ATIModeCalculate
         VScan = pATI->LCDVertical / pMode->VDisplay;
         switch (pATIHW->crtc)
         {
+
+#ifndef AVOID_CPIO
+
             case ATI_CRTC_VGA:
                 if (VScan > 64)
                     VScan = 64;
                 pMode->VScan = VScan;
                 break;
+
+#endif /* AVOID_CPIO */
 
             case ATI_CRTC_MACH64:
                 pMode->VScan = 0;
@@ -572,6 +617,9 @@ ATIModeCalculate
 
     switch (pATIHW->crtc)
     {
+
+#ifndef AVOID_CPIO
+
         case ATI_CRTC_VGA:
             /* Fill in VGA data */
             ATIVGACalculate(pATI, pATIHW, pMode);
@@ -683,6 +731,8 @@ ATIModeCalculate
                         CRTC_EN | CRTC_VGA_LINEAR | CRTC_CNT_EN;
             }
             break;
+
+#endif /* AVOID_CPIO */
 
         case ATI_CRTC_MACH64:
             /* Fill in Mach64 data */
@@ -832,9 +882,13 @@ ATIModeCalculate
                         pATI->LCDVertical, VERT_STRETCH_RATIO0);
         }
 
+#ifndef AVOID_CPIO
+
         /* Copy non-shadow CRTC register values to the shadow set */
         for (Index = 0;  Index < NumberOf(pATIHW->shadow_vga);  Index++)
             pATIHW->shadow_vga[Index] = pATIHW->crt[Index];
+
+#endif /* AVOID_CPIO */
 
         pATIHW->shadow_h_total_disp = pATIHW->crtc_h_total_disp;
         pATIHW->shadow_h_sync_strt_wid = pATIHW->crtc_h_sync_strt_wid;
@@ -888,10 +942,15 @@ ATIModeSet
     ATIHWPtr    pATIHW
 )
 {
+
+#ifndef AVOID_CPIO
+
     int Index;
 
     /* Get back to bank 0 */
     (*pATIHW->SetBank)(pATI, 0);
+
+#endif /* AVOID_CPIO */
 
     if (pATI->Chip >= ATI_CHIP_88800GXC)
     {
@@ -953,6 +1012,9 @@ ATIModeSet
 
     switch (pATIHW->crtc)
     {
+
+#ifndef AVOID_CPIO
+
         case ATI_CRTC_VGA:
             /* Start sequencer reset */
             PutReg(SEQX, 0x00U, 0x00U);
@@ -1013,21 +1075,26 @@ ATIModeSet
 
             break;
 
+#endif /* AVOID_CPIO */
+
         case ATI_CRTC_MACH64:
             /* Load Mach64 CRTC registers */
             ATIMach64Set(pATI, pATIHW);
 
-            if (!pATI->UseSmallApertures)
-                break;
+#ifndef AVOID_CPIO
 
-            /* Oddly enough, these need to be set also, maybe others */
-            PutReg(SEQX, 0x02U, pATIHW->seq[2]);
-            PutReg(SEQX, 0x04U, pATIHW->seq[4]);
-            PutReg(GRAX, 0x06U, pATIHW->gra[6]);
-            if (!pATI->CPIO_VGAWonder)
-                break;
+            if (pATI->UseSmallApertures)
+            {
+                /* Oddly enough, these need to be set also, maybe others */
+                PutReg(SEQX, 0x02U, pATIHW->seq[2]);
+                PutReg(SEQX, 0x04U, pATIHW->seq[4]);
+                PutReg(GRAX, 0x06U, pATIHW->gra[6]);
+                if (pATI->CPIO_VGAWonder)
+                    ATIModifyExtReg(pATI, 0xB6U, -1, 0x00U, pATIHW->b6);
+            }
 
-            ATIModifyExtReg(pATI, 0xB6U, -1, 0x00U, pATIHW->b6);
+#endif /* AVOID_CPIO */
+
             break;
 
         default:
@@ -1048,6 +1115,9 @@ ATIModeSet
         /* Restore shadow registers */
         switch (pATIHW->crtc)
         {
+
+#ifndef AVOID_CPIO
+
             case ATI_CRTC_VGA:
                 for (Index = 0;
                      Index < NumberOf(pATIHW->shadow_vga);
@@ -1055,6 +1125,8 @@ ATIModeSet
                     PutReg(CRTX(pATI->CPIO_VGABase), Index,
                         pATIHW->shadow_vga[Index]);
                 /* Fall through */
+
+#endif /* AVOID_CPIO */
 
             case ATI_CRTC_MACH64:
                 outr(CRTC_H_TOTAL_DISP, pATIHW->shadow_h_total_disp);
@@ -1099,11 +1171,15 @@ ATIModeSet
     /* Reset hardware cursor caching */
     pATI->CursorXOffset = pATI->CursorYOffset = (CARD16)(-1);
 
+#ifndef AVOID_CPIO
+
     /* Restore video memory */
     ATISwap(pScreenInfo->scrnIndex, pATI, pATIHW, TRUE);
 
     if (pATI->VGAAdapter != ATI_ADAPTER_NONE)
         ATIVGASaveScreen(pATI, SCREEN_SAVER_OFF);       /* Turn on screen */
+
+#endif /* AVOID_CPIO */
 
     if ((xf86GetVerbosity() > 3) && (pATIHW == &pATI->NewHW))
     {

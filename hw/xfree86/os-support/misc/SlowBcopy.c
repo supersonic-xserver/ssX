@@ -1,7 +1,16 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/SlowBcopy.c,v 1.9 2006/01/09 15:00:22 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ 
 /*******************************************************************************
   for Alpha Linux
 *******************************************************************************/
- 
+
 /* 
  *   Create a dependency that should be immune from the effect of register
  *   renaming as is commonly seen in superscalar processors.  This should
@@ -12,47 +21,26 @@
  *   
  */ 
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include <X11/X.h>
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 #include "compiler.h"
 
-static int really_slow_bcopy;
-
-_X_EXPORT void
-xf86SetReallySlowBcopy(void)
-{
-	really_slow_bcopy = 1;
-}
-
-#if defined(__i386__) || defined(__x86_64__)
-static void xf86_really_slow_bcopy(unsigned char *src, unsigned char *dst, int len)
+/* The outb() isn't needed on my machine, but who knows ... -- ost */
+void
+xf86SlowBcopy(unsigned char *src, unsigned char *dst, int len)
 {
     while(len--)
     {
 	*dst++ = *src++;
+#if !defined(__sparc__) && \
+    !defined(__powerpc__) && \
+    !defined(__mips__) && \
+    !defined(__ia64__)
 	outb(0x80, 0x00);
-    }
-}
 #endif
-
-/* The outb() isn't needed on my machine, but who knows ... -- ost */
-_X_EXPORT void
-xf86SlowBcopy(unsigned char *src, unsigned char *dst, int len)
-{
-#if defined(__i386__) || defined(__x86_64__)
-    if (really_slow_bcopy) {
-	xf86_really_slow_bcopy(src, dst, len);
-	return;
     }
-#endif
-    while(len--)
-	*dst++ = *src++;
 }
 
 #ifdef __alpha__
@@ -83,7 +71,7 @@ unsigned long _bus_base(void);
 
 #endif
 
-_X_EXPORT void
+void
 xf86SlowBCopyFromBus(unsigned char *src, unsigned char *dst, int count)
 {
     if (isJensen())
@@ -105,7 +93,7 @@ xf86SlowBCopyFromBus(unsigned char *src, unsigned char *dst, int count)
 	xf86SlowBcopy(src,dst,count);
 }
   
-_X_EXPORT void
+void
 xf86SlowBCopyToBus(unsigned char *src, unsigned char *dst, int count)
 {
     if (isJensen())

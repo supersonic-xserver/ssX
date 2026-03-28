@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993 by Davor Matic
 
@@ -11,12 +25,9 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Keyboard.c,v 1.12 2005/10/14 15:17:15 tsi Exp $ */
 
 #define NEED_EVENTS
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
@@ -32,11 +43,10 @@ is" without express or implied warranty.
 #include "Screen.h"
 #include "Keyboard.h"
 #include "Args.h"
-#include "Events.h"
 
 #ifdef XKB
 #include <X11/extensions/XKB.h>
-#include <xkbsrv.h>
+#include <X11/extensions/XKBsrv.h>
 #include <X11/extensions/XKBconfig.h>
 
 extern Bool
@@ -68,7 +78,7 @@ extern	Status	XkbGetControls(
 #define	XKB_CONFIG_FILE		"X0-config.keyboard"
 #endif
 #ifndef XKB_DFLT_RULES_FILE
-#define	XKB_DFLT_RULES_FILE	__XKBDEFRULES__
+#define	XKB_DFLT_RULES_FILE	"xfree86"
 #endif
 #ifndef XKB_DFLT_KB_LAYOUT
 #define	XKB_DFLT_KB_LAYOUT	"us"
@@ -85,16 +95,8 @@ extern	Status	XkbGetControls(
 
 #endif
 
-DeviceIntPtr xnestKeyboardDevice = NULL;
-
 void
 xnestBell(int volume, DeviceIntPtr pDev, pointer ctrl, int cls)
-{
-  XBell(xnestDisplay, volume);
-}
-
-void
-DDXRingBell(int volume, int pitch, int duration)
 {
   XBell(xnestDisplay, volume);
 }
@@ -145,7 +147,7 @@ xnestKeyboardProc(DeviceIntPtr pDev, int onoff)
   int mapWidth;
   int min_keycode, max_keycode;
   KeySymsRec keySyms;
-  CARD8 modmap[MAP_LENGTH];
+  CARD8 modmap[256];
   int i, j;
   XKeyboardState values;
 
@@ -175,7 +177,7 @@ xnestKeyboardProc(DeviceIntPtr pDev, int onoff)
 				   &mapWidth);
 #endif
       
-      for (i = 0; i < MAP_LENGTH; i++)
+      for (i = 0; i < 256; i++)
 	modmap[i] = 0;
       for (j = 0; j < 8; j++)
 	for(i = 0; i < modifier_keymap->max_keypermod; i++) {
@@ -205,6 +207,9 @@ XkbError:
 			       xnestBell, xnestChangeKeyboardControl);
 #ifdef XKB
       } else {
+	FILE *file;
+	XkbConfigRtrnRec config;
+
 	XkbComponentNamesRec names;
 	char *rules, *model, *layout, *variants, *options;
 
@@ -228,6 +233,32 @@ XkbError:
 	layout = XKB_DFLT_KB_LAYOUT;
 	variants = XKB_DFLT_KB_VARIANT;
 	options = XKB_DFLT_KB_OPTIONS;
+	if (XkbInitialMap) {
+	  if ((names.keymap = strchr(XkbInitialMap, '/')) != NULL)
+	    ++names.keymap;
+	  else
+	    names.keymap = XkbInitialMap;
+	}
+
+	if ((file = fopen(XKB_BASE_DIRECTORY XKB_CONFIG_FILE, "r")) != NULL) {
+	  if (XkbCFParse(file, XkbCFDflts, xkb, &config) == 0) {
+	    ErrorF("Error parsing config file.\n");
+	    fclose(file);
+	    goto XkbError;
+	  }
+	  if (config.rules_file)
+	    rules = config.rules_file;
+	  if (config.model)
+	    model = config.model;
+	  if (config.layout)
+	    layout = config.layout;
+	  if (config.variant)
+	    variants = config.variant;
+	  if (config.options)
+	    options = config.options;
+
+	  fclose(file);
+	}
 
 	XkbSetRulesDflts(rules, model, layout, variants, options);
 	XkbInitKeyboardDeviceStruct(pDev, &names, &keySyms, modmap,
@@ -244,13 +275,17 @@ XkbError:
       break;
     case DEVICE_ON: 
       xnestEventMask |= XNEST_KEYBOARD_EVENT_MASK;
-      for (i = 0; i < xnestNumScreens; i++)
-	XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  if (xnestInputEnabled) {
+        for (i = 0; i < xnestNumScreens; i++)
+	      XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  }
       break;
     case DEVICE_OFF: 
       xnestEventMask &= ~XNEST_KEYBOARD_EVENT_MASK;
-      for (i = 0; i < xnestNumScreens; i++)
-	XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  if (xnestInputEnabled) {
+        for (i = 0; i < xnestNumScreens; i++)
+	      XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  }
       break;
     case DEVICE_CLOSE: 
       break;
@@ -259,55 +294,7 @@ XkbError:
 }
 
 Bool
-LegalModifier(unsigned int key, DeviceIntPtr pDev)
+LegalModifier(unsigned int key, DevicePtr pDev)
 {
   return TRUE;
-}
-
-void
-xnestUpdateModifierState(unsigned int state)
-{
-  DeviceIntPtr pDev = xnestKeyboardDevice;
-  KeyClassPtr keyc = pDev->key;
-  int i;
-  CARD8 mask;
-
-  state = state & 0xff;
-
-  if (keyc->state == state)
-    return;
-
-  for (i = 0, mask = 1; i < 8; i++, mask <<= 1) {
-    int key;
-
-    /* Modifier is down, but shouldn't be
-     */
-    if ((keyc->state & mask) && !(state & mask)) {
-      int count = keyc->modifierKeyCount[i];
-
-      for (key = 0; key < MAP_LENGTH; key++)
-	if (keyc->modifierMap[key] & mask) {
-	  int bit;
-	  BYTE *kptr;
-
-	  kptr = &keyc->down[key >> 3];
-	  bit = 1 << (key & 7);
-
-	  if (*kptr & bit)
-	    xnestQueueKeyEvent(KeyRelease, key);
-
-	  if (--count == 0)
-	    break;
-	}
-    }
-
-    /* Modifier shoud be down, but isn't
-     */
-    if (!(keyc->state & mask) && (state & mask))
-      for (key = 0; key < MAP_LENGTH; key++)
-	if (keyc->modifierMap[key] & mask) {
-	  xnestQueueKeyEvent(KeyPress, key);
-	  break;
-	}
-  }
 }

@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Flags.c,v 1.27 2005/01/26 05:31:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -172,7 +179,7 @@ xf86parseFlagsSection (void)
 				Error (QUOTE_MSG, "Identifier");
 			if (has_ident)
 				Error (MULTIPLE_MSG, "Identifier");
-			ptr->flg_identifier = xf86configStrdup(val.str);
+			ptr->flg_identifier = val.str;
 			has_ident = TRUE;
 			break;
 			/* 
@@ -203,23 +210,25 @@ xf86parseFlagsSection (void)
 					if (ServerFlagsTab[i].token == token)
 					{
 						char *valstr = NULL;
-						tmp = ServerFlagsTab[i].name;
+						/* can't use strdup because it calls malloc */
+						tmp = xf86configStrdup (ServerFlagsTab[i].name);
 						if (hasvalue)
 						{
 							tokentype = xf86getSubToken(&(ptr->flg_comment));
 							if (strvalue) {
 								if (tokentype != STRING)
 									Error (QUOTE_MSG, tmp);
-								valstr = xf86configStrdup(val.str);
+								valstr = val.str;
 							} else {
 								if (tokentype != NUMBER)
 									Error (NUMBER_MSG, tmp);
-								xf86configAsprintf(&valstr, "%d", val.num);
+								valstr = xf86confmalloc(16);
+								if (valstr)
+									sprintf(valstr, "%d", val.num);
 							}
 						}
 						ptr->flg_option_lst = xf86addNewOption
 							(ptr->flg_option_lst, tmp, valstr);
-						xf86conffree(valstr);
 					}
 					i++;
 				}
@@ -265,23 +274,19 @@ xf86printServerFlagsSection (FILE * f, XF86ConfFlagsPtr ptr)
 }
 
 static XF86OptionPtr
-addNewOption2 (XF86OptionPtr head, const char *name, const char *val, int used)
+addNewOption2 (XF86OptionPtr head, char *name, char *val, int used)
 {
 	XF86OptionPtr new, old = NULL;
-	
 
 	/* Don't allow duplicates */
- 	if (head != NULL && (old = xf86findOption(head, name)) != NULL) {
+ 	if (head != NULL && (old = xf86findOption(head, name)) != NULL)
  		new = old;
-		xf86conffree(old->opt_name);
-		TestFree(old->opt_val);
-		TestFree(old->opt_comment);
- 	} else {
+ 	else {
 		new = xf86confcalloc (1, sizeof (XF86OptionRec));
  		new->list.next = NULL;
  	}
- 	new->opt_name = xf86configStrdup(name);
- 	new->opt_val = xf86configStrdup(val);
+ 	new->opt_name = name;
+ 	new->opt_val = val;
  	new->opt_used = used;
 	
   	if (old == NULL)
@@ -290,12 +295,8 @@ addNewOption2 (XF86OptionPtr head, const char *name, const char *val, int used)
  		return head;
 }
 
-/*
- * Duplicate name/value strings with config's alloc.  This is for internal
- * and public use.
- */
 XF86OptionPtr
-xf86addNewOption (XF86OptionPtr head, const char *name, const char *val)
+xf86addNewOption (XF86OptionPtr head, char *name, char *val)
 {
 	return addNewOption2(head, name, val, 0);
 }
@@ -365,7 +366,7 @@ xf86optionValue(XF86OptionPtr opt)
 }
 
 XF86OptionPtr
-xf86newOption(const char *name, const char *value)
+xf86newOption(char *name, char *value)
 {
 	XF86OptionPtr opt;
 
@@ -375,8 +376,8 @@ xf86newOption(const char *name, const char *value)
 
 	opt->opt_used = 0;
 	opt->list.next = 0;
-	opt->opt_name = xf86configStrdup(name);
-	opt->opt_val = xf86configStrdup(value);
+	opt->opt_name = name;
+	opt->opt_val = value;
 
 	return opt;
 }
@@ -390,9 +391,9 @@ xf86nextOption(XF86OptionPtr list)
 }
 
 /*
- * This function searches the given option list for the named option and
- * returns a pointer to the option rec if found.  The last occurrence of the
- * named option is returned.  If not found, it returns NULL.
+ * this function searches the given option list for the named option and
+ * returns a pointer to the option rec if found. If not found, it returns
+ * NULL
  */
 
 XF86OptionPtr
@@ -514,9 +515,14 @@ xf86optionListMerge (XF86OptionPtr head, XF86OptionPtr tail)
 char *
 xf86uLongToString(unsigned long i)
 {
-	char *s = NULL;
+	char *s;
+	int l;
 
-	xf86configAsprintf(&s, "%lu", i);
+	l = (int)(ceil(log10((double)i) + 2.5));
+	s = xf86confmalloc(l);
+	if (!s)
+		return NULL;
+	sprintf(s, "%lu", i);
 	return s;
 }
 
@@ -532,9 +538,8 @@ xf86debugListOptions(XF86OptionPtr Options)
 XF86OptionPtr
 xf86parseOption(XF86OptionPtr head)
 {
-	XF86OptionPtr option;
-	char *name, *value = NULL, *comment = NULL;
-	const char *comment2 = NULL;
+	XF86OptionPtr option, cnew, old;
+	char *name, *comment = NULL;
 	int token;
 
 	if ((token = xf86getSubToken(&comment)) != STRING) {
@@ -544,25 +549,39 @@ xf86parseOption(XF86OptionPtr head)
 		return (head);
 	}
 
-	name = xf86configStrdup(val.str);
+	name = val.str;
 	if ((token = xf86getSubToken(&comment)) == STRING) {
-		value = xf86configStrdup(val.str);
+		option = xf86newOption(name, val.str);
+		option->opt_comment = comment;
 		if ((token = xf86getToken(NULL)) == COMMENT)
-			comment2 = val.str;
+			option->opt_comment = xf86addComment(option->opt_comment, val.str);
 		else
 			xf86unGetToken(token);
-	} else if (token == COMMENT)
-		comment2 = val.str;
-	else
-		xf86unGetToken(token);
+	}
+	else {
+		option = xf86newOption(name, NULL);
+		option->opt_comment = comment;
+		if (token == COMMENT)
+			option->opt_comment = xf86addComment(option->opt_comment, val.str);
+		else
+			xf86unGetToken(token);
+	}
 
-	head = xf86addNewOption(head, name, value);
-	option = xf86findOption(head, name);
-	xf86conffree(name);
-	TestFree(value);
-	option->opt_comment = comment;
-	if (comment2)
-		option->opt_comment = xf86addComment(option->opt_comment, comment2);
+	old = NULL;
+
+	/* Don't allow duplicates */
+	if (head != NULL && (old = xf86findOption(head, name)) != NULL) {
+		cnew = old;
+		xf86conffree(option->opt_name);
+		TestFree(option->opt_val);
+		TestFree(option->opt_comment);
+		xf86conffree(option);
+	}
+	else
+		cnew = option;
+	
+	if (old == NULL)
+		return ((XF86OptionPtr)xf86addListItem((glp)head, (glp)cnew));
 
 	return (head);
 }

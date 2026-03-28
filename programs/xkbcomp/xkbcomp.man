@@ -1,3 +1,8 @@
+.\" $Xorg: xkbcomp.man,v 1.3 2000/08/17 19:54:33 cpqbld Exp $
+.\"
+.\"
+.\"
+.\"
 .\" $XFree86: xc/programs/xkbcomp/xkbcomp.man,v 1.13 2005/02/11 03:03:19 dawes Exp $
 .\"
 .TH XKBCOMP 1 __vendorversion__

@@ -1,4 +1,4 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_vtxtmp_x86.S,v 1.1.1.2 2004/12/10 15:05:57 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_vtxtmp_x86.S,v 1.3 2004/12/10 15:30:10 alanh Exp $ */
 /**************************************************************************
 
 Copyright 2002 Tungsten Graphics Inc., Cedar Park, Texas.

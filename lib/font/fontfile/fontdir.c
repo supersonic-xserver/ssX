@@ -1,3 +1,19 @@
+/* $Xorg: fontdir.c,v 1.4 2001/02/09 02:04:03 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1991, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/fontfile/fontdir.c,v 3.24tsi Exp $ */
+/* $XFree86: xc/lib/font/fontfile/fontdir.c,v 3.23 2003/12/02 19:50:40 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium
@@ -32,14 +48,19 @@ in this Software without prior written authorization from The Open Group.
 #include    "fntfilst.h"
 #include    <X11/keysym.h>
 
+#if HAVE_STDINT_H
+#include <stdint.h>
+#elif !defined(INT32_MAX)
+#define INT32_MAX 0x7fffffff
+#endif
+
 Bool
 FontFileInitTable (FontTablePtr table, int size)
 {
+    if (size < 0 || (size > INT32_MAX/sizeof(FontEntryRec)))
+	return FALSE;
     if (size)
     {
-	if ((size < 0) || (size > (0x7fffffff / sizeof(FontEntryRec))))
-	    return FALSE;
-
 	table->entries = (FontEntryPtr) xalloc(sizeof(FontEntryRec) * size);
 	if (!table->entries)
 	    return FALSE;

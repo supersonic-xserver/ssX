@@ -1,5 +1,12 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,14 +26,12 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stdlib.h>
+/* $XFree86: xc/programs/Xserver/fb/fbcopy.c,v 1.15 2006/01/09 14:59:46 dawes Exp $ */
 
 #include "fb.h"
+#ifdef IN_MODULE
+#include "xf86_ansic.h"
+#endif
 
 void
 fbCopyNtoN (DrawablePtr	pSrcDrawable,
@@ -54,50 +59,28 @@ fbCopyNtoN (DrawablePtr	pSrcDrawable,
     
     fbGetDrawable (pSrcDrawable, src, srcStride, srcBpp, srcXoff, srcYoff);
     fbGetDrawable (pDstDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
-
+    
     while (nbox--)
     {
-#ifndef FB_ACCESS_WRAPPER /* pixman_blt() doesn't support accessors yet */
-	if (pm == FB_ALLONES && alu == GXcopy && !reverse &&
-	    !upsidedown)
-	{
-	    if (!pixman_blt ((uint32_t *)src, (uint32_t *)dst, srcStride, dstStride, srcBpp, dstBpp,
-			     (pbox->x1 + dx + srcXoff),
-			     (pbox->y1 + dy + srcYoff),
-			     (pbox->x1 + dstXoff),
-			     (pbox->y1 + dstYoff),
-			     (pbox->x2 - pbox->x1),
-			     (pbox->y2 - pbox->y1)))
-		goto fallback;
-	    else
-		goto next;
-	}
-    fallback:
-#endif
 	fbBlt (src + (pbox->y1 + dy + srcYoff) * srcStride,
 	       srcStride,
 	       (pbox->x1 + dx + srcXoff) * srcBpp,
-	       
+    
 	       dst + (pbox->y1 + dstYoff) * dstStride,
 	       dstStride,
 	       (pbox->x1 + dstXoff) * dstBpp,
-	       
+    
 	       (pbox->x2 - pbox->x1) * dstBpp,
 	       (pbox->y2 - pbox->y1),
-	       
+    
 	       alu,
 	       pm,
 	       dstBpp,
-	       
+    
 	       reverse,
 	       upsidedown);
-#ifndef FB_ACCESS_WRAPPER
-    next:
-#endif
 	pbox++;
-    }    
-    fbFinishAccess (pDstDrawable);
-    fbFinishAccess (pSrcDrawable);
+    }
 }
 
 void
@@ -168,9 +151,6 @@ fbCopy1toN (DrawablePtr	pSrcDrawable,
 	}
 	pbox++;
     }
-
-    fbFinishAccess (pDstDrawable);
-    fbFinishAccess (pSrcDrawable);
 }
 
 void
@@ -219,8 +199,6 @@ fbCopyNto1 (DrawablePtr	pSrcDrawable,
 			(FbStip) pPriv->and, (FbStip) pPriv->xor,
 			(FbStip) pPriv->bgand, (FbStip) pPriv->bgxor,
 			bitplane);
-	    fbFinishAccess (pDstDrawable);
-	    fbFinishAccess (pSrcDrawable);
 	}
 	else
 	{
@@ -281,9 +259,6 @@ fbCopyNto1 (DrawablePtr	pSrcDrawable,
 		      pPriv->and, pPriv->xor,
 		      pPriv->bgand, pPriv->bgxor);
 	    xfree (tmp);
-
-	    fbFinishAccess (pDstDrawable);
-	    fbFinishAccess (pSrcDrawable);
 	}
 	pbox++;
     }
@@ -624,7 +599,7 @@ fbCopyArea (DrawablePtr	pSrcDrawable,
 	    int		yOut)
 {
     fbCopyProc	copy;
-
+    
 #ifdef FB_24_32BIT
     if (pSrcDrawable->bitsPerPixel != pDstDrawable->bitsPerPixel)
 	copy = fb24_32CopyMtoN;

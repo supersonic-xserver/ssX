@@ -1,3 +1,11 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
 /*
  * Copyright © 2003, 2004, 2005 David H. Dawes.
  * Copyright © 2003, 2004, 2005 X-Oz Technologies.
@@ -9,7 +17,7 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *
+ * 
  *  1. Redistributions of source code must retain the above copyright
  *     notice, this list of conditions, and the following disclaimer.
  *
@@ -17,7 +25,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *
+ * 
  *  3. The end-user documentation included with the redistribution,
  *     if any, must include the following acknowledgment: "This product
  *     includes software developed by X-Oz Technologies
@@ -41,11 +49,11 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  * Author: David Dawes <dawes@x-oz.com>.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86AutoConfig.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86AutoConfig.c,v 1.8 2005/02/19 01:02:34 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86Parser.h"
@@ -55,7 +63,7 @@
 #include "xf86_OSlib.h"
 #include "xf86Bus.h"
 
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
 #define SBUS_SUPPORT
 #endif
 
@@ -78,10 +86,7 @@
 #define BUILTIN_DEVICE_SECTION_PRE \
 	"Section \"Device\"\n" \
 	"\tIdentifier\t" BUILTIN_DEVICE_NAME "\n" \
-	"\tDriver\t\"%s\"\n%s"
-
-#define BUILTIN_DEVICE_SECTION_BUSID \
-	"\tBusID\t\"%s\"\n"
+	"\tDriver\t\"%s\"\n"
 
 #define BUILTIN_DEVICE_SECTION_POST \
 	"EndSection\n\n"
@@ -198,20 +203,16 @@ xf86AutoConfig(void)
     char *driver = NULL;
     FILE *gp = NULL;
     XF86ConfigPtr pConfig;
-    char *busId = NULL, *busIdSpec;
+    Bool foundDev = FALSE;
 #ifdef SBUS_SUPPORT
-    char *promPath = NULL;
+    char *promPath;
 #endif
 
     /* Find the primary device, and get some information about it. */
     if (xf86PciVideoInfo) {
 	for (pciptr = xf86PciVideoInfo; (info = *pciptr); pciptr++) {
 	    if (xf86IsPrimaryPci(info)) {
-		char busnum[8];
-
-		xf86FormatPciBusNumber(info->bus, busnum);
-		xasprintf(&busId, "PCI:%s:%d:%d",
-			  busnum, info->device, info->func);
+		foundDev = TRUE;
 		break;
 	    }
 	}
@@ -222,7 +223,7 @@ xf86AutoConfig(void)
 	xf86MsgVerb(X_INFO, 3, "AutoConfig: xf86PciVideoInfo is not set.\n");
     }
 #ifdef SBUS_SUPPORT
-    if (!busId) {
+    if (!foundDev) {
 	sbusDevicePtr psdp, *psdpp;
 	Bool useProm = FALSE;
 
@@ -232,12 +233,11 @@ xf86AutoConfig(void)
 	    for (psdpp = xf86SbusInfo; (psdp = *psdpp); psdpp++) {
 		if (psdp->fd == -2)
 		    continue;
+		foundDev = TRUE;
 		if (useProm && psdp->node.node)
 		    promPath = sparcPromNode2Pathname(&psdp->node);
 		else
 		    xasprintf(&promPath, "fb%d", psdp->fbNum);
-
-		xasprintf(&busId, "SBUS:%s", promPath);
 		break;
 	    }
 	    if (useProm)
@@ -248,11 +248,11 @@ xf86AutoConfig(void)
     }
 #endif
 
-    if (!busId) {
+    if (!foundDev)
 	xf86Msg(X_WARNING,
 		"AutoConfig: Cannot detect the primary video device.\n");
-	busIdSpec = "";
-    } else {
+
+    if (foundDev) {
 	char *tmp;
 	char *path = NULL, *a, *b;
 	char *searchPath = NULL;
@@ -319,7 +319,16 @@ xf86AutoConfig(void)
 	}
 	strcat(searchPath, GETCONFIG_DIR);
 
-	xf86MsgVerb(X_INFO, 3, "AutoConfig: Primary is %s\n", busId);
+	if (info) {
+	    xf86MsgVerb(X_INFO, 3, "AutoConfig: Primary PCI is %d:%d:%d\n",
+			info->bus, info->device, info->func);
+	}
+#ifdef SBUS_SUPPORT
+	else if (promPath) {
+	    xf86MsgVerb(X_INFO, 3, "AutoConfig: Primary SBUS is %s\n",
+			promPath);
+	}
+#endif
 
 	if (info) {
 	    snprintf(buf, sizeof(buf), "%s"
@@ -365,8 +374,6 @@ xf86AutoConfig(void)
 	}
 	xfree(path);
 	xfree(searchPath);
-
-	xasprintf(&busIdSpec, BUILTIN_DEVICE_SECTION_BUSID, busId);
     }
 
     AppendToConfig(BUILTIN_MODULE_SECTION);
@@ -374,7 +381,7 @@ xf86AutoConfig(void)
 
     if (driver) {
 	snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION_PRE,
-		 driver, 0, driver, busIdSpec);
+		 driver, 0, driver);
 	AppendToConfig(buf);
 	xf86MsgVerb(X_INFO, 3, "AutoConfig: New driver is \"%s\".\n", driver);
 	buf[0] = '\t';
@@ -393,16 +400,10 @@ xf86AutoConfig(void)
 	Pclose(gp);
 
     for (p = deviceList; *p; p++) {
-	snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION,
-		 *p, 0, *p, busIdSpec);
+	snprintf(buf, sizeof(buf), BUILTIN_DEVICE_SECTION, *p, 0, *p);
 	AppendToConfig(buf);
 	snprintf(buf, sizeof(buf), BUILTIN_SCREEN_SECTION, *p, 0, *p, 0);
 	AppendToConfig(buf);
-    }
-
-    if (busId) {
-	xfree(busId);
-	xfree(busIdSpec);
     }
 
     AppendToConfig(BUILTIN_LAYOUT_SECTION_PRE);
@@ -431,7 +432,7 @@ xf86AutoConfig(void)
     for (p = builtinConfig; *p; p++)
 	xf86ErrorFVerb(3, "\t%s", *p);
     xf86MsgVerb(X_DEFAULT, 3, "--- End of built-in configuration ---\n");
-
+    
     xf86setBuiltinConfig(builtinConfig);
     pConfig = (XF86ConfigPtr)(xf86Info.config);
     xf86Info.config = xf86parseConfigFile(pConfig);

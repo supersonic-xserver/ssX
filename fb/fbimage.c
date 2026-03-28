@@ -1,5 +1,12 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,14 +26,14 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <string.h>
+/* $XFree86: xc/programs/Xserver/fb/fbimage.c,v 1.9 2006/01/09 14:59:47 dawes Exp $ */
 
 #include "fb.h"
+#ifdef XFree86LOADER
+#include "xf86.h"
+#include "xf86_ansic.h"
+#endif
+
 
 void
 fbPutImage (DrawablePtr	pDrawable,
@@ -66,7 +73,7 @@ fbPutImage (DrawablePtr	pDrawable,
 	break;
     case XYPixmap:
 	srcStride = BitmapBytePad(w + leftPad) / sizeof (FbStip);
-	for (i = (unsigned long)1 << (pDrawable->depth - 1); i; i >>= 1)
+	for (i = 1 << (pDrawable->depth - 1); i; i >>= 1)
 	{
 	    if (i & pGC->planemask)
 	    {
@@ -168,8 +175,6 @@ fbPutZImage (DrawablePtr	pDrawable,
 		   pm,
 		   dstBpp);
     }
-
-    fbFinishAccess (pDrawable);
 }
 	     
 void
@@ -277,8 +282,6 @@ fbPutXYImage (DrawablePtr	pDrawable,
 		      fgand, fgxor, bgand, bgxor);
 	}
     }
-
-    fbFinishAccess (pDrawable);
 }
 
 void
@@ -363,6 +366,4 @@ fbGetImage (DrawablePtr	    pDrawable,
 		    fbXorStip(GXcopy,0,FB_STIP_ALLONES),
 		    planeMask);
     }
-
-    fbFinishAccess (pDrawable);
 }

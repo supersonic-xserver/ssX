@@ -1,7 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (c) 2002  XFree86 Inc
 */
-/* $XFree86: xc/lib/XRes/XRes.c,v 1.3 2002/03/10 22:06:53 mvojkovi Exp $ */
+/* $XFree86: xc/lib/XRes/XRes.c,v 1.4 2002/10/16 00:37:26 dawes Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES

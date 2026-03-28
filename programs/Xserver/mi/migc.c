@@ -1,3 +1,11 @@
+/* $Xorg: migc.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -36,13 +44,16 @@ from The Open Group.
 
 /* ARGSUSED */
 void
-miChangeGC(GCPtr pGC, unsigned long mask)
+miChangeGC(pGC, mask)
+    GCPtr           pGC;
+    unsigned long   mask;
 {
     return;
 }
 
 void
-miDestroyGC(GCPtr pGC)
+miDestroyGC(pGC)
+    GCPtr           pGC;
 {
     if (pGC->pRotatedPixmap)
 	(*pGC->pScreen->DestroyPixmap) (pGC->pRotatedPixmap);
@@ -56,7 +67,8 @@ miDestroyGC(GCPtr pGC)
  */
 
 GCOpsPtr
-miCreateGCOps(GCOpsPtr prototype)
+miCreateGCOps(prototype)
+    GCOpsPtr        prototype;
 {
     GCOpsPtr        ret;
 
@@ -71,7 +83,8 @@ miCreateGCOps(GCOpsPtr prototype)
 }
 
 void
-miDestroyGCOps(GCOpsPtr ops)
+miDestroyGCOps(ops)
+    GCOpsPtr        ops;
 {
     if (ops->devPrivate.val)
 	xfree(ops);
@@ -79,7 +92,8 @@ miDestroyGCOps(GCOpsPtr ops)
 
 
 void
-miDestroyClip(GCPtr pGC)
+miDestroyClip(pGC)
+    GCPtr           pGC;
 {
     if (pGC->clientClipType == CT_NONE)
 	return;
@@ -100,7 +114,11 @@ miDestroyClip(GCPtr pGC)
 }
 
 void
-miChangeClip(GCPtr pGC, int type, pointer pvalue, int nrects)
+miChangeClip(pGC, type, pvalue, nrects)
+    GCPtr           pGC;
+    int             type;
+    pointer         pvalue;
+    int             nrects;
 {
     (*pGC->funcs->DestroyClip) (pGC);
     if (type == CT_PIXMAP)
@@ -127,7 +145,8 @@ miChangeClip(GCPtr pGC, int type, pointer pvalue, int nrects)
 }
 
 void
-miCopyClip(GCPtr pgcDst, GCPtr pgcSrc)
+miCopyClip(pgcDst, pgcSrc)
+    GCPtr           pgcDst, pgcSrc;
 {
     RegionPtr       prgnNew;
 
@@ -151,13 +170,18 @@ miCopyClip(GCPtr pgcDst, GCPtr pgcSrc)
 
 /* ARGSUSED */
 void
-miCopyGC(GCPtr pGCSrc, unsigned long changes, GCPtr pGCDst)
+miCopyGC(pGCSrc, changes, pGCDst)
+    GCPtr           pGCSrc;
+    unsigned long   changes;
+    GCPtr           pGCDst;
 {
     return;
 }
 
 void
-miComputeCompositeClip(GCPtr pGC, DrawablePtr pDrawable)
+miComputeCompositeClip(pGC, pDrawable)
+    GCPtr           pGC;
+    DrawablePtr     pDrawable;
 {
     ScreenPtr       pScreen;
 

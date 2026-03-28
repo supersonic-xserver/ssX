@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * cslibint.c -- low level I/O
  *
  * (c) Copyright 1993-1994 Adobe Systems Incorporated.
@@ -47,7 +54,7 @@
  *  
  * Author:  Adobe Systems Incorporated and MIT X Consortium
  */
-/* $XFree86: xc/lib/dps/cslibint.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/lib/dps/cslibint.c,v 1.6 2004/07/25 20:17:02 dawes Exp $ */
 
 /*
  *	XlibInternal.c - Internal support routines for the C subroutine
@@ -1652,24 +1659,15 @@ int N_XGetHostname (char *buf, int maxlen)
 #ifdef NEED_UTSNAME
     struct utsname name;
 
-    if ((maxlen <= 0) || (buf == NULL))
-	return 0;
-
-    len = 0;
-    if (uname(&name) >= 0) {
-	len = strlen(name.nodename);
-	if (len >= maxlen)
-	    len = maxlen - 1;
-	strncpy(buf, name.nodename, len);
-    }
+    uname (&name);
+    len = strlen (name.nodename);
+    if (len >= maxlen) len = maxlen - 1;
+    strncpy (buf, name.nodename, len);
     buf[len] = '\0';
 #else
-    if ((maxlen <= 0) || (buf == NULL))
-	return 0;
-
     buf[0] = '\0';
-    (void) gethostname(buf, maxlen);
-    buf[maxlen - 1] = '\0';
+    (void) gethostname (buf, maxlen);
+    buf [maxlen - 1] = '\0';
     len = strlen(buf);
 #endif /* NEED_UTSNAME */
     return len;

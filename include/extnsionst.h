@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,15 +58,19 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/include/extnsionst.h,v 3.10 2005/05/14 02:00:04 dawes Exp $ */
 
 #ifndef EXTENSIONSTRUCT_H
 #define EXTENSIONSTRUCT_H 
 
-#include "dix.h"
 #include "misc.h"
 #include "screenint.h"
 #include "extension.h"
 #include "gc.h"
+
+#define INITARGS void
+
+typedef void (*InitExtension)(INITARGS);
 
 typedef struct _ExtensionEntry {
     int index;
@@ -69,7 +87,9 @@ typedef struct _ExtensionEntry {
     pointer extPrivate;
     unsigned short (* MinorOpcode)(	/* called for errors */
 	ClientPtr /* client */);
-    DevUnion *devPrivates;
+#ifdef XCSECURITY
+    Bool secure;		/* extension visible to untrusted clients? */
+#endif
 } ExtensionEntry;
 
 /* 
@@ -85,10 +105,31 @@ extern void NotImplemented (	/* FIXME: this may move to another file... */
 	xEvent *,
 	xEvent *);
 
+typedef void (* ExtensionLookupProc)(
+#ifdef EXTENSION_PROC_ARGS
+    EXTENSION_PROC_ARGS
+#else
+    /* args no longer indeterminate */
+    char *name,
+    GCPtr pGC
+#endif
+);
+
+typedef struct _ProcEntry {
+    char *name;
+    ExtensionLookupProc proc;
+} ProcEntryRec, *ProcEntryPtr;
+
+typedef struct _ScreenProcEntry {
+    int num;
+    ProcEntryPtr procList;
+} ScreenProcEntry;
+
 #define    SetGCVector(pGC, VectorElement, NewRoutineAddress, Atom)    \
     pGC->VectorElement = NewRoutineAddress;
 
 #define    GetGCValue(pGC, GCElement)    (pGC->GCElement)
+
 
 extern ExtensionEntry *AddExtension(
     char* /*name*/,
@@ -105,7 +146,20 @@ extern Bool AddExtensionAlias(
     ExtensionEntry * /*extension*/);
 
 extern ExtensionEntry *CheckExtension(const char *extname);
-extern ExtensionEntry *GetExtensionEntry(int major);
+
+extern ExtensionLookupProc LookupProc(
+    char* /*name*/,
+    GCPtr /*pGC*/);
+
+extern Bool RegisterProc(
+    char* /*name*/,
+    GCPtr /*pGC*/,
+    ExtensionLookupProc /*proc*/);
+
+extern Bool RegisterScreenProc(
+    char* /*name*/,
+    ScreenPtr /*pScreen*/,
+    ExtensionLookupProc /*proc*/);
 
 extern void DeclareExtensionSecurity(
     char * /*extname*/,

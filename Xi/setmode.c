@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/setmode.c,v 3.4 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,18 +60,14 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "XIstubs.h"
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
 
 #include "setmode.h"
@@ -75,14 +79,15 @@ SOFTWARE.
  */
 
 int
-SProcXSetDeviceMode(ClientPtr client)
-{
-    char n;
+SProcXSetDeviceMode(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xSetDeviceModeReq);
     swaps(&stuff->length, n);
-    return (ProcXSetDeviceMode(client));
-}
+    return(ProcXSetDeviceMode(client));
+    }
 
 /***********************************************************************
  *
@@ -91,10 +96,11 @@ SProcXSetDeviceMode(ClientPtr client)
  */
 
 int
-ProcXSetDeviceMode(ClientPtr client)
-{
+ProcXSetDeviceMode(client)
+    register ClientPtr client;
+    {
     DeviceIntPtr dev;
-    xSetDeviceModeReply rep;
+    xSetDeviceModeReply	rep;
 
     REQUEST(xSetDeviceModeReq);
     REQUEST_SIZE_MATCH(xSetDeviceModeReq);
@@ -104,30 +110,33 @@ ProcXSetDeviceMode(ClientPtr client)
     rep.length = 0;
     rep.sequenceNumber = client->sequence;
 
-    dev = LookupDeviceIntRec(stuff->deviceid);
-    if (dev == NULL) {
-	SendErrorToClient(client, IReqCode, X_SetDeviceMode, 0, BadDevice);
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	SendErrorToClient (client, IReqCode, X_SetDeviceMode, 0, BadDevice);
 	return Success;
-    }
-    if (dev->valuator == NULL) {
+	}
+    if (dev->valuator == NULL)
+	{
 	SendErrorToClient(client, IReqCode, X_SetDeviceMode, 0, BadMatch);
 	return Success;
-    }
+	}
     if ((dev->grab) && !SameClient(dev->grab, client))
 	rep.status = AlreadyGrabbed;
     else
-	rep.status = SetDeviceMode(client, dev, stuff->mode);
+	rep.status = SetDeviceMode (client, dev, stuff->mode);
 
-    if (rep.status == Success)
-	dev->valuator->mode = stuff->mode;
-    else if (rep.status != AlreadyGrabbed) {
+    if (rep.status == Success) 
+  	dev->valuator->mode = stuff->mode;
+    else if (rep.status != AlreadyGrabbed)
+	{
 	SendErrorToClient(client, IReqCode, X_SetDeviceMode, 0, rep.status);
-	return Success;
-    }
+        return Success;
+	}
 
-    WriteReplyToClient(client, sizeof(xSetDeviceModeReply), &rep);
+    WriteReplyToClient (client, sizeof (xSetDeviceModeReply), &rep);
     return Success;
-}
+    }
 
 /***********************************************************************
  *
@@ -137,11 +146,14 @@ ProcXSetDeviceMode(ClientPtr client)
  */
 
 void
-SRepXSetDeviceMode(ClientPtr client, int size, xSetDeviceModeReply * rep)
-{
-    char n;
+SRepXSetDeviceMode (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xSetDeviceModeReply	*rep;
+    {
+    register char n;
 
     swaps(&rep->sequenceNumber, n);
     swapl(&rep->length, n);
     WriteToClient(client, size, (char *)rep);
-}
+    }

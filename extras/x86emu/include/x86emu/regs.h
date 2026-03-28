@@ -1,4 +1,11 @@
 /****************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 *
 *						Realmode X86 Emulator Library
 *
@@ -35,7 +42,7 @@
 * Description:  Header file for x86 register definitions.
 *
 ****************************************************************************/
-/* $XFree86: xc/extras/x86emu/include/x86emu/regs.h,v 1.5 2003/10/22 20:03:05 tsi Exp $ */
+/* $XFree86: xc/extras/x86emu/include/x86emu/regs.h,v 1.6 2003/10/28 16:01:40 tsi Exp $ */
 
 #ifndef __X86EMU_REGS_H
 #define __X86EMU_REGS_H

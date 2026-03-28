@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_context.c,v 1.3 2003/05/06 23:52:08 daenzer Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_context.c,v 1.1.1.4 2004/12/10 15:33:01 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -49,6 +56,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "tnl/tnl.h"
 #include "tnl/t_pipeline.h"
 
+#include "drivers/common/driverfuncs.h"
+
 #include "r200_context.h"
 #include "r200_ioctl.h"
 #include "r200_state.h"
@@ -60,7 +69,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_vtxfmt.h"
 #include "r200_maos.h"
 
-#define DRIVER_DATE	"20030328"
+#define DRIVER_DATE	"20040929"
 
 #include "vblank.h"
 #include "utils.h"
@@ -126,7 +135,7 @@ static const char * const card_extensions[] =
     "GL_ARB_texture_env_combine",
     "GL_ARB_texture_env_dot3",
     "GL_ARB_texture_mirrored_repeat",
-    "GL_EXT_blend_logic_op",
+    "GL_ARB_vertex_buffer_object",
     "GL_EXT_blend_minmax",
     "GL_EXT_blend_subtract",
     "GL_EXT_secondary_color",
@@ -141,7 +150,6 @@ static const char * const card_extensions[] =
     "GL_ATI_texture_env_combine3",
     "GL_ATI_texture_mirror_once",
     "GL_MESA_pack_invert",
-    "GL_MESA_ycbcr_texture",
     "GL_NV_blend_square",
     "GL_SGIS_generate_mipmap",
     NULL
@@ -164,6 +172,7 @@ static const struct tnl_pipeline_stage *r200_pipeline[] = {
    &_tnl_fog_coordinate_stage,
    &_tnl_texgen_stage,
    &_tnl_texture_transform_stage,
+   &_tnl_vertex_program_stage,
 
    /* Try again to go to tcl? 
     *     - no good for asymmetric-twoside (do with multipass)
@@ -186,15 +195,15 @@ static const struct tnl_pipeline_stage *r200_pipeline[] = {
 
 /* Initialize the driver's misc functions.
  */
-static void r200InitDriverFuncs( GLcontext *ctx )
+static void r200InitDriverFuncs( struct dd_function_table *functions )
 {
-    ctx->Driver.GetBufferSize		= r200GetBufferSize;
-    ctx->Driver.ResizeBuffers           = _swrast_alloc_buffers;
-    ctx->Driver.GetString		= r200GetString;
+    functions->GetBufferSize		= r200GetBufferSize;
+    functions->ResizeBuffers           = _swrast_alloc_buffers;
+    functions->GetString		= r200GetString;
 
-    ctx->Driver.Error			= NULL;
-    ctx->Driver.DrawPixels		= NULL;
-    ctx->Driver.Bitmap			= NULL;
+    functions->Error			= NULL;
+    functions->DrawPixels		= NULL;
+    functions->Bitmap			= NULL;
 }
 
 static const struct dri_debug_control debug_control[] =
@@ -227,7 +236,7 @@ get_ust_nop( int64_t * ust )
 }
 
 
-/* Create the device specific context.
+/* Create the device specific rendering context.
  */
 GLboolean r200CreateContext( const __GLcontextModes *glVisual,
 			     __DRIcontextPrivate *driContextPriv,
@@ -235,6 +244,7 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
 {
    __DRIscreenPrivate *sPriv = driContextPriv->driScreenPriv;
    r200ScreenPtr screen = (r200ScreenPtr)(sPriv->private);
+   struct dd_function_table functions;
    r200ContextPtr rmesa;
    GLcontext *ctx, *shareCtx;
    int i;
@@ -249,12 +259,31 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
    if ( !rmesa )
       return GL_FALSE;
 
-   /* Allocate the Mesa context */
+   /* Parse configuration files.
+    * Do this here so that initialMaxAnisotropy is set before we create
+    * the default textures.
+    */
+   driParseConfigFiles (&rmesa->optionCache, &screen->optionCache,
+			screen->driScreen->myNum, "r200");
+   rmesa->initialMaxAnisotropy = driQueryOptionf(&rmesa->optionCache,
+                                                 "def_max_anisotropy");
+
+   /* Init default driver functions then plug in our R200-specific functions
+    * (the texture functions are especially important)
+    */
+   _mesa_init_driver_functions(&functions);
+   r200InitDriverFuncs(&functions);
+   r200InitIoctlFuncs(&functions);
+   r200InitStateFuncs(&functions);
+   r200InitTextureFuncs(&functions);
+
+   /* Allocate and initialize the Mesa context */
    if (sharedContextPrivate)
       shareCtx = ((r200ContextPtr) sharedContextPrivate)->glCtx;
    else
       shareCtx = NULL;
-   rmesa->glCtx = _mesa_create_context(glVisual, shareCtx, (void *) rmesa, GL_TRUE);
+   rmesa->glCtx = _mesa_create_context(glVisual, shareCtx,
+                                       &functions, (void *) rmesa);
    if (!rmesa->glCtx) {
       FREE(rmesa);
       return GL_FALSE;
@@ -270,12 +299,8 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
    rmesa->dri.fd = sPriv->fd;
    rmesa->dri.drmMinor = sPriv->drmMinor;
 
-   /* Parse configuration files */
-   driParseConfigFiles (&rmesa->optionCache, &screen->optionCache,
-			screen->driScreen->myNum, "r200");
-
    rmesa->r200Screen = screen;
-   rmesa->sarea = (RADEONSAREAPrivPtr)((GLubyte *)sPriv->pSAREA +
+   rmesa->sarea = (drm_radeon_sarea_t *)((GLubyte *)sPriv->pSAREA +
 				       screen->sarea_priv_offset);
 
 
@@ -285,13 +310,14 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
    make_empty_list( & rmesa->swapped );
 
    rmesa->nr_heaps = 1 /* screen->numTexHeaps */ ;
+   assert(rmesa->nr_heaps < R200_NR_TEX_HEAPS);
    for ( i = 0 ; i < rmesa->nr_heaps ; i++ ) {
       rmesa->texture_heaps[i] = driCreateTextureHeap( i, rmesa,
 	    screen->texSize[i],
 	    12,
 	    RADEON_NR_TEX_REGIONS,
-	    rmesa->sarea->texList[i],
-	    & rmesa->sarea->texAge[i],
+	    (drmTextureRegionPtr)rmesa->sarea->tex_list[i],
+	    & rmesa->sarea->tex_age[i],
 	    & rmesa->swapped,
 	    sizeof( r200TexObj ),
 	    (destroy_texture_object_t *) r200DestroyTexObj );
@@ -303,7 +329,7 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
 	 DRI_CONF_TEXTURE_DEPTH_32 : DRI_CONF_TEXTURE_DEPTH_16;
 
    rmesa->swtcl.RenderIndex = ~0;
-   rmesa->lost_context = 1;
+   rmesa->hw.all_dirty = 1;
 
    /* Set the maximum texture size small enough that we can guarentee that
     * all texture units can bind a maximal texture and have them both in
@@ -311,9 +337,10 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
     */
 
    ctx = rmesa->glCtx;
-   ctx->Const.MaxTextureUnits = 2;
-   ctx->Const.MaxTextureImageUnits = 2;
-   ctx->Const.MaxTextureCoordUnits = 2;
+   ctx->Const.MaxTextureUnits = driQueryOptioni (&rmesa->optionCache,
+						 "texture_units");
+   ctx->Const.MaxTextureImageUnits = ctx->Const.MaxTextureUnits;
+   ctx->Const.MaxTextureCoordUnits = ctx->Const.MaxTextureUnits;
 
    driCalculateMaxTextureLevels( rmesa->texture_heaps,
 				 rmesa->nr_heaps,
@@ -364,29 +391,49 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
    _tnl_isolate_materials( ctx, GL_TRUE );
 
 
-   /* Configure swrast to match hardware characteristics:
+   /* Configure swrast and TNL to match hardware characteristics:
     */
    _swrast_allow_pixel_fog( ctx, GL_FALSE );
    _swrast_allow_vertex_fog( ctx, GL_TRUE );
+   _tnl_allow_pixel_fog( ctx, GL_FALSE );
+   _tnl_allow_vertex_fog( ctx, GL_TRUE );
 
 
-   _math_matrix_ctr( &rmesa->TexGenMatrix[0] );
-   _math_matrix_ctr( &rmesa->TexGenMatrix[1] );
+   for ( i = 0 ; i < R200_MAX_TEXTURE_UNITS ; i++ ) {
+      _math_matrix_ctr( &rmesa->TexGenMatrix[i] );
+      _math_matrix_set_identity( &rmesa->TexGenMatrix[i] );
+   }
    _math_matrix_ctr( &rmesa->tmpmat );
-   _math_matrix_set_identity( &rmesa->TexGenMatrix[0] );
-   _math_matrix_set_identity( &rmesa->TexGenMatrix[1] );
    _math_matrix_set_identity( &rmesa->tmpmat );
 
    driInitExtensions( ctx, card_extensions, GL_TRUE );
+   if (rmesa->r200Screen->chipset & R200_CHIPSET_REAL_R200) {
+   /* yuv textures only work with r200 chips for unknown reasons, the
+      others get the bit ordering right but don't actually do YUV-RGB conversion */
+      _mesa_enable_extension( ctx, "GL_MESA_ycbcr_texture" );
+   }
    if (rmesa->r200Screen->drmSupportsCubeMaps)
       _mesa_enable_extension( ctx, "GL_ARB_texture_cube_map" );
+   if (rmesa->r200Screen->drmSupportsBlendColor) {
+      _mesa_enable_extension( ctx, "GL_EXT_blend_equation_separate" );
+      _mesa_enable_extension( ctx, "GL_EXT_blend_func_separate" );
+   }
+   if(driQueryOptionb(&rmesa->optionCache, "arb_vertex_program"))
+      _mesa_enable_extension( ctx, "GL_ARB_vertex_program");
+   if(driQueryOptionb(&rmesa->optionCache, "nv_vertex_program"))
+      _mesa_enable_extension( ctx, "GL_NV_vertex_program");
 
+#if 0
    r200InitDriverFuncs( ctx );
    r200InitIoctlFuncs( ctx );
    r200InitStateFuncs( ctx );
-   r200InitSpanFuncs( ctx );
-   r200InitPixelFuncs( ctx );
    r200InitTextureFuncs( ctx );
+#endif
+   /* plug in a few more device driver functions */
+   /* XXX these should really go right after _mesa_init_driver_functions() */
+   r200InitPixelFuncs( ctx );
+   r200InitSpanFuncs( ctx );
+   r200InitTnlFuncs( ctx );
    r200InitState( rmesa );
    r200InitSwtcl( ctx );
 
@@ -412,14 +459,11 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
 
    rmesa->prefer_gart_client_texturing = 
       (getenv("R200_GART_CLIENT_TEXTURES") != 0);
-#ifndef _SOLO   
+
    rmesa->get_ust = (PFNGLXGETUSTPROC) glXGetProcAddress( (const GLubyte *) "__glXGetUST" );
    if ( rmesa->get_ust == NULL ) {
       rmesa->get_ust = get_ust_nop;
    }
-#else
-   rmesa->get_ust = get_ust_nop;
-#endif
    (*rmesa->get_ust)( & rmesa->swap_ust );
 
 
@@ -437,8 +481,10 @@ GLboolean r200CreateContext( const __GLcontextModes *glVisual,
    }
    else if (tcl_mode == DRI_CONF_TCL_SW || getenv("R200_NO_TCL") ||
 	    !(rmesa->r200Screen->chipset & R200_CHIPSET_TCL)) {
-      rmesa->r200Screen->chipset &= ~R200_CHIPSET_TCL;
-      fprintf(stderr, "disabling TCL support\n");
+      if (rmesa->r200Screen->chipset & R200_CHIPSET_TCL) {
+	 rmesa->r200Screen->chipset &= ~R200_CHIPSET_TCL;
+	 fprintf(stderr, "Disabling HW TCL support\n");
+      }
       TCL_FALLBACK(rmesa->glCtx, R200_TCL_FALLBACK_TCL_DISABLE, 1);
    }
    if (rmesa->r200Screen->chipset & R200_CHIPSET_TCL) {

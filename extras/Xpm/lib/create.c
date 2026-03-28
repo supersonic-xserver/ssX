@@ -1,3 +1,11 @@
+/* $XdotOrg: xc/extras/Xpm/lib/create.c,v 1.4 2004/11/25 21:19:11 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 1989-95 GROUPE BULL
  *
@@ -32,7 +40,7 @@
 *                                                                             *
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
-/* $XFree86: xc/extras/Xpm/lib/create.c,v 1.8 2004/12/17 16:38:03 tsi Exp $ */
+/* $XFree86: xc/extras/Xpm/lib/create.c,v 1.4 2003/05/27 22:26:20 tsi Exp $ */
 
 /*
  * The code related to FOR_MSW has been added by
@@ -994,15 +1002,6 @@ CreateXImage(display, visual, depth, format, width, height, image_return)
     if (!*image_return)
 	return (XpmNoMemory);
 
-    if ((*image_return)->bitmap_unit < 0 ||
-	(*image_return)->bitmap_unit > 32 ||
-	(*image_return)->depth < 0 || (*image_return)->depth > 32 ||
-	(*image_return)->bits_per_pixel < 0 ||
-	(*image_return)->bits_per_pixel > 32) {
-	XDestroyImage(*image_return);
-	return (XpmNoMemory);
-    }
-
 #if !defined(FOR_MSW) && !defined(AMIGA)
     if (height != 0 && (*image_return)->bytes_per_line >= INT_MAX / height) {
 	XDestroyImage(*image_return);
@@ -1224,10 +1223,9 @@ PutImagePixels(image, width, height, pixelindex, pixels)
     register char *dst;
     register unsigned int *iptr;
     register unsigned int x, y;
-    int i;
     register char *data;
     Pixel pixel, px;
-    int nbytes, depth, ibu, ibpp;
+    int nbytes, depth, ibu, ibpp, i;
 
     data = image->data;
     iptr = pixelindex;
@@ -1244,14 +1242,14 @@ PutImagePixels(image, width, height, pixelindex, pixels)
 		dst = (char *) &px;
 		px = 0;
 		nbytes = ibu >> 3;
-		for (i = nbytes; i-- > 0;)
+		for (i = nbytes; --i >= 0;)
 		    *dst++ = *src++;
 		XYNORMALIZE(&px, image);
 		_putbits((char *) &pixel, (x % ibu), 1, (char *) &px);
 		XYNORMALIZE(&px, image);
 		src = (char *) &px;
 		dst = &data[XYINDEX(x, y, image)];
-		for (i = nbytes; i-- > 0;)
+		for (i = nbytes; --i >= 0;)
 		    *dst++ = *src++;
 	    }
     } else {
@@ -1268,14 +1266,14 @@ PutImagePixels(image, width, height, pixelindex, pixels)
 		dst = (char *) &px;
 		px = 0;
 		nbytes = (ibpp + 7) >> 3;
-		for (i = nbytes; i-- > 0;)
+		for (i = nbytes; --i >= 0;)
 		    *dst++ = *src++;
 		ZNORMALIZE(&px, image);
 		_putbits((char *) &pixel, (x * ibpp) & 7, ibpp, (char *) &px);
 		ZNORMALIZE(&px, image);
 		src = (char *) &px;
 		dst = &data[ZINDEX(x, y, image)];
-		for (i = nbytes; i-- > 0;)
+		for (i = nbytes; --i >= 0;)
 		    *dst++ = *src++;
 	    }
     }
@@ -1787,14 +1785,14 @@ PutPixel1(ximage, x, y, pixel)
     dst = (char *)&px;
     px = 0;
     nbytes = ximage->bitmap_unit >> 3;
-    for (i = nbytes; i-- > 0; ) *dst++ = *src++;
+    for (i = nbytes; --i >= 0; ) *dst++ = *src++;
     XYNORMALIZE(&px, ximage);
     i = ((x + ximage->xoffset) % ximage->bitmap_unit);
     _putbits ((char *)&pixel, i, 1, (char *)&px);
     XYNORMALIZE(&px, ximage);
     src = (char *) &px;
     dst = &ximage->data[XYINDEX(x, y, ximage)];
-    for (i = nbytes; i-- > 0; )
+    for (i = nbytes; --i >= 0; )
 	*dst++ = *src++;
 
     return 1;
@@ -1825,14 +1823,14 @@ PutPixel(ximage, x, y, pixel)
     dst = (char *) &px;
     px = 0;
     nbytes = (ibpp + 7) >> 3;
-    for (i = nbytes; i-- > 0;)
+    for (i = nbytes; --i >= 0;)
 	*dst++ = *src++;
     ZNORMALIZE(&px, ximage);
     _putbits((char *) &pixel, (x * ibpp) & 7, ibpp, (char *) &px);
     ZNORMALIZE(&px, ximage);
     src = (char *) &px;
     dst = &ximage->data[ZINDEX(x, y, ximage)];
-    for (i = nbytes; i-- > 0;)
+    for (i = nbytes; --i >= 0;)
 	*dst++ = *src++;
 
     return 1;

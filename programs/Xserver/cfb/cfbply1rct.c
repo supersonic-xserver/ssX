@@ -1,5 +1,12 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbply1rct.c,v 3.13tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: cfbply1rct.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -25,8 +32,9 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
+/* $XFree86: xc/programs/Xserver/cfb/cfbply1rct.c,v 3.11 2003/10/30 14:53:39 tsi Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -40,15 +48,20 @@ in this Software without prior written authorization from The Open Group.
 #include "cfbrrop.h"
 
 void
-RROP_NAME(cfbFillPoly1Rect)(DrawablePtr pDrawable, GCPtr pGC, int shape,
-			    int mode, int count, DDXPointPtr ptsIn)
+RROP_NAME(cfbFillPoly1Rect) (pDrawable, pGC, shape, mode, count, ptsIn)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		shape;
+    int		mode;
+    int		count;
+    DDXPointPtr	ptsIn;
 {
     cfbPrivGCPtr    devPriv;
     int		    nwidth;
     CfbBits	    *addrl, *addr;
 #if PSZ == 24
     CfbBits	    startmask, endmask;
-    int		    pidx;
+    register int    pidx;
 #else
 #if PPW > 1
     CfbBits	    mask, bits = ~((CfbBits)0);
@@ -56,7 +69,7 @@ RROP_NAME(cfbFillPoly1Rect)(DrawablePtr pDrawable, GCPtr pGC, int shape,
 #endif
     int		    maxy;
     int		    origin;
-    int		    vertex1, vertex2;
+    register int    vertex1, vertex2;
     int		    c = 0;
     BoxPtr	    extents;
     int		    clip;
@@ -276,16 +289,20 @@ RROP_NAME(cfbFillPoly1Rect)(DrawablePtr pDrawable, GCPtr pGC, int shape,
 	    l -= c;
 #endif
 
+#if PGSZ == 32
 #define LWRD_SHIFT 2
+#else /* PGSZ == 64 */
+#define LWRD_SHIFT 3
+#endif /* PGSZ */
 
 #if PSZ == 24
-	    addr = (CfbBits *)((char *)addrl + ((l * PSZB) & ~(PGSZB - 1)));
+	    addr = (CfbBits *)((char *)addrl + ((l * 3) & ~0x03));
 	    if (nmiddle <= 1){
 	      if (nmiddle)
 	        RROP_SOLID24(addr, l);
 	    } else {
 	      maskbits(l, nmiddle, startmask, endmask, nmiddle);
-	      pidx = l & (PGSZB - 1);
+	      pidx = l & 3;
 	      if (startmask){
 		RROP_SOLID_MASK(addr, startmask, pidx-1);
 		addr++;

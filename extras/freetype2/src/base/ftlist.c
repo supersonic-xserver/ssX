@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftlist.c                                                               */
 /*                                                                         */
 /*    Generic list support for FreeType (body).                            */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -23,9 +30,10 @@
   /*************************************************************************/
 
 
-#include <freetype/ftlist.h>
-#include <freetype/internal/ftdebug.h>
-#include <freetype/internal/ftobjs.h>
+#include <ft2build.h>
+#include FT_LIST_H
+#include FT_INTERNAL_DEBUG_H
+#include FT_INTERNAL_OBJECTS_H
 
 
   /*************************************************************************/
@@ -40,8 +48,9 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( FT_ListNode )  FT_List_Find( FT_List  list,
-                                              void*    data )
+  FT_EXPORT_DEF( FT_ListNode )
+  FT_List_Find( FT_List  list,
+                void*    data )
   {
     FT_ListNode  cur;
 
@@ -61,8 +70,9 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( void )  FT_List_Add( FT_List      list,
-                                      FT_ListNode  node )
+  FT_EXPORT_DEF( void )
+  FT_List_Add( FT_List      list,
+               FT_ListNode  node )
   {
     FT_ListNode  before = list->tail;
 
@@ -81,8 +91,9 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( void )  FT_List_Insert( FT_List      list,
-                                         FT_ListNode  node )
+  FT_EXPORT_DEF( void )
+  FT_List_Insert( FT_List      list,
+                  FT_ListNode  node )
   {
     FT_ListNode  after = list->head;
 
@@ -101,8 +112,9 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( void )  FT_List_Remove( FT_List      list,
-                                         FT_ListNode  node )
+  FT_EXPORT_DEF( void )
+  FT_List_Remove( FT_List      list,
+                  FT_ListNode  node )
   {
     FT_ListNode  before, after;
 
@@ -124,8 +136,9 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( void )  FT_List_Up( FT_List      list,
-                                     FT_ListNode  node )
+  FT_EXPORT_DEF( void )
+  FT_List_Up( FT_List      list,
+              FT_ListNode  node )
   {
     FT_ListNode  before, after;
 
@@ -153,9 +166,10 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( FT_Error )  FT_List_Iterate( FT_List            list,
-                                              FT_List_Iterator   iterator,
-                                              void*              user )
+  FT_EXPORT_DEF( FT_Error )
+  FT_List_Iterate( FT_List            list,
+                   FT_List_Iterator   iterator,
+                   void*              user )
   {
     FT_ListNode  cur   = list->head;
     FT_Error     error = FT_Err_Ok;
@@ -179,10 +193,11 @@
 
   /* documentation is in ftlist.h */
 
-  FT_EXPORT_DEF( void )  FT_List_Finalize( FT_List             list,
-                                           FT_List_Destructor  destroy,
-                                           FT_Memory           memory,
-                                           void*               user )
+  FT_EXPORT_DEF( void )
+  FT_List_Finalize( FT_List             list,
+                    FT_List_Destructor  destroy,
+                    FT_Memory           memory,
+                    void*               user )
   {
     FT_ListNode  cur;
 
@@ -197,7 +212,7 @@
       if ( destroy )
         destroy( memory, data, user );
 
-      FREE( cur );
+      FT_FREE( cur );
       cur = next;
     }
 

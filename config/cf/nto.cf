@@ -1,4 +1,4 @@
-/* $XFree86: xc/config/cf/nto.cf,v 1.4 2001/11/16 16:47:50 dawes Exp $ */
+/* $XFree86: xc/config/cf/nto.cf,v 1.5 2004/06/02 22:42:53 dawes Exp $ */
 /* Get X to build using the gcc toolchain, self hosted RTP x86 */
 /* Let us try to separate the x86 stuff out of here as well... */ 
 

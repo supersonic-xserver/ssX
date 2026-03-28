@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/xdm/dm_socket.h,v 1.1 1998/10/10 15:25:33 dawes Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/xdm/dm_socket.h,v 1.2 2001/07/23 13:15:52 dawes Exp $
  */
 
 /************************************************************

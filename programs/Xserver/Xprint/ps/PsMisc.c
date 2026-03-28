@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/ps/PsMisc.c,v 1.6tsi Exp $ */
+/* $Xorg: PsMisc.c,v 1.4 2001/02/09 02:04:36 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -73,8 +80,9 @@ in this Software without prior written authorization from The Open Group.
 **    *********************************************************
 ** 
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/ps/PsMisc.c,v 1.6 2001/12/14 19:59:16 dawes Exp $ */
 
-#include <X11/Xos.h>	/* for SIGCLD on pre-POSIX systems */
+#include "Xos.h"	/* for SIGCLD on pre-POSIX systems */
 #include <stdio.h>
 #include "Ps.h"
 

@@ -1,9 +1,24 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_context.h,v 1.2 2002/02/22 21:32:58 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_context.h,v 1.1.1.2 2004/12/10 15:05:38 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _FFB_CONTEXT_H
 #define _FFB_CONTEXT_H
 
 #include "dri_util.h"
+#include "drm.h"
 
 #include "mtypes.h"
 
@@ -261,8 +276,8 @@ do {	if ((STATE_MASK) & ~((FMESA)->state_dirty)) {	\
 	/* Fog state. */
 	float			Znear, Zfar;
 
-	drmContext		hHWContext;
-	drmLock			*driHwLock;
+	drm_context_t		hHWContext;
+	drm_hw_lock_t		*driHwLock;
 	int			driFd;
 
 	unsigned int		clear_pixel;

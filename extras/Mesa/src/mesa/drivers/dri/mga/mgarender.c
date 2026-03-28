@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/mga/mgarender.c,v 1.4 2002/10/30 12:51:36 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mgarender.c,v 1.1.1.2 2004/06/10 14:22:56 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -109,7 +116,7 @@ static void mgaDmaPrimitive( GLcontext *ctx, GLenum prim )
 
 
 #define ALLOC_VERTS( nr ) \
-   mgaAllocDmaLow( mmesa, nr * mmesa->vertex_size * 4)
+  mgaAllocDmaLow( mmesa, (nr) * mmesa->vertex_size * 4)
 #define EMIT_VERTS( ctx, j, nr, buf ) \
    mga_emit_contiguous_verts(ctx, j, (j)+(nr), buf)
 

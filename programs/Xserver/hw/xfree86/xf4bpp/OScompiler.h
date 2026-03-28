@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/OScompiler.h,v 1.4 2000/07/26 01:52:26 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,6 +28,7 @@
  * SOFTWARE.
  *
 */
+/* $XConsortium: OScompiler.h /main/4 1996/02/21 17:56:09 kaleb $ */
 
 #ifndef __COMPILER_DEPENDANCIES__
 #define __COMPILER_DEPENDANCIES__

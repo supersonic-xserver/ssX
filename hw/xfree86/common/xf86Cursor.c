@@ -1,35 +1,60 @@
-/*
- * Copyright (c) 1994-2003 by The XFree86 Project, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Cursor.c,v 3.43 2005/10/14 15:16:32 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-#define NEED_EVENTS
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
+/*
+ * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+#define NEED_EVENTS
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include "input.h"
@@ -75,9 +100,14 @@ static miPointerScreenFuncRec xf86PointerScreenFuncs = {
   xf86CursorOffScreen,
   xf86CrossScreen,
   xf86WarpCursor,
+#ifdef XINPUT
+  xf86eqEnqueue,
+  xf86eqSwitchScreen
+#else
   /* let miPointerInitialize take care of these */
   NULL,
   NULL
+#endif
 };
 
 static xf86ScreenLayoutRec xf86ScreenLayout[MAXSCREENS];
@@ -139,6 +169,11 @@ void
 xf86SetViewport(ScreenPtr pScreen, int x, int y)
 {
   ScrnInfoPtr   pScr = XF86SCRNINFO(pScreen);
+
+#ifdef XFreeXDGA
+  if (DGAActive(pScr->scrnIndex))
+    return;
+#endif
 
   (*pScr->PointerMoved)(pScreen->myNum, x, y);
 }
@@ -218,15 +253,16 @@ xf86SwitchMode(ScreenPtr pScreen, DisplayModePtr mode)
   if (mode == pScr->currentMode)
     return TRUE;
 
-  if (mode->HDisplay > pScr->virtualX || mode->VDisplay > pScr->virtualY)
+  if (mode->HDisplay > pScreen->width || mode->VDisplay > pScreen->height)
     return FALSE;
 
-  pCursorScreen = miPointerGetScreen(inputInfo.pointer);
+  pCursorScreen = miPointerCurrentScreen();
   if (pScreen == pCursorScreen)
-    miPointerGetPosition(inputInfo.pointer, &px, &py);
+    miPointerPosition(&px, &py);
 
   xf86EnterServerState(SETUP);
   Switched = (*pScr->SwitchMode)(pScr->scrnIndex, mode, 0);
+  xf86EnterServerState(OPERATING);
   if (Switched) {
     pScr->currentMode = mode;
 
@@ -261,7 +297,6 @@ xf86SwitchMode(ScreenPtr pScreen, DisplayModePtr mode)
       pScr->frameY1 = pScr->virtualY - 1;
     }
   }
-  xf86EnterServerState(OPERATING);
 
   if (pScr->AdjustFrame)
     (*pScr->AdjustFrame)(pScr->scrnIndex, pScr->frameX0, pScr->frameY0, 0);
@@ -291,7 +326,9 @@ xf86ZoomViewport(ScreenPtr pScreen, int zoom)
       mode = mode->next;
     else
       mode = mode->prev;
-  } while (mode != pScr->currentMode && !(mode->type & M_T_USERDEF));
+  } while (mode != pScr->currentMode && (!(mode->type & M_T_USERDEF) ||
+					 mode->HDisplay > pScreen->width ||
+					 mode->VDisplay > pScreen->height));
 
   (void)xf86SwitchMode(pScreen, mode);
 }
@@ -406,14 +443,18 @@ xf86CursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
 /*
  * xf86CrossScreen --
  *      Switch to another screen
- *
- *	Currently nothing special happens, but mi assumes the CrossScreen
- *	method exists.
  */
 
+/* NEED TO CHECK THIS */
+/* ARGSUSED */
 static void
 xf86CrossScreen (ScreenPtr pScreen, Bool entering)
 {
+#if 0
+  if (xf86Info.sharedMonitor)
+    (XF86SCRNINFO(pScreen)->EnterLeaveMonitor)(entering);
+  (XF86SCRNINFO(pScreen)->EnterLeaveCursor)(entering);
+#endif
 }
 
 
@@ -435,7 +476,7 @@ xf86WarpCursor (ScreenPtr pScreen, int x, int y)
 }
 
 
-_X_EXPORT void *
+void *
 xf86GetPointerScreenFuncs(void)
 {
     return (void *)&xf86PointerScreenFuncs;
@@ -556,7 +597,7 @@ xf86InitOrigins(void)
 	for(mask = screensLeft, i = 0; mask; mask >>= 1, i++) {
 	    if(!(mask & 1L)) continue;
 
-	    screen = &xf86ConfigLayout.screens[i];
+	    screen = xf86Info.serverLayout->screenLayouts[i];
 
 	    switch(screen->where) {
 	    case PosObsolete:
@@ -565,40 +606,24 @@ xf86InitOrigins(void)
 		/* force edge lists */
 		if(screen->left) {
 		    ref = screen->left->screennum;
-		    if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-			ErrorF("Referenced uninitialized screen in Layout!\n");
-			break;
-		    }
 		    pLayout->left = AddEdge(pLayout->left, 
 			0, xf86Screens[i]->pScreen->height,
 			xf86Screens[ref]->pScreen->width, 0, ref);
 		}
 		if(screen->right) {
 		    ref = screen->right->screennum;
-		    if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-			ErrorF("Referenced uninitialized screen in Layout!\n");
-			break;
-		    }
 		    pScreen = xf86Screens[i]->pScreen;
 		    pLayout->right = AddEdge(pLayout->right, 
 			0, pScreen->height, -pScreen->width, 0, ref);
 		}
 		if(screen->top) {
 		    ref = screen->top->screennum;
-		    if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-			ErrorF("Referenced uninitialized screen in Layout!\n");
-			break;
-		    }
 		    pLayout->up = AddEdge(pLayout->up, 
 			0, xf86Screens[i]->pScreen->width,
 			0, xf86Screens[ref]->pScreen->height, ref);
 		}
 		if(screen->bottom) {
 		    ref = screen->bottom->screennum;
-		    if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-			ErrorF("Referenced uninitialized screen in Layout!\n");
-			break;
-		    }
 		    pScreen = xf86Screens[i]->pScreen;
 		    pLayout->down = AddEdge(pLayout->down, 
 			0, pScreen->width, 0, -pScreen->height, ref);
@@ -614,10 +639,6 @@ xf86InitOrigins(void)
 		break;
 	    case PosRelative:
 		ref = screen->refscreen->screennum;
-		if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-		    ErrorF("Referenced uninitialized screen in Layout!\n");
-		    break;
-		}
 		if(screensLeft & (1 << ref)) break;
 		dixScreenOrigins[i].x = dixScreenOrigins[ref].x + screen->x;
 		dixScreenOrigins[i].y = dixScreenOrigins[ref].y + screen->y;
@@ -625,10 +646,6 @@ xf86InitOrigins(void)
 		break;
 	    case PosRightOf:
 		ref = screen->refscreen->screennum;
-		if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-		    ErrorF("Referenced uninitialized screen in Layout!\n");
-		    break;
-		}
 		if(screensLeft & (1 << ref)) break;
 		pScreen = xf86Screens[ref]->pScreen;
 		dixScreenOrigins[i].x = 
@@ -638,10 +655,6 @@ xf86InitOrigins(void)
 		break;
 	    case PosLeftOf:
 		ref = screen->refscreen->screennum;
-		if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-		    ErrorF("Referenced uninitialized screen in Layout!\n");
-		    break;
-		}
 		if(screensLeft & (1 << ref)) break;
 		pScreen = xf86Screens[i]->pScreen;
 		dixScreenOrigins[i].x = 
@@ -651,10 +664,6 @@ xf86InitOrigins(void)
 		break;
 	    case PosBelow:
 		ref = screen->refscreen->screennum;
-		if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-		    ErrorF("Referenced uninitialized screen in Layout!\n");
-		    break;
-		}
 		if(screensLeft & (1 << ref)) break;
 		pScreen = xf86Screens[ref]->pScreen;
 		dixScreenOrigins[i].x = dixScreenOrigins[ref].x;
@@ -664,10 +673,6 @@ xf86InitOrigins(void)
 		break;
 	    case PosAbove:
 		ref = screen->refscreen->screennum;
-		if (! xf86Screens[ref] || ! xf86Screens[ref]->pScreen) {
-		    ErrorF("Referenced uninitialized screen in Layout!\n");
-		    break;
-		}
 		if(screensLeft & (1 << ref)) break;
 		pScreen = xf86Screens[i]->pScreen;
 		dixScreenOrigins[i].x = dixScreenOrigins[ref].x;
@@ -690,7 +695,7 @@ xf86InitOrigins(void)
 	    i = 0;
 	    while(!((1 << i) & screensLeft)){ i++; }
 
-	    ref = xf86ConfigLayout.screens[i].refscreen->screennum;
+	    ref = xf86Info.serverLayout->screenLayouts[i]->refscreen->screennum;
 	    dixScreenOrigins[ref].x = dixScreenOrigins[ref].y = 0;
 	    screensLeft &= ~(1 << ref);
 	}

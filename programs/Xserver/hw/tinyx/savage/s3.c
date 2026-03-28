@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -150,10 +157,10 @@ s3CardInit (KdCardInfo *card)
 
 	wakeup = (volatile CARD32 *) (registers + 0x8510);
 	ErrorF ("Wakeup S3 chip at %p\n", (void *)wakeup);
-	ErrorF ("Wakeup was 0x%lx\n", (unsigned long)*wakeup);
+	ErrorF ("Wakeup was 0x%lx\n", *wakeup);
 	/* wakeup the chip */
 	*(volatile CARD32 *) (registers + 0x8510) = 1;
-	ErrorF ("Wakeup is 0x%lx\n", (unsigned long)*wakeup);
+	ErrorF ("Wakeup is 0x%lx\n", *wakeup);
     }
     s3Set (s3vga, s3_io_addr_select, 1);
     s3Set (s3vga, s3_enable_ram, 1);
@@ -187,8 +194,7 @@ s3CardInit (KdCardInfo *card)
     
     if (!s3c->memory)
     {
-	ErrorF ("Can't detect s3 frame buffer at 0x%lx\n",
-		(unsigned long)s3FrameBuffer);
+	ErrorF ("Can't detect s3 frame buffer at 0x%lx\n", s3FrameBuffer);
 	goto bail3;
     }
     

@@ -27,7 +27,7 @@
 
 <title>XFree86&reg; server 4.x Design (DRAFT)
 <author>The XFree86 Project, Inc
-<date>13 October 2005
+<date>19 December 2003
 
 
 
@@ -36,7 +36,7 @@
 
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DESIGN.sgml,v 1.61 2006/03/02 03:00:36 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/DESIGN.sgml,v 1.57 2004/12/08 22:27:11 dawes Exp $
 </ident>
 
 
@@ -2341,7 +2341,7 @@ can be set with the &s.code;xf86SetOperatingState()&e.code; function:
       that the resource ranges have to match those specified during
       registration.  If a range has been specified starting at
       &s.code;A&e.code; and ending at &s.code;B&e.code; and suppose
-      &s.code;C&e.code; is a value satisfying
+      &s.code;C&e.code; us a value satisfying
       &s.code;A&nbsp;&lt;&nbsp;C&nbsp;&lt;&nbsp;B&e.code; one may not
       specify the resource range &s.code;(A,B)&e.code; by splitting it
       into two ranges &s.code;(A,C)&e.code; and &s.code;(C,B)&e.code;.
@@ -2791,7 +2791,7 @@ All modules must NOT include any system include files, or the following:
     &s.code;"xf86Priv.h"&nl;
     "xf86Privstr.h"&nl;
     "xf86_OSlib.h"&nl;
-    &lt;X11/Xos.h&gt;&e.code;
+    "Xos.h"&e.code;
  </quote>
 
 In addition, "xf86_libc.h" must not be included explicitly.  It is
@@ -4247,7 +4247,7 @@ XFree86 common layer.
       &s.code;modreq&e.code;
 	<quote><p>
 		  An optional &s.code;XF86ModReqInfo*&e.code; containing
-		  version/ABI/vendor information specifying requirements to
+		  version/ABI/vendor information to requirements to
 		  check the newly loaded module against.  The main
 		  purpose of this is to allow the loader to verify that
 		  a module of the correct type/version before running
@@ -4541,7 +4541,7 @@ typedef struct {
 
 The vers parameter must be initialised to a pointer to a correctly
 initialised &s.code;XF86ModuleVersionInfo&e.code; struct.  The other
-two parameters are optional, and should be initialised to
+two parameter are optional, and should be initialised to
 &s.code;NULL&e.code; when not required.  The other parameters are defined
 as
 
@@ -4592,12 +4592,6 @@ as
 
 The following is the Loader interface that is available to any part of
 the server, and may also be used from within modules.
-
-<p>
-Some of these have &s.code;xf86*&e.code; wrappers with simpler interfaces
-declared in &s.code;"xf86.h"&e.code;.
-These wrappers are the preferred interface for modules, given that they are also
-available in a statically built server, whereas the functions below are not.
 
   <quote><p>
   &s.code;pointer LoadSubModule(pointer parent, const char *module,
@@ -4703,20 +4697,20 @@ available in a statically built server, whereas the functions below are not.
 
   </quote>
 
-  &s.code;int LoaderCheckUnresolved(int dummy)&e.code;
+  &s.code;int LoaderCheckUnresolved(int delayflag)&e.code;
   <quote><p>
     This function checks for unresolved symbols.  It generates warnings
     for unresolved symbols that have not been registered with
-    &s.code;LoaderRefSymLists()&e.code;.  All such symbols are automatically
-    mapped to a dummy function.  If unresolved
+    &s.code;LoaderRefSymLists()&e.code;, and maps them to a dummy
+    function.  This behaviour may change in future.  If unresolved
     symbols are found that have been registered with
     &s.code;LoaderReqSymLists()&e.code; or
     &s.code;LoaderReqSymbols()&e.code; then this function returns a
     non-zero value.  If none of these symbols are unresolved the return
     value is zero, indicating success.
 
-    The &s.code;dummy&e.code; parameter is not used, and should be set to
-    &s.code;0&e.code;.  It is kept only for compatibility purposes.
+    The &s.code;delayflag&e.code; parameter should normally be set to
+    &s.code;LD_RESOLV_IFDONE&e.code;.
 
   </quote>
 
@@ -4729,19 +4723,6 @@ available in a statically built server, whereas the functions below are not.
     &s.code;errmin&e.code;.  If &s.code;name&e.code; is
     non-&s.code;NULL&e.code;, it is printed as an identifying prefix
     to the message (followed by a `:').
-
-  </quote>
-
-  &s.code;LoaderSetParentModuleRequirements(pointer module,
-			&f.indent;pointer req);&e.code;
-  <quote><p>
-    This function is intended to be called from a module's
-    &s.code;Setup&e.code; function.  It associates an
-    &s.code;XF86ModReqInfo&e.code; structure occurrence (addressed by
-    &s.code;req&e.code;) with the module being loaded (specified by
-    &s.code;module&e.code;).  This structure occurrence will then be used to
-    check this module's parent modules against.  This mechanism allows a module
-    to ensure its callers are compatible.
 
   </quote>
   </quote>
@@ -5663,7 +5644,7 @@ typedef struct {
     <ref id="avail" name="Available Functions"> sections.
 
 
-<sect1>Probing discrete clocks on older hardware
+<sect1>Probing discrete clocks on old hardware
 <p>
 
     The &s.code;xf86GetClocks()&e.code; function may be used to assist
@@ -5688,7 +5669,7 @@ typedef struct {
       a function that does whatever is required to protect the hardware
       state while selecting a new clock.  &s.code;BlankScreen&e.code;
       is a function that blanks the screen.  &s.code;vertsyncreg&e.code;
-      and &s.code;maskval&e.code; are the I/O register and bitmask to
+      and &s.code;maskval&e.code; are the register and bitmask to
       check for the presence of vertical sync pulses.
       &s.code;knownclkindex&e.code; and &s.code;knownclkvalue&e.code;
       are the index and value of a known clock.  These are the known
@@ -6278,7 +6259,7 @@ programming the standard VGA registers, and for handling VGA colourmaps.
 
 The following is an outline for writing a basic unaccelerated driver
 for a PCI video card with a linear mapped framebuffer, and which has a
-VGA core.  It includes some general information that is relevant to
+VGA core.  It is includes some general information that is relevant to
 most drivers (even those which don't fit that basic description).
 
 The information here is based on the initial conversion of the Matrox
@@ -6291,9 +6272,8 @@ Each driver must reserve a unique driver name, and a string that is used
 to prefix all of its externally visible symbols.  This is to avoid name
 space clashes when loading multiple drivers.  The examples here are for
 the ``ZZZ'' driver, which uses the ``ZZZ'' or ``zzz'' prefix for its externally
-visible symbols, with preference given to the uppercase prefix.
-Internal symbols should also follow this convention to facilitate the debugging
-of a statically built server.
+visible symbols.
+
 
 <sect1>Include files
 <p>
@@ -6384,7 +6364,7 @@ of a statically built server.
     "xf86Privstr.h"&nl;
     "xf86_libc.h"&nl;
     "xf86_OSlib.h"&nl;
-    &lt;X11/Xos.h&gt;&e.code;&nl;
+    "Xos.h"&e.code;&nl;
     any OS header
  </quote>
 

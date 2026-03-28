@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbpntarea.c,v 1.3tsi Exp $ */
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mfbpntarea.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -82,17 +88,21 @@ and *p++ = 0.
 
 /*ARGSUSED*/
 void
-MFBSOLIDFILLAREA(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
-		 PixmapPtr nop)
+MFBSOLIDFILLAREA(pDraw, nbox, pbox, alu, nop)
+    DrawablePtr pDraw;
+    int nbox;
+    BoxPtr pbox;
+    int alu;
+    PixmapPtr nop;
 {
     int nlwidth;	/* width in longwords of the drawable */
     int w;		/* width of current box */
-    int h;	/* height of current box */
-    PixelType *p;	/* pointer to bits we're writing */
-    int nlw;	/* loop version of nlwMiddle */
-    PixelType startmask;
-    PixelType endmask;/* masks for reggedy bits at either end of line */
-    int nlwExtra;	
+    register int h;	/* height of current box */
+    register PixelType *p;	/* pointer to bits we're writing */
+    register int nlw;	/* loop version of nlwMiddle */
+    register PixelType startmask;
+    register PixelType endmask;/* masks for reggedy bits at either end of line */
+    register int nlwExtra;	
 		        /* to get from right of box to left of next span */
     int nlwMiddle;	/* number of longwords between sides of boxes */
     PixelType *pbits;	/* pointer to start of drawable */
@@ -182,24 +192,28 @@ XOR the destination with the stipple pattern.
 
 /*ARGSUSED*/
 void
-MFBSTIPPLEFILLAREA(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
-		   PixmapPtr pstipple)
+MFBSTIPPLEFILLAREA(pDraw, nbox, pbox, alu, pstipple)
+    DrawablePtr pDraw;
+    int nbox;
+    BoxPtr pbox;
+    int alu;
+    PixmapPtr pstipple;
 {
-    PixelType *psrc;
+    register PixelType *psrc;
 			/* pointer to bits in tile, if needed */
     int tileHeight;	/* height of the tile */
-    PixelType srcpix;	
+    register PixelType srcpix;	
 
     int nlwidth;	/* width in longwords of the drawable */
     int w;		/* width of current box */
-    int nlw;	/* loop version of nlwMiddle */
-    PixelType *p;	/* pointer to bits we're writing */
-    int h;	/* height of current box */
+    register int nlw;	/* loop version of nlwMiddle */
+    register PixelType *p;	/* pointer to bits we're writing */
+    register int h;	/* height of current box */
     PixelType startmask;
     PixelType endmask;	/* masks for reggedy bits at either end of line */
     int nlwMiddle;	/* number of longwords between sides of boxes */
     int nlwExtra;	/* to get from right of box to left of next span */
-    int iy;	/* index of current scanline in tile */
+    register int iy;	/* index of current scanline in tile */
     PixelType *pbits;	/* pointer to start of drawable */
 
     mfbGetPixelWidthAndPointer(pDraw, nlwidth, pbits);

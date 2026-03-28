@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file dlist.h
  * Display lists management.
  */
@@ -68,10 +75,10 @@ extern void _mesa_compile_error( GLcontext *ctx, GLenum error, const char *s );
 
 extern void *_mesa_alloc_instruction( GLcontext *ctx, int opcode, GLint sz );
 
-extern int _mesa_alloc_opcode( GLcontext *ctx, GLuint sz,
-                               void (*execute)( GLcontext *, void * ),
-                               void (*destroy)( GLcontext *, void * ),
-                               void (*print)( GLcontext *, void * ) );
+extern GLint _mesa_alloc_opcode( GLcontext *ctx, GLuint sz,
+                                 void (*execute)( GLcontext *, void * ),
+                                 void (*destroy)( GLcontext *, void * ),
+                                 void (*print)( GLcontext *, void * ) );
 
 extern void GLAPIENTRY _mesa_save_EvalMesh2(GLenum mode, GLint i1, GLint i2,
 				 GLint j1, GLint j2 );

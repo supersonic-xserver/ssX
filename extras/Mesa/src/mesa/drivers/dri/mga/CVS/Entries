@@ -1,0 +1,27 @@
+/Makefile/1.1.1.1/Fri Mar 18 13:06:28 2005//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.1/Fri Mar 18 13:06:28 2005//Tnetbsd-5-2-3-RELEASE
+/mga_texcombine.c/1.1.1.1/Fri Mar 18 13:06:28 2005//Tnetbsd-5-2-3-RELEASE
+/mga_texstate.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mga_xmesa.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mga_xmesa.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgacontext.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgadd.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgadd.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgaioctl.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgaioctl.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgapixel.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgapixel.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgaregs.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgarender.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgaspan.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgaspan.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgastate.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgastate.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgatex.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgatex.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgatexmem.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgatris.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgatris.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgavb.c/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+/mgavb.h/1.1.1.1/Fri Mar 18 13:06:29 2005//Tnetbsd-5-2-3-RELEASE
+D

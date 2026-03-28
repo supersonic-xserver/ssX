@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/chgkbd.c,v 3.7 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,18 +60,15 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "XIstubs.h"
 #include "globals.h"
 #include "extnsionst.h"
+#include "extinit.h"			/* LookupDeviceIntRec */
 
 #include "exevents.h"
 #include "exglobals.h"
@@ -78,15 +83,16 @@ SOFTWARE.
  */
 
 int
-SProcXChangeKeyboardDevice(ClientPtr client)
-{
-    char n;
+SProcXChangeKeyboardDevice(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xChangeKeyboardDeviceReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xChangeKeyboardDeviceReq);
-    return (ProcXChangeKeyboardDevice(client));
-}
+    return(ProcXChangeKeyboardDevice(client));
+    }
 
 /***********************************************************************
  *
@@ -96,12 +102,116 @@ SProcXChangeKeyboardDevice(ClientPtr client)
  */
 
 int
-ProcXChangeKeyboardDevice(ClientPtr client)
-{
+ProcXChangeKeyboardDevice (client)
+    register ClientPtr client;
+    {
+    int				i;
+    DeviceIntPtr 		xkbd = inputInfo.keyboard;
+    DeviceIntPtr 		dev;
+    FocusClassPtr		xf = xkbd->focus;
+    FocusClassPtr		df;
+    KeyClassPtr 		k;
+    xChangeKeyboardDeviceReply	rep;
+    changeDeviceNotify		ev;
+
     REQUEST(xChangeKeyboardDeviceReq);
     REQUEST_SIZE_MATCH(xChangeKeyboardDeviceReq);
 
-    SendErrorToClient(client, IReqCode, X_ChangeKeyboardDevice, 0,
-                      BadDevice);
+    rep.repType = X_Reply;
+    rep.RepType = X_ChangeKeyboardDevice;
+    rep.length = 0;
+    rep.sequenceNumber = client->sequence;
+
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	rep.status = -1;
+	SendErrorToClient(client, IReqCode, X_ChangeKeyboardDevice, 0, 
+		BadDevice);
+	return Success;
+	}
+
+    k = dev->key;
+    if (k == NULL)
+	{
+	rep.status = -1;
+	SendErrorToClient(client, IReqCode, X_ChangeKeyboardDevice, 0, 
+		BadMatch);
+	return Success;
+	}
+
+    if (((dev->grab) && !SameClient(dev->grab, client)) ||
+        ((xkbd->grab) && !SameClient(xkbd->grab, client)))
+	rep.status = AlreadyGrabbed;
+    else if ((dev->sync.frozen &&
+	     dev->sync.other && !SameClient(dev->sync.other, client)) ||
+	     (xkbd->sync.frozen &&
+	      xkbd->sync.other && !SameClient(xkbd->sync.other, client)))
+	rep.status = GrabFrozen;
+    else
+	{
+	if (ChangeKeyboardDevice (xkbd, dev) != Success)
+	    {
+	    SendErrorToClient(client, IReqCode, X_ChangeKeyboardDevice, 0, 
+		BadDevice);
+	    return Success;
+	    }
+	if (!dev->focus)
+	    InitFocusClassDeviceStruct (dev);
+	if (!dev->kbdfeed)
+	   InitKbdFeedbackClassDeviceStruct(dev, (BellProcPtr)NoopDDA,
+					    (KbdCtrlProcPtr)NoopDDA);
+	df = dev->focus;
+	df->win = xf->win;
+	df->revert = xf->revert;
+	df->time = xf->time;
+	df->traceGood = xf->traceGood;
+	if (df->traceSize != xf->traceSize)
+	    {
+	    Must_have_memory = TRUE; /* XXX */
+	    df->trace = (WindowPtr *) xrealloc(df->trace, 
+		xf->traceSize * sizeof(WindowPtr));
+	    Must_have_memory = FALSE; /* XXX */
+	    }
+	df->traceSize = xf->traceSize;
+	for (i=0; i<df->traceSize; i++)
+	    df->trace[i] = xf->trace[i];
+	RegisterOtherDevice (xkbd);
+	RegisterKeyboardDevice (dev);
+
+	ev.type = ChangeDeviceNotify;
+	ev.deviceid = stuff->deviceid;
+	ev.time = currentTime.milliseconds;
+	ev.request = NewKeyboard;
+
+	SendEventToAllWindows (dev, ChangeDeviceNotifyMask, (xEvent *)&ev, 1);
+	SendMappingNotify (MappingKeyboard, k->curKeySyms.minKeyCode, 
+	    k->curKeySyms.maxKeyCode - k->curKeySyms.minKeyCode + 1,client);
+
+	rep.status = 0;
+	}
+
+    WriteReplyToClient (client, sizeof (xChangeKeyboardDeviceReply), 
+	&rep);
     return Success;
-}
+    }
+
+/***********************************************************************
+ *
+ * This procedure writes the reply for the XChangeKeyboardDevice 
+ * function, if the client and server have a different byte ordering.
+ *
+ */
+
+void
+SRepXChangeKeyboardDevice (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xChangeKeyboardDeviceReply	*rep;
+    {
+    register char n;
+
+    swaps(&rep->sequenceNumber, n);
+    swapl(&rep->length, n);
+    WriteToClient(client, size, (char *)rep);
+    }

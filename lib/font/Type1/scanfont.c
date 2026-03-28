@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/scanfont.c,v 1.19tsi Exp $ */
+/* $Xorg: scanfont.c,v 1.3 2000/08/17 19:46:32 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -45,12 +52,13 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
+/* $XFree86: xc/lib/font/Type1/scanfont.c,v 1.17 2003/11/29 04:55:28 dawes Exp $ */
 
 #ifndef FONTMODULE
 #include <string.h>
 #else
-#include <X11/Xdefs.h>	/* Bool declaration */
-#include <X11/Xmd.h>	/* INT32 declaration */
+#include "Xdefs.h"	/* Bool declaration */
+#include "Xmd.h"	/* INT32 declaration */
 #include "xf86_ansic.h"
 #endif
 #include "t1stdio.h"
@@ -63,6 +71,8 @@
 #include "spaces.h"
 #include "fontfcn.h"
 #include "blues.h"
+
+#include <limits.h>
  
 #ifdef BUILDCID
 #define CID_BUFSIZE 80
@@ -630,7 +640,7 @@ getFDArray(psobj *arrayP)
   scan_token(inputP);
   if (tokenType == TOKEN_INTEGER) {
       /* an FD array must contain at least one element */
-      if ((tokenValue.integer <= 0) || (tokenValue.integer > MAX_PS_PSFONTS))
+      if (tokenValue.integer <= 0)
           return(SCAN_ERROR);
       arrayP->len = tokenValue.integer;
   } else
@@ -645,6 +655,7 @@ getFDArray(psobj *arrayP)
   arrayP->data.valueP = tokenStartP;
 
   /* allocate FDArray */
+  /* No integer overflow since arrayP->len is unsigned short */
   FDArrayP = (psfont *)vm_alloc(arrayP->len*(sizeof(psfont)));
   if (!(FDArrayP)) return(SCAN_OUT_OF_MEMORY);
 
@@ -816,7 +827,7 @@ BuildSubrs(psfont *FontP)
    /* note: rc is set by getInt. */
    N = getInt();
    if (rc) return(rc);
-   if ((N < 0) || (N > MAX_PS_PSOBJS)) return(SCAN_ERROR);
+   if (N < 0 ) return(SCAN_ERROR);
    /* if we already have a Subrs, then skip the second one */
    /* The second one is for hiresolution devices.          */
    if (FontP->Subrs.data.arrayP != NULL) {
@@ -841,7 +852,8 @@ BuildSubrs(psfont *FontP)
      }
      return(SCAN_OK);
    }
- 
+   if (N > INT_MAX / sizeof(psobj)) 
+       return (SCAN_ERROR);
    arrayP = (psobj *)vm_alloc(N*sizeof(psobj));
    if (!(arrayP) ) return(SCAN_OUT_OF_MEMORY);
    FontP->Subrs.len = N;
@@ -902,7 +914,7 @@ BuildCharStrings(psfont *FontP)
      }
      else return(rc);  /* if next token was not an Int */
    }
-   if ((N<=0) || (N >= MAX_PS_PSDICTS)) return(SCAN_ERROR);
+   if (N<=0 || N > INT_MAX / sizeof(psdict)) return(SCAN_ERROR);
    /* save number of entries in the dictionary */
  
    dictP = (psdict *)vm_alloc((N+1)*sizeof(psdict));
@@ -1710,6 +1722,10 @@ scan_cidfont(cidfont *CIDFontP, cmapres *CMapP)
     if (tokenType == TOKEN_INTEGER)
       rangecnt = tokenValue.integer;
 
+    if (rangecnt < 0 || rangecnt > INT_MAX / sizeof(spacerangecode)) {
+	rc = SCAN_ERROR;
+	break;
+    }
     /* ==> tokenLength, tokenTooLong, tokenType, and */
     /* tokenValue are now set                        */
 
@@ -1732,10 +1748,6 @@ scan_cidfont(cidfont *CIDFontP, cmapres *CMapP)
         break;
       case TOKEN_NAME:
         if (0 == strncmp(tokenStartP,"begincodespacerange",19)) {
-	  if ((rangecnt <= 0) || (rangecnt > MAX_CID_SPACERANGECODES)) {
-	    rc = SCAN_OUT_OF_MEMORY;
-	    break;
-	  }
           CIDFontP->spacerangecnt++;
           spacerangeP = (spacerange *)vm_alloc(sizeof(spacerange));
           if (!spacerangeP) {
@@ -1791,10 +1803,6 @@ scan_cidfont(cidfont *CIDFontP, cmapres *CMapP)
           }
         }
         if (0 == strncmp(tokenStartP,"begincidrange",13)) {
-	  if ((rangecnt <= 0) || (rangecnt > MAX_CID_CIDRANGECODES)) {
-	    rc = SCAN_OUT_OF_MEMORY;
-	    break;
-	  }
           CIDFontP->cidrangecnt++;
           cidrangeP = (cidrange *)vm_alloc(sizeof(cidrange));
           if (!cidrangeP) {
@@ -1876,10 +1884,6 @@ scan_cidfont(cidfont *CIDFontP, cmapres *CMapP)
         }
 
         if (0 == strncmp(tokenStartP,"beginnotdefrange",16)) {
-	  if ((rangecnt <= 0) || (rangecnt > MAX_CID_CIDRANGECODES)) {
-	    rc = SCAN_OUT_OF_MEMORY;
-	    break;
-	  }
           CIDFontP->notdefrangecnt++;
           notdefrangeP = (cidrange *)vm_alloc(sizeof(cidrange));
           if (!notdefrangeP) {

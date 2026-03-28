@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * cslibint.h -- low level I/O
  *
  * (c) Copyright 1993-1994 Adobe Systems Incorporated.
@@ -291,14 +298,12 @@ extern void N_XSend(Display *, _Xconst char *, long);
 extern void N_XWaitForReadable(Display *);
 extern void N_XWaitForWritable(Display *);
 
-#if 0
 extern void XDPSGetDefaultColorMaps(
     Display *dpy,
     Screen *screen,
     Drawable drawable,
     XStandardColormap *colorCube,
     XStandardColormap *grayRamp);
-#endif
 
 #endif /* _CSLIBINT_H */
 

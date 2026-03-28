@@ -1,5 +1,14 @@
 /*
- * Copyright Â© 2000 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/miext/shadow/shrot32pack.c,v 1.1 2000/09/08 21:46:45 keithp Exp $
+ *
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,9 +31,5 @@
 
 #define FUNC	shadowUpdateRotate32
 #define Data	CARD32
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "shrotpack.h"

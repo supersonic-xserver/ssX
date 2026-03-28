@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/shader/Imakefile.inc,v 1.2 2004/12/10 18:26:36 alanh Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/shader/Imakefile.inc,v 1.3 2004/12/11 01:39:50 alanh Exp $
 
 #ifndef MesaShaderBuildDir
 #define MesaShaderBuildDir $(GLXLIBSRC)/mesa/shader/

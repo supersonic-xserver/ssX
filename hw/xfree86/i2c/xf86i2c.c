@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1998 Itai Nahshon, Michael Schimek
  *
  * The original code was derived from and inspired by 
@@ -6,20 +13,15 @@
  *      (c) 1998 Gerd Knorr <kraxel@cs.tu-berlin.de>
  */
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/i2c/xf86i2c.c,v 1.17 2005/10/14 15:16:53 tsi Exp $ */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
-#include <sys/time.h>
-#include <string.h>
-
+#if 1
 #include "misc.h"
 #include "xf86.h"
+#include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
 #include <X11/X.h>
-#include <X11/Xos.h>
 #include <X11/Xproto.h>
 #include "scrnintstr.h"
 #include "regionstr.h"
@@ -29,6 +31,14 @@
 #include "resource.h"
 #include "gcstruct.h"
 #include "dixstruct.h"
+#else
+typedef int Bool;
+typedef void *Pointer;
+#define NULL ((void *)0)
+#define X_DEFAULT 0
+#define TRUE  1
+#define FALSE 0
+#endif
 
 #include "xf86i2c.h"
 
@@ -69,21 +79,22 @@ I2CUDelay(I2CBusPtr b, int usec)
 static void
 I2CUDelay(I2CBusPtr b, int usec)
 {
-  struct timeval begin, cur;
+  long b_secs, b_usecs;
+  long a_secs, a_usecs;
   long d_secs, d_usecs;
   long diff;
 
   if (usec > 0) {
-    X_GETTIMEOFDAY(&begin);
+    xf86getsecs(&b_secs, &b_usecs);
     do {
       /* It would be nice to use {xf86}usleep, 
        * but usleep (1) takes >10000 usec !
        */
-      X_GETTIMEOFDAY(&cur);
-      d_secs  = (cur.tv_sec - begin.tv_sec);
-      d_usecs = (cur.tv_usec - begin.tv_usec);
+      xf86getsecs(&a_secs, &a_usecs);
+      d_secs  = (a_secs - b_secs);
+      d_usecs = (a_usecs - b_usecs);
       diff = d_secs*1000000 + d_usecs;
-    } while (diff>=0 && diff< (usec + 1));
+    } while (diff>0 && diff< (usec + 1));
   }
 }
 #endif

@@ -1,7 +1,11 @@
-
-/* $Xorg: sunFbs.c,v 1.4 2001/02/09 02:04:43 xorgcvs Exp $ */
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1990, 1993, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -36,11 +40,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -67,7 +71,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * express or implied warranty.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sunFbs.c,v 1.8 2003/11/17 22:20:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunFbs.c,v 1.9 2006/01/09 14:59:49 dawes Exp $ */
 
 /****************************************************************/
 /* Modified from  sunCG4C.c for X11R3 by Tom Jarmolowski	*/
@@ -76,20 +80,22 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "sun.h"
 #include <sys/mman.h>
 
-static Bool closeScreen(ScreenPtr pScreen);
+int sunScreenIndex;
 
-DevPrivateKeyRec sunScreenPrivateKeyRec;
+static unsigned long generation = 0;
 
-void *
-sunMemoryMap(size_t len, off_t off, int fd)
+pointer sunMemoryMap (
+    size_t	len,
+    off_t	off,
+    int		fd)
 {
     int		pagemask, mapsize;
     caddr_t	addr;
-    void	*mapaddr;
+    pointer	mapaddr;
 
 #ifdef SVR4
     pagemask = sysconf(_SC_PAGESIZE) - 1;
-#else
+#else 
     pagemask = getpagesize() - 1;
 #endif
     mapsize = ((int) len + pagemask) & ~pagemask;
@@ -97,55 +103,59 @@ sunMemoryMap(size_t len, off_t off, int fd)
 
 #if !defined(__bsdi__) && !defined(_MAP_NEW) && !defined(__NetBSD__) && !defined(__OpenBSD__)
     if ((addr = (caddr_t) valloc (mapsize)) == NULL) {
-	ErrorF("Couldn't allocate frame buffer memory\n");
+	Error ("Couldn't allocate frame buffer memory");
 	(void) close (fd);
 	return NULL;
     }
 #endif
 
 #if !defined(__NetBSD__) && !defined(__OpenBSD__)
-    /*
+    /* 
      * try and make it private first, that way once we get it, an
      * interloper, e.g. another server, can't get this frame buffer,
      * and if another server already has it, this one won't.
      */
-    if ((int)(mapaddr = (void *) mmap (addr,
+    if ((int)(mapaddr = (pointer) mmap (addr,
 		mapsize,
 		PROT_READ | PROT_WRITE, MAP_PRIVATE,
 		fd, off)) == -1)
 #endif
-	mapaddr = mmap (addr,
+	mapaddr = (pointer) mmap (addr,
 		    mapsize,
 		    PROT_READ | PROT_WRITE, MAP_SHARED,
 		    fd, off);
-    if (mapaddr == (void *) -1) {
-	ErrorF("mapping frame buffer memory\n");
+    if (mapaddr == (pointer) -1) {
+	Error ("mapping frame buffer memory");
 	(void) close (fd);
-	mapaddr = NULL;
+	mapaddr = (pointer) NULL;
     }
     return mapaddr;
 }
 
-Bool
-sunScreenAllocate(ScreenPtr pScreen)
+Bool sunScreenAllocate (
+    ScreenPtr	pScreen)
 {
     sunScreenPtr    pPrivate;
+    extern int AllocateScreenPrivateIndex();
 
-    if (!dixRegisterPrivateKey(&sunScreenPrivateKeyRec, PRIVATE_SCREEN, 0)) {
-	ErrorF("dixRegisterPrivateKey failed\n");
-	return FALSE;
+    if (generation != serverGeneration)
+    {
+	sunScreenIndex = AllocateScreenPrivateIndex();
+	if (sunScreenIndex < 0)
+	    return FALSE;
+	generation = serverGeneration;
     }
-    pPrivate = calloc(1, sizeof (sunScreenRec));
+    pPrivate = (sunScreenPtr) xalloc (sizeof (sunScreenRec));
     if (!pPrivate)
 	return FALSE;
 
-    pPrivate->origColormapValid = FALSE;
-    sunSetScreenPrivate(pScreen, pPrivate);
+    pScreen->devPrivates[sunScreenIndex].ptr = (pointer) pPrivate;
     return TRUE;
 }
 
-Bool
-sunSaveScreen(ScreenPtr pScreen, int on)
+Bool sunSaveScreen (
+    ScreenPtr	pScreen,
+    int		on)
 {
     int		state;
 
@@ -160,60 +170,75 @@ sunSaveScreen(ScreenPtr pScreen, int on)
     return( TRUE );
 }
 
-static Bool
-closeScreen(ScreenPtr pScreen)
+static Bool closeScreen (i, pScreen)
+    int		i;
+    ScreenPtr	pScreen;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
+    SetupScreen(pScreen);
     Bool    ret;
 
     (void) OsSignal (SIGIO, SIG_IGN);
-#if 0	/* XXX GX is disabled for now */
     sunDisableCursor (pScreen);
-#endif
-    if (pPrivate->origColormapValid)
-	(*pPrivate->RestoreColormap)(pScreen);
     pScreen->CloseScreen = pPrivate->CloseScreen;
-    ret = (*pScreen->CloseScreen) (pScreen);
+    ret = (*pScreen->CloseScreen) (i, pScreen);
     (void) (*pScreen->SaveScreen) (pScreen, SCREEN_SAVER_OFF);
-    free (pPrivate);
+    xfree ((pointer) pPrivate);
     return ret;
 }
 
-Bool
-sunScreenInit(ScreenPtr pScreen)
+Bool sunScreenInit (
+    ScreenPtr	pScreen)
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
+    SetupScreen(pScreen);
+    extern void   sunBlockHandler();
+    extern void   sunWakeupHandler();
+    static ScreenPtr autoRepeatScreen;
+    extern miPointerScreenFuncRec   sunPointerScreenFuncs;
 
     pPrivate->installedMap = 0;
     pPrivate->CloseScreen = pScreen->CloseScreen;
     pScreen->CloseScreen = closeScreen;
     pScreen->SaveScreen = sunSaveScreen;
-#if 0	/* XXX GX is disabled for now */
-    if (!sunCursorInitialize (pScreen))
+#ifdef XKB
+    if (noXkbExtension) {
 #endif
+    /*
+     *	Block/Unblock handlers
+     */
+    if (sunAutoRepeatHandlersInstalled == FALSE) {
+	autoRepeatScreen = pScreen;
+	sunAutoRepeatHandlersInstalled = TRUE;
+    }
+
+    if (pScreen == autoRepeatScreen) {
+        pScreen->BlockHandler = sunBlockHandler;
+        pScreen->WakeupHandler = sunWakeupHandler;
+    }
+#ifdef XKB
+    }
+#endif
+    if (!sunCursorInitialize (pScreen))
 	miDCInitialize (pScreen, &sunPointerScreenFuncs);
     return TRUE;
 }
 
-Bool
-sunInitCommon(
+Bool sunInitCommon (
     int		scrn,
     ScreenPtr	pScrn,
     off_t	offset,
-    Bool	(*init1)(ScreenPtr, void *, int, int, int, int, int, int),
-    void	(*init2)(ScreenPtr),
-    Bool	(*cr_cm)(ScreenPtr),
-    Bool	(*save)(ScreenPtr, int),
-    int		fb_off
-)
+    Bool	(*init1)(),
+    void	(*init2)(),
+    Bool	(*cr_cm)(),
+    Bool	(*save)(),
+    int		fb_off)
 {
     unsigned char*	fb = sunFbs[scrn].fb;
 
     if (!sunScreenAllocate (pScrn))
 	return FALSE;
     if (!fb) {
-	if ((fb = sunMemoryMap ((size_t) sunFbs[scrn].info.fb_size,
-			     offset,
+	if ((fb = sunMemoryMap ((size_t) sunFbs[scrn].info.fb_size, 
+			     offset, 
 			     sunFbs[scrn].fd)) == NULL)
 	    return FALSE;
 	sunFbs[scrn].fb = fb;
@@ -226,6 +251,7 @@ sunInitCommon(
 	    sunFbs[scrn].info.fb_width,
 	    sunFbs[scrn].info.fb_depth))
 	    return FALSE;
+    miInitializeBackingStore(pScrn);
     /* sunCGScreenInit() if cfb... */
     if (init2)
 	(*init2)(pScrn);

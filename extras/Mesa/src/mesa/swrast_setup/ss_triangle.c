@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/swrast_setup/ss_triangle.c,v 1.0 tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -57,9 +63,9 @@ static void _swsetup_render_line_tri( GLcontext *ctx,
    SWvertex *v0 = &verts[e0];
    SWvertex *v1 = &verts[e1];
    SWvertex *v2 = &verts[e2];
-   GLchan c[2][4] = {{0, }, };
-   GLchan s[2][4] = {{0, }, };
-   GLfloat i[2] = {0.0, 0.0};
+   GLchan c[2][4];
+   GLchan s[2][4];
+   GLfloat i[2];
 
    /* cull testing */
    if (ctx->Polygon.CullFlag) {
@@ -116,9 +122,9 @@ static void _swsetup_render_point_tri( GLcontext *ctx,
    SWvertex *v0 = &verts[e0];
    SWvertex *v1 = &verts[e1];
    SWvertex *v2 = &verts[e2];
-   GLchan c[2][4] = {{0, }, };
-   GLchan s[2][4] = {{0, }, };
-   GLfloat i[2] = {0.0, };
+   GLchan c[2][4];
+   GLchan s[2][4];
+   GLfloat i[2];
 
    /* cull testing */
    if (ctx->Polygon.CullFlag) {

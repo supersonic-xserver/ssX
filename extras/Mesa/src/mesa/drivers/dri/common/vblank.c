@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*- */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (c) Copyright IBM Corporation 2002
  * All Rights Reserved.
@@ -25,7 +32,7 @@
  * Authors:
  *    Ian Romanick <idr@us.ibm.com>
  */
-/* $XFree86:$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/vblank.c,v 1.1.1.2 2004/12/10 15:06:14 alanh Exp $ */
 
 #include "glheader.h"
 #include "xf86drm.h"
@@ -128,11 +135,7 @@ int driWaitForMSC32( __DRIdrawablePrivate *priv,
 	 if ( drmWaitVBlank( priv->driScreenPriv->fd, &vbl ) != 0 ) {
 	    /* FIXME: This doesn't seem like the right thing to return here.
 	     */
-#ifndef _SOLO	     
 	    return GLX_BAD_CONTEXT;
-#else
-	    return -1;
-#endif
 	 }
 
          dont_wait = 0;
@@ -163,11 +166,7 @@ int driWaitForMSC32( __DRIdrawablePrivate *priv,
       if ( drmWaitVBlank( priv->driScreenPriv->fd, &vbl ) != 0 ) {
 	 /* FIXME: This doesn't seem like the right thing to return here.
 	  */
-#ifndef _SOLO
 	 return GLX_BAD_CONTEXT;
-#else
-	 return -1;
-#endif
       }
    }
 
@@ -226,11 +225,9 @@ GLuint driGetDefaultVBlankFlags( const driOptionCache *optionCache )
 
 void driDrawableInitVBlank( __DRIdrawablePrivate *priv, GLuint flags )
 {
-#ifndef _SOLO
    if ( priv->pdraw->swap_interval == (unsigned)-1 ) {
       priv->pdraw->swap_interval = (flags & VBLANK_FLAG_THROTTLE) != 0 ? 1 : 0;
    }
-#endif   
 }
 
 
@@ -328,11 +325,7 @@ driWaitForVBlank( const  __DRIdrawablePrivate *priv, GLuint * vbl_seq,
    vbl.request.type = DRM_VBLANK_ABSOLUTE;
 
    if ( (flags & VBLANK_FLAG_INTERVAL) != 0 ) {
-#ifndef _SOLO   
       interval = priv->pdraw->swap_interval;
-#else
-      interval = 0;
-#endif      
       /* this must have been initialized when the drawable was first bound
        * to a direct rendering context. */
       assert ( interval != (unsigned)-1 );

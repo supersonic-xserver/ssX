@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 VA Linux Systems, Inc.
  * (c) Copyright IBM Corporation 2002
  * All Rights Reserved.
@@ -26,8 +33,9 @@
  *    Ian Romanick <idr@us.ibm.com>
  *    Keith Whitwell <keithw@tungstengraphics.com>
  */
-/* $XFree86:$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mga_texstate.c,v 1.1.1.3 2004/12/10 15:05:41 alanh Exp $ */
 
+#include <stdlib.h>
 #include "mm.h"
 #include "mgacontext.h"
 #include "mgatex.h"
@@ -65,7 +73,7 @@ mgaSetTexImages( mgaContextPtr mmesa,
 		 const struct gl_texture_object * tObj )
 {
     mgaTextureObjectPtr t = (mgaTextureObjectPtr) tObj->DriverData;
-    struct gl_texture_image *baseImage = tObj->Image[ tObj->BaseLevel ];
+    struct gl_texture_image *baseImage = tObj->Image[0][ tObj->BaseLevel ];
     GLint totalSize;
     GLint width, height;
     GLint i;
@@ -110,12 +118,12 @@ mgaSetTexImages( mgaContextPtr mmesa,
       log2Width = 0;
       log2Height = 0;
    } else {
-      log2Width  = tObj->Image[t->base.firstLevel]->WidthLog2;
-      log2Height = tObj->Image[t->base.firstLevel]->HeightLog2;
+      log2Width  = tObj->Image[0][t->base.firstLevel]->WidthLog2;
+      log2Height = tObj->Image[0][t->base.firstLevel]->HeightLog2;
    }
 
-   width = tObj->Image[t->base.firstLevel]->Width;
-   height = tObj->Image[t->base.firstLevel]->Height;
+   width = tObj->Image[0][t->base.firstLevel]->Width;
+   height = tObj->Image[0][t->base.firstLevel]->Height;
 
    numLevels = MIN2( t->base.lastLevel - t->base.firstLevel + 1,
                      MGA_IS_G200(mmesa) ? G200_TEX_MAXLEVELS : G400_TEX_MAXLEVELS);
@@ -124,7 +132,7 @@ mgaSetTexImages( mgaContextPtr mmesa,
    totalSize = 0;
    for ( i = 0 ; i < numLevels ; i++ ) {
       const struct gl_texture_image * const texImage = 
-	  tObj->Image[ i + t->base.firstLevel ];
+	  tObj->Image[0][ i + t->base.firstLevel ];
       int size;
 
       if (texImage == NULL)
@@ -204,7 +212,7 @@ static void mgaUpdateTextureEnvG200( GLcontext *ctx, GLuint unit )
    mgaContextPtr mmesa = MGA_CONTEXT(ctx);
    struct gl_texture_object *tObj = ctx->Texture.Unit[0]._Current;
    mgaTextureObjectPtr t = (mgaTextureObjectPtr) tObj->DriverData;
-   GLenum format = tObj->Image[tObj->BaseLevel]->Format;
+   GLenum format = tObj->Image[0][tObj->BaseLevel]->Format;
 
    if (tObj != ctx->Texture.Unit[0].Current2D &&
        tObj != ctx->Texture.Unit[0].CurrentRect)
@@ -536,7 +544,7 @@ static GLboolean mgaUpdateTextureEnvBlend( GLcontext *ctx, int unit )
    const struct gl_texture_unit *texUnit = &ctx->Texture.Unit[source];
    const struct gl_texture_object *tObj = texUnit->_Current;
    GLuint *reg = ((GLuint *)&mmesa->setup.tdualstage0 + unit);
-   GLenum format = tObj->Image[tObj->BaseLevel]->Format;
+   GLenum format = tObj->Image[0][tObj->BaseLevel]->Format;
 
    *reg = 0;
 
@@ -633,7 +641,7 @@ static void mgaUpdateTextureEnvG400( GLcontext *ctx, GLuint unit )
    const struct gl_texture_object *tObj = texUnit->_Current;
    GLuint *reg = ((GLuint *)&mmesa->setup.tdualstage0 + unit);
    mgaTextureObjectPtr t = (mgaTextureObjectPtr) tObj->DriverData;
-   GLenum format = tObj->Image[tObj->BaseLevel]->Format;
+   GLenum format = tObj->Image[0][tObj->BaseLevel]->Format;
 
    if (tObj != ctx->Texture.Unit[source].Current2D &&
        tObj != ctx->Texture.Unit[source].CurrentRect)
@@ -780,7 +788,7 @@ static GLboolean update_tex_common( GLcontext *ctx, int unit )
    mgaTextureObjectPtr t = (mgaTextureObjectPtr) tObj->DriverData;
 
    /* Fallback if there's a texture border */
-   if ( tObj->Image[tObj->BaseLevel]->Border > 0 ) {
+   if ( tObj->Image[0][tObj->BaseLevel]->Border > 0 ) {
       return GL_FALSE;
    }
 

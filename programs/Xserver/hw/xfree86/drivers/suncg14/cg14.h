@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * CG14 framebuffer - defines.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg14/cg14.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg14/cg14.h,v 1.3 2001/05/04 19:05:45 dawes Exp $ */
 
 #ifndef CG14_H
 #define CG14_H
@@ -29,11 +36,16 @@
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"
 #include "xf86RamDac.h"
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "gcstruct.h"
 #include "xf86sbusBus.h"
 
 /* Various offsets in virtual (ie. mmap()) spaces Linux and Solaris support. */
+#define CG14_REGS_VOFF		0x00000000	/* registers */
+#define CG14_XLUT_VOFF		0x00003000	/* X Look Up Table */
+#define CG14_CLUT1_VOFF		0x00004000	/* Color Look Up Table */
+#define CG14_CLUT2_VOFF		0x00005000	/* Color Look Up Table */
+#define CG14_CLUT3_VOFF		0x00006000	/* Color Look Up Table */
 #define CG14_DIRECT_VOFF	0x10000000
 #define CG14_CTLREG_VOFF	0x20000000
 #define CG14_CURSOR_VOFF	0x30000000
@@ -50,6 +62,7 @@
 typedef struct {
 	unsigned int	*fb;
 	unsigned char	*x32;
+	unsigned char	*xlut;
 	int		width;
 	int		height;
 	sbusDevicePtr	psdp;

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/keyboard/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/keyboard/Imakefile,v 1.5 2004/06/01 00:17:04 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -54,8 +54,9 @@ OBJS = kbd.o
 
 DRIVER = kbd
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-	   -I$(SERVERSRC)/mi -I$(SERVERSRC)/include
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86SRC)/loader -I$(XF86OSSRC) \
+	   -I$(SERVERSRC)/mi -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	   -I$(EXTINCSRC)
 
 #if MakeHasPosixVariableSubstitutions
 SubdirLibraryRule($(OBJS))

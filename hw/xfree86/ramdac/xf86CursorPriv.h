@@ -1,7 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86CursorPriv.h,v 1.5 2003/02/15 03:14:47 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _XF86CURSORPRIV_H
 #define _XF86CURSORPRIV_H
@@ -27,8 +38,9 @@ typedef struct {
     Bool			PalettedCursor;
     ColormapPtr			pInstalledMap;
     Bool                	(*SwitchMode)(int, DisplayModePtr,int);
-    xf86EnableDisableFBAccessProc *EnableDisableFBAccess;
-    CursorPtr                   SavedCursor;
+    Bool                	(*EnterVT)(int, int);
+    void                	(*LeaveVT)(int, int);
+    int				(*SetDGAMode)(int, int, DGADevicePtr);
 
     /* Number of requests to force HW cursor */
     int				ForceHWCursorCount;

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/hurd/Imakefile,v 1.17tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/hurd/Imakefile,v 1.17 2004/11/23 02:25:43 dawes Exp $
 
 #include <Server.tmpl>
 
@@ -15,8 +15,8 @@ OBJS = hurd_init.o hurd_video.o hurd_io.o libc_wrapper.o $(BIOS_MOD).o \
        VTsw_noop.o posix_tty.o $(MOUSEOBJ) \
        stdResource.o stdPci.o sigiostubs.o pm_noop.o kmod_noop.o agp_noop.o
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include \
-           -I$(SERVERSRC)/mi
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
+           -I$(XINCLUDESRC) -I$(EXTINCSRC) -I$(SERVERSRC)/mi
 
 RESDEFINES = -DUSESTDRES
 

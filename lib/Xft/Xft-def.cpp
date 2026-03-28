@@ -45,10 +45,5 @@ XftTextExtents32
 XftTextExtents8
 XftTextExtentsUtf8
 XftXlfdParse
-XftGlyphExtents
-XftLockFace
-XftUnlockFace
-XftGlyphSpecRender
-XftDrawGlyphSpec
 
 /* $XFree86: xc/lib/Xft/Xft-def.cpp,v 1.8 2005/02/07 01:38:23 tsi Exp $ */

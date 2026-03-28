@@ -1,0 +1,72 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/Imakefile,v 1.24 2007/04/03 00:21:07 tsi Exp $
+
+#define IHaveSubdirs
+#include <Server.tmpl>
+
+LinkSourceFile(XFree86.man,../xfree86)
+
+/* The version of miinitext.c in mi is built with many extensions off. */
+LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),$(EXT_DEFINES))
+
+#if BuildXInputExt
+XINPUTSRCS = darwinXinput.c
+XINPUTOBJS = darwinXinput.o
+#endif
+
+SRCS =	darwin.c \
+        darwinEvents.c \
+        darwinKeyboard.c \
+        miinitext.c \
+        $(XINPUTSRCS)
+
+OBJS =	darwin.o \
+        darwinEvents.o \
+        darwinKeyboard.o \
+        miinitext.o \
+        $(XINPUTOBJS)
+
+INCLUDES = -I$(SERVERSRC)/mi -I$(SERVERSRC)/fb -I$(SERVERSRC)/render \
+           -I$(SERVERSRC)/Xi -I$(SERVERSRC)/record -I$(SERVERSRC)/dbe \
+           -I$(SERVERSRC)/include -I$(SERVERSRC)/os \
+           -I$(SERVERSRC)/miext/shadow -I$(SERVERSRC)/hw/xfree86
+
+OSNAME = OSName
+OSVENDOR = OSVendor
+OSNAMEDEF = -DOSNAME='" $(OSNAME)"' -DOSVENDOR='" $(OSVENDOR)"'
+#if defined(XFree86CustomVersion)
+CUSTOMVERSION = XFree86CustomVersion
+CUSTOMVERDEF = -DXF86_CUSTOM_VERSION='$(CUSTOMVERSION)'
+#endif
+#if defined(BuilderString)
+BUILDERSTRING = BuilderString
+BUILDERMSG = -DBUILDERSTRING='$(BUILDERSTRING)'
+#endif
+
+#if OSMajorVersion >= 6
+CLUTDEF = -DUSE_NEW_CLUT
+#endif
+
+#if DarwinQuartzSupport
+SUBDIRS = iokit bundle quartz utils
+QUARTZDEF = -DDARWIN_WITH_QUARTZ
+#else
+SUBDIRS = iokit utils
+#endif
+
+DEFINES = $(QUARTZDEF)
+EXTRAMANDEFS = $(QUARTZDEF) -D__logdir__=$(LOGDIRECTORY)
+
+SpecialCObjectRule(darwin,$(ICONFIGFILES),$(OSNAMEDEF) $(BUILDERMSG) \
+                   $(CUSTOMVERDEF) $(CLUTDEF))
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(darwin,$(OBJS))
+
+InstallManPage(XDarwin,$(MANDIR))
+InstallManPage(XFree86,$(MANDIR))
+
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

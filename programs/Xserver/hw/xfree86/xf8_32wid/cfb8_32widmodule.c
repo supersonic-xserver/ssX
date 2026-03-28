@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/cfb8_32widmodule.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/cfb8_32widmodule.c,v 1.1 2000/05/21 01:02:43 mvojkovi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifdef XFree86LOADER
 
@@ -23,7 +37,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData xf8_32widModuleData = { &VersRec, xf8_32widSetup, NULL };
 
 static pointer
-xf8_32widSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+xf8_32widSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     if (!LoadSubModule(module, "mfb", NULL, NULL, NULL, NULL,
 			errmaj, errmin))

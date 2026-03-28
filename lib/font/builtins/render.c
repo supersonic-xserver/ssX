@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/font/builtins/render.c,v 1.5tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: render.c,v 1.2 1999/11/02 06:16:48 keithp Exp $
  *
  * Copyright 1999 SuSE, Inc.
  *
@@ -17,35 +24,33 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
+/* $XFree86: xc/lib/font/builtins/render.c,v 1.4 2000/02/23 20:29:36 dawes Exp $ */
 
-#include "pcf.h"
-#include "fntfilst.h"
-#include "fontutil.h"
-#include "builtin.h"
+#include    "fntfilst.h"
+#include    "builtin.h"
 
-static int
-BuiltinOpenBitmap(
-    FontPathElementPtr	fpe,
-    FontPtr		*ppFont,
-    int			flags,
-    FontEntryPtr	entry,
-    char		*fileName,
-    fsBitmapFormat	format,
-    fsBitmapFormatMask	fmask,
-    FontPtr		unused)
+BuiltinOpenBitmap (fpe, ppFont, flags, entry, fileName, format, fmask)
+    FontPathElementPtr	fpe;
+    FontPtr		*ppFont;
+    int			flags;
+    FontEntryPtr	entry;
+    char		*fileName;
+    fsBitmapFormat	format;
+    fsBitmapFormatMask	fmask;
 {
     FontFilePtr	file;
     FontPtr     pFont;
+    int         i;
     int         ret;
     int         bit,
-		byte,
-		glyph,
-		scan,
+                byte,
+                glyph,
+                scan,
 		image;
 
     file = BuiltinFileOpen (fileName);
@@ -53,7 +58,7 @@ BuiltinOpenBitmap(
 	return BadFontName;
     pFont = (FontPtr) xalloc(sizeof(FontRec));
     if (!pFont) {
-	BuiltinFileClose(file);
+	BuiltinFileClose (file);
 	return AllocError;
     }
     /* set up default values */
@@ -66,9 +71,9 @@ BuiltinOpenBitmap(
     pFont->maxPrivate = -1;
     pFont->devPrivates = (pointer *) 0;
 
-    ret = pcfReadFont(pFont, file, bit, byte, glyph, scan);
+    ret = pcfReadFont (pFont, file, bit, byte, glyph, scan);
 
-    BuiltinFileClose(file);
+    BuiltinFileClose (file);
     if (ret != Successful)
 	xfree(pFont);
     else
@@ -76,34 +81,36 @@ BuiltinOpenBitmap(
     return ret;
 }
 
-static int
-BuiltinGetInfoBitmap(
-    FontPathElementPtr	fpe,
-    FontInfoPtr		pFontInfo,
-    FontEntryPtr	entry,
-    char		*fileName)
+BuiltinGetInfoBitmap (fpe, pFontInfo, entry, fileName)
+    FontPathElementPtr	fpe;
+    FontInfoPtr		pFontInfo;
+    FontEntryPtr	entry;
+    char		*fileName;
 {
     FontFilePtr file;
+    int		i;
     int		ret;
+    FontRendererPtr renderer;
 
-    file = BuiltinFileOpen(fileName);
+    file = BuiltinFileOpen (fileName);
     if (!file)
 	return BadFontName;
-    ret = pcfReadFontInfo(pFontInfo, file);
-    BuiltinFileClose(file);
+    ret = pcfReadFontInfo (pFontInfo, file);
+    BuiltinFileClose (file);
     return ret;
 }
 
 static FontRendererRec renderers[] = {
-    {".builtin", 8, BuiltinOpenBitmap, 0, BuiltinGetInfoBitmap, 0, 0}
+    ".builtin", 8,
+    BuiltinOpenBitmap, 0, BuiltinGetInfoBitmap, 0, 0
 };
 
-#define numRenderers (sizeof renderers / sizeof renderers[0])
+#define numRenderers	(sizeof renderers / sizeof renderers[0])
 
-void
-BuiltinRegisterFontFileFunctions(void)
+BuiltinRegisterFontFileFunctions()
 {
     int	i;
     for (i = 0; i < numRenderers; i++)
-	FontFileRegisterRenderer(&renderers[i]);
+	FontFileRegisterRenderer ((FontRendererRec *) &renderers[i]);
 }
+

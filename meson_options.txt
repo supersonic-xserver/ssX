@@ -26,7 +26,7 @@ option('default_font_path', type: 'string')
 option('glx', type: 'boolean', value: true)
 option('xdmcp', type: 'boolean', value: true)
 option('xdm-auth-1', type: 'boolean', value: true)
-option('secure-rpc', type: 'boolean', value: true)
+option('secure-rpc', type: 'boolean', value: false)
 option('ipv6', type: 'combo', choices: ['true', 'false', 'auto'], value: 'auto')
 
 option('xkb_dir', type: 'string')
@@ -100,3 +100,6 @@ option('dri3', type: 'combo', choices: ['true', 'false', 'auto'], value: 'auto',
 option('sna', type: 'boolean', value: true, description: 'Enable SNA acceleration')
 option('uxa', type: 'boolean', value: true, description: 'Enable UXA acceleration')
 option('backlight', type: 'boolean', value: true, description: 'Enable backlight control')
+
+option('legacy_build', type: 'boolean', value: false,
+       description: 'Build using 2009-era legacy headers and XFree86 logic')

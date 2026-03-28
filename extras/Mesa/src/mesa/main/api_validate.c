@@ -1,7 +1,13 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
  * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
  *
@@ -62,7 +68,7 @@ _mesa_validate_DrawElements(GLcontext *ctx,
 
    /* Always need vertex positions */
    if (!ctx->Array.Vertex.Enabled
-       && !(ctx->VertexProgram.Enabled && ctx->Array.VertexAttrib[0].Enabled))
+       && !(ctx->VertexProgram._Enabled && ctx->Array.VertexAttrib[0].Enabled))
       return GL_FALSE;
 
    /* Vertex buffer object tests */
@@ -168,7 +174,7 @@ _mesa_validate_DrawRangeElements(GLcontext *ctx, GLenum mode,
 
    /* Always need vertex positions */
    if (!ctx->Array.Vertex.Enabled
-       && !(ctx->VertexProgram.Enabled && ctx->Array.VertexAttrib[0].Enabled))
+       && !(ctx->VertexProgram._Enabled && ctx->Array.VertexAttrib[0].Enabled))
       return GL_FALSE;
 
    if (ctx->Const.CheckArrayBounds) {
@@ -227,8 +233,7 @@ _mesa_validate_DrawArrays(GLcontext *ctx,
       _mesa_update_state(ctx);
 
    /* Always need vertex positions */
-   if (!ctx->Array.Vertex.Enabled
-       && !(ctx->VertexProgram.Enabled && ctx->Array.VertexAttrib[0].Enabled))
+   if (!ctx->Array.Vertex.Enabled && !ctx->Array.VertexAttrib[0].Enabled)
       return GL_FALSE;
 
    if (ctx->Const.CheckArrayBounds) {

@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_screen.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_screen.c,v 1.7 2004/12/13 22:40:53 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -46,7 +53,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_context.h"
 #include "r200_ioctl.h"
 #include "radeon_macros.h"
-#include "r200_reg.h"
+#include "radeon_reg.h"
 
 #include "utils.h"
 #include "vblank.h"
@@ -303,7 +310,7 @@ r200CreateScreen( __DRIscreenPrivate *sPriv )
       drm_radeon_getparam_t gp;
 
       gp.param = RADEON_PARAM_GART_BUFFER_OFFSET;
-      gp.value = (int *)&screen->gart_buffer_offset;
+      gp.value = &screen->gart_buffer_offset;
 
       ret = drmCommandWriteRead( sPriv->fd, DRM_RADEON_GETPARAM,
 				 &gp, sizeof(gp));
@@ -315,7 +322,7 @@ r200CreateScreen( __DRIscreenPrivate *sPriv )
 
       if (sPriv->drmMinor >= 6) {
 	 gp.param = RADEON_PARAM_GART_BASE;
-	 gp.value = (int *)&screen->gart_base;
+	 gp.value = &screen->gart_base;
 
 	 ret = drmCommandWriteRead( sPriv->fd, DRM_RADEON_GETPARAM,
 				    &gp, sizeof(gp));

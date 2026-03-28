@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfb8bit.c,v 1.7tsi Exp $ */
+/* $Xorg: cfb8bit.c,v 1.4 2001/02/09 02:04:37 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1994, 1998  The Open Group
@@ -26,6 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/cfb/cfb8bit.c,v 1.5 2001/12/14 19:59:20 dawes Exp $ */
 
 /*
  * cfb8bit.c
@@ -36,9 +44,9 @@ from The Open Group.
 
 #if PSZ == 8
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
 #include	"scrnintstr.h"
@@ -191,7 +199,9 @@ PixelGroup cfb8StippleFg, cfb8StippleBg, cfb8StipplePm;
 PixelGroup cfb8StippleAnd[NUM_MASKS], cfb8StippleXor[NUM_MASKS];
 
 int
-cfb8SetStipple(int alu, CfbBits fg, CfbBits planemask)
+cfb8SetStipple (alu, fg, planemask)
+int		alu;
+CfbBits	fg, planemask;
 {
     CfbBits   and, xor, rrop;
     int	s;
@@ -218,7 +228,9 @@ cfb8SetStipple(int alu, CfbBits fg, CfbBits planemask)
 
 
 int
-cfb8SetOpaqueStipple(int alu, CfbBits fg, CfbBits bg, CfbBits planemask)
+cfb8SetOpaqueStipple (alu, fg, bg, planemask)
+int		alu;
+CfbBits	fg, bg, planemask;
 {
     CfbBits   andfg, xorfg, andbg, xorbg, rropfg, rropbg;
     int	s;
@@ -258,6 +270,7 @@ cfb8SetOpaqueStipple(int alu, CfbBits fg, CfbBits bg, CfbBits planemask)
  * contents of the glyph to compute the visible bits.
  */
 
+#if PGSZ == 32
 #if (BITMAP_BIT_ORDER == MSBFirst)
 PixelGroup cfb8BitLenMasks[PGSZ] = {
     0xffffffff, 0x7fffffff, 0x3fffffff, 0x1fffffff,
@@ -281,10 +294,88 @@ PixelGroup cfb8BitLenMasks[PGSZ] = {
     0xf0000000, 0xe0000000, 0xc0000000, 0x80000000,
 };
 #endif /* BITMAP_BIT_ORDER */
+#else /* PGSZ == 64 */
+#if (BITMAP_BIT_ORDER == MSBFirst)
+PixelGroup cfb8BitLenMasks[PGSZ] = {
+    0xffffffffffffffff,    0x7fffffffffffffff,
+    0x3fffffffffffffff,    0x1fffffffffffffff,
+    0x0fffffffffffffff,    0x07ffffffffffffff,
+    0x03ffffffffffffff,    0x01ffffffffffffff,
+    0x00ffffffffffffff,    0x007fffffffffffff,
+    0x003fffffffffffff,    0x001fffffffffffff,
+    0x000fffffffffffff,    0x0007ffffffffffff,
+    0x0003ffffffffffff,    0x0001ffffffffffff,
+    0x0000ffffffffffff,    0x00007fffffffffff,
+    0x00003fffffffffff,    0x00001fffffffffff,
+    0x00000fffffffffff,    0x000007ffffffffff,
+    0x000003ffffffffff,    0x000001ffffffffff,
+    0x000000ffffffffff,    0x0000007fffffffff,
+    0x0000003fffffffff,    0x0000001fffffffff,
+    0x0000000fffffffff,    0x00000007ffffffff,
+    0x00000003ffffffff,    0x00000001ffffffff,
+    0x00000000ffffffff,    0x000000007fffffff,
+    0x000000003fffffff,    0x000000001fffffff,
+    0x000000000fffffff,    0x0000000007ffffff,
+    0x0000000003ffffff,    0x0000000001ffffff,
+    0x0000000000ffffff,    0x00000000007fffff,
+    0x00000000003fffff,    0x00000000001fffff,
+    0x00000000000fffff,    0x000000000007ffff,
+    0x000000000003ffff,    0x000000000001ffff,
+    0x000000000000ffff,    0x0000000000007fff,
+    0x0000000000003fff,    0x0000000000001fff,
+    0x0000000000000fff,    0x00000000000007ff,
+    0x00000000000003ff,    0x00000000000001ff,
+    0x00000000000000ff,    0x000000000000007f,
+    0x000000000000003f,    0x000000000000001f,
+    0x000000000000000f,    0x0000000000000007,
+    0x0000000000000003,    0x0000000000000001
+};
+#else
+PixelGroup cfb8BitLenMasks[PGSZ] = {
+    0xffffffffffffffff,    0xfffffffffffffffe,
+    0xfffffffffffffffc,    0xfffffffffffffff8,
+    0xfffffffffffffff0,    0xffffffffffffffe0,
+    0xffffffffffffffc0,    0xffffffffffffff80,
+    0xffffffffffffff00,    0xfffffffffffffe00,
+    0xfffffffffffffc00,    0xfffffffffffff800,
+    0xfffffffffffff000,    0xffffffffffffe000,
+    0xffffffffffffc000,    0xffffffffffff8000,
+    0xffffffffffff0000,    0xfffffffffffe0000,
+    0xfffffffffffc0000,    0xfffffffffff80000,
+    0xfffffffffff00000,    0xffffffffffe00000,
+    0xffffffffffc00000,    0xffffffffff800000,
+    0xffffffffff000000,    0xfffffffffe000000,
+    0xfffffffffc000000,    0xfffffffff8000000,
+    0xfffffffff0000000,    0xffffffffe0000000,
+    0xffffffffc0000000,    0xffffffff80000000,
+    0xffffffff00000000,    0xfffffffe00000000,
+    0xfffffffc00000000,    0xfffffff800000000,
+    0xfffffff000000000,    0xffffffe000000000,
+    0xffffffc000000000,    0xffffff8000000000,
+    0xffffff0000000000,    0xfffffe0000000000,
+    0xfffffc0000000000,    0xfffff80000000000,
+    0xfffff00000000000,    0xffffe00000000000,
+    0xffffc00000000000,    0xffff800000000000,
+    0xffff000000000000,    0xfffe000000000000,
+    0xfffc000000000000,    0xfff8000000000000,
+    0xfff0000000000000,    0xffe0000000000000,
+    0xffc0000000000000,    0xff80000000000000,
+    0xff00000000000000,    0xfe00000000000000,
+    0xfc00000000000000,    0xf800000000000000,
+    0xf000000000000000,    0xe000000000000000,
+    0xc000000000000000,    0x8000000000000000
+};
+#endif /* BITMAP_BIT_ORDER */
+#endif /* PGSZ */
+
+
 
 int
-cfb8ComputeClipMasks32(BoxPtr pBox, int numRects, int x, int y, int w, int h,
-		       CARD32 *clips)
+cfb8ComputeClipMasks32 (pBox, numRects, x, y, w, h, clips)
+    BoxPtr	pBox;
+    int		numRects;
+    int		x, y, w, h;
+    CARD32      *clips;
 {
     int	    yBand, yBandBot;
     int	    ch;

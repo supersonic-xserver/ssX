@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/agp_noop.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/agp_noop.c,v 1.6 2004/02/13 23:58:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 2000-2003 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -54,7 +61,7 @@
 #ifdef __UNIXOS2__
 # define I_NEED_OS2_H
 #endif
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
@@ -97,11 +104,6 @@ xf86AllocateGARTMemory(int screenNum, unsigned long size, int type,
 	return -1;
 }
 
-Bool
-xf86DeallocateGARTMemory(int screenNum, int key)
-{
-	return FALSE;
-}
 
 Bool
 xf86BindGARTMemory(int screenNum, int key, unsigned long offset)

@@ -1,3 +1,11 @@
+/* $TOG: panoramiX.h /main/4 1998/03/17 06:51:02 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /****************************************************************
 *                                                               *
 *    Copyright (c) Digital Equipment Corporation, 1991, 1997    *
@@ -18,7 +26,7 @@
 *   or  in  FAR 52.227-19, as applicable.                       *
 *                                                               *
 *****************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/panoramiX.h,v 1.7 2005/10/14 15:16:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/panoramiX.h,v 1.6 2003/03/23 04:56:02 mvojkovi Exp $ */
 
 /* THIS IS NOT AN X PROJECT TEAM SPECIFICATION */
 
@@ -29,7 +37,7 @@
 #ifndef _PANORAMIX_H_
 #define _PANORAMIX_H_
 
-#include <X11/extensions/panoramiXext.h>
+#include "panoramiXext.h"
 #include "gcstruct.h"
 
 

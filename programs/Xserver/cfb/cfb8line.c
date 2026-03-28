@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfb8line.c,v 3.23tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfb8line.c,v 3.20 2004/09/15 15:01:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 Copyright 1990, 1998  The Open Group
@@ -29,7 +43,7 @@ in this Software without prior written authorization from The Open Group.
  */
 
 /*
- * Copyright (c) 2004, 2005 by The XFree86 Project, Inc.
+ * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -76,7 +90,7 @@ in this Software without prior written authorization from The Open Group.
  */
 
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -93,7 +107,7 @@ in this Software without prior written authorization from The Open Group.
 #ifdef PIXEL_ADDR
 
 #if defined(__GNUC__) && defined(mc68020)
-#define STUPID __volatile__
+#define STUPID volatile
 #define REARRANGE
 #else
 #define STUPID
@@ -192,12 +206,12 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 #if PSZ == 24
-#define PXL2ADR(x)  (((x) * PSZB) / PGSZB)
+#define PXL2ADR(x)  ((x)*3 >> 2)
 
 #if RROP == GXcopy
 #define body_rop \
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	    switch((unsigned long)addrb & (PGSZB - 1)){ \
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	    switch((unsigned long)addrb & 3){ \
 	    case 0: \
 	      *addrp = (*addrp & 0xFF000000)|(piQxelXor[0] & 0xFFFFFF); \
 	      break; \
@@ -216,8 +230,8 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #if RROP == GXxor
 #define body_rop \
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	    switch((unsigned long)addrb & (PGSZB - 1)){ \
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	    switch((unsigned long)addrb & 3){ \
 	    case 0: \
 	      *addrp ^= piQxelXor[0] & 0xFFFFFF; \
 	      break; \
@@ -236,8 +250,8 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #if RROP == GXand
 #define body_rop \
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	    switch((unsigned long)addrb & (PGSZB - 1)){ \
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	    switch((unsigned long)addrb & 3){ \
 	    case 0: \
 	      *addrp &= piQxelAnd[0] | 0xFF000000; \
 	      break; \
@@ -256,8 +270,8 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #if RROP == GXor
 #define body_rop \
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	    switch((unsigned long)addrb & (PGSZB - 1)){ \
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	    switch((unsigned long)addrb & 3){ \
 	    case 0: \
 	      *addrp |= piQxelOr[0] & 0xFFFFFF; \
 	      break; \
@@ -276,8 +290,8 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #if RROP == GXset
 #define body_rop \
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	    switch((unsigned long)addrb & (PGSZB - 1)){ \
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	    switch((unsigned long)addrb & 3){ \
 	    case 0: \
 	      *addrp = (*addrp & (piQxelAnd[0]|0xFF000000)) \
 			^ (piQxelXor[0] & 0xFFFFFF); \
@@ -308,48 +322,55 @@ in this Software without prior written authorization from The Open Group.
 
 int
 #ifdef POLYSEGMENT
-FUNC_NAME(cfb8SegmentSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int nseg,
-			      xSegment *pSegInit)
+FUNC_NAME(cfb8SegmentSS1Rect) (pDrawable, pGC, nseg, pSegInit)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		nseg;
+    xSegment	*pSegInit;
 #else
-FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
-			   int npt, DDXPointPtr pptInit,
-			   DDXPointPtr pptInitOrig, int *x1p, int *y1p,
-			   int *x2p, int *y2p)
+FUNC_NAME(cfb8LineSS1Rect) (pDrawable, pGC, mode, npt, pptInit, pptInitOrig,
+			    x1p,y1p,x2p,y2p)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int	mode;		/* Origin or Previous */
+    int	npt;		/* number of points */
+    DDXPointPtr pptInit, pptInitOrig;
+    int	*x1p, *y1p, *x2p, *y2p;
 #endif /* POLYSEGMENT */
 {
-    long   e;
-    int    y1_or_e1;
-    PixelType   *addrp;
-    int    stepmajor;
-    int    stepminor;
+    register long   e;
+    register int    y1_or_e1;
+    register PixelType   *addrp;
+    register int    stepmajor;
+    register int    stepminor;
 #ifndef REARRANGE
-    long   e3;
+    register long   e3;
 #endif
 #ifdef mc68000
-    short  x1_or_len;
+    register short  x1_or_len;
 #else
-    int    x1_or_len;
+    register int    x1_or_len;
 #endif
     RROP_DECLARE
 
 #ifdef SAVE_X2Y2
 # define c2 y2
 #else
-    int    c2;
+    register int    c2;
 #endif
 #if !defined(ORIGIN) && !defined(POLYSEGMENT)
-    int _x1 = 0, _y1 = 0, _x2 = 0, _y2 = 0;
+    register int _x1 = 0, _y1 = 0, _x2 = 0, _y2 = 0;
     int extents_x1, extents_y1, extents_x2, extents_y2;
 #endif /* !ORIGIN */
 #ifndef PREVIOUS
-    int upperleft, lowerright;
+    register int upperleft, lowerright;
     CARD32	 ClipMask = 0x80008000;
 #endif /* !PREVIOUS */
 #ifdef POLYSEGMENT
-    int    capStyle;
+    register int    capStyle;
 #endif /* POLYSEGMENT */
 #ifdef SAVE_X2Y2
-    int    x2, y2;
+    register int    x2, y2;
 # define X1  x1_or_len
 # define Y1  y1_or_e1
 # define X2  x2
@@ -445,8 +466,8 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 #if PSZ == 24
 	addrLineEnd = addr + WIDTH_MUL(_y1, nwidth);
 	xOffset = xBase + _x1;
-	addrb = (char *)addrLineEnd + xOffset * PSZB;
-	addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1));
+	addrb = (char *)addrLineEnd + xOffset * 3;
+	addrp = (PixelType *)((unsigned long)addrb & ~0x03);
 #else
 	addrp = addr + WIDTH_MUL(_y1, nwidth) + _x1;
 #endif
@@ -471,8 +492,8 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 #if PSZ == 24
 	addrLineEnd = addr + WIDTH_MUL(Y2, nwidth);
 	xOffset = xBase + X2;
-	addrb = (char *)addrLineEnd + xOffset * PSZB;
-	addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1));
+	addrb = (char *)addrLineEnd + xOffset * 3;
+	addrp = (PixelType *)((unsigned long)addrb & ~0x03);
 #else
 	addrp = addr + WIDTH_MUL(Y2, nwidth) + X2;
 #endif
@@ -492,8 +513,8 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 #if PSZ == 24
 	addrLineEnd = addr + WIDTH_MUL(y1_or_e1, nwidth);
 	xOffset = xBase + x1_or_len;
-	addrb = (char *)addrLineEnd + xOffset * PSZB;
-	addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1));
+	addrb = (char *)addrLineEnd + xOffset * 3;
+	addrp = (PixelType *)((unsigned long)addrb & ~0x03);
 #else
 	addrp = addr + WIDTH_MUL(y1_or_e1, nwidth) + x1_or_len;
 #endif
@@ -565,7 +586,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 	if (x1_or_len < y1_or_e1)
 	{
 #ifdef REARRANGE
-	    int	e3;
+	    register int	e3;
 #endif
 
 	    e3 = x1_or_len;
@@ -586,7 +607,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 
 	{
 #ifdef REARRANGE
-	int e3;
+	register int e3;
 	RROP_DECLARE
 	RROP_FETCH_GCPRIV(devPriv);
 #endif
@@ -598,12 +619,12 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 
 #if PSZ == 24
  	if (stepmajor == 1  ||  stepmajor == -1){
- 	    stepmajor3 = stepmajor * PSZB;
+ 	    stepmajor3 = stepmajor * 3;
  	    stepminor3 = stepminor * sizeof (CfbBits);
  	    majordx = stepmajor; minordx = 0;
          } else {
  	    stepmajor3 = stepmajor * sizeof (CfbBits);
- 	    stepminor3 = stepminor * PSZB;
+ 	    stepminor3 = stepminor * 3;
  	    majordx = 0; minordx = stepminor;
          }
 #endif
@@ -693,7 +714,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 #endif
 #endif
 #if PSZ == 24
-	addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1));
+	addrp = (PixelType *)((unsigned long)addrb & ~0x03);
 #endif
 	}
 #undef body
@@ -702,7 +723,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 	else /* Polysegment horizontal line optimization */
 	{
 # ifdef REARRANGE
-	    int    e3;
+	    register int    e3;
 	    RROP_DECLARE
 	    RROP_FETCH_GCPRIV(devPriv);
 # endif /* REARRANGE */
@@ -733,28 +754,34 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 		    x1_or_len++;
 	    }
 # if PSZ == 24
-	    y1_or_e1 = xOffset & (PGSZB - 1);
+	    y1_or_e1 = xOffset & 3;
 # else
 	    y1_or_e1 = ((long) addrp) & (PGSZB - 1);
 	    addrp = (PixelType *) (((unsigned char *) addrp) - y1_or_e1);
+#if PGSZ == 32
 #  if PWSH != 2
 	    y1_or_e1 >>= (2 - PWSH);
 #  endif
+#else /* PGSZ == 64 */
+#  if PWSH != 3
+	    y1_or_e1 >>= (3 - PWSH);
+#  endif
+#endif /* PGSZ */
 # endif /* PSZ == 24 */
 #if PSZ == 24
 	    {
 #if RROP == GXcopy
-	      int nlmiddle;
-	      int leftIndex = xOffset & (PGSZB - 1);
-	      int rightIndex = (xOffset + x1_or_len) & (PGSZB - 1);
+	      register int nlmiddle;
+	      int leftIndex = xOffset & 3;
+	      int rightIndex = (xOffset + x1_or_len) & 3;
 #else
-	      int pidx;
+	      register int pidx;
 #endif
 
 #if RROP == GXcopy
 	      nlmiddle = x1_or_len;
 	      if(leftIndex){
-		nlmiddle -= (PGSZB - leftIndex);
+		nlmiddle -= (4 - leftIndex);
 	      }
 	      if(rightIndex){
 		nlmiddle -= rightIndex;
@@ -892,7 +919,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 /*
 		  if (e3){
 		    e3 &= 0xFFFFFF;
-		    switch(rightIndex & (PGSZB - 1)){
+		    switch(rightIndex&3){
 		    case 0:
 		      *addrp = ((*addrp) & (0xFF000000 | ~e3))
 			| (piQxelXor[0] & 0xFFFFFF & e3);
@@ -922,14 +949,13 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 		}
 	      }
 #else /* GXcopy */
-	      addrp = (PixelType *)((char *)addrLineEnd +
-		 ((xOffset * PSZB) & ~(PGSZB - 1)));
+	      addrp = (PixelType *)((char *)addrLineEnd + ((xOffset * 3) & ~0x03));
 	      if (x1_or_len <= 1){
 		if (x1_or_len)
 		  RROP_SOLID24(addrp, xOffset);
 	      } else {
 		maskbits(xOffset, x1_or_len, e, e3, x1_or_len);
-		pidx = xOffset & (PGSZB - 1);
+		pidx = xOffset & 3;
 		if (e){
 		  RROP_SOLID_MASK(addrp, e, pidx-1);
 		  addrp++;
@@ -1023,7 +1049,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 # endif
 #if PSZ == 24
 #if RROP == GXcopy
-	    switch(xOffset & (PGSZB - 1)){
+	    switch(xOffset & 3){
 	    case 0:
 	      *addrp = ((*addrp)&0xFF000000)|(piQxelXor[0] & 0xFFFFFF);
 	      break;
@@ -1041,7 +1067,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 	    }
 #endif
 #if RROP == GXxor
-	    switch(xOffset & (PGSZB - 1)){
+	    switch(xOffset & 3){
 	    case 0:
 	      *addrp ^= (piQxelXor[0] & 0xFFFFFF);
 	      break;
@@ -1059,7 +1085,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 	    }
 #endif
 #if RROP == GXand
-	    switch(xOffset & (PGSZB - 1)){
+	    switch(xOffset & 3){
 	    case 0:
 	      *addrp &= (piQxelAnd[0] | 0xFF000000);
 	      break;
@@ -1077,7 +1103,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 	    }
 #endif
 #if RROP == GXor
-	    switch(xOffset & (PGSZB - 1)){
+	    switch(xOffset & 3){
 	    case 0:
 	      *addrp |= (piQxelOr[0] & 0xFFFFFF);
 	      break;
@@ -1095,7 +1121,7 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 	    }
 #endif
 #if RROP == GXset
-	    switch(xOffset & (PGSZB - 1)){
+	    switch(xOffset & 3){
 	    case 0:
 	      *addrp = (((*addrp)&(piQxelAnd[0] |0xFF000000))^(piQxelXor[0] & 0xFFFFFF));
 	      break;
@@ -1129,8 +1155,11 @@ FUNC_NAME(cfb8LineSS1Rect)(DrawablePtr pDrawable, GCPtr pGC, int mode,
 #ifdef POLYSEGMENT
 
 void
-cfb8SegmentSS1Rect(DrawablePtr pDrawable, GCPtr pGC, int nseg,
-		   xSegment *pSegInit)
+cfb8SegmentSS1Rect (pDrawable, pGC, nseg, pSegInit)
+    DrawablePtr	    pDrawable;
+    GCPtr	    pGC;
+    int		    nseg;
+    xSegment	    *pSegInit;
 {
     int	    (*func)(DrawablePtr, GCPtr, int, xSegment *);
     void    (*clip)(DrawablePtr, GCPtr, int, int, int, int, BoxPtr, Bool);
@@ -1189,8 +1218,12 @@ cfb8SegmentSS1Rect(DrawablePtr pDrawable, GCPtr pGC, int nseg,
 #else /* POLYSEGMENT */
 
 void
-cfb8LineSS1Rect(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-		DDXPointPtr pptInit)
+cfb8LineSS1Rect (pDrawable, pGC, mode, npt, pptInit)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		mode;
+    int		npt;
+    DDXPointPtr	pptInit;
 {
     int	    (*func)(DrawablePtr, GCPtr, int, int, 
 		    DDXPointPtr, DDXPointPtr,
@@ -1277,8 +1310,12 @@ cfb8LineSS1Rect(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 #if !defined(POLYSEGMENT) && !defined (PREVIOUS)
 
 void
-RROP_NAME(cfb8ClippedLine)(DrawablePtr pDrawable, GCPtr pGC, int x1, int y1,
-			   int x2, int y2, BoxPtr boxp, Bool shorten)
+RROP_NAME (cfb8ClippedLine) (pDrawable, pGC, x1, y1, x2, y2, boxp, shorten)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		x1, y1, x2, y2;
+    BoxPtr	boxp;
+    Bool	shorten;
 {
     int		    oc1, oc2;
     int		    e, e1, e3, len;
@@ -1403,20 +1440,20 @@ RROP_NAME(cfb8ClippedLine)(DrawablePtr pDrawable, GCPtr pGC, int x1, int y1,
     x1 = new_x1;
     y1 = new_y1;
     {
-    PixelType	*addrp;
+    register PixelType	*addrp;
     RROP_DECLARE
 
     RROP_FETCH_GC(pGC);
 
 #if PSZ == 24
     addrLineEnd = addr + (y1 * nwidth);
-    addrb = (char *)addrLineEnd + x1 * PSZB;
+    addrb = (char *)addrLineEnd + x1 * 3;
     if (stepx == 1  ||  stepx == -1){
-      stepx3 = stepx * PSZB;
+      stepx3 = stepx * 3;
       stepy3 = stepy * sizeof (CfbBits);
     } else {
       stepx3 = stepx * sizeof (CfbBits);
-      stepy3 = stepy * PSZB;
+      stepy3 = stepy * 3;
     }
 #else
     addrp = addr + (y1 * nwidth) + x1;
@@ -1436,11 +1473,17 @@ RROP_NAME(cfb8ClippedLine)(DrawablePtr pDrawable, GCPtr pGC, int x1, int y1,
 	while (len >= PGSZB)
 	{
 	    body body body body
+#if PGSZ == 64
+	    body body body body
+#endif
 	    len -= PGSZB;
 	}
 	switch (len)
 	{
-	case 3: body case 2: body case 1: body
+#if PGSZ == 64
+	case  7: body case 6: body case 5: body case 4: body
+#endif
+	case  3: body case 2: body case 1: body
 	}
 #undef body
     }
@@ -1475,10 +1518,16 @@ RROP_NAME(cfb8ClippedLine)(DrawablePtr pDrawable, GCPtr pGC, int x1, int y1,
 	while ((len -= PGSZB) >= 0)
 	{
 	    body body body body
+#if PGSZ == 64
+	    body body body body
+#endif
 	}
 	switch (len)
 	{
-	case -1: body case -2: body case -3: body
+	case  -1: body case -2: body case -3: body
+#if PGSZ == 64
+	case  -4: body case -5: body case -6: body case -7: body
+#endif
 	}
 #else /* !LARGE_INSTRUCTION_CACHE */
 	IMPORTANT_START;

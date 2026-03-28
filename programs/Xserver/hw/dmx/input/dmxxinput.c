@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxxinput.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxxinput.c,v 1.1 2004/06/30 20:21:44 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002-2003 Red Hat Inc., Durham, North Carolina.
  *
@@ -38,11 +45,11 @@
  */
 
 #define	 NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "inputstr.h"
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "XIstubs.h"
 
 #include "mipointer.h"

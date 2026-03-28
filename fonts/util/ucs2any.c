@@ -1,4 +1,11 @@
 /*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2003 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
@@ -10,9 +17,6 @@
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of The NetBSD Foundation nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -26,7 +30,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-/* $XFree86: xc/fonts/util/ucs2any.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/fonts/util/ucs2any.c,v 1.1 2003/09/21 10:54:14 herrb Exp $ */
 /*
  * This utility allows you to generate from an ISO10646-1 encoded
  * BDF font other BDF fonts in any possible encoding. This way, you can
@@ -512,7 +516,7 @@ main(int argc, char *argv[])
 	int i;
 	int j;
 	int *chars = NULL;
-	bbx_t bbx = {0, 0, 0, 0};
+	bbx_t bbx;
 	char *fout = NULL;
 	FILE *fout_fp;
 	int k;
@@ -624,10 +628,10 @@ main(int argc, char *argv[])
 				spacing_index = ++nextheader;
 				da_add_str(headers, spacing_index, NULL);
 			} else if ((nextc = startswith(l, "COMMENT")) != NULL) {
-				if (strncmp(nextc, "$XFree86: ", 10)==0) {
+				if (strncmp(nextc, "$Id: ", 5)==0) {
 					char *header = NULL;
 					char *id = NULL, *end = NULL;
-					id = zstrdup(nextc + 10);
+					id = zstrdup(nextc + 5);
 					end = strrchr(id, '$');
 					if (end) *end = '\0';
 					zstrcpy(&header, "COMMENT Derived from ");
@@ -888,8 +892,6 @@ main(int argc, char *argv[])
 		zstrcpy(&fout, t);
 
 		/* write new BDF file */
-		fprintf(stderr, "Writing %d characters into file '%s'.\n",
-			j, fout);
 		fout_fp = fopen(fout, "w");
 		if (fout_fp == NULL) {
 			fprintf(stderr, "%s: Can't write file '%s': %s!\n",

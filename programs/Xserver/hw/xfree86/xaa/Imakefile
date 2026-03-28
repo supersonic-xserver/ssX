@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xaa/Imakefile,v 3.44tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xaa/Imakefile,v 3.44 2004/06/01 00:17:07 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -84,9 +84,10 @@ SUBDIRS = lsb_first msb_first lsb_fixed msb_fixed
 
 DONES = lsb_first/DONE msb_first/DONE lsb_fixed/DONE msb_fixed/DONE
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(EXTINCSRC) \
            -I$(SERVERSRC)/cfb -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
-           -I$(SERVERSRC)/include -I$(SERVERSRC)/Xext -I$(SERVERSRC)/render
+	   -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(FONTINCSRC) \
+	   -I$(SERVERSRC)/Xext -I$(SERVERSRC)/render
 
 ModuleObjectRule()
 
@@ -103,8 +104,10 @@ InstallLibraryModule(xaa,$(MODULEDIR),.)
 
 DependTarget()
 
+
 ForceSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
+
 
 InstallDriverSDKLibraryModule(xaa,$(DRIVERSDKMODULEDIR),.)
 

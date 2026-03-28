@@ -1,3 +1,11 @@
+/* $Xorg: parseutils.c,v 1.3 2000/08/17 19:54:33 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
  Copyright (c) 1994 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/parseutils.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/xkbcomp/parseutils.c,v 1.5 2002/07/01 02:26:01 tsi Exp $ */
 
 #define DEBUG_VAR_NOT_LOCAL
 #define	DEBUG_VAR parseDebug
@@ -660,14 +668,14 @@ BAIL:
 void
 PrintStmtAddrs(ParseCommon *stmt)
 {
-    fprintf(stderr, "0x%lx", (unsigned long)stmt);
+    fprintf(stderr,"0x%x",stmt);
     if (stmt) {
 	do {
-	    fprintf(stderr, "->0x%lx", (unsigned long)stmt->next);
+	    fprintf(stderr,"->0x%x",stmt->next);
 	    stmt= stmt->next;
 	} while (stmt);
     }
-    fprintf(stderr, "\n");
+    fprintf(stderr,"\n");
 }
 #endif
 

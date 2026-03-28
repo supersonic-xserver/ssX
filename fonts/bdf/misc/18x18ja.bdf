@@ -4,7 +4,7 @@ COMMENT Japanese Industrial Standard, JIS X 9051-1984
 COMMENT padded with one pixel on all sides, plus JIS X 0212-1990 glyphs
 COMMENT designed by Koichi Yasuoka <yasuoka@kudpc.kyoto-u.ac.jp> et al.
 COMMENT Some Korean symbols derived from Daewoo's X11 font contribution.
-COMMENT $XFree86$
+COMMENT Id: 18x18ja.bdf,v 1.16 2000-06-19 11:32:33+01 mgk25 Exp mgk25 $
 COMMENT Send bug reports to Markus Kuhn <mkuhn@acm.org>
 FONT -Misc-Fixed-Medium-R-Normal-ja-18-120-100-100-C-180-ISO10646-1
 SIZE 12 100 100

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftsystem.c                                                             */
 /*                                                                         */
-/*    Unix-specific FreeType low-level system interface (body).            */
+/*    VMS-specific FreeType low-level system interface (body).             */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -17,7 +24,7 @@
 
 
 #include <ft2build.h>
-/* we use our special ftconfig.h file, not the standard one */
+  /* we use our special ftconfig.h file, not the standard one */
 #include <ftconfig.h>
 #include FT_INTERNAL_DEBUG_H
 #include FT_SYSTEM_H
@@ -48,8 +55,9 @@
 #else
   extern
 #endif
-  int  munmap( char*  addr,
-               int    len );
+  int
+  munmap( char*  addr,
+          int    len );
 
 #define MUNMAP_ARG_CAST  char *
 
@@ -91,9 +99,9 @@
   /* <Return>                                                              */
   /*    The address of newly allocated block.                              */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void*  ft_alloc( FT_Memory  memory,
-                   long       size )
+  FT_CALLBACK_DEF( void* )
+  ft_alloc( FT_Memory  memory,
+            long       size )
   {
     FT_UNUSED( memory );
 
@@ -121,11 +129,11 @@
   /* <Return>                                                              */
   /*    The address of the reallocated memory block.                       */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void*  ft_realloc( FT_Memory  memory,
-                     long       cur_size,
-                     long       new_size,
-                     void*      block )
+  FT_CALLBACK_DEF( void* )
+  ft_realloc( FT_Memory  memory,
+              long       cur_size,
+              long       new_size,
+              void*      block )
   {
     FT_UNUSED( memory );
     FT_UNUSED( cur_size );
@@ -143,13 +151,13 @@
   /*    The memory release function.                                       */
   /*                                                                       */
   /* <Input>                                                               */
-  /*    memory  :: A pointer to the memory object.                         */
+  /*    memory :: A pointer to the memory object.                          */
   /*                                                                       */
-  /*    block   :: The address of block in memory to be freed.             */
+  /*    block  :: The address of block in memory to be freed.              */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void  ft_free( FT_Memory  memory,
-                 void*      block )
+  FT_CALLBACK_DEF( void )
+  ft_free( FT_Memory  memory,
+           void*      block )
   {
     FT_UNUSED( memory );
 
@@ -189,8 +197,8 @@
   /* <Input>                                                               */
   /*    stream :: A pointer to the stream object.                          */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void  ft_close_stream( FT_Stream  stream )
+  FT_CALLBACK_DEF( void )
+  ft_close_stream( FT_Stream  stream )
   {
     munmap( (MUNMAP_ARG_CAST)stream->descriptor.pointer, stream->size );
 
@@ -202,8 +210,9 @@
 
   /* documentation is in ftobjs.h */
 
-  FT_EXPORT_DEF( FT_Error )  FT_New_Stream( const char*  filepathname,
-                                            FT_Stream    stream )
+  FT_EXPORT_DEF( FT_Error )
+  FT_Stream_Open( FT_Stream    stream,
+                  const char*  filepathname )
   {
     int          file;
     struct stat  stat_buf;
@@ -216,14 +225,14 @@
     file = open( filepathname, O_RDONLY );
     if ( file < 0 )
     {
-      FT_ERROR(( "FT_New_Stream:" ));
+      FT_ERROR(( "FT_Stream_Open:" ));
       FT_ERROR(( " could not open `%s'\n", filepathname ));
       return FT_Err_Cannot_Open_Resource;
     }
 
     if ( fstat( file, &stat_buf ) < 0 )
     {
-      FT_ERROR(( "FT_New_Stream:" ));
+      FT_ERROR(( "FT_Stream_Open:" ));
       FT_ERROR(( " could not `fstat' file `%s'\n", filepathname ));
       goto Fail_Map;
     }
@@ -239,7 +248,7 @@
 
     if ( (long)stream->base == -1 )
     {
-      FT_ERROR(( "FT_New_Stream:" ));
+      FT_ERROR(( "FT_Stream_Open:" ));
       FT_ERROR(( " could not `mmap' file `%s'\n", filepathname ));
       goto Fail_Map;
     }
@@ -252,7 +261,7 @@
     stream->close = ft_close_stream;
     stream->read  = 0;
 
-    FT_TRACE1(( "FT_New_Stream:" ));
+    FT_TRACE1(( "FT_Stream_Open:" ));
     FT_TRACE1(( " opened `%s' (%d bytes) successfully\n",
                 filepathname, stream->size ));
 
@@ -269,9 +278,21 @@
   }
 
 
+#ifdef FT_DEBUG_MEMORY
+
+  extern FT_Int
+  ft_mem_debug_init( FT_Memory  memory );
+
+  extern void
+  ft_mem_debug_done( FT_Memory  memory );
+
+#endif
+
+
   /* documentation is in ftobjs.h */
 
-  FT_EXPORT_DEF( FT_Memory )  FT_New_Memory( void )
+  FT_EXPORT_DEF( FT_Memory )
+  FT_New_Memory( void )
   {
     FT_Memory  memory;
 
@@ -283,6 +304,9 @@
       memory->alloc   = ft_alloc;
       memory->realloc = ft_realloc;
       memory->free    = ft_free;
+#ifdef FT_DEBUG_MEMORY
+      ft_mem_debug_init( memory );
+#endif
     }
 
     return memory;
@@ -291,8 +315,12 @@
 
   /* documentation is in ftobjs.h */
 
-  FT_EXPORT_DEF( void )  FT_Done_Memory( FT_Memory  memory )
+  FT_EXPORT_DEF( void )
+  FT_Done_Memory( FT_Memory  memory )
   {
+#ifdef FT_DEBUG_MEMORY
+    ft_mem_debug_done( memory );
+#endif
     memory->free( memory, memory );
   }
 

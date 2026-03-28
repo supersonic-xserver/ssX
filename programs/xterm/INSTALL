@@ -1,5 +1,5 @@
--- $XTermId: INSTALL,v 1.104 2006/02/12 22:43:56 tom Exp $
--- $XFree86: xc/programs/xterm/INSTALL,v 3.41 2006/01/04 02:10:17 dickey Exp $
+-- $XTermId: INSTALL,v 1.79 2005/01/09 16:20:01 tom Exp $
+-- $XFree86: xc/programs/xterm/INSTALL,v 3.37 2005/01/14 01:50:02 dickey Exp $
 -- Thomas E. Dickey
 
 Xterm is normally built as part of the X Window System source tree, using
@@ -160,12 +160,6 @@ The options (in alphabetic order):
 	type.  If you do not need input method (and are troubled by the
 	warning messages), it is safe to disable this option.
 
-  --disable-leaks         test: set to test memory leaks
-
-  	Compile-in code which frees memory which might confuse a leak-testing
-	tool.  Normally these chunks of memory are retained as long as xterm
-	is running.
-
   --disable-maximize      disable actions for iconify/deiconify/maximize/restore
 
 	Do not compile-in code that implements runtime 'actions' for
@@ -190,11 +184,6 @@ The options (in alphabetic order):
 	This feature is used to ensure that the child process's terminal modes
 	match the parent's.  In particular, it addresses a problem where the
 	terminal size is not defined in the stty settings.
-
-  --disable-regex         disable regular-expression selections
-
-	Do not compile-in code to support the "regex" option for multiple
-	mouse clicks.
 
   --disable-rightbar      disable right-scrollbar support
 
@@ -275,7 +264,7 @@ The options (in alphabetic order):
 	translation.
 
   --enable-dec-locator    enable DECterm Locator support
-	Add support for DEC Locator control sequences for xterm:
+	Add support for for DEC Locator control sequences for xterm:
 
 		DECEFR - Enable Filter Rectangle
 	        DECELR - Enable Locator Reports
@@ -321,40 +310,6 @@ The options (in alphabetic order):
 
 	This sets "--enable-luit" as a side-effect.
 
-  --enable-narrowproto    enable narrow prototypes for X libraries
-
-	Originally xterm was built using imake rather than a configure script. 
-	One feature of imake that is not possible to guess within the
-	configure script is the wide-prototype compile-time definition
-	NARROWPROTO.  When this is not set properly, the Athena widget
-	scrollbars do not work properly.  xterm's configure script has a
-	fallback case which allows disabling imake.  However, this is moot
-	with the X.org "modular" build, whose compiler options are unrelated to
-	imake or older versions of any libraries that it may distribute.  In
-	this case, the configure script needs some help.  Use this option to
-	enable or disable NARROW proto (and disable imake with the
-	--disable-imake option) to match the whims of X.org hackers.
-
-	For instance
-
-		configure --disable-imake --disable-narrowproto
-
-  --enable-paste64        enable support for bracketed paste mode
-
-	Compile-in code to support experimental bracketed paste mode, i.e.,
-	provide functions for setting/getting the selection data.
-
-	(see ctlseqs.ms description of OSC 52).
-
-  --enable-readline-mouse enable support for mouse in readline applications
-
-	Compile-in code to support experimental bracketed paste mode, i.e.,
-	provide functions for setting/getting the selection data.  Essentially
-	this puts xterm into a mode that sends special function-key strings to
-	bracket the data.
-
-	(See --enable-paste64, which fits xterm's protocol better).
-
   --enable-sco-fkeys      enable support for SCO-style function keys
 
   	Compile-in code to support SCO-style function keys.
@@ -370,15 +325,6 @@ The options (in alphabetic order):
 
   	Compile-in code that builds a toolbar with pulldown menus.  The
 	normal popup menus are still available.
-
-	This is an experimental option.  As of patch #206, it is known to
-	work well with fvwm, but not as well with some other window managers,
-	e.g., KDE's Kwin and IceWM.
-
-	In addition to isolated layout problems, it is reported that some
-	flavors of the Athena widget library perform badly with ISO-10646
-	fonts.  You can work around those by setting the menu fonts to
-	an ISO-8859 variant in your X resources.
 
   --enable-trace          test: set to enable debugging traces
 
@@ -413,28 +359,6 @@ The options (in alphabetic order):
 
   	Look for, compile and link with the Xaw Plus widget library.
 
-  --with-app-defaults=DIR directory in which to install resource files (default: EPREFIX/lib/X11/app-defaults)
-
-	autoconf scripts assume that all of the files should be installed
-	under the same top-level directory.  But X applications defaults
-	must be installed into a special directory, e.g.,
-
-		/usr/X11/lib/app-defaults
-
-	However, there is no standard for this pathname.  The manual page
-	for X notes that the environment variable $XUSERFILESEARCHPATH can
-	specify a list of places where X searches for applications defaults.
-	Also, it may look in $XAPPLRESDIR, but that usually is not related
-	to where xterm might be installed.  To keep it simple, the configure
-	script uses
-
-		EPREFIX/lib/X11/app-defaults
-
-	as the default (EPREFIX is --prefix).  That makes it work normally
-	for most systems if --prefix is /usr.  For other installs, e.g., to
-	/usr/local, you should use this option to customize the location to
-	match your system configuration.
-
   --with-freetype-cflags  -D/-I options for compiling with FreeType library
 
 	Override options provided by xft-config or freetype-config.
@@ -461,58 +385,7 @@ The options (in alphabetic order):
 	workable terminfo description.  Be advised, however, that the
 	common variety of "xterm-color" is not suited for xterm, but is
 	directed to other variations (such as nxterm) which do not
-	support the background-color erase capability.
-
-  --with-pcre             use PCRE for regular-expressions
-
-	If regular expressions are not disable (--disable-regex), use PCRE
-	rather than the POSIX regular expressions.
-
-  --with-reference=XXX    program to use as permissions-reference
-
-	To install xterm with setuid permissions, the scripts usually compare
-	it with a previous install.  That works well for individual
-	maintainers, but can be a problem for packagers who may be
-	cross-compiling, etc.  This option lets the package builder specify
-	the file used for permissions reference.
-
-  --with-setuid=XXX       use the given setuid user
-
-	Install xterm setuid'd to the given user.  If no parameter value
-	is given, assume it is root.
-
-	See also --with-utmp-setgid and --with-utempter, which manipulate
-	the setgid group.
-
-  --with-tty-group=XXX    use XXX for the tty-group
-
-	If xterm is installed setuid'd to root, change the group of the tty
-	device to the given value on startup.  Three cases are possible:
-	
-	a) If this option is not given, the configure script will attempt to
-	   find a suitable value (usually "tty"), and verify that it exists in
-	   the group database.
-
-	b) If the option value is given, it will use the value even if it does
-	   not exist in the group database (allowing packagers to work about
-	   deficient environments).
-
-	c) If the option is disabled, e.g., --without-tty-group, the
-	   permissions change will use the group-id of the process.
-
-	If xterm is not installed setuid'd to root, this option is not needed,
-	since it cannot change the tty device's ownership.
-
-  --with-xterm-symlink=XXX  make symbolic link to installed xterm
-
-	If any of the configure options to modify the program name i.e.,
-	--program-prefix, --program-suffix or --program-transform-name
-	are given, this option allows the makefile to create a symbolic link,
-	e.g., to "xterm" on install.  The option value gives the name for
-	the link, which defaults to "xterm".
-
-	Use --without-xterm-symlink to disable a link to "xterm" if none
-	is wanted.
+	support the back-color erase capability.
 
   --with-terminal-id[=V]  set default decTerminalID (default: vt100)
 
@@ -544,12 +417,3 @@ The options (in alphabetic order):
 	The utempter library is a set-uid wrapper for the utmp facility.
 	On systems with Unix98 pty's, xterm can use this library when
 	available so it need not be installed set-uid.
-
-  --with-utmp-setgid      use setgid for access to utmp
-
-	The option value specifies a group to use when installing.
-	xterm will be installed with setgid privilege to this group.
-	At runtime, xterm will drop the setuid privilege immediately
-	after opening the pseudo-terminal, and will have only the
-	group privilege needed to access the utmp file.  This relies
-	on having POSIX setuid behavior.

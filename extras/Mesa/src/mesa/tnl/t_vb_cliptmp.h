@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -122,7 +129,7 @@ TAG(clip_line)( GLcontext *ctx, GLuint i, GLuint j, GLubyte mask )
 {
    TNLcontext *tnl = TNL_CONTEXT(ctx);
    struct vertex_buffer *VB = &tnl->vb;
-   interp_func interp = tnl->Driver.Render.Interp;
+   tnl_interp_func interp = tnl->Driver.Render.Interp;
    GLfloat (*coord)[4] = VB->ClipPtr->data;
    GLuint ii = i, jj = j, p;
 
@@ -163,7 +170,7 @@ TAG(clip_tri)( GLcontext *ctx, GLuint v0, GLuint v1, GLuint v2, GLubyte mask )
 {
    TNLcontext *tnl = TNL_CONTEXT(ctx);
    struct vertex_buffer *VB = &tnl->vb;
-   interp_func interp = tnl->Driver.Render.Interp;
+   tnl_interp_func interp = tnl->Driver.Render.Interp;
    GLfloat (*coord)[4] = VB->ClipPtr->data;
    GLuint pv = v2;
    GLuint vlist[2][MAX_CLIPPED_VERTICES];
@@ -216,7 +223,7 @@ TAG(clip_quad)( GLcontext *ctx, GLuint v0, GLuint v1, GLuint v2, GLuint v3,
 {
    TNLcontext *tnl = TNL_CONTEXT(ctx);
    struct vertex_buffer *VB = &tnl->vb;
-   interp_func interp = tnl->Driver.Render.Interp;
+   tnl_interp_func interp = tnl->Driver.Render.Interp;
    GLfloat (*coord)[4] = VB->ClipPtr->data;
    GLuint pv = v3;
    GLuint vlist[2][MAX_CLIPPED_VERTICES];

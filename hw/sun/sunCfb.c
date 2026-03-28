@@ -1,7 +1,11 @@
-
-/* $Xorg: sunCfb.c,v 1.5 2001/02/09 02:04:43 xorgcvs Exp $ */
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1990, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -36,11 +40,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -54,7 +58,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.15 2003/10/07 21:43:09 herrb Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.18 2007/01/02 01:24:12 tsi Exp $ */
 
 /*
  * Copyright 1987 by the Regents of the University of California
@@ -73,43 +77,28 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* Modified from  sunCG4C.c for X11R3 by Tom Jarmolowski	*/
 /****************************************************************/
 
-/*
+/* 
  * Copyright 1991, 1992, 1993 Kaleb S. Keithley
  *
  * Permission to use, copy, modify, and distribute this
  * software and its documentation for any purpose and without
  * fee is hereby granted, provided that the above copyright
- * notice appear in all copies.  Kaleb S. Keithley makes no
- * representations about the suitability of this software for
- * any purpose.  It is provided "as is" without express or
+ * notice appear in all copies.  Kaleb S. Keithley makes no 
+ * representations about the suitability of this software for 
+ * any purpose.  It is provided "as is" without express or 
  * implied warranty.
  */
 
 #include "sun.h"
-#include "fb.h"
-#include "miline.h"
+#include "cfb/cfb.h"
+#include "mi/miline.h"
 
 #define GXZEROLINEBIAS	(OCTANT1 | OCTANT3 | OCTANT4 | OCTANT6)
 
-static void CGUpdateColormap(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-static void CGGetColormap(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-static void CGStoreColors(ColormapPtr, int, xColorItem *);
-static void CGSaveColormap(ScreenPtr);
-static void CGRestoreColormap(ScreenPtr);
-static void CGScreenInitCommon(ScreenPtr);
-static void CGScreenInit(ScreenPtr);
-static void checkMono(void);
-#ifdef INCLUDE_CG2_HEADER
-static void CG2UpdateColormap(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-static void CG2GetColormap(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-static void CG2RestoreColormap(ScreenPtr);
-static Bool CG2SaveScreen(ScreenPtr, int);
-static void CG2ScreenInit(ScreenPtr pScreen);
-#endif
-static void CG4Switch(ScreenPtr, int);
-
-static void
-CGUpdateColormap(ScreenPtr pScreen, int dex, int count, u_char *rmap, u_char *gmap, u_char *bmap)
+static void CGUpdateColormap(pScreen, dex, count, rmap, gmap, bmap)
+    ScreenPtr	pScreen;
+    int		dex, count;
+    u_char	*rmap, *gmap, *bmap;
 {
     struct fbcmap sunCmap;
 
@@ -120,13 +109,15 @@ CGUpdateColormap(ScreenPtr pScreen, int dex, int count, u_char *rmap, u_char *gm
     sunCmap.blue = &bmap[dex];
 
     if (ioctl(sunFbs[pScreen->myNum].fd, FBIOPUTCMAP, &sunCmap) < 0) {
-	ErrorF("CGUpdateColormap\n");
+	Error("CGUpdateColormap");
 	FatalError( "CGUpdateColormap: FBIOPUTCMAP failed\n" );
     }
 }
 
-static void
-CGGetColormap(ScreenPtr pScreen, int dex, int count, u_char *rmap, u_char *gmap, u_char *bmap)
+static void CGGetColormap(pScreen, dex, count, rmap, gmap, bmap)
+    ScreenPtr	pScreen;
+    int		dex, count;
+    u_char	*rmap, *gmap, *bmap;
 {
     struct fbcmap sunCmap;
 
@@ -137,15 +128,15 @@ CGGetColormap(ScreenPtr pScreen, int dex, int count, u_char *rmap, u_char *gmap,
     sunCmap.blue = &bmap[dex];
 
     if (ioctl(sunFbs[pScreen->myNum].fd, FBIOGETCMAP, &sunCmap) < 0) {
-	ErrorF("CGGetColormap\n");
+	Error("CGGetColormap");
 	FatalError( "CGGetColormap: FBIOGETCMAP failed\n" );
     }
 }
 
-void
-sunInstallColormap(ColormapPtr cmap)
+void sunInstallColormap(cmap)
+    ColormapPtr	cmap;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(cmap->pScreen);
+    SetupScreen(cmap->pScreen);
     register int i;
     register Entry *pent;
     register VisualPtr pVisual = cmap->pVisual;
@@ -157,7 +148,7 @@ sunInstallColormap(ColormapPtr cmap)
 	return;
     if (pPrivate->installedMap)
 	WalkTree(pPrivate->installedMap->pScreen, TellLostMap,
-		 (void *) &(pPrivate->installedMap->mid));
+		 (pointer) &(pPrivate->installedMap->mid));
     if ((pVisual->class | DynamicClass) == DirectColor) {
 	if (pVisual->ColormapEntries < 256) {
 	    rMask = pVisual->redMask;
@@ -194,20 +185,19 @@ sunInstallColormap(ColormapPtr cmap)
     }
     pPrivate->installedMap = cmap;
     (*pPrivate->UpdateColormap) (cmap->pScreen, 0, 256, rmap, gmap, bmap);
-    WalkTree(cmap->pScreen, TellGainedMap, (void *) &(cmap->mid));
+    WalkTree(cmap->pScreen, TellGainedMap, (pointer) &(cmap->mid));
 }
 
-void
-sunUninstallColormap(ColormapPtr cmap)
+void sunUninstallColormap(cmap)
+    ColormapPtr	cmap;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(cmap->pScreen);
+    SetupScreen(cmap->pScreen);
     if (cmap == pPrivate->installedMap) {
 	Colormap defMapID = cmap->pScreen->defColormap;
 
 	if (cmap->mid != defMapID) {
-	    ColormapPtr defMap;
-	    dixLookupResourceByType((void **)&defMap, defMapID, RT_COLORMAP,
-				    serverClient, DixUseAccess);
+	    ColormapPtr defMap = (ColormapPtr) LookupIDByType(defMapID,
+							      RT_COLORMAP);
 
 	    if (defMap)
 		(*cmap->pScreen->InstallColormap)(defMap);
@@ -217,18 +207,21 @@ sunUninstallColormap(ColormapPtr cmap)
     }
 }
 
-int
-sunListInstalledColormaps(ScreenPtr pScreen, Colormap *pCmapList)
+int sunListInstalledColormaps(pScreen, pCmapList)
+    ScreenPtr	pScreen;
+    Colormap	*pCmapList;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
+    SetupScreen(pScreen);
     *pCmapList = pPrivate->installedMap->mid;
     return (1);
 }
 
-static void
-CGStoreColors(ColormapPtr pmap, int ndef, xColorItem *pdefs)
+static void CGStoreColors(pmap, ndef, pdefs)
+    ColormapPtr	pmap;
+    int		ndef;
+    xColorItem	*pdefs;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pmap->pScreen);
+    SetupScreen(pmap->pScreen);
     u_char	rmap[256], gmap[256], bmap[256];
     xColorItem	expanddefs[256];
     register int i;
@@ -236,7 +229,7 @@ CGStoreColors(ColormapPtr pmap, int ndef, xColorItem *pdefs)
     if (pPrivate->installedMap != NULL && pPrivate->installedMap != pmap)
 	return;
     if ((pmap->pVisual->class | DynamicClass) == DirectColor) {
-	ndef = fbExpandDirectColors(pmap, ndef, pdefs, expanddefs);
+	ndef = cfbExpandDirectColors(pmap, ndef, pdefs, expanddefs);
 	pdefs = expanddefs;
     }
     while (ndef--) {
@@ -249,75 +242,39 @@ CGStoreColors(ColormapPtr pmap, int ndef, xColorItem *pdefs)
     }
 }
 
-static void
-CGSaveColormap(ScreenPtr pScreen)
+static void CGScreenInit (pScreen)
+    ScreenPtr	pScreen;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
-    sunCmapPtr origColormap;
-    u_char *rmap, *gmap, *bmap;
-
-    origColormap = &pPrivate->origColormap;
-    rmap = origColormap->origRed;
-    gmap = origColormap->origGreen;
-    bmap = origColormap->origBlue;
-    (*pPrivate->GetColormap)(pScreen, 0, NCMAP, rmap, gmap, bmap);
-}
-
-static void
-CGRestoreColormap(ScreenPtr pScreen)
-{
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
-    sunCmapPtr origColormap;
-    u_char *rmap, *gmap, *bmap;
-
-    if (pPrivate->origColormapValid) {
-	origColormap = &pPrivate->origColormap;
-	rmap = origColormap->origRed;
-	gmap = origColormap->origGreen;
-	bmap = origColormap->origBlue;
-	(*pPrivate->UpdateColormap)(pScreen, 0, NCMAP, rmap, gmap, bmap);
-    }
-}
-
-static void
-CGScreenInitCommon(ScreenPtr pScreen)
-{
+#ifndef STATIC_COLOR /* { */
+    SetupScreen (pScreen);
     pScreen->InstallColormap = sunInstallColormap;
     pScreen->UninstallColormap = sunUninstallColormap;
     pScreen->ListInstalledColormaps = sunListInstalledColormaps;
     pScreen->StoreColors = CGStoreColors;
+    pPrivate->UpdateColormap = CGUpdateColormap;
+    pPrivate->GetColormap = CGGetColormap;
     if (sunFlipPixels) {
 	Pixel pixel = pScreen->whitePixel;
 	pScreen->whitePixel = pScreen->blackPixel;
 	pScreen->blackPixel = pixel;
     }
+#endif /* } */
 }
 
-static void
-CGScreenInit(ScreenPtr pScreen)
+static void checkMono (argc, argv)
+    int argc;
+    const char** argv;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
+    int i;
 
-    CGScreenInitCommon(pScreen);
-    pPrivate->UpdateColormap = CGUpdateColormap;
-    pPrivate->GetColormap = CGGetColormap;
-    pPrivate->RestoreColormap = CGRestoreColormap;
-
-    CGSaveColormap(pScreen);
-    pPrivate->origColormapValid = TRUE;
-}
-
-static void
-checkMono(void)
-{
-
-    if (sunForceMono)
-	ErrorF("-mono not appropriate for CG3/CG4/CG6\n");
+    for (i = 1; i < argc; i++)
+	if (strcmp (argv[i], "-mono") == 0)
+	    ErrorF ("-mono not appropriate for CG3/CG4/CG6\n");
 }
 
 /*
  * CG3_MMAP_OFFSET is #defined in <pixrect/cg3var.h> or <sys/cg3var.h>
- * on  SunOS and Solaris respectively.  Under Solaris, cg3var.h
+ * on  SunOS and Solaris respectively.  Under Solaris, cg3var.h 
  * #includes a non-existent file, and causes the make to abort.  Other
  * systems may not have cg3var.h at all.  Since all cg3var.h is needed
  * for is this one #define, we'll just #define it here and let it go at that.
@@ -325,36 +282,30 @@ checkMono(void)
 
 #define CG3_MMAP_OFFSET 0x04000000
 
-Bool
-sunCG3Init(
-    ScreenPtr	  pScreen,  	/* The Screen to initialize */
-    int	    	  argc,	    	/* The number of the Server's arguments. */
-    char    	  **argv   	/* The arguments themselves. Don't change! */
-)
+Bool sunCG3Init (screen, pScreen, argc, argv)
+    int	    	  screen;    	/* what screen am I going to be */
+    ScreenPtr	  pScreen;  	/* The Screen to initialize */
+    int	    	  argc;	    	/* The number of the Server's arguments. */
+    const char    **argv;   	/* The arguments themselves. Don't change! */
 {
-    int	screen = pScreen->myNum;
-
-    checkMono();
-    sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
+    checkMono (argc, argv);
+    sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     return sunInitCommon (screen, pScreen, (off_t) CG3_MMAP_OFFSET,
 	sunCfbScreenInit, CGScreenInit,
-	fbCreateDefColormap, sunSaveScreen, 0);
+	cfbCreateDefColormap, sunSaveScreen, 0);
 }
 
-Bool
-sunTCXInit(
-    ScreenPtr	  pScreen,  	/* The Screen to initialize */
-    int	    	  argc,	    	/* The number of the Server's arguments. */
-    char    	  **argv   	/* The arguments themselves. Don't change! */
-)
+Bool sunTCXInit (screen, pScreen, argc, argv)
+    int	    	  screen;    	/* what screen am I going to be */
+    ScreenPtr	  pScreen;  	/* The Screen to initialize */
+    int	    	  argc;	    	/* The number of the Server's arguments. */
+    const char    **argv;   	/* The arguments themselves. Don't change! */
 {
-    int	screen = pScreen->myNum;
-
-    checkMono();
-    sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
+    checkMono (argc, argv);
+    sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     return sunInitCommon (screen, pScreen, (off_t) 0,
 	sunCfbScreenInit, CGScreenInit,
-	fbCreateDefColormap, sunSaveScreen, 0);
+	cfbCreateDefColormap, sunSaveScreen, 0);
 }
 
 #if !defined(i386) /* { */
@@ -377,14 +328,16 @@ sunTCXInit(
 #endif /* } */
 #endif /* } */
 
-#ifdef INCLUDE_CG2_HEADER
+#if defined(INCLUDE_CG2_HEADER) || !defined(SVR4)
 typedef struct {
     struct cg2memfb	mem;
     struct cg2fb 	regs;
 } *CG2Ptr;
 
-static void
-CG2UpdateColormap(ScreenPtr pScreen, int index, int count, u_char *rmap, u_char *gmap, u_char *bmap)
+static void CG2UpdateColormap(pScreen, index, count, rmap, gmap,bmap)
+    ScreenPtr	pScreen;
+    int		  index, count;
+    u_char	  *rmap, *gmap, *bmap;
 {
     CG2Ptr	fb = (CG2Ptr) sunFbs[pScreen->myNum].fb;
     volatile struct cg2statusreg *regp = &fb->regs.status.reg;
@@ -399,8 +352,10 @@ CG2UpdateColormap(ScreenPtr pScreen, int index, int count, u_char *rmap, u_char 
     regp->update_cmap = 1;
 }
 
-static void
-CG2GetColormap(ScreenPtr pScreen, int index, int count, u_char *rmap, u_char *gmap, u_char *bmap)
+static void CG2GetColormap(pScreen, index, count, rmap, gmap,bmap)
+    ScreenPtr	pScreen;
+    int		  index, count;
+    u_char	  *rmap, *gmap, *bmap;
 {
     CG2Ptr	fb = (CG2Ptr) sunFbs[pScreen->myNum].fb;
 
@@ -413,17 +368,9 @@ CG2GetColormap(ScreenPtr pScreen, int index, int count, u_char *rmap, u_char *gm
     }
 }
 
-static void
-CG2RestoreColormap(ScreenPtr pScreen)
-{
-    int screen = pScreen->myNum;
-
-    CGRestoreColormap(pScreen);
-    ((CG2Ptr)sunFbs[screen].fb)->regs.ppmask.reg = 1;
-}
-
-static Bool
-CG2SaveScreen(ScreenPtr pScreen, int on)
+static Bool CG2SaveScreen (pScreen, on)
+    ScreenPtr	  pScreen;
+    int    	  on;
 {
     CG2Ptr	fb = (CG2Ptr) sunFbs[pScreen->myNum].fb;
     volatile struct cg2statusreg *regp = &fb->regs.status.reg;
@@ -433,54 +380,52 @@ CG2SaveScreen(ScreenPtr pScreen, int on)
     return TRUE;
 }
 
-static void
-CG2ScreenInit(ScreenPtr pScreen)
+static void CG2ScreenInit (pScreen)
+    ScreenPtr	pScreen;
 {
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
-
-    CGScreenInitCommon(pScreen);
+    SetupScreen (pScreen);
+    CGScreenInit (pScreen);
     pPrivate->UpdateColormap = CG2UpdateColormap;
     pPrivate->GetColormap = CG2GetColormap;
-    pPrivate->RestoreColormap = CG2RestoreColormap;
-
-    CGSaveColormap(pScreen);
-    pPrivate->origColormapValid = TRUE;
 }
 
-Bool
-sunCG2Init(
-    ScreenPtr	pScreen,  	/* The Screen to initialize */
-    int		argc,	    	/* The number of the Server's arguments. */
-    char**	argv	   	/* The arguments themselves. Don't change! */
-)
+Bool sunCG2Init (screen, pScreen, argc, argv)
+    int		screen;    	/* what screen am I going to be */
+    ScreenPtr	pScreen;  	/* The Screen to initialize */
+    int		argc;	    	/* The number of the Server's arguments. */
+    const char**argv;   	/* The arguments themselves. Don't change! */
 {
-    int 	screen = pScreen->myNum;
+    int		i;
     Bool	ret;
+    Bool	mono = FALSE;
 
-    sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
+    for (i = 1; i < argc; i++)
+	if (strcmp (argv[i], "-mono") == 0)
+	    mono = TRUE;
+
+    sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     pScreen->SaveScreen = CG2SaveScreen;
 #ifndef LOWMEMFTPT
-    if (sunForceMono) {
+    if (mono) {
 	pScreen->whitePixel = 0;
 	pScreen->blackPixel = 1;
-	sunFbs[screen].info.fb_depth = 1;
 	ret = sunInitCommon (screen, pScreen, (off_t) 0,
-			fbScreenInit, NULL,
-			fbCreateDefColormap, CG2SaveScreen, 0);
+			mfbScreenInit, NULL,
+			mfbCreateDefColormap, CG2SaveScreen, 0);
 	((CG2Ptr) sunFbs[screen].fb)->regs.ppmask.reg = 1;
     } else {
 #endif /* ifndef LOWMEMFTPT */
 	ret = sunInitCommon (screen, pScreen, (off_t) 0,
 			sunCfbScreenInit, CG2ScreenInit,
-			fbCreateDefColormap, CG2SaveScreen,
-			offsetof(struct cg2memfb, pixplane));
+			cfbCreateDefColormap, CG2SaveScreen,
+			(int) &((struct cg2memfb *) 0)->pixplane);
 	((CG2Ptr) sunFbs[screen].fb)->regs.ppmask.reg = 0xFF;
 #ifndef LOWMEMFTPT
     }
 #endif /* ifndef LOWMEMFTPT */
     return ret;
 }
-#endif /* INCLUDE_CG2_HEADER */
+#endif /* INCLUDE_CG2_HEADER || !SVR4 */
 
 #define	CG4_HEIGHT	900
 #define	CG4_WIDTH	1152
@@ -491,33 +436,31 @@ typedef struct {
     u_char mpixel[CG4_MELEN];		/* bit-per-pixel memory */
     u_char epixel[CG4_MELEN];		/* enable plane */
     u_char cpixel[CG4_HEIGHT][CG4_WIDTH];	/* byte-per-pixel memory */
-} *CG4Ptr, CG4Rec;
+} *CG4Ptr;
 
-static void
-CG4Switch(ScreenPtr pScreen, int select)
+static void CG4Switch (pScreen, select)
+    ScreenPtr	pScreen;
+    int		select;
 {
     CG4Ptr	fb = (CG4Ptr) sunFbs[pScreen->myNum].fb;
 
     (void) memset ((char *)fb->epixel, select ? ~0 : 0, CG4_MELEN);
 }
 
-Bool
-sunCG4Init(
-    ScreenPtr	pScreen,  	/* The Screen to initialize */
-    int		argc,	    	/* The number of the Server's arguments. */
-    char**	argv    	/* The arguments themselves. Don't change! */
-)
+Bool sunCG4Init (screen, pScreen, argc, argv)
+    int		screen;    	/* what screen am I going to be */
+    ScreenPtr	pScreen;  	/* The Screen to initialize */
+    int		argc;	    	/* The number of the Server's arguments. */
+    const char**argv;   	/* The arguments themselves. Don't change! */
 {
-    int screen = pScreen->myNum;
-
-    checkMono();
+    checkMono (argc, argv);
     if (sunCG4Frob)
-	sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
+	sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     else
 	sunFbs[screen].EnterLeave = CG4Switch;
     return sunInitCommon (screen, pScreen, (off_t) 0,
 	sunCfbScreenInit, CGScreenInit,
-	fbCreateDefColormap, sunSaveScreen, offsetof(CG4Rec, cpixel));
+	cfbCreateDefColormap, sunSaveScreen, (int) ((CG4Ptr) 0)->cpixel);
 }
 
 #ifdef FBTYPE_SUNFAST_COLOR /* { */
@@ -525,17 +468,15 @@ sunCG4Init(
 #define CG6_MMAP_OFFSET 0x70000000
 #define CG6_IMAGE_OFFSET 0x16000
 
-Bool
-sunCG6Init(
-    ScreenPtr	pScreen,  	/* The Screen to initialize */
-    int		argc,	    	/* The number of the Server's arguments. */
-    char**	argv	   	/* The arguments themselves. Don't change! */
-)
+Bool sunCG6Init (screen, pScreen, argc, argv)
+    int		screen;    	/* The index of pScreen in the ScreenInfo */
+    ScreenPtr	pScreen;  	/* The Screen to initialize */
+    int		argc;	    	/* The number of the Server's arguments. */
+    const char**argv;   	/* The arguments themselves. Don't change! */
 {
-    void *fb;
-    int screen = pScreen->myNum;
+    pointer	fb;
 
-    checkMono();
+    checkMono (argc, argv);
     if (!sunScreenAllocate (pScreen))
 	return FALSE;
     if (!sunFbs[screen].fb) {
@@ -543,45 +484,44 @@ sunCG6Init(
 #define FBSIZE (size_t) sunFbs[screen].info.fb_width * \
 			sunFbs[screen].info.fb_height + CG6_IMAGE_OFFSET
 	if ((fb = sunMemoryMap (FBSIZE,
-			     (off_t) CG6_MMAP_OFFSET,
+			     (off_t) CG6_MMAP_OFFSET, 
 			     sunFbs[screen].fd)) == NULL)
 	    return FALSE;
 	sunFbs[screen].fb = fb;
 #undef FBSIZE
     }
-    sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
-    if (!sunCfbSetupScreen (pScreen,
+    sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
+    if (!sunCfbSetupScreen (pScreen, 
 	    sunFbs[screen].fb + CG6_IMAGE_OFFSET,
-	    sunFbs[screen].info.fb_width,
+	    sunFbs[screen].info.fb_width, 
 	    sunFbs[screen].info.fb_height,
-	    monitorResolution, monitorResolution,
+	    monitorResolution, monitorResolution, 
 	    sunFbs[screen].info.fb_width,
 	    sunFbs[screen].info.fb_depth))
 	return FALSE;
 #ifndef LOWMEMFTPT
-#if 0 /* XXX no GX support for now */
     if (sunNoGX == FALSE) {
 	if (!sunGXInit (pScreen, &sunFbs[screen]))
 	    return FALSE;
     }
-#endif
 #endif /* ifndef LOWMEMFTPT */
     if (!sunCfbFinishScreenInit(pScreen,
 	    sunFbs[screen].fb + CG6_IMAGE_OFFSET,
-	    sunFbs[screen].info.fb_width,
+	    sunFbs[screen].info.fb_width, 
 	    sunFbs[screen].info.fb_height,
-	    monitorResolution, monitorResolution,
+	    monitorResolution, monitorResolution, 
 	    sunFbs[screen].info.fb_width,
 	    sunFbs[screen].info.fb_depth))
 	return FALSE;
     if (sunNoGX == FALSE) {
 	miSetZeroLineBias(pScreen, GXZEROLINEBIAS);
     }
+    miInitializeBackingStore(pScreen);
     CGScreenInit (pScreen);
     if (!sunScreenInit (pScreen))
 	return FALSE;
     sunSaveScreen (pScreen, SCREEN_SAVER_OFF);
-    return fbCreateDefColormap(pScreen);
+    return cfbCreateDefColormap(pScreen);
 }
 #endif /* } */
 #endif /* } */

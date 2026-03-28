@@ -1,3 +1,19 @@
+/* $Xorg: Simple.h,v 1.4 2001/02/09 02:03:45 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Simple.h,v 1.11 2006/01/25 04:32:09 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Simple.h,v 1.9 2001/12/14 19:54:42 dawes Exp $ */
 
 #ifndef _Simple_h
 #define _Simple_h
@@ -62,20 +78,16 @@ SOFTWARE.
  cursorName	     Cursor		String		NULL
  destroyCallback     Callback		Pointer		NULL
  displayList	     DisplayList	XawDisplayList*	NULL
- encoding	     Encoding		UnsignedChar	XtTextEncoding8bit
  height		     Height		Dimension	0
  insensitiveBorder   Insensitive	Pixmap		Gray
- international       International	Boolean		False
  mappedWhenManaged   MappedWhenManaged	Boolean		True
  pointerColor        Foreground         Pixel           XtDefaultForeground
  pointerColorBackground Background      Pixel           XtDefaultBackground
  sensitive	     Sensitive		Boolean		True
  tip		     Tip		String		NULL
- tipCallback	     Callback		Pointer		NULL
  width		     Width		Dimension	0
  x		     Position		Position	0
  y		     Position		Position	0
- userData	     UserData		Pointer		NULL
 
 */
 
@@ -106,26 +118,8 @@ SOFTWARE.
 #define XawRDisplayList "XawDisplayList"
 #endif
 
-#define XtNencoding "encoding"
-#define XtCEncoding "Encoding"
-
 #define XtNtip		"tip"
 #define XtCTip		"Tip"
-
-#ifndef XtNuserData
-#define XtNuserData	"userData"
-#endif
-
-#ifndef XtCuserData
-#define XtCuserData	"UserData"
-#endif
-
-#define XtNtipCallback	"tipCallback"
-#define XtCTipCallback	"Callback"
-
-#ifndef XawRTipCallback
-#define XawRTipCallback "XawTipCallback"
-#endif
 #endif	/* OLDXAW */
 
 typedef struct _SimpleClassRec	*SimpleWidgetClass;

@@ -1,5 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    quartzKeyboard.c
+   $Id: quartzKeyboard.c,v 1.1.1.2 2005/03/18 13:10:53 tron Exp $
 
    Code to build a keymap using the Carbon Keyboard Layout API,
    which is supported on Mac OS X 10.2 and newer.
@@ -31,7 +39,7 @@
    promote the sale, use or other dealings in this Software without
    prior written authorization.
 */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzKeyboard.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzKeyboard.c,v 1.3 2004/03/31 22:29:10 torrey Exp $ */
 
 #include "quartzCommon.h"
 
@@ -39,7 +47,7 @@
 #include <Carbon/Carbon.h>
 
 #include "darwinKeyboard.h"
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "keysym2ucs.h"
 
 #ifdef HAS_KL_API
@@ -146,7 +154,7 @@ const static struct {
 };
 
 unsigned int
-DarwinModeSystemKeymapSeed (void)
+DarwinSystemKeymapSeed (void)
 {
     static unsigned int seed;
 
@@ -370,12 +378,6 @@ DarwinModeReadSystemKeymap (darwinKeyboardInfo *info)
 }
 
 #else /* !HAS_KL_API */
-
-unsigned int
-DarwinModeSystemKeymapSeed (void)
-{
-    return 0;
-}
 
 Bool
 DarwinModeReadSystemKeymap (darwinKeyboardInfo *info)

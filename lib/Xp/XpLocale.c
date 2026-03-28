@@ -1,3 +1,11 @@
+/* $Xorg: XpLocale.c,v 1.3 2000/08/17 19:46:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -38,7 +46,6 @@
 #include <X11/extensions/Printstr.h>
 #include <X11/Xlibint.h>
 #include "XpExtUtil.h"
-#include "Xpint.h"
 
 #include <X11/Xlocale.h>
 
@@ -50,14 +57,17 @@ XPHinterProc  _xp_hinter_proc = NULL;
 char         *_xp_hinter_desc = NULL;
 int           _xp_hinter_init = 1;	/* need to init */
 
+
+extern char *_xpstrdup();
+
+
 /******************************************************************************
  *
  * THE DEFAULT LOCALE HINTER
  *
  * Make changes here only.
  */
-static char *
-_XpLocaleHinter(void)
+static char *_XpLocaleHinter()
 {
 #ifdef hpux
     char lbuf[ LC_BUFSIZ ];
@@ -174,8 +184,7 @@ XpGetLocaleHinter (
  *
  * If neither a hint or description exists, a NULL is returned.
  */
-char *
-XpGetLocaleNetString()
+char *XpGetLocaleNetString()
 {
     XPHinterProc  locale_hinter;
 

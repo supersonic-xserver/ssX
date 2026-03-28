@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaPict.c,v 1.19tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaPict.c,v 1.19 2004/01/26 18:54:55 mvojkovi Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -27,7 +34,7 @@
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "windowstr.h"

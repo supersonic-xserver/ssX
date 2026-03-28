@@ -1,4 +1,11 @@
-/* $XFree86: xc/include/fonts/font.h,v 3.7 2006/01/09 14:58:20 dawes Exp $ */
+/* $Xorg: font.h,v 1.3 2000/08/18 04:05:44 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -21,12 +28,14 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/include/fonts/font.h,v 3.5 2001/01/17 17:53:26 dawes Exp $ */
+/* $NCDXorg: @(#)font.h,v 1.7 1991/06/24 17:00:23 lemke Exp $ */
 
 #ifndef FONT_H
 #define FONT_H
 
 #ifndef BitmapFormatByteOrderMask
-#include <X11/fonts/fsmasks.h>
+#include	"fsmasks.h"
 #endif
 
 /* data structures */
@@ -141,7 +150,7 @@ extern void		    EmptyFontPatternCache (
 
 extern void		    CacheFontPattern (
     FontPatternCachePtr /* cache */,
-    const char * /* pattern */,
+    char * /* pattern */,
     int /* patlen */,
     FontPtr /* pFont */
 );
@@ -151,7 +160,7 @@ extern FontResolutionPtr GetClientResolutions(
 
 extern FontPtr		    FindCachedFontPattern (
     FontPatternCachePtr /* cache */,
-    const char * /* pattern */,
+    char * /* pattern */,
     int /* patlen */
 );
 

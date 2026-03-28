@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/miarc.c,v 3.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/miarc.c,v 3.15 2003/12/06 18:46:28 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $Xorg: miarc.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
 /* Author: Keith Packard and Bob Scheifler */
 /* Warning: this code is toxic, do not dally very long here. */
 
@@ -56,8 +63,8 @@ SOFTWARE.
 #include <math.h>
 #undef _XOPEN_SOURCE
 #endif
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "misc.h"
 #include "gcstruct.h"
 #include "scrnintstr.h"
@@ -66,17 +73,13 @@ SOFTWARE.
 #include "mifpoly.h"
 #include "mi.h"
 #include "mifillarc.h"
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 
 static double miDsin(double a);
 static double miDcos(double a);
 static double miDasin(double v);
 static double miDatan2(double dy, double dx);
-#if !defined(__USE_XOPEN_EXTENDED) || !__USE_XOPEN_EXTENDED
-#if !defined(sun)
 double	cbrt(double);
-#endif
-#endif
 
 #ifdef ICEILTEMPDECL
 ICEILTEMPDECL
@@ -110,14 +113,12 @@ ICEILTEMPDECL
 #endif
 
 #ifdef USE_INLINE
-inline static int
-max(const int x, const int y)
+inline static const int max (const int x, const int y)
 {
 	return x>y? x:y;
 }
 
-inline static int
-min (const int x, const int y)
+inline static const int min (const int x, const int y)
 {
 	return x<y? x:y;
 }
@@ -125,13 +126,13 @@ min (const int x, const int y)
 #else
 
 static int
-max(int x, int y)
+max (int x, int y)
 {
 	return x>y? x:y;
 }
 
 static int
-min(int x, int y)
+min (int x, int y)
 {
 	return x<y? x:y;
 }
@@ -249,7 +250,7 @@ typedef struct _miPolyArc {
 static CARD32 gcvals[6];
 
 static void fillSpans(DrawablePtr pDrawable, GCPtr pGC);
-static void newFinalSpan(int y, int xmin, int xmax);
+static void newFinalSpan(int y, register int xmin, register int xmax);
 static void drawArc(xArc *tarc, int l, int a0, int a1, miArcFacePtr right,
 		    miArcFacePtr left);
 static void drawZeroArc(DrawablePtr pDraw, GCPtr pGC, xArc *tarc, int lw,
@@ -434,7 +435,9 @@ static RESTYPE cacheType;
  */
 /*ARGSUSED*/
 int
-miFreeArcCache(pointer data, XID id)
+miFreeArcCache (data, id)
+    pointer	    data;
+    XID		    id;
 {
     int k;
     arcCacheRec *cent;
@@ -462,11 +465,11 @@ miComputeCircleSpans(
     xArc *parc,
     miArcSpanData *spdata)
 {
-    miArcSpan *span;
+    register miArcSpan *span;
     int doinner;
-    int x, y, e;
+    register int x, y, e;
     int xk, yk, xm, ym, dx, dy;
-    int slw, inslw;
+    register int slw, inslw;
     int inx = 0, iny, ine = 0;
     int inxk = 0, inyk = 0, inxm = 0, inym = 0;
 
@@ -530,7 +533,7 @@ miComputeEllipseSpans(
     xArc *parc,
     miArcSpanData *spdata)
 {
-    miArcSpan *span;
+    register miArcSpan *span;
     double w, h, r, xorg;
     double Hs, Hf, WH, K, Vk, Nk, Fk, Vr, N, Nc, Z, rs;
     double A, T, b, d, x, y, t, inx, outx = 0.0, hepp, hepm;
@@ -861,12 +864,12 @@ tailX(
 static miArcSpanData *
 miComputeWideEllipse(
     int		   lw,
-    xArc *parc,
+    register xArc *parc,
     Bool	  *mustFree)
 {
-    miArcSpanData *spdata;
-    arcCacheRec *cent, *lruent;
-    int k;
+    register miArcSpanData *spdata;
+    register arcCacheRec *cent, *lruent;
+    register int k;
     arcCacheRec fakeent;
 
     if (!lw)
@@ -944,14 +947,14 @@ miFillWideEllipse(
     xArc	*parc)
 {
     DDXPointPtr points;
-    DDXPointPtr pts;
+    register DDXPointPtr pts;
     int *widths;
-    int *wids;
+    register int *wids;
     miArcSpanData *spdata;
     Bool mustFree;
-    miArcSpan *span;
-    int xorg, yorgu, yorgl;
-    int n;
+    register miArcSpan *span;
+    register int xorg, yorgu, yorgl;
+    register int n;
 
     yorgu = parc->height + pGC->lineWidth;
     n = (sizeof(int) * 2) * yorgu;
@@ -1072,9 +1075,13 @@ miFillWideEllipse(
  */
 
 void
-miPolyArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
+miPolyArc(pDraw, pGC, narcs, parcs)
+    DrawablePtr	pDraw;
+    GCPtr	pGC;
+    int		narcs;
+    xArc	*parcs;
 {
-    int		i;
+    register int		i;
     xArc			*parc;
     int				xMin, xMax, yMin, yMax;
     int				pixmapWidth = 0, pixmapHeight = 0;
@@ -1297,7 +1304,7 @@ miPolyArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
 }
 
 static double
-angleBetween(SppPointRec center, SppPointRec point1, SppPointRec point2)
+angleBetween (SppPointRec center, SppPointRec point1, SppPointRec point2)
 {
 	double	a1, a2, a;
 	
@@ -1554,7 +1561,7 @@ miRoundCap(
 
 # define Dsin(d)	((d) == 0.0 ? 0.0 : ((d) == 90.0 ? 1.0 : sin(d*M_PI/180.0)))
 # define Dcos(d)	((d) == 0.0 ? 1.0 : ((d) == 90.0 ? 0.0 : cos(d*M_PI/180.0)))
-# define mod(a,b)	((a) >= 0 ? (a) % (b) : (b) - (-a) % (b))
+# define mod(a,b)	((a) >= 0 ? (a) % (b) : (b) - (-(a)) % (b))
 
 static double
 miDcos (double a)
@@ -1909,12 +1916,12 @@ miComputeArcs (
 	double		a0, a1;
 	struct arcData	*data;
 	miArcDataPtr	arc;
-	xArc		xarc = {0, };
+	xArc		xarc;
 	int		iphase, prevphase = 0, joinphase;
 	int		arcsJoin;
 	int		selfJoin;
 
-	int		iDash = 0, dashRemaining = 0;
+	int		iDash = 0, dashRemaining;
 	int		iDashStart = 0, dashRemainingStart = 0, iphaseStart;
 	int		startAngle, spanAngle, endAngle, backwards = 0;
 	int		prevDashAngle, dashAngle;
@@ -3136,9 +3143,9 @@ static struct finalSpanChunk	*chunks;
 struct finalSpan *
 realAllocSpan ()
 {
-	struct finalSpanChunk	*newChunk;
-	struct finalSpan	*span;
-	int			i;
+	register struct finalSpanChunk	*newChunk;
+	register struct finalSpan	*span;
+	register int			i;
 
 	newChunk = (struct finalSpanChunk *) xalloc (sizeof (struct finalSpanChunk));
 	if (!newChunk)
@@ -3176,12 +3183,12 @@ fillSpans (
     DrawablePtr	pDrawable,
     GCPtr	pGC)
 {
-	struct finalSpan	*span;
-	DDXPointPtr		xSpan;
-	int			*xWidth;
-	int			i;
-	struct finalSpan	**f;
-	int			spany;
+	register struct finalSpan	*span;
+	register DDXPointPtr		xSpan;
+	register int			*xWidth;
+	register int			i;
+	register struct finalSpan	**f;
+	register int			spany;
 	DDXPointPtr			xSpans;
 	int				*xWidths;
 
@@ -3277,11 +3284,11 @@ realFindSpan (int y)
 static void
 newFinalSpan (
     int		y,
-    int	xmin,
-    int	xmax)
+    register int	xmin,
+    register int	xmax)
 {
-	struct finalSpan	*x;
-	struct finalSpan	**f;
+	register struct finalSpan	*x;
+	register struct finalSpan	**f;
 	struct finalSpan		*oldx;
 	struct finalSpan		*prev;
 

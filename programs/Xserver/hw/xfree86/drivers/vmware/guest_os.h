@@ -1,7 +1,15 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vmware/guest_os.h,v 1.1 2001/04/05 19:29:44 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* *********************************************************
  * Copyright (C) 1999-2001 VMware, Inc.
  * All Rights Reserved
+ * Id: guest_os.h,v 1.5 2001/01/26 23:32:15 yoel Exp $
  * **********************************************************/
 
 #ifndef _GUEST_OS_H_

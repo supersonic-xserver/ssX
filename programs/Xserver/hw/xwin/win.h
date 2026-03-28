@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -31,7 +38,7 @@
  *		Harold L Hunt II
  *		Kensuke Matsuzaki
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/win.h,v 1.40tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/win.h,v 1.38 2003/10/08 11:13:02 eich Exp $ */
 
 #ifndef _WIN_H_
 #define _WIN_H_
@@ -142,10 +149,10 @@
 #endif /* MAP_FILE */
 #endif /* HAS_MMAP */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/Xos.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xproto.h"
+#include "Xos.h"
+#include "Xprotostr.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "pixmap.h"
@@ -164,7 +171,7 @@
 #include "mibstore.h"
 #include "input.h"
 #include "mipointer.h"
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "mibstore.h"
 #include "micoord.h"
 #include "dix.h"
@@ -274,7 +281,7 @@ typedef Bool (*winAdjustVideoModeProcPtr)(ScreenPtr);
 
 typedef Bool (*winCreateBoundingWindowProcPtr)(ScreenPtr);
 
-typedef Bool (*winFinishScreenInitProcPtr)(int, ScreenPtr, int, const char **);
+typedef Bool (*winFinishScreenInitProcPtr)(int, ScreenPtr, int, char **);
 
 typedef Bool (*winBltExposedRegionsProcPtr)(ScreenPtr);
 
@@ -1171,17 +1178,17 @@ winPolyLineNativeGDI (DrawablePtr	pDrawable,
 Bool
 winScreenInit (int index,
 	       ScreenPtr pScreen,
-	       const int argc, const char **argv);
+	       int argc, char **argv);
 
 Bool
 winFinishScreenInitFB (int index,
 		       ScreenPtr pScreen,
-		       int argc, const char **argv);
+		       int argc, char **argv);
 
 Bool
 winFinishScreenInitNativeGDI (int index,
 			      ScreenPtr pScreen,
-			      int argc, const char **argv);
+			      int argc, char **argv);
 
 Bool
 winSaveScreen (ScreenPtr pScreen, int on);

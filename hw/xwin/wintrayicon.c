@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -28,10 +35,8 @@
  * Authors:	Early Ehlinger
  *		Harold L Hunt II
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/wintrayicon.c,v 1.2 2003/10/02 13:30:11 eich Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include "win.h"
 #include <shellapi.h>
 #include "winprefs.h"
@@ -51,7 +56,12 @@ winInitNotifyIcon (winPrivScreenPtr pScreenPriv)
   nid.uID = pScreenInfo->dwScreen;
   nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
   nid.uCallbackMessage = WM_TRAYICON;
-  nid.hIcon = (HICON)winTaskbarIcon ();
+  nid.hIcon = LoadImage (g_hInstance,
+			 MAKEINTRESOURCE(IDI_XWIN),
+			 IMAGE_ICON,
+			 GetSystemMetrics (SM_CXSMICON),
+			 GetSystemMetrics (SM_CYSMICON),
+			 0);
 
   /* Save handle to the icon so it can be freed later */
   pScreenPriv->hiconNotifyIcon = nid.hIcon;
@@ -59,7 +69,7 @@ winInitNotifyIcon (winPrivScreenPtr pScreenPriv)
   /* Set display and screen-specific tooltip text */
   snprintf (nid.szTip,
 	    sizeof (nid.szTip),
-	    PROJECT_NAME " Server - %s:%d",
+	    "Cygwin/XFree86 Server - %s:%d",
 	    display, 
 	    (int) pScreenInfo->dwScreen);
 
@@ -113,22 +123,10 @@ winHandleIconMessage (HWND hwnd, UINT message,
 		      WPARAM wParam, LPARAM lParam,
 		      winPrivScreenPtr pScreenPriv)
 {
-#if defined(XWIN_MULTIWINDOWEXTWM) || defined(XWIN_MULTIWINDOW)
   winScreenInfo		*pScreenInfo = pScreenPriv->pScreenInfo;
-#endif
 
   switch (lParam)
     {
-    case WM_LBUTTONUP:
-      /* Restack and bring all windows to top */
-      SetForegroundWindow (hwnd);
-
-#ifdef XWIN_MULTIWINDOWEXTWM
-      if (pScreenInfo->fMWExtWM)
-	winMWExtWMRestackWindows (pScreenInfo->pScreen);
-#endif
-      break;
-
     case WM_LBUTTONDBLCLK:
       /* Display Exit dialog box */
       winDisplayExitDialog (pScreenPriv);
@@ -152,33 +150,41 @@ winHandleIconMessage (HWND hwnd, UINT message,
 	/* Get actual tray icon menu */
 	hmenuTray = GetSubMenu (hmenuPopup, 0);
 
-#ifdef XWIN_MULTIWINDOW
 	/* Check for MultiWindow mode */
 	if (pScreenInfo->fMultiWindow)
 	  {
-	    MENUITEMINFO		mii = {0};
-	    
-	    /* Root is shown, remove the check box */
-	    
-	    /* Setup menu item info structure */
-	    mii.cbSize = sizeof (MENUITEMINFO);
-	    mii.fMask = MIIM_STATE;
-	    mii.fState = MFS_CHECKED;
-	    
-	    /* Unheck box if root is shown */
+	    /* Check if root window is shown or hidden */
 	    if (pScreenPriv->fRootWindowShown)
-	      mii.fState = MFS_UNCHECKED;
-
-	    /* Set menu state */
-	    SetMenuItemInfo (hmenuTray, ID_APP_HIDE_ROOT, FALSE, &mii);
+	      {
+		/* Remove Show Root Window button */
+		RemoveMenu (hmenuTray,
+			    ID_APP_SHOW_ROOT,
+			    MF_BYCOMMAND);
+	      }
+	    else
+	      {
+		/* Remove Hide Root Window button */
+		RemoveMenu (hmenuTray,
+			    ID_APP_HIDE_ROOT,
+			    MF_BYCOMMAND);
+	      }
 	  }
 	else
-#endif
 	  {
+	    /* Remove Show Root Window button */
+	    RemoveMenu (hmenuTray,
+			ID_APP_SHOW_ROOT,
+			MF_BYCOMMAND);
+	    
 	    /* Remove Hide Root Window button */
 	    RemoveMenu (hmenuTray,
 			ID_APP_HIDE_ROOT,
 			MF_BYCOMMAND);
+
+	    /* Remove separator */
+	    RemoveMenu (hmenuTray,
+			0,
+			MF_BYPOSITION);
 	  }
 
 	SetupRootMenu ((unsigned long)hmenuTray);

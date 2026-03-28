@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -22,7 +29,7 @@
  * Adapted from ts300.c by Alan Hourihane <alanh@fairlite.demon.co.uk>
  * For the Compaq IPAQ handheld, with the HP VGA Out Card (F1252A).
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/ipaq/ipaq.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/ipaq/ipaq.c,v 1.1 2004/06/02 22:43:01 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -73,7 +80,7 @@
 #include "pcmcia.h"
 
 void
-InitCard (const char *name)
+InitCard (char *name)
 {
     KdCardAttr attr;
     if (name && !strcmp(name, "pcmcia"))
@@ -83,13 +90,13 @@ InitCard (const char *name)
 }
 
 void
-InitOutput (ScreenInfo *pScreenInfo, const int argc, const char **argv)
+InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     KdInitOutput (pScreenInfo, argc, argv);
 }
 
 void
-InitInput (const int argc, const char **argv)
+InitInput (int argc, char **argv)
 {
     KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
 #ifdef TOUCHSCREEN
@@ -100,7 +107,7 @@ InitInput (const int argc, const char **argv)
 extern pcmciaDisplayModeRec pcmciaDefaultModes[];
 
 int
-ddxProcessArgument (int argc, const char **argv, int i)
+ddxProcessArgument (int argc, char **argv, int i)
 {
     return KdProcessArgument (argc, argv, i);
 }

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX Hardware Device Driver for Intel i810
  * Copyright (C) 1999 Keith Whitwell
  * Texmem interface changes (C) 2003 Dave Airlie
@@ -22,7 +29,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i810/i810texmem.c,v 1.2 2004/04/22 13:58:36 tsi Exp $ */
 
 #include "glheader.h"
 #include "macros.h"

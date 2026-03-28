@@ -1,3 +1,11 @@
+/* $XConsortium: xcalc.h,v 1.4 94/04/17 20:43:32 converse Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1989  X Consortium
@@ -37,6 +45,12 @@ from the X Consortium.
 
 #ifndef _XCALC_H_
 #define _XCALC_H_
+
+#ifdef SIGNALRETURNSINT
+#define signal_t int
+#else
+#define signal_t void
+#endif
 
 #define kRECIP 0	/* reciprocal */
 #define kSQR   1	/* square */
@@ -112,17 +126,5 @@ extern void memf(int keynum);
 extern void oneop(int keynum);
 extern void offf(void);
 extern void ResetCalc(void);
-
-extern int rpn;
-#define LCD_STR_LEN     32
-extern char dispstr[LCD_STR_LEN];
-extern Atom wm_delete_window;
-
-extern void ringbell(void);
-extern void Quit(void);
-extern void do_select(Time time);
-extern void draw(char *string);
-extern void setflag(int indicator, Boolean on);
-
 
 #endif

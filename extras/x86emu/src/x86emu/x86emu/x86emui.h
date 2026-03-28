@@ -1,4 +1,11 @@
 /****************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 *
 *						Realmode X86 Emulator Library
 *
@@ -38,7 +45,7 @@
 *
 ****************************************************************************/
 
-/* $XFree86: xc/extras/x86emu/src/x86emu/x86emu/x86emui.h,v 1.3 2000/04/17 16:29:47 eich Exp $ */
+/* $XFree86: xc/extras/x86emu/src/x86emu/x86emu/x86emui.h,v 1.4 2001/04/01 13:59:58 tsi Exp $ */
 
 #ifndef __X86EMU_X86EMUI_H
 #define __X86EMU_X86EMUI_H

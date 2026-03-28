@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/mitauth.c,v 1.5tsi Exp $ */
+/* $Xorg: mitauth.c,v 1.4 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -26,13 +33,14 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/os/mitauth.c,v 1.5 2001/12/14 20:00:34 dawes Exp $ */
 
 /*
  * MIT-MAGIC-COOKIE-1 authorization scheme
  * Author:  Keith Packard, MIT X Consortium
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "osdep.h"
 #include "dixstruct.h"

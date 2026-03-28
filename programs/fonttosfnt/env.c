@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Provide setenv() and unsetenv() on platforms that don't have them.
  * From FreeBSD's libc.
  */
@@ -36,7 +43,7 @@
  * SUCH DAMAGE.
  */
 
-/* $XFree86: xc/programs/xedit/lisp/env.c,v 1.1 2002/03/05 03:52:34 dawes Exp $ */
+/* $XFree86: xc/programs/fonttosfnt/env.c,v 1.1 2003/07/08 15:39:49 tsi Exp $ */
 
 
 #include <stdlib.h>

@@ -1,5 +1,11 @@
 XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/Imakefile,v 3.16 2005/03/07 16:39:18 tsi Exp $
 
+
+
+
+
+XCOMM $XConsortium: Imakefile /main/5 1996/02/21 18:12:46 kaleb $
+
             SRCS = xf86config.c cards.c
             OBJS = xf86config.o cards.o
  LOCAL_LIBRARIES = $(XKBFILELIB) $(XONLYLIB)

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,7 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/tinyx.h,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/tinyx.h,v 1.1 2004/06/02 22:43:00 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -68,10 +75,10 @@
  */
 
 #include <stdio.h>
-#include <X11/X.h>
+#include "X.h"
 #define NEED_EVENTS
-#include <X11/Xproto.h>
-#include <X11/Xos.h>
+#include "Xproto.h"
+#include "Xos.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "windowstr.h"
@@ -249,7 +256,6 @@ typedef struct _KdMouseInfo {
 } KdMouseInfo;
 
 extern KdMouseInfo	*kdMouseInfo;
-extern Bool		kdNoSerialMouse;
 
 #ifdef TOUCHSCREEN
 /* 
@@ -262,7 +268,7 @@ extern int KdTsPhyScreen;
 #endif
 
 KdMouseInfo *KdMouseInfoAdd (void);
-void	    KdParseMouse (const char *);
+void	    KdParseMouse (char *);
 
 typedef struct _KdMouseFuncs {
     int		    (*Init) (void);
@@ -581,7 +587,7 @@ KdSubRotation (Rotation a, Rotation b);
 
 void
 KdParseScreen (KdScreenInfo *screen,
-	       const char    *arg);
+	       char	    *arg);
 
 char *
 KdSaveString (char *str);
@@ -599,24 +605,24 @@ Bool
 KdSaveScreen (ScreenPtr pScreen, int on);
 
 Bool
-KdScreenInit(int index, ScreenPtr pScreen, int argc, const char **argv);
+KdScreenInit(int index, ScreenPtr pScreen, int argc, char **argv);
 
 void
 KdInitScreen (ScreenInfo    *pScreenInfo,
 	      KdScreenInfo  *screen,
 	      int	    argc,
-	      const char    **argv);
+	      char	    **argv);
 
 void
 KdInitCard (ScreenInfo	    *pScreenInfo,
 	    KdCardInfo	    *card,
 	    int		    argc,
-	    const char	    **argv);
+	    char	    **argv);
 
 void
 KdInitOutput (ScreenInfo    *pScreenInfo,
 	      int	    argc,
-	      const char    **argv);
+	      char	    **argv);
 
 void
 KdSetSubpixelOrder (ScreenPtr pScreen, Rotation randr);
@@ -625,7 +631,7 @@ Bool
 KdCreateWindow (WindowPtr pWin);
 
 int
-KdProcessArgument (int argc, const char **argv, int i);
+KdProcessArgument (int argc, char **argv, int i);
 
 void
 KdUseMsg (void);
@@ -809,4 +815,4 @@ KdFrameBufferSize (CARD8 *base, int max);
 
 /* function prototypes to be imlpemented by the drivers */
 void
-InitCard (const char *name);
+InitCard (char *name);

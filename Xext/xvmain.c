@@ -1,4 +1,11 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
 
@@ -21,6 +28,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/Xext/xvmain.c,v 1.19 2007/01/04 02:48:11 tsi Exp $ */
 
 /*
 ** File: 
@@ -73,12 +81,6 @@ SOFTWARE.
 **
 */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <string.h>
-
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "misc.h"
@@ -98,6 +100,10 @@ SOFTWARE.
 #include <X11/extensions/Xv.h>
 #include <X11/extensions/Xvproto.h>
 #include "xvdix.h"
+
+#ifdef EXTMODULE
+#include "xf86_ansic.h"
+#endif
 
 #ifdef PANORAMIX
 #include "panoramiX.h"
@@ -153,7 +159,7 @@ static int XvdiSendVideoNotify(XvPortPtr, DrawablePtr, int);
 */
 
 void 
-XvExtensionInit(void)
+XvExtensionInit(INITARGS)
 {
   ExtensionEntry *extEntry;
 
@@ -205,8 +211,7 @@ XvExtensionInit(void)
 }
 
 static Bool
-CreateResourceTypes(void)
-
+CreateResourceTypes()
 {
   
   if (XvResourceGeneration == serverGeneration) return TRUE;
@@ -253,7 +258,7 @@ CreateResourceTypes(void)
 
 }
 
-_X_EXPORT int
+int
 XvScreenInit(ScreenPtr pScreen)
 {
   XvScreenPtr pxvs;
@@ -334,14 +339,14 @@ XvResetProc(ExtensionEntry* extEntry)
 {
 }
 
-_X_EXPORT int
-XvGetScreenIndex(void)
+int
+XvGetScreenIndex()
 {
   return XvScreenIndex;
 }
 
-_X_EXPORT unsigned long
-XvGetRTPort(void)
+unsigned long
+XvGetRTPort()
 {
   return XvRTPort;
 }
@@ -531,12 +536,7 @@ XvdiDestroyEncoding(pointer value, XID id)
 }
 
 static int
-XvdiSendVideoNotify(pPort, pDraw, reason)
-
-XvPortPtr pPort;
-DrawablePtr pDraw;
-int reason;
-
+XvdiSendVideoNotify(XvPortPtr pPort, DrawablePtr pDraw, int reason)
 {
   xvEvent event;
   XvVideoNotifyPtr pn;
@@ -1171,7 +1171,6 @@ XvdiGetPortAttribute(
 
 static void
 WriteSwappedVideoNotifyEvent(xvEvent *from, xvEvent *to)
-
 {
 
   to->u.u.type = from->u.u.type;
@@ -1186,7 +1185,6 @@ WriteSwappedVideoNotifyEvent(xvEvent *from, xvEvent *to)
 
 static void
 WriteSwappedPortNotifyEvent(xvEvent *from, xvEvent *to)
-
 {
 
   to->u.u.type = from->u.u.type;

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2002 by Brian Goines (bgoines78@comcast.net)
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -326,18 +333,14 @@ InputDriverRec JAMSTUDIO =
 
 #ifdef XFree86LOADER
 
-static MODULETEARDOWNPROTO(xf86JS_XUnplug);
-
 static void
 xf86JS_XUnplug(pointer p)
 {
    return;
 }
 
-static MODULESETUPPROTO(xf86JS_XPlug);
-
 static pointer
-xf86JS_XPlug(ModuleDescPtr module, pointer options, int *errmaj, int *errmin)
+xf86JS_XPlug(pointer module, pointer options, int *errmaj, int *errmin)
 {
    xf86AddInputDriver(&JAMSTUDIO, module, 0);
    return module;

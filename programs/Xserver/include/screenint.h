@@ -1,3 +1,11 @@
+/* $Xorg: screenint.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/screenint.h,v 1.8 2005/04/01 14:27:02 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/include/screenint.h,v 1.6 2003/04/27 21:31:05 herrb Exp $ */
 #ifndef SCREENINT_H
 #define SCREENINT_H
 
@@ -77,16 +85,14 @@ extern Bool AllocateGCPrivate(
     int /* index */,
     unsigned /* amount */);
 
-typedef Bool (*ScrnInitProcPtr)(
-    int /* index */,
-    ScreenPtr /* pScreen */,
-    const int /* argc */,
-    const char ** /* argv */);
-
 extern int AddScreen(
-    ScrnInitProcPtr /* pfnInit */,
-    const int /* argc */,
-    const char** /* argv */);
+    Bool (* /*pfnInit*/)(
+	int /*index*/,
+	ScreenPtr /*pScreen*/,
+	int /*argc*/,
+	char ** /*argv*/),
+    int /*argc*/,
+    char** /*argv*/);
 
 #ifdef PIXPRIV
 

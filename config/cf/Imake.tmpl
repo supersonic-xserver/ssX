@@ -1,9 +1,9 @@
 XCOMM ----------------------------------------------------------------------
 XCOMM Makefile generated from IMAKE_TEMPLATE and INCLUDE_IMAKEFILE
-XCOMM $XFree86: xc/config/cf/Imake.tmpl,v 3.181tsi Exp $
+XCOMM $XFree86: xc/config/cf/Imake.tmpl,v 3.169 2005/02/11 03:02:53 dawes Exp $
 XCOMM ----------------------------------------------------------------------
 /*
- * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -77,9 +77,6 @@ all::
 #undef clean
 #define clean cleandir
 
-#include <version.def>
-#include <date.def>
-
 #include <Imake.cf>
 
 XCOMM -----------------------------------------------------------------------
@@ -89,9 +86,6 @@ XCOMM the platform-specific parameters - edit site.def to change
 #include <site.def>
 #undef BeforeVendorCF
 
-#if defined(HasGcc4) && !defined(HasGcc3)
-# define HasGcc3 HasGcc4
-#endif
 #if defined(HasGcc3) && !defined(HasGcc2)
 # define HasGcc2 HasGcc3
 #endif
@@ -410,11 +404,6 @@ XCOMM the platform-specific parameters - edit site.def to change
 #define ConstructMAKEFLAGS	NO	/* build MAKEFLAGS from MFLAGS */
 #endif
 
-/* Some recursive `make`'s end up duplicating MFLAGS (and MAKEFLAGS) */
-#ifndef PassMFLAGS
-#define PassMFLAGS		YES
-#endif
-
 #ifndef HasLargeTmp
 #define HasLargeTmp		NO	/* be paranoid */
 #endif
@@ -486,13 +475,6 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasDlopen
 #define HasDlopen		NO	/* assume not */
 #endif
-#ifndef DlLibrary
-#if HasDlopen
-#define DlLibrary		-ldl
-#else
-#define DlLibrary		/**/
-#endif
-#endif
 #ifndef HasWeakSymbols
 #define HasWeakSymbols		NO	/* assume not */
 #endif
@@ -520,26 +502,8 @@ XCOMM the platform-specific parameters - edit site.def to change
 #ifndef HasPam
 #define HasPam			NO
 #endif
-#ifndef PamDefines
-#define PamDefines		/**/
-#endif
-#ifndef PamLibraries
-#define PamLibraries		-lpam DlLibrary
-#endif
-#ifndef ServerPamLibraries
-#define ServerPamLibraries	PamLibraries
-#endif
-/*
- * By default, don't generate PAM-aware binaries, as they would not run on
- * (older/different) systems without PAM.
- */
-#ifndef UsePam
-#define UsePam			NO
-#endif
-#if UsePam && HasPam
-         PAMDEFINES = -DUSE_PAM PamDefines
-       PAMLIBRARIES = PamLibraries
- SERVERPAMLIBRARIES = ServerPamLibraries
+#ifndef HasPamMisc
+#define HasPamMisc		NO
 #endif
 #ifndef HasGetpeereid
 #define HasGetpeereid		NO
@@ -722,6 +686,36 @@ NCURSESLIBDIR = NCursesLibDir
 #ifdef NCursesIncDir
 NCURSESINCDIR = NCursesIncDir
 #endif
+#ifndef HasGlide2
+#define HasGlide2 NO
+#endif
+#ifndef Glide2IncDir
+#if HasGlide2
+#define Glide2IncDir /usr/include/glide
+#else
+#define Glide2IncDir
+#endif
+#endif
+GLIDE2INCDIR = Glide2IncDir
+#ifndef HasGlide3
+#define HasGlide3 NO
+#endif
+#ifndef Glide3IncDir
+#if HasGlide3
+#define Glide3IncDir /usr/include/glide3
+#else
+#define Glide3IncDir
+#endif
+#endif
+GLIDE3INCDIR = Glide3IncDir
+#ifndef Glide3LibName
+#if HasGlide3
+#define Glide3LibName glide3
+#else
+#define Glide3LibName
+#endif
+#endif
+GLIDE3LIBNAME = Glide3LibName
 #ifndef HasTk
 #define HasTk NO
 #endif
@@ -998,10 +992,6 @@ TCLIBDIR = TclLibDir
 #endif
 #endif
 
-#ifndef PkgConfigDirectory
-#define PkgConfigDirectory $(USRLIBDIR)/pkgconfig
-#endif
-
 #ifndef ConfigSrc
 #define ConfigSrc $(TOP)/config
 #endif
@@ -1078,9 +1068,6 @@ TCLIBDIR = TclLibDir
 #ifndef InstKmemFlags     /* put -g kmem -m 2711 in site.def... */
 #define InstKmemFlags InstUidFlags
 #endif
-#ifndef InstUtmpFlags     /* put -m 2755 -g utmp in site.def... */
-#define InstUtmpFlags InstUidFlags
-#endif
 #ifndef ParallelMakeFlags
 #define ParallelMakeFlags /**/
 #endif
@@ -1111,11 +1098,8 @@ TCLIBDIR = TclLibDir
 #ifndef BootstrapCFlags
 #define BootstrapCFlags /**/
 #endif
-#ifndef HasGcc4
-#define HasGcc4 NO
-#endif
 #ifndef HasGcc3
-#define HasGcc3 HasGcc4
+#define HasGcc3 NO
 #endif
 #ifndef HasGcc2
 #define HasGcc2 HasGcc3
@@ -1127,7 +1111,7 @@ TCLIBDIR = TclLibDir
 #define HasBrokenCCForLink NO
 #endif
 #ifndef CcCmd
-#if HasGcc2 || HasGcc3 || HasGcc4
+#if HasGcc2
 #define CcCmd gcc -fpcc-struct-return
 #else
 #if HasGcc
@@ -1414,6 +1398,9 @@ TCLIBDIR = TclLibDir
 #ifndef DBMLibrary
 #define DBMLibrary -ldbm
 #endif
+#ifndef DlLibrary
+#define DlLibrary -ldl
+#endif
 #ifndef ExtraLibraries
 #if SystemV4
 #if HasSockets
@@ -1684,7 +1671,7 @@ TCLIBDIR = TclLibDir
 #define DocFilesToClean /**/
 #endif
 #ifndef FilesToClean
-#define FilesToClean *.CKP *.ln *.BAK *.bak *.Osuf *.i *.ii core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut
+#define FilesToClean *.CKP *.ln *.BAK *.bak *.Osuf core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut
 #endif
 
 #ifdef CrossCompileDir
@@ -1782,8 +1769,6 @@ TCLIBDIR = TclLibDir
 #ifdef VarDbDirectory
          VARDBDIR = VarDbDirectory	/* OS location of db/state files */
 #endif
-     PKGCONFIGDIR = PkgConfigDirectory
-
 #ifdef CrossCompileDir
                AR = CrossArCmd
 #else
@@ -1967,9 +1952,6 @@ MODLDCOMBINEFLAGS = ModuleLdCombineFlags
 #if ConstructMAKEFLAGS
         MAKEFLAGS = $(MFLAGS)
 #endif
-#if PassMFLAGS
-       PASSMFLAGS = $(MFLAGS)
-#endif
    PARALLELMFLAGS = ParallelMakeFlags
 #if HasSharedLibraries
     SHAREDCODEDEF = SharedCodeDef
@@ -2053,15 +2035,18 @@ MODLDCOMBINEFLAGS = ModuleLdCombineFlags
      INSTMANFLAGS = InstManFlags	/* install flags for man pages */
      INSTDATFLAGS = InstDatFlags	/* install flags for data files */
     INSTKMEMFLAGS = InstKmemFlags	/* install flags for /dev/kmem progs */
-    INSTUTMPFLAGS = InstUtmpFlags	/* install flags for utmp access */
 
 #ifdef ProjectRoot
       PROJECTROOT = ProjectRoot
 #endif
-#if defined(UseInstalled) && AlternateIncRoot
-# define TopInclude	-I$(INCROOT)
+#ifdef UseInstalled
+# if AlternateIncRoot
+#  define TopInclude	-I$(INCROOT)
+# else
+#  define TopInclude	/**/
+# endif
 #else
-# define TopInclude	/**/
+# define TopInclude	-I$(TOP)
 #endif
 
       CDEBUGFLAGS = DefaultCDebugFlags
@@ -2072,16 +2057,8 @@ MODLDCOMBINEFLAGS = ModuleLdCombineFlags
  * EXTRA_INCLUDES contains project-specific includes set in project incfiles
  * INCLUDES contains client-specific includes set in Imakefile
  * LOCAL_LDFLAGS contains client-specific ld flags flags set in Imakefile
- * DEVEL_INCLUDES contains sanitised copies of system headers.
  */
-
-#ifdef DevelIncludeDir
-DEVEL_INCLUDEDIR = DevelIncludeDir
-DEVEL_INCLUDES = -I$(DEVEL_INCLUDEDIR)
-#endif
-
-   LOCAL_INCLUDES = -I.
-      ALLINCLUDES = $(LOCAL_INCLUDES) $(INCLUDES) $(EXTRA_INCLUDES) $(TOP_INCLUDES) $(INSTALLED_INCLUDES) $(DEVEL_INCLUDES) $(STD_INCLUDES)
+      ALLINCLUDES = $(INCLUDES) $(EXTRA_INCLUDES) $(TOP_INCLUDES) $(INSTALLED_INCLUDES) $(STD_INCLUDES)
        ALLDEFINES = $(ALLINCLUDES) $(STD_DEFINES) $(PROTO_DEFINES) $(THREADS_DEFINES) $(MODULE_DEFINES) $(DEFINES) $(EXTRA_DEFINES)
            CFLAGS = $(CDEBUGFLAGS) $(CCOPTIONS) $(THREADS_CFLAGS) $(MODULE_CFLAGS) $(ALLDEFINES)
         LINTFLAGS = $(LINTOPTS) -DLINT $(ALLDEFINES) $(DEPEND_DEFINES)
@@ -2224,11 +2201,6 @@ XCOMM common rules for all Makefiles - do not edit
 
 .cc.s:
 	CompileCplusplusToAsm($(_NOOP_))
-
-.SUFFIXES: .m
-
-.m.o:
-	$(CC) -c $(CFLAGS) -o $@ $<
 
 /*
  * These need to be here so that rules in Imakefile occur first;  the blank

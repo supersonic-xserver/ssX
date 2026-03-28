@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -26,6 +33,12 @@
 
 #include "dri3_priv.h"
 #include <syncsrv.h>
+#include "dixaccess.h"
+#include "resource.h"
+
+#ifndef M_ANY
+#define M_ANY 0
+#endif
 #include <unistd.h>
 #include <xace.h>
 #include "../Xext/syncsdk.h"
@@ -51,7 +64,7 @@ proc_dri3_query_version(ClientPtr client)
         swapl(&rep.majorVersion);
         swapl(&rep.minorVersion);
     }
-    WriteToClient(client, sizeof(rep), &rep);
+    WriteToClient(client, sizeof(rep), (char *)&rep);
     return Success;
 }
 
@@ -75,7 +88,7 @@ dri3_send_open_reply(ClientPtr client, int fd)
         return BadAlloc;
     }
 
-    WriteToClient(client, sizeof (rep), &rep);
+    WriteToClient(client, sizeof (rep), (char *)&rep);
 
     return Success;
 }
@@ -111,7 +124,7 @@ proc_dri3_open(ClientPtr client)
     if (status != Success)
         return status;
 
-    if (client->ignoreCount == 0)
+    if (client->noClientException == Success)
         return dri3_send_open_reply(client, fd);
 
     return Success;
@@ -228,7 +241,7 @@ proc_dri3_buffer_from_pixmap(ClientPtr client)
         return BadAlloc;
     }
 
-    WriteToClient(client, sizeof(rep), &rep);
+    WriteToClient(client, sizeof(rep), (char *)&rep);
 
     return client->noClientException;
 }
@@ -294,7 +307,7 @@ proc_dri3_fd_from_fence(ClientPtr client)
     if (WriteFdToClient(client, fd, FALSE) < 0)
         return BadAlloc;
 
-    WriteToClient(client, sizeof(rep), &rep);
+    WriteToClient(client, sizeof(rep), (char *)&rep);
 
     return client->noClientException;
 }
@@ -312,7 +325,7 @@ int
 proc_dri3_dispatch(ClientPtr client)
 {
     REQUEST(xReq);
-    if (!client->local)
+    if (!LocalClient(client))
         return BadMatch;
     if (stuff->data >= DRI3NumberRequests || !proc_dri3_vector[stuff->data])
         return BadRequest;
@@ -407,7 +420,7 @@ int
 sproc_dri3_dispatch(ClientPtr client)
 {
     REQUEST(xReq);
-    if (!client->local)
+    if (!LocalClient(client))
         return BadMatch;
     if (stuff->data >= DRI3NumberRequests || !sproc_dri3_vector[stuff->data])
         return BadRequest;

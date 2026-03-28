@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $XFree86$
+# $XFree86: xc/programs/xterm/vttests/resize.pl,v 1.1 2004/03/04 02:21:58 dickey Exp $
 #
 # -- Thomas Dickey (2004/3/3)
 # resize.sh rewritten into Perl for comparison.

@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/font/builtins/file.c,v 1.5tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: file.c,v 1.2 1999/11/02 06:16:47 keithp Exp $
  *
  * Copyright 1999 SuSE, Inc.
  *
@@ -17,11 +24,12 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
+/* $XFree86: xc/lib/font/builtins/file.c,v 1.4 2000/02/23 20:29:33 dawes Exp $ */
 
 #include "builtin.h"
 
@@ -31,10 +39,11 @@ typedef struct _BuiltinIO {
 } BuiltinIORec, *BuiltinIOPtr;
 
 static int
-BuiltinFill(BufFilePtr f)
+BuiltinFill (f)
+    BufFilePtr	f;
 {
-    int			left, len;
-    BuiltinIOPtr	io = ((BuiltinIOPtr) f->private);
+    int	    left, len;
+    BuiltinIOPtr    io = ((BuiltinIOPtr) f->private);
 
     left = io->file->len - io->offset;
     if (left <= 0)
@@ -45,7 +54,7 @@ BuiltinFill(BufFilePtr f)
     len = BUFFILESIZE;
     if (len > left)
 	len = left;
-    bcopy(io->file->bits + io->offset, f->buffer, len);
+    bcopy (io->file->bits + io->offset, f->buffer, len);
     io->offset += len;
     f->left = len - 1;
     f->bufp = f->buffer + 1;
@@ -53,12 +62,15 @@ BuiltinFill(BufFilePtr f)
 }
 
 static int
-BuiltinSkip(BufFilePtr f, int count)
+BuiltinSkip (f, count)
+    BufFilePtr	f;
+    int		count;
 {
-    BuiltinIOPtr	io = ((BuiltinIOPtr) f->private);
-    int			curoff;
-    int			fileoff;
-    int			todo;
+    BuiltinIOPtr    io = ((BuiltinIOPtr) f->private);
+    int	    curoff;
+    int	    fileoff;
+    int	    todo;
+    int	    left;
 
     curoff = f->bufp - f->buffer;
     fileoff = curoff + f->left;
@@ -78,15 +90,19 @@ BuiltinSkip(BufFilePtr f, int count)
 }
 
 static int
-BuiltinClose(BufFilePtr f, int doClose)
+BuiltinClose (f, doClose)
+    BufFilePtr	f;
 {
-    xfree(f->private);
+    BuiltinIOPtr    io = ((BuiltinIOPtr) f->private);
+    
+    xfree (io);
     return 1;
 }
 
 
 FontFilePtr
-BuiltinFileOpen(char *name)
+BuiltinFileOpen (name)
+    char    *name;
 {
     int		    i;
     BuiltinIOPtr    io;
@@ -98,29 +114,29 @@ BuiltinFileOpen(char *name)
 	    break;
     if (i == builtin_files_count)
 	return NULL;
-    io = xalloc (sizeof (BuiltinIORec));
+    io = (BuiltinIOPtr) xalloc (sizeof (BuiltinIORec));
     if (!io)
 	return NULL;
     io->offset = 0;
     io->file = (void *) &builtin_files[i];
-    raw = BufFileCreate((char *)io, BuiltinFill, 0, BuiltinSkip, BuiltinClose);
+    raw = BufFileCreate ((char *) io, BuiltinFill, 0, BuiltinSkip, BuiltinClose);
     if (!raw)
     {
-	xfree(io);
+	xfree (io);
 	return NULL;
     }
-    if ((cooked = BufFilePushCompressed(raw)))
+    if (cooked = BufFilePushCompressed (raw))
 	raw = cooked;
     else
     {
 	raw->left += raw->bufp - raw->buffer;
 	raw->bufp = raw->buffer;
     }
-    return (FontFilePtr)raw;
+    return (FontFilePtr) raw;
 }
 
-int
-BuiltinFileClose(FontFilePtr f)
+BuiltinFileClose (f)
+    FontFilePtr	f;
 {
-    return BufFileClose((BufFilePtr)f, TRUE);
+    return BufFileClose ((BufFilePtr) f, TRUE);
 }

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (C) 1999.  The XFree86 Project Inc.
 
    Written by Mark Vojkovich (mvojkovi@ucsd.edu)
@@ -6,20 +13,20 @@
    Pre-fb-write callbacks and RENDER support - Nolan Leake (nolan@vmware.com)
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/shadowfb/shadow.c,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/shadowfb/shadow.c,v 1.21 2003/11/10 18:22:38 tsi Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "pixmapstr.h"
 #include "input.h"
-#include <X11/fonts/font.h>
+#include "font.h"
 #include "mi.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
 #include "gcstruct.h"
 #include "dixfontstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "xf86.h"
 #include "xf86str.h"
 #include "shadowfb.h"

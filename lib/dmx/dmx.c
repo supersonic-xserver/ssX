@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/dmx/dmx.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/lib/dmx/dmx.c,v 1.1 2004/06/30 20:21:37 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -41,11 +48,11 @@
 
 #define NEED_REPLIES
 #include <X11/Xlibint.h>
-#include <X11/extensions/Xext.h>
+#include "Xext.h"
 #define EXTENSION_PROC_ARGS void *
-#include <X11/extensions/extutil.h>
-#include <X11/extensions/dmxproto.h>
-#include <X11/extensions/dmxext.h>
+#include "extutil.h"
+#include "dmxproto.h"
+#include "dmxext.h"
 
 static XExtensionInfo dmx_extension_info_data;
 static XExtensionInfo *dmx_extension_info = &dmx_extension_info_data;

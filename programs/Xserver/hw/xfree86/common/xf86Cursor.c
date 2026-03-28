@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Cursor.c,v 3.42tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Cursor.c,v 3.41 2005/01/26 05:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -48,8 +55,8 @@
 
 
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "cursor.h"
 #include "mipointer.h"
@@ -63,7 +70,7 @@
 #include "xf86_OSproc.h"
 
 #ifdef XINPUT
-#include <X11/extensions/XIproto.h>
+#include "XIproto.h"
 #include "xf86Xinput.h"
 #endif
 
@@ -162,11 +169,6 @@ void
 xf86SetViewport(ScreenPtr pScreen, int x, int y)
 {
   ScrnInfoPtr   pScr = XF86SCRNINFO(pScreen);
-
-#ifdef XFreeXDGA
-  if (DGAActive(pScr->scrnIndex))
-    return;
-#endif
 
   (*pScr->PointerMoved)(pScreen->myNum, x, y);
 }

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/xf86Optrec.h,v 1.13 2006/08/09 20:53:16 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/xf86Optrec.h,v 1.12 2004/02/13 23:58:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2001 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -106,20 +113,21 @@ typedef struct
 XF86OptionRec, *XF86OptionPtr;
 
 
-XF86OptionPtr xf86addNewOption(XF86OptionPtr head, const char *name,
-				const char *val);
+XF86OptionPtr xf86addNewOption(XF86OptionPtr head, char *name, char *val);
 XF86OptionPtr xf86optionListDup(XF86OptionPtr opt);
 void xf86optionListFree(XF86OptionPtr opt);
 char *xf86optionName(XF86OptionPtr opt);
 char *xf86optionValue(XF86OptionPtr opt);
-XF86OptionPtr xf86newOption(const char *name, const char *value);
+XF86OptionPtr xf86newOption(char *name, char *value);
 XF86OptionPtr xf86nextOption(XF86OptionPtr list);
 XF86OptionPtr xf86findOption(XF86OptionPtr list, const char *name);
 char *xf86findOptionValue(XF86OptionPtr list, const char *name);
 int xf86findOptionBoolean (XF86OptionPtr, const char *, int);
 XF86OptionPtr xf86optionListCreate(const char **options, int count, int used);
 XF86OptionPtr xf86optionListMerge(XF86OptionPtr head, XF86OptionPtr tail);
+char *xf86configStrdup (const char *s);
 int xf86nameCompare (const char *s1, const char *s2);
+char *xf86uLongToString(unsigned long i);
 void xf86debugListOptions(XF86OptionPtr);
 XF86OptionPtr xf86parseOption(XF86OptionPtr head);
 void xf86printOptionList(FILE *fp, XF86OptionPtr list, int tabs);

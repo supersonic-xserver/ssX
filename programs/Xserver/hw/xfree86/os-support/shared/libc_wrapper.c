@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/libc_wrapper.c,v 1.111tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/libc_wrapper.c,v 1.108 2004/11/23 02:25:44 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1997-2005 by The XFree86 Project, Inc.
+ * Copyright 1997-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -49,12 +56,12 @@
 #if defined(linux) && !defined(__GLIBC__)
 #undef __STRICT_ANSI__
 #endif
-#include <X11/X.h>
+#include <X.h>
 #ifdef __UNIXOS2__
 #define I_NEED_OS2_H
 #endif
-#include <X11/Xmd.h>
-#include <X11/Xos.h>
+#include <Xmd.h>
+#include <Xos.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #if defined(__bsdi__)
@@ -68,7 +75,7 @@
 #endif
 #include <stdarg.h>
 #include <fcntl.h>
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 #include "os.h"
 #include <ctype.h>
 #include <unistd.h>
@@ -518,7 +525,7 @@ xf86mmap(void *start, xf86size_t length, int prot,
     if (flags & XF86_MAP_FIXED)		f |= MAP_FIXED;
     if (flags & XF86_MAP_SHARED)	f |= MAP_SHARED;
     if (flags & XF86_MAP_PRIVATE)	f |= MAP_PRIVATE;
-#if (defined(__amd64__) || defined(__x86_64__)) && defined(linux)
+#if defined(__AMD64__) && defined(linux)
     if (flags & XF86_MAP_32BIT)	        f |= MAP_32BIT;
 #endif
     if (prot  & XF86_PROT_EXEC)		p |= PROT_EXEC;
@@ -540,7 +547,7 @@ xf86mmap(void *start, xf86size_t length, int prot,
     if(mmapFd < 0) {
       if ((mmapFd = open("/dev/mmap", O_RDWR)) == -1) {
           ErrorF("Warning: failed to open /dev/mmap \n");
-          xf86errno = XF86_ENOSYS;
+          xf86errno = xf86_ENOSYS;
           return XF86_MAP_FAILED;
       }
     }
@@ -558,7 +565,7 @@ xf86mmap(void *start, xf86size_t length, int prot,
 	return rc;
 #else
     ErrorF("Warning: mmap() is not supported on this platform\n");
-    xf86errno = XF86_ENOSYS;
+    xf86errno = xf86_ENOSYS;
     return XF86_MAP_FAILED;
 #endif
 #endif
@@ -580,7 +587,7 @@ xf86munmap(void *start, xf86size_t length)
     return rc;
 #else
     ErrorF("Warning: munmap() is not supported on this platform\n");
-    xf86errno = XF86_ENOSYS;
+    xf86errno = xf86_ENOSYS;
     return -1;
 #endif
 #endif
@@ -726,7 +733,7 @@ xf86printf(const char *format, ...)
 	va_list args;
 	va_start(args, format);
 
-	ret = vprintf(format, args);
+	ret = printf(format,args);
 	va_end(args);
 	return ret;
 }
@@ -907,7 +914,7 @@ xf86ftell(XF86FILE* f)
 	return ftell(fp->filehnd);
 }
 
-#define mapnum(e) case (XF86_##e): err = e; break
+#define mapnum(e) case (xf86_##e): err = e; break
 
 char*
 xf86strerror(int n)
@@ -1857,7 +1864,7 @@ xf86getpagesize()
 }
 
 
-#define mapnum(e) case (e): return (XF86_##e)
+#define mapnum(e) case (e): return (xf86_##e)
 
 int
 xf86GetErrno ()
@@ -1905,7 +1912,7 @@ xf86GetErrno ()
 int
 xf86shmget(xf86key_t key, int size, int xf86shmflg)
 {
-    int shmflg, status;
+    int shmflg;
 
     /* This copies the permissions (SHM_R, SHM_W for u, g, o). */
     shmflg = xf86shmflg & 0777;
@@ -1915,16 +1922,13 @@ xf86shmget(xf86key_t key, int size, int xf86shmflg)
     if (xf86shmflg & XF86IPC_CREAT) shmflg |= IPC_CREAT;
     if (xf86shmflg & XF86IPC_EXCL) shmflg |= IPC_EXCL;
     if (xf86shmflg & XF86IPC_NOWAIT) shmflg |= IPC_NOWAIT;
-    status = shmget((key_t) key, size, shmflg);
-    xf86errno = xf86GetErrno();
-    return status;
+    return shmget((key_t) key, size, shmflg);
 }
 
 char *
 xf86shmat(int id, char *addr, int xf86shmflg)
 {
     int shmflg = 0;
-    char * status;
 
 #ifdef SHM_RDONLY
     if (xf86shmflg & XF86SHM_RDONLY) shmflg |= SHM_RDONLY;
@@ -1936,62 +1940,32 @@ xf86shmat(int id, char *addr, int xf86shmflg)
     if (xf86shmflg & XF86SHM_REMAP)  shmflg |= SHM_REMAP;
 #endif
 
-    status = shmat(id,addr,shmflg);
-    xf86errno = xf86GetErrno();
-    return status;
+    return shmat(id,addr,shmflg);
 }
 
 int
 xf86shmdt(char *addr)
 {
-    int status = shmdt(addr);
-
-    xf86errno = xf86GetErrno();
-    return status;
+    return shmdt(addr);
 }
 
+/*
+ * for now only implement the rmid command.
+ */
 int
-xf86shmctl(int id, int xf86cmd, struct xf86shmid_ds * buf)
+xf86shmctl(int id, int xf86cmd, pointer buf)
 {
-    struct shmid_ds ds, *dsp;
-    int cmd, status;
+    int cmd;
 
     switch (xf86cmd) {
     case XF86IPC_RMID:
 	cmd = IPC_RMID;
-	dsp = NULL;
-	break;
-    case XF86IPC_SET:
-	cmd = IPC_SET;
-	dsp = &ds;
-	(void) memset(&ds, 0, sizeof(ds));
-	ds.shm_perm.uid = buf->shm_perm.uid;
-	ds.shm_perm.gid = buf->shm_perm.gid;
-	ds.shm_perm.cuid = buf->shm_perm.cuid;
-	ds.shm_perm.cgid = buf->shm_perm.cgid;
-	ds.shm_perm.mode = buf->shm_perm.mode;
-	ds.shm_segsz = buf->shm_segsz;
-	break;
-    case XF86IPC_STAT:
-	cmd = IPC_STAT;
-	dsp = &ds;
 	break;
     default:
-	return -1;
+	return 0;
     }
     
-    status = shmctl(id, cmd, dsp);
-    xf86errno = xf86GetErrno();
-    if ((status == 0) && (cmd == IPC_STAT)) {
-	(void) memset(buf, 0, sizeof(*buf));
-	buf->shm_perm.uid = ds.shm_perm.uid;
-	buf->shm_perm.gid = ds.shm_perm.gid;
-	buf->shm_perm.cuid = ds.shm_perm.cuid;
-	buf->shm_perm.cgid = ds.shm_perm.cgid;
-	buf->shm_perm.mode = ds.shm_perm.mode;
-	buf->shm_segsz = ds.shm_segsz;
-    }
-    return status;
+    return shmctl(id, cmd, buf);
 }
 #else
 
@@ -2009,7 +1983,7 @@ xf86shmat(int id, char *addr, int xf86shmflg)
 }
 
 int
-xf86shmctl(int id, int xf86cmd, struct xf86shmid_ds * buf)
+xf86shmctl(int id, int xf86cmd, pointer buf)
 {
     return -1;
 }
@@ -2087,8 +2061,3 @@ xf86setjmperror(xf86jmp_buf env)
     return 0;
 }
 
-int
-xf86rand(void)
-{
-    return rand();
-}

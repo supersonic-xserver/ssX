@@ -5,7 +5,7 @@
 // Adds suport for dead-keys in I18N applications
 // by Conectiva  (http://www.conectiva.com.br)"
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/br,v 1.5 2004/05/08 07:26:54 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/br,v 1.6 2004/06/19 13:53:47 pascal Exp $
 
 xkb_symbols "abnt2" {
 

@@ -1,0 +1,31 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/bundle/German.lproj/Imakefile,v 1.4 2007/04/22 00:37:19 tsi Exp $
+
+#include <Server.tmpl>
+
+LinkSourceFile(InfoPlist.strings.cpp,../English.lproj)
+
+INCLUDES = -I$(SERVERSRC)/include
+
+VERS = XFree86VersionString
+DATE = XFree86DateString
+XF86_DEFS = $(INCLUDES) -DXF86_VERSION=$(VERS) -DXF86_REL_DATE=$(DATE)
+
+AllTarget(XDarwinHelp.html)
+CppFileTarget(XDarwinHelp.html,XDarwinHelp.html.cpp,$(XF86_DEFS), \
+	NullParameter)
+
+AllTarget(InfoPlist.strings)
+InfoPlist.strings: InfoPlist.strings.cpp
+	RemoveFile($@)
+	ClearmakeOSName \
+	$(CPP) CppNoLineInfoOption $(XF86_DEFS) <InfoPlist.strings.cpp | \
+	CppSedMagic | sed 's/__quote__/"/g' >$@
+
+clean::
+	RemoveFiles(InfoPlist.strings)
+
+SYMLINKDIR = ../../symlinks/German.lproj
+
+BundleSymbolicLink($(SYMLINKDIR),.,Localizable.strings)
+BundleSymbolicLink($(SYMLINKDIR),MainMenu.nib,MainMenu.nib/classes.nib)
+BundleSymbolicLink($(SYMLINKDIR),MainMenu.nib,MainMenu.nib/objects.nib)

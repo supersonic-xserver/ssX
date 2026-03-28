@@ -1,5 +1,16 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_regacc.c,v 1.2 2003/01/14 09:34:32 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: nsc_regacc.c $
+ * $Revision: 1.1.1.1 $
+ * $Author: tron $
+ *
  * This is the main file used to add Durango graphics support to a software 
  * project.  The main reason to have a single file include the other files
  * is that it centralizes the location of the compiler options.  This file

@@ -1,3 +1,4 @@
+.\" $Xorg: Framework.ms,v 1.3 2000/08/17 19:42:49 cpqbld Exp $
 .\" To print this out, type tbl macros.t ThisFile | troff -ms
 .\" $XFree86: xc/doc/specs/i18n/Framework.ms,v 1.5 2001/02/09 00:02:52 dawes Exp $
 .EH ''''

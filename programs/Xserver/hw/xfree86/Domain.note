@@ -107,8 +107,8 @@ Output drivers
 --------------
 Most drivers currently used on ix86 need(ed) source code changes.
 - Calls to xf86ReadBIOS() and xf86MapVidMem() were replaced with calls to
-  xf86ReadDomainMemory() and xf86MapDomainMemory() respectively.  This has
-  already been done.
+  xf86ReadDomainMemory() and xf86MapDomainMemory() respectively.  Except
+  for the "ati" and "atimisc" modules, this has already been done.
 - All ix86-style I/O port numbers need to be declared as an IOADDRESS, a
   type defined in xf86Pci.h as "unsigned long".  Such port numbers also
   need to be offset by a displacement which is also defined as an
@@ -121,8 +121,9 @@ Most drivers currently used on ix86 need(ed) source code changes.
   actually a pointer that has been recasted to an unsigned long, but the
   common layer "hides" this fact from the driver ABI, which means that I/O
   port numbers, as seen by drivers, remain as integers rather than
-  addresses.  s3 and tseng are the only modules left whose I/O still needs
-  to be converted (I've temporarily run out of steam).
+  addresses.  Aside from the ati and atimisc modules, s3 and tseng are the
+  only modules left whose I/O still needs to be converted (I've temporarily
+  run out of steam).
 - Note that these conversions are not necessarily sufficient to produce
   drivers that will work on any given multi-domain architecture.  A driver
   that, for example, had endianness problems, still does.  But, at least,
@@ -138,5 +139,10 @@ Most drivers currently used on ix86 need(ed) source code changes.
   xf86MatchIsaInstances(), while still valid, will always return detection
   failure on SPARC's and PowerPC's.  This will be dealt with when a more
   general master abort handling scheme is implemented.
+- I need to make a decision about the master abort issues mentionned above
+  before I can convert the "ati" and "atimisc" modules.  Consequently,
+  these modules still need to be compiled with -DAVOID_CPIO on
+  multi-domain architectures, and support for Mach64 variants as
+  non-primary heads is not yet available.
 
-$XFree86: xc/programs/Xserver/hw/xfree86/Domain.note,v 1.4tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/Domain.note,v 1.4 2004/12/31 03:30:40 tsi Exp $

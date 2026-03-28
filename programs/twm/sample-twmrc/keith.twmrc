@@ -104,7 +104,7 @@ Function "previous-window"
 
 DefaultFunction f.nop
 
-Button1	=	: title		: f.function "move-or-raiselower"
+Button1	=	: title 	: f.function "move-or-raiselower"
 Button2 =	: title		: f.menu "Title Menu"
 Button3 =	: title		: f.resize
 Button1 = m	: window|icon	: f.iconify

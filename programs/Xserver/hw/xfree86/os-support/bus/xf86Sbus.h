@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/xf86Sbus.h,v 1.12tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Platform specific SBUS and OpenPROM access declarations.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -21,6 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/xf86Sbus.h,v 1.10 2004/12/07 22:19:50 tsi Exp $ */
 
 #ifndef _XF86_SBUS_H
 #define _XF86_SBUS_H
@@ -36,42 +43,8 @@
 #elif defined(SVR4)
 # include <sys/fbio.h>
 # include <sys/openpromio.h>
-#elif defined(__OpenBSD__)
-# include <machine/openpromio.h>
-# include <dev/wscons/wsconsio.h>
-  /* Compatibility #defines */
-# define FBTYPE_SUN2BW		WSDISPLAY_TYPE_SUNBW
-# define FBTYPE_SUN2COLOR	WSDISPLAY_TYPE_SUNCG2
-# define FBTYPE_SUN3COLOR	WSDISPLAY_TYPE_SUNCG3
-# define FBTYPE_SUN4COLOR	WSDISPLAY_TYPE_SUNCG4
-# define FBTYPE_SUNFAST_COLOR	WSDISPLAY_TYPE_SUNCG6
-# define FBTYPE_MEMCOLOR	WSDISPLAY_TYPE_SUNCG8
-# define FBTYPE_SUNGP3		WSDISPLAY_TYPE_SUNCG12
-# define FBTYPE_SUNGT		(-1)	/* Doesn't seem to exist */
-# define FBTYPE_SUNLEO		WSDISPLAY_TYPE_SUNLEO
-# define FBTYPE_MDICOLOR	WSDISPLAY_TYPE_SUNCG14
-# define FBTYPE_TCXCOLOR	WSDISPLAY_TYPE_SUNTCX
-# define FBTYPE_CREATOR		WSDISPLAY_TYPE_SUNFFB
-
-# define fbcmap			wsdisplay_cmap
-
-# define FBIOGETCMAP		WSDISPLAYIO_GETCMAP
-# define FBIOPUTCMAP		WSDISPLAYIO_PUTCMAP
-
-# define fbcursor		wsdisplay_cursor
-# define set			which
-
-# define FBIOSCURSOR		WSDISPLAYIO_SCURSOR
-# define FBIOGCURSOR		WSDISPLAYIO_GCURSOR
-
-# define FB_CUR_SETCUR		WSDISPLAY_CURSOR_DOCUR
-# define FB_CUR_SETPOS		WSDISPLAY_CURSOR_DOPOS
-# define FB_CUR_SETHOT		WSDISPLAY_CURSOR_DOHOT
-# define FB_CUR_SETCMAP		WSDISPLAY_CURSOR_DOCMAP
-# define FB_CUR_SETSHAPE	WSDISPLAY_CURSOR_DOSHAPE
-# define FB_CUR_SETALL		WSDISPLAY_CURSOR_DOALL
-
-# define FBIOSVIDEO		WSDISPLAYIO_SVIDEO
+#elif defined(__OpenBSD__) && defined(__sparc64__)
+/* XXX */
 #elif defined(CSRG_BASED)
 # if defined(__FreeBSD__)
 #  include <sys/types.h>
@@ -80,24 +53,6 @@
 # elif defined(__NetBSD__)
 #  include <dev/sun/fbio.h>
 #  include <dev/ofw/openfirmio.h>
-   /*
-    * Translate from openpromio to openfirmio.  This could likely be avoided by
-    * #include'ing <machine/openpromio.h> or <sparc/openpromio.h> instead.
-    */
-#  define opiocdesc		ofiocdesc
-#  define op_nodeid		of_nodeid
-#  define op_namelen		of_namelen
-#  define op_name		of_name
-#  define op_buflen		of_buflen
-#  define op_buf		of_buf
-
-#  define OPIOCGET		OFIOCGET
-#  define OPIOCSET		OFIOCSET
-#  define OPIOCNEXTPROP		OFIOCNEXTPROP
-#  define OPIOCGETOPTNODE	OFIOCGETOPTNODE
-#  define OPIOCGETNEXT		OFIOCGETNEXT
-#  define OPIOCGETCHILD		OFIOCGETCHILD
-#  define OPIOCFINDDEVICE	OFIOCFINDDEVICE
 # else
 #  include <machine/fbio.h>
 # endif
@@ -140,7 +95,7 @@
 #endif
 
 #ifndef   FBTYPE_MDICOLOR
-# if defined(CSRG_BASED) && !defined(__NetBSD__)
+# ifdef CSRG_BASED
 #  define FBTYPE_MDICOLOR 28
 # else
 #  define FBTYPE_MDICOLOR 20
@@ -165,12 +120,12 @@
 # endif
 #endif
 
-#ifndef   FBTYPE_P9100
-# ifdef __NetBSD__
-#  define  FBTYPE_P9100 21
-# else
-#  define  FBTYPE_P9100 -1	/* Not supported */
-# endif
+#ifndef FBTYPE_P9100
+#define FBTYPE_P9100 21
+#endif
+
+#ifndef FBTYPE_AG10E
+#define FBTYPE_AG10E 24
 #endif
 
 #endif /* XFree86Module */

@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,6 +58,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/include/cursorstr.h,v 1.10 2006/01/09 15:00:33 dawes Exp $ */
 
 #ifndef CURSORSTRUCT_H
 #define CURSORSTRUCT_H 
@@ -75,22 +90,10 @@ typedef struct _Cursor {
     unsigned short backRed, backGreen, backBlue; /* device-independent color */
     int refcnt;
     pointer devPriv[MAXSCREENS];		/* set by pScr->RealizeCursor*/
-#ifdef XFIXES
-    CARD32 serialNumber;
-    Atom name;
-#endif
 } CursorRec;
 
 typedef struct _CursorMetric {
     unsigned short width, height, xhot, yhot;
 } CursorMetricRec;
 
-typedef struct {
-    int                x, y;
-    ScreenPtr  pScreen;
-} HotSpot;
-
-#ifdef XEVIE
-extern HotSpot xeviehot;
-#endif
 #endif /* CURSORSTRUCT_H */

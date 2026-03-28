@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/sun/sunKeyMap.c,v 1.4tsi Exp $ */
+/* $Xorg: sunKeyMap.c,v 1.3 2000/08/17 19:48:30 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -27,11 +34,12 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/hw/sun/sunKeyMap.c,v 1.4 2001/10/28 03:33:12 tsi Exp $ */
 
 #include	"sun.h"
 #define		XK_KATAKANA
-#include	<X11/keysym.h>
-#include	<X11/Sunkeysym.h>
+#include	"keysym.h"
+#include	"Sunkeysym.h"
 
 /* 
   By default all keyboards are hardcoded on the theory that people

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclInit.c,v 1.14 2006/02/19 15:51:18 tsi Exp $ */
+/* $Xorg: PclInit.c,v 1.3 2000/08/17 19:48:08 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -76,6 +83,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclInit.c,v 1.12 2002/10/16 21:13:32 dawes Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -85,15 +93,10 @@ copyright holders.
 #include "Pcl.h"
 
 #include "cfb.h"
-#include <X11/Xos.h>	/* for unlink() */
+#include "Xos.h"	/* for unlink() */
 
 #include "attributes.h"
 #include "DiPrint.h"
-
-#ifdef MITSHM
-#define _XSHM_SERVER_
-#include <X11/extensions/XShm.h>
-#endif
 
 #define MODELDIRNAME "/models"
 
@@ -166,7 +169,7 @@ InitializePclDriver(
      int ndx,
      ScreenPtr pScreen,
      int argc,
-     const char **argv)
+     char **argv)
 {
     int maxRes, xRes, yRes, maxDim;
     unsigned i;
@@ -213,10 +216,6 @@ InitializePclDriver(
     mfbScreenInit( pScreen, NULL, maxDim, maxDim, maxRes, maxRes,
 		  maxRes );
 #endif /* XP_PCL_COLOR */
-
-#ifdef MITSHM
-    ShmRegisterMiFuncs(pScreen);
-#endif
 
     miInitializeBackingStore ( pScreen );
 

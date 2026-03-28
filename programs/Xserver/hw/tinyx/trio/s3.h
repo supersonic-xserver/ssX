@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/tinyx/trio/s3.h,v 1.1tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,6 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/trio/s3.h,v 1.1 2004/06/02 22:43:03 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -1065,7 +1072,7 @@ typedef struct _crtc {
 				    ((crtc)->ge_screen_width_2 << 2))
 
 #define crtc_set_ge_screen_width(crtc,v) { \
-    (crtc)->ge_screen_width_0_1 = (v) & 0x3; \
+    (crtc)->ge_screen_width_0_1 = (v); \
     (crtc)->ge_screen_width_2 = (v) >> 2; \
 }
 

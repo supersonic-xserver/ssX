@@ -21,7 +21,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/VISmoveImage.s,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/VISmoveImage.s,v 1.2 2000/05/23 04:47:43 dawes Exp $ */
 
 
 /* NOTE NOTE NOTE: All loads in these routines _MUST_ be 64-byte block
@@ -78,8 +78,8 @@
 
 #if defined(__sparc_v9__) || defined(__sparcv9) || defined(__arch64__)
 
-	.register %g2, #scratch
-	.register %g3, #scratch
+ .register %g2, #scratch
+ .register %g3, #scratch
 
 #define SMUL			mulx
 #define ICC			xcc
@@ -182,7 +182,11 @@ tgtr:
 	.globl			VISmoveImageLR
 	.align			32
 VISmoveImageLR:
+#ifdef __arch64__
 	save			%sp, -192, %sp				! Group 0
+#else
+	save			%sp, -96, %sp				! Group 0
+#endif
 0:	rd			%pc, %tmp3				! Group 1
 	sub			%src, %dst, %mode			! Group 7
 	brz,pn			%h, return
@@ -783,7 +787,7 @@ roll_wide:
 	 sub			%tmp3, %rightw, %curw
 
 return: return			%i7+8
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__)
 	 wr			%g0, 4, %fprs
 #else
 	 wr			%g0, 0, %fprs
@@ -1150,7 +1154,11 @@ tgtr:
 	.globl			VISmoveImageRL
 	.align			32
 VISmoveImageRL:
+#ifdef __arch64__
 	save			%sp, -192, %sp				! Group 0
+#else
+	save			%sp, -96, %sp				! Group 0
+#endif
 0:	rd			%pc, %tmp3				! Group 1
 	and			%dst, 63, %leftw			! Group 7
 	mov			64, %tmp1
@@ -2182,7 +2190,7 @@ rroll_wide:
 	 sub			%curw, %rightw, %curw
 
 rreturn:return			%i7+8
-#if defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__)
 	 wr			%g0, 4, %fprs
 #else
 	 wr			%g0, 0, %fprs

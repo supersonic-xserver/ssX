@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiscreen.c,v 1.40tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiscreen.c,v 1.34 2004/12/31 16:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1999 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1999 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -88,10 +95,10 @@ ATIRefreshArea
 Bool
 ATIScreenInit
 (
-    int        iScreen,
-    ScreenPtr  pScreen,
-    const int  argc,
-    const char **argv
+    int       iScreen,
+    ScreenPtr pScreen,
+    int       argc,
+    char      **argv
 )
 {
     ScrnInfoPtr  pScreenInfo = xf86Screens[iScreen];
@@ -137,6 +144,9 @@ ATIScreenInit
     /* Initialise framebuffer layer */
     switch (pATI->bitsPerPixel)
     {
+
+#ifndef AVOID_CPIO
+
         case 1:
             pATI->Closeable = xf1bppScreenInit(pScreen, pFB,
                 pScreenInfo->virtualX, pScreenInfo->virtualY,
@@ -148,6 +158,8 @@ ATIScreenInit
                 pScreenInfo->virtualX, pScreenInfo->virtualY,
                 pScreenInfo->xDpi, pScreenInfo->yDpi, pATI->displayWidth);
             break;
+
+#endif /* AVOID_CPIO */
 
         case 8:
         case 16:
@@ -196,6 +208,9 @@ ATIScreenInit
                     "RENDER extension not supported with a shadowed"
                     " framebuffer.\n");
         }
+
+#ifndef AVOID_CPIO
+
         else if (pATI->BankInfo.BankSize)
         {
             if (serverGeneration == 1)
@@ -203,6 +218,9 @@ ATIScreenInit
                     "RENDER extension not supported with a banked"
                     " framebuffer.\n");
         }
+
+#endif /* AVOID_CPIO */
+
         else if (!fbPictureInit(pScreen, NULL, 0))
         {
             if (serverGeneration == 1)
@@ -221,11 +239,15 @@ ATIScreenInit
 
     xf86SetBlackWhitePixels(pScreen);
 
+#ifndef AVOID_CPIO
+
     /* Initialise banking if needed */
     if (!miInitializeBanking(pScreen,
                              pScreenInfo->virtualX, pScreenInfo->virtualY,
                              pATI->displayWidth, &pATI->BankInfo))
         return FALSE;
+
+#endif /* AVOID_CPIO */
 
     /* Setup acceleration */
     if (!ATIInitializeAcceleration(pScreen, pScreenInfo, pATI))
@@ -246,12 +268,23 @@ ATIScreenInit
     if (!miCreateDefColormap(pScreen))
         return FALSE;
 
+#ifdef AVOID_CPIO
+
+    if (!xf86HandleColormaps(pScreen, 256, pATI->rgbBits, ATILoadPalette, NULL,
+                             CMAP_PALETTED_TRUECOLOR |
+                             CMAP_LOAD_EVEN_IF_OFFSCREEN))
+            return FALSE;
+
+#else /* AVOID_CPIO */
+
     if (pATI->depth > 1)
         if (!xf86HandleColormaps(pScreen, (pATI->depth == 4) ? 16 : 256,
                                  pATI->rgbBits, ATILoadPalette, NULL,
                                  CMAP_PALETTED_TRUECOLOR |
                                  CMAP_LOAD_EVEN_IF_OFFSCREEN))
             return FALSE;
+
+#endif /* AVOID_CPIO */
 
     /* Initialise shadow framebuffer */
     if (pATI->OptionShadowFB &&

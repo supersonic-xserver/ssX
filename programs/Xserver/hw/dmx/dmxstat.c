@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxstat.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxstat.c,v 1.2 2005/01/30 17:48:44 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002, 2003 Red Hat Inc., Durham, North Carolina.
  *
@@ -46,7 +53,7 @@
 #include "dmx.h"
 #include "dmxstat.h"
 #include "dmxlog.h"
-#include <X11/Xos.h>                /* For sys/time.h */
+#include "Xos.h"                /* For sys/time.h */
 
 /** Used to compute a running average of value. */
 typedef struct _DMXStatAvg {

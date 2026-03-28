@@ -1,12 +1,23 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_driver.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_driver.c,v 1.6 2004/06/10 17:26:38 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: nsc_driver.c $
+ * $Revision: 1.2 $
+ * $Author: christos $
+ *
  * File Contents: This is the main module configures the interfacing 
  *                with the X server. The individual modules will be 
  *                loaded based upon the options selected from the 
  *                XF86Config. This file also has modules for finding 
  *                supported modes, turning on the modes based on options.
  *
- * Project:       Nsc XFree86 Frame buffer device driver.
+ * Project:       Nsc Xfree Frame buffer device driver.
  *
  */
 
@@ -139,7 +150,11 @@
  *
  * END_NSC_LIC_GPL */
 
+#ifndef DEBUGX
+#define DEBUGX(x)
+#endif
 #define NSC_TRACE 0
+#define CFB 0
 #define HWVGA 1
 
 /* Includes that are used by all drivers */
@@ -161,7 +176,20 @@
 #define RC_MAX_DEPTH 24
 
 /* Frame buffer stuff */
+#if CFB
+/*
+ * If using cfb, cfb.h is required.  Select the others for the bpp values
+ * the driver supports.
+ */
+#define PSZ 8				/* needed for cfb.h */
+#include "cfb.h"
+#undef PSZ
+#include "cfb16.h"
+#include "cfb24.h"
+#include "cfb32.h"
+#else
 #include "fb.h"
+#endif
 
 #include "shadowfb.h"
 
@@ -175,13 +203,15 @@
 #include "vbe.h"
 
 /* Check for some extensions */
+#ifdef XFreeXDGA
 #define _XF86_DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
+#endif /* XFreeXDGA */
 
 #include "globals.h"
 #include "opaque.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #define EXTERN
 /* Our private include file (this also includes the durango headers) */
@@ -330,11 +360,21 @@ const char *nscInt10Symbols[] = {
    NULL
 };
 
+#if CFB
+const char *nscCfbSymbols[] = {
+   "cfbScreenInit",
+   "cfb16ScreenInit",
+   "cfb24ScreenInit",
+   "cfb32ScreenInit",
+   NULL
+};
+#else
 const char *nscFbSymbols[] = {
    "fbScreenInit",
    "fbPictureInit",
    NULL
 };
+#endif
 
 const char *nscXaaSymbols[] = {
    "XAADestroyInfoRec",
@@ -399,7 +439,7 @@ XF86ModuleData nscModuleData = { &NscVersionRec, NscSetup, NULL };
  *-------------------------------------------------------------------------
 */
 static pointer
-NscSetup(ModuleDescPtr Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
+NscSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
 {
    static Bool Initialised = FALSE;
 
@@ -409,10 +449,15 @@ NscSetup(ModuleDescPtr Module, pointer Options, int *ErrorMajor, int *ErrorMinor
       /* Tell the loader about symbols from other modules that this
        * module might refer to.
        */
-      LoaderModRefSymLists(Module, nscVgahwSymbols, nscVbeSymbols,
-			   nscFbSymbols, nscXaaSymbols,
-			   nscInt10Symbols, nscRamdacSymbols, nscShadowSymbols,
-			   NULL);
+      LoaderRefSymLists(nscVgahwSymbols, nscVbeSymbols,
+#if CFB
+			nscCfbSymbols,
+#else
+			nscFbSymbols,
+#endif
+			nscXaaSymbols,
+			nscInt10Symbols, nscRamdacSymbols, nscShadowSymbols,
+			NULL);
       return (pointer) TRUE;
    }
    /*The return value must be non-NULL on success */

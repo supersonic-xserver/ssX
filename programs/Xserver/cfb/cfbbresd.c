@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbbresd.c,v 3.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbbresd.c,v 3.6 2001/12/14 19:59:22 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: cfbbresd.c,v 1.4 2001/02/09 02:04:37 xorgcvs Exp $ */
+#include "X.h"
 #include "misc.h"
 #include "cfb.h"
 #include "cfbmskbits.h"
@@ -55,15 +62,30 @@ SOFTWARE.
 /* Dashed bresenham line */
 
 void
-cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
-	 int numInDashList, int *pdashOffset, int isDoubleDash,
-	 CfbBits *addrl, int nlwidth, int signdx, int signdy, int axis,
-	 int x1, int y1, int e, int e1, int e2, int len)
+cfbBresD(rrops,
+	 pdashIndex, pDash, numInDashList, pdashOffset, isDoubleDash,
+	 addrl, nlwidth,
+	 signdx, signdy, axis, x1, y1, e, e1, e2, len)
+    cfbRRopPtr	    rrops;
+    int		    *pdashIndex;	/* current dash */
+    unsigned char   *pDash;		/* dash list */
+    int		    numInDashList;	/* total length of dash list */
+    int		    *pdashOffset;	/* offset into current dash */
+    int		    isDoubleDash;
+    CfbBits   *addrl;		/* pointer to base of bitmap */
+    int		    nlwidth;		/* width in longwords of bitmap */
+    int		    signdx, signdy;	/* signs of directions */
+    int		    axis;		/* major axis (Y_AXIS or X_AXIS) */
+    int		    x1, y1;		/* initial point */
+    register int    e;			/* error accumulator */
+    register int    e1;			/* bresenham increments */
+    int		    e2;
+    int		    len;		/* length of line */
 {
 #ifdef PIXEL_ADDR
-    PixelType	*addrp;
+    register PixelType	*addrp;
 #endif
-    int e3 = e2-e1;
+    register		int e3 = e2-e1;
     int			dashIndex;
     int			dashOffset;
     int			dashRemaining;
@@ -134,7 +156,7 @@ cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
     /* point to first point */
     nlwidth <<= PWSH;
     addrp = (PixelType *)(addrl) + (y1 * nlwidth);
-    addrb = (char *)addrp + x1 * PSZB;
+    addrb = (char *)addrp + x1 * 3;
 
 #else
 #define Loop(store) while (thisDash--) {\
@@ -147,7 +169,7 @@ cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
 #endif
     signdy *= nlwidth;
 #if PSZ == 24
-    signdx3 = signdx * PSZB;
+    signdx3 = signdx * 3;
     signdy3 = signdy * sizeof (CfbBits);
 #endif
     if (axis == Y_AXIS)
@@ -168,8 +190,8 @@ cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
     {
 #if PSZ == 24
 #define body_copy(pix) { \
-	addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	switch((unsigned long)addrb & (PGSZB - 1)){ \
+	addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	switch((unsigned long)addrb & 3){ \
 	case 0: \
 	  *addrp = (*addrp & 0xFF000000)|((pix)[0] & 0xFFFFFF); \
 	  break; \
@@ -217,8 +239,8 @@ cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
     else
     {
 #define body_set(and, xor) { \
-	addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	switch((unsigned long)addrb & (PGSZB - 1)){ \
+	addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	switch((unsigned long)addrb & 3){ \
 	case 0: \
 	  *addrp = (*addrp & ((and)[0]|0xFF000000)) ^ ((xor)[0] & 0xFFFFFF); \
 	  break; \
@@ -264,12 +286,12 @@ cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
     }
 #else /* !PIXEL_ADDR */
     {
-    	CfbBits	tmp;
+    	register CfbBits	tmp;
 	CfbBits		startbit, bit;
 
     	/* point to longword containing first point */
 #if PSZ == 24
-    	addrl = (addrl + (y1 * nlwidth) + ((x1 * PSZB) / PGSZB);
+    	addrl = (addrl + (y1 * nlwidth) + ((x1*3) >> 2);
 #else
     	addrl = (addrl + (y1 * nlwidth) + (x1 >> PWSH));
 #endif
@@ -279,8 +301,8 @@ cfbBresD(cfbRRopPtr rrops, int *pdashIndex, unsigned char *pDash,
 	    startbit = cfbmask[0];
 	else
 #if PSZ == 24
-	    startbit = cfbmask[(PPW - 1) << 1];
-    	bit = cfbmask[(x1 & (PGSZB - 1)) << 1];
+	    startbit = cfbmask[(PPW-1)<<1];
+    	bit = cfbmask[(x1 & 3)<<1];
 #else
 	    startbit = cfbmask[PPW-1];
     	bit = cfbmask[x1 & PIM];

@@ -1,9 +1,27 @@
-/* $XTermId: input.c,v 1.185 2006/06/18 21:19:22 tom Exp $ */
+/* $XTermId: input.c,v 1.169 2005/01/10 00:36:38 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/input.c,v 3.75 2006/02/13 01:14:59 dickey Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright 1999-2005,2006 by Thomas E. Dickey
+ *	$Xorg: input.c,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
+ */
+
+/* $XFree86: xc/programs/xterm/input.c,v 3.72 2005/01/14 01:50:03 dickey Exp $ */
+
+/*
+ * Copyright 1999-2004,2005 by Thomas E. Dickey
  *
  *                         All Rights Reserved
  *
@@ -79,18 +97,6 @@
 
 #include <data.h>
 #include <fontutils.h>
-
-#define IsControlAlias(n) ((n) != 0 && strchr("2345678 @`\\/^~_?", (n)) != 0)
-
-#define IsControlInput(n) (((n) <= 0x1f) \
-			|| ((n) >= 0x40 && (n) <= 0x5f) \
-			|| ((n) >= 0x60 && (n) <= 0x7f))
-
-#ifdef XK_ISO_Left_Tab
-#define IsTabKey(n) ((n) == XK_Tab || (n) == XK_ISO_Left_Tab)
-#else
-#define IsTabKey(n) ((n) == XK_Tab)
-#endif
 
 #define MAP(from, to) case from: return(to)
 
@@ -336,60 +342,15 @@ Input(TKeyboard * keyboard,
     if (screen->xic) {
 	Status status_return;
 #if OPT_WIDE_CHARS
-	if (screen->utf8_mode) {
+	if (screen->utf8_mode)
 	    nbytes = Xutf8LookupString(screen->xic, event,
 				       strbuf, sizeof(strbuf),
 				       &keysym, &status_return);
-	} else
+	else
 #endif
-	{
 	    nbytes = XmbLookupString(screen->xic, event,
 				     strbuf, sizeof(strbuf),
 				     &keysym, &status_return);
-	}
-#if OPT_MOD_FKEYS
-	/*
-	 * X "normally" has some built-in translations, which the user may
-	 * want to suppress when processing the modifyOtherKeys resource.
-	 * In particular, the control modifier applied to some of the keyboard
-	 * digits gives results for control characters (see the IsControlAlias
-	 * macro):
-	 *
-	 * control 2   0    NUL
-	 * control SPC 0    NUL
-	 * control @   0    NUL
-	 * control `   0    NUL
-	 * control 3   0x1b ESC
-	 * control 4   0x1c FS
-	 * control \   0x1c FS
-	 * control 5   0x1d GS
-	 * control 6   0x1e RS
-	 * control ^   0x1e RS
-	 * control ~   0x1e RS
-	 * control 7   0x1f US
-	 * control /   0x1f US
-	 * control _   0x1f US
-	 * control 8   0x7f DEL
-	 *
-	 * It is possible that some other keyboards do not work for these
-	 * combinations, but they do work with modifyOtherKeys=2 for the US
-	 * keyboard:
-	 *
-	 * control `   0    NUL
-	 * control [   0x1b ESC
-	 * control \   0x1c FS
-	 * control ]   0x1d GS
-	 * control ?   0x7f DEL
-	 */
-	if (status_return == XLookupBoth
-	    && nbytes <= 1
-	    && keysym < 256
-	    && (keyboard->modify_other_keys > 1)
-	    && !IsControlInput(keysym)) {
-	    nbytes = 1;
-	    strbuf[0] = keysym;
-	}
-#endif /* OPT_MOD_FKEYS */
     } else
 #endif
     {
@@ -538,21 +499,6 @@ Input(TKeyboard * keyboard,
     }
 #endif /* OPT_MOD_FKEYS */
 
-#if OPT_MOD_FKEYS
-    /*
-     * Shift-tab is often mapped to XK_ISO_Left_Tab which is classified as
-     * IsEditFunctionKey(), and the conversion does not produce any bytes. 
-     * Check for this special case so we have data when handling the
-     * modifyOtherKeys resource.
-     */
-    if (keyboard->modify_other_keys > 1) {
-	if (IsTabKey(keysym) && nbytes == 0) {
-	    nbytes = 1;
-	    strbuf[0] = '\t';
-	}
-    }
-#endif
-
     /* VT300 & up: backarrow toggle */
     if ((nbytes == 1)
 	&& (((keyboard->flags & MODE_DECBKM) == 0)
@@ -629,15 +575,9 @@ Input(TKeyboard * keyboard,
 	MODIFIER_PARM;
 	unparseseq(&reply, pty);
 	key = True;
-    } else if (((IsFunctionKey(keysym)
-		 || IsMiscFunctionKey(keysym)
-		 || IsEditFunctionKey(keysym))
-#if OPT_MOD_FKEYS
-		&& ((keyboard->modify_other_keys < 2)
-		    || (modify_parm != 5)
-		    || (!IsTabKey(keysym)))
-#endif
-	       )
+    } else if (IsFunctionKey(keysym)
+	       || IsMiscFunctionKey(keysym)
+	       || IsEditFunctionKey(keysym)
 #ifdef SunXK_F36
 	       || keysym == SunXK_F36
 	       || keysym == SunXK_F37
@@ -709,32 +649,6 @@ Input(TKeyboard * keyboard,
 	    unparseputc(kypd_num[keysym - XK_KP_Space], pty);
 	}
 	key = True;
-#if OPT_MOD_FKEYS
-    } else if ((keyboard->modify_other_keys > 0)
-	       && (nbytes == 1)
-	       && (modify_parm != 0)
-	       && (modify_parm != 2 || keysym >= 256)
-	       && (!(event->state & ControlMask)
-		   || (keyboard->modify_other_keys > 1
-		       && !IsControlInput(keysym))
-		   || (keyboard->modify_other_keys == 1
-		       && !(IsControlInput(keysym)
-			    || IsControlAlias(keysym))))) {
-	/*
-	 * Function-key code 27 happens to not be used in the vt220-style
-	 * encoding.  xterm uses this to represent modified non-function-keys
-	 * such as control/+ in the Sun/PC keyboard layout.  See the
-	 * modifyOtherKeys resource in the manpage for more information.
-	 */
-	TRACE(("...modifyOtherKeys %d;%d\n", modify_parm, strbuf[0]));
-	reply.a_type = CSI;
-	APPEND_PARM(27);
-	APPEND_PARM(modify_parm);
-	APPEND_PARM(strbuf[0]);
-	reply.a_final = '~';
-
-	unparseseq(&reply, pty);
-#endif
     } else if (nbytes > 0) {
 #if OPT_TEK4014
 	if (screen->TekGIN) {
@@ -1244,7 +1158,7 @@ hex2int(int c)
  * Returns the (shift, control) state in *state.
  */
 int
-xtermcapKeycode(char **params, unsigned *state)
+xtermcapKeycode(char *params, unsigned *state)
 {
     /* *INDENT-OFF* */
 #define DATA(tc,ti,x,y) { tc, ti, x, y }
@@ -1329,31 +1243,25 @@ xtermcapKeycode(char **params, unsigned *state)
     unsigned len = 0;
     int code = -1;
 #define MAX_TNAME_LEN 6
-    char name[MAX_TNAME_LEN + 1];
+    char name[MAX_TNAME_LEN];
     char *p;
 
-    TRACE(("xtermcapKeycode(%s)\n", *params));
-
     /* Convert hex encoded name to ascii */
-    for (p = *params; hex2int(p[0]) >= 0 && hex2int(p[1]) >= 0; p += 2) {
-	if (len >= MAX_TNAME_LEN)
-	    break;
+    for (p = params; hex2int(p[0]) >= 0 && hex2int(p[1]) >= 0; p += 2) {
+	if (len == MAX_TNAME_LEN - 1)
+	    return -1;
 	name[len++] = (hex2int(p[0]) << 4) + hex2int(p[1]);
     }
+    if (*p)
+	return -1;
     name[len] = 0;
-    *params = p;
-
-    if (*p == 0 || *p == ';') {
-	for (n = 0; n < XtNumber(table); n++) {
-	    if (!strcmp(table[n].ti, name) || !strcmp(table[n].tc, name)) {
-		code = table[n].code;
-		*state = table[n].state;
-		break;
-	    }
+    for (n = 0; n < XtNumber(table); n++) {
+	if (!strcmp(table[n].ti, name) || !strcmp(table[n].tc, name)) {
+	    code = table[n].code;
+	    *state = table[n].state;
+	    break;
 	}
     }
-
-    TRACE(("... xtermcapKeycode(%s, %u) -> %#06x\n", name, *state, code));
     return code;
 }
 #endif

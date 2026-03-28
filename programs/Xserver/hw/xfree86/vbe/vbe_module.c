@@ -1,38 +1,58 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/vbe/vbe_module.c,v 1.3 2005/08/28 20:04:52 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/vbe/vbe_module.c,v 1.1 2003/02/17 17:06:46 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef XFree86LOADER
 
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include "xf86.h"
+#include "xf86str.h"
 #include "vbe.h"
 
 extern const char *vbe_ddcSymbols[];
-extern const char *vbe_int10Symbols[];
 
-/*
- * Vbe.*InfoBlock structures were reworked starting with video driver ABI
- * version number 0.9.
- */
-static XF86ModReqInfo ParentModuleRequirements =
+#ifdef XFree86LOADER
+
+static MODULESETUPPROTO(vbeSetup);
+
+static XF86ModuleVersionInfo vbeVersRec =
 {
-    MAJOR_UNSPEC,		/* majorversion */
-    MINOR_UNSPEC,		/* minorversion */
-    PATCH_UNSPEC,		/* patchlevel */
-    ABI_CLASS_VIDEODRV,		/* abiclass */
-    SET_ABI_VERSION(0, 9),	/* abiversion */
-    MOD_CLASS_NONE		/* moduleclass */
+    "vbe",
+    MODULEVENDORSTRING,
+    MODINFOSTRING1,
+    MODINFOSTRING2,
+    XF86_VERSION_CURRENT,
+    1, 1, 0,
+    ABI_CLASS_VIDEODRV,		/* needs the video driver ABI */
+    ABI_VIDEODRV_VERSION,
+    MOD_CLASS_NONE,
+    {0,0,0,0}
 };
 
+XF86ModuleData vbeModuleData = { &vbeVersRec, vbeSetup, NULL };
+
 static pointer
-vbeSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+vbeSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
-    /*
-     * Tell the loader about symbols from other modules that this module
-     * might refer to.
-     */
-    LoaderModRefSymLists(module, vbe_ddcSymbols, vbe_int10Symbols, NULL);
-
-    /* Cause parent module version to be checked */
-    xf86SetParentModuleRequirements(module, &ParentModuleRequirements);
-
+    static Bool setupDone = FALSE;
+    
+    if (!setupDone) {
+	setupDone = TRUE;
+	LoaderRefSymLists(vbe_ddcSymbols,NULL);
+	/*
+	 * Tell the loader about symbols from other modules that this module
+	 * might refer to.
+	 */
+    } 
     /*
      * The return value must be non-NULL on success even though there
      * is no TearDownProc.
@@ -40,25 +60,5 @@ vbeSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
     return (pointer)1;
 }
 
-static XF86ModuleVersionInfo vbeVersRec =
-{
-    "vbe",			/* modname */
-    MODULEVENDORSTRING,		/* vendor */
-    MODINFOSTRING1,		/* _modinfo1_ */
-    MODINFOSTRING2,		/* _modinfo2_ */
-    XF86_VERSION_CURRENT,	/* xf86version */
-    2, 0, 0,			/* majorversion, minorversion, patchlevel */
-    ABI_CLASS_VIDEODRV,		/* needs the video driver ABI */
-    ABI_VIDEODRV_VERSION,	/* abiversion (current) */
-    MOD_CLASS_NONE,		/* moduleclass */
-    {0,0,0,0}			/* checksum */
-};
+#endif
 
-XF86ModuleData vbeModuleData =
-{
-    &vbeVersRec,		/* vers */
-    vbeSetup,			/* setup */
-    NULL			/* teardown */
-};
-
-#endif /* XFree86LOADER */

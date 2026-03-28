@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xedit/lisp/modules/Imakefile,v 1.17tsi Exp $
+XCOMM $XFree86: xc/programs/xedit/lisp/modules/Imakefile,v 1.17 2003/12/11 16:03:30 paulo Exp $
 
 #include "../lisp.cf"
 #include "../lisp.rules"
@@ -7,7 +7,7 @@ XCOMM $XFree86: xc/programs/xedit/lisp/modules/Imakefile,v 1.17tsi Exp $
 
     SRCS = x11.c xt.c xaw.c
     OBJS = x11.o xt.o xaw.o
-INCLUDES = -I../.. -I../mp -I../re
+INCLUDES = -I../.. -I../mp -I../re -I$(XINCLUDESRC)
 
 LispModuleTarget(x11, $(XLIB) $(LOCAL_LIBRARIES),)
 LispModuleTarget(xt, $(XTOOLLIB) $(XLIB) $(LOCAL_LIBRARIES),)

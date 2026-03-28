@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/Xrender/Glyph.c,v 1.11 2002/10/18 01:13:39 keithp Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/Xrender/Glyph.c,v 1.12 2002/11/05 23:22:35 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/gcstruct.h,v 1.9 2005/10/14 15:17:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,8 +52,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-
 
 #ifndef GCSTRUCT_H
 #define GCSTRUCT_H
@@ -261,6 +267,10 @@ typedef struct _GCOps {
 		int /*h*/,
 		int /*x*/,
 		int /*y*/);
+
+#ifdef NEED_LINEHELPER
+    void	(* LineHelper)();
+#endif
 
     DevUnion	devPrivate;
 } GCOps;

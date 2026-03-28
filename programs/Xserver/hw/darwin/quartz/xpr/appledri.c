@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/appledri.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/appledri.c,v 1.1 2003/06/30 01:45:13 torrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -38,8 +45,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
@@ -75,7 +82,7 @@ typedef struct _DRIEvent {
 
 
 void
-AppleDRIExtensionInit(INITARGS)
+AppleDRIExtensionInit(void)
 {
     ExtensionEntry* extEntry;
 
@@ -173,7 +180,7 @@ ProcAppleDRIAuthConnection(
     rep.authenticated = 1;
 
     if (!DRIAuthConnection( screenInfo.screens[stuff->screen], stuff->magic)) {
-        ErrorF("Failed to authenticate %u\n", (unsigned int)stuff->magic);
+        ErrorF("Failed to authenticate %u\n", stuff->magic);
         rep.authenticated = 0;
     }
     WriteToClient(client, sizeof(xAppleDRIAuthConnectionReply), (char *)&rep);

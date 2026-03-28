@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/tnl/t_save_api.c,v 1.1.1.4 2004/12/10 15:05:11 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/tnl/t_save_api.c,v 1.4 2004/12/10 15:30:13 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2002 Tungsten Graphics Inc., Cedar Park, Texas.

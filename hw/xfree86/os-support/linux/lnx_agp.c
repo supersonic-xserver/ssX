@@ -1,16 +1,20 @@
 /*
- * Abstraction of the AGP GART interface.
- *
- * This version is for Linux and Free/Open/NetBSD.
- *
- * Copyright Â© 2000 VA Linux Systems, Inc.
- * Copyright Â© 2001 The XFree86 Project, Inc.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+ * Abstraction of the AGP GART interface.
+ *
+ * This version is for both Linux and FreeBSD.
+ *
+ * Copyright © 2000 VA Linux Systems, Inc.
+ * Copyright © 2001 The XFree86 Project, Inc.
+ */
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_agp.c,v 3.18 2006/05/08 01:40:24 dawes Exp $ */
 
 #include <X11/X.h>
 #include "xf86.h"
@@ -20,8 +24,14 @@
 
 #if defined(linux)
 #include <asm/ioctl.h>
-#include <linux/agpgart.h>
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
+#include <linux/version.h>
+
+#if defined(LINUX_VERSION_CODE) && defined(KERNEL_VERSION)
+# if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,31)
+#  include <linux/agpgart.h>
+# endif
+#endif
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #include <sys/ioctl.h>
 #include <sys/agpio.h>
 #endif
@@ -43,7 +53,7 @@ static Bool initDone = FALSE;
  * Close /dev/agpgart.  This frees all associated memory allocated during
  * this server generation.
  */
-_X_EXPORT Bool
+Bool
 xf86GARTCloseScreen(int screenNum)
 {
 	if(gartFd != -1) {
@@ -61,6 +71,7 @@ xf86GARTCloseScreen(int screenNum)
 static Bool
 GARTInit(int screenNum)
 {
+#ifdef AGPIOC_INFO
 	struct _agp_info agpinf;
 
 	if (initDone)
@@ -112,19 +123,22 @@ GARTInit(int screenNum)
 		return FALSE;
 	}
 #endif
-	
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
-_X_EXPORT Bool
+Bool
 xf86AgpGARTSupported()
 {
 	return GARTInit(-1);
 }
 
-_X_EXPORT AgpInfoPtr
+AgpInfoPtr
 xf86GetAGPInfo(int screenNum)
 {
+#ifdef AGPIOC_INFO
 	struct _agp_info agpinf;
 	AgpInfoPtr info;
 
@@ -137,8 +151,6 @@ xf86GetAGPInfo(int screenNum)
 			   "xf86GetAGPInfo: Failed to allocate AgpInfo\n");
 		return NULL;
 	}
-
-	memset((char*)&agpinf, 0, sizeof(agpinf));
 
 	if (ioctl(gartFd, AGPIOC_INFO, &agpinf) != 0) {
 		xf86DrvMsg(screenNum, X_ERROR,
@@ -155,9 +167,10 @@ xf86GetAGPInfo(int screenNum)
 	info->systemPages = agpinf.pg_system;
 	info->usedPages = agpinf.pg_used;
 
-	xf86DrvMsg(screenNum, X_INFO, "Kernel reported %d total, %d used\n", agpinf.pg_total, agpinf.pg_used);
-
 	return info;
+#else
+	return NULL;
+#endif
 }
 
 /*
@@ -165,9 +178,10 @@ xf86GetAGPInfo(int screenNum)
  * count instead of using acquiredScreen?
  */
 
-_X_EXPORT Bool
+Bool
 xf86AcquireGART(int screenNum)
 {
+#ifdef AGPIOC_ACQUIRE
 	if (screenNum != -1 && !GARTInit(screenNum))
 		return FALSE;
 
@@ -181,11 +195,15 @@ xf86AcquireGART(int screenNum)
 		acquiredScreen = screenNum;
 	}
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
-_X_EXPORT Bool
+Bool
 xf86ReleaseGART(int screenNum)
 {
+#ifdef AGPIOC_RELEASE
 	if (screenNum != -1 && !GARTInit(screenNum))
 		return FALSE;
 
@@ -210,13 +228,15 @@ xf86ReleaseGART(int screenNum)
 	    }
 	    return TRUE;
 	}
+#endif
 	return FALSE;
 }
 
-_X_EXPORT int
+int
 xf86AllocateGARTMemory(int screenNum, unsigned long size, int type,
 			unsigned long *physical)
 {
+#ifdef AGPIOC_ALLOCATE
 	struct _agp_allocate alloc;
 	int pages;
 
@@ -249,11 +269,15 @@ xf86AllocateGARTMemory(int screenNum, unsigned long size, int type,
 		*physical = alloc.physical;
 
 	return alloc.key;
+#else
+	return -1;
+#endif
 }
 
-_X_EXPORT Bool
+Bool
 xf86DeallocateGARTMemory(int screenNum, int key)
 {
+#ifdef AGPIOC_DEALLOCATE
 	if (!GARTInit(screenNum) || acquiredScreen != screenNum)
 		return FALSE;
 
@@ -263,11 +287,7 @@ xf86DeallocateGARTMemory(int screenNum, int key)
 		return FALSE;
 	}
 
-#ifdef __linux__
-	if (ioctl(gartFd, AGPIOC_DEALLOCATE, (int *)key) != 0) {
-#else
-	if (ioctl(gartFd, AGPIOC_DEALLOCATE, &key) != 0) {
-#endif
+	if (ioctl(gartFd, AGPIOC_DEALLOCATE, key) != 0) {
 		xf86DrvMsg(screenNum, X_WARNING,"xf86DeAllocateGARTMemory: "
                    "deallocation gart memory with key %d failed\n\t(%s)\n",
                    key, strerror(errno));
@@ -275,12 +295,16 @@ xf86DeallocateGARTMemory(int screenNum, int key)
 	}
 
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
 /* Bind GART memory with "key" at "offset" */
-_X_EXPORT Bool
+Bool
 xf86BindGARTMemory(int screenNum, int key, unsigned long offset)
 {
+#ifdef AGPIOC_BIND
 	struct _agp_bind bind;
 	int pageOffset;
 
@@ -317,13 +341,17 @@ xf86BindGARTMemory(int screenNum, int key, unsigned long offset)
 	}
 
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
 
 /* Unbind GART memory with "key" */
-_X_EXPORT Bool
+Bool
 xf86UnbindGARTMemory(int screenNum, int key)
 {
+#ifdef AGPIOC_UNBIND
 	struct _agp_unbind unbind;
 
 	if (!GARTInit(screenNum) || acquiredScreen != screenNum)
@@ -349,13 +377,17 @@ xf86UnbindGARTMemory(int screenNum, int key)
 		       "xf86UnbindGARTMemory: unbind key %d\n", key);
 
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
 
 /* XXX Interface may change. */
-_X_EXPORT Bool
+Bool
 xf86EnableAGP(int screenNum, CARD32 mode)
 {
+#ifdef AGPIOC_SETUP
 	agp_setup setup;
 
 	if (!GARTInit(screenNum) || acquiredScreen != screenNum)
@@ -370,5 +402,8 @@ xf86EnableAGP(int screenNum, CARD32 mode)
 	}
 
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 

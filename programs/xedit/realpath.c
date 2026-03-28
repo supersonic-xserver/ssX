@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1994
  *	The Regents of the University of California.  All rights reserved.
  *
@@ -34,6 +41,10 @@
  * SUCH DAMAGE.
  */
 /* $XFree86: xc/programs/xedit/realpath.c,v 1.6 2002/02/10 02:50:05 paulo Exp $ */
+
+#if defined(LIBC_SCCS) && !defined(lint)
+static char sccsid[] = "@(#)realpath.c	8.1 (Berkeley) 2/16/94";
+#endif /* LIBC_SCCS and not lint */
 
 #include <sys/param.h>
 #include <sys/types.h>

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997,1998 Metro Link, Inc.
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,21 +26,13 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/aoutloader.h,v 1.5 2006/03/02 03:00:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/aoutloader.h,v 1.4 2003/10/15 16:29:02 dawes Exp $ */
 
 #ifndef _AOUTLOADER_H
 #define _AOUTLOADER_H
-
-typedef struct AOUT_RELOC *AOUTRelocPtr;
-typedef struct AOUT_COMMON *AOUTCommonPtr;
-
 extern void *AOUTLoadModule(loaderPtr, int, LOOKUP **);
-extern void AOUTResolveSymbols(LoaderDescPtr, int);
-extern int AOUTCheckForUnresolved(LoaderDescPtr);
+extern void AOUTResolveSymbols(void *);
+extern int AOUTCheckForUnresolved(void *);
 extern char *AOUTAddressToSection(void *, unsigned long);
 extern void AOUTUnloadModule(void *);
-extern const char *AOUTFindRelocName(LoaderDescPtr, int, unsigned long);
-extern const char *AOUTAddressToSymbol(void *, unsigned long, unsigned long *,
-				       const char **, int);
-extern void *AOUTReadExecutableSyms(int);
 #endif

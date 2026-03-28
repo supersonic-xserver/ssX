@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i740/Imakefile,v 1.14tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i740/Imakefile,v 1.13 2004/06/01 00:17:01 dawes Exp $
 XCOMM
 XCOMM This is the Imakefile for the i740 driver.  
 XCOMM 
@@ -57,14 +57,16 @@ SRCS = i740_driver.c i740_cursor.c i740_accel.c i740_io.c i740_dga.c i740_i2c.c 
 OBJS = i740_driver.o i740_cursor.o i740_accel.o i740_io.o i740_dga.o i740_i2c.o i740_video.o
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-	   -I$(SERVERSRC)/mi -I$(XF86SRC)/xaa -I$(XF86SRC)/rac \
-	   -I$(XF86SRC)/xaa -I$(XF86SRC)/ramdac \
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
+	   -I$(XF86SRC)/xaa -I$(XF86SRC)/rac \
+           -I$(SERVERSRC)/cfb -I$(XF86SRC)/xaa -I$(XF86SRC)/ramdac \
 	   -I$(XF86SRC)/vgahw -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-	   -I$(SERVERSRC)/Xext -I$(XF86SRC)/vbe -I$(SERVERSRC)/fb \
-	   -I$(SERVERSRC)/include -I$(XF86SRC)/int10 -I$(SERVERSRC)/render
+	   -I$(SERVERSRC)/Xext -I$(XF86SRC)/vbe -I$(SERVERSRC)/fb\
+           -I$(FONTINCSRC) -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	   -I$(EXTINCSRC) -I$(XF86SRC)/int10 -I$(SERVERSRC)/render
 #endif
 
 #if MakeHasPosixVariableSubstitutions

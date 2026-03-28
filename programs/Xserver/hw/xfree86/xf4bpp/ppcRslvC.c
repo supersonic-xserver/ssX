@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcRslvC.c,v 1.5 2001/12/17 20:00:46 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -51,6 +58,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
 */
 
+/* $XConsortium: ppcRslvC.c /main/7 1996/02/21 17:58:25 kaleb $ */
+
 /* Generic Color Resolution Scheme
  * P. Shupak 12/31/87
  */
@@ -83,10 +92,11 @@ static unsigned short defstaticpalette[16][3] = {
 	};
 
 Bool
-xf4bppInitializeColormap(ColormapPtr pmap)
+xf4bppInitializeColormap(pmap)
+    register ColormapPtr	pmap;
 {
-    unsigned i;
-    VisualPtr pVisual;
+    register unsigned i;
+    register VisualPtr pVisual;
     unsigned lim, maxent, shift;
 
     pVisual = pmap->pVisual;
@@ -133,8 +143,11 @@ xf4bppInitializeColormap(ColormapPtr pmap)
 }
 
 void
-xf4bppResolveColor(unsigned short *pred, unsigned short *pgreen,
-		   unsigned short *pblue, VisualPtr pVisual )
+xf4bppResolveColor( pred, pgreen, pblue, pVisual )
+register unsigned short* pred ;
+register unsigned short* pgreen ;
+register unsigned short* pblue ;
+register VisualPtr pVisual ;
 { 
     unsigned lim, maxent, shift;
 

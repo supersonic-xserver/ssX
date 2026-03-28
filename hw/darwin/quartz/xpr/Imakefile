@@ -1,0 +1,33 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/Imakefile,v 1.6 2007/04/03 00:21:10 tsi Exp $
+
+#include <Server.tmpl>
+
+SRCS =  appledri.c \
+        dri.c \
+        xprAppleWM.c \
+        xprCursor.c \
+        xprFrame.c \
+        xprScreen.c \
+        x-hash.c \
+        x-hook.c \
+        x-list.c
+
+OBJS =  appledri.o \
+        dri.o \
+        xprAppleWM.o \
+        xprCursor.o \
+        xprFrame.o \
+        xprScreen.o \
+        x-hash.o \
+        x-hook.o \
+        x-list.o
+
+INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+           -I$(SERVERSRC)/render -I$(SERVERSRC)/miext/rootless -I.. -I../.. \
+           -I$(SERVERSRC)/miext/rootless/safeAlpha -I$(SERVERSRC)/Xext \
+           -I$(LIBSRC)/GL/apple -I$(APPLEWMLIBSRC)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(xpr,$(OBJS))
+
+DependTarget()

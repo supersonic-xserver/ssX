@@ -1,3 +1,19 @@
+/* $Xorg: FSServName.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* @(#)FSServName.c	4.1	91/05/02
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -22,7 +38,7 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/FS/FSServName.c,v 1.5 2005/03/23 03:11:23 dawes Exp $ */
+/* $XFree86: xc/lib/FS/FSServName.c,v 1.4 2001/12/14 19:53:33 dawes Exp $ */
 
 /*
 
@@ -53,10 +69,10 @@ in this Software without prior written authorization from The Open Group.
 #include	<stdio.h>
 #include	<X11/Xosdefs.h>
 #include	<stdlib.h>
-#include	"FSlib.h"
 
-char *
-FSServerName(char *server)
+char       *
+FSServerName(server)
+    char       *server;
 {
     char       *s;
 

@@ -1,4 +1,10 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/elographics/xf86Elo.c,v 1.22dawes Exp $ */
+/* $XConsortium: xf86Elo.c /main/13 1996/10/25 14:11:31 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1995, 1999 by Patrick Lecoanet, France. <lecoanet@cena.dgac.fr>
@@ -22,6 +28,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/elographics/xf86Elo.c,v 1.20 2004/04/26 22:48:21 dawes Exp $ */
 
 /*
  *******************************************************************************
@@ -399,12 +407,12 @@ xf86EloConvert(LocalDevicePtr	local,
 static void
 xf86EloReadInput(LocalDevicePtr	local)
 {
-  EloPrivatePtr	priv = (EloPrivatePtr)(local->private);
-  int		cur_x = 0, cur_y = 0;
-  int		state = 0;
-  int		post_needed = 0;
-  int		x = 0; /* output */
-  int		y = 0; /* output */
+  EloPrivatePtr     priv = (EloPrivatePtr)(local->private);
+  int				cur_x = 0, cur_y = 0;
+  int				state = 0;
+  int               post_needed = 0;
+  int x; /* output */
+  int y; /* output */
 
   DBG(4, ErrorF("Entering ReadInput\n"));
 
@@ -439,7 +447,7 @@ xf86EloReadInput(LocalDevicePtr	local)
      * calib and before posting the event.
      */
 
-     DBG(3, ErrorF("EloConvert Before Fix: Screen(%d) - x(%d), y(%d)\n", priv->screen_no, cur_x, cur_y));
+     DBG(3, ErrorF("EloConvert Before Fix: Screen(%d) - x(%d), y(%d)\n", priv->screen_no, x, y));
      /* 
       * Use the conversion method to send correct coordinates
       * since it contains all necessary logic
@@ -1170,10 +1178,8 @@ InputDriverRec ELOGRAPHICS = {
 };
 
 #ifdef XFree86LOADER
-static MODULESETUPPROTO(Plug);
-
 static pointer
-Plug(ModuleDescPtr	module,
+Plug(pointer	module,
      pointer	options,
      int	*errmaj,
      int	*errmin)

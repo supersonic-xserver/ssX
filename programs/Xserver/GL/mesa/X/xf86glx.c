@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/GL/mesa/X/xf86glx.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/mesa/X/xf86glx.c,v 1.6 2004/12/17 16:38:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -84,7 +91,6 @@ static __GLXscreenInfo __glDDXScreenInfo = {
     NULL,                 /* Set up pVisualPriv in probe */
     0,                    /* Set up numVisuals in probe */
     0,                    /* Set up numUsableVisuals in probe */
-    NULL,                 /* GLextensions is overwritten by __glXScreenInit */
     "Vendor String",      /* GLXvendor is overwritten by __glXScreenInit */
     "Version String",     /* GLXversion is overwritten by __glXScreenInit */
     "Extensions String",  /* GLXextensions is overwritten by __glXScreenInit */
@@ -653,6 +659,8 @@ Bool __MESA_screenProbe(int screen)
 extern void __MESA_resetExtension(void)
 {
     int i, j;
+
+    XMesaReset();
 
     for (i = 0; i < screenInfo.numScreens; i++) {
 	for (j = 0; j < MESAScreens[i].num_vis; j++) {

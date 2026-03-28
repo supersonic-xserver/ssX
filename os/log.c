@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -106,6 +120,12 @@ void (*OsVendorVErrorFProc)(const char *, va_list args) = NULL;
 static FILE *logFile = NULL;
 static Bool logFlush = FALSE;
 static Bool logSync = FALSE;
+#ifndef DEFAULT_LOG_VERBOSITY
+#define DEFAULT_LOG_VERBOSITY 0
+#endif
+#ifndef DEFAULT_LOG_FILE_VERBOSITY
+#define DEFAULT_LOG_FILE_VERBOSITY 3
+#endif
 static int logVerbosity = DEFAULT_LOG_VERBOSITY;
 static int logFileVerbosity = DEFAULT_LOG_FILE_VERBOSITY;
 
@@ -394,12 +414,9 @@ LogMessage(MessageType type, const char *format, ...)
     va_end(ap);
 }
 
-#ifdef __GNUC__
-void AbortServer(void) __attribute__((noreturn));
-#endif
 
 void
-AbortServer(void)
+AbortServer(int sig)
 {
     OsCleanup(TRUE);
     CloseDownDevices();
@@ -549,7 +566,7 @@ FatalError(const char *f, ...)
 #endif
     if (!beenhere) {
 	beenhere = TRUE;
-	AbortServer();
+	AbortServer(0);
     } else
 	abort();
     /*NOTREACHED*/

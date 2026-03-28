@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/xkb/xkbLEDs.c,v 3.10tsi Exp $ */
+/* $Xorg: xkbLEDs.c,v 1.4 2001/05/10 19:54:01 steve Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,6 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/xkb/xkbLEDs.c,v 3.8 2003/11/17 22:20:46 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -34,8 +42,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "misc.h"
 #include "inputstr.h"
 
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XKBsrv.h>
+#include "XI.h"
+#include "XKBsrv.h"
 #include "xkb.h"
 
 /***====================================================================***/
@@ -55,13 +63,10 @@ XkbIndicatorsToUpdate(	DeviceIntPtr	dev,
 			unsigned long 	state_changes,
 			Bool		enable_changes)
 {
-unsigned	update=	0;
+register unsigned	update=	0;
 XkbSrvLedInfoPtr	sli;
 
     sli= XkbFindSrvLedInfo(dev,XkbDfltXIClass,XkbDfltXIId,0);
-
-    if (!sli)
-	return update;
 
     if (state_changes&(XkbModifierStateMask|XkbGroupStateMask))
 	update|= sli->usesEffective;
@@ -118,8 +123,8 @@ XkbStatePtr	state;
     }
     state= &xkbi->state;
     if ((map->groups)&&((map->which_groups&(~XkbIM_UseBase))!=0)) {
-	int i;
-	unsigned bit,match;
+	register int i;
+	register unsigned bit,match;
 
 	if (on)	match= (map->groups)&XkbAllGroupsMask;
 	else 	match= (~map->groups)&XkbAllGroupsMask;
@@ -145,7 +150,7 @@ XkbStatePtr	state;
     }
     if ((map->mods.mask)&&((map->which_mods&(~XkbIM_UseBase))!=0)) {
 	if (map->which_mods&(XkbIM_UseLocked|XkbIM_UseEffective)) {
-	    unsigned long old;
+	    register unsigned long old;
 	    old= state->locked_mods;
 	    if (on)	state->locked_mods|= map->mods.mask;
 	    else	state->locked_mods&= ~map->mods.mask;
@@ -153,7 +158,7 @@ XkbStatePtr	state;
 		stateChange= True;
 	}
 	if (map->which_mods&(XkbIM_UseLatched|XkbIM_UseEffective)) {
-	    unsigned long newmods;
+	    register unsigned long newmods;
 	    newmods= state->latched_mods;
 	    if (on)	newmods|=  map->mods.mask;
 	    else	newmods&= ~map->mods.mask;
@@ -298,7 +303,7 @@ CARD8 			mods,group;
 
 void
 XkbUpdateIndicators(	DeviceIntPtr		dev,
-			CARD32		update,
+			register CARD32		update,
 			Bool			check_edevs,
 			XkbChangesPtr		changes,
 			XkbEventCausePtr	cause)
@@ -363,7 +368,7 @@ XkbSrvLedInfoPtr	sli;
 void
 XkbCheckIndicatorMaps(DeviceIntPtr dev,XkbSrvLedInfoPtr sli,unsigned which)
 {
-unsigned	i,bit;
+register unsigned	i,bit;
 XkbIndicatorMapPtr	map;
 XkbDescPtr		xkb;
 
@@ -511,7 +516,7 @@ Bool			checkNames;
     if ((sli->maps==NULL)&&(needed_parts&XkbXI_IndicatorMapsMask))
 	sli->maps= _XkbTypedCalloc(XkbNumIndicators,XkbIndicatorMapRec);
     if (checkNames) {
-	unsigned i,bit;
+	register unsigned i,bit;
 	sli->namesPresent=	0;
 	for (i=0,bit=1;i<XkbNumIndicators;i++,bit<<=1) {
 	    if (sli->names[i]!=None)
@@ -784,7 +789,7 @@ XkbSrvInfoPtr			xkbi;
 DeviceIntPtr			kbd;
 XkbChangesRec			my_changes;
 xkbExtensionDeviceNotify	my_ed;
-unsigned		i,bit,affected;
+register unsigned		i,bit,affected;
 XkbIndicatorMapPtr		map;
 unsigned			oldState;
 Bool				kb_changed;
@@ -872,8 +877,8 @@ XkbStatePtr			state;
 XkbControlsPtr			ctrls;
 XkbChangesRec			my_changes;
 xkbExtensionDeviceNotify	my_ed;
-unsigned		i,bit,affected;
-XkbIndicatorMapPtr	map;
+register unsigned		i,bit,affected;
+register XkbIndicatorMapPtr	map;
 unsigned			oldState;
 
     if ((maps_to_check==0)||(sli->maps==NULL)||(sli->mapsPresent==0))
@@ -942,7 +947,7 @@ _UpdateButtonVMods(	XkbDescPtr			xkb,
 			unsigned			changed,
 			xkbExtensionDeviceNotify *	ed_inout)
 {
-int i;
+register int i;
 
     for (i=0;i<num_btns;i++,acts++) {
 	if ((acts->any.type!=XkbSA_NoAction)&&
@@ -962,11 +967,11 @@ int i;
 
 static void
 _UpdateMapVMods(	XkbDescPtr	xkb,
-			XkbIndicatorMapPtr map,
+			register	XkbIndicatorMapPtr map,
 			unsigned	changed_vmods,
 			unsigned *	changed_maps_rtrn)
 {
-int i;
+register int i;
 
     *changed_maps_rtrn= 0;
     for (i=0;i<XkbNumIndicators;i++,map++) {

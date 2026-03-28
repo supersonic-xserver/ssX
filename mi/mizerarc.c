@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mizerarc.c,v 1.10 2007/04/09 15:37:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -26,16 +34,11 @@ Author:  Bob Scheifler, MIT X Consortium
 
 ********************************************************/
 
-
 /* Derived from:
  * "Algorithm for drawing ellipses or hyperbolae with a digital plotter"
  * by M. L. V. Pitteway
  * The Computer Journal, November 1967, Volume 10, Number 3, pp. 282-289
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include <math.h>
 #include <X11/X.h>
@@ -95,7 +98,7 @@ static miZeroArcPtRec oob = {65536, 65536, 0};
  *
  */
 
-_X_EXPORT Bool
+Bool
 miZeroArcSetup(arc, info, ok360)
     xArc *arc;
     miZeroArcRec *info;
@@ -401,8 +404,10 @@ miZeroArcSetup(arc, info, ok360)
 
 #define DoPix(idx,xval,yval) if (mask & (1 << idx)) Pixelate(xval, yval);
 
-static DDXPointPtr
-miZeroArcPts(xArc *arc, DDXPointPtr pts)
+DDXPointPtr
+miZeroArcPts(arc, pts)
+    xArc *arc;
+    DDXPointPtr pts;
 {
     miZeroArcRec info;
     int x, y, a, b, d, mask;
@@ -705,7 +710,7 @@ miZeroArcDashPts(
     dinfo->dashOffset = pGC->dash[dinfo->dashIndex] - dashRemaining;
 }
 
-_X_EXPORT void
+void
 miZeroPolyArc(pDraw, pGC, narcs, parcs)
     DrawablePtr	pDraw;
     GCPtr	pGC;
@@ -775,7 +780,10 @@ miZeroPolyArc(pDraw, pGC, narcs, parcs)
 	if (miCanZeroArc(arc))
 	{
 	    if (pGC->lineStyle == LineSolid)
+	    {
 		pts = miZeroArcPts(arc, points);
+		oddPts = NULL;
+	    }
 	    else
 	    {
 		pts = points;

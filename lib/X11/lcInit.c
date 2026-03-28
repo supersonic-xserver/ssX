@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1985, 1986, 1987, 1991, 1998  The Open Group
 
 Portions Copyright 2000 Sun Microsystems, Inc. All Rights Reserved.
@@ -41,6 +48,7 @@ interest in or to any trademark, service mark, logo or trade name of
 Sun Microsystems, Inc. or its licensors is granted.
 
 */
+/* $Xorg: lcInit.c,v 1.4 2000/12/12 12:44:05 coskrey Exp $ */
 /*
  * Copyright 1992, 1993 by TOSHIBA Corp.
  *

@@ -1,5 +1,5 @@
-/* $XFree86$ */
 /*
+ * $Xorg: mipsstack.s,v 1.4 2001/02/09 02:06:19 xorgcvs Exp $
  *
 Copyright 1992, 1998  The Open Group
 

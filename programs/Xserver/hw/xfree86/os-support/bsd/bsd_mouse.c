@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.38tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.37 2005/02/10 01:37:52 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1999-2005 by The XFree86 Project, Inc.
@@ -47,7 +61,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
@@ -73,14 +87,14 @@
 
 #define HUP_GENERIC_DESKTOP     0x0001
 #define HUP_BUTTON              0x0009
-#define HUP_CONSUMER            0x000c
+#define HUP_CONSUMER		0x000c
 
 #define HUG_X                   0x0030
 #define HUG_Y                   0x0031
 #define HUG_Z                   0x0032
 #define HUG_WHEEL               0x0038
 
-#define HUC_AC_PAN              0x0238
+#define HUC_AC_PAN		0x0238
 
 #define HID_USAGE2(p,u) (((p) << 16) | u)
 
@@ -92,7 +106,7 @@
 static void usbSigioReadInput (int fd, void *closure);
 #endif
 
-#define TSTOMILLI(ts) (((ts).tv_nsec/1000000)+((ts).tv_sec*1000))
+#define TSTOMILLI(ts)       (((ts).tv_nsec/1000000)+((ts).tv_sec*1000))
 
 #define DEFAULT_MOUSE_DEV		"/dev/mouse"
 #if defined(__NetBSD__)
@@ -579,21 +593,21 @@ wsconsReadInput(InputInfoPtr pInfo)
 	    dw = event->value;
 	    break;
 #endif
-	case WSCONS_EVENT_MOUSE_ABSOLUTE_X:
-	    miPointerPosition(&x, &y);
-	    miPointerAbsoluteCursor(event->value, y, TSTOMILLI(event->time));
-	    ++event;
-	    continue;
-	                    
-	case WSCONS_EVENT_MOUSE_ABSOLUTE_Y:
-	    miPointerPosition(&x, &y);
-	    miPointerAbsoluteCursor(x, event->value, TSTOMILLI(event->time));
-	    ++event;
-	    continue;
-	                    
-	case WSCONS_EVENT_MOUSE_ABSOLUTE_Z:
-	    ++event;
-	    continue;
+        case WSCONS_EVENT_MOUSE_ABSOLUTE_X:
+            miPointerPosition (&x, &y);
+            miPointerAbsoluteCursor (event->value, y, TSTOMILLI(event->time));
+            ++event;
+            continue;
+                            
+        case WSCONS_EVENT_MOUSE_ABSOLUTE_Y:
+            miPointerPosition (&x, &y);
+            miPointerAbsoluteCursor (x, event->value, TSTOMILLI(event->time));
+            ++event;
+            continue;
+                            
+        case WSCONS_EVENT_MOUSE_ABSOLUTE_Z:
+            ++event;
+            continue;
 
 #ifdef WSCONS_EVENT_MOUSE_ABSOLUTE_W
 	case WSCONS_EVENT_MOUSE_ABSOLUTE_W:

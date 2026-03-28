@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * dpsXcmu.c -- Simple color management/allocation utility
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -54,7 +61,7 @@
  *
  * Author: Adobe Systems Incorporated and Donna Converse, MIT X Consortium
  */
-/* $XFree86: xc/lib/dps/dpsXcmu.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/lib/dps/dpsXcmu.c,v 1.5 2001/07/25 15:04:54 dawes Exp $ */
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -67,7 +74,6 @@
 #include <pwd.h>
 
 #include "dpsassert.h"
-#include "DPS/dpsXclient.h"
 #include "cslibint.h"
 
 /* Defines for standard colormap routines */
@@ -104,6 +110,7 @@ static Bool CheckCube(XColor *, XColor *, XStandardColormap *);
 static Bool CubicCube(XStandardColormap *);
 static Bool GetColorCubeFromProperty(Display *, XVisualInfo *, XStandardColormap *, XStandardColormap **, int *);
 static Bool GetGrayRampFromProperty(Display *, XVisualInfo *, XStandardColormap *, XStandardColormap **, int *);
+Status XDPSCreateStandardColormaps(Display *, Drawable, Visual *, int, int, int, int, XStandardColormap *, XStandardColormap *, Bool);
 static Status contiguous(unsigned long *, int, int *, unsigned long, int *, int *);
 static XVisualInfo *PickCorrectVisual(Display *, XVisualInfo *, int, Colormap);
 static int FindRampSize(XColor *, XColor *);
@@ -1086,8 +1093,8 @@ static void FindStaticGrayRamp(
     XStandardColormap *colorCube)
 {
     XColor *ramp, *black, *white, *altBlack, *altWhite;
-    int i, r0, r1, r2, r3, size, entries, redMult = 0;
-    unsigned long base = 0;
+    int i, r0, r1, r2, r3, size, entries, redMult;
+    unsigned long base;
 
     entries = 1 << vinfo->depth;
     ramp = (XColor *) calloc(entries, sizeof(XColor));

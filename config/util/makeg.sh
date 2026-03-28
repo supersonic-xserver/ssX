@@ -1,6 +1,6 @@
 #! /bin/sh
 # makeg - run "make" with options necessary to make a debuggable executable
-# $XFree86$
+# $Xorg: makeg.sh,v 1.3 2000/08/17 19:41:52 cpqbld Exp $
 
 # set GDB=1 in your environment if using gdb on Solaris 2.
 

@@ -1,3 +1,11 @@
+/* $Xorg: Xtranslcl.c,v 1.6 2001/02/09 02:04:06 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtranslcl.c,v 3.43 2005/09/14 14:23:14 tsi Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtranslcl.c,v 3.42 2004/04/03 22:26:22 dawes Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -64,18 +72,17 @@ from The Open Group.
  *
  * The goal is to have common connection code among all SVR4/Intel vendors.
  *
- * ALL THE ABOVE COMPANIES DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
+ * ALL THE ABOVE COMPANIES DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
  * SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, 
- * IN NO EVENT SHALL THESE COMPANIES BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THIS SOFTWARE.
+ * IN NO EVENT SHALL THESE COMPANIES * BE LIABLE FOR ANY SPECIAL, INDIRECT 
+ * OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS 
+ * OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
+ * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE 
+ * OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #include <errno.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <sys/signal.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -86,9 +93,6 @@ from The Open Group.
 #include <sys/stream.h>
 #include <sys/ptms.h>
 #endif
-#endif
-#ifdef SVR4
-#include <stropts.h>
 #endif
 #include <sys/stropts.h>
 #include <sys/wait.h>
@@ -207,7 +211,18 @@ TRANS(FillAddrInfo)(XtransConnInfo ciptr, char *sun_path, char *peer_sun_path)
 #define SIGNAL_T void
 #endif /* SYSV */
 
-typedef SIGNAL_T (*PFV)(int);
+typedef SIGNAL_T (*PFV)();
+
+extern PFV signal();
+
+extern char *ptsname(
+    int
+);
+
+static void _dummy(int sig)
+
+{
+}
 
 #ifndef sun
 #define X_STREAMS_DIR	"/dev/X"
@@ -274,14 +289,6 @@ typedef SIGNAL_T (*PFV)(int);
 
 #ifndef sun
 #ifdef TRANS_CLIENT
-
-#ifdef PTSNODENAME
-static SIGNAL_T
-TRANS(PTSCatchSignal)(int sig)
-{
-    (void)(sig);
-}
-#endif
 
 static int
 TRANS(PTSOpenClient)(XtransConnInfo ciptr, char *port)
@@ -387,7 +394,7 @@ TRANS(PTSOpenClient)(XtransConnInfo ciptr, char *port)
      * wait for server to respond
      */
 
-    savef = signal(SIGALRM, TRANS(PTSCatchSignal));
+    savef = signal(SIGALRM, _dummy);
     alarm_time = alarm (30); /* CONNECT_TIMEOUT */
 
     ret = read(fd, buf, 1);
@@ -488,7 +495,7 @@ TRANS(PTSOpenServer)(XtransConnInfo ciptr, char *port)
     grantpt(fd);
     unlockpt(fd);
 
-    if( (slave = ptsname(fd)) == NULL) {
+    if( (slave=ptsname(fd)) == NULL) {
 	PRMSG(1, "PTSOpenServer: Unable to get slave device name\n", 0,0,0 );
 	close(fd);
 	return(-1);
@@ -637,6 +644,7 @@ TRANS(NAMEDOpenClient)(XtransConnInfo ciptr, char *port)
     int			fd;
     char		server_path[64];
     struct stat		filestat;
+    extern int		isastream();
 #endif
 
     PRMSG(2,"NAMEDOpenClient(%s)\n", port, 0,0 );
@@ -894,10 +902,11 @@ named_spipe(int fd, char *path)
 
     return(ret);
 }
-
+
 /* SCO doesnt use the ISC transport type - it causes problems */
 #ifndef __SCO__
 
+
 /* ISC */
 
 #ifdef TRANS_CLIENT
@@ -1017,17 +1026,6 @@ TRANS(ISCOpenClient)(XtransConnInfo ciptr, char *port)
 
 #ifdef TRANS_SERVER
 
-#if defined(ISCDEVNODENAME) && \
-    !defined(UNIXCONN) && \
-    !defined(SVR4) && \
-    defined(ISC40)
-static SIGNAL_T
-TRANS(ISCCatchSignal)(int sig)
-{
-    (void)(sig);
-}
-#endif
-
 static int
 TRANS(ISCOpenServer)(XtransConnInfo ciptr, char *port)
 
@@ -1109,7 +1107,7 @@ TRANS(ISCOpenServer)(XtransConnInfo ciptr, char *port)
 #else
 #ifdef ISC40
     /* catch SIGSYS on symlink for ISC40 compiled binaries running on ISC30 */
-    signal(SIGSYS, TRANS(ISCCatchSignal));
+    signal(SIGSYS,_dummy);
 #endif
     if( link(server_path, server_unix_path) < 0 )
 #ifdef ISC40
@@ -1214,14 +1212,6 @@ TRANS(ISCAccept)(XtransConnInfo ciptr, XtransConnInfo newciptr, int *status)
 
 #ifdef TRANS_CLIENT
 
-#if defined(SCORNODENAME)
-static SIGNAL_T
-TRANS(SCOCatchSignal)(int sig)
-{
-    (void)(sig);
-}
-#endif
-
 static int
 TRANS(SCOOpenClient)(XtransConnInfo ciptr, char *port)
 {
@@ -1230,7 +1220,8 @@ TRANS(SCOOpenClient)(XtransConnInfo ciptr, char *port)
     char		server_path[64];
     struct strbuf	ctlbuf;
     unsigned long	alarm_time;
-    PFV			savef;
+    void		(*savef)();
+    extern int	getmsg(), putmsg();
     long		temp;
 #endif
 
@@ -1262,7 +1253,7 @@ TRANS(SCOOpenClient)(XtransConnInfo ciptr, char *port)
     ctlbuf.buf = (caddr_t)&temp;
     fl = 0;
 
-    savef = signal(SIGALRM, TRANS(SCOCatchSignal));
+    savef = signal(SIGALRM, _dummy);
     alarm_time = alarm(10);
 
     ret = getmsg(server, &ctlbuf, 0, &fl);

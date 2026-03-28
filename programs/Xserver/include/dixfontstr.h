@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $Xorg: dixfontstr.h,v 1.3 2000/08/17 19:53:29 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -27,7 +34,7 @@ SOFTWARE.
 
 #include "servermd.h"
 #include "dixfont.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "closure.h"
 #define NEED_REPLIES
 #include "X11/Xproto.h" /* for xQueryFontReply */

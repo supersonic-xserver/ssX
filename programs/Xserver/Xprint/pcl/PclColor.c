@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclColor.c,v 1.11tsi Exp $ */
+/* $Xorg: PclColor.c,v 1.3 2000/08/17 19:48:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -45,6 +52,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclColor.c,v 1.10 2003/10/29 22:11:00 tsi Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -677,7 +685,7 @@ unsigned char *PclReadMap(char *name, int *dim)
     unsigned char *data;
     long size;
 
-    if ((fp=Fopen(name, "r")) == NULL) {
+    if ((fp=fopen(name, "r")) == NULL) {
 	return(NULL);
     }
 
@@ -717,7 +725,7 @@ unsigned char *PclReadMap(char *name, int *dim)
 	return(NULL);
     }
 
-    Fclose(fp);
+    fclose(fp);
     return(data);
 }
 

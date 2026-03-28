@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  pshrec.h                                                               */
 /*                                                                         */
 /*    Postscript (Type1/Type2) hints recorder (specification).             */
 /*                                                                         */
-/*  Copyright 2001 by                                                      */
+/*  Copyright 2001, 2002, 2003 by                                          */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -125,10 +132,6 @@ FT_BEGIN_HEADER
   } PS_DimensionRec, *PS_Dimension;
 
 
-  /* magic value used within PS_HintsRec */
-#define PS_HINTS_MAGIC  0x68696e74   /* "hint" */
-
-
   /* glyph hints descriptor                                */
   /* dimension 0 => X coordinates + vertical hints/stems   */
   /* dimension 1 => Y coordinates + horizontal hints/stems */
@@ -145,20 +148,20 @@ FT_BEGIN_HEADER
   /* */
 
   /* initialize hints recorder */
-  FT_LOCAL FT_Error
+  FT_LOCAL( FT_Error )
   ps_hints_init( PS_Hints   hints,
                  FT_Memory  memory );
 
   /* finalize hints recorder */
-  FT_LOCAL void
+  FT_LOCAL( void )
   ps_hints_done( PS_Hints  hints );
 
   /* initialize Type1 hints recorder interface */
-  FT_LOCAL void
+  FT_LOCAL( void )
   t1_hints_funcs_init( T1_Hints_FuncsRec*  funcs );
 
   /* initialize Type2 hints recorder interface */
-  FT_LOCAL void
+  FT_LOCAL( void )
   t2_hints_funcs_init( T2_Hints_FuncsRec*  funcs );
 
 

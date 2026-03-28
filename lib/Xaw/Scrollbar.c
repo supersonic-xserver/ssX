@@ -1,3 +1,19 @@
+/* $Xorg: Scrollbar.c,v 1.4 2001/02/09 02:03:45 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Scrollbar.c,v 1.14 2006/01/09 14:59:02 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Scrollbar.c,v 1.13 2001/12/14 19:54:42 dawes Exp $ */
 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
@@ -97,11 +113,9 @@ static void StartScroll(Widget, XEvent*, String*, Cardinal*);
  * Initialization
  */
 static char defaultTranslations[] =
-"<Btn5Down>:"	"StartScroll(Forward)\n"
 "<Btn1Down>:"	"StartScroll(Forward)\n"
 "<Btn2Down>:"	"StartScroll(Continuous) MoveThumb() NotifyThumb()\n"
 "<Btn3Down>:"	"StartScroll(Backward)\n"
-"<Btn4Down>:"	"StartScroll(Backward)\n"
 "<Btn2Motion>:"	"MoveThumb() NotifyThumb()\n"
 "<BtnUp>:"	"NotifyScroll(Proportional) EndScroll()\n";
 

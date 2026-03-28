@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/XTrap/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/lib/XTrap/Imakefile,v 1.1 2001/11/02 23:29:27 dawes Exp $
 
 #define DoNormalLib NormalLibXTrap
 #define DoSharedLib SharedLibXTrap
@@ -15,7 +15,7 @@ REQUIREDLIBS = SharedXmuReqs
 #endif
 
 XCOMM wish this weren't necessary, but need xlib and xt internals...
-INCLUDES=-I$(TOOLKITSRC)
+INCLUDES=-I$(TOP)/include -I$(TOOLKITSRC)
 
 
       SRCS = XECallBcks.c XEConTxt.c XEDsptch.c XEPrInfo.c \

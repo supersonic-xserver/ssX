@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -53,7 +60,15 @@ _swrast_Bitmap( GLcontext *ctx, GLint px, GLint py,
    struct sw_span span;
 
    ASSERT(ctx->RenderMode == GL_RENDER);
-   ASSERT(bitmap);
+
+   bitmap = (const GLubyte *) _swrast_validate_pbo_access(unpack, width,
+                                        height, 1,
+                                        GL_COLOR_INDEX, GL_BITMAP,
+                                        (GLvoid *) bitmap);
+   if (!bitmap) {
+      /* XXX GL_INVALID_OPERATION? */
+      return;
+   }
 
    RENDER_START(swrast,ctx);
 

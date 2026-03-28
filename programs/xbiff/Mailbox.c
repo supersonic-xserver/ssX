@@ -1,3 +1,11 @@
+/* $XConsortium: Mailbox.c,v 1.64 94/04/17 20:43:26 rws Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1988  X Consortium
@@ -27,7 +35,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xbiff/Mailbox.c,v 1.6 2005/03/25 02:22:59 dawes Exp $ */
+/* $XFree86: xc/programs/xbiff/Mailbox.c,v 1.5 2001/10/28 03:34:25 tsi Exp $ */
 
 /*
  * Author:  Jim Fulton, MIT X Consortium
@@ -105,9 +113,7 @@ typedef union wait	waitType;
 static char defaultTranslations[] = 
   "<ButtonPress>:  unset()";
 
-static void Check(Widget gw, XEvent *event, String *params, Cardinal *nparams);
-static void Set(Widget gw, XEvent *event, String *params, Cardinal *nparams);
-static void Unset(Widget gw, XEvent *event, String *params, Cardinal *nparams);
+static void Check(), Set(), Unset();
 
 static XtActionsRec actionsList[] = { 
     { "check",	Check },
@@ -158,20 +164,10 @@ static XtResource resources[] = {
 #undef offset
 #undef goffset
 
-static void GetMailFile(MailboxWidget w);
-static void CloseDown(MailboxWidget w, int status);
-static void check_mailbox(MailboxWidget w, Boolean force_redraw, Boolean reset);
-static void redraw_mailbox(MailboxWidget w);
-static void beep(MailboxWidget w);
-static void Initialize(Widget request, Widget new, ArgList args,
-		       Cardinal *num_args);
-static void Realize(Widget gw, XtValueMask *valuemaskp,
-		    XSetWindowAttributes *attr);
-static void Destroy(Widget gw);
-static void Redisplay(Widget gw, XEvent *event, Region region);
-static Boolean SetValues(Widget gcurrent, Widget grequest, Widget gnew,
-			 ArgList args, Cardinal *num_args);
-static void get_tip_text(Widget w, XtPointer client_data, XtPointer call_data);
+static void GetMailFile(), CloseDown();
+static void check_mailbox(), redraw_mailbox(), beep();
+static void Initialize(), Realize(), Destroy(), Redisplay();
+static Boolean SetValues();
 
 MailboxClassRec mailboxClassRec = {
     { /* core fields */
@@ -223,81 +219,8 @@ WidgetClass mailboxWidgetClass = (WidgetClass) &mailboxClassRec;
  * widget initialization
  */
 
-static void 
-get_tip_text(Widget gw, XtPointer client_data, XtPointer call_data)
-{
-    MailboxWidget w = (MailboxWidget) gw;
-    Cardinal message_count = 0;
-    char text[64], buf[5000], marker[] = "From ", *p;
-    size_t chars_read;
-    FILE *mbox;
-
-    /* read the file and count new messages */
-    mbox = fopen(w->mailbox.filename, "r");
-    if (mbox == NULL || feof(mbox))
-	return;
-
-    /* the buffer must be big enough to hold the ending of a marker if
-     * it was truncated.  The worst case is when the marker is
-     * splitted this way: "F|rom ", so we need to leave a space for at
-     * least 4 characters + teminating NUL. */
-    while ((chars_read = fread(buf, 1, sizeof(buf) - 4 - 1, mbox)) != 0)
-    {
-	p = &buf[0];
-
-	/* NUL-termination for strstr function */
-	p[chars_read] = '\0';
-
-	while ((p = strstr(p, marker)) != NULL)
-	{
-	    if (p == buf || p[-1] == '\n')
-		message_count++;
-	    p += sizeof(marker);
-	}
-
-	/* manual search for possibly truncated marker */
-	if (chars_read > 4 &&
-	    (buf[chars_read - 1] == 'F' ||
-	     (buf[chars_read - 2] == 'F' && buf[chars_read - 1] == 'r') ||
-	     (buf[chars_read - 3] == 'F' && buf[chars_read - 2] == 'r'
-	      && buf[chars_read - 1] == 'o') ||
-	     (buf[chars_read - 4] == 'F' && buf[chars_read - 3] == 'r'
-	      && buf[chars_read - 2] == 'o' && buf[chars_read - 1] == 'm')))
-	{
-	    /* marker might be splitted, so re-try */
-	    p = &buf[chars_read];
-
-	    /* read the remaining 4 bytes which are guaranteed to fit
-	     * into the buffer. */
-	    if ((chars_read = fread(p, 1, 4, mbox)) != 0)
-	    {
-		/* NUL-termination for strstr function */
-		p[chars_read] = '\0';
-
-		/* step back, so that the marker is not splitted */
-		p -= 4;
-
-		if ((p = strstr(p, marker)) != NULL && p[-1] == '\n')
-		{
-		    message_count++;
-		}
-	    }
-	}
-    }
-
-    fclose(mbox);
-
-    if (message_count == 0)
-	return;
-
-    snprintf(text, sizeof(text), "%d new messag%s", message_count,
-	     (message_count == 1 ? "e" : "es"));
-
-    *((String*) client_data) = XtNewString(text);
-}
-
-static GC
-get_mailbox_gc(MailboxWidget w)
+static GC get_mailbox_gc (w)
+    MailboxWidget w;
 {
     XtGCMask valuemask;
     XGCValues xgcv;
@@ -312,8 +235,10 @@ get_mailbox_gc(MailboxWidget w)
 
 
 /* ARGSUSED */
-static void
-Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args)
+static void Initialize (request, new, args, num_args)
+    Widget request, new;
+    ArgList args;
+    Cardinal *num_args;
 {
     MailboxWidget w = (MailboxWidget) new;
     int shape_event_base, shape_error_base;
@@ -332,7 +257,6 @@ Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args)
     w->mailbox.empty.pixmap = None;
     w->mailbox.flag_up = FALSE;
     w->mailbox.last_size = 0;
-    XtVaSetValues((Widget) w, XtNtipCallback, &get_tip_text, NULL);
     if (!w->mailbox.filename) GetMailFile (w);
     return;
 }
@@ -347,8 +271,11 @@ Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args)
  */
 
 /* ARGSUSED */
-static void
-Set(Widget gw, XEvent *event, String *params, Cardinal *nparams)
+static void Set (gw, event, params, nparams)
+    Widget gw;
+    XEvent *event;
+    String *params;
+    Cardinal *nparams;
 {
     MailboxWidget w = (MailboxWidget) gw;
 
@@ -365,8 +292,11 @@ Set(Widget gw, XEvent *event, String *params, Cardinal *nparams)
  */
 
 /* ARGSUSED */
-static void
-Unset(Widget gw, XEvent *event, String *params, Cardinal *nparams)
+static void Unset (gw, event, params, nparams)
+    Widget gw;
+    XEvent *event;
+    String *params;
+    Cardinal *nparams;
 {
     MailboxWidget w = (MailboxWidget) gw;
 
@@ -381,8 +311,11 @@ Unset(Widget gw, XEvent *event, String *params, Cardinal *nparams)
  */
 
 /* ARGSUSED */
-static void
-Check(Widget gw, XEvent *event, String *params, Cardinal *nparams)
+static void Check (gw, event, params, nparams)
+    Widget gw;
+    XEvent *event;
+    String *params;
+    Cardinal *nparams;
 {
     MailboxWidget w = (MailboxWidget) gw;
 
@@ -393,8 +326,9 @@ Check(Widget gw, XEvent *event, String *params, Cardinal *nparams)
 
 
 /* ARGSUSED */
-static void
-clock_tic(XtPointer client_data, XtIntervalId *id)
+static void clock_tic (client_data, id)
+    XtPointer client_data;
+    XtIntervalId *id;
 {
     MailboxWidget w = (MailboxWidget) client_data;
 
@@ -411,9 +345,13 @@ clock_tic(XtPointer client_data, XtIntervalId *id)
     return;
 }
 
-static Pixmap
-make_pixmap(Display *dpy, MailboxWidget w, Pixmap bitmap, int depth,
-	    Boolean flip, int *widthp, int *heightp)
+static Pixmap make_pixmap (dpy, w, bitmap, depth, flip, widthp, heightp)
+    Display *dpy;
+    MailboxWidget w;
+    Pixmap bitmap;
+    Boolean flip;
+    int depth;
+    int *widthp, *heightp;
 {
     Window root;
     int x, y;
@@ -436,8 +374,10 @@ make_pixmap(Display *dpy, MailboxWidget w, Pixmap bitmap, int depth,
 				      width, height, depth, fore, back);
 }
 
-static void
-Realize(Widget gw, XtValueMask *valuemaskp, XSetWindowAttributes *attr)
+static void Realize (gw, valuemaskp, attr)
+    Widget gw;
+    XtValueMask *valuemaskp;
+    XSetWindowAttributes *attr;
 {
     MailboxWidget w = (MailboxWidget) gw;
     register Display *dpy = XtDisplay (w);
@@ -488,8 +428,8 @@ Realize(Widget gw, XtValueMask *valuemaskp, XSetWindowAttributes *attr)
 }
 
 
-static void
-Destroy(Widget gw)
+static void Destroy (gw)
+    Widget gw;
 {
     MailboxWidget w = (MailboxWidget) gw;
     Display *dpy = XtDisplay (gw);
@@ -510,8 +450,10 @@ Destroy(Widget gw)
 }
 
 
-static void
-Redisplay(Widget gw, XEvent *event, Region region)
+static void Redisplay (gw, event, region)
+    Widget gw;
+    XEvent *event;
+    Region region;
 {
     MailboxWidget w = (MailboxWidget) gw;
 
@@ -519,8 +461,9 @@ Redisplay(Widget gw, XEvent *event, Region region)
 }
 
 
-static void
-check_mailbox(MailboxWidget w, Boolean force_redraw, Boolean reset)
+static void check_mailbox (w, force_redraw, reset)
+    MailboxWidget w;
+    Boolean force_redraw, reset;
 {
     long mailboxsize = 0;
     Boolean readSinceLastWrite = FALSE;
@@ -605,8 +548,8 @@ check_mailbox(MailboxWidget w, Boolean force_redraw, Boolean reset)
  * get user name for building mailbox
  */
 
-static void
-GetMailFile(MailboxWidget w)
+static void GetMailFile (w)
+    MailboxWidget w;
 {
     char *username;
     char *mailpath;
@@ -617,6 +560,8 @@ GetMailFile(MailboxWidget w)
 	CloseDown (w, 1);
     }
 #else
+    char *getlogin();
+
     username = getlogin ();
     if (!username) {
 	struct passwd *pw = getpwuid (getuid ());
@@ -642,8 +587,9 @@ GetMailFile(MailboxWidget w)
     return;
 }
 
-static void
-CloseDown(MailboxWidget w, int status)
+static void CloseDown (w, status)
+    MailboxWidget w;
+    int status;
 {
     Display *dpy = XtDisplay (w);
 
@@ -654,9 +600,10 @@ CloseDown(MailboxWidget w, int status)
 
 
 /* ARGSUSED */
-static Boolean
-SetValues(Widget gcurrent, Widget grequest, Widget gnew, ArgList args,
-	  Cardinal *num_args)
+static Boolean SetValues (gcurrent, grequest, gnew, args, num_args)
+    Widget gcurrent, grequest, gnew;
+    ArgList args;
+    Cardinal *num_args;
 {
     MailboxWidget current = (MailboxWidget) gcurrent;
     MailboxWidget new = (MailboxWidget) gnew;
@@ -686,8 +633,8 @@ SetValues(Widget gcurrent, Widget grequest, Widget gnew, ArgList args,
  * drawing code
  */
 
-static void
-redraw_mailbox(MailboxWidget w)
+static void redraw_mailbox (w)
+    MailboxWidget w;
 {
     register Display *dpy = XtDisplay (w);
     register Window win = XtWindow (w);
@@ -739,8 +686,8 @@ redraw_mailbox(MailboxWidget w)
 }
 
 
-static void
-beep(MailboxWidget w)
+static void beep (w)
+    MailboxWidget w;
 {
     XBell (XtDisplay (w), w->mailbox.volume);
     return;

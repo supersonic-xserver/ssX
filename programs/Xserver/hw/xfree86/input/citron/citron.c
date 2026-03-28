@@ -1,4 +1,11 @@
-/*
+/* $Id: citron.c,v 1.1.1.6 2005/03/18 13:12:27 tron Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998  Metro Link Incorporated
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +32,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.c,v 1.14 2006/01/09 15:00:17 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.c,v 1.13 2004/04/26 22:26:10 dawes Exp $ */
 
 /*
  * Based, in part, on code with the following copyright notice:
@@ -282,7 +289,7 @@ static XF86ModuleVersionInfo VersionRec =
  * ************************************************************************/
 
 static pointer
-SetupProc(	ModuleDescPtr module,
+SetupProc(	pointer module,
 			pointer options,
 			int *errmaj,
 			int *errmin )

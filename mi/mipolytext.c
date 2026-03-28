@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mipolytext.c,v 1.5 2005/10/14 15:17:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ************************************************************************/
+
 /*
  * mipolytext.c - text routines
  *
@@ -52,10 +61,6 @@ SOFTWARE.
  * 		Western Software Laboratory
  * Date:	Thu Feb  5 1987
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include	<X11/X.h>
 #include	<X11/Xmd.h>
@@ -66,13 +71,27 @@ SOFTWARE.
 #include	"dixfontstr.h"
 #include	"mi.h"
 
-_X_EXPORT int
-miPolyText8(pDraw, pGC, x, y, count, chars)
-    DrawablePtr pDraw;
-    GCPtr	pGC;
-    int		x, y;
-    int 	count;
-    char	*chars;
+int
+miPolyText(DrawablePtr pDraw, GCPtr pGC, int x, int y, int count,
+	   char *chars, FontEncoding fontEncoding)
+{
+    unsigned long n, i;
+    int w;
+    CharInfoPtr charinfo[255];	/* encoding only has 1 byte for count */
+
+    GetGlyphs(pGC->font, (unsigned long)count, (unsigned char *)chars,
+	      fontEncoding, &n, charinfo);
+    w = 0;
+    for (i=0; i < n; i++) w += charinfo[i]->metrics.characterWidth;
+    if (n != 0)
+        (*pGC->ops->PolyGlyphBlt)(
+	    pDraw, pGC, x, y, n, charinfo, FONTGLYPHS(pGC->font));
+    return x+w;
+}
+
+
+int
+miPolyText8(DrawablePtr pDraw, GCPtr pGC, int x, int y, int count, char *chars)
 {
     unsigned long n, i;
     int w;
@@ -88,13 +107,10 @@ miPolyText8(pDraw, pGC, x, y, count, chars)
     return x+w;
 }
 
-_X_EXPORT int
-miPolyText16(pDraw, pGC, x, y, count, chars)
-    DrawablePtr pDraw;
-    GCPtr	pGC;
-    int		x, y;
-    int		count;
-    unsigned short *chars;
+
+int
+miPolyText16(DrawablePtr pDraw, GCPtr pGC, int x, int y, int count,
+	     unsigned short *chars)
 {
     unsigned long n, i;
     int w;
@@ -111,13 +127,29 @@ miPolyText16(pDraw, pGC, x, y, count, chars)
     return x+w;
 }
 
-_X_EXPORT void
-miImageText8(pDraw, pGC, x, y, count, chars)
-    DrawablePtr pDraw;
-    GCPtr	pGC;
-    int		x, y;
-    int		count;
-    char	*chars;
+
+int
+miImageText(DrawablePtr pDraw, GCPtr pGC, int x, int y, int count,
+	    char *chars, FontEncoding fontEncoding)
+{
+    unsigned long n, i;
+    FontPtr font = pGC->font;
+    int w;
+    CharInfoPtr charinfo[255];
+
+    GetGlyphs(font, (unsigned long)count, (unsigned char *)chars,
+	      fontEncoding, &n, charinfo);
+    w = 0;
+    for (i=0; i < n; i++) w += charinfo[i]->metrics.characterWidth;
+    if (n !=0 )
+        (*pGC->ops->ImageGlyphBlt)(pDraw, pGC, x, y, n, charinfo, FONTGLYPHS(font));
+    return x+w;
+}
+
+
+void
+miImageText8(DrawablePtr pDraw, GCPtr pGC, int  x, int  y, int  count,
+	     char *chars)
 {
     unsigned long n;
     FontPtr font = pGC->font;
@@ -129,13 +161,10 @@ miImageText8(pDraw, pGC, x, y, count, chars)
         (*pGC->ops->ImageGlyphBlt)(pDraw, pGC, x, y, n, charinfo, FONTGLYPHS(font));
 }
 
-_X_EXPORT void
-miImageText16(pDraw, pGC, x, y, count, chars)
-    DrawablePtr pDraw;
-    GCPtr	pGC;
-    int		x, y;
-    int		count;
-    unsigned short *chars;
+
+void
+miImageText16(DrawablePtr pDraw, GCPtr pGC, int x, int y, int count,
+	      unsigned short *chars)
 {
     unsigned long n;
     FontPtr font = pGC->font;

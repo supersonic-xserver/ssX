@@ -1,3 +1,19 @@
+/* Header:   //Mercury/Projects/archives/XFree86/4.0/smi_dac.c-arc   1.8   27 Nov 2000 15:47:08   Frido  $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) 1994-1998 The XFree86 Project, Inc.  All Rights Reserved.
 Copyright (C) 2000 Silicon Motion, Inc.  All Rights Reserved.
@@ -88,7 +104,7 @@ SMI_CommonCalcClock(int scrnIndex, long freq, int min_m, int min_n1,
 		}
 	}
 
-	DEBUG((VERBLEV, "Clock parameters for %1.6f MHz: m=%d, n1=%d, n2=%d\n",
+	DEBUGX((VERBLEV, "Clock parameters for %1.6f MHz: m=%d, n1=%d, n2=%d\n",
 			((double)(best_m) / (double)(best_n1) / (1 << best_n2)) * BASE_FREQ,
 			best_m, best_n1, best_n2));
 

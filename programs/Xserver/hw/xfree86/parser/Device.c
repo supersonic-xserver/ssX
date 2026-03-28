@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Device.c,v 1.28 2004/02/13 23:58:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -136,38 +143,38 @@ xf86parseDeviceSection (void)
 				Error (QUOTE_MSG, "Identifier");
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
-			ptr->dev_identifier = xf86configStrdup(val.str);
+			ptr->dev_identifier = val.str;
 			has_ident = TRUE;
 			break;
 		case VENDOR:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "Vendor");
-			ptr->dev_vendor = xf86configStrdup(val.str);
+			ptr->dev_vendor = val.str;
 			break;
 		case BOARD:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "Board");
-			ptr->dev_board = xf86configStrdup(val.str);
+			ptr->dev_board = val.str;
 			break;
 		case CHIPSET:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "Chipset");
-			ptr->dev_chipset = xf86configStrdup(val.str);
+			ptr->dev_chipset = val.str;
 			break;
 		case CARD:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "Card");
-			ptr->dev_card = xf86configStrdup(val.str);
+			ptr->dev_card = val.str;
 			break;
 		case DRIVER:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "Driver");
-			ptr->dev_driver = xf86configStrdup(val.str);
+			ptr->dev_driver = val.str;
 			break;
 		case RAMDAC:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "Ramdac");
-			ptr->dev_ramdac = xf86configStrdup(val.str);
+			ptr->dev_ramdac = val.str;
 			break;
 		case DACSPEED:
 			for (i = 0; i < CONF_MAXDACSPEEDS; i++)
@@ -215,7 +222,7 @@ xf86parseDeviceSection (void)
 		case CLOCKCHIP:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "ClockChip");
-			ptr->dev_clockchip = xf86configStrdup(val.str);
+			ptr->dev_clockchip = val.str;
 			break;
 		case CHIPID:
 			if (xf86getSubToken (&(ptr->dev_comment)) != NUMBER)
@@ -249,7 +256,7 @@ xf86parseDeviceSection (void)
 		case BUSID:
 			if (xf86getSubToken (&(ptr->dev_comment)) != STRING)
 				Error (QUOTE_MSG, "BusID");
-			ptr->dev_busid = xf86configStrdup(val.str);
+			ptr->dev_busid = val.str;
 			break;
 		case IRQ:
 			if (xf86getSubToken (&(ptr->dev_comment)) != NUMBER)
@@ -407,3 +414,13 @@ xf86findDevice (const char *ident, XF86ConfDevicePtr p)
 	return (NULL);
 }
 
+char *
+xf86configStrdup (const char *s)
+{
+	char *tmp;
+	if (!s) return NULL;
+	tmp = xf86confmalloc (sizeof (char) * (strlen (s) + 1));
+	if (tmp)
+		strcpy (tmp, s);
+	return (tmp);
+}

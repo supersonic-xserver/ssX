@@ -1,6 +1,11 @@
-/* $XFree86: xc/extras/freetype2/include/freetype/config/ftstdlib.h,v 1.0tsi Exp $ */
-
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftstdlib.h                                                             */
 /*                                                                         */
@@ -59,8 +64,6 @@
   /*                                                                    */
   /**********************************************************************/
 
-
-#ifndef FONTMODULE
 
 #include <limits.h>
 
@@ -134,74 +137,6 @@
 
 #define ft_setjmp   setjmp    /* same thing here */
 #define ft_longjmp  longjmp   /* "               */
-
-
-#else
-
-#include <X11/Xmd.h>
-#define _XTYPEDEF_BOOL
-#include <X11/Xdefs.h>
-#define DONT_DEFINE_WRAPPERS
-#define DEFINE_SETJMP_WRAPPERS
-#include "xf86_ansic.h"
-#undef DONT_DEFINE_WRAPPERS
-
-#ifndef offsetof
-#define offsetof(TYPE, MEMBER) ((xf86size_t)&((TYPE*)0)->MEMBER)
-#endif
-
-#define FT_CHAR_BIT  8
-#define FT_UINT_MAX  4294967295U
-#ifdef LONG64
-#define FT_ULONG_MAX 18446744073709551615UL
-#else
-#define FT_ULONG_MAX 4294967295UL
-#endif
-
-#define ft_isalnum   xf86isalnum
-#define ft_isupper   xf86isupper
-#define ft_islower   xf86islower
-#define ft_isdigit   xf86isdigit
-#define ft_isxdigit  xf86isxdigit
-
-#define ft_memcmp    xf86memcmp
-#define ft_memcpy    xf86memcpy
-#define ft_memmove   xf86memmove
-#define ft_memset    xf86memset
-#define ft_strcat    xf86strcat
-#define ft_strcmp    xf86strcmp
-#define ft_strcpy    xf86strcpy
-#define ft_strlen    xf86strlen
-#define ft_strncmp   xf86strncmp
-#define ft_strncpy   xf86strncpy
-#define ft_strrchr   xf86strrchr
-
-#define ft_sprintf   xf86sprintf
-
-#define ft_qsort     xf86qsort
-#define ft_exit      xf86exit
-
-#define ft_atol      xf86atol
-
-#define ft_jmp_buf   jmp_buf
-#define ft_setjmp    setjmp
-#define ft_longjmp   longjmp
-
-#undef  exit
-#define exit         xf86exit
-
-#undef  fprintf
-#define fprintf      xf86fprintf
-
-#undef  memcpy
-#define memcpy       xf86memcpy
-#undef  memset
-#define memset       xf86memset
-
-#undef  stderr
-#define stderr       xf86stderr
-
-#endif /* FONTMODULE */
 
 
   /* the following is only used for debugging purposes, i.e. when */

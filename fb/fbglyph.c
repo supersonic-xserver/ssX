@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fbglyph.c,v 1.14 2005/10/14 15:16:23 tsi Exp $
  *
- * Copyright Â© 1998 Keith Packard
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,10 +28,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "fb.h"
 #include	<X11/fonts/fontstruct.h>
@@ -62,11 +66,11 @@ fbGlyphIn (RegionPtr	pRegion,
 #ifdef FB_24BIT
 #ifndef FBNOPIXADDR
 
-#define WRITE1(d,n,fg)	WRITE((d) + (n), (CARD8) fg)
-#define WRITE2(d,n,fg)	WRITE((CARD16 *) &(d[n]), (CARD16) fg)
-#define WRITE4(d,n,fg)	WRITE((CARD32 *) &(d[n]), (CARD32) fg)
+#define WRITE1(d,n,fg)	((d)[n] = (CARD8) fg)
+#define WRITE2(d,n,fg)	(*(CARD16 *) &(d[n]) = (CARD16) fg)
+#define WRITE4(d,n,fg)	(*(CARD32 *) &(d[n]) = (CARD32) fg)
 #if FB_UNIT == 6 && IMAGE_BYTE_ORDER == LSBFirst
-#define WRITE8(d)	WRITE((FbBits *) &(d[0]), fg)
+#define WRITE8(d)	(*(FbBits *) &(d[0]) = fg)
 #else
 #define WRITE8(d)	WRITE4(d,0,_ABCA), WRITE4(d,4,_BCAB)
 #endif
@@ -157,7 +161,7 @@ fbGlyph24 (FbBits   *dstBits,
     lshift = 4 - shift;
     while (height--)
     {
-	bits = READ(stipple++);
+	bits = *stipple++;
 	n = lshift;
 	dst = dstLine;
 	while (bits)
@@ -284,7 +288,7 @@ fbPolyGlyphBlt (DrawablePtr	pDrawable,
     glyph = 0;
     if (pGC->fillStyle == FillSolid && pPriv->and == 0)
     {
-	dstBpp = pDrawable->bitsPerPixel;
+	fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
 	switch (dstBpp) {
 	case 8:	    glyph = fbGlyph8; break;
 	case 16:    glyph = fbGlyph16; break;
@@ -312,7 +316,6 @@ fbPolyGlyphBlt (DrawablePtr	pDrawable,
 	    if (glyph && gWidth <= sizeof (FbStip) * 8 &&
 		fbGlyphIn (fbGetCompositeClip(pGC), gx, gy, gWidth, gHeight))
 	    {
-		fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
 		(*glyph) (dst + (gy + dstYoff) * dstStride,
 			  dstStride,
 			  dstBpp,
@@ -320,7 +323,6 @@ fbPolyGlyphBlt (DrawablePtr	pDrawable,
 			  pPriv->xor,
 			  gx + dstXoff,
 			  gHeight);
-		fbFinishAccess (pDrawable);
 	    }
 	    else
 #endif
@@ -377,7 +379,7 @@ fbImageGlyphBlt (DrawablePtr	pDrawable,
     glyph = 0;
     if (pPriv->and == 0)
     {
-	dstBpp = pDrawable->bitsPerPixel;
+	fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
 	switch (dstBpp) {
 	case 8:	    glyph = fbGlyph8; break;
 	case 16:    glyph = fbGlyph16; break;
@@ -445,7 +447,6 @@ fbImageGlyphBlt (DrawablePtr	pDrawable,
 	    if (glyph && gWidth <= sizeof (FbStip) * 8 &&
 		fbGlyphIn (fbGetCompositeClip(pGC), gx, gy, gWidth, gHeight))
 	    {
-		fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
 		(*glyph) (dst + (gy + dstYoff) * dstStride,
 			  dstStride,
 			  dstBpp,
@@ -453,7 +454,6 @@ fbImageGlyphBlt (DrawablePtr	pDrawable,
 			  pPriv->fg,
 			  gx + dstXoff,
 			  gHeight);
-		fbFinishAccess (pDrawable);
 	    }
 	    else
 #endif

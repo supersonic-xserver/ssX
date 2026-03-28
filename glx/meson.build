@@ -66,7 +66,10 @@ hdrs_vnd = [
 ]
 
 libglxvnd = ''
-if build_glx
+# Legacy build mode: Disable Vendor Neutral Dispatch (glxvnd)
+# Only legacy GLX provider is compatible with XFree86 4.8.0
+# For ssX-legacy build, always disable glxvnd to avoid cascading type issues
+if false and build_glx and not legacy_mode
     libglxvnd = static_library('libglxvnd',
     srcs_vnd,
     include_directories: inc,

@@ -1,0 +1,32 @@
+/Makefile/1.1.1.1/Fri Mar 18 13:12:33 2005//Tnetbsd-5-2-3-RELEASE
+/ati_pcigart.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drmP.h/1.3/Fri Mar 18 14:55:15 2005//Tnetbsd-5-2-3-RELEASE
+/drm_agpsupport.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_auth.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_bufs.h/1.3/Fri Mar 18 14:55:15 2005//Tnetbsd-5-2-3-RELEASE
+/drm_context.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_dma.h/1.3/Fri Mar 18 14:55:16 2005//Tnetbsd-5-2-3-RELEASE
+/drm_drawable.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_drv.h/1.5/Fri Mar 18 14:55:16 2005//Tnetbsd-5-2-3-RELEASE
+/drm_fops.h/1.1.1.4/Fri Mar 18 13:12:34 2005//Tnetbsd-5-2-3-RELEASE
+/drm_ioctl.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_irq.h/1.3/Fri Mar 18 14:55:16 2005//Tnetbsd-5-2-3-RELEASE
+/drm_lock.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_memory.h/1.2/Sat Mar  6 11:17:39 2004//Tnetbsd-5-2-3-RELEASE
+/drm_memory_debug.h/1.1.1.1/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_os_freebsd.h/1.1.1.4/Fri Mar 18 13:12:34 2005//Tnetbsd-5-2-3-RELEASE
+/drm_os_netbsd.h/1.3/Fri Mar 18 14:55:16 2005//Tnetbsd-5-2-3-RELEASE
+/drm_pci.h/1.1.1.1/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_scatter.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_sysctl.h/1.1.1.3/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/drm_vm.h/1.1.1.4/Fri Mar 18 13:12:34 2005//Tnetbsd-5-2-3-RELEASE
+/mga_drv.c/1.1.1.2/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/r128_drv.c/1.1.1.2/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/radeon_drv.c/1.1.1.2/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/sis_drv.c/1.1.1.1/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/tdfx_drv.c/1.1.1.2/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+D/mga////
+D/r128////
+D/radeon////
+D/sis////
+D/tdfx////

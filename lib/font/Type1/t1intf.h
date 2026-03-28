@@ -1,3 +1,11 @@
+/* $Xorg: t1intf.h,v 1.3 2000/08/17 19:46:33 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -43,7 +51,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
-/* $XFree86: xc/lib/font/Type1/t1intf.h,v 1.8tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/t1intf.h,v 1.7 2001/07/25 15:04:55 dawes Exp $ */
 
 #ifdef BUILDCID
 #include "AFM.h"
@@ -65,8 +73,8 @@ typedef struct cid_glyphs {
        FontInfo       *AFMinfo;
 #ifdef USE_MMAP
        unsigned char  *CIDdata;
-#endif
        long            CIDsize;
+#endif
 } cidglyphs;
 #endif
 

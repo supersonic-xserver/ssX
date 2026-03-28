@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 2002 by Juliusz Chroboczek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +26,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/fonttosfnt/read.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/fonttosfnt/read.c,v 1.6 2003/12/19 02:16:36 dawes Exp $ */
 
 #include <stdio.h>
 
@@ -28,7 +35,7 @@ THE SOFTWARE.
 #include FT_BDF_H
 #include "X11/Xos.h"
 #include "fonttosfnt.h"
-#include <X11/fonts/fontenc.h>
+#include "fontenc.h"
 
 #define FLOOR2(x, y) ((x) >= 0 ? (x) / (y) : -(((-(x)) + (y) - 1) / (y)))
 #define CEIL2(x, y) (FLOOR2((x) + (y) - 1, (y)))

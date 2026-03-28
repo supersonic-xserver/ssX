@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -73,6 +80,15 @@ _tnl_need_dlist_norm_lengths( GLcontext *ctx, GLboolean flag );
 
 extern void
 _tnl_isolate_materials( GLcontext *ctx, GLboolean flag );
+
+
+/* Control whether T&L does per-vertex fog
+ */
+extern void
+_tnl_allow_vertex_fog( GLcontext *ctx, GLboolean value );
+
+extern void
+_tnl_allow_pixel_fog( GLcontext *ctx, GLboolean value );
 
 
 #endif

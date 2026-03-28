@@ -1,0 +1,79 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/vfb/Imakefile,v 3.33 2006/02/19 15:51:22 tsi Exp $
+
+#include <Server.tmpl>
+
+#define IHaveSubdirs
+
+#if BuildRender
+RENDERDIRS = render
+#endif
+
+#if BuildRandR
+RANDRDIRS = randr
+#endif
+
+#if BuildRECORD
+RECORDDIRS = record
+#endif
+
+#if BuildDBE
+DBEDIR = dbe
+#endif
+
+#if BuildXTrap
+XTRAPDIR = XTrap
+#endif
+
+SUBDIRS = dix os Xext $(RENDERDIRS) $(RANDRDIRS) $(RECORDDIRS) $(DBEDIR) \
+	  $(XTRAPDIR)
+
+#if HasShm
+SHMDEF = -DHAS_SHM
+#endif
+
+XCOMM add more architectures here as we discover them
+#if defined(HPArchitecture) || \
+    (defined(SparcArchitecture) && !defined(LynxOSArchitecture)) || \
+    SystemV4 || \
+    defined(OSF1Architecture) || \
+    defined(i386BsdArchitecture) || \
+    defined(LinuxArchitecture) || \
+    defined(DarwinArchitecture)
+MMAPDEF = -DHAS_MMAP
+#endif
+
+#ifdef OS2Architecture
+SRCS1 = os2_stubs.c
+OBJS1 = os2_stubs.o
+#endif
+
+#ifdef XvfbExcludedExtensions
+VFB_DEFINES = XvfbExcludedExtensions
+#endif
+
+SRCS =	InitInput.c InitOutput.c miinitext.c $(SRCS1)
+
+OBJS =	InitInput.o InitOutput.o miinitext.o $(OBJS1)
+
+INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
+	   -I$(SERVERSRC)/include -I../../os -I$(SERVERSRC)/Xext \
+	   -I$(SERVERSRC)/render
+
+DEFINES = $(OS_DEFINES) $(SHMDEF) $(MMAPDEF) $(EXT_DEFINES) $(VFB_DEFINES)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(vfb,$(OBJS))
+
+#ifdef OS2Architecture
+LinkSourceFile(os2_stubs.c,../xfree86/os-support/os2)
+SpecialCObjectRule(os2_stubs,$(ICONFIGFILES),-DOS2NULLSELECT)
+#endif
+
+LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),NullParameter)
+
+InstallManPage(Xvfb,$(MANDIR))
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

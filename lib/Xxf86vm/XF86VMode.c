@@ -1,3 +1,11 @@
+/* $XConsortium: XF86VMode.c /main/2 1995/11/14 18:17:58 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* $XFree86: xc/lib/Xxf86vm/XF86VMode.c,v 3.34 2002/12/22 00:46:51 dawes Exp $ */
 /*
 

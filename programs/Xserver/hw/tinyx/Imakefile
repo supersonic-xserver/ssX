@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/Imakefile,v 1.9 2006/03/03 16:43:14 tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/Imakefile,v 1.4 2005/03/12 23:36:27 dawes Exp $
 /*
- * Copyright (c) 2004-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 2004, 2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -48,27 +48,14 @@ XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/Imakefile,v 1.9 2006/03/03 16:43:14
 
 #include "TinyX.tmpl"
 
-#define IHaveSubdirs
-
 #if BuildRender
 RENDERSRCS=txpict.c
 RENDEROBJS=txpict.o
-RENDERSUBDIRS = render
-#endif
-
-#if BuildRandR
-RANDRSUBDIRS = randr
 #endif
 
 #if BuildXvExt
 XVSRCS=txxv.c
 XVOBJS=txxv.o 
-#endif
-
-#if (defined(XSavageServer) && XSavageServer) || \
-    (defined(XIgsServer) && XIgsServer)
-VGASRC = vga.c
-VGAOBJ = vga.o
 #endif
 
 #ifdef TinyDIXDefines
@@ -83,76 +70,14 @@ IPAQ_DEFINES = -DXIPAQ
 MTRR_DEFINES = -DHAS_MTRR
 #endif
 
-#if defined(LinuxArchitecture)
-OSDIRS = linux
-#elif defined(VXWORKS)
-OSDIRS = vxworks
-#endif
+DEFINES = $(IPAQ_DEFINES) $(TINY_DEFINES) $(MTRR_DEFINES) -UXFree86LOADER
 
-#if defined(XfbdevServer) && XfbdevServer
-FBDEVDIR = fbdev
-#endif
-#if defined(XSavageServer) && XSavageServer
-SAVAGEDIR = savage
-#endif
-#if defined(XIgsServer) && XIgsServer
-IGSDIR = igs
-#endif
-#if defined(XTridentServer) && XTridentServer
-FBDEVDIR = fbdev
-VESADIR = vesa
-TRIDENTDIR = trident
-#endif
-#if defined(XchipsServer) && XchipsServer
-VESADIR = vesa
-CHIPSDIR = chips
-#endif
-#if defined(Xmach64Server) && Xmach64Server
-VESADIR = vesa
-MACH64DIR = mach64
-#endif
-#if defined(Xi810Server) && Xi810Server
-FBDEVDIR = fbdev
-VESADIR = vesa
-I810DIR = i810
-#endif
-#if defined(XSis530Server) && XSis530Server
-SIS530DIR = sis530
-#endif
-#if defined(XTrioServer) && XTrioServer
-TRIODIR = trio
-#endif
-#if defined(XipaqServer) && XipaqServer
-FBDEVDIR = fbdev
-PCMCIADIR = pcmcia
-IPAQDIR = ipaq
-#endif
-#if defined(XTS300Server) && XTS300Server
-TRIODIR = trio
-SIS530DIR = sis530
-TS300DIR = ts300
-#endif
-#if defined(XItsyServer) && XItsyServer
-ITSYDIR = itsy
-#endif
-#if defined(XvesaServer) && XvesaServer
-VESADIR = vesa
-#endif
+SRCS = txaa.c txcmap.c txcolor.c tinyx.c txinfo.c txinput.c txmap.c txnoop.c \
+	txtest.c vga.c txasync.c txmode.c txcurscol.c txshadow.c \
+	$(RENDERSRCS) $(XVSRCS) miinitext.c stubs.c
 
-
-SUBDIRS = sys dix os Xext $(RENDERSUBDIRS) $(RANDRSUBDIRS) $(OSDIRS) \
-	$(CHIPSDIR) $(FBDEVDIR) $(I810DIR) $(IGSDIR) $(IPAQDIR) $(ITSYDIR) \
-	$(MACH64DIR) $(PCMCIADIR) $(SAVAGEDIR) $(SIS530DIR) $(TRIDENTDIR) \
-	$(TRIODIR) $(TS300DIR) $(VESADIR) 
-
-DEFINES = $(EXT_DEFINES) $(IPAQ_DEFINES) $(TINY_DEFINES) $(MTRR_DEFINES)
-
-SRCS = txaa.c txcmap.c tinyx.c txinfo.c txinput.c txmap.c txnoop.c \
-	txtest.c $(VGASRC) txasync.c txmode.c txcurscol.c txshadow.c \
-	$(RENDERSRCS) $(XVSRCS) miinitext.c
-
-OBJS = txaa.o txcmap.o tinyx.o txinfo.o txinput.o txmap.o txnoop.o \
-	txtest.o $(VGAOBJ) txasync.o txmode.o txcurscol.o txshadow.o \
+OBJS = txaa.o txcmap.o txcolor.o tinyx.o txinfo.o txinput.o txmap.o txnoop.o \
+	txtest.o vga.o txasync.o txmode.o txcurscol.o txshadow.o \
 	$(RENDEROBJS) $(XVOBJS)
 
 INCLUDES = $(TINYXINCLUDES)
@@ -160,27 +85,13 @@ INCLUDES = $(TINYXINCLUDES)
 NormalLibraryObjectRule()
 NormalLibraryTarget(tinyx,$(OBJS))
 
+SpecialCObjectRule(tinyx,,$(EXT_DEFINES) $(TINY_DEFINES))
+
 AllTarget(miinitext.o)
 LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
-SpecialCObjectRule(miinitext,$(ICONFIGFILES),NullParameter)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),$(EXT_DEFINES) $(PAN_DEFINES) -DNO_MODULE_EXTS $(EXT_MODULE_DEFINES) $(TINY_DEFINES))
 
-TINYX_FONT_DEFS = TinyXFontDefines
-#if TinyXSpeedo
-TINYX_SPEEDO_DEFINES = -DBUILD_SPEEDO
-#endif
-#if TinyXType1
-TINYX_TYPE1_DEFINES = -DBUILD_TYPE1
-#endif
-#if TinyXCID
-TINYX_CID_DEFINES = -DBUILD_CID
-#endif
-#if TinyXFreeType
-TINYX_FREETYPE_DEFINES = -DBUILD_FREETYPE
-#endif
-
-TINY_FONT_DEFINES = $(TINYX_FONT_DEFS) $(TINYX_SPEEDO_DEFINES) \
-	$(TINYX_TYPE1_DEFINES) $(TINYX_CID_DEFINES) $(TINYX_FREETYPE_DEFINES)
-
+TINY_FONT_DEFINES =
 
 AllTarget(register.o)
 LinkSourceFile(register.c,$(FONTLIBSRC)/fontfile)
@@ -189,9 +100,10 @@ AllTarget(ffcheck.o)
 LinkSourceFile(ffcheck.c,$(FONTLIBSRC)/fontfile)
 SpecialCObjectRule(ffcheck,$(ICONFIGFILES),-I$(FONTLIBSRC)/include $(TINY_FONT_DEFINES))
 
+AllTarget(stubs.o)
+LinkSourceFile(stubs.c,$(SERVERSRC)/Xi)
+SpecialCObjectRule(stubs,$(ICONFIGFILES),-UXINPUT)
+
 InstallManPage(TinyX,$(MANDIR))
 InstallManPageAliases(TinyX,$(MANDIR),Xchips Xi810 Xigs Xipaq Xmach64 Xsavage Xsis530 Xtrident Xtrio Xts300 Xkdrive kdrive)
 DependTarget()
-
-MakeSubdirs($(SUBDIRS))
-DependSubdirs($(SUBDIRS))

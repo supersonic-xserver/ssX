@@ -1,5 +1,61 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Option.c,v 1.38 2006/08/09 20:53:15 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1998-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1998-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * Copyright © 2003, 2004, 2005 David H. Dawes.
+ * Copyright © 2003, 2004, 2005 X-Oz Technologies.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -7,22 +63,38 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
+ * 
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions, and the following disclaimer.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *  2. Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ * 
+ *  3. The end-user documentation included with the redistribution,
+ *     if any, must include the following acknowledgment: "This product
+ *     includes software developed by X-Oz Technologies
+ *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
+ *     appear in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *  4. Except as contained in this notice, the name of X-Oz
+ *     Technologies shall not be used in advertising or otherwise to
+ *     promote the sale, use or other dealings in this Software without
+ *     prior written authorization from X-Oz Technologies.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
@@ -30,10 +102,6 @@
  *
  * This file includes public option handling functions.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -64,7 +132,7 @@ static Bool ParseOptionValue(int scrnIndex, pointer options, OptionInfoPtr p,
  *   extraOpts, display, confScreen, monitor, device
  */
 
-_X_EXPORT void
+void
 xf86CollectOptions(ScrnInfoPtr pScrn, pointer extraOpts)
 {
     XF86OptionPtr tmp;
@@ -81,7 +149,7 @@ xf86CollectOptions(ScrnInfoPtr pScrn, pointer extraOpts)
 	if (device && device->options) {
 	    tmp = xf86optionListDup(device->options);
 	    if (pScrn->options)
-		xf86optionListMerge(pScrn->options,tmp);
+		xf86optionListMerge(pScrn->options, tmp);
 	    else
 		pScrn->options = tmp;
 	}
@@ -131,7 +199,7 @@ xf86CollectOptions(ScrnInfoPtr pScrn, pointer extraOpts)
  *   pInfo->conf_idev->commonOptions, defaultOpts
  */
 
-_X_EXPORT void
+void
 xf86CollectInputOptions(InputInfoPtr pInfo, const char **defaultOpts,
 			pointer extraOpts)
 {
@@ -142,14 +210,14 @@ xf86CollectInputOptions(InputInfoPtr pInfo, const char **defaultOpts,
     if (defaultOpts) {
 	pInfo->options = xf86OptionListCreate(defaultOpts, -1, 0);
     }
-    if (pInfo->conf_idev && pInfo->conf_idev->commonOptions) {
+    if (pInfo->conf_idev->commonOptions) {
 	tmp = xf86optionListDup(pInfo->conf_idev->commonOptions);
 	if (pInfo->options)
 	    pInfo->options = xf86optionListMerge(pInfo->options, tmp);
 	else
 	    pInfo->options = tmp;
     }
-    if (pInfo->conf_idev && pInfo->conf_idev->extraOptions) {
+    if (pInfo->conf_idev->extraOptions) {
 	tmp = xf86optionListDup(pInfo->conf_idev->extraOptions);
 	if (pInfo->options)
 	    pInfo->options = xf86optionListMerge(pInfo->options, tmp);
@@ -224,28 +292,28 @@ LookupBoolOption(pointer optlist, const char *name, int deflt, Bool markUsed)
 
 /* These xf86Set* functions are intended for use by non-screen specific code */
 
-_X_EXPORT int
+int
 xf86SetIntOption(pointer optlist, const char *name, int deflt)
 {
     return LookupIntOption(optlist, name, deflt, TRUE);
 }
 
 
-_X_EXPORT double
+double
 xf86SetRealOption(pointer optlist, const char *name, double deflt)
 {
     return LookupRealOption(optlist, name, deflt, TRUE);
 }
 
 
-_X_EXPORT char *
+char *
 xf86SetStrOption(pointer optlist, const char *name, char *deflt)
 {
     return LookupStrOption(optlist, name, deflt, TRUE);
 }
 
 
-_X_EXPORT int
+int
 xf86SetBoolOption(pointer optlist, const char *name, int deflt)
 {
     return LookupBoolOption(optlist, name, deflt, TRUE);
@@ -255,28 +323,28 @@ xf86SetBoolOption(pointer optlist, const char *name, int deflt)
  * These are like the Set*Option functions, but they don't mark the options
  * as used.
  */
-_X_EXPORT int
+int
 xf86CheckIntOption(pointer optlist, const char *name, int deflt)
 {
     return LookupIntOption(optlist, name, deflt, FALSE);
 }
 
 
-_X_EXPORT double
+double
 xf86CheckRealOption(pointer optlist, const char *name, double deflt)
 {
     return LookupRealOption(optlist, name, deflt, FALSE);
 }
 
 
-_X_EXPORT char *
+char *
 xf86CheckStrOption(pointer optlist, const char *name, char *deflt)
 {
     return LookupStrOption(optlist, name, deflt, FALSE);
 }
 
 
-_X_EXPORT int
+int
 xf86CheckBoolOption(pointer optlist, const char *name, int deflt)
 {
     return LookupBoolOption(optlist, name, deflt, FALSE);
@@ -286,89 +354,105 @@ xf86CheckBoolOption(pointer optlist, const char *name, int deflt)
  * addNewOption() has the required property of replacing the option value
  * if the option is already present.
  */
-_X_EXPORT pointer
+pointer
 xf86ReplaceIntOption(pointer optlist, const char *name, const int val)
 {
-    char tmp[16];
-    sprintf(tmp,"%i",val);
-    return xf86AddNewOption(optlist,name,tmp);
+    char *tmp;
+    pointer ret;
+
+    xasprintf(&tmp, "%i", val);
+    if (tmp) {
+	ret = xf86AddNewOption(optlist, name, tmp);
+	xfree(tmp);
+	return ret;
+    } else
+	return NULL;
 }
 
-_X_EXPORT pointer
+pointer
 xf86ReplaceRealOption(pointer optlist, const char *name, const double val)
 {
-    char tmp[32];
-    snprintf(tmp,32,"%f",val);
-    return xf86AddNewOption(optlist,name,tmp);
+    char *tmp;
+    pointer ret;
+
+    xasprintf(&tmp, "%f", val);
+    if (tmp) {
+	ret = xf86AddNewOption(optlist, name, tmp);
+	xfree(tmp);
+	return ret;
+    } else
+	return NULL;
 }
 
-_X_EXPORT pointer
+pointer
 xf86ReplaceBoolOption(pointer optlist, const char *name, const Bool val)
 {
-    return xf86AddNewOption(optlist,name,val?"True":"False");
+    return xf86AddNewOption(optlist, name, val ? "True" : "False");
 }
 
-_X_EXPORT pointer
+pointer
 xf86ReplaceStrOption(pointer optlist, const char *name, const char* val)
 {
-      return xf86AddNewOption(optlist,name,val);
+      return xf86AddNewOption(optlist, name, val);
 }
 
-_X_EXPORT pointer
+pointer
 xf86AddNewOption(pointer head, const char *name, const char *val)
 {
-    /* XXX These should actually be allocated in the parser library. */
-    char *tmp = strdup(val);
-    char *tmp_name = strdup(name);
-
-    return xf86addNewOption(head, tmp_name, tmp);
+    return xf86addNewOption(head, name, val);
 }
 
 
-_X_EXPORT pointer
+pointer
 xf86NewOption(char *name, char *value)
 {
     return xf86newOption(name, value);
 }
 
 
-_X_EXPORT pointer
+pointer
 xf86NextOption(pointer list)
 {
     return xf86nextOption(list);
 }
 
-_X_EXPORT pointer
+pointer
 xf86OptionListCreate(const char **options, int count, int used)
 {
 	return xf86optionListCreate(options, count, used);
 }
 
-_X_EXPORT pointer
+pointer
 xf86OptionListMerge(pointer head, pointer tail)
 {
 	return xf86optionListMerge(head, tail);
 }
 
-_X_EXPORT void
+pointer
+xf86OptionListDup(pointer opt)
+{
+	return xf86optionListDup(opt);
+}
+
+void
 xf86OptionListFree(pointer opt)
 {
 	xf86optionListFree(opt);
 }
 
-_X_EXPORT char *
+char *
 xf86OptionName(pointer opt)
 {
 	return xf86optionName(opt);
 }
 
-_X_EXPORT char *
+char *
 xf86OptionValue(pointer opt)
 {
 	return xf86optionValue(opt);
 }
 
-_X_EXPORT void
+void
 xf86OptionListReport(pointer parm)
 {
     XF86OptionPtr opts = parm;
@@ -383,23 +467,40 @@ xf86OptionListReport(pointer parm)
     }
 }
 
-/* End of XInput-caused section	*/
+void
+xf86OptionListPrint(int verb, MessageType from, const char *prefix,
+		    pointer parm)
+{
+    XF86OptionPtr opts = parm;
+    const char *p;
 
-_X_EXPORT pointer
+    p = EMPTYIFNULL(prefix);
+    while (opts) {
+	if (xf86optionValue(opts))
+	    xf86MsgVerb(from, verb, "%sOption \"%s\" \"%s\"\n", p,
+			xf86optionName(opts), xf86optionValue(opts));
+	else
+	    xf86MsgVerb(from, verb, "%sOption \"%s\"\n", p,
+			xf86optionName(opts));
+	opts = xf86nextOption(opts);
+    }
+}
+
+pointer
 xf86FindOption(pointer options, const char *name)
 {
     return xf86findOption(options, name);
 }
 
 
-_X_EXPORT char *
+char *
 xf86FindOptionValue(pointer options, const char *name)
 {
     return xf86findOptionValue(options, name);
 }
 
 
-_X_EXPORT void
+void
 xf86MarkOptionUsed(pointer option)
 {
     if (option != NULL)
@@ -407,7 +508,7 @@ xf86MarkOptionUsed(pointer option)
 }
 
 
-_X_EXPORT void
+void
 xf86MarkOptionUsedByName(pointer options, const char *name)
 {
     XF86OptionPtr opt;
@@ -417,7 +518,7 @@ xf86MarkOptionUsedByName(pointer options, const char *name)
 	opt->opt_used = TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 xf86CheckIfOptionUsed(pointer option)
 {
     if (option != NULL)
@@ -426,7 +527,7 @@ xf86CheckIfOptionUsed(pointer option)
 	return FALSE;
 }
 
-_X_EXPORT Bool
+Bool
 xf86CheckIfOptionUsedByName(pointer options, const char *name)
 {
     XF86OptionPtr opt;
@@ -438,18 +539,24 @@ xf86CheckIfOptionUsedByName(pointer options, const char *name)
 	return FALSE;
 }
 
-_X_EXPORT void
-xf86ShowUnusedOptions(int scrnIndex, pointer options)
+void
+xf86ShowUnusedOptionsVerb(int scrnIndex, pointer options, int verb)
 {
     XF86OptionPtr opt = options;
 
     while (opt) {
 	if (opt->opt_name && !opt->opt_used) {
-	    xf86DrvMsg(scrnIndex, X_WARNING, "Option \"%s\" is not used\n",
-			opt->opt_name);
+	    xf86DrvMsgVerb(scrnIndex, X_WARNING, verb,
+			   "Option \"%s\" is not used\n", opt->opt_name);
 	}
 	opt = opt->list.next;
     }
+}
+
+void
+xf86ShowUnusedOptions(int scrnIndex, pointer options)
+{
+    xf86ShowUnusedOptionsVerb(scrnIndex, options, X_LOG_DEFAULT_VERB);
 }
 
 
@@ -515,7 +622,7 @@ ParseOptionValue(int scrnIndex, pointer options, OptionInfoPtr p,
 	case OPTV_STRING:
 	    if (*s == '\0') {
 		xf86DrvMsg(scrnIndex, X_WARNING,
-			   "Option \"%s\" requires an string value\n",
+			   "Option \"%s\" requires a string value\n",
 			   p->name);
 		p->found = FALSE;
 	    } else {
@@ -661,7 +768,7 @@ ParseOptionValue(int scrnIndex, pointer options, OptionInfoPtr p,
 }
 
 
-_X_EXPORT void
+void
 xf86ProcessOptions(int scrnIndex, pointer options, OptionInfoPtr optinfo)
 {
     OptionInfoPtr p;
@@ -672,7 +779,7 @@ xf86ProcessOptions(int scrnIndex, pointer options, OptionInfoPtr optinfo)
 }
 
 
-_X_EXPORT OptionInfoPtr
+OptionInfoPtr
 xf86TokenToOptinfo(const OptionInfoRec *table, int token)
 {
     const OptionInfoRec *p, *match = NULL, *set = NULL;
@@ -699,7 +806,7 @@ xf86TokenToOptinfo(const OptionInfoRec *table, int token)
 }
 
 
-_X_EXPORT const char *
+const char *
 xf86TokenToOptName(const OptionInfoRec *table, int token)
 {
     const OptionInfoRec *p;
@@ -709,7 +816,7 @@ xf86TokenToOptName(const OptionInfoRec *table, int token)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86IsOptionSet(const OptionInfoRec *table, int token)
 {
     OptionInfoPtr p;
@@ -719,7 +826,7 @@ xf86IsOptionSet(const OptionInfoRec *table, int token)
 }
 
 
-_X_EXPORT char *
+char *
 xf86GetOptValString(const OptionInfoRec *table, int token)
 {
     OptionInfoPtr p;
@@ -732,7 +839,7 @@ xf86GetOptValString(const OptionInfoRec *table, int token)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86GetOptValInteger(const OptionInfoRec *table, int token, int *value)
 {
     OptionInfoPtr p;
@@ -746,7 +853,7 @@ xf86GetOptValInteger(const OptionInfoRec *table, int token, int *value)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86GetOptValULong(const OptionInfoRec *table, int token, unsigned long *value)
 {
     OptionInfoPtr p;
@@ -760,7 +867,7 @@ xf86GetOptValULong(const OptionInfoRec *table, int token, unsigned long *value)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86GetOptValReal(const OptionInfoRec *table, int token, double *value)
 {
     OptionInfoPtr p;
@@ -774,7 +881,7 @@ xf86GetOptValReal(const OptionInfoRec *table, int token, double *value)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86GetOptValFreq(const OptionInfoRec *table, int token,
 		  OptFreqUnits expectedUnits, double *value)
 {
@@ -822,7 +929,7 @@ xf86GetOptValFreq(const OptionInfoRec *table, int token,
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86GetOptValBool(const OptionInfoRec *table, int token, Bool *value)
 {
     OptionInfoPtr p;
@@ -836,7 +943,7 @@ xf86GetOptValBool(const OptionInfoRec *table, int token, Bool *value)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86ReturnOptValBool(const OptionInfoRec *table, int token, Bool def)
 {
     OptionInfoPtr p;
@@ -849,7 +956,7 @@ xf86ReturnOptValBool(const OptionInfoRec *table, int token, Bool def)
 }
 
 
-_X_EXPORT int
+int
 xf86NameCmp(const char *s1, const char *s2)
 {
     return xf86nameCompare(s1, s2);
@@ -864,7 +971,7 @@ xf86NormalizeName(const char *s)
     if (s == NULL)
 	return NULL;
 
-    ret = xalloc(strlen(s) + 1);
+    ret = xnfalloc(strlen(s) + 1);
     for (p = s, q = ret; *p != 0; p++) {
 	switch (*p) {
 	case '_':

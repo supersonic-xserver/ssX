@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ttinterp.h                                                             */
 /*                                                                         */
 /*    TrueType bytecode interpreter (specification).                       */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,24 +23,15 @@
 /***************************************************************************/
 
 
-#ifndef TTINTERP_H
-#define TTINTERP_H
+#ifndef __TTINTERP_H__
+#define __TTINTERP_H__
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ttobjs.h"
 
-#else
 
-#include <truetype/ttobjs.h>
-
-#endif
-
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
 #ifndef TT_CONFIG_OPTION_STATIC_INTEPRETER  /* indirect implementation */
@@ -76,25 +74,30 @@
   /*************************************************************************/
 
   /* Rounding function */
-  typedef FT_F26Dot6  (*TT_Round_Func)( EXEC_OP_ FT_F26Dot6  distance,
-                                                 FT_F26Dot6  compensation );
+  typedef FT_F26Dot6
+  (*TT_Round_Func)( EXEC_OP_ FT_F26Dot6  distance,
+                             FT_F26Dot6  compensation );
 
   /* Point displacement along the freedom vector routine */
-  typedef void  (*TT_Move_Func)( EXEC_OP_ TT_GlyphZone*  zone,
-                                          FT_UInt        point,
-                                          FT_F26Dot6     distance );
+  typedef void
+  (*TT_Move_Func)( EXEC_OP_ TT_GlyphZone  zone,
+                            FT_UShort     point,
+                            FT_F26Dot6    distance );
 
   /* Distance projection along one of the projection vectors */
-  typedef FT_F26Dot6  (*TT_Project_Func)( EXEC_OP_ FT_Vector*  v1,
-                                                   FT_Vector*  v2 );
+  typedef FT_F26Dot6
+  (*TT_Project_Func)( EXEC_OP_ FT_Vector*  v1,
+                               FT_Vector*  v2 );
 
   /* reading a cvt value.  Take care of non-square pixels if necessary */
-  typedef FT_F26Dot6  (*TT_Get_CVT_Func)( EXEC_OP_ FT_ULong  index );
+  typedef FT_F26Dot6
+  (*TT_Get_CVT_Func)( EXEC_OP_ FT_ULong  idx );
 
   /* setting or moving a cvt value.  Take care of non-square pixels  */
   /* if necessary                                                    */
-  typedef void  (*TT_Set_CVT_Func)( EXEC_OP_ FT_ULong    index,
-                                             FT_F26Dot6  value );
+  typedef void
+  (*TT_Set_CVT_Func)( EXEC_OP_ FT_ULong    idx,
+                               FT_F26Dot6  value );
 
 
   /*************************************************************************/
@@ -118,90 +121,90 @@
   /*                                                                       */
   typedef struct  TT_ExecContextRec_
   {
-    TT_Face         face;
-    TT_Size         size;
-    FT_Memory       memory;
+    TT_Face            face;
+    TT_Size            size;
+    FT_Memory          memory;
 
     /* instructions state */
 
-    FT_Error        error;      /* last execution error */
+    FT_Error           error;      /* last execution error */
 
-    FT_Long         top;        /* top of exec. stack   */
+    FT_Long            top;        /* top of exec. stack   */
 
-    FT_UInt         stackSize;  /* size of exec. stack  */
-    FT_Long*        stack;      /* current exec. stack  */
+    FT_UInt            stackSize;  /* size of exec. stack  */
+    FT_Long*           stack;      /* current exec. stack  */
 
-    FT_Long         args;
-    FT_UInt         new_top;    /* new top after exec.  */
+    FT_Long            args;
+    FT_UInt            new_top;    /* new top after exec.  */
 
-    TT_GlyphZone    zp0,        /* zone records */
-                    zp1,
-                    zp2,
-                    pts,
-                    twilight;
+    TT_GlyphZoneRec    zp0,        /* zone records */
+                       zp1,
+                       zp2,
+                       pts,
+                       twilight;
 
-    FT_Size_Metrics  metrics;
-    TT_Size_Metrics  tt_metrics; /* size metrics */
+    FT_Size_Metrics    metrics;
+    TT_Size_Metrics    tt_metrics; /* size metrics */
 
-    TT_GraphicsState  GS;         /* current graphics state */
+    TT_GraphicsState   GS;         /* current graphics state */
 
-    FT_Int          curRange;  /* current code range number   */
-    FT_Byte*        code;      /* current code range          */
-    FT_Long         IP;        /* current instruction pointer */
-    FT_Long         codeSize;  /* size of current range       */
+    FT_Int             curRange;  /* current code range number   */
+    FT_Byte*           code;      /* current code range          */
+    FT_Long            IP;        /* current instruction pointer */
+    FT_Long            codeSize;  /* size of current range       */
 
-    FT_Byte         opcode;    /* current opcode              */
-    FT_Int          length;    /* length of current opcode    */
+    FT_Byte            opcode;    /* current opcode              */
+    FT_Int             length;    /* length of current opcode    */
 
-    FT_Bool         step_ins;  /* true if the interpreter must */
-                               /* increment IP after ins. exec */
-    FT_Long         cvtSize;
-    FT_Long*        cvt;
+    FT_Bool            step_ins;  /* true if the interpreter must */
+                                  /* increment IP after ins. exec */
+    FT_Long            cvtSize;
+    FT_Long*           cvt;
 
-    FT_UInt         glyphSize; /* glyph instructions buffer size */
-    FT_Byte*        glyphIns;  /* glyph instructions buffer */
+    FT_UInt            glyphSize; /* glyph instructions buffer size */
+    FT_Byte*           glyphIns;  /* glyph instructions buffer */
 
-    FT_UInt         numFDefs;  /* number of function defs         */
-    FT_UInt         maxFDefs;  /* maximum number of function defs */
-    TT_DefArray     FDefs;     /* table of FDefs entries          */
+    FT_UInt            numFDefs;  /* number of function defs         */
+    FT_UInt            maxFDefs;  /* maximum number of function defs */
+    TT_DefArray        FDefs;     /* table of FDefs entries          */
 
-    FT_UInt         numIDefs;  /* number of instruction defs */
-    FT_UInt         maxIDefs;  /* maximum number of ins defs */
-    TT_DefArray     IDefs;     /* table of IDefs entries     */
+    FT_UInt            numIDefs;  /* number of instruction defs */
+    FT_UInt            maxIDefs;  /* maximum number of ins defs */
+    TT_DefArray        IDefs;     /* table of IDefs entries     */
 
-    FT_UInt         maxFunc;   /* maximum function index     */
-    FT_UInt         maxIns;    /* maximum instruction index  */
+    FT_UInt            maxFunc;   /* maximum function index     */
+    FT_UInt            maxIns;    /* maximum instruction index  */
 
-    FT_Int          callTop,    /* top of call stack during execution */
-                    callSize;   /* size of call stack */
-    TT_CallStack    callStack;  /* call stack */
+    FT_Int             callTop,    /* top of call stack during execution */
+                       callSize;   /* size of call stack */
+    TT_CallStack       callStack;  /* call stack */
 
-    FT_UShort       maxPoints;    /* capacity of this context's `pts' */
-    FT_Short        maxContours;  /* record, expressed in points and  */
-                                  /* contours.                        */
+    FT_UShort          maxPoints;    /* capacity of this context's `pts' */
+    FT_Short           maxContours;  /* record, expressed in points and  */
+                                     /* contours.                        */
 
     TT_CodeRangeTable  codeRangeTable;  /* table of valid code ranges */
                                         /* useful for the debugger   */
 
-    FT_UShort       storeSize;  /* size of current storage */
-    FT_Long*        storage;    /* storage area            */
+    FT_UShort          storeSize;  /* size of current storage */
+    FT_Long*           storage;    /* storage area            */
 
-    FT_F26Dot6      period;     /* values used for the */
-    FT_F26Dot6      phase;      /* `SuperRounding'     */
-    FT_F26Dot6      threshold;
+    FT_F26Dot6         period;     /* values used for the */
+    FT_F26Dot6         phase;      /* `SuperRounding'     */
+    FT_F26Dot6         threshold;
 
 #if 0
     /* this seems to be unused */
-    FT_Int          cur_ppem;       /* ppem along the current proj vector */
+    FT_Int             cur_ppem;   /* ppem along the current proj vector */
 #endif
 
-    FT_Bool         instruction_trap;  /* If `True', the interpreter will */
-                                       /* exit after each instruction     */
+    FT_Bool            instruction_trap; /* If `True', the interpreter will */
+                                         /* exit after each instruction     */
 
-    TT_GraphicsState  default_GS;      /* graphics state resulting from    */
-                                       /* the prep program                 */
-    FT_Bool          is_composite;     /* true if the glyph is composite   */
-    FT_Bool          pedantic_hinting; /* true for pedantic interpretation */
+    TT_GraphicsState   default_GS;       /* graphics state resulting from   */
+                                         /* the prep program                */
+    FT_Bool            is_composite;     /* true if the glyph is composite  */
+    FT_Bool            pedantic_hinting; /* true if pedantic interpretation */
 
     /* latest interpreter additions */
 
@@ -214,6 +217,7 @@
                        func_freeProj;  /* current freedom proj. func  */
 
     TT_Move_Func       func_move;      /* current point move function */
+    TT_Move_Func       func_move_orig; /* move original position function */
 
     TT_Get_CVT_Func    func_read_cvt;  /* read a cvt entry              */
     TT_Set_CVT_Func    func_write_cvt; /* write a cvt entry (in pixels) */
@@ -228,20 +232,20 @@
   extern const TT_GraphicsState  tt_default_graphics_state;
 
 
-  FT_LOCAL
-  FT_Error  TT_Goto_CodeRange( TT_ExecContext  exec,
-                               FT_Int          range,
-                               FT_Long         IP );
+  FT_LOCAL( FT_Error )
+  TT_Goto_CodeRange( TT_ExecContext  exec,
+                     FT_Int          range,
+                     FT_Long         IP );
 
-  FT_LOCAL
-  FT_Error  TT_Set_CodeRange( TT_ExecContext  exec,
-                              FT_Int          range,
-                              void*           base,
-                              FT_Long         length );
+  FT_LOCAL( FT_Error )
+  TT_Set_CodeRange( TT_ExecContext  exec,
+                    FT_Int          range,
+                    void*           base,
+                    FT_Long         length );
 
-  FT_LOCAL
-  FT_Error  TT_Clear_CodeRange( TT_ExecContext  exec,
-                                FT_Int          range );
+  FT_LOCAL( FT_Error )
+  TT_Clear_CodeRange( TT_ExecContext  exec,
+                      FT_Int          range );
 
 
   /*************************************************************************/
@@ -263,28 +267,29 @@
   /* <Note>                                                                */
   /*    Only the glyph loader and debugger should call this function.      */
   /*                                                                       */
-  FT_EXPORT( TT_ExecContext )  TT_New_Context( TT_Face  face );
+  FT_EXPORT( TT_ExecContext )
+  TT_New_Context( TT_Face  face );
 
 
-  FT_LOCAL
-  FT_Error  TT_Done_Context( TT_ExecContext  exec );
+  FT_LOCAL( FT_Error )
+  TT_Done_Context( TT_ExecContext  exec );
 
-  FT_LOCAL
-  FT_Error  TT_Destroy_Context( TT_ExecContext  exec,
-                                FT_Memory       memory );
+  FT_LOCAL( FT_Error )
+  TT_Destroy_Context( TT_ExecContext  exec,
+                      FT_Memory       memory );
 
-  FT_LOCAL
-  FT_Error  TT_Load_Context( TT_ExecContext  exec,
-                             TT_Face         face,
-                             TT_Size         size );
+  FT_LOCAL( FT_Error )
+  TT_Load_Context( TT_ExecContext  exec,
+                   TT_Face         face,
+                   TT_Size         size );
 
-  FT_LOCAL
-  FT_Error  TT_Save_Context( TT_ExecContext  exec,
-                             TT_Size         ins );
+  FT_LOCAL( FT_Error )
+  TT_Save_Context( TT_ExecContext  exec,
+                   TT_Size         ins );
 
-  FT_LOCAL
-  FT_Error  TT_Run_Context( TT_ExecContext  exec,
-                            FT_Bool         debug );
+  FT_LOCAL( FT_Error )
+  TT_Run_Context( TT_ExecContext  exec,
+                  FT_Bool         debug );
 
 
   /*************************************************************************/
@@ -308,14 +313,13 @@
   /*    This function is publicly exported because it is directly          */
   /*    invoked by the TrueType debugger.                                  */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  TT_RunIns( TT_ExecContext  exec );
+  FT_EXPORT( FT_Error )
+  TT_RunIns( TT_ExecContext  exec );
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-#endif /* TTINTERP_H */
+#endif /* __TTINTERP_H__ */
 
 
 /* END */

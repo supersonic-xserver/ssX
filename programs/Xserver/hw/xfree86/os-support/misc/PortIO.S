@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/PortIO.S,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/PortIO.S,v 1.3 2004/04/05 02:33:15 dawes Exp $ */
 
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
@@ -107,7 +107,8 @@ GLNAME(inl):
 #elif defined(sparc)
 
 	/*
-	 * These match the gcc inline versions in compiler.h.
+	 * Don't know if these are actually used/useful for Solaris/SPARC,
+	 * but they match the gcc inline versions in compiler.h.
 	 */
 
 	.file "PortIO.s"
@@ -121,55 +122,44 @@ GLNAME(inl):
 
 	.section	".text"
 
-/* membar everything for fault-isolation purposes */
-#define MEMBAR .word 0x8143e07f
-
 	.align 4
 outb:
-	MEMBAR
 	stba %o1, [%o0] #ASI_P_L
-	MEMBAR
+	membar #StoreStore | #StoreLoad
 	retl
 	nop
 
 	.align 4
 outw:
-	MEMBAR
 	stha %o1, [%o0] #ASI_P_L
-	MEMBAR
+	membar #StoreStore | #StoreLoad
 	retl
 	nop
 
 	.align 4
 outl:
-	MEMBAR
 	sta %o1, [%o0] #ASI_P_L
-	MEMBAR
+	membar #StoreStore | #StoreLoad
 	retl
 	nop
 
 	.align 4
 inb:
-	MEMBAR
 	lduba [%o0] #ASI_P_L, %o0
-	MEMBAR
 	retl
 	nop
 
 	.align 4
 inw:
-	MEMBAR
 	lduha [%o0] #ASI_P_L, %o0
-	MEMBAR
 	retl
 	nop
 
 	.align 4
 inl:
-	MEMBAR
 	lda [%o0] #ASI_P_L, %o0
-	MEMBAR
 	retl
 	nop
 
 #endif
+

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (C) Copyright IBM Corporation 2004
  * All Rights Reserved.
  *
@@ -20,9 +27,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/**
+ * \file via_texcombine.c
+ * Calculate texture combine hardware state.
  *
- * Authors:
- *    Ian Romanick <idr@us.ibm.com>
+ * \author Ian Romanick <idr@us.ibm.com>
  */
 
 #include <stdio.h>
@@ -106,8 +117,8 @@ viaTexCombineState( viaContextPtr vmesa,
    unsigned alpha = 0;
    unsigned bias = 0;
    unsigned op = 0;
-   unsigned a_shift = combine->ScaleShiftRGB;
-   unsigned c_shift = combine->ScaleShiftA;
+   unsigned a_shift = combine->ScaleShiftA;
+   unsigned c_shift = combine->ScaleShiftRGB;
    unsigned i;
    unsigned constant_color[3];
    unsigned ordered_constant_color[4];

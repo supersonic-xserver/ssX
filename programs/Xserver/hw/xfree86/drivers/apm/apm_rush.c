@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/apm/apm_rush.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/apm/apm_rush.c,v 1.12 2003/02/12 21:46:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright Loïc Grenié 1999
  */
@@ -308,16 +315,16 @@ Copyright (c) 1998 Daryll Strauss
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include "scrnintstr.h"
 #define _XF86RUSH_SERVER_
-#include <X11/extensions/xf86rushstr.h>
-#include <X11/extensions/panoramiXproto.h>
+#include "xf86rushstr.h"
 
+static unsigned char RushReqCode = 0;
 static int RushErrorBase;
 
 static DISPATCH_PROC(ProcXF86RushDispatch);
@@ -345,13 +352,10 @@ XFree86RushExtensionInit(ScreenPtr pScreen)
 {
     ExtensionEntry* extEntry;
 
-    if (IsXineramaActive()) {
-	xf86DrvMsg(pScreen->myNum, X_NOTICE,
-		   "\"" XF86RUSHNAME "\" and \"" PANORAMIX_PROTOCOL_NAME
-		   "\" extensions not supported simultaneously.\n");
+#ifdef PANORAMIX
+    if (!noPanoramiXExtension)
 	return;
-    }
-
+#endif
     if (rush_ext_generation == serverGeneration) {
 	if (xf86Screens[pScreen->myNum]->drv == &APM &&
 		APMPTR(xf86Screens[pScreen->myNum])->Chipset == AT3D) {
@@ -368,6 +372,7 @@ XFree86RushExtensionInit(ScreenPtr pScreen)
 				SProcXF86RushDispatch,
 				XF86RushResetProc,
 				StandardMinorOpcode))) {
+	RushReqCode = (unsigned char)extEntry->base;
 	RushErrorBase = extEntry->errorBase;
 	if (xf86Screens[pScreen->myNum]->drv == &APM &&
 		APMPTR(xf86Screens[pScreen->myNum])->Chipset == AT3D) {
@@ -665,8 +670,8 @@ ProcXF86RushAT3DEnableRegs(ClientPtr client)
 	return BadMatch;
     pApm->Rush = 0x04;
     if (!pApm->noLinear) {
-	db = RDXB(0xDB);
-	WRXB(0xDB, db | 0x04);
+	db = RDXL(0xDB);
+	WRXL(0xDB, db | 0x04);
 	WRXB(0x110, 0x03);
 	tmp = RDXB(0x1F0);
 	WRXB(0x1F0, tmp | 0xD0);
@@ -676,8 +681,8 @@ ProcXF86RushAT3DEnableRegs(ClientPtr client)
 	WRXB(0x1F2, tmp | 0x10);
     }
     else {
-	db = RDXB(0xDB);
-	WRXB_IOP(0xDB, db | 0x04);
+	db = RDXL(0xDB);
+	WRXL_IOP(0xDB, db | 0x04);
 	WRXB_IOP(0x110, 0x03);
 	tmp = RDXB_IOP(0x1F0);
 	WRXB_IOP(0x1F0, tmp | 0xD0);
@@ -714,8 +719,8 @@ ProcXF86RushAT3DDisableRegs(ClientPtr client)
 	WRXB(0x1F0, tmp & ~0xD0);
 	WRXB(0x110, 0);
 	pApm->Rush = 0x00;
-	db = RDXB(0xDB);
-	WRXB(0xDB, db & ~0x04);
+	db = RDXL(0xDB);
+	WRXL(0xDB, db & ~0x04);
     }
     else {
 	tmp = RDXB_IOP(0x1F2);

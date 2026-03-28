@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SBUS and OpenPROM access functions.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/Sbus.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/Sbus.c,v 1.6 2004/12/07 21:53:46 tsi Exp $ */
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -41,19 +48,12 @@
 int promRootNode;
 
 static int promFd = -1;
+static int promCurrentNode;
 static int promOpenCount = 0;
 static int promP1275 = -1;
-
 #define MAX_PROP	128
 #define MAX_VAL		(4096-128-4)
-
-#if defined(__OpenBSD__) || defined(__NetBSD__)
-/* These two use their own OBP access scheme */
-static struct opiocdesc promOpio;
-static char promval[MAX_VAL + 1];
-#else
 static struct openpromio *promOpio;
-#endif
 
 sbusDevicePtr *xf86SbusInfo = NULL;
 
@@ -73,65 +73,9 @@ struct sbus_devtable sbusDeviceTable[] = {
     { SBUS_DEVICE_TCX, FBTYPE_TCXCOLOR, "tcx", "Sun TCX" },
     { SBUS_DEVICE_FFB, FBTYPE_CREATOR, "ffb", "Sun FFB" },
     { SBUS_DEVICE_FFB, FBTYPE_CREATOR, "afb", "Sun Elite3D" },
-    { SBUS_DEVICE_P9100, FBTYPE_P9100, "pnozz", "Weitek P9100" },
     { 0, 0, NULL, NULL }
 };
 
-#if defined(__OpenBSD__) || defined(__NetBSD__)
-int
-promGetSibling(int node)
-{
-    if (node == -1)
-	return 0;
-
-    promOpio.op_nodeid = node;
-    if (ioctl(promFd, OPIOCGETNEXT, &promOpio.op_nodeid) < 0)
-	return 0;
-
-    return promOpio.op_nodeid;
-}
-
-int
-promGetChild(int node)
-{
-    if (!node || (node == -1))
-	return 0;
-
-    promOpio.op_nodeid = node;
-    if (ioctl(promFd, OPIOCGETCHILD, &promOpio.op_nodeid) < 0)
-	return 0;
-
-    return promOpio.op_nodeid;
-}
-
-char *
-promGetProperty(const char *prop, int *lenp)
-{
-    /* op_nodeid has already been set */
-    promOpio.op_namelen = strlen(prop);
-    promOpio.op_name = (char *)prop;
-    promOpio.op_buflen = MAX_VAL;
-    promOpio.op_buf = promval;
-
-    if (ioctl(promFd, OPIOCGET, &promOpio) < 0)
-	return NULL;
-
-    if (lenp)
-	*lenp = promOpio.op_buflen;
-    return promOpio.op_buf;
-}
-
-int
-promGetBool(const char *prop)
-{
-    int length;
-
-    if (!promGetProperty(prop, &length) || (length < 0))
-	return 0;
-
-    return 1;
-}
-#else
 int
 promGetSibling(int node)
 {
@@ -143,7 +87,8 @@ promGetSibling(int node)
     if (ioctl(promFd, OPROMNEXT, promOpio) < 0)
 	return 0;
 
-    return *(int *)promOpio->oprom_array;
+    promCurrentNode = *(int *)promOpio->oprom_array;
+    return promCurrentNode;
 }
 
 int
@@ -157,7 +102,8 @@ promGetChild(int node)
     if (ioctl(promFd, OPROMCHILD, promOpio) < 0)
 	return 0;
 
-    return *(int *)promOpio->oprom_array;
+    promCurrentNode = *(int *)promOpio->oprom_array;
+    return promCurrentNode;
 }
 
 char *
@@ -166,7 +112,7 @@ promGetProperty(const char *prop, int *lenp)
     promOpio->oprom_size = MAX_VAL;
     strcpy(promOpio->oprom_array, prop);
     if (ioctl(promFd, OPROMGETPROP, promOpio) < 0)
-	return NULL;
+	return 0;
 
     if (lenp)
 	*lenp = promOpio->oprom_size;
@@ -189,7 +135,6 @@ promGetBool(const char *prop)
 	    return 1;
     }
 }
-#endif
 
 #define PROM_NODE_SIBLING 0x01
 #define PROM_NODE_PREF    0x02
@@ -226,12 +171,11 @@ promIsP1275(void)
 
     if (promP1275 != -1)
 	return;
-    promP1275 = FALSE;
+    promP1275 = 0;
     f = fopen("/proc/cpuinfo", "r");
     if (!f) return;
     while (fgets(buffer, 1024, f) != NULL)
-	if (!strncmp(buffer, "type", 4) &&
-	    (strstr(buffer, "sun4u") || strstr(buffer, "sun4v"))) {
+	if (!strncmp(buffer, "type", 4) && strstr(buffer, "sun4u")) {
 	    promP1275 = 1;
 	    break;
 	}
@@ -242,20 +186,14 @@ promIsP1275(void)
     if (promP1275 != -1)
 	return;
 
-    if ((uname(&buffer) >= 0) &&
-        (!strcmp(buffer.machine, "sun4u") || !strcmp(buffer.machine, "sun4v")))
+    if ((uname(&buffer) == 0) && !strcmp(buffer.machine, "sun4u"))
 	promP1275 = TRUE;
     else
 	promP1275 = FALSE;
-#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
-# if defined(__arch64__) || defined(__sparc_v9__) || defined(__sparc64__)
+#elif defined(__FreeBSD__)
     promP1275 = TRUE;
-# else
-    /* Might need to check for a 32-bit userland running on a sun4u or sun4v */
-    promP1275 = FALSE;
-# endif
 #else
-# error Missing promIsP1275() function for this OS
+#error Missing promIsP1275() function for this OS
 #endif
 }
 
@@ -272,12 +210,10 @@ sparcPromClose(void)
 	promFd = -1;
     }
 
-#if !defined(__OpenBSD__) && !defined(__NetBSD__)
     if (promOpio) {
 	xfree(promOpio);
 	promOpio = NULL;
     }
-#endif
 
     promOpenCount = 0;
 }
@@ -290,21 +226,15 @@ sparcPromInit(void)
 	return 0;
     }
 
-    if (promFd < 0) {
-	promFd = open("/dev/openprom", O_RDONLY, 0);
-	if (promFd == -1)
-	    return -1;
-    }
+    promFd = open("/dev/openprom", O_RDONLY, 0);
+    if (promFd == -1)
+	return -1;
 
-#if !defined(__OpenBSD__) && !defined(__NetBSD__)
+    promOpio = (struct openpromio *)xalloc(4096);
     if (!promOpio) {
-	promOpio = (struct openpromio *)xalloc(4096);
-	if (!promOpio) {
-	    sparcPromClose();
-	    return -1;
-	}
+	sparcPromClose();
+	return -1;
     }
-#endif
 
     promRootNode = promGetSibling(0);
     if (!promRootNode) {
@@ -597,7 +527,7 @@ static int
 promWalkNode2Pathname(char *path, int parent, int node, int searchNode, int type)
 {
     int nextnode;
-    int len = 0, ntype = type;
+    int len, ntype = type;
     char *prop, *p;
 
     prop = promGetProperty("name", &len);
@@ -759,58 +689,11 @@ sparcPromPathname2Node(const char *pathName)
     return i;
 }
 
-Bool
-xf86LocateSbusMemoryArea(sbusDevicePtr psdp, char **devName,
-			 unsigned int *devOffset, unsigned int *fbSize,
-			 unsigned int *fbOffset, unsigned int *flags)
-{
-    /*
-     * Note that SBUS video drivers, contrary to other drivers, can be
-     * OS-specific.  That's because the offset(s) needed to mmap(2) SBUS video
-     * devices can be also.  One might think this common layer function could
-     * translate from a more generic offset scheme to the needed OS-specific
-     * one, but this would require adapter-specific knowledge in the common
-     * layer, and, for SBUS devices, there's enough of that already...
-     *
-     * Instead, this simply checks that all offsets are 32-bit.
-     */
-    unsigned int offset;
-
-    if (!psdp || !devOffset || devOffset[1])
-	return FALSE;
-
-    offset = devOffset[0];
-
-    if (fbOffset) {
-	if ((offset ^ (unsigned int)(-1L)) < *fbOffset)
-	    return FALSE;
-
-	offset += *fbOffset;
-    }
-
-    if (fbSize) {
-	if ((offset ^ (unsigned int)(-1L)) < *fbSize)
-	    return FALSE;
-    }
-
-    if (devName)
-	*devName = psdp->device;
-
-    if (flags)
-	*flags = 0;
-
-    return TRUE;
-}
-
 pointer
 xf86MapSbusMem(sbusDevicePtr psdp, unsigned long offset, unsigned long size)
 {
     pointer ret;
     unsigned long pagemask, off, len;
-    unsigned int devOffset[2], fbSize;
-#ifdef __OpenBSD__
-    static const unsigned int fbmode = WSDISPLAYIO_MODE_MAPPED;
-#endif
 
     if (!psdp || !size)
 	return NULL;
@@ -819,23 +702,10 @@ xf86MapSbusMem(sbusDevicePtr psdp, unsigned long offset, unsigned long size)
 	psdp->fd = open(psdp->device, O_RDWR);
 	if (psdp->fd == -1)
 	    return NULL;
-	psdp->mmapCount = 0;
-#ifdef __OpenBSD__
-	if (ioctl(psdp->fd, WSDISPLAYIO_SMODE, &fbmode) < 0)
-	    return NULL;
-#endif
     } else if (psdp->fd < 0) {
 	return NULL;
     }
 
-    devOffset[0] = offset;
-    devOffset[1] = 0;
-    fbSize = size;
-    if (!xf86LocateSbusMemoryArea(psdp, NULL, devOffset, &fbSize, NULL, NULL) ||
-	(devOffset[1] != 0))
-	return NULL;
-
-    offset = devOffset[0];
     pagemask = xf86getpagesize() - 1;
     off = offset & ~pagemask;
     len = ((offset + size + pagemask) & ~pagemask) - off;
@@ -849,7 +719,6 @@ xf86MapSbusMem(sbusDevicePtr psdp, unsigned long offset, unsigned long size)
 	    return NULL;
     }
 
-    psdp->mmapCount++;
     return (char *)ret + (offset - off);
 }
 
@@ -861,15 +730,47 @@ xf86UnmapSbusMem(sbusDevicePtr psdp, pointer addr, unsigned long size)
     unsigned long len = (((unsigned long)addr + size + mask) & ~mask) - base;
 
     munmap((pointer)base, len);
+}
 
-    if (!--psdp->mmapCount) {
-#ifdef __OpenBSD__
-	static const unsigned int fbmode = WSDISPLAYIO_MODE_EMUL;
+/* Tell OS that we are driving the HW cursor ourselves. */
+void
+xf86SbusHideOsHwCursor(sbusDevicePtr psdp)
+{
+    struct fbcursor fbcursor;
+    unsigned char zeros[8];
 
-	/* Ignore errors */
-	ioctl(psdp->fd, WSDISPLAYIO_SMODE, &fbmode);
-#endif
-	close(psdp->fd);
-	psdp->fd = -1;
-    }
+    memset(&fbcursor, 0, sizeof(fbcursor));
+    memset(&zeros, 0, sizeof(zeros));
+    fbcursor.cmap.count = 2;
+    fbcursor.cmap.red = zeros;
+    fbcursor.cmap.green = zeros;
+    fbcursor.cmap.blue = zeros;
+    fbcursor.image = (char *)zeros;
+    fbcursor.mask = (char *)zeros;
+    fbcursor.size.x = 32;
+    fbcursor.size.y = 1;
+    fbcursor.set = FB_CUR_SETALL;
+    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
+}
+
+/* Set HW cursor colormap. */
+void
+xf86SbusSetOsHwCursorCmap(sbusDevicePtr psdp, int bg, int fg)
+{
+    struct fbcursor fbcursor;
+    unsigned char red[2], green[2], blue[2];
+
+    memset(&fbcursor, 0, sizeof(fbcursor));
+    red[0] = bg >> 16;
+    green[0] = bg >> 8;
+    blue[0] = bg;
+    red[1] = fg >> 16;
+    green[1] = fg >> 8;
+    blue[1] = fg;
+    fbcursor.cmap.count = 2;
+    fbcursor.cmap.red = red;
+    fbcursor.cmap.green = green;
+    fbcursor.cmap.blue = blue;
+    fbcursor.set = FB_CUR_SETCMAP;
+    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
 }

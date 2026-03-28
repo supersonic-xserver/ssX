@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1989, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,7 +30,7 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
-/* $XFree86: xc/lib/Xext/XShape.c,v 1.4 2002/10/16 02:19:22 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/XShape.c,v 1.5 2005/01/27 02:28:58 dawes Exp $ */
 #define NEED_EVENTS
 #define NEED_REPLIES
 #include <X11/Xlibint.h>

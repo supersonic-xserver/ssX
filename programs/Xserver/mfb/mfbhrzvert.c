@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbhrzvert.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbhrzvert.c,v 1.5 2001/12/14 20:00:08 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -46,8 +53,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mfbhrzvert.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+#include "X.h"
 
 #include "gc.h"
 #include "window.h"
@@ -61,11 +68,17 @@ SOFTWARE.
    abs(len) > 1
 */
 void
-mfbHorzS(int rop, PixelType *addrl, int nlwidth, int x1, int y1, int len)
+mfbHorzS(rop, addrl, nlwidth, x1, y1, len)
+int rop;		/* a reduced rasterop */
+register PixelType *addrl;	/* pointer to base of bitmap */
+register int nlwidth;	/* width in longwords of bitmap */
+int x1;			/* initial point */ 
+int y1;
+int len;		/* length of line */
 {
-    PixelType startmask;
-    PixelType endmask;
-    int nlmiddle;
+    register PixelType startmask;
+    register PixelType endmask;
+    register int nlmiddle;
 
 
     /* force the line to go left to right
@@ -134,9 +147,14 @@ mfbHorzS(int rop, PixelType *addrl, int nlwidth, int x1, int y1, int len)
 */
 
 void
-mfbVertS(int rop, PixelType *addrl, int nlwidth, int x1, int y1, int len)
+mfbVertS(rop, addrl, nlwidth, x1, y1, len)
+int rop;		/* a reduced rasterop */
+register PixelType *addrl;	/* pointer to base of bitmap */
+register int nlwidth;	/* width in longwords of bitmap */
+int x1, y1;		/* initial point */
+register int len;	/* length of line */
 {
-    PixelType bitmask;
+    register PixelType bitmask;
 
     addrl = mfbScanline(addrl, x1, y1, nlwidth);
 

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Events.c,v 3.174tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Events.c,v 3.166 2005/02/18 22:38:31 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -22,7 +29,7 @@
  *
  */
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -68,20 +75,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* $XConsortium: xf86Events.c /main/46 1996/10/25 11:36:30 kaleb $ */
+
 /* [JCH-96/01/21] Extended std reverse map to four buttons. */
 
 #ifdef __UNIXOS2__
 #define I_NEED_OS2_H
 #endif
 
-#include <X11/X.h>
-#include <X11/Xpoll.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xpoll.h"
+#include "Xproto.h"
 #include "misc.h"
-
-#ifdef XFree86LOADER
-#include "loaderProcs.h"
-#endif
 
 #include "compiler.h"
 
@@ -97,8 +102,8 @@
 #endif
 
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #else
 #include "inputstr.h"
 #endif
@@ -109,15 +114,11 @@
 
 #ifdef XF86BIGFONT
 #define _XF86BIGFONT_SERVER_
-#include <X11/extensions/xf86bigfont.h>
-#endif
-
-#ifdef STACKTRACE
-#include "getstack.h"
+#include "xf86bigfont.h"
 #endif
 
 #ifdef XKB
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #endif
 
 #define XE_POINTER  1
@@ -138,7 +139,7 @@
 #ifdef XTESTEXT1
 
 #define	XTestSERVER_SIDE
-#include <X11/extensions/xtestext1.h>
+#include "xtestext1.h"
 extern short xtest_mousex;
 extern short xtest_mousey;
 extern int   on_steal_input;          
@@ -318,11 +319,14 @@ void
 xf86ProcessActionEvent(ActionEvent action, void *arg)
 {
 #ifdef DEBUG
-    ErrorF("ProcessActionEvent(%d,%lx)\n", (int)action, (unsigned long)arg);
+    ErrorF("ProcessActionEvent(%d,%x)\n", (int) action, arg);
 #endif
     switch (action) {
     case ACTION_TERMINATE:
 	if (!xf86Info.dontZap) {
+#ifdef XFreeXDGA
+	    DGAShutdown();
+#endif
 	    GiveUp(0);
 	}
 	break;
@@ -1273,44 +1277,10 @@ xf86RemoveEnabledDevice(InputInfoPtr pInfo)
     }
 }
 
-#ifdef STACKTRACE
-
-#ifndef STACK_LEVELS
-#define STACK_LEVELS 16
-#endif
-void
-xf86ShowStackTrace()
-{
-    unsigned long returnStack[STACK_LEVELS];
-    int i;
-
-    getStackTrace(returnStack, STACK_LEVELS);
-    ErrorF("Stack trace:\n");
-    for (i = 0; i < STACK_LEVELS && returnStack[i]; i++) {
-      ErrorF("%2d: 0x%lx", i, returnStack[i]);
-#ifdef XFree86LOADER
-      ErrorF(": ");
-      if (!LoaderPrintSymbol(returnStack[i]))
-	break;
-#else
-      ErrorF("\n");
-#endif
-    }
-}
-
-#else
+static int *xf86SignalIntercept = NULL;
 
 void
-xf86ShowStackTrace()
-{
-    ErrorF("Stack trace not supported on this platform.\n");
-}
-#endif
-
-static volatile int *xf86SignalIntercept = NULL;
-
-void
-xf86InterceptSignals(volatile int *signo)
+xf86InterceptSignals(int *signo)
 {
     if ((xf86SignalIntercept = signo))
 	*signo = -1;
@@ -1337,16 +1307,12 @@ xf86SigHandler(int signo)
 #endif
 #if defined(XFree86LOADER)
   if (xf86Initialising)
-      LoaderCheckUnresolved(0);
+      LoaderCheckUnresolved(LD_RESOLV_IFDONE);
   ErrorF("\n"
 	 "   *** If unresolved symbols were reported above, they might not\n"
-	 "   *** be the reason for the server aborting.\n\n");
+	 "   *** be the reason for the server aborting.\n");
 #endif
-  ErrorF("Caught signal %d.\n", signo);
-
-  xf86ShowStackTrace();
-
-  FatalError("Server aborting\n");
+  FatalError("Caught signal %d.  Server aborting\n", signo);
 }
 
 #ifdef MEMDEBUG
@@ -1663,6 +1629,8 @@ XTestGenerateEvent(int dev_type, int keycode, int keystate, int mousex,
 #ifdef WSCONS_SUPPORT
 
 /* XXX Currently XKB is mandatory. */
+
+extern int WSKbdToKeycode(int);
 
 void
 xf86PostWSKbdEvent(struct wscons_event *event)

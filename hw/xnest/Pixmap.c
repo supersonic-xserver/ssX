@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xnest/Pixmap.c,v 3.10 2007/04/09 15:37:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,10 +19,6 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -32,7 +36,9 @@ is" without express or implied warranty.
 #include "Screen.h"
 #include "XNPixmap.h"
 
+#ifdef PIXPRIV
 int xnestPixmapPrivateIndex;	    
+#endif
 
 PixmapPtr
 xnestCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
@@ -55,8 +61,12 @@ xnestCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
   pPixmap->drawable.serialNumber = NEXT_SERIAL_NUMBER;
   pPixmap->refcnt = 1;
   pPixmap->devKind = PixmapBytePad(width, depth);
+#ifdef PIXPRIV
   pPixmap->devPrivates[xnestPixmapPrivateIndex].ptr =
       (pointer)((char *)pPixmap + pScreen->totalPixmapSize);
+#else
+  pPixmap->devPrivate.ptr = (pointer)(pPixmap + 1);
+#endif
   if (width && height)
       xnestPixmapPriv(pPixmap)->pixmap = 
 	  XCreatePixmap(xnestDisplay, 
@@ -94,11 +104,9 @@ xnestPixmapToRegion(PixmapPtr pPixmap)
   
   pReg = REGION_CREATE(pPixmap->drawable.pScreen, NULL, 1);
   pTmpReg = REGION_CREATE(pPixmap->drawable.pScreen, NULL, 1);
-  if(!pReg || !pTmpReg) {
-      XDestroyImage(ximage);
-      return NullRegion;
-  }
+  if(!pReg || !pTmpReg) return NullRegion;
   
+  Box.x1 = 0;
   for (y = 0; y < pPixmap->drawable.height; y++) {
     Box.y1 = y;
     Box.y2 = y + 1;

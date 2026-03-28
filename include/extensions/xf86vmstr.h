@@ -1,4 +1,11 @@
 /* $XFree86: xc/include/extensions/xf86vmstr.h,v 3.28 2002/12/22 00:46:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1995  Kaleb S. KEITHLEY
@@ -28,6 +35,7 @@ or other dealings in this Software without prior written authorization
 from Kaleb S. KEITHLEY
 
 */
+/* $Xorg: xf86vmstr.h,v 1.3 2000/08/18 04:05:46 coskrey Exp $ */
 
 /* THIS IS NOT AN X CONSORTIUM STANDARD OR AN X PROJECT TEAM SPECIFICATION */
 

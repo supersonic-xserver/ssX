@@ -1,4 +1,11 @@
 /******************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * 
  * Copyright (c) 1994, 1995  Hewlett-Packard Company
  *
@@ -29,42 +36,39 @@
  *     Machine-independent DBE code
  *
  *****************************************************************************/
+/* $XFree86: xc/programs/Xserver/dbe/midbe.c,v 3.8 2006/02/19 15:51:18 tsi Exp $ */
 
 
 /* INCLUDES */
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
+
+#include "gcstruct.h"
+#include "midbe.h"
+#include "midbestr.h"
+
+#ifndef IN_MODULE
+#include <stdio.h>
+#else
+#include "xf86_ansic.h"
 #endif
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include "misc.h"
-#include "os.h"
-#include "windowstr.h"
-#include "scrnintstr.h"
-#include "pixmapstr.h"
-#include "extnsionst.h"
-#include "dixstruct.h"
-#include "resource.h"
-#include "opaque.h"
-#include "dbestruct.h"
-#include "midbestr.h"
-#include "regionstr.h"
-#include "gcstruct.h"
-#include "inputstr.h"
-#include "midbe.h"
+/* DEFINES */
 
-#include <stdio.h>
+
+/* TYPEDEFS */
+
+
+/* GLOBALS */
 
 static int	miDbePrivPrivGeneration  =  0;
 static int	miDbeWindowPrivPrivIndex = -1;
-static RESTYPE	dbeDrawableResType;
-static RESTYPE	dbeWindowPrivResType;
-static int	dbeScreenPrivIndex = -1;
-static int	dbeWindowPrivIndex = -1;
+RESTYPE		dbeDrawableResType;
+RESTYPE		dbeWindowPrivResType;
+int		dbeScreenPrivIndex = -1;
+int		dbeWindowPrivIndex = -1;
+
 
 
 /******************************************************************************
@@ -117,9 +121,9 @@ miDbeGetVisualInfo(ScreenPtr pScreen, XdbeScreenVisualInfo *pScrVisInfo)
              * the same performance level for all visuals (0).  A higher
              * performance level value indicates higher performance.
              */
-            visInfo[k].visual    = pDepth->vids[j];
+            visInfo[k].visualID    = pDepth->vids[j];
             visInfo[k].depth     = pDepth->depth;
-            visInfo[k].perflevel = 0;
+            visInfo[k].perfLevel = 0;
             k++;
         }
     }
@@ -815,6 +819,9 @@ miDbeInit(ScreenPtr pScreen, DbeScreenPrivPtr pDbeScreenPriv)
     pDbeScreenPriv->EndIdiom              = 0;
     pDbeScreenPriv->ResetProc             = miDbeResetProc;
     pDbeScreenPriv->WinPrivDelete         = miDbeWinPrivDelete;
+
+    /* The mi implementation doesn't need buffer validation. */
+    pDbeScreenPriv->ValidateBuffer	  = (DbeValidateBufferProcPtr)NoopDDA;
 
     return(TRUE);
 

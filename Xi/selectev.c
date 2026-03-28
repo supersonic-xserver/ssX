@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/selectev.c,v 3.5 2008/03/18 19:50:45 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -53,73 +61,22 @@ SOFTWARE.
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
-#include "windowstr.h"	/* window structure  */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
+#include "windowstr.h"			/* window structure  */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exevents.h"
 #include "exglobals.h"
 
 #include "grabdev.h"
 #include "selectev.h"
 
-extern Mask ExtExclusiveMasks[];
-extern Mask ExtValidMasks[];
-
-static int
-HandleDevicePresenceMask(ClientPtr client, WindowPtr win,
-                         XEventClass *cls, CARD16 *count)
-{
-    int i, j;
-    Mask mask;
-
-    /* We use the device ID 256 to select events that aren't bound to
-     * any device.  For now we only handle the device presence event,
-     * but this could be extended to other events that aren't bound to
-     * a device.
-     *
-     * In order not to break in CreateMaskFromList() we remove the
-     * entries with device ID 256 from the XEventClass array.
-     */
-
-    mask = 0;
-    for (i = 0, j = 0; i < *count; i++) {
-        if (cls[i] >> 8 != 256) {
-            cls[j] = cls[i];
-            j++;
-            continue;
-        }
-
-        switch (cls[i] & 0xff) {
-        case _devicePresence:
-            mask |= DevicePresenceNotifyMask;
-            break;
-        }
-    }
-
-    *count = j;
-
-    if (mask == 0)
-        return Success;
-
-    /* We always only use mksidx = 0 for events not bound to
-     * devices */
-
-    if (AddExtensionClient (win, client, mask, 0) != Success)
-        return BadAlloc;
-
-    RecalculateDeviceDeliverableEvents(win);
-
-    return Success;
-}
+extern	Mask		ExtExclusiveMasks[];
+extern	Mask		ExtValidMasks[];
 
 /***********************************************************************
  *
@@ -128,8 +85,9 @@ HandleDevicePresenceMask(ClientPtr client, WindowPtr win,
  */
 
 int
-SProcXSelectExtensionEvent(ClientPtr client)
-{
+SProcXSelectExtensionEvent (client)
+register ClientPtr client;
+    {
     char n;
 
     REQUEST(xSelectExtensionEventReq);
@@ -138,11 +96,10 @@ SProcXSelectExtensionEvent(ClientPtr client)
     swapl(&stuff->window, n);
     swaps(&stuff->count, n);
     REQUEST_FIXED_SIZE(xSelectExtensionEventReq,
-                      stuff->count * sizeof(CARD32));
-    SwapLongs((CARD32 *) (&stuff[1]), stuff->count);
-
-    return (ProcXSelectExtensionEvent(client));
-}
+		       stuff->count * sizeof(CARD32));
+    SwapLongs((CARD32 *)(&stuff[1]), stuff->count);
+    return(ProcXSelectExtensionEvent(client));
+    }
 
 /***********************************************************************
  *
@@ -151,51 +108,48 @@ SProcXSelectExtensionEvent(ClientPtr client)
  */
 
 int
-ProcXSelectExtensionEvent(ClientPtr client)
-{
-    int ret;
-    int i;
-    WindowPtr pWin;
-    struct tmask tmp[EMASKSIZE];
+ProcXSelectExtensionEvent (client)
+    register ClientPtr client;
+    {
+    int			ret;
+    int			i;
+    WindowPtr 		pWin;
+    struct tmask	tmp[EMASKSIZE];
 
     REQUEST(xSelectExtensionEventReq);
     REQUEST_AT_LEAST_SIZE(xSelectExtensionEventReq);
 
-    if (stuff->length != (sizeof(xSelectExtensionEventReq) >> 2) + stuff->count) {
-	SendErrorToClient(client, IReqCode, X_SelectExtensionEvent, 0,
-			  BadLength);
+    if (stuff->length !=(sizeof(xSelectExtensionEventReq)>>2) + stuff->count)
+	{
+	SendErrorToClient (client, IReqCode, X_SelectExtensionEvent, 0, 
+		BadLength);
 	return Success;
-    }
-
-    ret = dixLookupWindow(&pWin, stuff->window, client, DixUnknownAccess);
-    if (ret != Success) {
-	SendErrorToClient(client, IReqCode, X_SelectExtensionEvent, 0, ret);
-	return Success;
-    }
-
-    if (HandleDevicePresenceMask(client, pWin, (XEventClass *) & stuff[1],
-                                &stuff->count) != Success) {
-       SendErrorToClient(client, IReqCode, X_SelectExtensionEvent, 0,
-                         BadAlloc);
-       return Success;
-    }
-
-    if ((ret = CreateMaskFromList(client, (XEventClass *) & stuff[1],
-				  stuff->count, tmp, NULL,
-				  X_SelectExtensionEvent)) != Success)
-	return Success;
-
-    for (i = 0; i < EMASKSIZE; i++)
-	if (tmp[i].dev != NULL) {
-	    if ((ret =
-		 SelectForWindow((DeviceIntPtr) tmp[i].dev, pWin, client,
-				 tmp[i].mask, ExtExclusiveMasks[i],
-				 ExtValidMasks[i])) != Success) {
-		SendErrorToClient(client, IReqCode, X_SelectExtensionEvent, 0,
-				  ret);
-		return Success;
-	    }
 	}
 
+    pWin = (WindowPtr) LookupWindow (stuff->window, client);
+    if (!pWin)
+        {
+	client->errorValue = stuff->window;
+	SendErrorToClient(client, IReqCode, X_SelectExtensionEvent, 0, 
+		BadWindow);
+	return Success;
+        }
+
+    if ((ret = CreateMaskFromList (client, (XEventClass *)&stuff[1], 
+	stuff->count, tmp, NULL, X_SelectExtensionEvent)) != Success)
+	return Success;
+
+    for (i=0; i<EMASKSIZE; i++)
+	if (tmp[i].dev != NULL)
+	    {
+	    if ((ret = SelectForWindow((DeviceIntPtr)tmp[i].dev, pWin, client, tmp[i].mask, 
+		ExtExclusiveMasks[i], ExtValidMasks[i])) != Success)
+		{
+		SendErrorToClient(client, IReqCode, X_SelectExtensionEvent, 0, 
+			ret);
+		return Success;
+		}
+	    }
+
     return Success;
-}
+    }

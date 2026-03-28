@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/Xft/Xft.man,v 1.2 2000/11/30 06:59:45 keithp Exp $
+.\" $XFree86: xc/lib/Xft1/Xft.man,v 1.2 2003/06/12 14:12:27 eich Exp $
 .\"
 .\" Copyright 2000 Keith Packard, member of The XFree86 Project, Inc..\"
 .\" Permission to use, copy, modify, distribute, and sell this software and its

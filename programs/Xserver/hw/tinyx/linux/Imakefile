@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/linux/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/linux/Imakefile,v 1.1 2004/06/02 22:43:01 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -62,7 +62,7 @@ SRCS = keyboard.c linux.c mouse.c ps2.c bus.c ms.c agp.c $(TSSRCS)
 
 OBJS = keyboard.o linux.o mouse.o ps2.o bus.o ms.o agp.o $(TSOBJS)
 
-INCLUDES = $(TINYXINCLUDES)
+INCLUDES = -I. $(TINYXINCLUDES)
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(linux,$(OBJS))

@@ -1,4 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: mieq.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $
+ *
 Copyright 1990, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,7 +32,7 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
-/* $XFree86: xc/programs/Xserver/mi/mieq.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mieq.c,v 1.3 2001/12/14 20:00:22 dawes Exp $ */
 
 /*
  * mieq.c
@@ -33,9 +42,9 @@ in this Software without prior written authorization from The Open Group.
  */
 
 # define NEED_EVENTS
-# include   <X11/X.h>
-# include   <X11/Xmd.h>
-# include   <X11/Xproto.h>
+# include   "X.h"
+# include   "Xmd.h"
+# include   "Xproto.h"
 # include   "misc.h"
 # include   "windowstr.h"
 # include   "pixmapstr.h"
@@ -63,7 +72,8 @@ typedef struct _EventQueue {
 static EventQueueRec miEventQueue;
 
 Bool
-mieqInit(DevicePtr pKbd, DevicePtr pPtr)
+mieqInit (pKbd, pPtr)
+    DevicePtr	pKbd, pPtr;
 {
     miEventQueue.head = miEventQueue.tail = 0;
     miEventQueue.lastEventTime = GetTimeInMillis ();
@@ -84,7 +94,8 @@ mieqInit(DevicePtr pKbd, DevicePtr pPtr)
  */
 
 void
-mieqEnqueue(xEvent *e)
+mieqEnqueue (e)
+    xEvent	*e;
 {
     HWEventQueueType	oldtail, newtail;
     Bool    isMotion;
@@ -123,7 +134,9 @@ mieqEnqueue(xEvent *e)
 }
 
 void
-mieqSwitchScreen(ScreenPtr pScreen, Bool fromDIX)
+mieqSwitchScreen (pScreen, fromDIX)
+    ScreenPtr	pScreen;
+    Bool	fromDIX;
 {
     miEventQueue.pEnqueueScreen = pScreen;
     if (fromDIX)
@@ -134,7 +147,7 @@ mieqSwitchScreen(ScreenPtr pScreen, Bool fromDIX)
  * Call this from ProcessInputEvents()
  */
 
-void mieqProcessInputEvents()
+void mieqProcessInputEvents ()
 {
     EventRec	*e;
     int		x, y;

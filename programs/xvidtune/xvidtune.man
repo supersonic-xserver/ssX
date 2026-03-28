@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/xvidtune/xvidtune.man,v $
+.\" $XFree86: xc/programs/xvidtune/xvidtune.man,v 3.14 2001/08/13 19:35:01 dawes Exp $
 .\"
 .\" Copyright (c) 1995  Kaleb S. KEITHLEY
 .\"

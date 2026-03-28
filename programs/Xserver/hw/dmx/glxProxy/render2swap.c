@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/render2swap.c,v 1.4 2005/01/30 17:48:44 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -39,7 +46,7 @@
 #include "unpack.h"
 #include "g_disptab.h"
 
-static GLint __glEvalComputeK(GLenum target)
+GLint __glEvalComputeK(GLenum target)
 {
     switch (target) {
     case GL_MAP1_VERTEX_4:

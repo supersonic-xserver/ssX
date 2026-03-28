@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/expat/Imakefile,v 1.10tsi Exp $
+XCOMM $XFree86: xc/lib/expat/Imakefile,v 1.10 2004/04/05 02:33:13 dawes Exp $
 
 #define DoNormalLib NormalLibExpat
 #define DoSharedLib SharedLibExpat
@@ -19,7 +19,7 @@ EXPATTOP = $(TOP)/extras/expat
 EXPATSRC = $(EXPATTOP)/lib
 EXPATINC = $(EXPATTOP)/lib
 
-INCLUDES = -I$(EXPATINC) -I$(EXPATTOP)
+INCLUDES = -I$(EXPATINC) -I$(EXPATTOP) -I.
 
 /*
  * Endianness (for short's)

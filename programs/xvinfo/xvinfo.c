@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/xvinfo/xvinfo.c,v 1.7 2001/10/28 03:34:43 tsi Exp $ */
+/* $XFree86: xc/programs/xvinfo/xvinfo.c,v 1.8 2002/01/22 23:05:43 mvojkovi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <X11/X.h>
 #include <X11/Xlib.h>

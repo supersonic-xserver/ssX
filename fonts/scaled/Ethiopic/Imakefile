@@ -6,13 +6,18 @@ OTFFONTS = GohaTibebZemen.otf
 TTFINSTDIR = $(FONTDIR)/TTF
 OTFINSTDIR = $(FONTDIR)/OTF
 
+#if UseFreetype2
 MakeFcCache($(TTFFONTS) $(OTFFONTS))
+#endif
 
 InstallMultipleFlags($(TTFFONTS),$(TTFINSTDIR),$(INSTDATFLAGS))
 InstallMultipleFlags($(OTFFONTS),$(OTFINSTDIR),$(INSTDATFLAGS))
 
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif
+
 InstallFontsDir($(TTFINSTDIR))
 InstallFontsDir($(OTFINSTDIR))
-
-InstallFcCache($(TTFINSTDIR) $(OTFINSTDIR))
 

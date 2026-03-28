@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -492,9 +499,8 @@ static swrast_line_func get_line_func( GLcontext *ctx )
    SWcontext *swrast = SWRAST_CONTEXT(ctx);
    int depth = GET_VISUAL_DEPTH(xmesa->xm_visual);
 
-   (void) DitherValues;  /* silence unused var warning */
-   (void) kernel1;  /* silence unused var warning */
-
+   if ((ctx->Color._DrawDestMask & (DD_FRONT_LEFT_BIT | DD_BACK_LEFT_BIT)) ==0)
+      return (swrast_line_func) NULL;
    if (ctx->RenderMode != GL_RENDER)      return (swrast_line_func) NULL;
    if (ctx->Line.SmoothFlag)              return (swrast_line_func) NULL;
    if (ctx->Texture._EnabledUnits)        return (swrast_line_func) NULL;

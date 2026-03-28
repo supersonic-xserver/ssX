@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/module/Imakefile,v 1.4tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/module/Imakefile,v 1.4 2004/06/01 00:17:06 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,7 +52,8 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/module/Imakefile,v 1.4tsi
 MODPATHDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
    INCLUDES =	-I.. -I$(XF86SRC)/common -I$(XF86OSSRC) -I$(XF86OSSRC)/bus \
 		-I$(SERVERSRC)/include -I$(SERVERSRC)/os \
-		-I$(SERVERSRC)/Xext -I$(SERVERSRC)/Xi \
+		-I$(XINCLUDESRC) -I$(SERVERSRC)/Xext -I$(EXTINCSRC) \
+		-I$(SERVERSRC)/Xi \
 		-I$(FONTLIBSRC)/include -I$(XF86PARSERSRC) \
 		-I$(XF86SRC)/loader $(VGAINCLUDES) -I$(XF86SRC)/rac
 

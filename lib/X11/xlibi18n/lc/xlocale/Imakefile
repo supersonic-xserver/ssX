@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/X11/xlibi18n/lc/xlocale/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/lib/X11/xlibi18n/lc/xlocale/Imakefile,v 1.5 2004/06/01 00:16:57 dawes Exp $
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -49,7 +49,7 @@ XCOMM $XFree86: xc/lib/X11/xlibi18n/lc/xlocale/Imakefile,v 1.5tsi Exp $
  EXTRA_INCLUDES = -I../../..
       XI18NLIBNAME = xlocale
            SRCS = lcEuc.c lcSjis.c lcJis.c
-           OBJS = lcEuc.o lcSjis.o lcJis.o
+           OBJS = ${SRCS:.c=.o}
    REQUIREDLIBS = SharedXlibi18nReqs
 
 LinkSourceFile(lcEuc.c, ../../..)
@@ -60,4 +60,3 @@ LinkSourceFile(lcJis.c, ../../..)
 
 #include "../../Xi18nLib.conf"
 
-DependTarget()

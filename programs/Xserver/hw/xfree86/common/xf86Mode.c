@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Mode.c,v 1.82tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Mode.c,v 1.80 2005/02/26 18:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -99,7 +106,7 @@
  * This file includes helper functions for mode related things.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "servermd.h"
 #include "mibank.h"
@@ -1487,7 +1494,6 @@ xf86SetMonitorParameters(ScrnInfoPtr pScrn, MonPtr monitor,
 		    monitor->hsync[i].lo = hsync[i].lo;
 		    monitor->hsync[i].hi = hsync[i].hi;
 		}
-		type = "DDC-derived ";
 	    } else {
 		monitor->hsync[0].lo = 28;
 		monitor->nHsync = 1;
@@ -1525,7 +1531,6 @@ xf86SetMonitorParameters(ScrnInfoPtr pScrn, MonPtr monitor,
 		    monitor->vrefresh[i].lo = vrefresh[i].lo;
 		    monitor->vrefresh[i].hi = vrefresh[i].hi;
 		}
-		type = "DDC-derived ";
 	    } else {
 		monitor->nVrefresh = 1;
 		if (hSize > 0 && vSize > 0) {
@@ -2103,9 +2108,7 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 
     /*
      * Check the mode pool against a preferred refresh rate and preferred
-     * mode size.  Mark those modes that do not match as "low preference"
-     * modes.  Low preference modes may be used, but will not be selected
-     * by default.
+     * mode size.
      */
     for (q = scrp->modePool;  q != NULL;  q = q->next) {
 	if (q->status != MODE_OK)
@@ -2114,22 +2117,22 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 	if (ModeVRefresh(q) < (1.0 - SYNC_TOLERANCE) * targetRefresh) {
 	    if (preferredH <= 0 || preferredV <= 0) {
 		xf86DrvMsg(scrp->scrnIndex, X_INFO,
-			   "Low preference %s \"%s\" because its "
-			   "refresh (%.1f) is below the target (%.1f).\n",
+			   "Not using %s \"%s\" because its refresh (%.1f) "
+			   "is below the target (%.1f).\n",
 			   xf86ModeTypeToString(q->type),
 			   q->name, ModeVRefresh(q), targetRefresh);
-		q->type |= M_T_LOWPREF;
+		q->status = MODE_REFRESH_LOW;
 	    }
 	}
 
 	if (preferredH > 0 && preferredV > 0 &&
 	    (q->HDisplay > preferredH || q->VDisplay > preferredV)) {
 	    xf86DrvMsg(scrp->scrnIndex, X_INFO,
-		       "Low preference %s \"%s\" because it is "
+		       "Not using %s \"%s\" because it is "
 		       "larger than the preferred mode (%dx%d).\n",
 		       xf86ModeTypeToString(q->type), q->name,
 		       preferredH, preferredV);
-	    q->type |= M_T_LOWPREF;
+	    q->status = MODE_TOO_BIG;
 	}
     }
 
@@ -2205,15 +2208,9 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 			    ((double)q->HTotal / (double)q->HDisplay) < 1.15)
 			    continue;
 
-			/*
-			 * Do not allow low preference modes to influence the
-			 * the default mode choice.
-			 */
-			if (!(q->type & M_T_LOWPREF)) {
-			    if (modeSize < (q->HDisplay * q->VDisplay)) {
-				r = q;
-				modeSize = q->HDisplay * q->VDisplay;
-			    }
+			if (modeSize < (q->HDisplay * q->VDisplay)) {
+			    r = q;
+			    modeSize = q->HDisplay * q->VDisplay;
 			}
 		    }
 		}

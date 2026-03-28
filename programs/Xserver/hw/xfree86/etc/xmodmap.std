@@ -5,6 +5,8 @@
 !
 ! This file can be fed to xmodmap to restore the default mapping.
 !
+! $XConsortium: xmodmap.std /main/7 1996/02/21 17:48:55 kaleb $
+!
 ! First, clear the modifiers
 !
 clear    shift

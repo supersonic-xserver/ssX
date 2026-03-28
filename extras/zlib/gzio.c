@@ -1,10 +1,17 @@
 /* gzio.c -- IO on .gz files
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  *
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
-/* $XFree86$ */
+/* $XFree86: xc/extras/zlib/gzio.c,v 1.4 2003/06/01 22:05:22 herrb Exp $ */
 
 #include <stdio.h>
 

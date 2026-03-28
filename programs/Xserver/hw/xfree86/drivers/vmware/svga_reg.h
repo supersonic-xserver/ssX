@@ -1,6 +1,14 @@
 /* **********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1998-2001 VMware, Inc.
  * All Rights Reserved
+ * $Id: svga_reg.h,v 1.1.1.3 2003/02/28 13:20:17 tron Exp $
  * **********************************************************/
 
 /*

@@ -1,4 +1,10 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/joystick/xf86Jstk.c,v 1.9 2006/01/09 15:00:18 dawes Exp $ */
+/* $XConsortium: xf86Jstk.c /main/14 1996/10/25 14:11:36 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1995-1999 by Frederic Lepied, France. <Lepied@XFree86.org>       
@@ -23,6 +29,8 @@
  *
  */
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/joystick/xf86Jstk.c,v 1.7 2004/04/26 22:26:11 dawes Exp $ */
+
 #include <misc.h>
 #include <xf86.h>
 #include <xf86_ansic.h>
@@ -30,7 +38,7 @@
 #include <xf86Xinput.h>
 #include <xisb.h>
 #include <exevents.h>		/* Needed for InitValuator/Proximity stuff */
-#include <X11/keysym.h>
+#include <keysym.h>
 
 #include <xf86Module.h>
 
@@ -411,7 +419,7 @@ xf86JstkUnplug(pointer	p)
  * called when the module subsection is found in XF86Config
  */
 static pointer
-xf86JstkPlug(ModuleDescPtr	module,
+xf86JstkPlug(pointer	module,
 	     pointer	options,
 	     int	*errmaj,
 	     int	*errmin )

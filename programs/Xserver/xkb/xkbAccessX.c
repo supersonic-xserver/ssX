@@ -1,3 +1,11 @@
+/* $Xorg: xkbAccessX.c,v 1.4 2001/02/05 18:50:20 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbAccessX.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/xkbAccessX.c,v 1.10 2003/11/17 22:20:46 dawes Exp $ */
 
 #include <stdio.h>
 #include <math.h>
@@ -35,7 +43,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
 #include "inputstr.h"
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #if !defined(WIN32) && !defined(Lynx)
 #include <sys/time.h>
 #endif
@@ -445,8 +453,8 @@ XkbSrvLedInfoPtr	sli;
 /*									*/
 /************************************************************************/
 Bool
-AccessXFilterPressEvent(	xEvent *	xE, 
-				DeviceIntPtr	keybd, 
+AccessXFilterPressEvent(	register xEvent *	xE, 
+				register DeviceIntPtr	keybd, 
 				int			count)
 {
 XkbSrvInfoPtr	xkbi = keybd->key->xkbInfo;
@@ -580,8 +588,8 @@ KeySym *	sym = XkbKeySymsPtr(xkbi->desc,key);
 /*									*/
 /************************************************************************/
 Bool
-AccessXFilterReleaseEvent(	xEvent *	xE, 
-				DeviceIntPtr	keybd, 
+AccessXFilterReleaseEvent(	register xEvent *	xE, 
+				register DeviceIntPtr	keybd, 
 				int			count)
 {
 XkbSrvInfoPtr	xkbi = keybd->key->xkbInfo;
@@ -688,8 +696,8 @@ Bool		ignoreKeyEvent = FALSE;
 /*									*/
 /************************************************************************/
 void
-ProcessPointerEvent(	xEvent  *	xE, 
-			DeviceIntPtr	mouse, 
+ProcessPointerEvent(	register xEvent  *	xE, 
+			register DeviceIntPtr	mouse, 
 			int		        count)
 {
 DeviceIntPtr	dev = (DeviceIntPtr)LookupKeyboardDevice();

@@ -1,0 +1,45 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_halmod.c,v 1.2 2006/06/27 01:00:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include "xf86Module.h"
+
+#ifdef XFree86LOADER
+
+#define HAL_MAJOR_VERSION 1
+#define HAL_MINOR_VERSION 0
+#define HAL_PATCHLEVEL 0
+
+static MODULESETUPPROTO(halSetup);
+
+static XF86ModuleVersionInfo halVersRec =
+{
+	"mga_hal",
+	MODULEVENDORSTRING,
+	MODINFOSTRING1,
+	MODINFOSTRING2,
+	XF86_VERSION_CURRENT,
+	HAL_MAJOR_VERSION, HAL_MINOR_VERSION, HAL_PATCHLEVEL,
+	ABI_CLASS_VIDEODRV,			/* This is a video driver */
+	ABI_VIDEODRV_VERSION,
+	MOD_CLASS_NONE,
+	{0,0,0,0}
+};
+
+/*
+ * This is the module init data.
+ * Its name has to be the driver name followed by ModuleData.
+ */
+XF86ModuleData mga_halModuleData = { &halVersRec, halSetup, NULL };
+
+static pointer
+halSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+{
+	return (pointer)1;
+}
+
+#endif /* XFree86LOADER */

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/font/bitmap/Imakefile,v 1.14tsi Exp $
+XCOMM $XFree86: xc/lib/font/bitmap/Imakefile,v 1.14 2004/06/02 22:42:55 dawes Exp $
 
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
@@ -70,7 +70,8 @@ PCFOBJS=pcfread.o pcfwrite.o
 PCFDEFS=-DPCFFORMAT
 
 
-        INCLUDES = -I../include 
+        INCLUDES = -I$(FONTINCSRC) -I../include 
+         HEADERS = 
 #ifdef FontFormatDefines
      FORMAT_DEFS = FontFormatDefines
 #endif

@@ -1,0 +1,60 @@
+<!-- $XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/defs.ent,v 1.52 2008/11/22 22:57:28 tsi Exp $ -->
+
+<!-- shared entity definitions for the XFree86 documentation -->
+
+<!-- XFree86 version string -->
+<!ENTITY relvers CDATA "4.8.0">
+<!ENTITY prevrelvers CDATA "4.7.0">
+<!ENTITY fullrelvers CDATA "4.8.0">
+<!ENTITY prevfullrelvers CDATA "4.7.0">
+<!ENTITY nextfullrelvers CDATA "4.9.0">
+<!ENTITY nextfullreldate CDATA "not scheduled">
+<!ENTITY nextupdrelvers CDATA "4.8.1">
+<!ENTITY srcvers CDATA "480">
+<!ENTITY prevsrcvers CDATA "470">
+<!ENTITY fullsrcvers CDATA "490">
+<!ENTITY prevfullsrcvers CDATA "470">
+<!ENTITY whichfullrel CDATA "eleventh">
+<!ENTITY whichupdaterel CDATA "none">
+<!ENTITY reltag CDATA "xf-4_8_0">
+<!ENTITY relbranchtag CDATA "xf-4_8-branch">
+<!ENTITY rcnum CDATA "none">
+
+<!-- Version of the most recent 3.3.x release -->
+<!ENTITY legacyvers CDATA "3.3.6">
+
+<!-- doctools version strings -->
+<!ENTITY doctoolsvers CDATA "1.3.5">
+
+<!-- utils version strings -->
+<!ENTITY utilsvers CDATA "1.1.3">
+
+<!-- xtest version strings -->
+<!ENTITY xtestvers CDATA "4.0.14">
+
+<!-- FreeType version strings -->
+<!ENTITY freetypevers CDATA "2.1.8">
+
+<!-- These should be set according to which snapshot/release this is -->
+<!ENTITY % firstsnap 'IGNORE'>
+<!ENTITY % latersnap 'IGNORE'>
+<!ENTITY % snapshot 'IGNORE'>
+<!ENTITY % havebindist 'INCLUDE'>
+<!ENTITY % nobindist 'IGNORE'>
+<!ENTITY % docsonline 'INCLUDE'>
+<!ENTITY % notsnapshot 'INCLUDE'>
+<!ENTITY % relcandidate 'IGNORE'>
+<!ENTITY % notrelcandidate 'INCLUDE'>
+<!ENTITY % release 'INCLUDE'>
+<!ENTITY % firstrel 'IGNORE'>
+<!ENTITY % earlyrel 'IGNORE'>
+<!ENTITY % laterrel 'INCLUDE'>
+<!ENTITY % fullrel 'INCLUDE'>
+<!ENTITY % fullbinaries 'INCLUDE'>
+<!ENTITY % updaterel 'IGNORE'>
+<!ENTITY % prevrelwasupdate 'IGNORE'>
+<!ENTITY % draft 'IGNORE'>
+
+<!-- Set this to INCLUDE when references to the RELNOTES are to be included -->
+<!ENTITY % haverelnotes 'INCLUDE'>
+

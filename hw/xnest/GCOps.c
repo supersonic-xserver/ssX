@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xnest/GCOps.c,v 3.7 2005/10/14 15:17:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,10 +19,6 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -312,16 +316,5 @@ void
 xnestPushPixels(GCPtr pGC, PixmapPtr pBitmap, DrawablePtr pDst,
 		int width, int height, int x, int y)
 {
-  /* only works for solid bitmaps */
-  if (pGC->fillStyle == FillSolid)
-  {
-    XSetStipple (xnestDisplay, xnestGC(pGC), xnestPixmap(pBitmap));
-    XSetTSOrigin (xnestDisplay, xnestGC(pGC), x, y);
-    XSetFillStyle (xnestDisplay, xnestGC(pGC), FillStippled);
-    XFillRectangle (xnestDisplay, xnestDrawable(pDst),
-		    xnestGC(pGC), x, y, width, height);
-    XSetFillStyle (xnestDisplay, xnestGC(pGC), FillSolid);
-  }
-  else
-    ErrorF("xnest warning: function xnestPushPixels not implemented\n");
+  ErrorF("xnest warning: function xnestPushPixels not implemented\n");
 }

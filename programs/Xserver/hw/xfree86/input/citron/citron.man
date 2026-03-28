@@ -1,6 +1,7 @@
 .\" Copyright (c) 2000-2003 Peter Kunzmann <support@citron.de>
+.\" $Id: citron.man,v 1.1.1.2 2004/03/05 14:29:12 tron Exp $
 .\"
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.man,v 1.5 2006/01/09 15:00:17 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/citron/citron.man,v 1.4 2003/06/24 15:43:40 eich Exp $
 .\"
 .TH CITRON __drivermansuffix__ __vendorversion__
 .SH NAME
@@ -347,7 +348,7 @@ After also the interruption is released a ProximityOut event is generated.
 
 .I """5"" = ClickMode ZPress Exit
 
-This mode is similar to "Clickmode Dual Exit". 
+This mode is similat to "Clickmode Dual Exit". 
 The first interruption of the beams will sent a ProximityIn event. Only if
 a certain pressure is exceeded a ButtonPress event will occur. If the
 pressure falls below a certain limit no ButtonRelease event will be sent.

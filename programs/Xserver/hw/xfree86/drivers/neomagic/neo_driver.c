@@ -1,4 +1,11 @@
 /**********************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
                         All Rights Reserved
@@ -30,7 +37,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Copyright 2002 Shigehiro Nomura
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_driver.c,v 1.83tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_driver.c,v 1.79 2005/02/26 01:07:13 dawes Exp $ */
 
 /*
  * The original Precision Insight driver for
@@ -95,7 +102,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "picturestr.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /*
  * Driver data structures.
@@ -105,20 +112,20 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "neo_macros.h"
 
 /* These need to be checked */
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "servermd.h"
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 /* Mandatory functions */
 static const OptionInfoRec *	NEOAvailableOptions(int chipid, int busid);
 static void     NEOIdentify(int flags);
 static Bool     NEOProbe(DriverPtr drv, int flags);
 static Bool     NEOPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool     NEOScreenInit(int Index, ScreenPtr pScreen,
-                              const int argc, const char **argv);
+static Bool     NEOScreenInit(int Index, ScreenPtr pScreen, int argc,
+                                  char **argv);
 static Bool     NEOEnterVT(int scrnIndex, int flags);
 static void     NEOLeaveVT(int scrnIndex, int flags);
 static Bool     NEOCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -142,7 +149,7 @@ static void     neoCalcVCLK(ScrnInfoPtr pScrn, long freq);
 static xf86MonPtr  neo_ddc1(int scrnIndex);
 static Bool     neoDoDDC1(ScrnInfoPtr pScrn);
 static Bool     neoDoDDC2(ScrnInfoPtr pScrn);
-static Bool     neoDoDDCVBE(ScrnInfoPtr pScrn, ModuleDescPtr pDDCMod);
+static Bool     neoDoDDCVBE(ScrnInfoPtr pScrn);
 static void     neoProbeDDC(ScrnInfoPtr pScrn, int index);
 static void     NeoDisplayPowerManagementSet(ScrnInfoPtr pScrn,
 				int PowerManagementMode, int flags);
@@ -413,8 +420,8 @@ static const OptionInfoRec NEOOptions[] = {
  * List of symbols from other modules that this module references.  This
  * list is used to tell the loader that it is OK for symbols here to be
  * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderModReqSymbols() or
- * xf86LoaderModReqSymLists().  The purpose is this is to avoid warnings about
+ * told that they are essential via a call to xf86LoaderReqSymbols() or
+ * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
  * unresolved symbols that are not required.
  */
 
@@ -507,7 +514,7 @@ static XF86ModuleVersionInfo neoVersRec =
 XF86ModuleData neomagicModuleData = { &neoVersRec, neoSetup, NULL };
 
 static pointer
-neoSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+neoSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -524,9 +531,9 @@ neoSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, xaaSymbols,
-			     ramdacSymbols, shadowSymbols,
-			     ddcSymbols, vbeSymbols, i2cSymbols, NULL);
+	LoaderRefSymLists(vgahwSymbols, fbSymbols, xaaSymbols,
+			  ramdacSymbols, shadowSymbols,
+			  ddcSymbols, vbeSymbols, i2cSymbols, NULL);
 	/*
 	 * The return value must be non-NULL on success even though there
 	 * is no TearDownProc.
@@ -725,7 +732,6 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
     Bool height_480 = FALSE;
     Bool lcdCenterOptSet = FALSE;
     char *s;
-    ModuleDescPtr pMod;
     
     if (flags & PROBE_DETECT)  {
 	neoProbeDDC( pScrn, xf86GetEntityInfo(pScrn->entityList[0])->index );
@@ -733,10 +739,10 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
     }
     
     /* The vgahw module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);    
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);    
 
     /*
      * Allocate a vgaHWRec.
@@ -954,10 +960,10 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
 
     pScrn->monitor = pScrn->confScreen->monitor;
 
-    if ((pMod = xf86LoadSubModule(pScrn, "ddc"))) {
-        xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "ddc")) {
+        xf86LoaderReqSymLists(ddcSymbols, NULL);
 #if 1 /* for DDC1 testing */
-	if (!neoDoDDCVBE(pScrn, pMod))
+	if (!neoDoDDCVBE(pScrn))
 	  if (!neoDoDDC2(pScrn))
 #endif
 	      neoDoDDC1(pScrn);
@@ -1384,29 +1390,29 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
     /* If monitor resolution is set on the command line, use it */
     xf86SetDpi(pScrn, 0, 0);
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	RETURN
     }
 
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
     if (!nPtr->noLinear) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) 
+	if (!xf86LoadSubModule(pScrn, "xaa")) 
 	    RETURN
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     if (nPtr->shadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadow"))) {
+	if (!xf86LoadSubModule(pScrn, "shadow")) {
 	    RETURN
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
     
     if (!nPtr->swCursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac")))
+	if (!xf86LoadSubModule(pScrn, "ramdac"))
 	    RETURN
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
     return TRUE;
 }
@@ -1487,8 +1493,7 @@ NEOLoadPalette(
 
 /* Mandatory */
 static Bool
-NEOScreenInit(int scrnIndex, ScreenPtr pScreen,
-              const int argc, const char **argv)
+NEOScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     vgaHWPtr hwp;
@@ -3122,11 +3127,10 @@ neoDoDDC2(ScrnInfoPtr pScrn)
     NEOPtr nPtr = NEOPTR(pScrn);    
     vgaHWPtr hwp = VGAHWPTR(pScrn);
     Bool ret = FALSE;
-    ModuleDescPtr pMod;
 
     VGAwGR(0x09,0x26);
-    if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
-        xf86LoaderModReqSymLists(pMod, i2cSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "i2c")) {
+        xf86LoaderReqSymLists(i2cSymbols, NULL);
 	if (neo_I2CInit(pScrn)) {
 	    ret = xf86SetDDCproperties(pScrn,xf86PrintEDID(xf86DoEDID_DDC2(
 					      pScrn->scrnIndex,nPtr->I2C)));
@@ -3138,23 +3142,21 @@ neoDoDDC2(ScrnInfoPtr pScrn)
 }
 
 static Bool
-neoDoDDCVBE(ScrnInfoPtr pScrn, ModuleDescPtr pDDCMod)
+neoDoDDCVBE(ScrnInfoPtr pScrn)
 {
     NEOPtr nPtr = NEOPTR(pScrn);    
     vgaHWPtr hwp = VGAHWPTR(pScrn);
     vbeInfoPtr pVbe;
     Bool ret = FALSE;
-    ModuleDescPtr pMod;
 
     VGAwGR(0x09,0x26);
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
+	xf86LoaderReqSymLists(vbeSymbols, NULL);
         if ((pVbe = VBEInit(NULL,nPtr->pEnt->index))) {
-	    ret = xf86SetDDCproperties(pScrn,
-				       xf86PrintEDID(vbeDoEDID(pVbe, pDDCMod)));
-	    vbeFree(pVbe);
+	  ret = xf86SetDDCproperties(
+				     pScrn,xf86PrintEDID(vbeDoEDID(pVbe,NULL)));
+	  vbeFree(pVbe);
 	}
-	xf86UnloadSubModule(pMod);
     }
     VGAwGR(0x09,0x00);
     return ret;
@@ -3207,14 +3209,11 @@ static void
 neoProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
 
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
         if ((pVbe = VBEInit(NULL,index))) {
 	    ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	    vbeFree(pVbe);
 	}
-	xf86UnloadSubModule(pMod);
     }
 }

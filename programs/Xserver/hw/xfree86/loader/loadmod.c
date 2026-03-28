@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/loadmod.c,v 1.81tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/loadmod.c,v 1.74 2004/02/13 23:58:45 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *
@@ -23,7 +37,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2002 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -68,51 +82,6 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Copyright 2003-2006 by David H. Dawes.
- * Copyright 2003-2006 by X-Oz Technologies.
- * All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- * 
- *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions, and the following disclaimer.
- *
- *  2. Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- * 
- *  3. The end-user documentation included with the redistribution,
- *     if any, must include the following acknowledgment: "This product
- *     includes software developed by X-Oz Technologies
- *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
- *     appear in the software itself, if and wherever such third-party
- *     acknowledgments normally appear.
- *
- *  4. Except as contained in this notice, the name of X-Oz
- *     Technologies shall not be used in advertising or otherwise to
- *     promote the sale, use or other dealings in this Software without
- *     prior written authorization from X-Oz Technologies.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- */
 
 #include "os.h"
 /* For stat() and related stuff */
@@ -126,10 +95,6 @@
 #ifdef XINPUT
 #include "xf86Xinput.h"
 #endif
-
-#ifndef LOADERDEBUG
-#define LOADERDEBUG 0
-#endif
 #include "loader.h"
 #include "xf86Optrec.h"
 
@@ -138,12 +103,18 @@
 #include <dirent.h>
 #include <limits.h>
 
+extern int check_unresolved_sema;
+
 typedef struct _pattern {
     const char *pattern;
     regex_t rex;
 } PatternRec, *PatternPtr;
 
-/* Forward prototypes for static functions */
+/* Prototypes for static functions */
+static char *FindModule(const char *, const char *, const char **,
+			PatternPtr);
+static Bool CheckVersion(const char *, XF86ModuleVersionInfo *,
+			 const XF86ModReqInfo *);
 static void UnloadModuleOrDriver(ModuleDescPtr mod);
 static char *LoaderGetCanonicalName(const char *, PatternPtr);
 static void RemoveChild(ModuleDescPtr);
@@ -157,36 +128,14 @@ ModuleVersions LoaderVersionInfo = {
     ABI_FONT_VERSION
 };
 
-#if LOADERDEBUG
-static void
-PrintDiagnostics(const char *module, const char *what)
+#if 0
+void
+LoaderFixups(void)
 {
-#ifdef linux
-    char *procdev = NULL;
-    FILE *f = NULL;
-    char buf[1024];
-#endif
+    /* Need to call LRS here because the frame buffers get loaded last,
+     * and the drivers depend on them. */
 
-    if (!(LoaderDebugLevel & LOADER_DEBUG_DIAGNOSTICS))
-	return;
-
-    LoaderDebugMsg(LOADER_DEBUG_DIAGNOSTICS,
-		   "LoaderDiagnostics for %s of module %s\n", what, module);
-#ifdef linux
-    xasprintf(procdev, "/proc/%d/maps", getpid());
-    if (!procdev)
-	return;
-    f = fopen(procdev, "r");
-    if (f) {
-	while (fgets(buf, sizeof(buf), f))
-	    LoaderDebugMsg(LOADER_DEBUG_DIAGNOSTICS, "%s", buf);
-	fclose(f);
-    } else {
-	LoaderDebugMsg(LOADER_DEBUG_DIAGNOSTICS,
-		       "Cannot open %s: %s\n", procdev, strerror(errno));
-    }
-    xfree(procdev);
-#endif
+    LoaderResolveSymbols();
 }
 #endif
 
@@ -307,6 +256,7 @@ static PatternRec stdPatterns[] = {
     {"^lib(.*)\\.so$",},
     {"^lib(.*)\\.a$",},
     {"(.*)_drv\\.so$",},
+    {"^lib(.*)_drv\\.so$",},
     {"(.*)_drv\\.o$",},
     {"(.*)\\.so$",},
     {"(.*)\\.a$",},
@@ -381,7 +331,7 @@ InitSubdirs(const char **subdirlist)
     const char **s, **stmp = NULL;
     const char *osname;
     const char *slash;
-    int len;
+    int oslen = 0, len;
     Bool indefault;
 
     if (subdirlist == NULL) {
@@ -393,6 +343,7 @@ InitSubdirs(const char **subdirlist)
     }
 
     LoaderGetOS(&osname, NULL, NULL, NULL);
+    oslen = strlen(osname);
 
     {
 	/* Count number of entries and check for invalid paths */
@@ -437,9 +388,8 @@ InitSubdirs(const char **subdirlist)
 		len++;
 	    } else
 		slash = "";
-	    /* Tack on the OS name. */
-	    xasprintf(&subdirs[i], "%s%s%s/", *s, slash, osname);
-	    if (!subdirs[i]) {
+	    len += oslen + 2;
+	    if (!(subdirs[i] = xalloc(len))) {
 		while (--i >= 0)
 		    xfree(subdirs[i]);
 		xfree(subdirs);
@@ -447,17 +397,11 @@ InitSubdirs(const char **subdirlist)
 		    xfree(tmp_subdirlist);
 		return NULL;
 	    }
+	    /* tack on the OS name */
+	    sprintf(subdirs[i], "%s%s%s/", *s, slash, osname);
 	    i++;
-	    /* The path as given. */
+	    /* path as given */
 	    subdirs[i] = xstrdup(*s);
-	    if (!subdirs[i]) {
-		while (--i >= 0)
-		    xfree(subdirs[i]);
-		xfree(subdirs);
-		if (tmp_subdirlist)
-		    xfree(tmp_subdirlist);
-		return NULL;
-	    }
 	    i++;
 	    s++;
 	    if (indefault && !s) {
@@ -667,89 +611,6 @@ LoaderFreeDirList(char **list)
 }
 
 static Bool
-CheckRequirements(const XF86ModuleVersionInfo * data,
-		  const XF86ModReqInfo * req)
-{
-    if (!req)
-	return TRUE;
-
-    if (!data) {
-	xf86MsgVerb(X_WARNING, 2, "No version information to verify\n");
-	return FALSE;
-    }
-
-    if (req->majorversion != MAJOR_UNSPEC) {
-	if (data->majorversion != req->majorversion) {
-	    xf86MsgVerb(X_WARNING, 2, "Module major version (%d) doesn't match"
-			" required major version (%d)\n",
-			data->majorversion, req->majorversion);
-	    return FALSE;
-	}
-
-	if (req->minorversion != MINOR_UNSPEC) {
-	    if (data->minorversion < req->minorversion) {
-		xf86MsgVerb(X_WARNING, 2, "Module minor version (%d) is less"
-			    " than the required minor version (%d)\n",
-			    data->minorversion, req->minorversion);
-		return FALSE;
-	    }
-
-	    if ((data->minorversion == req->minorversion) &&
-		(req->patchlevel != PATCH_UNSPEC) &&
-		(data->patchlevel < req->patchlevel)) {
-		xf86MsgVerb(X_WARNING, 2, "Module patch level (%d) is less"
-			    " than the required patch level (%d)\n",
-			    data->patchlevel, req->patchlevel);
-		return FALSE;
-	    }
-	}
-    }
-
-    if (req->moduleclass) {
-	if (!data->moduleclass ||
-	    strcmp(req->moduleclass, data->moduleclass)) {
-	    xf86MsgVerb(X_WARNING, 2, "Module class (%s) doesn't match the"
-			" required class (%s)\n",
-			data->moduleclass ? data->moduleclass : "<NONE>",
-			req->moduleclass);
-	    return FALSE;
-	}
-    } else if (req->abiclass != ABI_CLASS_NONE) {
-	if (!data->abiclass || strcmp(req->abiclass, data->abiclass)) {
-	    xf86MsgVerb(X_WARNING, 2, "ABI class (%s) doesn't match the"
-			" required ABI class (%s)\n",
-			data->abiclass ? data->abiclass : "<NONE>",
-			req->abiclass);
-	    return FALSE;
-	}
-    }
-
-    if ((req->abiclass != ABI_CLASS_NONE) &&
-	(req->abiversion != ABI_VERS_UNSPEC)) {
-	int reqmaj, reqmin, maj, min;
-
-	reqmaj = GET_ABI_MAJOR(req->abiversion);
-	maj = GET_ABI_MAJOR(data->abiversion);
-	if (maj != reqmaj) {
-	    xf86MsgVerb(X_WARNING, 2, "ABI major version (%d) doesn't match"
-			" the required ABI major version (%d)\n",
-			maj, reqmaj);
-	    return FALSE;
-	}
-
-	reqmin = GET_ABI_MINOR(req->abiversion);
-	min = GET_ABI_MINOR(data->abiversion);
-	if (min < reqmin) {
-	    xf86MsgVerb(X_WARNING, 2, "Module ABI minor version (%d) is older"
-			" than that required (%d)\n", min, reqmin);
-	    return FALSE;
-	}
-    }
-
-    return TRUE;
-}
-
-static Bool
 CheckVersion(const char *module, XF86ModuleVersionInfo * data,
 	     const XF86ModReqInfo * req)
 {
@@ -845,9 +706,70 @@ CheckVersion(const char *module, XF86ModuleVersionInfo * data,
     }
 
     /* Check against requirements that the caller has specified */
-    if (!CheckRequirements(data, req))
-	return FALSE;
+    if (req) {
+	if (req->majorversion != MAJOR_UNSPEC) {
+	    if (data->majorversion != req->majorversion) {
+		xf86MsgVerb(X_WARNING, 2, "module major version (%d) "
+			    "doesn't match required major version (%d)\n",
+			    data->majorversion, req->majorversion);
+		return FALSE;
+	    } else if (req->minorversion != MINOR_UNSPEC) {
+		if (data->minorversion < req->minorversion) {
+		    xf86MsgVerb(X_WARNING, 2, "module minor version (%d) "
+				"is less than the required minor version (%d)\n",
+				data->minorversion, req->minorversion);
+		    return FALSE;
+		} else if (data->minorversion == req->minorversion &&
+			   req->patchlevel != PATCH_UNSPEC) {
+		    if (data->patchlevel < req->patchlevel) {
+			xf86MsgVerb(X_WARNING, 2, "module patch level (%d) "
+				    "is less than the required patch level (%d)\n",
+				    data->patchlevel, req->patchlevel);
+			return FALSE;
+		    }
+		}
+	    }
+	}
+	if (req->moduleclass) {
+	    if (!data->moduleclass ||
+		strcmp(req->moduleclass, data->moduleclass)) {
+		xf86MsgVerb(X_WARNING, 2, "Module class (%s) doesn't match "
+			    "the required class (%s)\n",
+			    data->moduleclass ? data->moduleclass : "<NONE>",
+			    req->moduleclass);
+		return FALSE;
+	    }
+	} else if (req->abiclass != ABI_CLASS_NONE) {
+	    if (!data->abiclass || strcmp(req->abiclass, data->moduleclass)) {
+		xf86MsgVerb(X_WARNING, 2, "ABI class (%s) doesn't match the "
+			    "required ABI class (%s)\n",
+			    data->abiclass ? data->abiclass : "<NONE>",
+			    req->abiclass);
+		return FALSE;
+	    }
+	}
+	if ((req->abiclass != ABI_CLASS_NONE) &&
+	    req->abiversion != ABI_VERS_UNSPEC) {
+	    int reqmaj, reqmin, maj, min;
 
+	    reqmaj = GET_ABI_MAJOR(req->abiversion);
+	    reqmin = GET_ABI_MINOR(req->abiversion);
+	    maj = GET_ABI_MAJOR(data->abiversion);
+	    min = GET_ABI_MINOR(data->abiversion);
+	    if (maj != reqmaj) {
+		xf86MsgVerb(X_WARNING, 2, "ABI major version (%d) doesn't "
+			    "match the required ABI major version (%d)\n",
+			    maj, reqmaj);
+		return FALSE;
+	    }
+	    /* XXX Maybe this should be the other way around? */
+	    if (min > reqmin) {
+		xf86MsgVerb(X_WARNING, 2, "module ABI minor version (%d) "
+			    "is new than that available (%d)\n", min, reqmin);
+		return FALSE;
+	    }
+	}
+    }
 #ifdef NOTYET
     if (data->checksum) {
 	/* verify the checksum field */
@@ -857,12 +779,6 @@ CheckVersion(const char *module, XF86ModuleVersionInfo * data,
     }
 #endif
     return TRUE;
-}
-
-void
-LoaderSetParentModuleRequirements(ModuleDescPtr mod, XF86ModReqInfo *req)
-{
-    mod->ParentReq = req;
 }
 
 ModuleDescPtr
@@ -895,24 +811,8 @@ LoadSubModule(ModuleDescPtr parent, const char *module,
     submod = LoadModule(module, NULL, subdirlist, patternlist, options,
 			modreq, errmaj, errmin);
     if (submod) {
-	submod->parent = parent;
-
-	/* Check requirements against parent modules */
-	while (parent) {
-	    if (!CheckRequirements(parent->VersionInfo, submod->ParentReq)) {
-		UnloadModule(submod);
-		if (errmaj)
-		    *errmaj = LDR_MISMATCH;
-		if (errmin)
-		    *errmin = 0;
-		return NULL;
-	    }
-
-	    parent = parent->parent;
-	}
-
-	parent = submod->parent;
 	parent->child = AddSibling(parent->child, submod);
+	submod->parent = parent;
     }
     return submod;
 }
@@ -945,9 +845,6 @@ DuplicateModule(ModuleDescPtr mod, ModuleDescPtr parent)
     ret->sib = DuplicateModule(mod->sib, parent);
     ret->parent = parent;
     ret->VersionInfo = mod->VersionInfo;
-    ret->ParentReq = mod->ParentReq;
-
-    DuplicateSymbolLists(mod, ret);
 
     return ret;
 }
@@ -956,7 +853,7 @@ DuplicateModule(ModuleDescPtr mod, ModuleDescPtr parent)
  * LoadModule: load a module
  *
  * module       The module name.  Normally this is not a filename but the
- *              module's "canonical" name.  A full pathname is, however,
+ *              module's "canonical name.  A full pathname is, however,
  *              also accepted.
  * path         A comma separated list of module directories.
  * subdirlist   A NULL terminated list of subdirectories to search.  When
@@ -1012,7 +909,6 @@ LoadModule(const char *module, const char *path, const char **subdirlist,
 
     patterns = InitPatterns(patternlist);
     name = LoaderGetCanonicalName(module, patterns);
-    LoaderDebugForModule(name);
     noncanonical = (name && strcmp(module, name) != 0);
     if (noncanonical) {
 	xf86ErrorFVerb(3, " (%s)\n", name);
@@ -1087,24 +983,27 @@ LoadModule(const char *module, const char *path, const char **subdirlist,
 	    *errmin = 0;
 	goto LoadModule_fail;
     }
-    ret->handle = LoaderOpen(found, name, 0, errmaj, errmin, &wasLoaded,
-			     (char **)&initdata);
+    ret->handle = LoaderOpen(found, name, 0, errmaj, errmin, &wasLoaded);
     if (ret->handle < 0)
 	goto LoadModule_fail;
 
     ret->filename = xstrdup(found);
 
-    /* This is needed for dlopen modules. */
-    if (!initdata) {
-	char *md;
-
-	xasprintf(&md, "%s" MODULE_DATA_NAME, name);
-	if (md) {
-	    initdata = LoaderSymbol(md);
-	    xfree(md);
-	}
+    /*
+     * now check if the special data object <modulename>ModuleData is
+     * present.
+     */
+    p = xalloc(strlen(name) + strlen("ModuleData") + 1);
+    if (!p) {
+	if (errmaj)
+	    *errmaj = LDR_NOMEM;
+	if (errmin)
+	    *errmin = 0;
+	goto LoadModule_fail;
     }
-
+    strcpy(p, name);
+    strcat(p, "ModuleData");
+    initdata = LoaderSymbol(p);
     if (initdata) {
 	ModuleSetupProc setup;
 	ModuleTearDownProc teardown;
@@ -1114,27 +1013,25 @@ LoadModule(const char *module, const char *path, const char **subdirlist,
 	setup = initdata->setup;
 	teardown = initdata->teardown;
 
-	/*
-	 * Different loads of the same module may have different versioning
-	 * requirements, so always check.
-	 */
-	if (vers) {
-	    if (!CheckVersion(module, vers, modreq)) {
+	if (!wasLoaded) {
+	    if (vers) {
+		if (!CheckVersion(module, vers, modreq)) {
+		    if (errmaj)
+			*errmaj = LDR_MISMATCH;
+		    if (errmin)
+			*errmin = 0;
+		    goto LoadModule_fail;
+		}
+	    } else {
+		xf86Msg(X_ERROR,
+			"LoadModule: Module %s does not supply"
+			" version information\n", module);
 		if (errmaj)
-		    *errmaj = LDR_MISMATCH;
+		    *errmaj = LDR_INVALID;
 		if (errmin)
 		    *errmin = 0;
 		goto LoadModule_fail;
 	    }
-	} else {
-	    xf86Msg(X_ERROR,
-		    "LoadModule: Module %s does not supply version"
-		    " information\n", module);
-	    if (errmaj)
-		*errmaj = LDR_INVALID;
-	    if (errmin)
-		*errmin = 0;
-	    goto LoadModule_fail;
 	}
 	if (setup)
 	    ret->SetupProc = setup;
@@ -1148,9 +1045,8 @@ LoadModule(const char *module, const char *path, const char **subdirlist,
 	    goto LoadModule_exit;
 
 	/* no initdata, fail the load */
-	xf86Msg(X_ERROR, "LoadModule: Module %s does not have a %s"
-			 MODULE_DATA_NAME " data object.\n",
-		module, name);
+	xf86Msg(X_ERROR, "LoadModule: Module %s does not have a %s "
+		"data object.\n", module, p);
 	if (errmaj)
 	    *errmaj = LDR_INVALID;
 	if (errmin)
@@ -1166,9 +1062,6 @@ LoadModule(const char *module, const char *path, const char **subdirlist,
 	xf86Msg(X_WARNING, "Module Options present, but no SetupProc "
 		"available for %s\n", module);
     }
-#if LOADERDEBUG
-    PrintDiagnostics(module, "load");
-#endif
     goto LoadModule_exit;
 
   LoadModule_fail:
@@ -1224,7 +1117,7 @@ UnloadModuleOrDriver(ModuleDescPtr mod)
 
     if ((mod->TearDownProc) && (mod->TearDownData))
 	mod->TearDownProc(mod->TearDownData);
-    LoaderUnload(mod);
+    LoaderUnload(mod->handle);
 
     if (mod->child)
 	UnloadModuleOrDriver(mod->child);
@@ -1248,7 +1141,7 @@ UnloadSubModule(ModuleDescPtr mod)
 
     if ((mod->TearDownProc) && (mod->TearDownData))
 	mod->TearDownProc(mod->TearDownData);
-    LoaderUnload(mod);
+    LoaderUnload(mod->handle);
 
     RemoveChild(mod);
 
@@ -1291,6 +1184,7 @@ NewModuleDesc(const char *name)
 	mdp->child = NULL;
 	mdp->sib = NULL;
 	mdp->parent = NULL;
+	mdp->demand_next = NULL;
 	mdp->name = xstrdup(name);
 	mdp->filename = NULL;
 	mdp->identifier = NULL;
@@ -1300,7 +1194,6 @@ NewModuleDesc(const char *name)
 	mdp->SetupProc = NULL;
 	mdp->TearDownProc = NULL;
 	mdp->TearDownData = NULL;
-	mdp->ParentReq = NULL;
     }
 
     return (mdp);
@@ -1396,7 +1289,7 @@ LoaderErrorMsg(const char *name, const char *modname, int errmaj, int errmin)
 	msg = "module-specific error";
 	break;
     default:
-	msg = "unknown error";
+	msg = "uknown error";
     }
     if (name)
 	xf86Msg(X_ERROR, "%s: Failed to load module \"%s\" (%s, %d)\n",
@@ -1452,19 +1345,3 @@ LoaderGetModuleVersion(ModuleDescPtr mod)
 				  mod->VersionInfo->minorversion,
 				  mod->VersionInfo->patchlevel);
 }
-
-ModuleDescPtr
-LoaderGetSubModuleByName(ModuleDescPtr mod, const char *name)
-{
-    ModuleDescPtr m;
-
-    if (!mod || !name)
-	return NULL;
-
-    for (m = mod->child; m; m = m->sib) {
-	if (!strcmp(m->name, name))
-	    return m;
-    }
-    return NULL;
-}
-

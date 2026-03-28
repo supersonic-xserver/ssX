@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/type1.c,v 1.11tsi Exp $ */
+/* $Xorg: type1.c,v 1.4 2000/08/17 19:46:34 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines, Corp. 1991
  * All Rights Reserved
  * Copyright Lexmark International, Inc. 1991
@@ -45,6 +52,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
+/* $XFree86: xc/lib/font/Type1/type1.c,v 1.11 2004/10/23 15:29:26 dawes Exp $ */
  
 /*********************************************************************/
 /*                                                                   */
@@ -67,8 +75,8 @@
 #include  <stdio.h>          /* a system-dependent include, usually */
 #include  <math.h>
 #else
-#include  <X11/Xdefs.h>
-#include  <X11/Xmd.h>
+#include  "Xdefs.h"
+#include  "Xmd.h"
 #include  "xf86_ansic.h"
 #endif
 #include  "objects.h"

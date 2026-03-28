@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2001 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +34,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/lisp.c,v 1.90tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/lisp.c,v 1.89 2003/10/02 13:30:13 eich Exp $ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -4861,14 +4868,13 @@ LispApply3(LispObj *function, LispObj *arg1, LispObj *arg2, LispObj *arg3)
 }
 
 static LispObj *
-LispRunFunMac(LispObj *name, LispObj * c, int macro, int base)
+LispRunFunMac(LispObj *name, LispObj *code, int macro, int base)
 {
-    LispObj * volatile result = NIL;
-    LispObj * volatile code = c;
+    LispObj *result = NIL;
 
     if (!macro) {
 	int lex = lisp__data.env.lex;
-	volatile int did_jump = 1;
+	int did_jump = 1;
 	LispBlock *block;
 
 	block = LispBeginBlock(name, LispBlockClosure);

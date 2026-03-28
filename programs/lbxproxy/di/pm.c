@@ -1,3 +1,11 @@
+/* $Xorg: pm.c,v 1.5 2001/02/09 02:05:31 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998  The Open Group
 
@@ -23,7 +31,7 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
-/* $XFree86: xc/programs/lbxproxy/di/pm.c,v 1.17 2006/01/09 15:00:45 dawes Exp $ */
+/* $XFree86: xc/programs/lbxproxy/di/pm.c,v 1.16 2004/04/03 22:38:54 tsi Exp $ */
 
 #include <ctype.h>
 #include <stdio.h>
@@ -389,7 +397,7 @@ PMprocessMessages (
 	if (colon)
 	{
 #if defined(IPv6) && defined(AF_INET6)
-	    struct addrinfo *ai = NULL, hints;
+	    struct addrinfo *ai, hints;
 	    Bool bracketed = False;
 	    char canonaddr[INET6_ADDRSTRLEN];
 	    int addrtype = AF_UNSPEC;

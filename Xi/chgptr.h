@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/chgptr.h,v 3.2 2003/11/17 22:20:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -23,26 +31,46 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #ifndef CHGPTR_H
 #define CHGPTR_H 1
 
-int SProcXChangePointerDevice(ClientPtr	/* client */
-    );
+int
+SProcXChangePointerDevice(
+	ClientPtr              /* client */
+	);
 
-int ProcXChangePointerDevice(ClientPtr	/* client */
-    );
+int
+ProcXChangePointerDevice (
+	ClientPtr              /* client */
+	);
 
-void DeleteFocusClassDeviceStruct(DeviceIntPtr	/* dev */
-    );
+void
+DeleteFocusClassDeviceStruct(
+	DeviceIntPtr           /* dev */
+	);
 
-void SendEventToAllWindows(DeviceIntPtr /* dev */ ,
-			   Mask /* mask */ ,
-			   xEvent * /* ev */ ,
-			   int	/* count */
-    );
+void
+SendEventToAllWindows (
+	DeviceIntPtr           /* dev */,
+	Mask                   /* mask */,
+	xEvent *               /* ev */,
+	int                    /* count */
+	);
+
+void
+FindInterestedChildren ( /* FIXME: could be static? */
+	DeviceIntPtr           /* dev */,
+	WindowPtr              /* p1 */,
+	Mask                   /* mask */,
+	xEvent *               /* ev */,
+	int                    /* count */
+	);
+
+void
+SRepXChangePointerDevice (
+	ClientPtr              /* client */,
+	int                    /* size */,
+	xChangePointerDeviceReply * /* rep */
+	);
 
 #endif /* CHGPTR_H */

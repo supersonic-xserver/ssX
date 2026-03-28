@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/lbxutil/image/dpackbits.c,v 1.4tsi Exp $ */
+/* $Xorg: dpackbits.c,v 1.4 2000/08/17 19:46:40 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1988, 1989, 1990, 1991, 1992 Sam Leffler
  * Copyright (c) 1991, 1992 Silicon Graphics, Inc.
@@ -22,10 +29,11 @@
  * LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
  * OF THIS SOFTWARE.
  */
+/* $XFree86: xc/lib/lbxutil/image/dpackbits.c,v 1.4 2001/01/17 19:43:35 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/Xfuncproto.h>
-#include <X11/extensions/lbximage.h>
+#include "lbximage.h"
 
 /*
  * -------------------------------------------------------------------------

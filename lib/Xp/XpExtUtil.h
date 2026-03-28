@@ -1,4 +1,11 @@
 /* $XFree86: xc/lib/Xp/XpExtUtil.h,v 1.4 2003/11/17 22:20:22 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 2000 The XFree86 Project, Inc.  All Rights Reserved.
  *
@@ -37,8 +44,5 @@ extern int XpCheckExtInit(
     Display * /* dpy */,
     int       /* version_index */
 );
-
-extern int XpCheckExtInitUnlocked(Display *dpy, int version_index);
-
 
 #endif /* _XPEXTUTIL_H */

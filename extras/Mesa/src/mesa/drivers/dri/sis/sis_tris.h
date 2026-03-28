@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r128/r128_tris.h,v 1.8 2002/10/30 12:51:43 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_tris.h,v 1.1.1.2 2004/12/10 15:05:42 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2003 Eric Anholt
@@ -32,13 +39,40 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __SIS_TRIS_H__
 #define __SIS_TRIS_H__
 
+#include "sis_lock.h"
 #include "mtypes.h"
 
 extern void sisInitTriFuncs( GLcontext *ctx );
-
-
+extern void sisFlushPrims( sisContextPtr smesa );
+extern void sisFlushPrimsLocked( sisContextPtr smesa );
 extern void sisFallback( GLcontext *ctx, GLuint bit, GLboolean mode );
+
 #define FALLBACK( smesa, bit, mode ) sisFallback( smesa->glCtx, bit, mode )
 
+#define SIS_FIREVERTICES(smesa)				\
+do {							\
+   if (smesa->vb_cur != smesa->vb_last)			\
+      sisFlushPrims(smesa);				\
+} while (0)
+
+static __inline GLuint *sisAllocDmaLow(sisContextPtr smesa, int bytes)
+{
+   GLuint *start;
+
+   if (smesa->vb_cur + bytes >= smesa->vb_end) {
+      LOCK_HARDWARE();
+      sisFlushPrimsLocked(smesa);
+      if (smesa->using_agp) {
+	 WaitEngIdle(smesa);
+	 smesa->vb_cur = smesa->vb;
+	 smesa->vb_last = smesa->vb_cur;
+      }
+      UNLOCK_HARDWARE();
+   }
+
+   start = (GLuint *)smesa->vb_cur;
+   smesa->vb_cur += bytes;
+   return start;
+}
 
 #endif /* __SIS_TRIS_H__ */

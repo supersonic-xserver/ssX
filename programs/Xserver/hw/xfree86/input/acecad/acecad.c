@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2001 Edouard TISSERANT <tissered@esstin.u-nancy.fr>
  * Parts inspired from Shane Watts <shane@bofh.asn.au> XFree86 3 Acecad Driver
  * Thanks to Emily, from AceCad, For giving me documents.
@@ -106,7 +113,7 @@ XF86ModuleData acecadModuleData = { &VersionRec, SetupProc, TearDownProc};
  ****************************************************************************/
 
 static pointer
-SetupProc(	ModuleDescPtr module,
+SetupProc(	pointer module,
 		pointer options,
 		int *errmaj,
 		int *errmin )

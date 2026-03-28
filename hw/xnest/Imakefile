@@ -1,0 +1,104 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xnest/Imakefile,v 3.31 2006/02/19 15:51:30 tsi Exp $
+
+#include <Server.tmpl>
+
+#define IHaveSubdirs
+
+#if BuildXKB
+XKBDIRS = xkb
+#endif
+
+#if BuildRender
+RENDERDIRS = render
+#endif
+
+#if BuildRandR
+RANDRDIRS = randr
+#endif
+
+#if BuildRECORD
+RECORDDIRS = record
+#endif
+
+#if BuildDBE
+DBEDIRS = dbe
+#endif
+
+#if BuildXTrap
+XTRAPDIRS = XTrap
+#endif
+
+SUBDIRS = dix os Xext $(XKBDIRS) $(RENDERDIRS) $(RANDRDIRS) $(RECORDDIRS) \
+	  $(DBEDIRS) $(XTRAPDIRS)
+
+#ifdef OS2Architecture
+SRCS1 = os2Stub.c
+OBJS1 = os2Stub.o
+#endif
+
+SRCS =	Args.c \
+	Color.c \
+	Cursor.c \
+	Display.c \
+	Events.c \
+	Font.c \
+	GC.c \
+	GCOps.c \
+	GetTime.c \
+	Handlers.c \
+	Init.c \
+	Keyboard.c \
+	Pixmap.c \
+	Pointer.c \
+	Screen.c \
+	TestExt.c \
+	Visual.c \
+	Window.c \
+	miinitext.c $(SRCS1)
+
+OBJS =	Args.o \
+	Color.o \
+	Cursor.o \
+	Display.o \
+	Events.o \
+	Font.o \
+	GC.o \
+	GCOps.o \
+	GetTime.o \
+	Handlers.o \
+	Init.o \
+	Keyboard.o \
+	Pixmap.o \
+	Pointer.o \
+	Screen.o \
+	TestExt.o \
+	Visual.o \
+	Window.o \
+	miinitext.o $(OBJS1)
+
+#ifdef XnestExcludedExtensions
+XNEST_DEFINES = XnestExcludedExtensions
+#endif
+
+INCLUDES = -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+	   -I$(SERVERSRC)/os -I$(LIBSRC) -I$(SERVERSRC)/Xext
+
+XKB_DEFINES = -DXKB_BASE_DIRECTORY=\"$(LIBDIR)/xkb/\"
+
+DEFINES = $(OS_DEFINES) $(XKB_DEFINES) $(EXT_DEFINES) $(XNEST_DEFINES)
+
+all:: $(OBJS)
+
+SpecialCObjectRule(Init,$(ICONFIGFILES),NullParameter)
+LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),NullParameter)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(xnest,$(OBJS))
+
+InstallManPage(Xnest,$(MANDIR))
+
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

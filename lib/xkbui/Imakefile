@@ -1,5 +1,5 @@
-XCOMM $XFree86: xc/lib/xkbui/Imakefile,v 3.8 2005/10/14 15:16:08 tsi Exp $
-
+XCOMM $XConsortium: Imakefile /main/1 1995/11/30 19:00:42 kaleb $
+XCOMM $XFree86: xc/lib/xkbui/Imakefile,v 3.7 2004/06/29 22:55:33 herrb Exp $
 #define DoNormalLib NormalLibxkbui
 #define DoSharedLib SharedLibxkbui
 #define DoExtraLib ExtraLibxkbui
@@ -18,7 +18,7 @@ REQUIREDLIBS = SharedxkbuiReqs
             SRCS = XKBui.c
             OBJS = XKBui.o
          HEADERS = XKBui.h
-        INCLUDES = -I../xkbfile
+        INCLUDES = -I. -I$(EXTINCSRC) -I../xkbfile
 
 #include <Library.tmpl>
 

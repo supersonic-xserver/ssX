@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2001 2d3d Inc., Delray Beach, FL
 
@@ -25,7 +39,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
 
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_tex.c,v 1.5 2003/05/07 21:56:31 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_tex.c,v 1.1.1.4 2004/12/10 15:05:48 alanh Exp $ */
 
 /*
  * Author:
@@ -44,8 +58,9 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "teximage.h"
 #include "texformat.h"
 #include "texmem.h"
+#include "texobj.h"
 #include "swrast/swrast.h"
-
+#include "texobj.h"
 #include "mm.h"
 
 #include "i830_screen.h"
@@ -276,10 +291,11 @@ static void i830TexParameter( GLcontext *ctx, GLenum target,
    i830ContextPtr imesa = I830_CONTEXT(ctx);
    i830TextureObjectPtr t = (i830TextureObjectPtr) tObj->DriverData;
    GLuint unit = ctx->Texture.CurrentUnit;
+
    if (!t)
       return;
 
-   if ( target != GL_TEXTURE_2D )
+   if ( target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_NV )
       return;
 
    /* Can't do the update now as we don't know whether to flush
@@ -416,19 +432,112 @@ static void i830TexSubImage2D( GLcontext *ctx,
 }
 
 
+
+static void i830CompressedTexImage2D( GLcontext *ctx, GLenum target, GLint level,
+                              GLint internalFormat,
+                              GLint width, GLint height, GLint border,
+                              GLsizei imageSize, const GLvoid *data,
+                              struct gl_texture_object *texObj,
+                              struct gl_texture_image *texImage )
+{
+   driTextureObject * t = (driTextureObject *) texObj->DriverData;
+   GLuint face;
+
+   /* which cube face or ordinary 2D image */
+   switch (target) {
+   case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
+   case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
+   case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
+   case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
+   case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
+   case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
+      face = (GLuint) target - (GLuint) GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+      ASSERT(face < 6);
+      break;
+   default:
+      face = 0;
+   }
+
+   if ( t != NULL ) {
+      driSwapOutTextureObject( t );
+   }
+   else {
+      t = (driTextureObject *) i830AllocTexObj( texObj );
+      if (!t) {
+         _mesa_error(ctx, GL_OUT_OF_MEMORY, "glCompressedTexImage2D");
+         return;
+      }
+   }
+
+   texImage->IsClientData = GL_FALSE;
+   
+   if (I830_DEBUG & DEBUG_TEXTURE)
+     fprintf(stderr, "%s: Using normal storage\n", __FUNCTION__);
+   
+   _mesa_store_compressed_teximage2d(ctx, target, level, internalFormat, width,
+				     height, border, imageSize, data, texObj, texImage);
+   
+   t->dirty_images[face] |= (1 << level);
+}
+
+
+static void i830CompressedTexSubImage2D( GLcontext *ctx, GLenum target, GLint level,
+                                 GLint xoffset, GLint yoffset,
+                                 GLsizei width, GLsizei height,
+                                 GLenum format,
+                                 GLsizei imageSize, const GLvoid *data,
+                                 struct gl_texture_object *texObj,
+                                 struct gl_texture_image *texImage )
+{
+   driTextureObject * t = (driTextureObject *) texObj->DriverData;
+   GLuint face;
+
+
+   /* which cube face or ordinary 2D image */
+   switch (target) {
+   case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
+   case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
+   case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
+   case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
+   case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
+   case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
+      face = (GLuint) target - (GLuint) GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+      ASSERT(face < 6);
+      break;
+   default:
+      face = 0;
+   }
+
+   assert( t ); /* this _should_ be true */
+   if ( t ) {
+      driSwapOutTextureObject( t );
+   }
+   else {
+      t = (driTextureObject *) i830AllocTexObj( texObj );
+      if (!t) {
+         _mesa_error(ctx, GL_OUT_OF_MEMORY, "glCompressedTexSubImage2D");
+         return;
+      }
+   }
+
+   _mesa_store_compressed_texsubimage2d(ctx, target, level, xoffset, yoffset, width,
+                            height, format, imageSize, data, texObj, texImage);
+
+   t->dirty_images[face] |= (1 << level);
+}
+
+
 static void i830BindTexture( GLcontext *ctx, GLenum target,
 			     struct gl_texture_object *tObj )
 {
-   if (!tObj->DriverData) {
-      i830AllocTexObj( tObj );
-   }
+   assert( (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_NV) ||
+           (tObj->DriverData != NULL) );
 }
 
 
 static void i830DeleteTexture( GLcontext *ctx, struct gl_texture_object *tObj )
 {
    driTextureObject * t = (driTextureObject *) tObj->DriverData;
-
    if ( t != NULL ) {
       i830ContextPtr imesa = I830_CONTEXT( ctx );
 
@@ -543,6 +652,11 @@ i830ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
       else
          return &_mesa_texformat_ycbcr_rev;
 
+   case GL_COMPRESSED_RGB_FXT1_3DFX:
+     return &_mesa_texformat_rgb_fxt1;
+   case GL_COMPRESSED_RGBA_FXT1_3DFX:
+     return &_mesa_texformat_rgba_fxt1;
+
    default:
       fprintf(stderr, "unexpected texture format in %s\n", __FUNCTION__);
       return NULL;
@@ -551,31 +665,34 @@ i830ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
    return NULL; /* never get here */
 }
 
-void i830DDInitTextureFuncs( GLcontext *ctx )
+/**
+ * Allocate a new texture object.
+ * Called via ctx->Driver.NewTextureObject.
+ * Note: this function will be called during context creation to
+ * allocate the default texture objects.
+ * Note: we could use containment here to 'derive' the driver-specific
+ * texture object from the core mesa gl_texture_object.  Not done at this time.
+ */
+static struct gl_texture_object *
+i830NewTextureObject( GLcontext *ctx, GLuint name, GLenum target )
 {
-   i830ContextPtr imesa = I830_CONTEXT(ctx);
+   struct gl_texture_object *obj;
+   obj = _mesa_new_texture_object(ctx, name, target);
+   i830AllocTexObj( obj );
+   return obj;
+}
 
-   ctx->Driver.TexEnv                    = i830TexEnv;
-   ctx->Driver.ChooseTextureFormat       = i830ChooseTextureFormat;
-   ctx->Driver.TexImage1D                = _mesa_store_teximage1d;
-   ctx->Driver.TexImage2D                = i830TexImage2D;
-   ctx->Driver.TexImage3D                = _mesa_store_teximage3d;
-   ctx->Driver.TexSubImage1D             = _mesa_store_texsubimage1d;
-   ctx->Driver.TexSubImage2D             = i830TexSubImage2D;
-   ctx->Driver.TexSubImage3D             = _mesa_store_texsubimage3d;
-   ctx->Driver.CopyTexImage1D            = _swrast_copy_teximage1d;
-   ctx->Driver.CopyTexImage2D            = _swrast_copy_teximage2d;
-   ctx->Driver.CopyTexSubImage1D         = _swrast_copy_texsubimage1d;
-   ctx->Driver.CopyTexSubImage2D         = _swrast_copy_texsubimage2d;
-   ctx->Driver.CopyTexSubImage3D         = _swrast_copy_texsubimage3d;
-   ctx->Driver.BindTexture               = i830BindTexture;
-   ctx->Driver.DeleteTexture             = i830DeleteTexture;
-   ctx->Driver.TexParameter              = i830TexParameter;
-   ctx->Driver.UpdateTexturePalette      = NULL;
-   ctx->Driver.IsTextureResident         = driIsTextureResident;
-   ctx->Driver.TestProxyTexImage         = _mesa_test_proxy_teximage;
-
-   driInitTextureObjects( ctx, & imesa->swapped,
-			  DRI_TEXMGR_DO_TEXTURE_2D
-			  | DRI_TEXMGR_DO_TEXTURE_RECT );
+void i830InitTextureFuncs( struct dd_function_table *functions )
+{
+   functions->NewTextureObject          = i830NewTextureObject;
+   functions->DeleteTexture             = i830DeleteTexture;
+   functions->ChooseTextureFormat       = i830ChooseTextureFormat;
+   functions->TexImage2D                = i830TexImage2D;
+   functions->TexSubImage2D             = i830TexSubImage2D;
+   functions->BindTexture               = i830BindTexture;
+   functions->TexParameter              = i830TexParameter;
+   functions->TexEnv                    = i830TexEnv;
+   functions->IsTextureResident         = driIsTextureResident;
+   functions->CompressedTexImage2D      = i830CompressedTexImage2D;
+   functions->CompressedTexSubImage2D   = i830CompressedTexSubImage2D;
 }

@@ -48,16 +48,10 @@ OBJS = 	XDPSpwraps.o XDPSswraps.o XDPSshare.o XDPSpreview.o \
 
 .SUFFIXES: .psw
 
-.psw.c : HostProgramTargetName($(PSWRAP))
+.psw.c :
 	RunProgram(PSWRAP,-o $*.c -a -f $*.h -h $*.h $<)
 
-HostProgramTargetName($(PSWRAP)):
-	@echo "checking $@ over in $(PSWRAPSRC) first..."; \
-	cd $(PSWRAPSRC) && $(MAKE) pswraponly; \
-	echo "okay, continuing in $(CURRENT_DIR)"
-
 includes:: $(SRCS)
-depend:: $(SRCS)
 
 #if HasMotif
 

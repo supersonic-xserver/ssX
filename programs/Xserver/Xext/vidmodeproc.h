@@ -1,11 +1,24 @@
-/* $XFree86: xc/programs/Xserver/Xext/vidmodeproc.h,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/vidmodeproc.h,v 1.6 2004/06/25 15:44:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* Prototypes for VidMode functions that the DDX must provide */
 
 #ifndef _VIDMODEPROC_H_
 #define _VIDMODEPROC_H_
 
-#include "extnsionst.h"
 
 typedef enum {
     VIDMODE_H_DISPLAY,
@@ -38,7 +51,7 @@ typedef union {
   float f;
 } vidMonitorValue;
 
-void XFree86VidModeExtensionInit(INITARGS);
+void XFree86VidModeExtensionInit(void);
 
 Bool VidModeAvailable(int scrnIndex);
 Bool VidModeGetCurrentModeline(int scrnIndex, pointer *mode, int *dotClock);

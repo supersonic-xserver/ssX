@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.0.2
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -35,14 +42,6 @@
 #include "occlude.h"
 #include "mtypes.h"
 
-#ifndef GL_SAMPLES_PASSED_ARB
-#define GL_SAMPLES_PASSED_ARB         0x8914
-#define GL_QUERY_COUNTER_BITS_ARB     0x8864
-#define GL_CURRENT_QUERY_ARB          0x8865
-#define GL_QUERY_RESULT_ARB           0x8866
-#define GL_QUERY_RESULT_AVAILABLE_ARB 0x8867
-#endif
-
 
 struct occlusion_query
 {
@@ -51,20 +50,6 @@ struct occlusion_query
    GLuint PassedCounter;
    GLboolean Active;
 };
-
-
-
-void
-_mesa_init_occlude(GLcontext *ctx)
-{
-#if FEATURE_ARB_occlusion_query
-   ctx->Occlusion.QueryObjects = _mesa_NewHashTable();
-#endif
-
-   ctx->OcclusionResult = GL_FALSE;
-   ctx->OcclusionResultSaved = GL_FALSE;
-}
-
 
 
 /**
@@ -185,6 +170,11 @@ _mesa_BeginQueryARB(GLenum target, GLuint id)
 
    if (target != GL_SAMPLES_PASSED_ARB) {
       _mesa_error(ctx, GL_INVALID_ENUM, "glBeginQueryARB(target)");
+      return;
+   }
+
+   if (id == 0) {
+      _mesa_error(ctx, GL_INVALID_OPERATION, "glBeginQueryARB(id==0)");
       return;
    }
 
@@ -329,4 +319,42 @@ _mesa_GetQueryObjectuivARB(GLuint id, GLenum pname, GLuint *params)
          _mesa_error(ctx, GL_INVALID_ENUM, "glGetQueryObjectuivARB(pname)");
          return;
    }
+}
+
+
+
+/**
+ * Allocate/init the context state related to occlusion query objects.
+ */
+void
+_mesa_init_occlude(GLcontext *ctx)
+{
+#if FEATURE_ARB_occlusion_query
+   ctx->Occlusion.QueryObjects = _mesa_NewHashTable();
+#endif
+   ctx->OcclusionResult = GL_FALSE;
+   ctx->OcclusionResultSaved = GL_FALSE;
+}
+
+
+/**
+ * Free the context state related to occlusion query objects.
+ */
+void
+_mesa_free_occlude_data(GLcontext *ctx)
+{
+   while (1) {
+      GLuint query = _mesa_HashFirstEntry(ctx->Occlusion.QueryObjects);
+      if (query) {
+         struct occlusion_query *q = (struct occlusion_query *)
+            _mesa_HashLookup(ctx->Occlusion.QueryObjects, query);
+         ASSERT(q);
+         delete_query_object(q);
+         _mesa_HashRemove(ctx->Occlusion.QueryObjects, query);
+      }
+      else {
+         break;
+      }
+   }
+   _mesa_DeleteHashTable(ctx->Occlusion.QueryObjects);
 }

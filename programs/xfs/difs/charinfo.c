@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/charinfo.c,v 1.13tsi Exp $ */
+/* $Xorg: charinfo.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  
 Copyright 1990, 1991, 1998  The Open Group
@@ -49,15 +56,15 @@ in this Software without prior written authorization from The Open Group.
  * This file was once on the other side of
  * the font library interface as util/fsfuncs.c.
  */
+/* $XFree86: xc/programs/xfs/difs/charinfo.c,v 1.12 2001/12/14 20:01:33 dawes Exp $ */
 
-#include <stdlib.h>
 #include <X11/Xos.h>
 #include "misc.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "fontutil.h"
 #include "clientstr.h"
 #define FSMD_H
-#include <X11/fonts/FSproto.h>
+#include "FSproto.h"
 #include "difs.h"
 
 extern void TwoByteSwap(unsigned char *, int);

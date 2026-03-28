@@ -1,3 +1,19 @@
+/* $Xorg: SetHints.c,v 1.5 2001/02/09 02:03:36 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/SetHints.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/lib/X11/SetHints.c,v 1.5 2003/11/17 22:20:08 dawes Exp $ */
 
 #include <X11/Xlibint.h>
 #include <X11/Xutil.h>
@@ -228,7 +244,7 @@ XSetStandardProperties (
     	XSizeHints *hints)	/* size hints for window in its normal state */
 {
 	XWMHints phints;
-	(void) memset(&phints, 0, sizeof(phints));
+	phints.flags = 0;
 
 	if (name != NULL) XStoreName (dpy, w, name);
 

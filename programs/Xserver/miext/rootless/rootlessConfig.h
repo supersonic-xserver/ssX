@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Platform specific rootless configuration
  */
 /*
@@ -40,11 +47,11 @@
 # define ROOTLESS_RESIZE_GRAVITY TRUE
 # undef  ROOTLESS_TRACK_DAMAGE
 
-#endif /* __DARWIN__ */
-
 /* Bit mask for alpha channel with a particular number of bits per
    pixel. Note that we only care for 32bpp data. Mac OS X uses planar
    alpha for 16bpp. */
-#define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
+# define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
+
+#endif /* __DARWIN__ */
 
 #endif /* _ROOTLESSCONFIG_H */

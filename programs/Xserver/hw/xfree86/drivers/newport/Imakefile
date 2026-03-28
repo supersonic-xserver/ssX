@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/Imakefile,v 1.9tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/Imakefile,v 1.8 2004/06/01 00:17:01 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -49,22 +49,22 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/Imakefile,v 1.9ts
 #define IHaveModules
 #include <Server.tmpl>
 
-SRCS = newport_driver.c newport_regs.c newport_cmap.c newport_shadow.c \
-       newport_cursor.c
+SRCS = newport_driver.c newport_regs.c newport_cmap.c newport_shadow.c newport_cursor.c
 
-OBJS = newport_driver.o newport_regs.o newport_cmap.o newport_shadow.o \
-       newport_cursor.o
+OBJS = newport_driver.o newport_regs.o newport_cmap.o newport_shadow.o newport_cursor.o
 
 XF86CONFIG = XF86Config.indy
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
+INCLUDES = -I. \
+	   -I$(XF86COMSRC) -I$(XF86OSSRC) \
 	   -I$(SERVERSRC)/mi -I$(SERVERSRC)/fb \
-	   -I$(XF86SRC)/shadowfb -I$(XF86SRC)/ramdac \
-	   -I$(SERVERSRC)/Xext -I$(SERVERSRC)/render \
-	   -I$(SERVERSRC)/include
+	   -I$(XF86SRC)/shadowfb \
+	   -I$(XF86SRC)/xaa -I$(XF86SRC)/ramdac \
+	   -I$(EXTINCSRC) -I$(SERVERSRC)/Xext -I$(SERVERSRC)/render \
+	   -I$(SERVERSRC)/include -I$(FONTINCSRC) -I$(XINCLUDESRC)
 #endif
 
 #if MakeHasPosixVariableSubstitutions

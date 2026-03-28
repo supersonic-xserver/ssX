@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SBUS bus-specific declarations
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,6 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.h,v 3.10 2007/03/15 02:11:36 tsi Exp $ */
 
 #ifndef _XF86_SBUSBUS_H
 #define _XF86_SBUSBUS_H
@@ -40,74 +48,85 @@
 #define SBUS_DEVICE_GT		0x000c
 #define SBUS_DEVICE_MGX		0x000d
 #define SBUS_DEVICE_P9100	0x000e
-#define SBUS_DEVICE_AG10E	0x000f
 
 typedef struct sbus_prom_node {
-    int node;
+    int			node;
     /* Because of misdesigned openpromio */
-    int cookie[2];
+    int			cookie[2];
 } sbusPromNode, *sbusPromNodePtr;
 
+typedef struct sbus_prom_parent {
+    sbusPromNode	node;
+    struct sbus_prom_parent *parent;
+} sbusPromParent, *sbusPromParentPtr;
+
 typedef struct sbus_device {
-    int devId;
-    int fbNum;
-    int fd;
-    int width, height;
-    sbusPromNode node;
-    const char *descr;
-    const char *device;
+    int			devId;
+    int			fbNum;
+    int			fd;
+    int			width, height;
+    sbusPromNode	node;
+    char		*descr;
+    char		*device;
+    sbusPromParentPtr	parent;
+    void		*OSprivate;
+    int			mmapCount;
 } sbusDevice, *sbusDevicePtr;
 
-struct sbus_devtable {
+extern struct sbus_devtable {
     int devId;
     int fbType;
-    const char *promName;
-    const char *driverName;
-    const char *descr;
-};
+    char *promName;
+    char *descr;
+} sbusDeviceTable[];
 
-extern _X_EXPORT void xf86SbusProbe(void);
-extern _X_EXPORT sbusDevicePtr *xf86SbusInfo;
-extern _X_EXPORT struct sbus_devtable sbusDeviceTable[];
+void xf86SbusProbe(void);
+extern sbusDevicePtr *xf86SbusInfo;
 
-extern _X_EXPORT int xf86MatchSbusInstances(const char *driverName,
-                                            int sbusDevId, GDevPtr * devList,
-                                            int numDevs, DriverPtr drvp,
-                                            int **foundEntities);
-extern _X_EXPORT sbusDevicePtr xf86GetSbusInfoForEntity(int entityIndex);
-extern _X_EXPORT int xf86GetEntityForSbusInfo(sbusDevicePtr psdp);
-extern _X_EXPORT void xf86SbusUseBuiltinMode(ScrnInfoPtr pScrn,
-                                             sbusDevicePtr psdp);
-extern _X_EXPORT void *xf86MapSbusMem(sbusDevicePtr psdp,
-                                        unsigned long offset,
-                                        unsigned long size);
-extern _X_EXPORT void xf86UnmapSbusMem(sbusDevicePtr psdp, void *addr,
-                                       unsigned long size);
-extern _X_EXPORT void xf86SbusHideOsHwCursor(sbusDevicePtr psdp);
-extern _X_EXPORT void xf86SbusSetOsHwCursorCmap(sbusDevicePtr psdp, int bg,
-                                                int fg);
-extern _X_EXPORT Bool xf86SbusHandleColormaps(ScreenPtr pScreen,
-                                              sbusDevicePtr psdp);
+Bool xf86ParseSbusBusString(const char *busID, int *fbNum);
+Bool xf86CompareSbusBusString(const char *busID, int fbNum);
+Bool xf86CheckSbusSlot(int fbNum);
+int xf86ClaimSbusSlot(sbusDevicePtr psdp, DriverPtr drvp, GDevPtr dev,
+		      Bool active);
+int xf86MatchSbusInstances(const char *driverName, int sbusDevId, 
+			   GDevPtr *devList, int numDevs, DriverPtr drvp,
+			   int **foundEntities);
+sbusDevicePtr xf86GetSbusInfoForEntity(int entityIndex);
+int xf86GetEntityForSbusInfo(sbusDevicePtr psdp);
+void xf86SbusUseBuiltinMode(ScrnInfoPtr pScrn, sbusDevicePtr psdp);
+Bool xf86LocateSbusMemoryArea(sbusDevicePtr psdp,
+			      char **devName, unsigned int *devOffset,
+			      unsigned int *fbSize, unsigned int *fbOffset,
+			      unsigned int *flags);
+pointer xf86MapSbusMem(sbusDevicePtr psdp, unsigned long offset,
+		       unsigned long size);
+void xf86UnmapSbusMem(sbusDevicePtr psdp, pointer addr, unsigned long size);
 
-extern _X_EXPORT int promRootNode;
+void xf86SbusHideOsHwCursor(sbusDevicePtr psdp);
+void xf86SbusSetOsHwCursorCmap(sbusDevicePtr psdp, int bg, int fg);
+void xf86SbusSetOsHwCursorImage(sbusDevicePtr psdp, pointer image,
+				pointer mask);
+void xf86SbusSetOsHwCursor(sbusDevicePtr psdp, Bool onoff);
+void xf86SbusSetOsHwCursorPosition(sbusDevicePtr psdp, int x, int y);
+void xf86SbusSetOsHwCursorHotSpot(sbusDevicePtr psdp, int hotx, int hoty);
 
-extern _X_EXPORT int promGetSibling(int node);
-extern _X_EXPORT int promGetChild(int node);
-extern _X_EXPORT char *promGetProperty(const char *prop, int *lenp);
-extern _X_EXPORT int promGetBool(const char *prop);
+Bool xf86SbusHandleColormaps(ScreenPtr pScreen, sbusDevicePtr psdp);
 
-extern _X_EXPORT int sparcPromInit(void);
-extern _X_EXPORT void sparcPromClose(void);
-extern _X_EXPORT char *sparcPromGetProperty(sbusPromNodePtr pnode,
-                                            const char *prop, int *lenp);
-extern _X_EXPORT int sparcPromGetBool(sbusPromNodePtr pnode, const char *prop);
-extern _X_EXPORT void sparcPromAssignNodes(void);
-extern _X_EXPORT char *sparcPromNode2Pathname(sbusPromNodePtr pnode);
-extern _X_EXPORT int sparcPromPathname2Node(const char *pathName);
-extern _X_EXPORT const char *sparcDriverName(void);
+Bool xf86SbusSaveScreen(sbusDevicePtr, int mode);
 
-extern Bool xf86SbusConfigure(void *busData, sbusDevicePtr sBus);
-extern void xf86SbusConfigureNewDev(void *busData, sbusDevicePtr sBus,
-                                    GDevRec * GDev);
+extern int promRootNode;
 
-#endif                          /* _XF86_SBUSBUS_H */
+int promGetSibling(int node);
+int promGetChild(int node);
+char * promGetProperty(const char *prop, int *lenp);
+int promGetBool(const char *prop);
+
+int sparcPromInit(void);
+void sparcPromClose(void);
+char * sparcPromGetProperty(sbusPromNodePtr pnode, const char *prop, int *lenp);
+int sparcPromGetBool(sbusPromNodePtr pnode, const char *prop);
+void sparcPromAssignNodes(void);
+char * sparcPromNode2Pathname(sbusPromNodePtr pnode);
+int sparcPromPathname2Node(const char *pathName);
+
+#endif /* _XF86_SBUSBUS_H */

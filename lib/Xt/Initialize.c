@@ -1,3 +1,19 @@
+/* $Xorg: Initialize.c,v 1.8 2001/02/09 02:03:55 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -30,7 +46,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Initialize.c,v 3.24tsi Exp $ */
+/* $XFree86: xc/lib/Xt/Initialize.c,v 3.23 2004/05/05 00:07:03 dickey Exp $ */
 
 /*
 
@@ -154,21 +170,21 @@ static void GetHostname (
     int len;
     struct utsname name;
 
-    if ((maxlen <= 0) || (buf == NULL) || (uname(&name) < 0))
+    if (maxlen <= 0 || buf == NULL)
 	return;
 
-    len = strlen(name.nodename);
-    if (len >= maxlen)
-	len = maxlen - 1;
-    (void) strncpy(buf, name.nodename, len);
-    buf[len] = '\0';
+    uname (&name);
+    len = strlen (name.nodename);
+    if (len >= maxlen) len = maxlen;
+    (void) strncpy (buf, name.nodename, len-1);
+    buf[len-1] = '\0';
 #else
     if (maxlen <= 0 || buf == NULL)
 	return;
 
     buf[0] = '\0';
-    (void) gethostname(buf, maxlen);
-    buf[maxlen - 1] = '\0';
+    (void) gethostname (buf, maxlen);
+    buf [maxlen - 1] = '\0';
 #endif
 }
 
@@ -318,7 +334,7 @@ static String GetRootDirName(
 {
 #ifdef WIN32
     register char *ptr1;
-    register char *ptr2 = NULL;
+    register char *ptr2;
     int len1 = 0, len2 = 0;
 
     if (ptr1 = getenv("HOME")) {	/* old, deprecated */
@@ -550,7 +566,7 @@ XrmDatabase XtScreenDatabase(
 			PATH_MAX - strlen (slashDotXdefaultsDash) - 1);
 	    (void) strcat(filename, slashDotXdefaultsDash);
 	    len = strlen(filename);
-	    GetHostname (filename+len, PATH_MAX-1-len);
+	    GetHostname (filename+len, PATH_MAX-len);
 	}
 	(void)XrmCombineFileDatabase(filename, &db, False);
     }

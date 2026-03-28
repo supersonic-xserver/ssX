@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_gpioi2c.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_gpioi2c.c,v 1.3 2003/11/03 05:11:46 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -45,7 +52,7 @@ static void I2C_RW_Control(VIABIOSInfoPtr pBIOSInfo, CARD8 Command, CARD8 Data);
 
 Bool VIAGPIOI2C_Initial(VIABIOSInfoPtr pBIOSInfo, CARD8 SlaveDevice)
 {
-    DEBUG(xf86DrvMsg(pBIOSInfo->scrnIndex, X_INFO, "GPIOI2C_Initial\n"));
+    DEBUGX(xf86DrvMsg(pBIOSInfo->scrnIndex, X_INFO, "GPIOI2C_Initial\n"));
     switch (pBIOSInfo->Chipset)
     {
         case VIA_KM400:
@@ -54,7 +61,7 @@ Bool VIAGPIOI2C_Initial(VIABIOSInfoPtr pBIOSInfo, CARD8 SlaveDevice)
             break;
         default:
             GPIOPORT = 0;
-            DEBUG(xf86DrvMsg(pBIOSInfo->scrnIndex, X_INFO,
+            DEBUGX(xf86DrvMsg(pBIOSInfo->scrnIndex, X_INFO,
                               "GPIOI2C initial failure!\n"));
             return FALSE;
     }

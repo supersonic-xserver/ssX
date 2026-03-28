@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xxf86misc/XF86Misc.c,v 3.12 2002/11/20 04:04:57 dawes Exp $ */
+/* $XFree86: xc/lib/Xxf86misc/XF86Misc.c,v 3.13 2003/04/03 16:15:47 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1995, 1996  The XFree86 Project, Inc

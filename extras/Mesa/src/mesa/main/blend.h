@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file blend.h
  * Blending functions operations.
  */
@@ -47,6 +54,10 @@ _mesa_BlendFuncSeparateEXT( GLenum sfactorRGB, GLenum dfactorRGB,
 
 extern void GLAPIENTRY
 _mesa_BlendEquation( GLenum mode );
+
+
+extern void GLAPIENTRY
+_mesa_BlendEquationSeparateEXT( GLenum modeRGB, GLenum modeA );
 
 
 extern void GLAPIENTRY

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_cursor.c,v 1.26tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_cursor.c,v 1.26 2003/11/10 18:41:22 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000 ATI Technologies Inc., Markham, Ontario, and
  *                VA Linux Systems Inc., Fremont, California.
@@ -46,10 +53,8 @@
 
 				/* Driver data structures */
 #include "radeon.h"
-#include "radeon_version.h"
-#include "radeon_reg.h"
 #include "radeon_macros.h"
-#include "radeon_mergedfb.h"
+#include "radeon_reg.h"
 
 				/* X and server generic header files */
 #include "xf86.h"
@@ -74,40 +79,31 @@ static CARD32 mono_cursor_color[] = {
 #if X_BYTE_ORDER == X_BIG_ENDIAN
 
 #define CURSOR_SWAPPING_DECL_MMIO   unsigned char *RADEONMMIO = info->MMIO;
+#define CURSOR_SWAPPING_DECL	    CARD32  __surface_cntl;
 #define CURSOR_SWAPPING_START() \
-  do { \
-    if (info->accel) \
-	(*info->accel->Sync)(pScrn); \
     OUTREG(RADEON_SURFACE_CNTL, \
-	   (info->ModeReg.surface_cntl | \
-	     RADEON_NONSURF_AP0_SWP_32BPP | RADEON_NONSURF_AP1_SWP_32BPP) & \
-	   ~(RADEON_NONSURF_AP0_SWP_16BPP | RADEON_NONSURF_AP1_SWP_16BPP)); \
-  } while (0)
-#define CURSOR_SWAPPING_END()	(OUTREG(RADEON_SURFACE_CNTL, \
-					info->ModeReg.surface_cntl))
+	   ((__surface_cntl = INREG(RADEON_SURFACE_CNTL)) | \
+	    RADEON_NONSURF_AP0_SWP_32BPP) & \
+	   ~RADEON_NONSURF_AP0_SWP_16BPP)
+#define CURSOR_SWAPPING_END()	(OUTREG(RADEON_SURFACE_CNTL, __surface_cntl))
 
 #else
 
 #define CURSOR_SWAPPING_DECL_MMIO
-#define CURSOR_SWAPPING_START() \
-  do { \
-    if (info->accel) \
-	(*info->accel->Sync)(pScrn); \
-  } while (0)
+#define CURSOR_SWAPPING_DECL
+#define CURSOR_SWAPPING_START()
 #define CURSOR_SWAPPING_END()
 
 #endif
-
 
 /* Set cursor foreground and background colors */
 static void RADEONSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
 {
     RADEONInfoPtr  info       = RADEONPTR(pScrn);
-    CARD32        *pixels     = (CARD32 *)(pointer)(info->FB + info->cursor_offset);
+    CARD32        *pixels     = (CARD32 *)(pointer)(info->FB + info->cursor_start);
     int            pixel, i;
     CURSOR_SWAPPING_DECL_MMIO
-
-    RADEONTRACE(("RADEONSetCursorColors\n"));
+    CURSOR_SWAPPING_DECL
 
 #ifdef ARGB_CURSOR
     /* Don't recolour cursors set with SetCursorARGB. */
@@ -130,7 +126,7 @@ static void RADEONSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
      */
     for (i = 0; i < CURSOR_WIDTH * CURSOR_HEIGHT; i++, pixels++)
        if ((pixel = *pixels))
-	   *pixels = (pixel == info->cursor_fg) ? fg : bg;
+           *pixels = (pixel == info->cursor_fg) ? fg : bg;
 
     CURSOR_SWAPPING_END();
     info->cursor_fg = fg;
@@ -149,15 +145,9 @@ static void RADEONSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
     int                xorigin    = 0;
     int                yorigin    = 0;
     int                total_y    = pScrn->frameY1 - pScrn->frameY0;
+    int                X2         = pScrn->frameX0 + x;
+    int                Y2         = pScrn->frameY0 + y;
     int		       stride     = 256;
-
-    if(info->MergedFB) {
-       RADEONTRACE(("RADEONSetCursorPositionMerged\n"));
-       RADEONSetCursorPositionMerged(pScrn, x, y);
-       return;
-    }
-
-    RADEONTRACE(("RADEONSetCursorPosition\n"));
 
     if (x < 0)                        xorigin = -x+1;
     if (y < 0)                        yorigin = -y+1;
@@ -166,6 +156,57 @@ static void RADEONSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
     if (xorigin >= cursor->MaxWidth)  xorigin = cursor->MaxWidth - 1;
     if (yorigin >= cursor->MaxHeight) yorigin = cursor->MaxHeight - 1;
 
+    if (info->Clone) {
+	int X0 = 0;
+	int Y0 = 0;
+
+	if ((info->CurCloneMode->VDisplay == pScrn->currentMode->VDisplay) &&
+	    (info->CurCloneMode->HDisplay == pScrn->currentMode->HDisplay)) {
+	    Y2 = y;
+	    X2 = x;
+	    X0 = pScrn->frameX0;
+	    Y0 = pScrn->frameY0;
+	} else {
+	    if (y < 0)
+		Y2 = pScrn->frameY0;
+
+	    if (x < 0)
+		X2 = pScrn->frameX0;
+
+	    if (Y2 >= info->CurCloneMode->VDisplay + info->CloneFrameY0) {
+		Y0 = Y2 - info->CurCloneMode->VDisplay;
+		Y2 = info->CurCloneMode->VDisplay - 1;
+	    } else if (Y2 < info->CloneFrameY0) {
+		Y0 = Y2;
+		Y2 = 0;
+	    } else {
+		Y2 -= info->CloneFrameY0;
+		Y0 = info->CloneFrameY0;
+	    }
+
+	    if (X2 >= info->CurCloneMode->HDisplay + info->CloneFrameX0) {
+		X0 = X2 - info->CurCloneMode->HDisplay;
+		X2 = info->CurCloneMode->HDisplay - 1;
+	    } else if (X2 < info->CloneFrameX0) {
+		X0 = X2;
+		X2 = 0;
+	    } else {
+		X2 -= info->CloneFrameX0;
+		X0 = info->CloneFrameX0;
+	    }
+
+	    if (info->CurCloneMode->Flags & V_DBLSCAN)
+		Y2 *= 2;
+	}
+
+	if ((X0 >= 0 || Y0 >= 0) &&
+	    ((info->CloneFrameX0 != X0) || (info->CloneFrameY0 != Y0))) {
+	    RADEONDoAdjustFrame(pScrn, X0, Y0, TRUE);
+	    info->CloneFrameX0 = X0;
+	    info->CloneFrameY0 = Y0;
+	}
+    }
+
     if (!info->IsSecondary) {
 	OUTREG(RADEON_CUR_HORZ_VERT_OFF,  (RADEON_CUR_LOCK
 					   | (xorigin << 16)
@@ -173,9 +214,7 @@ static void RADEONSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
 	OUTREG(RADEON_CUR_HORZ_VERT_POSN, (RADEON_CUR_LOCK
 					   | ((xorigin ? 0 : x) << 16)
 					   | (yorigin ? 0 : y)));
-	RADEONTRACE(("cursor_offset: 0x%x, yorigin: %d, stride: %d\n",
-		     info->cursor_offset, yorigin, stride));
-	OUTREG(RADEON_CUR_OFFSET, info->cursor_offset + yorigin * stride);
+	OUTREG(RADEON_CUR_OFFSET, info->cursor_start + yorigin * stride);
     } else {
 	OUTREG(RADEON_CUR2_HORZ_VERT_OFF,  (RADEON_CUR2_LOCK
 					    | (xorigin << 16)
@@ -184,9 +223,26 @@ static void RADEONSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
 					    | ((xorigin ? 0 : x) << 16)
 					    | (yorigin ? 0 : y)));
 	OUTREG(RADEON_CUR2_OFFSET,
-	       info->cursor_offset + pScrn->fbOffset + yorigin * stride);
+	       info->cursor_start + pScrn->fbOffset + yorigin * stride);
     }
 
+    if (info->Clone) {
+	xorigin = 0;
+	yorigin = 0;
+	if (X2 < 0) xorigin = -X2 + 1;
+	if (Y2 < 0) yorigin = -Y2 + 1;
+	if (xorigin >= cursor->MaxWidth)  xorigin = cursor->MaxWidth - 1;
+	if (yorigin >= cursor->MaxHeight) yorigin = cursor->MaxHeight - 1;
+
+	OUTREG(RADEON_CUR2_HORZ_VERT_OFF,  (RADEON_CUR2_LOCK
+					    | (xorigin << 16)
+					    | yorigin));
+	OUTREG(RADEON_CUR2_HORZ_VERT_POSN, (RADEON_CUR2_LOCK
+					    | ((xorigin ? 0 : X2) << 16)
+					    | (yorigin ? 0 : Y2)));
+	OUTREG(RADEON_CUR2_OFFSET,
+	       info->cursor_start + pScrn->fbOffset + yorigin * stride);
+    }
 }
 
 /* Copy cursor image from `image' to video memory.  RADEONSetCursorPosition
@@ -197,13 +253,12 @@ static void RADEONLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *image)
     RADEONInfoPtr  info       = RADEONPTR(pScrn);
     unsigned char *RADEONMMIO = info->MMIO;
     CARD8         *s          = (CARD8 *)(pointer)image;
-    CARD32        *d          = (CARD32 *)(pointer)(info->FB + info->cursor_offset);
+    CARD32        *d          = (CARD32 *)(pointer)(info->FB + info->cursor_start);
     CARD32         save1      = 0;
     CARD32         save2      = 0;
     CARD8	   chunk;
     CARD32         i, j;
-
-    RADEONTRACE(("RADEONLoadCursorImage (at %x)\n", info->cursor_offset));
+    CURSOR_SWAPPING_DECL
 
     if (!info->IsSecondary) {
 	save1 = INREG(RADEON_CRTC_GEN_CNTL) & ~(CARD32) (3 << 20);
@@ -211,7 +266,7 @@ static void RADEONLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *image)
 	OUTREG(RADEON_CRTC_GEN_CNTL, save1 & (CARD32)~RADEON_CRTC_CUR_EN);
     }
 
-    if (info->IsSecondary || info->MergedFB) {
+    if (info->IsSecondary || info->Clone) {
 	save2 = INREG(RADEON_CRTC2_GEN_CNTL) & ~(CARD32) (3 << 20);
 	save2 |= (CARD32) (2 << 20);
 	OUTREG(RADEON_CRTC2_GEN_CNTL, save2 & (CARD32)~RADEON_CRTC2_CUR_EN);
@@ -231,8 +286,8 @@ static void RADEONLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *image)
      */
     CURSOR_SWAPPING_START();
 #define ARGB_PER_CHUNK	(8 * sizeof (chunk) / 2)
-    for (i = 0; i < (CURSOR_WIDTH * CURSOR_HEIGHT / ARGB_PER_CHUNK); i++) {
-	chunk = *s++;
+    for (i = 0; i < CURSOR_WIDTH * CURSOR_HEIGHT / ARGB_PER_CHUNK; i++) {
+        chunk = *s++;
 	for (j = 0; j < ARGB_PER_CHUNK; j++, chunk >>= 2)
 	    *d++ = mono_cursor_color[chunk & 3];
     }
@@ -244,7 +299,7 @@ static void RADEONLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *image)
     if (!info->IsSecondary)
 	OUTREG(RADEON_CRTC_GEN_CNTL, save1);
 
-    if (info->IsSecondary || info->MergedFB)
+    if (info->IsSecondary || info->Clone)
 	OUTREG(RADEON_CRTC2_GEN_CNTL, save2);
 
 }
@@ -255,9 +310,7 @@ static void RADEONHideCursor(ScrnInfoPtr pScrn)
     RADEONInfoPtr  info       = RADEONPTR(pScrn);
     unsigned char *RADEONMMIO = info->MMIO;
 
-    RADEONTRACE(("RADEONHideCursor\n"));
-
-    if (info->IsSecondary || info->MergedFB)
+    if (info->IsSecondary || info->Clone)
 	OUTREGP(RADEON_CRTC2_GEN_CNTL, 0, ~RADEON_CRTC2_CUR_EN);
 
     if (!info->IsSecondary)
@@ -270,9 +323,7 @@ static void RADEONShowCursor(ScrnInfoPtr pScrn)
     RADEONInfoPtr  info       = RADEONPTR(pScrn);
     unsigned char *RADEONMMIO = info->MMIO;
 
-    RADEONTRACE(("RADEONShowCursor\n"));
-
-    if (info->IsSecondary || info->MergedFB)
+    if (info->IsSecondary || info->Clone)
 	OUTREGP(RADEON_CRTC2_GEN_CNTL, RADEON_CRTC2_CUR_EN,
 		~RADEON_CRTC2_CUR_EN);
 
@@ -287,7 +338,7 @@ static Bool RADEONUseHWCursor(ScreenPtr pScreen, CursorPtr pCurs)
     ScrnInfoPtr    pScrn = xf86Screens[pScreen->myNum];
     RADEONInfoPtr  info  = RADEONPTR(pScrn);
 
-    return info->cursor ? TRUE : FALSE;
+    return info->cursor_start ? TRUE : FALSE;
 }
 
 #ifdef ARGB_CURSOR
@@ -295,7 +346,10 @@ static Bool RADEONUseHWCursor(ScreenPtr pScreen, CursorPtr pCurs)
 
 static Bool RADEONUseHWCursorARGB (ScreenPtr pScreen, CursorPtr pCurs)
 {
-    if (RADEONUseHWCursor(pScreen, pCurs) &&
+    ScrnInfoPtr    pScrn = xf86Screens[pScreen->myNum];
+    RADEONInfoPtr  info  = RADEONPTR(pScrn);
+
+    if (info->cursor_start &&
 	pCurs->bits->height <= CURSOR_HEIGHT && pCurs->bits->width <= CURSOR_WIDTH)
 	return TRUE;
     return FALSE;
@@ -305,14 +359,16 @@ static void RADEONLoadCursorARGB (ScrnInfoPtr pScrn, CursorPtr pCurs)
 {
     RADEONInfoPtr  info       = RADEONPTR(pScrn);
     unsigned char *RADEONMMIO = info->MMIO;
-    CARD32        *d          = (CARD32 *)(pointer)(info->FB + info->cursor_offset);
+    CARD32        *d          = (CARD32 *)(pointer)(info->FB + info->cursor_start);
     int            x, y, w, h;
     CARD32         save1      = 0;
     CARD32         save2      = 0;
     CARD32	  *image = pCurs->bits->argb;
     CARD32	  *i;
+    CURSOR_SWAPPING_DECL
 
-    RADEONTRACE(("RADEONLoadCursorARGB\n"));
+    if (!image)
+	return;	/* XXX can't happen */
 
     if (!info->IsSecondary) {
 	save1 = INREG(RADEON_CRTC_GEN_CNTL) & ~(CARD32) (3 << 20);
@@ -320,7 +376,7 @@ static void RADEONLoadCursorARGB (ScrnInfoPtr pScrn, CursorPtr pCurs)
 	OUTREG(RADEON_CRTC_GEN_CNTL, save1 & (CARD32)~RADEON_CRTC_CUR_EN);
     }
 
-    if (info->IsSecondary || info->MergedFB) {
+    if (info->IsSecondary || info->Clone) {
 	save2 = INREG(RADEON_CRTC2_GEN_CNTL) & ~(CARD32) (3 << 20);
 	save2 |= (CARD32) (2 << 20);
 	OUTREG(RADEON_CRTC2_GEN_CNTL, save2 & (CARD32)~RADEON_CRTC2_CUR_EN);
@@ -353,12 +409,12 @@ static void RADEONLoadCursorARGB (ScrnInfoPtr pScrn, CursorPtr pCurs)
 	for (x = 0; x < CURSOR_WIDTH; x++)
 	    *d++ = 0;
 
-    CURSOR_SWAPPING_END();
+    CURSOR_SWAPPING_END ();
 
     if (!info->IsSecondary)
 	OUTREG(RADEON_CRTC_GEN_CNTL, save1);
 
-    if (info->IsSecondary || info->MergedFB)
+    if (info->IsSecondary || info->Clone)
 	OUTREG(RADEON_CRTC2_GEN_CNTL, save2);
 
 }
@@ -409,24 +465,29 @@ Bool RADEONCursorInit(ScreenPtr pScreen)
     width                     = pScrn->displayWidth;
     width_bytes		      = width * (pScrn->bitsPerPixel / 8);
     height                    = (size_bytes + width_bytes - 1) / width_bytes;
-
-    fbarea = xf86AllocateOffscreenArea(pScreen, width, height,
-				       256, NULL, NULL, NULL);
+    fbarea                    = xf86AllocateOffscreenArea(pScreen,
+							  width,
+							  height,
+							  256,
+							  NULL,
+							  NULL,
+							  NULL);
 
     if (!fbarea) {
-	info->cursor_offset    = 0;
+	info->cursor_start    = 0;
 	xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 		   "Hardware cursor disabled"
 		   " due to insufficient offscreen memory\n");
     } else {
-	info->cursor_offset  = RADEON_ALIGN((fbarea->box.x1 +
-					     fbarea->box.y1 * width) *
-					    info->CurrentLayout.pixel_bytes,
-					    256);
-	info->cursor_end = info->cursor_offset + size_bytes;
+	info->cursor_start    = RADEON_ALIGN((fbarea->box.x1 +
+					      fbarea->box.y1 * width) *
+					     info->CurrentLayout.pixel_bytes,
+					     256);
+	info->cursor_end      = info->cursor_start + size_bytes;
     }
+
     RADEONTRACE(("RADEONCursorInit (0x%08x-0x%08x)\n",
-		  info->cursor_offset, info->cursor_end));
+		 info->cursor_start, info->cursor_end));
 
     return xf86InitCursor(pScreen, cursor);
 }

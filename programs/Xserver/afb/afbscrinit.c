@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbscrinit.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbscrinit.c,v 3.5 1998/11/22 10:36:59 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,10 +53,11 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbscrinit.c,v 5.17 94/04/17 20:28:34 dpw Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>		/* for xColorItem */
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xproto.h"		/* for xColorItem */
+#include "Xmd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "windowstr.h"
@@ -80,20 +88,10 @@ BSFuncRec afbBSFuncRec = {
 	(BackingStoreGetSpansPixmapProcPtr) 0,
 };
 
-static void
-StoreColorsNoop(ColormapPtr pColormap, int ndef, xColorItem * pdef)
-{
-    /* NOOP */
-}
-
-static void
-DestroyColormapNoop(ColormapPtr pColormap)
-{
-    /* NOOP */
-}
-
 Bool
-afbCloseScreen(int index, ScreenPtr pScreen)
+afbCloseScreen(index, pScreen)
+	int index;
+	ScreenPtr pScreen;
 {
 	int d;
 	DepthPtr depths = pScreen->allowedDepths;
@@ -107,7 +105,8 @@ afbCloseScreen(int index, ScreenPtr pScreen)
 }
 
 Bool
-afbCreateScreenResources(ScreenPtr pScreen)
+afbCreateScreenResources(pScreen)
+	ScreenPtr pScreen;
 {
 	Bool retval;
 
@@ -127,7 +126,9 @@ afbCreateScreenResources(ScreenPtr pScreen)
 }
 
 Bool
-afbAllocatePrivates(ScreenPtr pScreen, int *pWinIndex, int *pGCIndex)
+afbAllocatePrivates(pScreen, pWinIndex, pGCIndex)
+	ScreenPtr pScreen;
+	int *pWinIndex, *pGCIndex;
 {
 	if (afbGeneration != serverGeneration) {
 #ifdef PIXMAP_PER_WINDOW
@@ -150,17 +151,13 @@ afbAllocatePrivates(ScreenPtr pScreen, int *pWinIndex, int *pGCIndex)
 }
 
 /* dts * (inch/dot) * (25.4 mm / inch) = mm */
-
-/*
-	pointer pbits;			pointer to screen bitmap
-	int xsize, ysize;		in pixels
-	int dpix, dpiy;			dots per inch
-	int width;			pixel width of frame buffer
-*/
-
 Bool
-afbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
-	      int dpix, int dpiy, int width)
+afbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width)
+	register ScreenPtr pScreen;
+	pointer pbits;			/* pointer to screen bitmap */
+	int xsize, ysize;		/* in pixels */
+	int dpix, dpiy;			/* dots per inch */
+	int width;			/* pixel width of frame buffer */
 {
 	VisualPtr visuals;
 	DepthPtr depths;
@@ -204,11 +201,11 @@ afbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
 	pScreen->UnrealizeFont = afbUnrealizeFont;
 	pScreen->CreateGC = afbCreateGC;
 	pScreen->CreateColormap = afbInitializeColormap;
-	pScreen->DestroyColormap = DestroyColormapNoop;
+	pScreen->DestroyColormap = (void (*)())NoopDDA;
 	pScreen->InstallColormap = afbInstallColormap;
 	pScreen->UninstallColormap = afbUninstallColormap;
 	pScreen->ListInstalledColormaps = afbListInstalledColormaps;
-	pScreen->StoreColors = StoreColorsNoop;
+	pScreen->StoreColors = (void (*)())NoopDDA;
 	pScreen->ResolveColor = afbResolveColor;
 	pScreen->BitmapToRegion = afbPixmapToRegion;
 	oldDevPrivate = pScreen->devPrivate;
@@ -229,7 +226,8 @@ afbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
 }
 
 PixmapPtr
-afbGetWindowPixmap(WindowPtr pWin)
+afbGetWindowPixmap(pWin)
+    WindowPtr pWin;
 {
 #ifdef PIXMAP_PER_WINDOW
     return (PixmapPtr)(pWin->devPrivates[frameWindowPrivateIndex].ptr);
@@ -241,7 +239,9 @@ afbGetWindowPixmap(WindowPtr pWin)
 }
 
 void
-afbSetWindowPixmap(WindowPtr pWin, PixmapPtr pPix)
+afbSetWindowPixmap(pWin, pPix)
+    WindowPtr pWin;
+    PixmapPtr pPix;
 {
 #ifdef PIXMAP_PER_WINDOW
     pWin->devPrivates[frameWindowPrivateIndex].ptr = (pointer)pPix;

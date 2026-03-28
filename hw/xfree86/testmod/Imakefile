@@ -1,0 +1,26 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/testmod/Imakefile,v 1.1 2006/03/02 03:00:39 dawes Exp $
+
+#define IHaveModules
+#include <Server.tmpl>
+
+SRCS1 = testmod1.c
+OBJS1 = testmod1.o
+
+SRCS2 = test2mod1.c
+OBJS2 = test2mod1.o
+
+SRCS = $(SRCS1) $(SRCS2)
+
+   INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+              -I$(SERVERSRC)/include -I$(XINCLUDESRC)
+
+ModuleObjectRule()
+
+ObjectModuleTarget(testmod,$(OBJS1),.)
+ObjectModuleTarget(test2mod,$(OBJS2),.)
+
+InstallObjectModule(testmod,$(MODULEDIR),.)
+InstallObjectModule(test2mod,$(MODULEDIR),.)
+
+DependTarget()
+

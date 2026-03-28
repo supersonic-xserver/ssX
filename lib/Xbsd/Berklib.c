@@ -1,3 +1,11 @@
+/* $Xorg: Berklib.c,v 1.4 2001/02/09 02:03:48 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1998 The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xbsd/Berklib.c,v 3.12 2005/10/16 23:02:24 tsi Exp $ */
+/* $XFree86: xc/lib/Xbsd/Berklib.c,v 3.10 2004/04/03 22:26:21 dawes Exp $ */
 
 
 /*
@@ -51,7 +59,7 @@ from The Open Group.
 #define WANT_RANDOM
 #endif
 
-#if defined(SVR4) && !defined(__SCO__) && !defined(sgi) && !defined(sun)
+#if defined(SVR4) && !defined(__SCO__)
 #define WANT_BFUNCS
 #define WANT_FFS
 #define WANT_RANDOM
@@ -193,7 +201,7 @@ int
 ffs(mask)
 unsigned int	mask;
 {
-    register int i;
+    register i;
 
     if ( ! mask ) return 0;
     i = 1;

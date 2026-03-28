@@ -1,9 +1,27 @@
-/* $XTermId: VTPrsTbl.c,v 1.45 2006/02/12 22:45:50 tom Exp $ */
+/* $XTermId: VTPrsTbl.c,v 1.38 2004/11/25 17:47:32 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/VTPrsTbl.c,v 3.29 2005/11/13 23:10:35 dickey Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*
+ *	$Xorg: VTPrsTbl.c,v 1.3 2000/08/17 19:55:07 cpqbld Exp $
+ */
+
+/* $XFree86: xc/programs/xterm/VTPrsTbl.c,v 3.27 2004/12/01 01:27:46 dickey Exp $ */
 /*
  *
- * Copyright 1999-2005,2006 by Thomas E. Dickey
+ * Copyright 1999-2000,2004 by Thomas E. Dickey
  *
  *                         All Rights Reserved
  *

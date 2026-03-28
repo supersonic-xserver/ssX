@@ -1,0 +1,48 @@
+/Imakefile/1.1.1.4/Fri Mar 18 13:12:54 2005//Tnetbsd-5-2-3-RELEASE
+/Imakefile.EXP/1.1.1.4/Sat Jan 19 15:12:55 2002//Tnetbsd-5-2-3-RELEASE
+/XAA.HOWTO/1.1.1.4/Sat Jan 19 15:12:56 2002//Tnetbsd-5-2-3-RELEASE
+/xaa.h/1.1.1.6/Fri Mar 18 13:12:55 2005//Tnetbsd-5-2-3-RELEASE
+/xaaBitBlt.c/1.1.1.4/Fri Mar  5 14:29:27 2004//Tnetbsd-5-2-3-RELEASE
+/xaaBitOrder.c/1.1.1.4/Fri Feb 28 13:20:23 2003//Tnetbsd-5-2-3-RELEASE
+/xaaBitmap.c/1.1.1.3/Sat Jun  9 15:09:02 2001//Tnetbsd-5-2-3-RELEASE
+/xaaCpyArea.c/1.3/Wed Mar 12 18:56:40 2008//Tnetbsd-5-2-3-RELEASE
+/xaaCpyPlane.c/1.1.1.5/Fri Mar  5 14:29:27 2004//Tnetbsd-5-2-3-RELEASE
+/xaaCpyWin.c/1.1.1.5/Fri Mar  5 14:29:27 2004//Tnetbsd-5-2-3-RELEASE
+/xaaDashLine.c/1.1.1.5/Fri Feb 28 13:20:23 2003//Tnetbsd-5-2-3-RELEASE
+/xaaFallback.c/1.1.1.3/Sat Jun  9 15:09:03 2001//Tnetbsd-5-2-3-RELEASE
+/xaaFillArc.c/1.1.1.3/Sat Jun  9 15:09:03 2001//Tnetbsd-5-2-3-RELEASE
+/xaaFillPoly.c/1.1.1.5/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaFillRect.c/1.1.1.5/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaGC.c/1.1.1.3/Sat Jun  9 15:09:04 2001//Tnetbsd-5-2-3-RELEASE
+/xaaGCmisc.c/1.1.1.3/Sat Jun  9 15:09:04 2001//Tnetbsd-5-2-3-RELEASE
+/xaaImage.c/1.1.1.4/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaInit.c/1.2/Sat Sep 17 17:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/xaaInitAccel.c/1.1.1.5/Fri Feb 28 13:20:23 2003//Tnetbsd-5-2-3-RELEASE
+/xaaLine.c/1.1.1.5/Fri Feb 28 13:20:23 2003//Tnetbsd-5-2-3-RELEASE
+/xaaLineMisc.c/1.1.1.3/Sat Jun  9 15:09:05 2001//Tnetbsd-5-2-3-RELEASE
+/xaaNonTEGlyph.c/1.1.1.3/Sat Jun  9 15:09:05 2001//Tnetbsd-5-2-3-RELEASE
+/xaaNonTEText.c/1.1.1.4/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaOffscreen.c/1.1.1.4/Sat Jan 19 15:13:00 2002//Tnetbsd-5-2-3-RELEASE
+/xaaOverlay.c/1.1.1.7/Fri Mar 18 13:12:55 2005//Tnetbsd-5-2-3-RELEASE
+/xaaOverlayDF.c/1.1.1.4/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaPCache.c/1.1.1.5/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaPaintWin.c/1.1.1.5/Fri Feb 28 13:20:23 2003//Tnetbsd-5-2-3-RELEASE
+/xaaPict.c/1.1.1.6/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaROP.c/1.1.1.3/Sat Jun  9 15:09:07 2001//Tnetbsd-5-2-3-RELEASE
+/xaaRect.c/1.1.1.3/Sat Jun  9 15:09:07 2001//Tnetbsd-5-2-3-RELEASE
+/xaaSpans.c/1.1.1.4/Sat Jan 19 15:13:03 2002//Tnetbsd-5-2-3-RELEASE
+/xaaStateChange.c/1.1.1.5/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaStipple.c/1.1.1.5/Fri Mar  5 14:29:28 2004//Tnetbsd-5-2-3-RELEASE
+/xaaTEGlyph.c/1.1.1.4/Fri Mar 18 13:12:56 2005//Tnetbsd-5-2-3-RELEASE
+/xaaTEGlyphBlt.S/1.1.1.3/Sat Jun  9 15:09:09 2001//Tnetbsd-5-2-3-RELEASE
+/xaaTEText.c/1.1.1.3/Sat Jun  9 15:09:09 2001//Tnetbsd-5-2-3-RELEASE
+/xaaTables.c/1.1.1.3/Sat Jun  9 15:09:09 2001//Tnetbsd-5-2-3-RELEASE
+/xaaWideLine.c/1.1.1.5/Fri Mar  5 14:29:29 2004//Tnetbsd-5-2-3-RELEASE
+/xaacexp.h/1.1.1.3/Sat Jun  9 15:09:09 2001//Tnetbsd-5-2-3-RELEASE
+/xaalocal.h/1.1.1.6/Fri Mar  5 14:29:29 2004//Tnetbsd-5-2-3-RELEASE
+/xaarop.h/1.1.1.4/Fri Mar 18 13:12:57 2005//Tnetbsd-5-2-3-RELEASE
+/xaawrap.h/1.1.1.3/Sat Jun  9 15:09:10 2001//Tnetbsd-5-2-3-RELEASE
+D/lsb_first////
+D/lsb_fixed////
+D/msb_first////
+D/msb_fixed////

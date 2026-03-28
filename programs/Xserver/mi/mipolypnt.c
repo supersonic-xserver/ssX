@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mipolypnt.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mipolypnt.c,v 1.3 2001/12/14 20:00:25 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,17 +52,21 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+/* $Xorg: mipolypnt.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+#include "X.h"
+#include "Xprotostr.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
 #include "mi.h"
 
 void
-miPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	    xPoint *pptInit)
+miPolyPoint(pDrawable, pGC, mode, npt, pptInit)
+    DrawablePtr 	pDrawable;
+    GCPtr 		pGC;
+    int 		mode;		/* Origin or Previous */
+    int 		npt;
+    xPoint 		*pptInit;
 {
 
     int 		xorg;
@@ -64,7 +75,7 @@ miPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
     XID			fsOld, fsNew;
     int			*pwidthInit, *pwidth;
     int			i;
-    xPoint 	*ppt;
+    register xPoint 	*ppt;
 
     /* make pointlist origin relative */
     if (mode == CoordModePrevious)

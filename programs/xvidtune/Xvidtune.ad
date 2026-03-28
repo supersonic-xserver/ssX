@@ -1,4 +1,4 @@
-! $XFree86: xc/programs/xvidtune/Xvidtune.ad,v 3.10 1995/07/19 12:46:12 dawes Exp $
+! $XFree86: xc/programs/xvidtune/Xvidtune.ad,v 3.12 2003/02/19 18:55:22 eich Exp $
 !
 *adInstalled: true
 *borderWidth: 0

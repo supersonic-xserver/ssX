@@ -1,6 +1,20 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_apm.c,v 3.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_apm.c,v 3.13 2002/10/16 01:24:28 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#include <X11/X.h>
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -25,8 +39,6 @@
 # define APM_SUSPEND_FAILED 0xf001
 #endif
 
-static PMClose lnxAPMOpen(void);
-extern PMClose lnxACPIOpen(void);
 static void lnxCloseAPM(void);
 static pointer APMihPtr = NULL;
 
@@ -119,21 +131,6 @@ lnxPMConfirmEventToOs(int fd, pmEvent event)
 
 PMClose
 xf86OSPMOpen(void)
-{
-	PMClose ret = NULL;
-
-	/* Favour ACPI over APM */
-
-	ret = lnxACPIOpen();
-
-	if (!ret)
-		ret = lnxAPMOpen();
-
-	return ret;
-}
-
-static PMClose
-lnxAPMOpen(void)
 {
     int fd, pfd;    
 

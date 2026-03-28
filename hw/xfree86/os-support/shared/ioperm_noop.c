@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/shared/ioperm_noop.c,v 3.6 2006/01/09 15:00:25 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1993 by David Wexelblat <dwex@XFree86.org>
  *
@@ -26,22 +34,18 @@
  * or the permissions are implicit with opening/enabling the console.
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include <X11/X.h>
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 
-_X_EXPORT Bool
+void
 xf86EnableIO()
 {
-	return TRUE;
+	return;
 }
 
-_X_EXPORT void
+void
 xf86DisableIO()
 {
 	return;

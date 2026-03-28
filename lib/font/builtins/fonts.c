@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/font/builtins/fonts.c,v 1.4tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: fonts.c,v 1.2 1999/11/02 06:16:47 keithp Exp $
  *
  * Copyright 1999 SuSE, Inc.
  *
@@ -17,11 +24,12 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
+/* $XFree86: xc/lib/font/builtins/fonts.c,v 1.4 2000/02/23 20:29:34 dawes Exp $ */
 
 #include "builtin.h"
 
@@ -2388,57 +2396,47 @@ static const char file_5x8[] = {
 
 };
 
-static char name_6x13[] =
-    "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso8859-1";
+static char name_6x13[] = "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso8859-1";
 static char name_cursor[] = "cursor";
-static char name_5x7[] =
-    "-misc-fixed-medium-r-normal--7-70-75-75-c-50-iso8859-1";
-static char name_5x8[] =
-    "-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso646.1991-irv";
+static char name_5x7[] = "-misc-fixed-medium-r-normal--7-70-75-75-c-50-iso8859-1";
+static char name_5x8[] = "-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso646.1991-irv";
 
 const BuiltinFileRec builtin_files[] = {
-    {"6x13.builtin", sizeof file_6x13, file_6x13},
-    {"cursor.builtin", sizeof file_cursor, file_cursor},
-    {"5x7.builtin", sizeof file_5x7, file_5x7},
-    {"5x8.builtin", sizeof file_5x8, file_5x8},
+"6x13.builtin", sizeof file_6x13, file_6x13,
+"cursor.builtin", sizeof file_cursor, file_cursor,
+"5x7.builtin", sizeof file_5x7, file_5x7,
+"5x8.builtin", sizeof file_5x8, file_5x8,
 };
 
-const int builtin_files_count =
-    sizeof(builtin_files) / sizeof(builtin_files[0]);
+const int builtin_files_count = sizeof (builtin_files) / sizeof (builtin_files[0]);
 
 const BuiltinDirRec builtin_dir[] = {
-    {"6x13.builtin", name_6x13},
-    {"cursor.builtin", name_cursor},
-    {"5x7.builtin", name_5x7},
-    {"5x8.builtin", name_5x8},
+"6x13.builtin", name_6x13,
+"cursor.builtin", name_cursor,
+"5x7.builtin", name_5x7,
+"5x8.builtin", name_5x8,
 };
 
-const int builtin_dir_count =
-    sizeof(builtin_dir) / sizeof(builtin_dir[0]);
+const int builtin_dir_count = sizeof (builtin_dir) / sizeof (builtin_dir[0]);
 
 static char alias_fixed[] = "fixed";
 static char alias_6x13[] = "6x13";
-static char alias_6x13_100[] =
-    "-misc-fixed-medium-r-semicondensed--13-100-100-100-c-60-iso8859-1";
+static char alias_6x13_100[] = "-misc-fixed-medium-r-semicondensed--13-100-100-100-c-60-iso8859-1";
 static char alias_5x7[] = "5x7";
-static char alias_5x7_100[] =
-    "-misc-fixed-medium-r-normal--7-50-100-100-c-50-iso8859-1";
+static char alias_5x7_100[] = "-misc-fixed-medium-r-normal--7-50-100-100-c-50-iso8859-1";
 static char alias_5x8[] = "5x8";
-static char alias_5x8_75[] =
-    "-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso8859-1";
-static char alias_5x8_100[] =
-    "-misc-fixed-medium-r-normal--8-60-100-100-c-50-iso8859-1";
+static char alias_5x8_75[] = "-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso8859-1";
+static char alias_5x8_100[] = "-misc-fixed-medium-r-normal--8-60-100-100-c-50-iso8859-1";
 
 const BuiltinAliasRec builtin_alias[] = {
-    {alias_fixed, name_6x13},
-    {alias_6x13, name_6x13},
-    {alias_6x13_100, name_6x13},
-    {alias_5x7, name_5x7},
-    {alias_5x7_100, name_5x7},
-    {alias_5x8, name_5x8},
-    {alias_5x8_75, name_5x8},
-    {alias_5x8_100, name_5x8},
+alias_fixed, name_6x13,
+alias_6x13, name_6x13,
+alias_6x13_100, name_6x13,
+alias_5x7, name_5x7,
+alias_5x7_100, name_5x7,
+alias_5x8, name_5x8,
+alias_5x8_75, name_5x8,
+alias_5x8_100, name_5x8,
 };
 
-const int builtin_alias_count =
-    sizeof(builtin_alias) / sizeof(builtin_alias[0]);
+const int builtin_alias_count = sizeof (builtin_alias) / sizeof (builtin_alias[0]);

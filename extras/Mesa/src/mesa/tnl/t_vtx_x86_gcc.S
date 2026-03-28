@@ -1,4 +1,4 @@
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/tnl/t_vtx_x86_gcc.S,v 1.2 2005/02/07 01:38:23 tsi Exp $ */
 /**************************************************************************
 
 Copyright 2004 Tungsten Graphics Inc., Cedar Park, Texas.

@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86int10.h,v 1.25tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86int10.h,v 1.24 2002/07/23 14:22:46 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *                   XFree86 int10 module
@@ -9,8 +23,8 @@
 #ifndef _XF86INT10_H
 #define _XF86INT10_H
 
-#include <X11/Xmd.h>
-#include <X11/Xdefs.h>
+#include "Xmd.h"
+#include "Xdefs.h"
 #include "xf86Pci.h"
 
 #define SEG_ADDR(x) (((x) >> 4) & 0x00F000)
@@ -43,7 +57,6 @@ typedef struct {
     int stackseg;
     PCITAG Tag;
     IOADDRESS ioBase;
-    IOADDRESS vmwarePort;	/* kludge */
 } xf86Int10InfoRec, *xf86Int10InfoPtr;
 
 typedef struct _int10Mem {

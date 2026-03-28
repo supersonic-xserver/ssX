@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/getfocus.c,v 3.4 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,18 +60,14 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "windowstr.h"	/* focus struct      */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "windowstr.h"			/* focus struct      */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
 
 #include "getfocus.h"
@@ -75,14 +79,15 @@ SOFTWARE.
  */
 
 int
-SProcXGetDeviceFocus(ClientPtr client)
-{
-    char n;
+SProcXGetDeviceFocus(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xGetDeviceFocusReq);
     swaps(&stuff->length, n);
-    return (ProcXGetDeviceFocus(client));
-}
+    return(ProcXGetDeviceFocus(client));
+    }
 
 /***********************************************************************
  *
@@ -91,20 +96,22 @@ SProcXGetDeviceFocus(ClientPtr client)
  */
 
 int
-ProcXGetDeviceFocus(ClientPtr client)
-{
-    DeviceIntPtr dev;
-    FocusClassPtr focus;
+ProcXGetDeviceFocus(client)
+    ClientPtr client;
+    {
+    DeviceIntPtr	dev;
+    FocusClassPtr 	focus;
     xGetDeviceFocusReply rep;
 
     REQUEST(xGetDeviceFocusReq);
     REQUEST_SIZE_MATCH(xGetDeviceFocusReq);
 
-    dev = LookupDeviceIntRec(stuff->deviceid);
-    if (dev == NULL || !dev->focus) {
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL || !dev->focus)
+	{
 	SendErrorToClient(client, IReqCode, X_GetDeviceFocus, 0, BadDevice);
 	return Success;
-    }
+	}
 
     rep.repType = X_Reply;
     rep.RepType = X_GetDeviceFocus;
@@ -119,14 +126,14 @@ ProcXGetDeviceFocus(ClientPtr client)
 	rep.focus = PointerRoot;
     else if (focus->win == FollowKeyboardWin)
 	rep.focus = FollowKeyboard;
-    else
+    else 
 	rep.focus = focus->win->drawable.id;
 
     rep.time = focus->time.milliseconds;
     rep.revertTo = focus->revert;
-    WriteReplyToClient(client, sizeof(xGetDeviceFocusReply), &rep);
+    WriteReplyToClient (client, sizeof(xGetDeviceFocusReply), &rep);
     return Success;
-}
+    }
 
 /***********************************************************************
  *
@@ -136,13 +143,16 @@ ProcXGetDeviceFocus(ClientPtr client)
  */
 
 void
-SRepXGetDeviceFocus(ClientPtr client, int size, xGetDeviceFocusReply * rep)
-{
-    char n;
+SRepXGetDeviceFocus (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xGetDeviceFocusReply	*rep;
+    {
+    register char n;
 
     swaps(&rep->sequenceNumber, n);
     swapl(&rep->length, n);
     swapl(&rep->focus, n);
     swapl(&rep->time, n);
     WriteToClient(client, size, (char *)rep);
-}
+    }

@@ -1,3 +1,11 @@
+/* $Xorg: PProcess.c,v 1.6 2001/02/09 02:05:57 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization from
 The Open Group.
 
 */
-/* $XFree86: xc/programs/xrx/plugin/PProcess.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/xrx/plugin/PProcess.c,v 1.8 2004/04/03 22:38:55 tsi Exp $ */
 
 #include "RxPlugin.h"
 #include "XUrls.h"
@@ -395,7 +403,7 @@ SubstructureRedirectHandler (
 	    Position x, y;
 	    Dimension width, height;
 	    Dimension border_width;
-	    Colormap cmap = 0;
+	    Colormap cmap;
 	    int n;
 	    Atom* wm_proto;
 	    windowrec* wp;

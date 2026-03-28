@@ -1,3 +1,11 @@
+/* $Xorg: site.h,v 1.6 2001/02/09 02:05:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -48,6 +56,37 @@ SOFTWARE.
 
 #ifndef SITE_H
 #define SITE_H
+/*
+ * The vendor string identifies the vendor responsible for the
+ * server executable.
+ */
+#ifndef VENDOR_STRING
+#define VENDOR_STRING "The X.Org Group"
+#endif
+
+/*
+ * The vendor release number identifies, for the purpose of submitting
+ * traceable bug reports, the release number of software produced
+ * by the vendor.
+ */
+#ifndef VENDOR_RELEASE
+#define VENDOR_RELEASE	6600
+#endif
+
+/*
+ * The following constants are provided solely as a last line of defense.  The
+ * normal build ALWAYS overrides them using a special rule given in
+ * server/dix/Imakefile.  If you want to change either of these constants, 
+ * you should set the DefaultFontPath or DefaultRGBDatabase configuration 
+ * parameters.
+ * DO NOT CHANGE THESE VALUES OR THE DIX IMAKEFILE!
+ */
+#ifndef COMPILEDDEFAULTFONTPATH
+#define COMPILEDDEFAULTFONTPATH	"/usr/lib/X11/fonts/misc/"
+#endif
+#ifndef RGB_DB
+#define RGB_DB			"/usr/lib/X11/rgb"
+#endif
 
 /*
  * The following constants contain default values for all of the variables 

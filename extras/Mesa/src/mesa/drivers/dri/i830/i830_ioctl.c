@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /**************************************************************************
 
@@ -26,7 +33,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
 
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_ioctl.c,v 1.5 2002/12/10 01:26:53 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_ioctl.c,v 1.1.1.3 2004/12/10 15:05:46 alanh Exp $ */
 
 /*
  * Author:
@@ -480,7 +487,7 @@ static void i830Clear(GLcontext *ctx, GLbitfield mask, GLboolean all,
       for (i = 0 ; i < imesa->numClipRects ; ) 
       { 	 
 	 int nr = MIN2(i + I830_NR_SAREA_CLIPRECTS, imesa->numClipRects);
-	 XF86DRIClipRectRec *box = imesa->pClipRects;	 
+	 drm_clip_rect_t *box = imesa->pClipRects;	 
 	 drm_clip_rect_t *b = (drm_clip_rect_t *)imesa->sarea->boxes;
 	 int n = 0;
 
@@ -533,7 +540,7 @@ static void i830Clear(GLcontext *ctx, GLbitfield mask, GLboolean all,
 void i830CopyBuffer( const __DRIdrawablePrivate *dPriv ) 
 {
    i830ContextPtr imesa;
-   XF86DRIClipRectPtr pbox;
+   drm_clip_rect_t *pbox;
    int nbox, i, tmp;
 
    assert(dPriv);
@@ -554,7 +561,7 @@ void i830CopyBuffer( const __DRIdrawablePrivate *dPriv )
    for (i = 0 ; i < nbox ; )
    {
       int nr = MIN2(i + I830_NR_SAREA_CLIPRECTS, dPriv->numClipRects);
-      XF86DRIClipRectRec *b = (XF86DRIClipRectRec *)imesa->sarea->boxes;
+      drm_clip_rect_t *b = (drm_clip_rect_t *)imesa->sarea->boxes;
 
       imesa->sarea->nbox = nr - i;
 
@@ -600,7 +607,7 @@ void i830PageFlip( const __DRIdrawablePrivate *dPriv )
    imesa->perf_boxes = 0;
 
    if (dPriv->pClipRects) {
-      *(XF86DRIClipRectRec *)imesa->sarea->boxes = dPriv->pClipRects[0];
+      *(drm_clip_rect_t *)imesa->sarea->boxes = dPriv->pClipRects[0];
       imesa->sarea->nbox = 1;
    }
 
@@ -702,7 +709,7 @@ static void age_imesa( i830ContextPtr imesa, int age )
 
 void i830FlushPrimsLocked( i830ContextPtr imesa )
 {
-   XF86DRIClipRectPtr pbox = (XF86DRIClipRectPtr)imesa->pClipRects;
+   drm_clip_rect_t *pbox = imesa->pClipRects;
    int nbox = imesa->numClipRects;
    drmBufPtr buffer = imesa->vertex_buffer;
    I830SAREAPtr sarea = imesa->sarea;
@@ -750,7 +757,7 @@ void i830FlushPrimsLocked( i830ContextPtr imesa )
    }
 
    for (i = 0 ; i < nbox ; i = nr ) {
-      XF86DRIClipRectPtr b = sarea->boxes;
+      drm_clip_rect_t *b = sarea->boxes;
       int j;
 
       nr = MIN2(i + I830_NR_SAREA_CLIPRECTS, nbox);
@@ -820,22 +827,22 @@ int i830_check_copy(int fd)
    return drmCommandNone(fd, DRM_I830_DOCOPY);
 }
 
-static void i830DDFlush( GLcontext *ctx )
+static void i830Flush( GLcontext *ctx )
 {
    i830ContextPtr imesa = I830_CONTEXT( ctx );
    I830_FIREVERTICES( imesa );
 }
 
-static void i830DDFinish( GLcontext *ctx  ) 
+static void i830Finish( GLcontext *ctx  ) 
 {
    i830ContextPtr imesa = I830_CONTEXT( ctx );
    i830DmaFinish( imesa );
 }
 
-void i830DDInitIoctlFuncs( GLcontext *ctx )
+void i830InitIoctlFuncs( struct dd_function_table *functions )
 {
-   ctx->Driver.Flush = i830DDFlush;
-   ctx->Driver.Clear = i830Clear;
-   ctx->Driver.Finish = i830DDFinish;
+   functions->Flush = i830Flush;
+   functions->Clear = i830Clear;
+   functions->Finish = i830Finish;
 }
 

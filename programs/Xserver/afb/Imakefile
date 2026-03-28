@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/afb/Imakefile,v 3.9tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/afb/Imakefile,v 3.9 2004/06/01 00:16:59 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -73,7 +73,8 @@ OBJS =   afbgc.o afbwindow.o afbfont.o afbpixmap.o afbfillsp.o afbsetsp.o \
 	 afbpushpxl.o afbplygblt.o afbtegblt.o afbpntwin.o afbpntarea.o \
 	 afbbres.o afbhrzvert.o afbline.o afbseg.o $(MODOBJ)
 
-INCLUDES = -I../cfb -I../mfb -I../mi -I../include $(EXTRAINCLUDES)
+INCLUDES = -I. -I../cfb -I../mfb -I../mi -I../include -I$(XINCLUDESRC) \
+	   -I$(FONTINCSRC) $(EXTRAINCLUDES)
 LINTDEFS = -DMFBPOLYGLYPHBLT=afbPolyGlyphBltWhite \
 	   -DMFBIMAGEGLYPHBLT=afbImageGlyphBltWhite \
 	   -DEQWHOLEWORD=MFB_EQWHOLEWORD_WHITE -DOPEQ=MFB_OPEQ_WHITE

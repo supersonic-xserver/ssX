@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $XFree86: xc/extras/freetype2/builds/unix/freetype-config.in,v 1.5 2003/10/31 20:49:04 herrb Exp $
+# $XFree86: xc/extras/freetype2/builds/unix/freetype-config.in,v 1.6 2004/04/26 16:15:53 dawes Exp $
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -118,7 +118,7 @@ fi
 if test "$echo_libs" = "yes" ; then
   rpath=
   if test "$enable_shared" = "yes" ; then
-    eval "rpath=\"$hardcode_libdir_flag_spec\""
+    eval "rpath=\"$hardcode_libdir_flag_spec\" -Wl,-R$libdir -L$libdir"
   fi
   libs="-lfreetype @LIBZ@"
   if test "$libdir" != "/usr/lib" ; then

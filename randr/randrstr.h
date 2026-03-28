@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2000 Compaq Computer Corporation
  * Copyright © 2002 Hewlett-Packard Company
  * Copyright © 2006 Intel Corporation
@@ -33,6 +40,7 @@
 #ifndef _RANDRSTR_H_
 #define _RANDRSTR_H_
 
+#include <stdint.h>
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "misc.h"
@@ -44,11 +52,12 @@
 #include "pixmapstr.h"
 #include "extnsionst.h"
 #include "servermd.h"
-#include "rrtransform.h"
+#include "privates.h"
 #include <X11/extensions/randr.h>
 #include <X11/extensions/randrproto.h>
 #include <X11/extensions/render.h>      /* we share subpixel order information */
 #include "picturestr.h"
+#include "rrtransform.h"
 #include <X11/Xfuncproto.h>
 
 /* required for ABI compatibility for now */
@@ -84,7 +93,7 @@ typedef struct _rrPropertyValue RRPropertyValueRec, *RRPropertyValuePtr;
 typedef struct _rrProperty RRPropertyRec, *RRPropertyPtr;
 typedef struct _rrCrtc RRCrtcRec, *RRCrtcPtr;
 typedef struct _rrOutput RROutputRec, *RROutputPtr;
-typedef struct _rrProvider RRProviderRec, *RRProviderPtr;
+typedef struct _RRProvider RRProviderRec, *RRProviderPtr;
 typedef struct _rrMonitor RRMonitorRec, *RRMonitorPtr;
 typedef struct _rrLease RRLeaseRec, *RRLeasePtr;
 
@@ -132,8 +141,6 @@ struct _rrCrtc {
     RRTransformRec client_pending_transform;
     RRTransformRec client_current_transform;
     PictTransform transform;
-    struct pict_f_transform f_transform;
-    struct pict_f_transform f_inverse;
 
     PixmapPtr scanout_pixmap;
     PixmapPtr scanout_pixmap_back;
@@ -165,7 +172,7 @@ struct _rrOutput {
     void *devPrivate;
 };
 
-struct _rrProvider {
+struct _RRProvider {
     RRProvider id;
     ScreenPtr pScreen;
     uint32_t capabilities;
@@ -174,8 +181,8 @@ struct _rrProvider {
     RRPropertyPtr properties;
     Bool pendingProperties;
     Bool changed;
-    struct _rrProvider *offload_sink;
-    struct _rrProvider *output_source;
+    struct _RRProvider *offload_sink;
+    struct _RRProvider *output_source;
 };
 
 typedef struct _rrMonitorGeometry {
@@ -261,7 +268,7 @@ typedef Bool (*RRProviderSetPropertyProcPtr) (ScreenPtr pScreen,
                                               RRPropertyValuePtr value);
 
 typedef Bool (*RRGetInfoProcPtr) (ScreenPtr pScreen, Rotation * rotations);
-typedef Bool (*RRCloseScreenProcPtr) (ScreenPtr pscreen);
+typedef int (*RRCloseScreenProcPtr)(int, ScreenPtr);
 
 typedef Bool (*RRProviderSetOutputSourceProcPtr)(ScreenPtr pScreen,
                                           RRProviderPtr provider,
@@ -418,9 +425,9 @@ extern _X_EXPORT DevPrivateKeyRec rrPrivKeyRec;
 
 #define rrPrivKey (&rrPrivKeyRec)
 
-#define rrGetScrPriv(pScr)  ((rrScrPrivPtr)dixLookupPrivate(&(pScr)->devPrivates, rrPrivKey))
+#define rrGetScrPriv(pScr)  ((rrScrPrivPtr)dixLookupPrivate((PrivateRec **)&(pScr)->devPrivates, rrPrivKey))
 #define rrScrPriv(pScr)	rrScrPrivPtr    pScrPriv = rrGetScrPriv(pScr)
-#define SetRRScreen(s,p) dixSetPrivate(&(s)->devPrivates, rrPrivKey, p)
+#define SetRRScreen(s,p) dixSetPrivate((PrivateRec **)&(s)->devPrivates, rrPrivKey, p)
 
 /*
  * each window has a list of clients requesting
@@ -507,7 +514,29 @@ extern _X_EXPORT RESTYPE RRCrtcType, RRModeType, RROutputType, RRProviderType, R
         }\
     }
 
-#define GetRRClient(pClient)    ((RRClientPtr)dixLookupPrivate(&(pClient)->devPrivates, RRClientPrivateKey))
+#define GetRRClient(pClient)    ((RRClientPtr)dixLookupPrivate((PrivateRec **)&(pClient)->devPrivates, RRClientPrivateKey))
+
+/* Simple lookup macros that return the pointer or NULL */
+#define LookupCrtc(client, id, access) \
+    ({ \
+        RRCrtcPtr _ptr = NULL; \
+        dixLookupResourceByType((void **)&_ptr, id, RRCrtcType, client, access); \
+        _ptr; \
+    })
+
+#define LookupOutput(client, id, access) \
+    ({ \
+        RROutputPtr _ptr = NULL; \
+        dixLookupResourceByType((void **)&_ptr, id, RROutputType, client, access); \
+        _ptr; \
+    })
+
+#define LookupMode(client, id, access) \
+    ({ \
+        RRModePtr _ptr = NULL; \
+        dixLookupResourceByType((void **)&_ptr, id, RRModeType, client, access); \
+        _ptr; \
+    })
 #define rrClientPriv(pClient)	RRClientPtr pRRClient = GetRRClient(pClient)
 
 #ifdef RANDR_12_INTERFACE
@@ -758,8 +787,6 @@ extern _X_EXPORT int
 
 RRCrtcTransformSet(RRCrtcPtr crtc,
                    PictTransformPtr transform,
-                   struct pict_f_transform *f_transform,
-                   struct pict_f_transform *f_inverse,
                    char *filter, int filter_len, xFixed * params, int nparams);
 
 /*
@@ -995,13 +1022,13 @@ extern _X_EXPORT int
 
 RRChangeOutputProperty(RROutputPtr output, Atom property, Atom type,
                        int format, int mode, unsigned long len,
-                       const void *value, Bool sendevent, Bool pending);
+                       void *value, Bool sendevent, Bool pending);
 
 extern _X_EXPORT int
 
 RRConfigureOutputProperty(RROutputPtr output, Atom property,
                           Bool pending, Bool range, Bool immutable,
-                          int num_values, const INT32 *values);
+                          int num_values, INT32 *values);
 extern _X_EXPORT int
  ProcRRChangeOutputProperty(ClientPtr client);
 

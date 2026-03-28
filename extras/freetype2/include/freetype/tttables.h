@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  tttables.h                                                             */
 /*                                                                         */
 /*    Basic SFNT/TrueType tables definitions and interface                 */
 /*    (specification only).                                                */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -20,14 +27,36 @@
 #ifndef __TTTABLES_H__
 #define __TTTABLES_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
-#endif
 
-#include FT_BUILD_H
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
+#endif
+
+
 FT_BEGIN_HEADER
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Section>                                                             */
+  /*    truetype_tables                                                    */
+  /*                                                                       */
+  /* <Title>                                                               */
+  /*    TrueType Tables                                                    */
+  /*                                                                       */
+  /* <Abstract>                                                            */
+  /*    TrueType-specific table types and functions.                       */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    This section contains the definition of TrueType-specific tables   */
+  /*    as well as some routines used to access and process them.          */
+  /*                                                                       */
+  /*************************************************************************/
+
 
   /*************************************************************************/
   /*                                                                       */
@@ -177,7 +206,7 @@ FT_BEGIN_HEADER
     FT_UShort  number_Of_HMetrics;
 
     /* The following fields are not defined by the TrueType specification */
-    /* but they're used to connect the metrics header to the relevant     */
+    /* but they are used to connect the metrics header to the relevant    */
     /* `HMTX' table.                                                      */
 
     void*      long_metrics;
@@ -255,7 +284,11 @@ FT_BEGIN_HEADER
   /*    caret_Slope_Run         :: The run coefficient of the cursor's     */
   /*                               slope.                                  */
   /*                                                                       */
-  /*    Reserved                :: 10 reserved bytes.                      */
+  /*    caret_Offset            :: The cursor's offset for slanted fonts.  */
+  /*                               This value is `reserved' in vmtx        */
+  /*                               version 1.0.                            */
+  /*                                                                       */
+  /*    Reserved                :: 8 reserved bytes.                       */
   /*                                                                       */
   /*    metric_Data_Format      :: Always 0.                               */
   /*                                                                       */
@@ -277,7 +310,7 @@ FT_BEGIN_HEADER
   /*               module is able to read both the horizontal and vertical */
   /*               headers.                                                */
   /*                                                                       */
-  typedef struct TT_VertHeader_
+  typedef struct  TT_VertHeader_
   {
     FT_Fixed   Version;
     FT_Short   Ascender;
@@ -412,7 +445,7 @@ FT_BEGIN_HEADER
   /*    A structure used to model a TrueType PCLT table.  All fields       */
   /*    comply to the TrueType table.                                      */
   /*                                                                       */
-  typedef struct TT_PCLT_
+  typedef struct  TT_PCLT_
   {
     FT_Fixed   Version;
     FT_ULong   FontNumber;
@@ -521,6 +554,15 @@ FT_BEGIN_HEADER
   } TT_MaxProfile;
 
 
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Enum>                                                                */
+  /*    FT_Sfnt_Tag                                                        */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    An enumeration used to specify the index of an SFNT table.         */
+  /*    Used in the @FT_Get_Sfnt_Table API function.                       */
+  /*                                                                       */
   typedef enum
   {
     ft_sfnt_head = 0,
@@ -531,14 +573,11 @@ FT_BEGIN_HEADER
     ft_sfnt_post = 5,
     ft_sfnt_pclt = 6,
 
-    sfnt_max   /* don't remove */
+    sfnt_max   /* internal end mark */
 
   } FT_Sfnt_Tag;
 
-
-  /* internal use only */
-  typedef void*  (*FT_Get_Sfnt_Table_Func)( FT_Face      face,
-                                            FT_Sfnt_Tag  tag );
+  /* */
 
 
   /*************************************************************************/
@@ -563,11 +602,96 @@ FT_BEGIN_HEADER
   /*    The table is owned by the face object and disappears with it.      */
   /*                                                                       */
   /*    This function is only useful to access SFNT tables that are loaded */
-  /*    by the sfnt/truetype/opentype drivers.  See FT_Sfnt_Tag for a      */
+  /*    by the sfnt/truetype/opentype drivers.  See @FT_Sfnt_Tag for a     */
   /*    list.                                                              */
   /*                                                                       */
-  FT_EXPORT( void* )  FT_Get_Sfnt_Table( FT_Face      face,
-                                         FT_Sfnt_Tag  tag );
+  FT_EXPORT( void* )
+  FT_Get_Sfnt_Table( FT_Face      face,
+                     FT_Sfnt_Tag  tag );
+
+
+ /**************************************************************************
+  *
+  * <Function>
+  *    FT_Load_Sfnt_Table
+  *
+  * <Description>
+  *   Loads any font table into client memory.
+  *
+  * <Input>
+  *   face   :: A handle to the source face.
+  *
+  *   tag    :: The 4-byte tag of the table to load.  Use the value 0 if
+  *             you want to access the whole font file.  Otherwise, you can
+  *             use one of the definitions found in the @FT_TRUETYPE_TAGS_H
+  *             file, or forge a new one with @FT_MAKE_TAG.
+  *              
+  *   offset :: The starting offset in the table (or file if tag == 0).
+  *
+  * <Output>
+  *   buffer :: The target buffer address.  The client must ensure that
+  *             the memory array is big enough to hold the data.
+  *
+  * <InOut>
+  *   length :: If the `length' parameter is NULL, then try to load the whole
+  *             table.  Return an error code if it fails.
+  *
+  *             Else, if `*length' is 0, exit immediately while returning
+  *             the table's (or file) full size in it.
+  *
+  *             Else the number of bytes to read from the table or file,
+  *             from the starting offset.
+  *
+  * <Return>
+  *   FreeType error code.  0 means success.
+  *
+  * <Note>
+  *   If you need to determine the table's length you should first call this
+  *   function with `*length' set to 0, as in the following example:
+  *
+  *   {
+  *     FT_ULong  length = 0;
+  *
+  *
+  *     error = FT_Load_Sfnt_Table( face, tag, 0, NULL, &length );
+  *     if ( error ) { ... table does not exist ... }
+  *
+  *     buffer = malloc( length );
+  *     if ( buffer == NULL ) { ... not enough memory ... }
+  *
+  *     error = FT_Load_Sfnt_Table( face,tag, 0, buffer, &length );
+  *     if ( error ) { ... could not load table ... }
+  *   }
+  */
+  FT_EXPORT( FT_Error )
+  FT_Load_Sfnt_Table( FT_Face    face,
+                      FT_ULong   tag,
+                      FT_Long    offset,
+                      FT_Byte*   buffer,
+                      FT_ULong*  length );
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Function>                                                            */
+  /*    FT_Get_CMap_Language_ID                                            */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    Return TrueType/sfnt specific cmap language ID.  Definitions of    */
+  /*    language ID values are in freetype/ttnameid.h.                     */
+  /*                                                                       */
+  /* <Input>                                                               */
+  /*    charmap ::                                                         */
+  /*      The target charmap.                                              */
+  /*                                                                       */
+  /* <Return>                                                              */
+  /*    The language ID of `charmap'.  If `charmap' doesn't belong to a    */
+  /*    TrueType/sfnt face, just return 0 as the default value.            */
+  /*                                                                       */
+  FT_EXPORT( FT_ULong )
+  FT_Get_CMap_Language_ID( FT_CharMap  charmap );
+
+  /* */
 
 
 FT_END_HEADER

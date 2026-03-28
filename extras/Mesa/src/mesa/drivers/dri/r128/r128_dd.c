@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r128/r128_dd.c,v 1.15 2002/10/30 12:51:38 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_dd.c,v 1.1.1.3 2004/12/10 15:05:53 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1999, 2000 ATI Technologies Inc. and Precision Insight, Inc.,
@@ -36,19 +43,19 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r128_context.h"
 #include "r128_ioctl.h"
 #include "r128_state.h"
-#include "r128_vb.h"
 #include "r128_dd.h"
+#include "swrast/swrast.h"
 
 #include "context.h"
 
 #include "utils.h"
 
-#define DRIVER_DATE	"20030328"
+#define DRIVER_DATE	"20041001"
 
 
 /* Return the width and height of the current color buffer.
  */
-static void r128DDGetBufferSize( GLframebuffer *buffer,
+static void r128GetBufferSize( GLframebuffer *buffer,
 				 GLuint *width, GLuint *height )
 {
    GET_CURRENT_CONTEXT(ctx);
@@ -62,7 +69,7 @@ static void r128DDGetBufferSize( GLframebuffer *buffer,
 
 /* Return various strings for glGetString().
  */
-static const GLubyte *r128DDGetString( GLcontext *ctx, GLenum name )
+static const GLubyte *r128GetString( GLcontext *ctx, GLenum name )
 {
    r128ContextPtr rmesa = R128_CONTEXT(ctx);
    static char buffer[128];
@@ -100,7 +107,7 @@ static const GLubyte *r128DDGetString( GLcontext *ctx, GLenum name )
  * hardware.  All commands that are normally sent to the ring are
  * already considered `flushed'.
  */
-static void r128DDFlush( GLcontext *ctx )
+static void r128Flush( GLcontext *ctx )
 {
    r128ContextPtr rmesa = R128_CONTEXT(ctx);
 
@@ -121,7 +128,7 @@ static void r128DDFlush( GLcontext *ctx )
 /* Make sure all commands have been sent to the hardware and have
  * completed processing.
  */
-static void r128DDFinish( GLcontext *ctx )
+static void r128Finish( GLcontext *ctx )
 {
    r128ContextPtr rmesa = R128_CONTEXT(ctx);
 
@@ -130,19 +137,18 @@ static void r128DDFinish( GLcontext *ctx )
    rmesa->c_drawWaits++;
 #endif
 
-   r128DDFlush( ctx );
+   r128Flush( ctx );
    r128WaitForIdle( rmesa );
 }
 
 
 /* Initialize the driver's misc functions.
  */
-void r128DDInitDriverFuncs( GLcontext *ctx )
+void r128InitDriverFuncs( struct dd_function_table *functions )
 {
-   ctx->Driver.GetBufferSize	= r128DDGetBufferSize;
-   ctx->Driver.ResizeBuffers    = _swrast_alloc_buffers;
-   ctx->Driver.GetString	= r128DDGetString;
-   ctx->Driver.Finish		= r128DDFinish;
-   ctx->Driver.Flush		= r128DDFlush;
-   ctx->Driver.Error		= NULL;
+   functions->GetBufferSize	= r128GetBufferSize;
+   functions->ResizeBuffers	= _swrast_alloc_buffers;
+   functions->GetString		= r128GetString;
+   functions->Finish		= r128Finish;
+   functions->Flush		= r128Flush;
 }

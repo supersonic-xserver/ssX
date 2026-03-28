@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: strings.xaw,v 1.3 2000/08/17 19:42:29 cpqbld Exp $
 \" These macros are not associated with any widget.
 
 .de Rs \" Resource Conversion message

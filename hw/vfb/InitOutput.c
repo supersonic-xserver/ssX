@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993, 1998  The Open Group
 
@@ -25,19 +39,72 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/*
+ * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/*
+ * The screen origin code is:
+ *
+ * Copyright (c) 2004 by The XFree86 Project, Inc
+ * Rights as per the XFree86 1.1 licence
+ * (http://www.xfree86.org/legal/licenses.html).
+ *
+ */
+
+/* $XFree86: xc/programs/Xserver/hw/vfb/InitOutput.c,v 3.37 2007/04/03 00:21:12 tsi Exp $ */
 
 #if defined(WIN32)
 #include <X11/Xwinsock.h>
 #endif
 #include <stdio.h>
-#include <X11/X.h>
+#include "X11/X.h"
 #define NEED_EVENTS
-#include <X11/Xproto.h>
-#include <X11/Xos.h>
+#include "X11/Xproto.h"
+#include "X11/Xos.h"
 #include "scrnintstr.h"
 #include "servermd.h"
 #define PSZ 8
@@ -47,7 +114,6 @@ from The Open Group.
 #include "gcstruct.h"
 #include "input.h"
 #include "mipointer.h"
-#include "micmap.h"
 #include <sys/types.h>
 #ifdef HAS_MMAP
 #include <sys/mman.h>
@@ -67,14 +133,16 @@ from The Open Group.
 #endif /* HAS_SHM */
 #include "dix.h"
 #include "miline.h"
+#include "mfb.h"
+#include "micmap.h"
 
-#define VFB_DEFAULT_WIDTH      1280
-#define VFB_DEFAULT_HEIGHT     1024
-#define VFB_DEFAULT_DEPTH         8
-#define VFB_DEFAULT_WHITEPIXEL    1
-#define VFB_DEFAULT_BLACKPIXEL    0
-#define VFB_DEFAULT_LINEBIAS      0
-#define XWD_WINDOW_NAME_LEN      60
+#define VFB_DEFAULT_WIDTH  1280
+#define VFB_DEFAULT_HEIGHT 1024
+#define VFB_DEFAULT_DEPTH  8
+#define VFB_DEFAULT_WHITEPIXEL 0
+#define VFB_DEFAULT_BLACKPIXEL 1
+#define VFB_DEFAULT_LINEBIAS 0
+#define XWD_WINDOW_NAME_LEN 60
 
 typedef struct
 {
@@ -82,7 +150,9 @@ typedef struct
     int width;
     int paddedBytesWidth;
     int paddedWidth;
+    int xOrigin;
     int height;
+    int yOrigin;
     int depth;
     int bitsPerPixel;
     int sizeInBytes;
@@ -109,7 +179,7 @@ static int vfbNumScreens;
 static vfbScreenInfo vfbScreens[MAXSCREENS];
 static Bool vfbPixmapDepths[33];
 #ifdef HAS_MMAP
-static char *pfbdir = NULL;
+static const char *pfbdir = NULL;
 #endif
 typedef enum { NORMAL_MEMORY_FB, SHARED_MEMORY_FB, MMAPPED_FILE_FB } fbMemType;
 static fbMemType fbmemtype = NORMAL_MEMORY_FB;
@@ -222,15 +292,15 @@ AbortDDX()
 
 #ifdef __DARWIN__
 void
-DarwinHandleGUI(int argc, char *argv[])
+DarwinHandleGUI(int argc, const char *argv[], char *envp[])
 {
 }
 
-void GlxExtensionInit();
+void GlxExtensionInit(INITARGS);
 void GlxWrapInitVisuals(void *procPtr);
 
 void
-DarwinGlxExtensionInit()
+DarwinGlxExtensionInit(INITARGS)
 {
     GlxExtensionInit();
 }
@@ -244,6 +314,11 @@ DarwinGlxWrapInitVisuals(
 #endif
 
 void
+OsVendorPreInit()
+{
+}
+
+void
 OsVendorInit()
 {
 }
@@ -253,22 +328,13 @@ OsVendorFatalError()
 {
 }
 
-#if defined(DDXBEFORERESET)
-void ddxBeforeReset(void)
-{
-    return;
-}
-#endif
-
 void
 ddxUseMsg()
 {
-    ErrorF("-screen scrn WxHxD     set screen's width, height, depth\n");
+    ErrorF("-screen n WxHxD[@x,y]  set screen's width, height, depth, origin\n");
     ErrorF("-pixdepths list-of-int support given pixmap depths\n");
-#ifdef RENDER
     ErrorF("+/-render		   turn on/of RENDER extension support"
 	   "(default on)\n");
-#endif
     ErrorF("-linebias n            adjust thin line pixelization\n");
     ErrorF("-blackpixel n          pixel value for black\n");
     ErrorF("-whitepixel n          pixel value for white\n");
@@ -282,13 +348,8 @@ ddxUseMsg()
 #endif
 }
 
-/* ddxInitGlobals - called by |InitGlobals| from os/util.c */
-void ddxInitGlobals(void)
-{
-}
-
 int
-ddxProcessArgument(int argc, char *argv[], int i)
+ddxProcessArgument(int argc, const char *argv[], int i)
 {
     static Bool firstTime = TRUE;
 
@@ -299,39 +360,55 @@ ddxProcessArgument(int argc, char *argv[], int i)
         firstTime = FALSE;
     }
 
-#define CHECK_FOR_REQUIRED_ARGUMENTS(num) \
-    if (((i + num) >= argc) || (!argv[i + num])) {                      \
-      ErrorF("Required argument to %s not specified\n", argv[i]);       \
-      UseMsg();                                                         \
-      FatalError("Required argument to %s not specified\n", argv[i]);   \
-    }
-    
     if (strcmp (argv[i], "-screen") == 0)	/* -screen n WxHxD */
     {
 	int screenNum;
-	CHECK_FOR_REQUIRED_ARGUMENTS(2);
+	char *arg2;
+ 	char *s;
+	if (i + 2 >= argc) return 0;
 	screenNum = atoi(argv[i+1]);
 	if (screenNum < 0 || screenNum >= MAXSCREENS)
 	{
 	    ErrorF("Invalid screen number %d\n", screenNum);
-	    UseMsg();
-	    FatalError("Invalid screen number %d passed to -screen\n",
-		       screenNum);
+	    return 0;
 	}
-	if (3 != sscanf(argv[i+2], "%dx%dx%d",
+	arg2 = xstrdup(argv[i+2]);
+	if (!arg2) {
+	    ErrorF("Memory allocation error\n");
+	    return 0;
+	}
+	s = strtok(arg2, "@");
+	if (3 != sscanf(s, "%dx%dx%d",
 			&vfbScreens[screenNum].width,
 			&vfbScreens[screenNum].height,
 			&vfbScreens[screenNum].depth))
 	{
-	    ErrorF("Invalid screen configuration %s\n", argv[i+2]);
-	    UseMsg();
-	    FatalError("Invalid screen configuration %s for -screen %d\n",
-		   argv[i+2], screenNum);
+	    xfree(arg2);
+	    ErrorF("Invalid screen configuration %s\n", s);
+	    return 0;
+	}
+	s = strtok(NULL, "@");
+	if (s)
+	{
+	    if (2 != sscanf(s, "%d,%d",
+			    &vfbScreens[screenNum].xOrigin,
+			    &vfbScreens[screenNum].yOrigin))
+	    {
+		xfree(arg2);
+		ErrorF("Invalid screen position %s\n", s);
+		return 0;
+	    }
+	}
+	else
+	{
+	    vfbScreens[screenNum].xOrigin = -1;
+	    vfbScreens[screenNum].yOrigin = -1;
 	}
 
 	if (screenNum >= vfbNumScreens)
 	    vfbNumScreens = screenNum + 1;
 	lastScreen = screenNum;
+	xfree(arg2);
 	return 3;
     }
 
@@ -339,15 +416,13 @@ ddxProcessArgument(int argc, char *argv[], int i)
     {
 	int depth, ret = 1;
 
-	CHECK_FOR_REQUIRED_ARGUMENTS(1);
-	while ((++i < argc) && (depth = atoi(argv[i])) != 0)
+	if (++i >= argc) return 0;
+	while ((i < argc) && (depth = atoi(argv[i++])) != 0)
 	{
 	    if (depth < 0 || depth > 32)
 	    {
 		ErrorF("Invalid pixmap depth %d\n", depth);
-		UseMsg();
-		FatalError("Invalid pixmap depth %d passed to -pixdepths\n",
-			   depth);
+		return 0;
 	    }
 	    vfbPixmapDepths[depth] = TRUE;
 	    ret++;
@@ -364,17 +439,14 @@ ddxProcessArgument(int argc, char *argv[], int i)
     if (strcmp (argv[i], "-render") == 0)	/* -render */
     {
 	Render = FALSE;
-#ifdef COMPOSITE
-	noCompositeExtension = TRUE;
-#endif
 	return 1;
     }
 
     if (strcmp (argv[i], "-blackpixel") == 0)	/* -blackpixel n */
     {
 	Pixel pix;
-	CHECK_FOR_REQUIRED_ARGUMENTS(1);
-	pix = atoi(argv[++i]);
+	if (++i >= argc) return 0;
+	pix = atoi(argv[i]);
 	if (-1 == lastScreen)
 	{
 	    int i;
@@ -393,8 +465,8 @@ ddxProcessArgument(int argc, char *argv[], int i)
     if (strcmp (argv[i], "-whitepixel") == 0)	/* -whitepixel n */
     {
 	Pixel pix;
-	CHECK_FOR_REQUIRED_ARGUMENTS(1);
-	pix = atoi(argv[++i]);
+	if (++i >= argc) return 0;
+	pix = atoi(argv[i]);
 	if (-1 == lastScreen)
 	{
 	    int i;
@@ -413,8 +485,8 @@ ddxProcessArgument(int argc, char *argv[], int i)
     if (strcmp (argv[i], "-linebias") == 0)	/* -linebias n */
     {
 	unsigned int linebias;
-	CHECK_FOR_REQUIRED_ARGUMENTS(1);
-	linebias = atoi(argv[++i]);
+	if (++i >= argc) return 0;
+	linebias = atoi(argv[i]);
 	if (-1 == lastScreen)
 	{
 	    int i;
@@ -433,8 +505,8 @@ ddxProcessArgument(int argc, char *argv[], int i)
 #ifdef HAS_MMAP
     if (strcmp (argv[i], "-fbdir") == 0)	/* -fbdir directory */
     {
-	CHECK_FOR_REQUIRED_ARGUMENTS(1);
-	pfbdir = argv[++i];
+	if (++i >= argc) return 0;
+	pfbdir = argv[i];
 	fbmemtype = MMAPPED_FILE_FB;
 	return 2;
     }
@@ -449,6 +521,71 @@ ddxProcessArgument(int argc, char *argv[], int i)
 #endif
 
     return 0;
+}
+
+#ifdef DDXTIME /* from ServerOSDefines */
+CARD32
+GetTimeInMillis()
+{
+    struct timeval  tp;
+
+    X_GETTIMEOFDAY(&tp);
+    return(tp.tv_sec * 1000) + (tp.tv_usec / 1000);
+}
+#endif
+
+
+static Bool
+vfbMultiDepthCreateGC(GCPtr pGC)
+{
+    switch (vfbBitsPerPixel(pGC->depth))
+    {
+    case 1:  return mfbCreateGC (pGC);
+    case 8:  
+    case 16: 
+    case 32: return fbCreateGC (pGC);
+    default: return FALSE;
+    }
+}
+
+static void
+vfbMultiDepthGetSpans(
+    DrawablePtr		pDrawable,	/* drawable from which to get bits */
+    int			wMax,		/* largest value of all *pwidths */
+    register DDXPointPtr ppt,		/* points to start copying from */
+    int			*pwidth,	/* list of number of bits to copy */
+    int			nspans,		/* number of scanlines to copy */
+    char		*pdstStart)	/* where to put the bits */
+{
+    switch (pDrawable->bitsPerPixel) {
+    case 1:
+	mfbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+	break;
+    case 8:
+    case 16:
+    case 32:
+	fbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+	break;
+    }
+    return;
+}
+
+static void
+vfbMultiDepthGetImage(DrawablePtr pDrawable, int sx, int sy, int w, int h,
+		      unsigned int format, unsigned long planeMask,
+		      char *pdstLine)
+{
+    switch (pDrawable->bitsPerPixel)
+    {
+    case 1:
+	mfbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+	break;
+    case 8:
+    case 16:
+    case 32:
+	fbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+	break;
+    }
 }
 
 static ColormapPtr InstalledMaps[MAXSCREENS];
@@ -473,7 +610,6 @@ vfbInstallColormap(ColormapPtr pmap)
     {
 	int entries;
 	XWDFileHeader *pXWDHeader;
-	XWDColor *pXWDCmap;
 	VisualPtr pVisual;
 	Pixel *     ppix;
 	xrgb *      prgb;
@@ -488,7 +624,6 @@ vfbInstallColormap(ColormapPtr pmap)
 
 	entries = pmap->pVisual->ColormapEntries;
 	pXWDHeader = vfbScreens[pmap->pScreen->myNum].pXWDHeader;
-	pXWDCmap = vfbScreens[pmap->pScreen->myNum].pXWDCmap;
 	pVisual = pmap->pVisual;
 
 	swapcopy32(pXWDHeader->visual_class, pVisual->class);
@@ -861,18 +996,12 @@ vfbCloseScreen(int index, ScreenPtr pScreen)
 }
 
 static Bool
-vfbScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
+vfbScreenInit(int index, ScreenPtr pScreen, const int argc, const char **argv)
 {
     vfbScreenInfoPtr pvfb = &vfbScreens[index];
-    int dpix = monitorResolution, dpiy = monitorResolution;
+    int dpix = 100, dpiy = 100;
     int ret;
     char *pbits;
-    
-    if (dpix == 0)
-      dpix = 100;
-
-    if (dpiy == 0)
-      dpiy = 100;
 
     pvfb->paddedBytesWidth = PixmapBytePad(pvfb->width, pvfb->depth);
     pvfb->bitsPerPixel = vfbBitsPerPixel(pvfb->depth);
@@ -883,69 +1012,27 @@ vfbScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
     pbits = vfbAllocateFramebufferMemory(pvfb);
     if (!pbits) return FALSE;
 
-    miSetPixmapDepths ();
+    /*    miSetPixmapDepths ();*/
+    miClearVisualTypes();
+    miSetVisualTypes(pvfb->depth, miGetDefaultVisualMask(pvfb->depth), 8, -1);
 
-    switch (pvfb->depth) {
+    switch (pvfb->bitsPerPixel)
+    {
+    case 1:
+	ret = mfbScreenInit(pScreen, pbits, pvfb->width, pvfb->height,
+			    dpix, dpiy, pvfb->paddedWidth);
+	break;
     case 8:
-	miSetVisualTypesAndMasks (8,
-				  ((1 << StaticGray) |
-				   (1 << GrayScale) |
-				   (1 << StaticColor) |
-				   (1 << PseudoColor) |
-				   (1 << TrueColor) |
-				   (1 << DirectColor)),
-				  8, PseudoColor, 0, 0, 0);
-	break;
-#if 0
-    /* 12bit PseudoColor with 12bit color resolution
-     * (to simulate SGI hardware and the 12bit PseudoColor emulation layer) */
-    case 12:
-	miSetVisualTypesAndMasks (12,
-				  ((1 << StaticGray) |
-				   (1 << GrayScale) |
-				   (1 << StaticColor) |
-				   (1 << PseudoColor) |
-				   (1 << TrueColor) |
-				   (1 << DirectColor)),
-				  12, PseudoColor, 0, 0, 0);
-	break;
-#endif
-    case 15:
-	miSetVisualTypesAndMasks (15,
-				  ((1 << TrueColor) |
-				   (1 << DirectColor)),
-				  8, TrueColor, 0x7c00, 0x03e0, 0x001f);
-	break;
     case 16:
-	miSetVisualTypesAndMasks (16,
-				  ((1 << TrueColor) |
-				   (1 << DirectColor)),
-				  8, TrueColor, 0xf800, 0x07e0, 0x001f);
+    case 32:
+	ret = fbScreenInit(pScreen, pbits, pvfb->width, pvfb->height,
+			      dpix, dpiy, pvfb->paddedWidth,pvfb->bitsPerPixel);
+	if (ret && Render) 
+	    fbPictureInit (pScreen, 0, 0);
 	break;
-    case 24:
-	miSetVisualTypesAndMasks (24,
-				  ((1 << TrueColor) |
-				   (1 << DirectColor)),
-				  8, TrueColor, 0xff0000, 0x00ff00, 0x0000ff);
-	break;
-#if 0
-    /* 30bit TrueColor (to simulate Sun's XVR-1000/-4000 high quality
-     * framebuffer series) */
-    case 30:
-	miSetVisualTypesAndMasks (30,
-				  ((1 << TrueColor) |
-				   (1 << DirectColor)),
-				  10, TrueColor, 0x3ff00000, 0x000ffc00, 0x000003ff);
-	break;
-#endif
+    default:
+	return FALSE;
     }
-	
-    ret = fbScreenInit(pScreen, pbits, pvfb->width, pvfb->height,
-		       dpix, dpiy, pvfb->paddedWidth,pvfb->bitsPerPixel);
-#ifdef RENDER
-    if (ret && Render) 
-	fbPictureInit (pScreen, 0, 0);
-#endif
 
     if (!ret) return FALSE;
 
@@ -955,6 +1042,9 @@ vfbScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
      * Circumvent the backing store that was just initialised.  This amounts
      * to a truely bizarre way of initialising SaveDoomedAreas and friends.
      */
+    pScreen->CreateGC = vfbMultiDepthCreateGC;
+    pScreen->GetImage = vfbMultiDepthGetImage;
+    pScreen->GetSpans = vfbMultiDepthGetSpans;
 
     pScreen->InstallColormap = vfbInstallColormap;
     pScreen->UninstallColormap = vfbUninstallColormap;
@@ -970,7 +1060,14 @@ vfbScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
     pScreen->blackPixel = pvfb->blackPixel;
     pScreen->whitePixel = pvfb->whitePixel;
 
-    ret = fbCreateDefColormap(pScreen);
+    if (pvfb->bitsPerPixel == 1)
+    {
+	ret = mfbCreateDefColormap(pScreen);
+    }
+    else
+    {
+	ret = fbCreateDefColormap(pScreen);
+    }
 
     miSetZeroLineBias(pScreen, pvfb->lineBias);
 
@@ -983,7 +1080,7 @@ vfbScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
 
 
 void
-InitOutput(ScreenInfo *screenInfo, int argc, char **argv)
+InitOutput(ScreenInfo *screenInfo, const int argc, const char **argv)
 {
     int i;
     int NumFormats = 0;
@@ -1001,15 +1098,9 @@ InitOutput(ScreenInfo *screenInfo, int argc, char **argv)
 	vfbPixmapDepths[1] = TRUE;
 	vfbPixmapDepths[4] = TRUE;
 	vfbPixmapDepths[8] = TRUE;
-#if 0
-	vfbPixmapDepths[12] = TRUE;
-#endif
-/*	vfbPixmapDepths[15] = TRUE; */
+	vfbPixmapDepths[15] = TRUE;
 	vfbPixmapDepths[16] = TRUE;
 	vfbPixmapDepths[24] = TRUE;
-#if 0
-	vfbPixmapDepths[30] = TRUE;
-#endif
 	vfbPixmapDepths[32] = TRUE;
     }
 
@@ -1042,9 +1133,39 @@ InitOutput(ScreenInfo *screenInfo, int argc, char **argv)
 	}
     }
 
+    /*
+     * Setup the Xinerama Layout.  If the screen origins are not specified
+     * explicitly, assume that screen n is to the right of screen n - 1.
+     * It is safe to set this up even when Xinerama is not used.
+     */
+
+    for (i = 0; i < vfbNumScreens; i++)
+    {
+	if (vfbScreens[i].xOrigin < 0 || vfbScreens[i].yOrigin < 0)
+	{
+	    if (i == 0)
+	    {
+		dixScreenOrigins[i].x = 0;
+		dixScreenOrigins[i].y = 0;
+	    }
+	    else
+	    {
+		dixScreenOrigins[i].x = dixScreenOrigins[i - 1].x +
+						vfbScreens[i - 1].width;
+		dixScreenOrigins[i].y = dixScreenOrigins[i - 1].y;
+	    }
+	}
+	else
+	{
+	    dixScreenOrigins[i].x = vfbScreens[i].xOrigin;
+	    dixScreenOrigins[i].y = vfbScreens[i].yOrigin;
+	}
+    }
+
 } /* end InitOutput */
 
 /* this is just to get the server to link on AIX */
 #ifdef AIXV3
 int SelectWaitTime = 10000; /* usec */
 #endif
+

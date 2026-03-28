@@ -1,9 +1,15 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -315,7 +321,7 @@ static GLboolean run_init_lighting( GLcontext *ctx,
  */
 static void check_lighting( GLcontext *ctx, struct tnl_pipeline_stage *stage )
 {
-   stage->active = ctx->Light.Enabled && !ctx->VertexProgram.Enabled;
+   stage->active = ctx->Light.Enabled && !ctx->VertexProgram._Enabled;
    if (stage->active) {
       if (stage->privatePtr)
 	 stage->run = run_validate_lighting;
@@ -352,7 +358,7 @@ static void dtr( struct tnl_pipeline_stage *stage )
 const struct tnl_pipeline_stage _tnl_lighting_stage =
 {
    "lighting",			/* name */
-   _NEW_LIGHT,			/* recheck */
+   _NEW_LIGHT|_NEW_PROGRAM,			/* recheck */
    _NEW_LIGHT|_NEW_MODELVIEW,	/* recalc -- modelview dependency
 				 * otherwise not captured by inputs
 				 * (which may be _TNL_BIT_POS) */

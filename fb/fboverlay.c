@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fboverlay.c,v 1.8 2006/02/19 15:51:19 tsi Exp $
  *
- * Copyright Â© 2000 SuSE, Inc.
+ * Copyright © 2000 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,24 +30,11 @@
  * Author:  Keith Packard, SuSE, Inc.
  */
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stdlib.h>
-
 #include "fb.h"
 #include "fboverlay.h"
-#include "shmint.h"
 
 int	fbOverlayGeneration;
 int	fbOverlayScreenPrivateIndex = -1;
-
-int fbOverlayGetScreenPrivateIndex(void)
-{
-    return fbOverlayScreenPrivateIndex;
-}
 
 /*
  * Replace this if you want something supporting
@@ -413,12 +408,12 @@ fbOverlayFinishScreenInit(ScreenPtr	pScreen,
 	return FALSE;
     if (! miScreenInit(pScreen, 0, xsize, ysize, dpix, dpiy, 0,
 			depth1, ndepths, depths,
-			defaultVisual, nvisuals, visuals))
-	return FALSE;
-    /* MI thinks there's no frame buffer */
-#ifdef MITSHM
-    ShmRegisterFbFuncs(pScreen);
+			defaultVisual, nvisuals, visuals
+#ifdef FB_OLD_SCREEN
+		       , (miBSFuncPtr) 0
 #endif
+		       ))
+	return FALSE;
     pScreen->minInstalledCmaps = 1;
     pScreen->maxInstalledCmaps = 2;
     

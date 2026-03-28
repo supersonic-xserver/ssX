@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 CHIPSET(0x4C57, RADEON_LW, RV200)
 CHIPSET(0x4C58, RADEON_LX, RV200)
 CHIPSET(0x4C59, RADEON_LY, RV100)

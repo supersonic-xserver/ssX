@@ -1,4 +1,11 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
 
@@ -21,7 +28,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/xvmain.c,v 1.18tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xvmain.c,v 1.16 2003/10/28 23:08:44 tsi Exp $ */
 
 /*
 ** File: 
@@ -74,8 +81,8 @@ SOFTWARE.
 **
 */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "scrnintstr.h"
@@ -90,8 +97,8 @@ SOFTWARE.
 
 #define GLOBAL
 
-#include <X11/extensions/Xv.h>
-#include <X11/extensions/Xvproto.h>
+#include "Xv.h"
+#include "Xvproto.h"
 #include "xvdix.h"
 
 #ifdef EXTMODULE
@@ -152,7 +159,7 @@ static int XvdiSendVideoNotify(XvPortPtr, DrawablePtr, int);
 */
 
 void 
-XvExtensionInit(INITARGS)
+XvExtensionInit()
 {
   ExtensionEntry *extEntry;
 
@@ -205,6 +212,7 @@ XvExtensionInit(INITARGS)
 
 static Bool
 CreateResourceTypes()
+
 {
   
   if (XvResourceGeneration == serverGeneration) return TRUE;
@@ -529,7 +537,12 @@ XvdiDestroyEncoding(pointer value, XID id)
 }
 
 static int
-XvdiSendVideoNotify(XvPortPtr pPort, DrawablePtr pDraw, int reason)
+XvdiSendVideoNotify(pPort, pDraw, reason)
+
+XvPortPtr pPort;
+DrawablePtr pDraw;
+int reason;
+
 {
   xvEvent event;
   XvVideoNotifyPtr pn;
@@ -1164,6 +1177,7 @@ XvdiGetPortAttribute(
 
 static void
 WriteSwappedVideoNotifyEvent(xvEvent *from, xvEvent *to)
+
 {
 
   to->u.u.type = from->u.u.type;
@@ -1178,6 +1192,7 @@ WriteSwappedVideoNotifyEvent(xvEvent *from, xvEvent *to)
 
 static void
 WriteSwappedPortNotifyEvent(xvEvent *from, xvEvent *to)
+
 {
 
   to->u.u.type = from->u.u.type;

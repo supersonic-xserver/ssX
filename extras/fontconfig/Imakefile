@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.9 2002/11/21 16:53:00 keithp Exp $
+XCOMM $XFree86: xc/extras/fontconfig/Imakefile,v 1.1.1.1 2003/06/04 02:56:24 dawes Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags

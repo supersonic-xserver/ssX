@@ -1,5 +1,4 @@
 %{
-/* $XFree86: xc/programs/twm/lex.l,v 3.16tsi Exp $ */
 /*****************************************************************************/
 /*
 
@@ -53,11 +52,14 @@ in this Software without prior written authorization from The Open Group.
 
 /***********************************************************************
  *
+ * $Xorg: lex.l,v 1.4 2001/02/09 02:05:36 xorgcvs Exp $
+ *
  * .twmrc lex file
  *
  * 12-Nov-87 Thomas E. LaStrange		File created
  *
  ***********************************************************************/
+/* $XFree86: xc/programs/twm/lex.l,v 3.14 2001/12/14 20:01:08 dawes Exp $ */
 
 /* #include <stdio.h> */		/* lex already includes stdio.h */
 #include "twm.h"
@@ -65,10 +67,8 @@ in this Software without prior written authorization from The Open Group.
 #include "list.h"
 #include "parse.h"
 
-#if defined(FLEX_SCANNER)
-#if !defined(YY_FLEX_LEX_COMPAT)
+#ifdef FLEX_SCANNER
 int yylineno;
-#endif
 
 #undef YY_INPUT
 #define YY_INPUT(buf,result,size) ((result) = doinput((buf),(size)))
@@ -103,15 +103,15 @@ number				[0-9]+
 "-"				{ return MINUS; }
 "|"				{ return OR; }
 
-[a-zA-Z\.]+			{ int token = parse_keyword ((char *)yytext,
+[a-zA-Z\.]+			{ int token = parse_keyword ((char *)yytext, 
 							     &yylval.num);
 				  if (token == ERRORTOKEN) {
 				      twmrc_error_prefix();
 				      fprintf (stderr,
-				       "ignoring unknown keyword:  %s\n",
+				       "ignoring unknown keyword:  %s\n", 
 					       yytext);
 				      ParseError = 1;
-				  } else
+				  } else 
 				    return token;
 				}
 
@@ -126,7 +126,7 @@ number				[0-9]+
 [\r\n\t ]			{;}
 .				{
 				  twmrc_error_prefix();
-				  fprintf (stderr,
+				  fprintf (stderr, 
 					   "ignoring character \"%s\"\n",
 					   yytext);
 				  ParseError = 1;

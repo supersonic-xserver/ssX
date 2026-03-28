@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/renderpix.c,v 1.4 2002/02/22 21:32:54 dawes Exp $ */
+/* $XFree86: xc/lib/GL/glx/renderpix.c,v 1.7 2004/04/08 10:07:33 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free

@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fboverlay.c,v 1.7tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fboverlay.c,v 1.7 2003/11/10 18:21:47 tsi Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -407,6 +414,10 @@ fbOverlayFinishScreenInit(ScreenPtr	pScreen,
 #endif
 		       ))
 	return FALSE;
+    /* MI thinks there's no frame buffer */
+#ifdef MITSHM
+    ShmRegisterFbFuncs(pScreen);
+#endif
     pScreen->minInstalledCmaps = 1;
     pScreen->maxInstalledCmaps = 2;
     

@@ -1,3 +1,14 @@
+/*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ *	$Xorg: X.h,v 1.4 2001/02/09 02:03:22 xorgcvs Exp $
+ */
+
 /* Definitions for the X window system likely to be used by applications */
 
 #ifndef X_H

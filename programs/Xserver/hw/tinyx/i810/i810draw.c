@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/tinyx/i810/i810draw.c,v 1.2tsi Exp $ */
 /* COPYRIGHT AND PERMISSION NOTICE
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright (c) 2000, 2001 Nokia Home Communications
 
@@ -89,13 +102,13 @@ X Window System is a trademark of The Open Group */
 #include "i810.h"
 #include "i810_reg.h"
 
-#include	<X11/Xmd.h>
+#include	"Xmd.h"
 #include	"gcstruct.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"regionstr.h"
 #include	"mistruct.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"fb.h"
 #include	"migc.h"

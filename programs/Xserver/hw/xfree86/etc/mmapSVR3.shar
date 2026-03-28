@@ -7,6 +7,8 @@
 # made 02/26/1994 03:10 UTC by root@gamma
 # Source directory /home1/tmp/x11r5
 #
+# $XConsortium: mmapSVR3.shar /main/4 1996/02/21 17:48:01 kaleb $
+#
 # existing files will NOT be overwritten unless -c is specified
 #
 # This shar contains:

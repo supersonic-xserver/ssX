@@ -1,0 +1,6 @@
+XCOMM $XFree86: xc/programs/Xserver/record/module/Imakefile,v 1.6 2005/05/13 21:02:32 dawes Exp $
+
+#define IHaveModules
+#define LinkDirectory ..
+#include "../Imakefile"
+

@@ -1,4 +1,4 @@
-<!-- $XFree86: xc/programs/Xserver/hw/darwin/bundle/Portuguese.lproj/XDarwinHelp.html.cpp,v 1.1tsi Exp $ --><html><body>
+<!-- $XFree86: xc/programs/Xserver/hw/darwin/bundle/Portuguese.lproj/XDarwinHelp.html.cpp,v 1.1 2002/01/25 06:46:46 torrey Exp $ --><html><body>
 
 #include "xf86Version.h"
 #ifndef PRE_RELEASE
@@ -28,22 +28,17 @@
 <center>
     <h2><a NAME="notice">Notas importantes</a></h2>
 </center>
-<blockquote>
-#if PRE_RELEASE
-  Essa &eacute; uma vers&atilde;o pr&eacute;-lancamento 
+<blockquote> #if PRE_RELEASE Essa &eacute; uma vers&atilde;o pr&eacute;-lancamento 
   do XFree86, e ela n&atilde;o &eacute; suportada de nenhuma forma. Bugs podem 
   ser reportados e corre&ccedil;&otilde;es podem ser enviadas para <A HREF="http://sourceforge.net/projects/xonx/">P&aacute;gina 
   do projeto XonX</A> no SourceForge. Antes de informar bugs em vers&otilde;es 
   pr&eacute;-lancamento, por favor verifique a þltima vers&atilde;o em <A HREF="http://sourceforge.net/projects/xonx/">XonX</A> 
   or no <A HREF="http://www.XFree86.Org/cvs">Reposit&oacute;rio CVS do XFree86</A>. 
-#else
-  Se o servidor &eacute; mais velho que 6-12 semanas, ou seu hardware &eacute; 
+  #else Se o servidor &eacute; mais velho que 6-12 semanas, ou seu hardware &eacute; 
   mais novo que a data acima, procure por uma nova vers&atilde;o antes de informar 
   problemas. Bugs podem ser reportados e corre&ccedil;&otilde;es podem ser enviadas 
   para a <A HREF="http://sourceforge.net/projects/xonx/">P&aacute;gina do projeto 
-  XonX</A> na SourceForge.
-#endif
-</blockquote>
+  XonX</A> na SourceForge. #endif </blockquote>
 <blockquote> Este software &eacute; distribu&iacute;do sob os termos da <a href="#license">licen&ccedil;a 
   MIT X11 / X Consortium</a> e &eacute; provido, sem nenhuma garantia. Por favor 
   leia a <a href="#license">Licen&ccedil;a</a> antes de come&ccedil;ar a usar 

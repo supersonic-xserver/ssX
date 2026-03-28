@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/devbell.c,v 3.4 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,17 +60,13 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
 
 #include "devbell.h"
@@ -75,14 +79,15 @@ SOFTWARE.
  */
 
 int
-SProcXDeviceBell(ClientPtr client)
-{
-    char n;
+SProcXDeviceBell(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xDeviceBellReq);
     swaps(&stuff->length, n);
-    return (ProcXDeviceBell(client));
-}
+    return(ProcXDeviceBell(client));
+    }
 
 /***********************************************************************
  *
@@ -91,8 +96,9 @@ SProcXDeviceBell(ClientPtr client)
  */
 
 int
-ProcXDeviceBell(ClientPtr client)
-{
+ProcXDeviceBell (client)
+    register ClientPtr client;
+    {
     DeviceIntPtr dev;
     KbdFeedbackPtr k;
     BellFeedbackPtr b;
@@ -105,55 +111,64 @@ ProcXDeviceBell(ClientPtr client)
     REQUEST(xDeviceBellReq);
     REQUEST_SIZE_MATCH(xDeviceBellReq);
 
-    dev = LookupDeviceIntRec(stuff->deviceid);
-    if (dev == NULL) {
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
 	client->errorValue = stuff->deviceid;
 	SendErrorToClient(client, IReqCode, X_DeviceBell, 0, BadDevice);
 	return Success;
-    }
+	}
 
-    if (stuff->percent < -100 || stuff->percent > 100) {
+    if (stuff->percent < -100 || stuff->percent > 100)
+	{
 	client->errorValue = stuff->percent;
 	SendErrorToClient(client, IReqCode, X_DeviceBell, 0, BadValue);
 	return Success;
-    }
-    if (stuff->feedbackclass == KbdFeedbackClass) {
-	for (k = dev->kbdfeed; k; k = k->next)
+	}
+    if (stuff->feedbackclass == KbdFeedbackClass)
+	{
+	for (k=dev->kbdfeed; k; k=k->next)
 	    if (k->ctrl.id == stuff->feedbackid)
 		break;
-	if (!k) {
+	if (!k)
+	    {
 	    client->errorValue = stuff->feedbackid;
 	    SendErrorToClient(client, IReqCode, X_DeviceBell, 0, BadValue);
 	    return Success;
-	}
+	    }
 	base = k->ctrl.bell;
 	proc = k->BellProc;
-	ctrl = (pointer) & (k->ctrl);
+	ctrl = (pointer) &(k->ctrl);
 	class = KbdFeedbackClass;
-    } else if (stuff->feedbackclass == BellFeedbackClass) {
-	for (b = dev->bell; b; b = b->next)
+	}
+    else if (stuff->feedbackclass == BellFeedbackClass)
+	{
+	for (b=dev->bell; b; b=b->next)
 	    if (b->ctrl.id == stuff->feedbackid)
 		break;
-	if (!b) {
+	if (!b)
+	    {
 	    client->errorValue = stuff->feedbackid;
 	    SendErrorToClient(client, IReqCode, X_DeviceBell, 0, BadValue);
 	    return Success;
-	}
+	    }
 	base = b->ctrl.percent;
 	proc = b->BellProc;
-	ctrl = (pointer) & (b->ctrl);
+	ctrl = (pointer) &(b->ctrl);
 	class = BellFeedbackClass;
-    } else {
+	}
+    else
+	{
 	client->errorValue = stuff->feedbackclass;
 	SendErrorToClient(client, IReqCode, X_DeviceBell, 0, BadValue);
 	return Success;
-    }
+	}
     newpercent = (base * stuff->percent) / 100;
     if (stuff->percent < 0)
-	newpercent = base + newpercent;
+        newpercent = base + newpercent;
     else
-	newpercent = base - newpercent + stuff->percent;
-    (*proc) (newpercent, dev, ctrl, class);
+    	newpercent = base - newpercent + stuff->percent;
+    (*proc)(newpercent, dev, ctrl, class);
 
     return Success;
-}
+    }

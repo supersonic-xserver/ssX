@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file clip.h
  */
 
@@ -38,5 +45,12 @@ _mesa_ClipPlane( GLenum plane, const GLdouble *equation );
 
 extern void GLAPIENTRY 
 _mesa_GetClipPlane( GLenum plane, GLdouble *equation );
+
+extern void GLAPIENTRY 
+_mesa_CullParameterfvEXT (GLenum cap, GLfloat *v);
+
+extern void GLAPIENTRY 
+_mesa_CullParameterdvEXT (GLenum cap, GLdouble *v);
+
 
 #endif

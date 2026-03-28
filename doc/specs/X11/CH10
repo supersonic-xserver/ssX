@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -76,7 +76,7 @@ Event types
 .IP \(bu 5
 Event structures
 .IP \(bu 5
-Event mask
+Event masks
 .IP \(bu 5
 Event processing
 .LP
@@ -197,6 +197,7 @@ T}	T{
 .PN MappingNotify , 
 .PN ReparentNotify , 
 .PN UnmapNotify , 
+.br
 .PN VisibilityNotify
 T}
 .sp 6p
@@ -383,7 +384,7 @@ and
 or
 .PN ClientMessage
 cannot be masked.
-Selection related events are only sent to clients cooperating
+Selection-related events are only sent to clients cooperating
 with selections (see section 4.5).
 When the keyboard or pointer mapping is changed,
 .PN MappingNotify
@@ -1067,7 +1068,7 @@ For the
 .PN XKeyPressedEvent
 and
 .PN XKeyReleasedEvent
-structures, this member is called keycode.
+structures, this member is called a keycode.
 It is set to a number that represents a physical key on the keyboard.
 The keycode is an arbitrary representation for any key on the keyboard
 (see sections 12.7 and 16.1).
@@ -2238,7 +2239,7 @@ Each bit set to 1 indicates that the corresponding key
 is currently pressed.
 The vector is represented as 32 bytes.
 Byte N (from 0) contains the bits for keys 8N to 8N + 7 
-with the least-significant bit in the byte representing key 8N.
+with the least significant bit in the byte representing key 8N.
 .NH 2
 Exposure Events
 .XS
@@ -2361,7 +2362,7 @@ be computed during certain graphics requests:
 or
 .PN XCopyPlane .
 The X server generates this event whenever a destination region could not be
-computed due to an obscured or out-of-bounds source region.
+computed because of an obscured or out-of-bounds source region.
 In addition, the X server guarantees to report contiguously all of the regions exposed by
 some graphics request 
 (for example, copying an area of a drawable to a destination
@@ -2970,6 +2971,7 @@ The request member is set to indicate the kind of mapping change that occurred
 and can be
 .PN MappingModifier ,
 .PN MappingKeyboard ,
+or
 .PN MappingPointer .
 If it is
 .PN MappingModifier ,
@@ -3166,7 +3168,7 @@ The structure for this event type contains:
 .TA .5i 3i
 .ta .5i 3i
 typedef struct {
-	int type;	/* VisibiltyNotify */
+	int type;	/* VisibilityNotify */
 	unsigned long serial;	/* # of last request processed by server */
 	Bool send_event;	/* true if this came from a SendEvent request */
 	Display *display;	/* Display the event was read from */
@@ -3641,8 +3643,8 @@ should be interpreted by the receiving client.
 The format member is set to 8, 16, or 32 and specifies whether the data
 should be viewed as a list of bytes, shorts, or longs.
 The data member is a union that contains the members b, s, and l.
-The b, s, and l members represent data of 20 8-bit values, 
-10 16-bit values, and 5 32-bit values.
+The b, s, and l members represent data of twenty 8-bit values, 
+ten 16-bit values, and five 32-bit values.
 Particular message types might not make use of all these values.
 The X server places no interpretation on the values in the window,
 message_type, or data members.

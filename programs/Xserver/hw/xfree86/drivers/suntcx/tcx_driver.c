@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * TCX framebuffer driver.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suntcx/tcx_driver.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suntcx/tcx_driver.c,v 1.11 2005/02/18 02:55:10 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -38,8 +45,8 @@ static const OptionInfoRec * TCXAvailableOptions(int chipid, int busid);
 static void	TCXIdentify(int flags);
 static Bool	TCXProbe(DriverPtr drv, int flags);
 static Bool	TCXPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	TCXScreenInit(int Index, ScreenPtr pScreen,
-			      const int argc, const char **argv);
+static Bool	TCXScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	TCXEnterVT(int scrnIndex, int flags);
 static void	TCXLeaveVT(int scrnIndex, int flags);
 static Bool	TCXCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -113,7 +120,7 @@ static XF86ModuleVersionInfo suntcxVersRec =
 XF86ModuleData suntcxModuleData = { &suntcxVersRec, tcxSetup, NULL };
 
 static pointer
-tcxSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+tcxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -466,8 +473,7 @@ TCXPreInit(ScrnInfoPtr pScrn, int flags)
 /* This gets called at the start of each server generation */
 
 static Bool
-TCXScreenInit(int scrnIndex, ScreenPtr pScreen,
-	      const int argc, const char **argv)
+TCXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     TcxPtr pTcx;
@@ -742,11 +748,11 @@ TCXValidMode(int scrnIndex, DisplayModePtr mode, Bool verbose, int flags)
 /* Mandatory */
 static Bool
 TCXSaveScreen(ScreenPtr pScreen, int mode)
+    /* this function should blank the screen when unblank is FALSE and
+       unblank it when unblank is TRUE -- it doesn't actually seem to be
+       used for much though */
 {
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-    TcxPtr pTcx = GET_TCX_FROM_SCRN(pScrn);
-
-    return xf86SbusSaveScreen(pTcx->psdp, mode);
+    return TRUE;
 }
 
 /*

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_init.c,v 1.11 2008/03/26 19:04:52 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_init.c,v 1.6 2002/06/06 13:49:34 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -94,8 +101,7 @@ xf86OpenConsole(void)
 		    strerror(errno));
 
 	    if (ioctl(fd, VT_GETSTATE, &vtinfo) < 0)
-		FatalError("xf86OpenConsole: Cannot determine current VT"
-			   " (%s)\n", strerror(errno));
+		FatalError("xf86OpenConsole: Cannot determine current VT\n");
 
 	    xf86StartVT = vtinfo.v_active;
 
@@ -118,7 +124,7 @@ xf86OpenConsole(void)
 		    FreeVTslot = 1;
 
 	    if (!FreeVTslot ||
-		(ioctl(fd, VT_OPENQRY, &xf86Info.vtno) < 0) ||
+	        (ioctl(fd, VT_OPENQRY, &xf86Info.vtno) < 0) ||
 		(xf86Info.vtno == -1))
 		FatalError("xf86OpenConsole: Cannot find a free VT\n");
 
@@ -147,16 +153,13 @@ xf86OpenConsole(void)
 	 * Now get the VT
 	 */
 	if (ioctl(xf86Info.consoleFd, VT_ACTIVATE, xf86Info.vtno) != 0)
-	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_ACTIVATE failed (%s)\n",
-		    strerror(errno));
+	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_ACTIVATE failed\n");
 
 	if (ioctl(xf86Info.consoleFd, VT_WAITACTIVE, xf86Info.vtno) != 0)
-	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_WAITACTIVE failed (%s)\n",
-		    strerror(errno));
+	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_WAITACTIVE failed\n");
 
 	if (ioctl(xf86Info.consoleFd, VT_GETMODE, &VT) < 0)
-	    FatalError("xf86OpenConsole: VT_GETMODE failed (%s)\n",
-		       strerror(errno));
+	    FatalError("xf86OpenConsole: VT_GETMODE failed\n");
 
 	signal(SIGUSR1, xf86VTRequest);
 
@@ -165,34 +168,21 @@ xf86OpenConsole(void)
 	VT.acqsig = SIGUSR1;
 
 	if (ioctl(xf86Info.consoleFd, VT_SETMODE, &VT) < 0)
-	    FatalError("xf86OpenConsole: VT_SETMODE VT_PROCESS failed (%s)\n",
-		       strerror(errno));
+	    FatalError("xf86OpenConsole: VT_SETMODE VT_PROCESS failed\n");
 
-#ifdef KDSETMODE
 	if (ioctl(xf86Info.consoleFd, KDSETMODE, KD_GRAPHICS) < 0)
-	    FatalError("xf86OpenConsole: KDSETMODE KD_GRAPHICS failed (%s)\n",
-		       strerror(errno));
-#endif
-#else
-#ifdef KDSETMODE
-	/* This may fail. */
-	ioctl(xf86Info.consoleFd, KDSETMODE, KD_GRAPHICS);
-#endif
-#endif
+	    FatalError("xf86OpenConsole: KDSETMODE KD_GRAPHICS failed\n");
     }
-#ifdef HAS_USL_VTS
     else /* serverGeneration != 1 */
     {
 	/*
 	 * Now re-get the VT
 	 */
 	if (ioctl(xf86Info.consoleFd, VT_ACTIVATE, xf86Info.vtno) != 0)
-	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_ACTIVATE failed (%s)\n",
-		    strerror(errno));
+	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_ACTIVATE failed\n");
 
 	if (ioctl(xf86Info.consoleFd, VT_WAITACTIVE, xf86Info.vtno) != 0)
-	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_WAITACTIVE failed (%s)\n",
-		    strerror(errno));
+	    xf86Msg(X_WARNING, "xf86OpenConsole: VT_WAITACTIVE failed\n");
 
 	/*
 	 * If the server doesn't have the VT when the reset occurs,
@@ -201,10 +191,10 @@ xf86OpenConsole(void)
 	 */
 	if (!xf86Screens[0]->vtSema)
 	    sleep(5);
-    }
 
 #endif /* HAS_USL_VTS */
 
+    }
 }
 
 void
@@ -213,40 +203,34 @@ xf86CloseConsole(void)
 #ifdef HAS_USL_VTS
     struct vt_mode VT;
 #endif
-#if defined(__SOL8__) || defined(__sparc__)
+#if defined(__SOL8__) || !defined(i386)
     int tmp;
 #endif
 
-#ifdef __sparc__
+#ifndef i386
 
     if (!xf86DoProbe && !xf86DoConfigure) {
+	int fd;
+
 	/*
-	 * Wipe out framebuffers, given we have nothing to restore them with.
+	 * Wipe out framebuffer just like the non-SI Xsun server does.  This
+	 * could be improved by saving framebuffer contents in
+	 * xf86OpenConsole() above and restoring them here.  Also, it's unclear
+	 * at this point whether this should be done for all framebuffers in
+	 * the system, rather than only the console.
 	 */
-	for (tmp = 0;  ;  tmp++) {
+	if ((fd = open("/dev/fb", O_RDWR, 0)) < 0) {
+	    xf86Msg(X_WARNING,
+		    "xf86CloseConsole():  unable to open framebuffer (%s)\n",
+		    strerror(errno));
+	} else {
 	    struct fbgattr fbattr;
-	    char *fbdev;
-	    int fd;
-
-	    fbdev = NULL;
-	    xasprintf(&fbdev, "/dev/fb%d", tmp);
-	    if (!fbdev) {
-		xf86Msg(X_WARNING,
-			"Cannot allocate space for framebuffer name\n");
-		break;
-	    }
-
-	    fd = open(fbdev, O_RDWR | O_NDELAY, 0);
-	    if (fd < 0) {
-		xfree(fbdev);
-		break;
-	    }
 
 	    if ((ioctl(fd, FBIOGATTR, &fbattr) < 0) &&
 		(ioctl(fd, FBIOGTYPE, &fbattr.fbtype) < 0)) {
 		xf86Msg(X_WARNING,
-			"xf86CloseConsole: Unable to retrieve %s attributes"
-			" (%s)\n", fbdev, strerror(errno));
+			"xf86CloseConsole():  unable to retrieve framebuffer"
+			" attributes (%s)\n", strerror(errno));
 	    } else {
 		pointer fbdata;
 
@@ -254,8 +238,8 @@ xf86CloseConsole(void)
 			      PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (fbdata == MAP_FAILED) {
 		    xf86Msg(X_WARNING,
-			    "xf86CloseConsole: Unable to mmap %s (%s)\n",
-			    fbdev, strerror(errno));
+			    "xf86CloseConsole():  unable to mmap framebuffer"
+			    " (%s)\n", strerror(errno));
 		} else {
 		    (void)memset(fbdata, 0, fbattr.fbtype.fb_size);
 		    (void)munmap(fbdata, fbattr.fbtype.fb_size);
@@ -263,15 +247,9 @@ xf86CloseConsole(void)
 	    }
 
 	    close(fd);
-	    xfree(fbdev);
 	}
     }
 
-#endif
-
-#ifdef KDSETMODE
-    /* Reset the display back to text mode */
-    ioctl(xf86Info.consoleFd, KDSETMODE, KD_TEXT);
 #endif
 
 #ifdef HAS_USL_VTS
@@ -290,6 +268,8 @@ xf86CloseConsole(void)
      * Did the whole thing similarly to the way linux does it
      */
 
+    /* Reset the display back to text mode */
+    ioctl(xf86Info.consoleFd, KDSETMODE, KD_TEXT);
     if (ioctl(xf86Info.consoleFd, VT_GETMODE, &VT) != -1)
     {
 	VT.mode = VT_AUTO;		/* Set default vt handling */
@@ -303,7 +283,7 @@ xf86CloseConsole(void)
 
     close(xf86Info.consoleFd);
 
-#if defined(__SOL8__) || defined(__sparc__)
+#if defined(__SOL8__) || !defined(i386)
 
     /*
      * This probably shouldn't be here.  However, there is no corresponding
@@ -322,7 +302,7 @@ xf86CloseConsole(void)
 }
 
 int
-xf86ProcessArgument(int argc, const char **argv, int i)
+xf86ProcessArgument(int argc, char **argv, int i)
 {
     /*
      * Keep server from detaching from controlling tty.  This is useful when
@@ -360,7 +340,7 @@ xf86ProcessArgument(int argc, const char **argv, int i)
 
 #endif /* HAS_USL_VTS */
 
-#if defined(__SOL8__) || defined(__sparc__)
+#if defined(__SOL8__) || !defined(i386)
 
     if ((i + 1) < argc) {
 	if (!strcmp(argv[i], "-dev")) {
@@ -390,7 +370,7 @@ void xf86UseMsg()
 #ifdef HAS_USL_VTS
     ErrorF("vtXX                   Use the specified VT number\n");
 #endif
-#if defined(__SOL8__) || defined(__sparc__)
+#if defined(__SOL8__) || !defined(i386)
     ErrorF("-dev <fb>              Framebuffer device\n");
     ErrorF("-ar1 <float>           Set autorepeat initiate time (sec)\n");
     ErrorF("                       (if not using XKB)\n");

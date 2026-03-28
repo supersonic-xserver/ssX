@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/radeon/radeon_ioctl.h,v 1.6 2002/12/16 16:18:58 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_ioctl.h,v 1.1.1.2 2004/12/10 15:06:21 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -103,6 +110,7 @@ extern void radeonWaitForIdleLocked( radeonContextPtr rmesa );
 extern void radeonWaitForVBlank( radeonContextPtr rmesa );
 extern void radeonInitIoctlFuncs( GLcontext *ctx );
 extern void radeonGetAllParams( radeonContextPtr rmesa );
+extern void radeonSetUpAtomList( radeonContextPtr rmesa );
 
 /* radeon_compat.c:
  */
@@ -110,7 +118,6 @@ extern void radeonCompatEmitPrimitive( radeonContextPtr rmesa,
 				       GLuint vertex_format,
 				       GLuint hw_primitive,
 				       GLuint nrverts );
-
 
 /* ================================================================
  * Helper macros:
@@ -130,7 +137,8 @@ do {						\
 #define RADEON_STATECHANGE( rmesa, ATOM )			\
 do {								\
    RADEON_NEWPRIM( rmesa );					\
-   move_to_head( &(rmesa->hw.dirty), &(rmesa->hw.ATOM));	\
+   rmesa->hw.ATOM.dirty = GL_TRUE;				\
+   rmesa->hw.is_dirty = GL_TRUE;				\
 } while (0)
 
 #define RADEON_DB_STATE( ATOM )			        \
@@ -144,7 +152,8 @@ static __inline int RADEON_DB_STATECHANGE(
    if (memcmp(atom->cmd, atom->lastcmd, atom->cmd_size*4)) {
       int *tmp;
       RADEON_NEWPRIM( rmesa );
-      move_to_head( &(rmesa->hw.dirty), atom );
+      atom->dirty = GL_TRUE;
+      rmesa->hw.is_dirty = GL_TRUE;
       tmp = atom->cmd; 
       atom->cmd = atom->lastcmd;
       atom->lastcmd = tmp;
@@ -163,6 +172,39 @@ do {							\
       radeonFlush( rmesa->glCtx );			\
    }							\
 } while (0)
+
+/* Command lengths.  Note that any time you ensure ELTS_BUFSZ or VBUF_BUFSZ
+ * are available, you will also be adding an rmesa->state.max_state_size because
+ * r200EmitState is called from within r200EmitVbufPrim and r200FlushElts.
+ */
+#if RADEON_OLD_PACKETS
+#define AOS_BUFSZ(nr)	((3 + ((nr / 2) * 3) + ((nr & 1) * 2)) * sizeof(int))
+#define VERT_AOS_BUFSZ	(0)
+#define ELTS_BUFSZ(nr)	(24 + nr * 2)
+#define VBUF_BUFSZ	(6 * sizeof(int))
+#else
+#define AOS_BUFSZ(nr)	((3 + ((nr / 2) * 3) + ((nr & 1) * 2)) * sizeof(int))
+#define VERT_AOS_BUFSZ	(5 * sizeof(int))
+#define ELTS_BUFSZ(nr)	(16 + nr * 2)
+#define VBUF_BUFSZ	(4 * sizeof(int))
+#endif
+
+/* Ensure that a minimum amount of space is available in the command buffer.
+ * This is used to ensure atomicity of state updates with the rendering requests
+ * that rely on them.
+ *
+ * An alternative would be to implement a "soft lock" such that when the buffer
+ * wraps at an inopportune time, we grab the lock, flush the current buffer,
+ * and hang on to the lock until the critical section is finished and we flush
+ * the buffer again and unlock.
+ */
+static __inline void radeonEnsureCmdBufSpace( radeonContextPtr rmesa,
+					      int bytes )
+{
+   if (rmesa->store.cmd_used + bytes > RADEON_CMD_BUF_SZ)
+      radeonFlushCmdBuf( rmesa, __FUNCTION__ );
+   assert( bytes <= RADEON_CMD_BUF_SZ );
+}
 
 /* Alloc space in the command buffer
  */

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  sfdriver.h                                                             */
 /*                                                                         */
 /*    High-level SFNT driver interface (specification).                    */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,25 +23,23 @@
 /***************************************************************************/
 
 
-#ifndef SFDRIVER_H
-#define SFDRIVER_H
+#ifndef __SFDRIVER_H__
+#define __SFDRIVER_H__
 
-#include <freetype/ftmodule.h>
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#include <ft2build.h>
+#include FT_MODULE_H
+
+
+FT_BEGIN_HEADER
 
 
   FT_EXPORT_VAR( const FT_Module_Class )  sfnt_module_class;
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-
-#endif /* SFDRIVER_H */
+#endif /* __SFDRIVER_H__ */
 
 
 /* END */

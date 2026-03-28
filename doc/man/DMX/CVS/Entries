@@ -1,0 +1,19 @@
+/DMX.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXAddInput.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXAddScreen.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXChangeDesktopAttributes.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXChangeScreensAttributes.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXForceWindowCreation.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXGetDesktopAttributes.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXGetInputAttributes.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXGetInputCount.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXGetScreenAttributes.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXGetScreenCount.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXGetWindowAttributes.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXQueryExtension.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXQueryVersion.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXRemoveInput.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXRemoveScreen.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/DMXSync.man/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.1/Fri Mar 18 13:05:17 2005//Tnetbsd-5-2-3-RELEASE
+D

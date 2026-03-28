@@ -29,6 +29,7 @@ libxserver_randr = static_library('libxserver_randr',
     srcs_randr,
     include_directories: inc,
     dependencies: common_dep,
+    c_args: ['-DSSX_LEGACY_MODE'],
 )
 
 install_data(hdrs_randr, install_dir: xorgsdkdir)

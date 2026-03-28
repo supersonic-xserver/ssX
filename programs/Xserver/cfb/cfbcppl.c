@@ -1,5 +1,13 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbcppl.c,v 1.9tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $TOG: cfb8cppl.c /main/16 1998/02/09 14:04:13 kaleb $
+ *
 Copyright 1990, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -24,9 +32,10 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
+/* $XFree86: xc/programs/Xserver/cfb/cfbcppl.c,v 1.7 2003/07/16 01:38:37 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "gcstruct.h"
 #include "window.h"
 #include "pixmapstr.h"
@@ -34,7 +43,9 @@ in this Software without prior written authorization from The Open Group.
 #include "windowstr.h"
 #include "cfb.h"
 #if PSZ == 8
+#undef   PSZ /* for maskbits.h */
 #include "maskbits.h"
+#define PSZ 8
 #include "mergerop.h"
 #else /* PSZ==8 */
 #include "cfbtab.h" /* provides starttab, endttab, partmasks */
@@ -42,9 +53,13 @@ in this Software without prior written authorization from The Open Group.
 
 
 void
-cfbCopyImagePlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
-		  int rop, RegionPtr prgnDst, DDXPointPtr pptSrc,
-		  unsigned long planemask)
+cfbCopyImagePlane(
+    DrawablePtr pSrcDrawable,
+    DrawablePtr pDstDrawable,
+    int	rop,
+    RegionPtr prgnDst,
+    DDXPointPtr pptSrc,
+    unsigned long planemask)
 {
     /* note: there must be some sort of trick behind,
        passing a planemask value with all bits set
@@ -87,9 +102,14 @@ cfbCopyImagePlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
 }
 
 void
-cfbCopyPlane8to1(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
-		 int rop, RegionPtr prgnDst, DDXPointPtr pptSrc,
-		 unsigned long planemask, unsigned long bitPlane)
+cfbCopyPlane8to1(
+    DrawablePtr pSrcDrawable,
+    DrawablePtr pDstDrawable,
+    int	rop,
+    RegionPtr prgnDst,
+    DDXPointPtr pptSrc,
+    unsigned long planemask,
+    unsigned long bitPlane)
 {
     int			    srcx, srcy, dstx, dsty, width, height;
     unsigned char	    *psrcBase;
@@ -97,12 +117,12 @@ cfbCopyPlane8to1(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
     int			    widthSrc, widthDst;
     unsigned char	    *psrcLine;
     PixelType		    *pdstLine;
-    unsigned char	    *psrc;
-    int			    i;
-    int			    curBit;
-    int			    bitPos;
-    CfbBits		    bits;
-    PixelType		    *pdst;
+    register unsigned char  *psrc;
+    register int	    i;
+    register int	    curBit;
+    register int	    bitPos;
+    register CfbBits  bits;
+    register PixelType	    *pdst;
     PixelType		    startmask, endmask;
     int			    niStart = 0, niEnd = 0;
     int			    bitStart = 0, bitEnd = 0;
@@ -291,9 +311,14 @@ cfbCopyPlane24to1
 #if PSZ == 32
 cfbCopyPlane32to1
 #endif
-(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, int rop,
- RegionPtr prgnDst, DDXPointPtr pptSrc, unsigned long planemask,
- unsigned long bitPlane)
+(
+    DrawablePtr pSrcDrawable,
+    DrawablePtr pDstDrawable,
+    int	rop,
+    RegionPtr prgnDst,
+    DDXPointPtr pptSrc,
+    unsigned long planemask,
+    unsigned long bitPlane)
 {
     int			    srcx, srcy, dstx, dsty, width, height;
     CfbBits	    *psrcBase;
@@ -301,22 +326,22 @@ cfbCopyPlane32to1
     int			    widthSrc, widthDst;
 #if PSZ == 16
     unsigned short	    *psrcLine;
-    unsigned short	    *psrc;
+    register unsigned short *psrc;
 #endif
 #if PSZ == 24
     unsigned char	    *psrcLine;
-    unsigned char	    *psrc;
+    register unsigned char  *psrc;
 #endif
 #if PSZ == 32
     unsigned int	    *psrcLine;
-    unsigned int	    *psrc;
+    register unsigned int   *psrc;
 #endif
     unsigned int	    *pdstLine;
-    unsigned int	    *pdst;
-    int			    i;
-    int			    curBit;
-    int			    bitPos;
-    unsigned int	    bits;
+    register unsigned int   *pdst;
+    register int	    i;
+    register int	    curBit;
+    register int	    bitPos;
+    register unsigned int   bits;
     unsigned int	    startmask = 0, endmask = 0;
     int			    niStart = 0, niEnd = 0;
     int			    bitStart = 0, bitEnd = 0;

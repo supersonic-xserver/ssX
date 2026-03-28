@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -60,7 +60,7 @@ Chapter 7: Graphics Context Functions
 A number of resources are used when performing graphics operations in X.
 Most information about performing graphics (for example, foreground
 color, background color, line style, and so on) is stored in
-resources called graphics contexts (GC).
+resources called graphics contexts (GCs).
 .IN "Graphics context"
 Most graphics operations (see chapter 8) take a 
 GC as an argument.
@@ -81,14 +81,14 @@ This chapter discusses how to:
 .IP \(bu 5
 Manipulate graphics context/state
 .IP \(bu 5
-Use GC convenience functions
+Use graphics context convenience functions
 .NH 2
 Manipulating Graphics Context/State
 .XS
 \*(SN Manipulating Graphics Context/State 
 .XE
 .LP
-Most attributes of graphics operations are stored in Graphic Contexts (GCs).
+Most attributes of graphics operations are stored in GCs.
 These include line width, line style, plane mask, foreground, background,
 tile, stipple, clipping region, end style, join style, and so on.
 Graphics operations (for example, drawing lines) use these values
@@ -532,7 +532,7 @@ The planes attribute is of type long, and it specifies which planes of the
 destination are to be modified, one bit per plane.
 .IN "Plane" "mask"
 A monochrome display has only one plane and
-will be the least-significant bit of the word.
+will be the least significant bit of the word.
 As planes are added to the display hardware, they will occupy more
 significant bits in the plane mask.
 .LP
@@ -627,7 +627,7 @@ T{
 T}	T{
 The full path of the line is drawn, 
 but the even dashes are filled differently 
-than the odd dashes (see fill-style) with
+from the odd dashes (see fill-style) with
 .PN CapButt 
 style used where even and odd dashes meet.
 T}
@@ -724,7 +724,7 @@ T{
 T}	T{
 thin
 T}	T{
-The results are device-dependent, 
+The results are device dependent, 
 but the desired effect is that nothing is drawn.
 T}
 .sp 6p
@@ -733,7 +733,7 @@ T{
 T}	T{
 thin
 T}	T{
-The results are device-dependent, 
+The results are device dependent, 
 but the desired effect is that a single pixel is drawn.
 T}
 .sp 6p
@@ -908,7 +908,7 @@ For optimum performance,
 you should draw as much as possible with the same GC 
 (without changing its components).
 The costs of changing GC components relative to using different GCs
-depend upon the display hardware and the server implementation.
+depend on the display hardware and the server implementation.
 It is quite likely that some amount of GC information will be
 cached in display hardware and that such hardware can only cache a small number
 of GCs.
@@ -1169,7 +1169,7 @@ Changing the dash-offset or dash-list
 overrides any previous 
 .PN XSetDashes
 request on the context.
-The order in which components are verified and altered is server-dependent.
+The order in which components are verified and altered is server dependent.
 If an error is generated, a subset of the components may have been altered.
 .LP
 .PN XChangeGC
@@ -1252,7 +1252,7 @@ and
 bits, respectively, in the valuemask)
 cannot be requested.
 Also note that an invalid resource ID (with one or more of the three
-most-significant bits set to 1) will be returned for
+most significant bits set to 1) will be returned for
 .PN GCFont ,
 .PN GCTile ,
 and
@@ -1329,9 +1329,9 @@ Specifies the GC.
 .LP
 .eM
 .NH 2
-Using GC Convenience Routines
+Using Graphics Context Convenience Routines
 .XS
-\*(SN Using GC Convenience Routines 
+\*(SN Using Graphics Context Convenience Routines 
 .XE
 .LP
 This section discusses how to set the:
@@ -2026,7 +2026,7 @@ can generate
 .PN BadAlloc
 and
 .PN BadGC 
-error.
+errors.
 .NH 3
 Setting the Current Font 
 .XS
@@ -2130,7 +2130,7 @@ Specifies the pixmap or
 .eM
 If the clip-mask is set to
 .PN None ,
-the pixels are are always drawn (regardless of the clip-origin).
+the pixels are always drawn (regardless of the clip-origin).
 .LP
 .PN XSetClipMask
 can generate

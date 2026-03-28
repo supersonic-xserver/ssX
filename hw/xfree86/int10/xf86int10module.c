@@ -1,16 +1,24 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86int10module.c,v 1.3 2006/03/16 16:50:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *                   XFree86 int10 module
  *   execute BIOS int 10h calls in x86 real mode environment
  *                 Copyright 1999 Egbert Eich
  */
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include "xf86.h"
 #include "xf86str.h"
 #include "xf86Pci.h"
 #include "xf86int10.h"
+
+
+#ifdef XFree86LOADER
+
 
 #ifndef MOD_NAME
 # define MOD_NAME int10
@@ -30,7 +38,7 @@ static XF86ModuleVersionInfo NAME(VersRec) =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    XORG_VERSION_CURRENT,
+    XF86_VERSION_CURRENT,
     1, 0, 0,
     ABI_CLASS_VIDEODRV,		/* needs the video driver ABI */
     ABI_VIDEODRV_VERSION,
@@ -38,14 +46,10 @@ static XF86ModuleVersionInfo NAME(VersRec) =
     {0,0,0,0}
 };
 
-_X_EXPORT XF86ModuleData NAME(ModuleData) = {
-    &NAME(VersRec),
-    NAME(Setup),
-    NULL
-};
+XF86ModuleData NAME(ModuleData) = { &NAME(VersRec), NAME(Setup), NULL };
 
 static pointer
-NAME(Setup)(pointer module, pointer opts, int *errmaj, int *errmin)
+NAME(Setup)(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
     
@@ -62,3 +66,5 @@ NAME(Setup)(pointer module, pointer opts, int *errmaj, int *errmin)
      */
     return (pointer)1;
 }
+
+#endif

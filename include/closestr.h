@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/closestr.h,v 3.7 2006/09/02 16:44:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1991, 1998  The Open Group
@@ -50,7 +58,7 @@ typedef struct _OFclosure {
     Bool        slept;
 
 /* XXX -- get these from request buffer instead? */
-    char       *origFontName;
+    const char       *origFontName;
     int		origFontNameLen;
     XID         fontid;
     char       *fontname;

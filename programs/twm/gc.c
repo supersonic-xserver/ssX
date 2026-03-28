@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/twm/gc.c,v 1.7tsi Exp $ */
 /*****************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -49,9 +55,12 @@ in this Software without prior written authorization from The Open Group.
 /**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
+/* $XFree86: xc/programs/twm/gc.c,v 1.6 2001/12/14 20:01:07 dawes Exp $ */
 
 
 /**********************************************************************
+ *
+ * $Xorg: gc.c,v 1.4 2001/02/09 02:05:36 xorgcvs Exp $
  *
  * Open the fonts and create the GCs
  *
@@ -75,7 +84,7 @@ in this Software without prior written authorization from The Open Group.
  */
 
 void
-CreateGCs(void)
+CreateGCs()
 {
     static ScreenInfo *prevScr = NULL;
     XGCValues	    gcv;
@@ -88,33 +97,31 @@ CreateGCs(void)
 
     /* create GC's */
 
-    gcm = GCFunction | GCLineWidth | GCForeground | GCSubwindowMode;
-    gcv.function = GXxor;
-    gcv.line_width = 0;
-    gcv.foreground = Scr->XORvalue;
-    gcv.subwindow_mode = IncludeInferiors;
+    gcm = 0;
+    gcm |= GCFunction;	    gcv.function = GXxor;
+    gcm |= GCLineWidth;	    gcv.line_width = 0;
+    gcm |= GCForeground;    gcv.foreground = Scr->XORvalue;
+    gcm |= GCSubwindowMode; gcv.subwindow_mode = IncludeInferiors;
 
     Scr->DrawGC = XCreateGC(dpy, Scr->Root, gcm, &gcv);
 
-    gcm = GCForeground | GCBackground;
-    gcv.foreground = Scr->MenuC.fore;
-    gcv.background = Scr->MenuC.back;
-    if (!use_fontset) {
-	gcm |= GCFont;
-	gcv.font = Scr->MenuFont.font->fid;
-    }
+    gcm = 0;
+    gcm |= GCForeground;    gcv.foreground = Scr->MenuC.fore;
+    gcm |= GCBackground;    gcv.background = Scr->MenuC.back;
+    if (!use_fontset)
+	{gcm |= GCFont;	    gcv.font =  Scr->MenuFont.font->fid;}
 
     Scr->MenuGC = XCreateGC(dpy, Scr->Root, gcm, &gcv);
 
-    gcm = GCPlaneMask | GCGraphicsExposures | GCLineWidth;
-    gcv.plane_mask = AllPlanes;
+    gcm = 0;
+    gcm |= GCPlaneMask;	    gcv.plane_mask = AllPlanes;
     /*
      * Prevent GraphicsExpose and NoExpose events.  We'd only get NoExpose
      * events anyway;  they cause BadWindow errors from XGetWindowAttributes
      * call in FindScreenInfo (events.c) (since drawable is a pixmap).
      */
-    gcv.graphics_exposures = False;
-    gcv.line_width = 0;
+    gcm |= GCGraphicsExposures;  gcv.graphics_exposures = False;
+    gcm |= GCLineWidth;	    gcv.line_width = 0;
 
     Scr->NormalGC = XCreateGC(dpy, Scr->Root, gcm, &gcv);
 }

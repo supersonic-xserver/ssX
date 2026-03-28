@@ -1,4 +1,18 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,62 +58,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* The panoramix components contained the following notice */
-/*****************************************************************
-
-Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
-BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of Digital Equipment Corporation
-shall not be used in advertising or otherwise to promote the sale, use or other
-dealings in this Software without prior written authorization from Digital
-Equipment Corporation.
-
-******************************************************************/
-/* XSERVER_DTRACE additions:
- * Copyright 2005-2006 Sun Microsystems, Inc.  All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, and/or sell copies of the Software, and to permit persons
- * to whom the Software is furnished to do so, provided that the above
- * copyright notice(s) and this permission notice appear in all copies of
- * the Software and that both the above copyright notice(s) and this
- * permission notice appear in supporting documentation.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
- * OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- * HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
- * INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- * 
- * Except as contained in this notice, the name of a copyright holder
- * shall not be used in advertising or otherwise to promote the sale, use
- * or other dealings in this Software without prior written authorization
- * of the copyright holder.
- */
 
 /*	Routines to manage various kinds of resources:
  *
@@ -123,12 +81,9 @@ Equipment Corporation.
  *      1, and an otherwise arbitrary ID in the low 22 bits, we can create a
  *      resource "owned" by the client.
  */
+/* $XFree86: xc/programs/Xserver/dix/resource.c,v 3.17 2006/02/19 15:51:19 tsi Exp $ */
 
 #define NEED_EVENTS
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include "misc.h"
 #include "os.h"
@@ -146,16 +101,7 @@ Equipment Corporation.
 #include "panoramiX.h"
 #include "panoramiXsrv.h"
 #endif
-#include "xace.h"
 #include <assert.h>
-
-#ifdef XSERVER_DTRACE
-#include <sys/types.h>
-typedef const char *string;
-#include "Xserver-dtrace.h"
-
-#define TypeNameString(t) NameForAtom(ResourceNames[t & TypeMask])
-#endif
 
 static void RebuildTable(
     int /*client*/
@@ -185,24 +131,25 @@ typedef struct _ClientResource {
     XID		expectID;
 } ClientResourceRec;
 
-_X_EXPORT RESTYPE lastResourceType;
+RESTYPE lastResourceType;
 static RESTYPE lastResourceClass;
-_X_EXPORT RESTYPE TypeMask;
+RESTYPE TypeMask;
 
 static DeleteType *DeleteFuncs = (DeleteType *)NULL;
 
-#ifdef XResExtension
+#ifdef RES
 
-_X_EXPORT Atom * ResourceNames = NULL;
+Atom * ResourceNames = NULL;
 
-_X_EXPORT void RegisterResourceName (RESTYPE type, char *name)
+void
+RegisterResourceName(RESTYPE type, char *name)
 {
     ResourceNames[type & TypeMask] =  MakeAtom(name, strlen(name), TRUE);
 }
 
 #endif
 
-_X_EXPORT RESTYPE
+RESTYPE
 CreateNewResourceType(DeleteType deleteFunc)
 {
     RESTYPE next = lastResourceType + 1;
@@ -215,7 +162,7 @@ CreateNewResourceType(DeleteType deleteFunc)
     if (!funcs)
 	return 0;
 
-#ifdef XResExtension
+#ifdef RES
     {
        Atom *newnames;
        newnames = xrealloc(ResourceNames, (next + 1) * sizeof(Atom));
@@ -232,8 +179,8 @@ CreateNewResourceType(DeleteType deleteFunc)
     return next;
 }
 
-_X_EXPORT RESTYPE
-CreateNewResourceClass(void)
+RESTYPE
+CreateNewResourceClass()
 {
     RESTYPE next = lastResourceClass >> 1;
 
@@ -244,7 +191,7 @@ CreateNewResourceClass(void)
     return next;
 }
 
-static ClientResourceRec clientTable[MAXCLIENTS];
+ClientResourceRec clientTable[MAXCLIENTS];
 
 /*****************
  * InitClientResources
@@ -279,7 +226,7 @@ InitClientResources(ClientPtr client)
 	DeleteFuncs[RT_OTHERCLIENT & TypeMask] = OtherClientGone;
 	DeleteFuncs[RT_PASSIVEGRAB & TypeMask] = DeletePassiveGrab;
 
-#ifdef XResExtension
+#ifdef RES
         if(ResourceNames)
             xfree(ResourceNames);
         ResourceNames = xalloc((lastResourceType + 1) * sizeof(Atom));
@@ -334,11 +281,7 @@ Hash(int client, XID id)
 }
 
 static XID
-AvailableID(
-    int client,
-    XID id,
-    XID maxid,
-    XID goodid)
+AvailableID(int client, XID id, XID maxid, XID goodid)
 {
     ResourcePtr res;
 
@@ -355,7 +298,7 @@ AvailableID(
     return 0;
 }
 
-_X_EXPORT void
+void
 GetXIDRange(int client, Bool server, XID *minp, XID *maxp)
 {
     XID id, maxid;
@@ -390,8 +333,7 @@ GetXIDRange(int client, Bool server, XID *minp, XID *maxp)
     *maxp = maxid;
 }
 
-/**
- *  GetXIDList is called by the XC-MISC extension's MiscGetXIDList function.
+/*  GetXIDList is called by the XC-MISC extension's MiscGetXIDList function.
  *  This function tries to find count unused XIDs for the given client.  It 
  *  puts the IDs in the array pids and returns the number found, which should
  *  almost always be the number requested.
@@ -406,8 +348,8 @@ GetXIDRange(int client, Bool server, XID *minp, XID *maxp)
  *  invented, but this will be used so rarely that this should suffice.
  */
 
-_X_EXPORT unsigned int
-GetXIDList(ClientPtr pClient, unsigned count, XID *pids)
+unsigned int
+GetXIDList(ClientPtr pClient, unsigned int count, XID *pids)
 {
     unsigned int found = 0;
     XID id = pClient->clientAsMask;
@@ -433,7 +375,7 @@ GetXIDList(ClientPtr pClient, unsigned count, XID *pids)
  * over-running another client.
  */
 
-_X_EXPORT XID
+XID
 FakeClientID(int client)
 {
     XID id, maxid;
@@ -454,16 +396,13 @@ FakeClientID(int client)
     return id;
 }
 
-_X_EXPORT Bool
+Bool
 AddResource(XID id, RESTYPE type, pointer value)
 {
     int client;
     ClientResourceRec *rrec;
     ResourcePtr res, *head;
     	
-#ifdef XSERVER_DTRACE
-    XSERVER_RESOURCE_ALLOC(id, type, value, TypeNameString(type));
-#endif
     client = CLIENT_ID(id);
     rrec = &clientTable[client];
     if (!rrec->buckets)
@@ -542,7 +481,7 @@ RebuildTable(int client)
     clientTable[client].resources = resources;
 }
 
-_X_EXPORT void
+void
 FreeResource(XID id, RESTYPE skipDeleteFuncType)
 {
     int		cid;
@@ -563,11 +502,6 @@ FreeResource(XID id, RESTYPE skipDeleteFuncType)
 	    if (res->id == id)
 	    {
 		RESTYPE rtype = res->type;
-
-#ifdef XSERVER_DTRACE
-		XSERVER_RESOURCE_FREE(res->id, res->type,
-			      res->value, TypeNameString(res->type));
-#endif		    
 		*prev = res->next;
 		elements = --*eltptr;
 		if (rtype & RC_CACHED)
@@ -589,12 +523,12 @@ FreeResource(XID id, RESTYPE skipDeleteFuncType)
 	}
     }
     if (!gotOne)
-	ErrorF("Freeing resource id=%lX which isn't there.\n",
+	FatalError("Freeing resource id=%lX which isn't there",
 		   (unsigned long)id);
 }
 
 
-_X_EXPORT void
+void
 FreeResourceByType(XID id, RESTYPE type, Bool skipFree)
 {
     int		cid;
@@ -609,10 +543,6 @@ FreeResourceByType(XID id, RESTYPE type, Bool skipFree)
 	{
 	    if (res->id == id && res->type == type)
 	    {
-#ifdef XSERVER_DTRACE
-		XSERVER_RESOURCE_FREE(res->id, res->type,
-			      res->value, TypeNameString(res->type));
-#endif		    		    
 		*prev = res->next;
 		if (type & RC_CACHED)
 		    FlushClientCaches(res->id);
@@ -638,8 +568,8 @@ FreeResourceByType(XID id, RESTYPE type, Bool skipFree)
  * data
  */
 
-_X_EXPORT Bool
-ChangeResourceValue (XID id, RESTYPE rtype, pointer value)
+Bool
+ChangeResourceValue(XID id, RESTYPE rtype, pointer value)
 {
     int    cid;
     ResourcePtr res;
@@ -666,7 +596,7 @@ ChangeResourceValue (XID id, RESTYPE rtype, pointer value)
  * add and delete an equal number of resources!
  */
 
-_X_EXPORT void
+void
 FindClientResourcesByType(
     ClientPtr client,
     RESTYPE type,
@@ -698,7 +628,7 @@ FindClientResourcesByType(
     }
 }
 
-_X_EXPORT void
+void
 FindAllClientResources(
     ClientPtr client,
     FindAllRes func,
@@ -775,10 +705,6 @@ FreeClientNeverRetainResources(ClientPtr client)
 	    RESTYPE rtype = this->type;
 	    if (rtype & RC_NEVERRETAIN)
 	    {
-#ifdef XSERVER_DTRACE
-		XSERVER_RESOURCE_FREE(this->id, this->type,
-			      this->value, TypeNameString(this->type));
-#endif		    
 		*prev = this->next;
 		if (rtype & RC_CACHED)
 		    FlushClientCaches(this->id);
@@ -825,10 +751,6 @@ FreeClientResources(ClientPtr client)
         for (this = *head; this; this = *head)
 	{
 	    RESTYPE rtype = this->type;
-#ifdef XSERVER_DTRACE
-	    XSERVER_RESOURCE_FREE(this->id, this->type,
-			  this->value, TypeNameString(this->type));
-#endif		    
 	    *head = this->next;
 	    if (rtype & RC_CACHED)
 		FlushClientCaches(this->id);
@@ -842,7 +764,7 @@ FreeClientResources(ClientPtr client)
 }
 
 void
-FreeAllResources(void)
+FreeAllResources()
 {
     int	i;
 
@@ -853,7 +775,7 @@ FreeAllResources(void)
     }
 }
 
-_X_EXPORT Bool
+Bool
 LegalNewID(XID id, ClientPtr client)
 {
 
@@ -873,7 +795,10 @@ LegalNewID(XID id, ClientPtr client)
 	     !LookupIDByClass(id, RC_ANY)));
 }
 
-/* SecurityLookupIDByType and SecurityLookupIDByClass:
+#ifdef XCSECURITY
+
+/*
+ * SecurityLookupIDByType and SecurityLookupIDByClass:
  * These are the heart of the resource ID security system.  They take
  * two additional arguments compared to the old LookupID functions:
  * the client doing the lookup, and the access mode (see resource.h).
@@ -881,12 +806,16 @@ LegalNewID(XID id, ClientPtr client)
  * else NULL is returned.
  */
 
-_X_EXPORT pointer
+pointer
 SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
 {
     int    cid;
     ResourcePtr res;
     pointer retval = NULL;
+
+    assert(client == NullClient ||
+     (client->index <= currentMaxClients && clients[client->index] == client));
+    assert( (rtype & TypeMask) <= lastResourceType);
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) &&
 	clientTable[cid].buckets)
@@ -900,20 +829,22 @@ SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
 		break;
 	    }
     }
-    if (retval && client && 
-	!XaceHook(XACE_RESOURCE_ACCESS, client, id, rtype, mode, retval))
-	retval = NULL;
-
+    if (retval && client && client->CheckAccess)
+	retval = (* client->CheckAccess)(client, id, rtype, mode, retval);
     return retval;
 }
 
 
-_X_EXPORT pointer
+pointer
 SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)
 {
     int    cid;
     ResourcePtr res = NULL;
     pointer retval = NULL;
+
+    assert(client == NullClient ||
+     (client->index <= currentMaxClients && clients[client->index] == client));
+    assert (classes >= lastResourceClass);
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) &&
 	clientTable[cid].buckets)
@@ -927,27 +858,85 @@ SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)
 		break;
 	    }
     }
-    if (retval && client &&
-	!XaceHook(XACE_RESOURCE_ACCESS, client, id, res->type, mode, retval))
-	retval = NULL;
-
+    if (retval && client && client->CheckAccess)
+	retval = (* client->CheckAccess)(client, id, res->type, mode, retval);
     return retval;
 }
 
-/* We can't replace the LookupIDByType and LookupIDByClass functions with
+/*
+ * We can't replace the LookupIDByType and LookupIDByClass functions with
  * macros because of compatibility with loadable servers.
  */
 
-_X_EXPORT pointer
+pointer
 LookupIDByType(XID id, RESTYPE rtype)
 {
     return SecurityLookupIDByType(NullClient, id, rtype,
-				  DixUnknownAccess);
+				  SecurityUnknownAccess);
 }
 
-_X_EXPORT pointer
+pointer
 LookupIDByClass(XID id, RESTYPE classes)
 {
     return SecurityLookupIDByClass(NullClient, id, classes,
-				   DixUnknownAccess);
+				   SecurityUnknownAccess);
 }
+
+#else /* not XCSECURITY */
+
+/*
+ *  LookupIDByType returns the object with the given id and type, else NULL.
+ */ 
+pointer
+LookupIDByType(XID id, RESTYPE rtype)
+{
+    int    cid;
+    ResourcePtr res;
+
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) &&
+	clientTable[cid].buckets)
+    {
+	res = clientTable[cid].resources[Hash(cid, id)];
+
+	for (; res; res = res->next)
+	    if ((res->id == id) && (res->type == rtype))
+		return res->value;
+    }
+    return (pointer)NULL;
+}
+
+/*
+ *  LookupIDByClass returns the object with the given id and any one of the
+ *  given classes, else NULL.
+ */ 
+pointer
+LookupIDByClass(XID id, RESTYPE classes)
+{
+    int    cid;
+    ResourcePtr res;
+
+    if (((cid = CLIENT_ID(id)) < MAXCLIENTS) &&
+	clientTable[cid].buckets)
+    {
+	res = clientTable[cid].resources[Hash(cid, id)];
+
+	for (; res; res = res->next)
+	    if ((res->id == id) && (res->type & classes))
+		return res->value;
+    }
+    return (pointer)NULL;
+}
+
+pointer
+SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
+{
+    return LookupIDByType(id, rtype);
+}
+
+pointer
+SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)
+{
+    return LookupIDByClass(id, classes);
+}
+
+#endif /* XCSECURITY */

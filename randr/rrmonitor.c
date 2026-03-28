@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2014 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,7 +27,9 @@
  * OF THIS SOFTWARE.
  */
 
+#include "scrnintstr.h"
 #include "randrstr.h"
+#include "dixaccess.h"
 #include "swaprep.h"
 
 static Atom
@@ -202,7 +211,7 @@ RRMonitorInitList(ScreenPtr screen, RRMonitorListPtr mon_list, Bool get_active)
 
     /* Count the number of crtcs in this and any slave screens */
     numCrtcs = pScrPriv->numCrtcs;
-    xorg_list_for_each_entry(slave, &screen->output_slave_list, output_head) {
+    xorg_list_for_each_entry(slave, &screen->output_slave_list, output_slave_list) {
         rrScrPrivPtr pSlavePriv;
         pSlavePriv = rrGetScrPriv(slave);
         numCrtcs += pSlavePriv->numCrtcs;
@@ -220,7 +229,7 @@ RRMonitorInitList(ScreenPtr screen, RRMonitorListPtr mon_list, Bool get_active)
             mon_list->server_crtc[c] = pScrPriv->crtcs[sc];
     }
 
-    xorg_list_for_each_entry(slave, &screen->output_slave_list, output_head) {
+    xorg_list_for_each_entry(slave, &screen->output_slave_list, output_slave_list) {
         rrScrPrivPtr pSlavePriv;
         pSlavePriv = rrGetScrPriv(slave);
         for (sc = 0; sc < pSlavePriv->numCrtcs; sc++, c++) {
@@ -471,7 +480,7 @@ RRMonitorAdd(ClientPtr client, ScreenPtr screen, RRMonitorPtr monitor)
         return BadValue;
     }
 
-    xorg_list_for_each_entry(slave, &screen->output_slave_list, output_head) {
+    xorg_list_for_each_entry(slave, &screen->output_slave_list, output_slave_list) {
         if (RRMonitorMatchesOutputName(slave, monitor->name)) {
             client->errorValue = monitor->name;
             return BadValue;
@@ -642,7 +651,7 @@ ProcRRGetMonitors(ClientPtr client)
         swapl(&rep.nmonitors);
         swapl(&rep.noutputs);
     }
-    WriteToClient(client, sizeof(xRRGetMonitorsReply), &rep);
+    WriteToClient(client, sizeof(xRRGetMonitorsReply), (char *)&rep);
 
     client->pSwapReplyFunc = (ReplySwapPtr) CopySwap32Write;
 
@@ -671,7 +680,7 @@ ProcRRGetMonitors(ClientPtr client)
             swapl(&info.heightInMillimeters);
         }
 
-        WriteToClient(client, sizeof(xRRMonitorInfo), &info);
+        WriteToClient(client, sizeof(xRRMonitorInfo), (char *)&info);
         WriteSwappedDataToClient(client, monitor->numOutputs * sizeof (RROutput), monitor->outputs);
     }
 

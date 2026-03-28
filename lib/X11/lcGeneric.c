@@ -1,3 +1,11 @@
+/* $Xorg: lcGeneric.c,v 1.7 2000/12/12 12:44:05 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992, 1993 by TOSHIBA Corp.
  *
@@ -27,7 +35,7 @@
  *  This is source code modified by FUJITSU LIMITED under the Joint
  *  Development Agreement for the CDE/Motif PST.
  */
-/* $XFree86: xc/lib/X11/lcGeneric.c,v 3.21tsi Exp $ */
+/* $XFree86: xc/lib/X11/lcGeneric.c,v 3.20 2003/09/24 02:43:12 dawes Exp $ */
 
 #include <stdio.h>
 #include "Xlibint.h"
@@ -426,7 +434,7 @@ read_charset_define(
     char name[BUFSIZ];
     XlcCharSet charsetd;
     char **value;
-    int num, new = 0;
+    int num, new;
     XlcSide side = XlcUnknown;
     char *tmp;
 

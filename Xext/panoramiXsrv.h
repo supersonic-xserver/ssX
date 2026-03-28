@@ -1,25 +1,36 @@
+/* $XFree86: xc/programs/Xserver/Xext/panoramiXsrv.h,v 1.10 2004/06/30 20:21:38 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _PANORAMIXSRV_H_
 #define _PANORAMIXSRV_H_
 
 #include "panoramiX.h"
 
-/* ssX: Forward declaration for PanoramiXData - needs restoration from git */
-typedef struct _PanoramiXData PanoramiXData;
-
 extern int PanoramiXNumScreens;
 extern PanoramiXData *panoramiXdataPtr;
 extern int PanoramiXPixWidth;
 extern int PanoramiXPixHeight;
+extern RegionRec PanoramiXScreenRegion;
 extern XID *PanoramiXVisualTable;
 
 extern void PanoramiXConsolidate(void);
 extern Bool PanoramiXCreateConnectionBlock(void);
 extern PanoramiXRes * PanoramiXFindIDByScrnum(RESTYPE, XID, int);
+extern PanoramiXRes * PanoramiXFindIDOnAnyScreen(RESTYPE, XID);
+extern WindowPtr PanoramiXChangeWindow(int, WindowPtr);
 extern Bool XineramaRegisterConnectionBlockCallback(void (*func)(void));
 extern int XineramaDeleteResource(pointer, XID);
 

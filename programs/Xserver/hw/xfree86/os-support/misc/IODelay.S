@@ -26,6 +26,7 @@ Austin, Tx 78765
 glenn@cs.utexas.edu)
 7/21/94
 *******************************************************************************/
+/* $XConsortium: IODelay.s /main/4 1996/02/21 17:40:21 kaleb $ */
  
 /* 
  *   All we really need is a delay of about 40ns for I/O recovery for just

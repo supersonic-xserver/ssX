@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbpixmap.c,v 1.4tsi Exp $ */
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -45,6 +58,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mfbpixmap.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
 
 /* pixmap management
    written by drewry, september 1986
@@ -52,7 +66,7 @@ SOFTWARE.
    on a monchrome device, a pixmap is a bitmap.
 */
 
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "maskbits.h"
@@ -65,7 +79,11 @@ SOFTWARE.
 #ifndef LOWMEMFTPT
 
 PixmapPtr
-mfbCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
+mfbCreatePixmap (pScreen, width, height, depth)
+    ScreenPtr	pScreen;
+    int		width;
+    int		height;
+    int		depth;
 {
     PixmapPtr pPixmap;
     int datasize;
@@ -104,7 +122,8 @@ mfbCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
 #endif /* ifndef LOWMEMFTPT */
 
 Bool
-mfbDestroyPixmap(PixmapPtr pPixmap)
+mfbDestroyPixmap(pPixmap)
+    PixmapPtr pPixmap;
 {
     if(--pPixmap->refcnt)
 	return TRUE;
@@ -114,9 +133,10 @@ mfbDestroyPixmap(PixmapPtr pPixmap)
 
 
 PixmapPtr
-mfbCopyPixmap(PixmapPtr pSrc)
+mfbCopyPixmap(pSrc)
+    register PixmapPtr	pSrc;
 {
-    PixmapPtr	pDst;
+    register PixmapPtr	pDst;
     int		size;
     ScreenPtr pScreen;
 
@@ -143,14 +163,15 @@ mfbCopyPixmap(PixmapPtr pSrc)
       left shift and or in original as many times as needed
 */
 void
-mfbPadPixmap(PixmapPtr pPixmap)
+mfbPadPixmap(pPixmap)
+    PixmapPtr pPixmap;
 {
-    int width = pPixmap->drawable.width;
-    int h;
-    PixelType mask;
-    PixelType *p;
-    PixelType bits;	/* real pattern bits */
-    int i;
+    register int width = pPixmap->drawable.width;
+    register int h;
+    register PixelType mask;
+    register PixelType *p;
+    register PixelType bits;	/* real pattern bits */
+    register int i;
     int rep;			/* repeat count for pattern */
 
     if (width >= PPW)
@@ -182,10 +203,12 @@ mfbPadPixmap(PixmapPtr pPixmap)
  * left.
  */
 void
-mfbXRotatePixmap(PixmapPtr pPix, int rw)
+mfbXRotatePixmap(pPix, rw)
+    PixmapPtr	pPix;
+    register int rw;
 {
-    PixelType	*pw, *pwFinal;
-    PixelType	t;
+    register PixelType	*pw, *pwFinal;
+    register PixelType	t;
 
     if (pPix == NullPixmap)
         return;
@@ -220,7 +243,9 @@ mfbXRotatePixmap(PixmapPtr pPix, int rw)
    works on any width.
  */
 void
-mfbYRotatePixmap(PixmapPtr pPix, int rh)
+mfbYRotatePixmap(pPix, rh)
+    register PixmapPtr	pPix;
+    int	rh;
 {
     int nbyDown;	/* bytes to move down to row 0; also offset of
 			   row rh */
@@ -251,9 +276,11 @@ mfbYRotatePixmap(PixmapPtr pPix, int rh)
 }
 
 void
-mfbCopyRotatePixmap(PixmapPtr psrcPix, PixmapPtr *ppdstPix, int xrot, int yrot)
+mfbCopyRotatePixmap(psrcPix, ppdstPix, xrot, yrot)
+    register PixmapPtr psrcPix, *ppdstPix;
+    int	xrot, yrot;
 {
-    PixmapPtr pdstPix;
+    register PixmapPtr pdstPix;
 
     if ((pdstPix = *ppdstPix) &&
 	(pdstPix->devKind == psrcPix->devKind) &&

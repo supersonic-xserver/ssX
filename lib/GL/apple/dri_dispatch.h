@@ -1,5 +1,13 @@
 /* dri_dispatch.h -- built automatically, DO NOT EDIT
-   $XFree86: xc/lib/GL/apple/dri_dispatch.h,v 1.8tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   $Id: dri_dispatch.h,v 1.1.1.2 2005/03/18 13:03:29 tron Exp $
+   $XFree86: xc/lib/GL/apple/dri_dispatch.h,v 1.7 2004/12/10 17:47:24 alanh Exp $ */
 /*
    Actually, this file has been edited to add necessary
    dependencies on the version of Mac OS X. Someday the
@@ -3176,6 +3184,14 @@ DEFUN_ALIAS_VOID (PointParameterfSGIS, PointParameterf,
 
 DEFUN_ALIAS_VOID (PointParameterfvSGIS, PointParameterfv,
     (GLenum pname, const GLfloat * params),
+    (pname, params))
+
+DEFUN_ALIAS_VOID (PointParameteri, PointParameteriNV,
+    (GLenum pname, GLint params),
+    (pname, params))
+
+DEFUN_ALIAS_VOID (PointParameteriv, PointParameterivNV,
+    (GLenum pname, const GLint * params),
     (pname, params))
 
 DEFUN_ALIAS_VOID (PrioritizeTexturesEXT, PrioritizeTextures,

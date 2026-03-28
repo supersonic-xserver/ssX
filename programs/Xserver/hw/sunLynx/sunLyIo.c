@@ -1,3 +1,11 @@
+/* $Xorg: sunLyIo.c,v 1.3 2000/08/17 19:48:37 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*-
  * This is sunIo.c modified for LynxOS
  * Copyright 1996 by Thomas Mueller
@@ -21,7 +29,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyIo.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyIo.c,v 3.6 2003/11/17 22:20:37 dawes Exp $ */
 
  /*
  *
@@ -297,7 +305,7 @@ ddxGiveUp()
 int
 ddxProcessArgument (argc, argv, i)
     int	argc;
-    const char *argv[];
+    char *argv[];
     int	i;
 {
     extern void UseMsg();

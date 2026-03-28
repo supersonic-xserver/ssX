@@ -1,3 +1,11 @@
+/* $Xorg: xprint.c,v 1.5 2001/03/05 20:42:26 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -63,14 +71,13 @@ copyright holders.
 **    *********************************************************
 **
 ********************************************************************/
-/* $XFree86: xc/programs/Xserver/Xext/xprint.c,v 1.17tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xprint.c,v 1.15 2003/10/28 23:08:44 tsi Exp $ */
 
-#undef  _XP_PRINT_SERVER_
 #define _XP_PRINT_SERVER_
-#include <X11/X.h>
-#include <X11/Xos.h>
+#include "X.h"
+#include "Xos.h"
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #undef NEED_EVENTS
 #include "misc.h"
 #include "windowstr.h"
@@ -78,9 +85,9 @@ copyright holders.
 #include "pixmapstr.h"
 #include "extnsionst.h"
 #include "dixstruct.h"
-#include <X11/Xatom.h>
-#include <X11/extensions/Print.h>
-#include <X11/extensions/Printstr.h>
+#include "Xatom.h"
+#include "Print.h"
+#include "Printstr.h"
 #include "../Xprint/DiPrint.h"
 #include "../Xprint/attributes.h"
 #include "modinit.h"
@@ -415,8 +422,7 @@ FreeScreenEntry(XpScreenPtr pScreenEntry)
  * whenever a context gets created for a particular driver on this screen.
  */
 void
-XpRegisterInitFunc(ScreenPtr pScreen, char *driverName,
-		   int (*initContext)(struct _XpContext *))
+XpRegisterInitFunc(ScreenPtr pScreen, char *driverName, int (*initContext)(struct _XpContext *))
 {
     XpDriverPtr pDriver;
 
@@ -569,7 +575,7 @@ ProcXpQueryVersion(ClientPtr client)
 {
     /* REQUEST(xPrintQueryVersionReq); */
     xPrintQueryVersionReply rep;
-    int n;
+    register int n;
     long l;
 
     REQUEST_SIZE_MATCH(xPrintQueryVersionReq);
@@ -1100,8 +1106,8 @@ ProcXpGetContext(ClientPtr client)
     xPrintGetContextReply rep;
 
     XpContextPtr pContext;
-    int n;
-    long l;
+    register int n;
+    register long l;
 
     REQUEST_SIZE_MATCH(xPrintGetContextReq);
 
@@ -1382,11 +1388,11 @@ XpFreePage(pointer data, XID id)
 static void
 InitContextPrivates(XpContextPtr context)
 {
-    char *ptr;
+    register char *ptr;
     DevUnion *ppriv;
-    unsigned *sizes;
-    unsigned size;
-    int i;
+    register unsigned *sizes;
+    register unsigned size;
+    register int i;
 
     if (totalContextSize == sizeof(XpContextRec))
         ppriv = (DevUnion *)NULL;
@@ -1734,7 +1740,9 @@ ProcXpEndDoc(ClientPtr client)
 }
 
 static Bool
-DoStartPage(ClientPtr client, XpStPagePtr c)
+DoStartPage(
+    ClientPtr client,
+    XpStPagePtr c)
 {
     WindowPtr pWin = c->pWin;
     int result = Success;
@@ -2323,7 +2331,7 @@ ProcXpInputSelected(ClientPtr client)
 {
     REQUEST(xPrintInputSelectedReq);
     xPrintInputSelectedReply rep;
-    int n;
+    register int n;
     long l;
     XpClientPtr pXpClient;
     XpContextPtr pContext;

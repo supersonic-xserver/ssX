@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/mirect.c,v 1.4 2001/06/08 19:36:34 keithp Exp $
  *
- * Copyright Â© 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,10 +28,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "scrnintstr.h"
 #include "gcstruct.h"
@@ -45,7 +49,7 @@ miColorRects (PicturePtr    pDst,
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
     CARD32		pixel;
     GCPtr		pGC;
-    CARD32		tmpval[5];
+    CARD32		tmpval[4];
     RegionPtr		pClip;
     unsigned long	mask;
 
@@ -56,13 +60,12 @@ miColorRects (PicturePtr    pDst,
 	return;
     tmpval[0] = GXcopy;
     tmpval[1] = pixel;
-    tmpval[2] = pDst->subWindowMode;
-    mask = GCFunction | GCForeground | GCSubwindowMode;
+    mask = GCFunction | GCForeground;
     if (pClipPict->clientClipType == CT_REGION)
     {
-	tmpval[3] = pDst->clipOrigin.x - xoff;
-	tmpval[4] = pDst->clipOrigin.y - yoff;
-	mask |= GCClipXOrigin|GCClipYOrigin;
+	tmpval[2] = pDst->clipOrigin.x - xoff;
+	tmpval[3] = pDst->clipOrigin.y - yoff;
+	mask |= CPClipXOrigin|CPClipYOrigin;
 	
 	pClip = REGION_CREATE (pScreen, NULL, 1);
 	REGION_COPY (pScreen, pClip,
@@ -70,7 +73,7 @@ miColorRects (PicturePtr    pDst,
 	(*pGC->funcs->ChangeClip) (pGC, CT_REGION, pClip, 0);
     }
 
-    ChangeGC (pGC, mask, tmpval);
+    ChangeGC (pGC, mask, (XID *) tmpval);
     ValidateGC (pDst->pDrawable, pGC);
     if (xoff || yoff)
     {
@@ -94,7 +97,7 @@ miColorRects (PicturePtr    pDst,
     FreeScratchGC (pGC);
 }
 
-_X_EXPORT void
+void
 miCompositeRects (CARD8		op,
 		  PicturePtr	pDst,
 		  xRenderColor  *color,
@@ -148,7 +151,7 @@ miCompositeRects (CARD8		op,
 	tmpval[0] = GXcopy;
 	tmpval[1] = pixel;
 
-	ChangeGC (pGC, GCFunction | GCForeground, tmpval);
+	ChangeGC (pGC, GCFunction | GCForeground, (XID *) tmpval);
 	ValidateGC (&pPixmap->drawable, pGC);
 	one.x = 0;
 	one.y = 0;
@@ -158,7 +161,7 @@ miCompositeRects (CARD8		op,
 	
 	tmpval[0] = xTrue;
 	pSrc = CreatePicture (0, &pPixmap->drawable, rgbaFormat,
-			      CPRepeat, tmpval, 0, &error);
+			      CPRepeat, (XID *) tmpval, 0, &error);
 			      
 	if (!pSrc)
 	    goto bail4;

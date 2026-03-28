@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Graphics Context support for generic rootless X server
  */
 /*
@@ -28,12 +35,8 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessGC.c,v 1.4 2005/10/16 18:06:07 tsi Exp $ */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stddef.h> /* For NULL */
 #include "mi.h"
 #include "scrnintstr.h"
 #include "gcstruct.h"
@@ -49,8 +52,12 @@
 
 #include "rootlessCommon.h"
 
+#ifdef ROOTLESS_ACCEL
+#include "rlAccel.h"
+#endif
 
-// GC functions
+
+/* GC functions */
 static void RootlessValidateGC(GCPtr pGC, unsigned long changes,
                                DrawablePtr pDrawable);
 static void RootlessChangeGC(GCPtr pGC, unsigned long mask);
@@ -71,7 +78,7 @@ GCFuncs rootlessGCFuncs = {
     RootlessCopyClip,
 };
 
-// GC operations
+/* GC operations */
 static void RootlessFillSpans();
 static void RootlessSetSpans();
 static void RootlessPutImage();
@@ -114,6 +121,9 @@ static GCOps rootlessGCOps = {
     RootlessImageGlyphBlt,
     RootlessPolyGlyphBlt,
     RootlessPushPixels
+#ifdef NEED_LINEHELPER
+    , NULL
+#endif
 };
 
 /*
@@ -162,7 +172,7 @@ static GCOps rootlessGCOps = {
 
        ...
 
-       if (canAccelxxx(..) && otherwise-suitable)
+       if (can_accel_xxx(..) && otherwise-suitable)
             GC_UNSET_PM(gc, dst);
 
        gc->funcs->OP(gc, ...);
@@ -280,8 +290,15 @@ RootlessCreateGC(GCPtr pGC)
             devPrivates[rootlessScreenPrivateIndex].ptr;
     result = s->CreateGC(pGC);
 
+#ifdef ROOTLESS_ACCEL
+    pGC->ops->FillSpans = rlFillSpans;
+    pGC->ops->CopyArea = rlCopyArea;
+    pGC->ops->PolyFillRect = rlPolyFillRect;
+    pGC->ops->ImageGlyphBlt = rlImageGlyphBlt;
+#endif
+
     gcrec = (RootlessGCRec *) pGC->devPrivates[rootlessGCPrivateIndex].ptr;
-    gcrec->originalOps = NULL; // don't wrap ops yet
+    gcrec->originalOps = NULL; /* don't wrap ops yet */
     gcrec->originalFuncs = pGC->funcs;
     pGC->funcs = &rootlessGCFuncs;
 
@@ -298,8 +315,10 @@ RootlessCreateGC(GCPtr pGC)
  * All the others just unwrap and call.
  */
 
-// GCFUNC_UNRAP assumes funcs have been wrapped and 
-// does not assume ops have been wrapped
+/*
+ * GCFUNC_UNRAP assumes funcs have been wrapped and 
+ * does not assume ops have been wrapped
+ */
 #define GCFUNC_UNWRAP(pGC) \
     RootlessGCRec *gcrec = (RootlessGCRec *) \
         (pGC)->devPrivates[rootlessGCPrivateIndex].ptr; \
@@ -329,8 +348,10 @@ RootlessValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 #ifdef ROOTLESS_PROTECT_ALPHA
         unsigned int depth = pDrawable->depth;
 
-        // We force a planemask so fb doesn't overwrite the alpha channel.
-        // Left to its own devices, fb will optimize away the planemask.
+	/*
+         * We force a planemask so fb doesn't overwrite the alpha channel.
+         * Left to its own devices, fb will optimize away the planemask.
+	 */
         pDrawable->depth = pDrawable->bitsPerPixel;
         pGC->planemask &= ~RootlessAlphaMask(pDrawable->bitsPerPixel);
         VALIDATE_GC(pGC, changes | GCPlaneMask, pDrawable);
@@ -396,7 +417,7 @@ static void RootlessCopyClip(GCPtr pgcDst, GCPtr pgcSrc)
  * However, much of this code is copied from shadowfb.
  */
 
-// assumes both funcs and ops are wrapped
+/* assumes both funcs and ops are wrapped */
 #define GCOP_UNWRAP(pGC) \
     RootlessGCRec *gcrec = (RootlessGCRec *) \
         (pGC)->devPrivates[rootlessGCPrivateIndex].ptr; \
@@ -427,7 +448,7 @@ RootlessFillSpans(DrawablePtr dst, GCPtr pGC, int nInit,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("fill spans start ");
+    RL_DEBUG_MSG(("fill spans start "));
 
     if (nInit <= 0) {
         pGC->ops->FillSpans(dst, pGC, nInit, pptInit, pwidthInit, sorted);
@@ -473,7 +494,7 @@ RootlessFillSpans(DrawablePtr dst, GCPtr pGC, int nInit,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("fill spans end\n");
+    RL_DEBUG_MSG(("fill spans end\n"));
 }
 
 static void
@@ -483,7 +504,7 @@ RootlessSetSpans(DrawablePtr dst, GCPtr pGC, char *pSrc,
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("set spans start ");
+    RL_DEBUG_MSG(("set spans start "));
 
     if (nspans <= 0) {
         pGC->ops->SetSpans(dst, pGC, pSrc, pptInit, pwidthInit,
@@ -522,7 +543,7 @@ RootlessSetSpans(DrawablePtr dst, GCPtr pGC, char *pSrc,
             RootlessDamageBox ((WindowPtr) dst, &box);
     }
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("set spans end\n");
+    RL_DEBUG_MSG(("set spans end\n"));
 }
 
 static void
@@ -534,7 +555,7 @@ RootlessPutImage(DrawablePtr dst, GCPtr pGC,
 
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("put image start ");
+    RL_DEBUG_MSG(("put image start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PutImage(dst, pGC, depth, x,y,w,h, leftPad, format, pBits);
@@ -549,7 +570,7 @@ RootlessPutImage(DrawablePtr dst, GCPtr pGC,
         RootlessDamageBox ((WindowPtr) dst, &box);
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("put image end\n");
+    RL_DEBUG_MSG(("put image end\n"));
 }
 
 /* changed area is *dest* rect */
@@ -567,7 +588,7 @@ RootlessCopyArea(DrawablePtr pSrc, DrawablePtr dst, GCPtr pGC,
     if (GC_IS_ROOT(dst) || GC_IS_ROOT(pSrc))
         return NULL;			/* nothing exposed */
 
-    RL_DEBUG_MSG("copy area start (src 0x%x, dst 0x%x)", pSrc, dst);
+    RL_DEBUG_MSG(("copy area start (src 0x%x, dst 0x%x)", pSrc, dst));
 
     if (pSrc->type == DRAWABLE_WINDOW && IsFramedWindow((WindowPtr)pSrc)) {
         unsigned int bytes;
@@ -599,7 +620,7 @@ RootlessCopyArea(DrawablePtr pSrc, DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("copy area end\n");
+    RL_DEBUG_MSG(("copy area end\n"));
     return result;
 }
 
@@ -617,7 +638,7 @@ static RegionPtr RootlessCopyPlane(DrawablePtr pSrc, DrawablePtr dst,
     if (GC_IS_ROOT(dst) || GC_IS_ROOT(pSrc))
         return NULL;			/* nothing exposed */
 
-    RL_DEBUG_MSG("copy plane start ");
+    RL_DEBUG_MSG(("copy plane start "));
 
     if (pSrc->type == DRAWABLE_WINDOW && IsFramedWindow((WindowPtr)pSrc)) {
         RootlessStartDrawing((WindowPtr) pSrc);
@@ -636,14 +657,16 @@ static RegionPtr RootlessCopyPlane(DrawablePtr pSrc, DrawablePtr dst,
         RootlessDamageBox ((WindowPtr) dst, &box);
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("copy plane end\n");
+    RL_DEBUG_MSG(("copy plane end\n"));
     return result;
 }
 
-// Options for size of changed area:
-//  0 = box per point
-//  1 = big box around all points
-//  2 = accumulate point in 20 pixel radius
+/*
+ * Options for size of changed area:
+ *  0 = box per point
+ *  1 = big box around all points
+ *  2 = accumulate point in 20 pixel radius
+ */
 #define ROOTLESS_CHANGED_AREA 1
 #define abs(a) ((a) > 0 ? (a) : -(a))
 
@@ -653,14 +676,14 @@ static void RootlessPolyPoint(DrawablePtr dst, GCPtr pGC,
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("polypoint start ");
+    RL_DEBUG_MSG(("polypoint start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PolyPoint(dst, pGC, mode, npt, pptInit);
 
     if (npt > 0) {
 #if ROOTLESS_CHANGED_AREA==0
-        // box per point
+        /* box per point */
         BoxRec box;
 
         while (npt) {
@@ -678,7 +701,7 @@ static void RootlessPolyPoint(DrawablePtr dst, GCPtr pGC,
         }
 
 #elif ROOTLESS_CHANGED_AREA==1
-        // one big box
+        /* one big box */
         BoxRec box;
 
         box.x2 = box.x1 = pptInit->x;
@@ -703,7 +726,7 @@ static void RootlessPolyPoint(DrawablePtr dst, GCPtr pGC,
             RootlessDamageBox ((WindowPtr) dst, &box);
 
 #elif ROOTLESS_CHANGED_AREA==2
-        // clever(?) method: accumulate point in 20-pixel radius
+        /* clever(?) method: accumulate point in 20-pixel radius */
         BoxRec box;
         int firstx, firsty;
 
@@ -736,7 +759,7 @@ static void RootlessPolyPoint(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("polypoint end\n");
+    RL_DEBUG_MSG(("polypoint end\n"));
 }
 
 #undef ROOTLESS_CHANGED_AREA
@@ -747,7 +770,7 @@ static void RootlessPolylines(DrawablePtr dst, GCPtr pGC,
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("poly lines start ");
+    RL_DEBUG_MSG(("poly lines start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->Polylines(dst, pGC, mode, npt, pptInit);
@@ -813,7 +836,7 @@ static void RootlessPolylines(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("poly lines end\n");
+    RL_DEBUG_MSG(("poly lines end\n"));
 }
 
 /* changed area is box around each line segment */
@@ -822,7 +845,7 @@ static void RootlessPolySegment(DrawablePtr dst, GCPtr pGC,
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("poly segment start (win 0x%x)", dst);
+    RL_DEBUG_MSG(("poly segment start (win 0x%x)", dst));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PolySegment(dst, pGC, nseg, pSeg);
@@ -884,7 +907,7 @@ static void RootlessPolySegment(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("poly segment end\n");
+    RL_DEBUG_MSG(("poly segment end\n"));
 }
 
 /* changed area is box around each line (not entire rects) */
@@ -893,7 +916,7 @@ static void RootlessPolyRectangle(DrawablePtr dst, GCPtr pGC,
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("poly rectangle start ");
+    RL_DEBUG_MSG(("poly rectangle start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PolyRectangle(dst, pGC, nRects, pRects);
@@ -945,7 +968,7 @@ static void RootlessPolyRectangle(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("poly rectangle end\n");
+    RL_DEBUG_MSG(("poly rectangle end\n"));
 }
 
 
@@ -954,7 +977,7 @@ static void RootlessPolyArc(DrawablePtr dst, GCPtr pGC, int narcs, xArc *parcs)
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("poly arc start ");
+    RL_DEBUG_MSG(("poly arc start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PolyArc(dst, pGC, narcs, parcs);
@@ -998,7 +1021,7 @@ static void RootlessPolyArc(DrawablePtr dst, GCPtr pGC, int narcs, xArc *parcs)
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("poly arc end\n");
+    RL_DEBUG_MSG(("poly arc end\n"));
 }
 
 
@@ -1010,8 +1033,8 @@ static void RootlessFillPolygon(DrawablePtr dst, GCPtr pGC,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("fill poly start (win 0x%x, fillStyle 0x%x)", dst,
-                 pGC->fillStyle);
+    RL_DEBUG_MSG(("fill poly start (win 0x%x, fillStyle 0x%x)", dst,
+                 pGC->fillStyle));
 
     if (count <= 2) {
         pGC->ops->FillPolygon(dst, pGC, shape, mode, count, pptInit);
@@ -1074,7 +1097,7 @@ static void RootlessFillPolygon(DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("fill poly end\n");
+    RL_DEBUG_MSG(("fill poly end\n"));
 }
 
 /* changed area is the rects */
@@ -1084,8 +1107,8 @@ static void RootlessPolyFillRect(DrawablePtr dst, GCPtr pGC,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("fill rect start (win 0x%x, fillStyle 0x%x)", dst,
-                 pGC->fillStyle);
+    RL_DEBUG_MSG(("fill rect start (win 0x%x, fillStyle 0x%x)", dst,
+                 pGC->fillStyle));
 
     if (nRectsInit <= 0) {
         pGC->ops->PolyFillRect(dst, pGC, nRectsInit, pRectsInit);
@@ -1128,7 +1151,7 @@ static void RootlessPolyFillRect(DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("fill rect end\n");
+    RL_DEBUG_MSG(("fill rect end\n"));
 }
 
 
@@ -1139,7 +1162,7 @@ static void RootlessPolyFillArc(DrawablePtr dst, GCPtr pGC,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("fill arc start ");
+    RL_DEBUG_MSG(("fill arc start "));
 
     if (narcsInit > 0) {
         BoxRec box;
@@ -1184,7 +1207,7 @@ static void RootlessPolyFillArc(DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("fill arc end\n");
+    RL_DEBUG_MSG(("fill arc end\n"));
 }
 
 
@@ -1194,7 +1217,7 @@ static void RootlessImageText8(DrawablePtr dst, GCPtr pGC,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("imagetext8 start ");
+    RL_DEBUG_MSG(("imagetext8 start "));
 
     if (count > 0) {
         int top, bot, Min, Max;
@@ -1236,20 +1259,20 @@ static void RootlessImageText8(DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("imagetext8 end\n");
+    RL_DEBUG_MSG(("imagetext8 end\n"));
 }
 
 static int RootlessPolyText8(DrawablePtr dst, GCPtr pGC,
                              int x, int y, int count, char *chars)
 {
-    int width; // the result, sorta
+    int width; /* the result, sorta */
 
     GCOP_UNWRAP(pGC);
 
     if (GC_IS_ROOT(dst))
         return 0;
 
-    RL_DEBUG_MSG("polytext8 start ");
+    RL_DEBUG_MSG(("polytext8 start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     width = pGC->ops->PolyText8(dst, pGC, x, y, count, chars);
@@ -1276,7 +1299,7 @@ static int RootlessPolyText8(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("polytext8 end\n");
+    RL_DEBUG_MSG(("polytext8 end\n"));
     return (width + x);
 }
 
@@ -1286,7 +1309,7 @@ static void RootlessImageText16(DrawablePtr dst, GCPtr pGC,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("imagetext16 start ");
+    RL_DEBUG_MSG(("imagetext16 start "));
 
     if (count > 0) {
         int top, bot, Min, Max;
@@ -1328,20 +1351,20 @@ static void RootlessImageText16(DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("imagetext16 end\n");
+    RL_DEBUG_MSG(("imagetext16 end\n"));
 }
 
 static int RootlessPolyText16(DrawablePtr dst, GCPtr pGC,
                             int x, int y, int count, unsigned short *chars)
 {
-    int width; // the result, sorta
+    int width; /* the result, sorta */
 
     GCOP_UNWRAP(pGC);
 
     if (GC_IS_ROOT(dst))
         return 0;
 
-    RL_DEBUG_MSG("polytext16 start ");
+    RL_DEBUG_MSG(("polytext16 start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     width = pGC->ops->PolyText16(dst, pGC, x, y, count, chars);
@@ -1368,7 +1391,7 @@ static int RootlessPolyText16(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("polytext16 end\n");
+    RL_DEBUG_MSG(("polytext16 end\n"));
     return width + x;
 }
 
@@ -1379,7 +1402,7 @@ static void RootlessImageGlyphBlt(DrawablePtr dst, GCPtr pGC,
     GC_SAVE(pGC);
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("imageglyph start ");
+    RL_DEBUG_MSG(("imageglyph start "));
 
     if (nglyphInit > 0) {
         int top, bot, width = 0;
@@ -1431,7 +1454,7 @@ static void RootlessImageGlyphBlt(DrawablePtr dst, GCPtr pGC,
 
     GC_RESTORE(pGC, dst);
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("imageglyph end\n");
+    RL_DEBUG_MSG(("imageglyph end\n"));
 }
 
 static void RootlessPolyGlyphBlt(DrawablePtr dst, GCPtr pGC,
@@ -1440,7 +1463,7 @@ static void RootlessPolyGlyphBlt(DrawablePtr dst, GCPtr pGC,
 {
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("polyglyph start ");
+    RL_DEBUG_MSG(("polyglyph start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PolyGlyphBlt(dst, pGC, x, y, nglyph, ppci, pglyphBase);
@@ -1473,7 +1496,7 @@ static void RootlessPolyGlyphBlt(DrawablePtr dst, GCPtr pGC,
     }
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("polyglyph end\n");
+    RL_DEBUG_MSG(("polyglyph end\n"));
 }
 
 
@@ -1486,7 +1509,7 @@ RootlessPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr dst,
 
     GCOP_UNWRAP(pGC);
     GC_SKIP_ROOT(dst);
-    RL_DEBUG_MSG("push pixels start ");
+    RL_DEBUG_MSG(("push pixels start "));
 
     RootlessStartDrawing((WindowPtr) dst);
     pGC->ops->PushPixels(pGC, pBitMap, dst, dx, dy, xOrg, yOrg);
@@ -1501,5 +1524,5 @@ RootlessPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr dst,
         RootlessDamageBox ((WindowPtr) dst, &box);
 
     GCOP_WRAP(pGC);
-    RL_DEBUG_MSG("push pixels end\n");
+    RL_DEBUG_MSG(("push pixels end\n"));
 }

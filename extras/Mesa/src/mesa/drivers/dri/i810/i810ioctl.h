@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/i810/i810ioctl.h,v 1.7 2002/10/30 12:51:33 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i810/i810ioctl.h,v 1.1.1.2 2004/06/10 14:22:48 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef I810_IOCTL_H
 #define I810_IOCTL_H
@@ -14,7 +28,7 @@ void i810WaitAgeLocked( i810ContextPtr imesa, int age );
 void i810WaitAge( i810ContextPtr imesa, int age );
 void i810DmaFinish( i810ContextPtr imesa );
 void i810RegetLockQuiescent( i810ContextPtr imesa );
-void i810InitIoctlFuncs( GLcontext *ctx );
+void i810InitIoctlFuncs( struct dd_function_table *functions );
 void i810CopyBuffer( const __DRIdrawablePrivate *dpriv );
 void i810PageFlip( const __DRIdrawablePrivate *dpriv );
 int i810_check_copy(int fd);

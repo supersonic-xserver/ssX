@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/dix/dixfonts.c,v 3.36tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/dixfonts.c,v 3.31 2005/02/15 01:09:36 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -70,9 +77,9 @@ SOFTWARE.
 
 
 #define NEED_REPLIES
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "resource.h"
 #include "dixstruct.h"
@@ -96,7 +103,7 @@ SOFTWARE.
 
 #ifdef XF86BIGFONT
 #define _XF86BIGFONT_SERVER_
-#include <X11/extensions/xf86bigfont.h>
+#include "xf86bigfont.h"
 #endif
 
 #define QUERYCHARINFO(pci, pr)  *(pr) = (pci)->metrics
@@ -117,7 +124,8 @@ static FontPathElementPtr *slept_fpes = (FontPathElementPtr *) 0;
 static FontPatternCachePtr patternCache;
 
 int
-FontToXError(int err)
+FontToXError(err)
+    int         err;
 {
     switch (err) {
     case Successful:
@@ -140,7 +148,8 @@ FontToXError(int err)
  * adding RT_FONT prevents conflict with default cursor font
  */
 Bool
-SetDefaultFont(const char *defaultfontname)
+SetDefaultFont(defaultfontname)
+    char       *defaultfontname;
 {
     int         err;
     FontPtr     pf;
@@ -168,7 +177,8 @@ SetDefaultFont(const char *defaultfontname)
  * freed data.
  */
 void
-QueueFontWakeup(FontPathElementPtr fpe)
+QueueFontWakeup(fpe)
+    FontPathElementPtr fpe;
 {
     int         i;
     FontPathElementPtr *new;
@@ -197,7 +207,8 @@ QueueFontWakeup(FontPathElementPtr fpe)
 }
 
 void
-RemoveFontWakeup(FontPathElementPtr fpe)
+RemoveFontWakeup(fpe)
+    FontPathElementPtr fpe;
 {
     int         i,
                 j;
@@ -215,7 +226,10 @@ RemoveFontWakeup(FontPathElementPtr fpe)
 
 /* ARGSUSED */
 void
-FontWakeup(pointer data, int count, pointer LastSelectMask)
+FontWakeup(data, count, LastSelectMask)
+    pointer     data;
+    int		count;
+    pointer     LastSelectMask;
 {
     int         i;
     FontPathElementPtr fpe;
@@ -237,7 +251,7 @@ UseFPE(FontPathElementPtr fpe)
 }
 
 static void
-FreeFPE(FontPathElementPtr fpe)
+FreeFPE (FontPathElementPtr fpe)
 {
     fpe->refcount--;
     if (fpe->refcount == 0) {
@@ -350,12 +364,6 @@ doOpenFont(ClientPtr client, OFclosurePtr c)
 	err = BadFontName;
 	goto bail;
     }
-    if ((pfont->info.firstCol > pfont->info.lastCol) ||
-	(pfont->info.firstRow > pfont->info.lastRow) ||
-	((pfont->info.lastCol - pfont->info.firstCol) > 255)) {
-	err = AllocError;
-	goto bail;
-    }
     if (!pfont->fpe)
 	pfont->fpe = fpe;
     pfont->refcnt++;
@@ -398,8 +406,12 @@ bail:
 }
 
 int
-OpenFont(ClientPtr client, XID fid, Mask flags, unsigned lenfname,
-	 const char *pfontname)
+OpenFont(client, fid, flags, lenfname, pfontname)
+    ClientPtr   client;
+    XID         fid;
+    Mask        flags;
+    unsigned    lenfname;
+    char       *pfontname;
 {
     OFclosurePtr c;
     int         i;
@@ -488,7 +500,9 @@ OpenFont(ClientPtr client, XID fid, Mask flags, unsigned lenfname,
  */
 /*ARGSUSED*/
 int
-CloseFont(pointer value, XID fid)
+CloseFont(value, fid)
+    pointer	value;  /* must conform to DeleteType */
+    XID		fid;
 {
     int         nscr;
     ScreenPtr   pscr;
@@ -530,11 +544,13 @@ CloseFont(pointer value, XID fid)
  /*
   * \ Sets up pReply as the correct QueryFontReply for pFont with the first
   * nProtoCCIStructs char infos. \
-  * Caller must allocate *pReply storage.
   */
 
 void
-QueryFont(FontPtr pFont, xQueryFontReply *pReply, int nProtoCCIStructs)
+QueryFont(pFont, pReply, nProtoCCIStructs)
+    FontPtr          pFont;
+    xQueryFontReply *pReply;	/* caller must allocate this storage */
+    int              nProtoCCIStructs;
 {
     FontPropPtr      pFP;
     int              r,
@@ -852,8 +868,11 @@ bail:
 }
 
 int
-ListFonts(ClientPtr client, unsigned char *pattern, unsigned int length,
-	  unsigned int max_names)
+ListFonts(client, pattern, length, max_names)
+    ClientPtr   client;
+    unsigned char *pattern;
+    unsigned int length;
+    unsigned int max_names;
 {
     int         i;
     LFclosurePtr c;
@@ -902,7 +921,9 @@ ListFonts(ClientPtr client, unsigned char *pattern, unsigned int length,
 }
 
 int
-doListFontsWithInfo(ClientPtr client, LFWIclosurePtr c)
+doListFontsWithInfo(client, c)
+    ClientPtr   client;
+    LFWIclosurePtr c;
 {
     FontPathElementPtr fpe;
     int         err = Successful;
@@ -1124,8 +1145,11 @@ bail:
 }
 
 int
-StartListFontsWithInfo(ClientPtr client, int length, unsigned char *pattern,
-		       int max_names)
+StartListFontsWithInfo(client, length, pattern, max_names)
+    ClientPtr   client;
+    int         length;
+    unsigned char       *pattern;
+    int         max_names;
 {
     int		    i;
     LFWIclosurePtr  c;
@@ -1179,9 +1203,11 @@ static XID clearGC[] = { CT_NONE };
 #define clearGCmask (GCClipMask)
 
 int
-doPolyText(ClientPtr client, PTclosurePtr c)
+doPolyText(client, c)
+    ClientPtr   client;
+    register PTclosurePtr c;
 {
-    FontPtr pFont = c->pGC->font, oldpFont;
+    register FontPtr pFont = c->pGC->font, oldpFont;
     Font	fid, oldfid;
     int err = Success, lgerr;	/* err is in X error, not font error, space */
     enum { NEVER_SLEPT, START_SLEEP, SLEEPING } client_state = NEVER_SLEPT;
@@ -1446,8 +1472,16 @@ bail:
 }
 
 int
-PolyText(ClientPtr client, DrawablePtr pDraw, GCPtr pGC, unsigned char *pElt,
-	 unsigned char *endReq, int xorg, int yorg, int reqType, XID did)
+PolyText(client, pDraw, pGC, pElt, endReq, xorg, yorg, reqType, did)
+    ClientPtr client;
+    DrawablePtr pDraw;
+    GC *pGC;
+    unsigned char *pElt;
+    unsigned char *endReq;
+    int xorg;
+    int yorg;
+    int reqType;
+    XID did;
 {
     PTclosureRec local_closure;
 
@@ -1481,7 +1515,9 @@ PolyText(ClientPtr client, DrawablePtr pDraw, GCPtr pGC, unsigned char *pElt,
 #undef FontShiftSize
 
 int
-doImageText(ClientPtr client, ITclosurePtr c)
+doImageText(client, c)
+    ClientPtr   client;
+    register ITclosurePtr c;
 {
     int err = Success, lgerr;	/* err is in X error, not font error, space */
     FontPathElementPtr fpe;
@@ -1515,6 +1551,7 @@ doImageText(ClientPtr client, ITclosurePtr c)
 	    GC *pGC;
 	    unsigned char *data;
 	    ITclosurePtr new_closure;
+	    ITclosurePtr old_closure;
 
 	    /* We're putting the client to sleep.  We need to
 	       save some state.  Similar problem to that handled
@@ -1527,6 +1564,7 @@ doImageText(ClientPtr client, ITclosurePtr c)
 		err = BadAlloc;
 		goto bail;
 	    }
+	    old_closure = c;
 	    *new_closure = *c;
 	    c = new_closure;
 
@@ -1534,6 +1572,7 @@ doImageText(ClientPtr client, ITclosurePtr c)
 	    if (!data)
 	    {
 		xfree(c);
+		c = old_closure;
 		err = BadAlloc;
 		goto bail;
 	    }
@@ -1545,6 +1584,7 @@ doImageText(ClientPtr client, ITclosurePtr c)
 	    {
 		xfree(c->data);
 		xfree(c);
+		c = old_closure;
 		err = BadAlloc;
 		goto bail;
 	    }
@@ -1558,6 +1598,7 @@ doImageText(ClientPtr client, ITclosurePtr c)
 		FreeScratchGC(pGC);
 		xfree(c->data);
 		xfree(c);
+		c = old_closure;
 		err = BadAlloc;
 		goto bail;
 	    }
@@ -1602,8 +1643,16 @@ bail:
 }
 
 int
-ImageText(ClientPtr client, DrawablePtr pDraw, GCPtr pGC, int nChars,
-	  unsigned char *data, int xorg, int yorg, int reqType, XID did)
+ImageText(client, pDraw, pGC, nChars, data, xorg, yorg, reqType, did)
+    ClientPtr client;
+    DrawablePtr pDraw;
+    GC *pGC;
+    int nChars;
+    unsigned char *data;
+    int xorg;
+    int yorg;
+    int reqType;
+    XID did;
 {
     ITclosureRec local_closure;
 
@@ -1674,8 +1723,7 @@ FreeFontPath(FontPathElementPtr *list, int n, Bool force)
 }
 
 static FontPathElementPtr
-find_existing_fpe(FontPathElementPtr *list, int num, unsigned char *name,
-		  int len)
+find_existing_fpe(FontPathElementPtr *list, int num, unsigned char *name, int len)
 {
     FontPathElementPtr fpe;
     int         i;
@@ -1804,7 +1852,11 @@ bail:
 
 /* XXX -- do we need to pass error down to each renderer? */
 int
-SetFontPath(ClientPtr client, int npaths, unsigned char *paths, int *error)
+SetFontPath(client, npaths, paths, error)
+    ClientPtr   client;
+    int         npaths;
+    unsigned char *paths;
+    int        *error;
 {
     int   err = Success;
 
@@ -1818,7 +1870,8 @@ SetFontPath(ClientPtr client, int npaths, unsigned char *paths, int *error)
 }
 
 int
-SetDefaultFontPath(const char *path)
+SetDefaultFontPath(path)
+    char       *path;
 {
     unsigned char *cp,
                *pp,
@@ -1859,7 +1912,9 @@ SetDefaultFontPath(const char *path)
 }
 
 unsigned char *
-GetFontPath(int *count, int *length)
+GetFontPath(count, length)
+    int			*count;
+    int			*length;
 {
     int			i;
     unsigned char       *c;
@@ -1889,8 +1944,12 @@ GetFontPath(int *count, int *length)
 }
 
 int
-LoadGlyphs(ClientPtr client, FontPtr pfont, unsigned nchars, int item_size,
-	   unsigned char *data)
+LoadGlyphs(client, pfont, nchars, item_size, data)
+    ClientPtr   client;
+    FontPtr     pfont;
+    unsigned    nchars;
+    int         item_size;
+    unsigned char *data;
 {
     if (fpe_functions[pfont->fpe->type].load_glyphs)
 	return (*fpe_functions[pfont->fpe->type].load_glyphs)
@@ -1900,7 +1959,8 @@ LoadGlyphs(ClientPtr client, FontPtr pfont, unsigned nchars, int item_size,
 }
 
 void
-DeleteClientFontStuff(ClientPtr client)
+DeleteClientFontStuff(client)
+    ClientPtr	client;
 {
     int			i;
     FontPathElementPtr	fpe;
@@ -1946,7 +2006,8 @@ GetDefaultPointSize ()
 
 
 FontResolutionPtr
-GetClientResolutions(int *num)
+GetClientResolutions (num)
+    int        *num;
 {
     if (requestingClient && requestingClient->fontResFunc != NULL &&
 	!requestingClient->clientGone)
@@ -2051,7 +2112,8 @@ FreeFonts()
 /* convenience functions for FS interface */
 
 FontPtr
-find_old_font(XID id)
+find_old_font(id)
+    XID         id;
 {
     return (FontPtr) SecurityLookupIDByType(NullClient, id, RT_NONE,
 					    SecurityUnknownAccess);
@@ -2064,19 +2126,23 @@ GetNewFontClientID()
 }
 
 int
-StoreFontClientFont(FontPtr pfont, Font id)
+StoreFontClientFont(pfont, id)
+    FontPtr     pfont;
+    Font        id;
 {
     return AddResource(id, RT_NONE, (pointer) pfont);
 }
 
 void
-DeleteFontClientID(Font id)
+DeleteFontClientID(id)
+    Font        id;
 {
     FreeResource(id, RT_NONE);
 }
 
 int
-client_auth_generation(ClientPtr client)
+client_auth_generation(client)
+    ClientPtr client;
 {
     return 0;
 }
@@ -2086,7 +2152,9 @@ static int  fs_handlers_installed = 0;
 static unsigned int last_server_gen;
 
 int
-init_fs_handlers(FontPathElementPtr fpe, BlockHandlerProcPtr block_handler)
+init_fs_handlers(fpe, block_handler)
+    FontPathElementPtr fpe;
+    BlockHandlerProcPtr block_handler;
 {
     /* if server has reset, make sure the b&w handlers are reinstalled */
     if (last_server_gen < serverGeneration) {
@@ -2109,8 +2177,10 @@ init_fs_handlers(FontPathElementPtr fpe, BlockHandlerProcPtr block_handler)
 }
 
 void
-remove_fs_handlers(FontPathElementPtr fpe, BlockHandlerProcPtr block_handler,
-		   Bool all)
+remove_fs_handlers(fpe, block_handler, all)
+    FontPathElementPtr fpe;
+    BlockHandlerProcPtr block_handler;
+    Bool        all;
 {
     if (all) {
 	/* remove the handlers if no one else is using them */
@@ -2139,8 +2209,8 @@ remove_fs_handlers(FontPathElementPtr fpe, BlockHandlerProcPtr block_handler,
 #define GLYPH_SIZE(ch, nbytes)          \
 	GLWIDTHBYTESPADDED((ch)->metrics.rightSideBearing - \
 			(ch)->metrics.leftSideBearing, (nbytes))
-void
-dump_char_ascii(CharInfoPtr cip)
+dump_char_ascii(cip)
+    CharInfoPtr cip;
 {
     int         r,
                 l;
@@ -2153,12 +2223,12 @@ dump_char_ascii(CharInfoPtr cip)
 
     bpr = GLYPH_SIZE(cip, 4);
     for (r = 0; r < (cip->metrics.ascent + cip->metrics.descent); r++) {
-	unsigned *row = (unsigned *)(cip->bits + (r * bpr));
+	pointer     row = (pointer) cip->bits + r * bpr;
 
 	byte = 0;
 	for (l = 0; l <= (cip->metrics.rightSideBearing -
 			  cip->metrics.leftSideBearing); l++) {
-	    if (maskTab[l & 7] & row[l >> 3])
+	    if (maskTab[l & 7] & ((unsigned *)row)[l >> 3])
 		putchar('X');
 	    else
 		putchar('.');

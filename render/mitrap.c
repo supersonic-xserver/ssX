@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/mitrap.c,v 1.9 2002/11/05 23:39:16 keithp Exp $
  *
- * Copyright Â© 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,10 +28,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "scrnintstr.h"
 #include "gcstruct.h"
@@ -139,25 +143,16 @@ miTrapezoids (CARD8	    op,
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
     PictureScreenPtr    ps = GetPictureScreen(pScreen);
-
-    /*
-     * Check for solid alpha add
-     */
-    if (op == PictOpAdd && miIsSolidAlpha (pSrc))
+    PicturePtr		pPicture = 0;
+    BoxRec		bounds;
+    INT16		xDst, yDst;
+    INT16		xRel, yRel;
+    
+    xDst = traps[0].left.p1.x >> 16;
+    yDst = traps[0].left.p1.y >> 16;
+    
+    if (maskFormat)
     {
-	for (; ntrap; ntrap--, traps++)
-	    (*ps->RasterizeTrapezoid) (pDst, traps, 0, 0);
-    } 
-    else if (maskFormat)
-    {
-	PicturePtr	pPicture;
-	BoxRec		bounds;
-	INT16		xDst, yDst;
-	INT16		xRel, yRel;
-	
-	xDst = traps[0].left.p1.x >> 16;
-	yDst = traps[0].left.p1.y >> 16;
-
 	miTrapezoidBounds (ntrap, traps, &bounds);
 	if (bounds.y1 >= bounds.y2 || bounds.x1 >= bounds.x2)
 	    return;
@@ -166,9 +161,37 @@ miTrapezoids (CARD8	    op,
 					 bounds.y2 - bounds.y1);
 	if (!pPicture)
 	    return;
-	for (; ntrap; ntrap--, traps++)
-	    (*ps->RasterizeTrapezoid) (pPicture, traps, 
-				       -bounds.x1, -bounds.y1);
+    }
+    for (; ntrap; ntrap--, traps++)
+    {
+	if (!xTrapezoidValid(traps))
+	    continue;
+	if (!maskFormat)
+	{
+	    miTrapezoidBounds (1, traps, &bounds);
+	    if (bounds.y1 >= bounds.y2 || bounds.x1 >= bounds.x2)
+		continue;
+	    pPicture = miCreateAlphaPicture (pScreen, pDst, maskFormat,
+					     bounds.x2 - bounds.x1,
+					     bounds.y2 - bounds.y1);
+	    if (!pPicture)
+		continue;
+	}
+	(*ps->RasterizeTrapezoid) (pPicture, traps, 
+				   -bounds.x1, -bounds.y1);
+	if (!maskFormat)
+	{
+	    xRel = bounds.x1 + xSrc - xDst;
+	    yRel = bounds.y1 + ySrc - yDst;
+	    CompositePicture (op, pSrc, pPicture, pDst,
+			      xRel, yRel, 0, 0, bounds.x1, bounds.y1,
+			      bounds.x2 - bounds.x1,
+			      bounds.y2 - bounds.y1);
+	    FreePicture (pPicture, 0);
+	}
+    }
+    if (maskFormat)
+    {
 	xRel = bounds.x1 + xSrc - xDst;
 	yRel = bounds.y1 + ySrc - yDst;
 	CompositePicture (op, pSrc, pPicture, pDst,
@@ -176,14 +199,5 @@ miTrapezoids (CARD8	    op,
 			  bounds.x2 - bounds.x1,
 			  bounds.y2 - bounds.y1);
 	FreePicture (pPicture, 0);
-    }
-    else
-    {
-	if (pDst->polyEdge == PolyEdgeSharp)
-	    maskFormat = PictureMatchFormat (pScreen, 1, PICT_a1);
-	else
-	    maskFormat = PictureMatchFormat (pScreen, 8, PICT_a8);
-	for (; ntrap; ntrap--, traps++)
-	    miTrapezoids (op, pSrc, pDst, maskFormat, xSrc, ySrc, 1, traps);
     }
 }

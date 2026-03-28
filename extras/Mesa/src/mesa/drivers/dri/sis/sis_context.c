@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
 Copyright 2003 Eric Anholt
@@ -24,7 +38,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/mesa/src/drv/sis/sis_ctx.c,v 1.3 2000/09/26 15:56:48 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_context.c,v 1.1.1.3 2004/12/10 15:05:43 alanh Exp $ */
 
 /*
  * Authors:
@@ -41,12 +55,14 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "sis_stencil.h"
 #include "sis_tex.h"
 #include "sis_tris.h"
-#include "sis_vb.h"
+#include "sis_alloc.h"
 
 #include "imports.h"
 #include "matrix.h"
 #include "extensions.h"
 #include "utils.h"
+
+#include "drivers/common/driverfuncs.h"
 
 #include "swrast/swrast.h"
 #include "swrast_setup/swrast_setup.h"
@@ -108,19 +124,27 @@ sisCreateContext( const __GLcontextModes *glVisual,
    sisContextPtr smesa;
    sisScreenPtr sisScreen;
    int i;
+   struct dd_function_table functions;
 
    smesa = (sisContextPtr)CALLOC( sizeof(*smesa) );
-   if ( smesa == NULL )
+   if (smesa == NULL)
       return GL_FALSE;
+
+   /* Init default driver functions then plug in our SIS-specific functions
+    * (the texture functions are especially important)
+    */
+   _mesa_init_driver_functions(&functions);
+   sisInitDriverFuncs(&functions);
+   sisInitTextureFuncs(&functions);
 
    /* Allocate the Mesa context */
    if (sharedContextPrivate)
       shareCtx = ((sisContextPtr)sharedContextPrivate)->glCtx;
    else 
       shareCtx = NULL;
-   smesa->glCtx = _mesa_create_context( glVisual, shareCtx, (void *) smesa,
-      GL_TRUE);
-   if (smesa->glCtx == NULL) {
+   smesa->glCtx = _mesa_create_context( glVisual, shareCtx,
+                                        &functions, (void *) smesa);
+   if (!smesa->glCtx) {
       FREE(smesa);
       return GL_FALSE;
    }
@@ -172,7 +196,7 @@ sisCreateContext( const __GLcontextModes *glVisual,
       smesa->colorFormat = DST_FORMAT_RGB_565;
       break;
    default:
-      assert (0);
+      sis_fatal_error("Bad bytesPerPixel.\n");
    }
 
    /* Parse configuration files */
@@ -189,18 +213,29 @@ sisCreateContext( const __GLcontextModes *glVisual,
    smesa->AGPBase = sisScreen->agp.map;
    smesa->AGPAddr = sisScreen->agp.handle;
 
-   /* set AGP command buffer */
-   if (smesa->AGPSize != 0 && sisScreen->AGPCmdBufSize != 0 &&
+   /* Create AGP command buffer */
+   if (smesa->AGPSize != 0 && 
       !driQueryOptionb(&smesa->optionCache, "agp_disable"))
-   {	
-      smesa->AGPCmdBufBase = smesa->AGPBase + sisScreen->AGPCmdBufOffset;
-      smesa->AGPCmdBufAddr = smesa->AGPAddr + sisScreen->AGPCmdBufOffset;
-      smesa->AGPCmdBufSize = sisScreen->AGPCmdBufSize;
-
-      smesa->pAGPCmdBufNext = (GLint *)&(smesa->sarea->AGPCmdBufNext);
-      smesa->AGPCmdModeEnabled = GL_TRUE;
-   } else {
-      smesa->AGPCmdModeEnabled = GL_FALSE;
+   {
+      smesa->vb = sisAllocAGP(smesa, 64 * 1024, &smesa->vb_agp_handle);
+      if (smesa->vb != NULL) {
+	 smesa->using_agp = GL_TRUE;
+	 smesa->vb_cur = smesa->vb;
+	 smesa->vb_last = smesa->vb;
+	 smesa->vb_end = smesa->vb + 64 * 1024;
+	 smesa->vb_agp_offset = ((long)smesa->vb - (long)smesa->AGPBase +
+	    (long)smesa->AGPAddr);
+      }
+   }
+   if (!smesa->using_agp) {
+      smesa->vb = malloc(64 * 1024);
+      if (smesa->vb == NULL) {
+	 FREE(smesa);
+	 return GL_FALSE;
+      }
+      smesa->vb_cur = smesa->vb;
+      smesa->vb_last = smesa->vb;
+      smesa->vb_end = smesa->vb + 64 * 1024;
    }
 
    smesa->GlobalFlag = 0L;
@@ -216,15 +251,15 @@ sisCreateContext( const __GLcontextModes *glVisual,
 
    _swrast_allow_pixel_fog( ctx, GL_TRUE );
    _swrast_allow_vertex_fog( ctx, GL_FALSE );
+   _tnl_allow_pixel_fog( ctx, GL_TRUE );
+   _tnl_allow_vertex_fog( ctx, GL_FALSE );
 
+   /* XXX these should really go right after _mesa_init_driver_functions() */
    sisDDInitStateFuncs( ctx );
    sisDDInitState( smesa );	/* Initializes smesa->zFormat, important */
-   sisInitVB( ctx );
    sisInitTriFuncs( ctx );
-   sisDDInitDriverFuncs( ctx );
    sisDDInitSpanFuncs( ctx );
    sisDDInitStencilFuncs( ctx );
-   sisDDInitTextureFuncs( ctx );
 
    driInitExtensions( ctx, card_extensions, GL_FALSE );
 
@@ -252,6 +287,9 @@ sisDestroyContext ( __DRIcontextPrivate *driContextPriv )
       _tnl_DestroyContext( smesa->glCtx );
       _ac_DestroyContext( smesa->glCtx );
       _swrast_DestroyContext( smesa->glCtx );
+
+      if (smesa->using_agp)
+	 sisFreeAGP(smesa, smesa->vb_agp_handle);
 
       /* free the Mesa context */
       /* XXX: Is the next line needed?  The DriverCtx (smesa) reference is
@@ -497,11 +535,3 @@ sis_update_texture_state (sisContextPtr smesa)
    smesa->GlobalFlag &= ~GFLAG_TEXTURE_STATES;
 }
 
-void
-sis_fatal_error (void)
-{
-   /* free video memory, or the framebuffer device will do it automatically */
-
-   fprintf(stderr, "Fatal errors in sis_dri.so\n");
-   exit (-1);
-}

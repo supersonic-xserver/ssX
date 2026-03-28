@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/extinit.h,v 3.4 2007/01/04 02:48:13 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -31,10 +39,93 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define EXTINIT_H
 
 #include "extnsionst.h"
+/* XI types needed for extension event swap functions */
+#ifdef HAVE_XI_H
+#include <XI/XI.h>
+#endif
+#include <X11/extensions/XIproto.h>
 
 void
-XInputExtensionInit(
+XInputExtensionInit(INITARGS);
+
+int
+ProcIDispatch (
+	ClientPtr              /* client */
+	);
+
+int
+SProcIDispatch(
+	ClientPtr              /* client */
+	);
+
+void
+SReplyIDispatch (
+	ClientPtr              /* client */,
+	int                    /* len */,
+	xGrabDeviceReply *     /* rep */
+	);
+
+void
+SEventIDispatch (
+	xEvent *               /* from */,
+	xEvent *               /* to */
+	);
+
+void
+SEventDeviceValuator (
+	deviceValuator *       /* from */,
+	deviceValuator *       /* to */
+	);
+
+void
+SEventFocus (
+	deviceFocus *          /* from */,
+	deviceFocus *          /* to */
+	);
+
+void
+SDeviceStateNotifyEvent (
+	deviceStateNotify *    /* from */,
+	deviceStateNotify *    /* to */
+	);
+
+void
+SDeviceKeyStateNotifyEvent (
+	deviceKeyStateNotify * /* from */,
+	deviceKeyStateNotify * /* to */
+	);
+
+void
+SDeviceButtonStateNotifyEvent (
+	deviceButtonStateNotify * /* from */,
+	deviceButtonStateNotify * /* to */
+	);
+
+void
+SChangeDeviceNotifyEvent (
+	changeDeviceNotify *   /* from */,
+	changeDeviceNotify *   /* to */
+	);
+
+void
+SDeviceMappingNotifyEvent (
+	deviceMappingNotify *  /* from */,
+	deviceMappingNotify *  /* to */
+	);
+
+void
+FixExtensionEvents (
+	ExtensionEntry 	*      /* extEntry */
+	);
+
+void
+RestoreExtensionEvents (
 	void
+	);
+
+void
+IResetProc(
+	ExtensionEntry *       /* unused */
 	);
 
 void
@@ -44,9 +135,41 @@ AssignTypeAndName (
 	char *                 /* name */
 	);
 
+void
+MakeDeviceTypeAtoms (
+	void
+);
+
 DeviceIntPtr
 LookupDeviceIntRec (
 	CARD8                  /* id */
+	);
+
+void
+SetExclusiveAccess (
+	Mask                   /* mask */
+	);
+
+void
+AllowPropagateSuppress (
+	Mask                   /* mask */
+	);
+
+Mask
+GetNextExtEventMask (
+	void
+);
+
+void
+SetMaskForExtEvent(
+	Mask                   /* mask */,
+	int                    /* event */
+	);
+
+void
+SetEventInfo(
+	Mask                   /* mask */,
+	int                    /* constant */
 	);
 
 #endif /* EXTINIT_H */

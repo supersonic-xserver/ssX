@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/vfb/InitInput.c,v 3.14 2007/01/23 18:02:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -26,24 +34,20 @@ from The Open Group.
 
 */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>
+#include "X11/X.h"
 #define NEED_EVENTS
 #include "mi.h"
-#include <X11/Xproto.h>
+#include "X11/Xproto.h"
 #include "scrnintstr.h"
 #include "inputstr.h"
-#include <X11/Xos.h>
+#include "X11/Xos.h"
 #include "mibstore.h"
 #include "mipointer.h"
 #include "lk201kbd.h"
 #include <X11/keysym.h>
 
 Bool
-LegalModifier(unsigned int key, DeviceIntPtr pDev)
+LegalModifier(unsigned int key, DevicePtr pDev)
 {
     return TRUE;
 }
@@ -53,10 +57,6 @@ ProcessInputEvents()
 {
     mieqProcessInputEvents();
     miPointerUpdate();
-}
-
-void DDXRingBell(int volume, int pitch, int duration)
-{
 }
 
 #define VFB_MIN_KEY 8
@@ -296,8 +296,8 @@ vfbMouseProc(DeviceIntPtr pDevice, int onoff)
 	    map[1] = 1;
 	    map[2] = 2;
 	    map[3] = 3;
-	    InitPointerDeviceStruct(pDev, map, 3, GetMotionHistory,
-		(PtrCtrlProcPtr)NoopDDA, GetMotionHistorySize(), 2);
+	    InitPointerDeviceStruct(pDev, map, 3, miPointerGetMotionEvents,
+		(PtrCtrlProcPtr)NoopDDA, miPointerGetMotionBufferSize());
 	    break;
 
     case DEVICE_ON:
@@ -315,12 +315,13 @@ vfbMouseProc(DeviceIntPtr pDevice, int onoff)
 }
 
 void
-InitInput(int argc, char *argv[])
+InitInput(const int argc, const char *argv[])
 {
     DeviceIntPtr p, k;
     p = AddInputDevice(vfbMouseProc, TRUE);
     k = AddInputDevice(vfbKeybdProc, TRUE);
     RegisterPointerDevice(p);
     RegisterKeyboardDevice(k);
-    (void)mieqInit();
+    miRegisterPointerDevice(screenInfo.screens[0], p);
+    (void)mieqInit ((DevicePtr) k, (DevicePtr) p);
 }

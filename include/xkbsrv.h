@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
 Permission to use, copy, modify, and distribute this
@@ -985,6 +992,8 @@ extern void XkbSendNewKeyboardNotify(
 #ifdef XKBSRV_NEED_FILE_FUNCS
 
 #include <X11/extensions/XKMformat.h>
+/* Forward declare XColor for XKBfile.h */
+typedef struct _XColor XColor;
 #include <X11/extensions/XKBfile.h>
 #include <X11/extensions/XKBrules.h>
 

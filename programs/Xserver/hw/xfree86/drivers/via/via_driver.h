@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_driver.h,v 1.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_driver.h,v 1.16 2004/12/10 16:07:03 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -27,11 +34,10 @@
 #define _VIA_DRIVER_H_ 1
 
 /* #define DEBUG_PRINT */
-#if defined(DEBUG_PRINT) || defined(DEBUG)
-#undef DEBUG
-#define DEBUG(x) x
+#ifdef DEBUG_PRINT
+#define DEBUGX(x) x
 #else
-#define DEBUG(x)
+#define DEBUGX(x)
 #endif
 
 #include "vgaHW.h"
@@ -46,7 +52,14 @@
 #include "mipointer.h"
 #include "micmap.h"
 
+#define USE_FB
+#ifdef USE_FB
 #include "fb.h"
+#else
+#include "cfb.h"
+#include "cfb16.h"
+#include "cfb32.h"
+#endif
 
 #include "xf86cmap.h"
 #include "vbe.h"
@@ -67,11 +80,17 @@
 #endif
 
 #define DRIVER_NAME     "via"
-#define DRIVER_VERSION  "4.1.31"
+#define DRIVER_VERSION  "4.1.0"
 #define VERSION_MAJOR   4
 #define VERSION_MINOR   1
-#define PATCHLEVEL      31
+#define PATCHLEVEL      30
 #define VIA_VERSION     ((VERSION_MAJOR<<24) | (VERSION_MINOR<<16) | PATCHLEVEL)
+
+#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,3,99,14,0)
+#undef XFREE86_44 
+#else
+#define XFREE86_44 1
+#endif
 
 #define VGAIN8(addr)        MMIO_IN8(pVia->MapBase+0x8000, addr)
 #define VGAIN16(addr)       MMIO_IN16(pVia->MapBase+0x8000, addr)
@@ -89,8 +108,11 @@
 
 #define VIA_MAX_ACCEL_X         (2047)
 #define VIA_MAX_ACCEL_Y         (2047)
-#define VIA_PIXMAP_CACHE_SIZE   \
-	(4 * (VIA_MAX_ACCEL_X + 1) * (VIA_MAX_ACCEL_Y +1))
+#ifdef XFREE86_44
+#define VIA_PIXMAP_CACHE_SIZE   (4 * (VIA_MAX_ACCEL_X + 1) * (VIA_MAX_ACCEL_Y +1))
+#else
+#define VIA_PIXMAP_CACHE_SIZE   (256 * 1024)
+#endif /* XFREE86_44 */
 #define VIA_CURSOR_SIZE         (4 * 1024)
 #define VIA_VQ_SIZE             (256 * 1024)
 
@@ -190,9 +212,9 @@ typedef struct
 #define SAA7108H		0
 #define SAA7113H		1
 #define SAA7114H		2
-    I2CDevPtr		I2C;			/* Decoder I2C */
-    I2CDevPtr		FMI2C;			/* FM Tuner I2C */
-
+    I2CDevPtr 		I2C;			/* Decoder I2C */
+    I2CDevPtr 		FMI2C;			/* FM Tuner I2C */
+    
     /* Not yet used */
     int			autoDetect;		/* Autodetect mode */
     int			tunerMode;		/* Fixed mode */
@@ -233,7 +255,7 @@ typedef struct _VIA {
     unsigned char*      MapBaseDense;
     unsigned char*      FBBase;
     unsigned char*      FBStart;
-
+    
     /* Private memory pool management */
     int			SWOVUsed[MEM_BLOCKS]; /* Free map for SWOV pool */
     unsigned long	SWOVPool;	/* Base of SWOV pool */
@@ -314,18 +336,18 @@ typedef struct _VIA {
 #ifdef XF86DRI
     Bool		directRenderingEnabled;
     DRIInfoPtr		pDRIInfo;
-    int			drmFD;
-    int			numVisualConfigs;
-    __GLXvisualConfig*	pVisualConfigs;
-    VIAConfigPrivPtr	pVisualConfigsPriv;
-    unsigned long	agpHandle;
-    unsigned long	registerHandle;
-    unsigned long	agpAddr;
+    int 		drmFD;
+    int 		numVisualConfigs;
+    __GLXvisualConfig* 	pVisualConfigs;
+    VIAConfigPrivPtr 	pVisualConfigsPriv;
+    unsigned long 	agpHandle;
+    unsigned long 	registerHandle;
+    unsigned long 	agpAddr;
     drmAddress          agpMappedAddr;
-    unsigned char	*agpBase;
-    unsigned int	agpSize;
-    Bool		IsPCI;
-    Bool		drixinerama;
+    unsigned char 	*agpBase;
+    unsigned int 	agpSize;
+    Bool 		IsPCI;
+    Bool 		drixinerama;
 #endif
     Bool		DRIIrqEnable;
 
@@ -346,15 +368,15 @@ typedef struct _VIA {
     pointer		VidReg;
     unsigned long	gdwVidRegCounter;
     unsigned long	old_dwUseExtendedFIFO;
-
+    
     /* Overlay TV Tuners */
     ViaTunerPtr		Tuner[2];
     I2CDevPtr		CXA2104S;
     int			AudioMode;
     int			AudioMute;
-
+    
     /* Global 2D state block - needs to slowly die */
-    ViaGraphicRec	graphicInfo;
+    ViaGraphicRec	graphicInfo;    
     ViaSharedPtr	sharedData;
 } VIARec, *VIAPtr;
 
@@ -442,11 +464,11 @@ void VIAUTRemoveRestartFlag(VIABIOSInfoPtr pBIOSInfo);
 
 /* in via_overlay.c */
 unsigned long viaOverlayHQVCalcZoomHeight (VIAPtr pVia, unsigned long srcHeight,unsigned long dstHeight,
-			     unsigned long * lpzoomCtl, unsigned long * lpminiCtl, unsigned long * lpHQVfilterCtl, unsigned long * lpHQVminiCtl,unsigned long * lpHQVzoomflag);
+                             unsigned long * lpzoomCtl, unsigned long * lpminiCtl, unsigned long * lpHQVfilterCtl, unsigned long * lpHQVminiCtl,unsigned long * lpHQVzoomflag);
 unsigned long viaOverlayGetSrcStartAddress (VIAPtr pVia, unsigned long dwVideoFlag,RECTL rSrc,RECTL rDest, unsigned long dwSrcPitch,LPDDPIXELFORMAT lpDPF,unsigned long * lpHQVoffset );
 void viaOverlayGetDisplayCount(VIAPtr pVIa, unsigned long dwVideoFlag,LPDDPIXELFORMAT lpDPF,unsigned long dwSrcWidth,unsigned long * lpDisplayCountW);
 unsigned long viaOverlayHQVCalcZoomWidth(VIAPtr pVia, unsigned long dwVideoFlag, unsigned long srcWidth , unsigned long dstWidth,
-			   unsigned long * lpzoomCtl, unsigned long * lpminiCtl, unsigned long * lpHQVfilterCtl, unsigned long * lpHQVminiCtl,unsigned long * lpHQVzoomflag);
+                           unsigned long * lpzoomCtl, unsigned long * lpminiCtl, unsigned long * lpHQVfilterCtl, unsigned long * lpHQVminiCtl,unsigned long * lpHQVzoomflag);
 void viaOverlayGetV1Format(VIAPtr pVia, unsigned long dwVideoFlag,LPDDPIXELFORMAT lpDPF, unsigned long * lpdwVidCtl,unsigned long * lpdwHQVCtl );
 void viaOverlayGetV3Format(VIAPtr pVia, unsigned long dwVideoFlag,LPDDPIXELFORMAT lpDPF, unsigned long * lpdwVidCtl,unsigned long * lpdwHQVCtl );
 

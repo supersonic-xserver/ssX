@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/mi/mipolycon.c,v 1.4 2001/12/14 20:00:25 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mipolycon.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
 
 #include "gcstruct.h"
 #include "pixmap.h"
@@ -69,11 +77,15 @@ static int getPolyYBounds(DDXPointPtr pts, int n, int *by, int *ty);
  *     this code.
  */
 Bool
-miFillConvexPoly(DrawablePtr dst, GCPtr pgc, int count, DDXPointPtr ptsIn)
+miFillConvexPoly(dst, pgc, count, ptsIn)
+    DrawablePtr dst;
+    GCPtr	pgc;
+    int		count;                /* number of points        */
+    DDXPointPtr ptsIn;                /* the points              */
 {
-    int xl = 0, xr = 0; /* x vals of left and right edges */
-    int dl = 0, dr = 0; /* decision variables             */
-    int ml = 0, m1l = 0;/* left edge slope and slope+1    */
+    register int xl = 0, xr = 0; /* x vals of left and right edges */
+    register int dl = 0, dr = 0; /* decision variables             */
+    register int ml = 0, m1l = 0;/* left edge slope and slope+1    */
     int mr = 0, m1r = 0;         /* right edge slope and slope+1   */
     int incr1l = 0, incr2l = 0;  /* left edge error increments     */
     int incr1r = 0, incr2r = 0;  /* right edge error increments    */
@@ -214,7 +226,7 @@ miFillConvexPoly(DrawablePtr dst, GCPtr pgc, int count, DDXPointPtr ptsIn)
 static int
 getPolyYBounds(DDXPointPtr pts, int n, int *by, int *ty)
 {
-    DDXPointPtr ptMin;
+    register DDXPointPtr ptMin;
     int ymin, ymax;
     DDXPointPtr ptsStart = pts;
 

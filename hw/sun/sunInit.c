@@ -1,5 +1,11 @@
-/* $Xorg: sunInit.c,v 1.4 2000/08/17 19:48:29 cpqbld Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * sunInit.c --
  *	Initialization functions for screen/keyboard/mouse, etc.
  *
@@ -15,7 +21,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunInit.c,v 3.14 2004/06/02 22:43:00 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunInit.c,v 3.20 2007/01/23 18:02:57 tsi Exp $ */
 
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
@@ -28,11 +34,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -49,19 +55,10 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include    "sun.h"
 #include    "gcstruct.h"
 #include    "mi.h"
-#include    "fb.h"
-#include    "extinit.h"
-#include    "xkbsrv.h"
-
-#include <X11/Xatom.h>
-
-/* default log file paths */
-#ifndef DEFAULT_LOGDIR
-#define DEFAULT_LOGDIR "/var/log"
-#endif
-#ifndef DEFAULT_LOGPREFIX
-#define DEFAULT_LOGPREFIX "Xsun."
-#endif
+#include    "mibstore.h"
+#include    "cfb.h"
+#include    "cfb16.h"
+#include    "cfb32.h"
 
 /* maximum pixmap depth */
 #ifndef SUNMAXDEPTH
@@ -71,11 +68,16 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef i386 /* { */
 #define BW2I NULL
 #else /* }{ */
+extern Bool sunBW2Init(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define BW2I sunBW2Init
 #endif /* } */
 
 #ifdef LOWMEMFTPT
-#undef  BW2I
 #define BW2I NULL
 #endif /* ifdef LOWMEMFTPT */
 
@@ -87,28 +89,64 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define CG8I NULL
 #define TCXI NULL
 #else /* }{ */
+extern Bool sunCG3Init(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define CG3I sunCG3Init
 #if defined(i386) || defined(__bsdi__) /* { */
 #define CG2I NULL
 #define CG4I NULL
 #else /* }{ */
-#ifdef INCLUDE_CG2_HEADER
+#if defined(INCLUDE_CG2_HEADER) || !defined(SVR4)
+extern Bool sunCG2Init(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define CG2I sunCG2Init
-#endif /* INCLUDE_CG2_HEADER */
+#endif /* INCLUDE_CG2_HEADER || !SVR4 */
+extern Bool sunCG4Init(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define CG4I sunCG4Init
 #endif /* } */
 #ifdef FBTYPE_SUNFAST_COLOR /* { */
+extern Bool sunCG6Init(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define CG6I sunCG6Init
 #else /* }{ */
 #define CG6I NULL
 #endif /* } */
 #ifdef XFBTYPE_TCX  /* { */
+extern Bool sunTCXInit(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define TCXI sunTCXInit
 #else /* }{ */
 #define TCXI NULL
 #endif /* } */
 #if SUNMAXDEPTH > 8 /* { */
 #ifdef FBTYPE_MEMCOLOR /* { */
+extern Bool sunCG8Init(
+    int /* screen */,
+    ScreenPtr /* pScreen */,
+    int /* argc */,
+    const char** /* argv */
+);
 #define CG8I sunCG8Init
 #else /* }{ */
 #define CG8I NULL
@@ -119,41 +157,47 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #endif /* } */
 
-static int OpenFrameBuffer(char *, int);
-static char** GetDeviceList(int, char **);
-static void sunConfig(void);
-static void AddVTAtoms(CallbackListPtr *, void *, void *);
-
-#if SUNMAXDEPTH == 32
-static Bool sunCfbCreateGC(GCPtr);
-static void sunCfbGetSpans(DrawablePtr, int, DDXPointPtr, int *, int, char *);
-static void sunCfbGetImage(DrawablePtr, int,int, int, int, unsigned int, unsigned long, char *);
-#endif /* SUNMAXDEPTH == 32 */
+extern KeySymsRec sunKeySyms[];
+extern SunModmapRec *sunModMaps[];
+extern int sunMaxLayout;
+extern KeySym* sunType4KeyMaps[];
+extern SunModmapRec* sunType4ModMaps[];
 
 static Bool	sunDevsInited = FALSE;
 
+Bool sunAutoRepeatHandlersInstalled;	/* FALSE each time InitOutput called */
 Bool sunSwapLkeys = FALSE;
-Bool sunDebug = FALSE;
-char *sunDeviceList = NULL;
-Bool sunForceMono = FALSE;
 Bool sunFlipPixels = FALSE;
 Bool sunFbInfo = FALSE;
 Bool sunCG4Frob = FALSE;
 Bool sunNoGX = FALSE;
 
+sunKbdPrivRec sunKbdPriv = {
+    -1,		/* fd */
+    -1,		/* type */
+    -1,		/* layout */
+    0,		/* click */
+    (Leds)0,	/* leds */
+};
+
+sunPtrPrivRec sunPtrPriv = {
+    -1,		/* fd */
+    0		/* Current button state */
+};
+
 /*
- * The name member in the following table corresponds to the
+ * The name member in the following table corresponds to the 
  * FBTYPE_* macros defined in /usr/include/sun/fbio.h file
  */
 sunFbDataRec sunFbData[XFBTYPE_LASTPLUSONE] = {
   { NULL, "SUN1BW        (bw1)" },
   { NULL, "SUN1COLOR     (cg1)" },
-  { BW2I, "SUN2BW        (bw2)" },
-#ifdef INCLUDE_CG2_HEADER
+  { BW2I, "SUN2BW        (bw2)" },	
+#if defined(INCLUDE_CG2_HEADER) || !defined(SVR4)
   { CG2I, "SUN2COLOR     (cg2)" },
 #else
   { NULL, "SUN2COLOR     (cg2)" },
-#endif /* INCLUDE_CG2_HEADER */
+#endif /* INCLUDE_CG2_HEADER || !defined(SVR4) */
   { NULL, "SUN2GP        (gp1/gp2)" },
   { NULL, "SUN5COLOR     (cg5/386i accel)" },
   { CG3I, "SUN3COLOR     (cg3)" },
@@ -161,28 +205,18 @@ sunFbDataRec sunFbData[XFBTYPE_LASTPLUSONE] = {
   { CG4I, "SUN4COLOR     (cg4)" },
   { NULL, "NOTSUN1" },
   { NULL, "NOTSUN2" },
-  { NULL, "NOTSUN3" }
+  { NULL, "NOTSUN3" }	
 #ifndef i386 /* { */
  ,{ CG6I, "SUNFAST_COLOR (cg6/gx)" },
   { NULL, "SUNROP_COLOR  (cg9)" },
   { NULL, "SUNFB_VIDEO" },
   { NULL, "SUNGIFB" },
   { NULL, "SUNPLAS" },
-#ifdef FBTYPE_SUNGP3
   { NULL, "SUNGP3        (cg12/gs)" },
-#endif
-#ifdef FBTYPE_SUNGT
   { NULL, "SUNGT         (gt)" },
-#endif
-#ifdef FBTYPE_SUNLEO
   { NULL, "SUNLEO        (zx)" },
-#endif
-#ifdef FBTYPE_MDICOLOR
   { NULL, "MDICOLOR      (cgfourteen)" },
-#endif
-#ifdef XFBTYPE_TCX
   { TCXI, "TCX           (tcx)" },
-#endif
 #endif /* } */
 };
 
@@ -242,7 +276,7 @@ static PixmapFormatRec	formats[] = {
 #if SUNMAXDEPTH > 1
     ,{ 8, 8, BITMAP_SCANLINE_PAD} /* 8-bit deep */
 #if SUNMAXDEPTH > 8
-    ,{ 12, 24, BITMAP_SCANLINE_PAD } /* 12-bit deep */
+    ,{ 12, 16, BITMAP_SCANLINE_PAD } /* 12-bit deep */
     ,{ 24, 32, BITMAP_SCANLINE_PAD } /* 24-bit deep */
 #endif
 #endif
@@ -259,11 +293,9 @@ static PixmapFormatRec	formats[] = {
  * Results:
  *	The fd of the framebuffer.
  */
-static int
-OpenFrameBuffer(
-    char		*device,	/* e.g. "/dev/cgtwo0" */
-    int			screen    	/* what screen am I going to be */
-)
+static int OpenFrameBuffer(device, screen)
+    char		*device;	/* e.g. "/dev/cgtwo0" */
+    int			screen;    	/* what screen am I going to be */
 {
     int			ret = TRUE;
     struct fbgattr	*fbattr;
@@ -277,32 +309,27 @@ OpenFrameBuffer(
     if ((sunFbs[screen].fd = open(device, O_RDWR, 0)) == -1)
 	ret = FALSE;
     else {
-	fbattr = malloc (sizeof (struct fbgattr));
+	fbattr = (struct fbgattr *) xalloc (sizeof (struct fbgattr));
 	if (ioctl(sunFbs[screen].fd, FBIOGATTR, fbattr) == -1) {
 	    /*
-		This is probably a bwtwo; the $64,000 question is:
-		is it the mono plane of a cgfour, or is it really a
-		real bwtwo?  If there is only a cgfour in the box or
-		only a bwtwo in the box, then it isn't a problem.  If
-		it's a 3/60, which has a bwtwo on the mother board *and*
-		a cgfour, then things get tricky because there's no way
+		This is probably a bwtwo; the $64,000 question is: 
+		is it the mono plane of a cgfour, or is it really a 
+		real bwtwo?  If there is only a cgfour in the box or 
+		only a bwtwo in the box, then it isn't a problem.  If 
+		it's a 3/60, which has a bwtwo on the mother board *and* 
+		a cgfour, then things get tricky because there's no way 
 		to tell if the bwtwo is really being emulated by the cgfour.
 	    */
-	    free (fbattr);
+	    xfree (fbattr);
 	    fbattr = NULL;
 	    if (ioctl(sunFbs[screen].fd, FBIOGTYPE, &sunFbs[screen].info) == -1) {
-		ErrorF("unable to get frame buffer attributes\n");
+		Error("unable to get frame buffer attributes");
 		(void) close(sunFbs[screen].fd);
 		sunFbs[screen].fd = -1;
-		return FALSE;
+		return FALSE; 
 	    }
 	}
 	if (ret) {
-	    int verb = 1;
-
-	    if (sunFbInfo)
-		verb = -1;
-
 	    devFbUsed = TRUE;
 	    if (fbattr) {
 		if (fbattr->fbtype.fb_type >= XFBTYPE_LASTPLUSONE) {
@@ -313,7 +340,7 @@ OpenFrameBuffer(
 		}
 		sunFbs[screen].info = fbattr->fbtype;
 	    }
-	    sunFbs[screen].fbPriv = (void *) fbattr;
+	    sunFbs[screen].fbPriv = (pointer) fbattr;
 	    if (fbattr && !sunFbData[fbattr->fbtype.fb_type].init) {
 		int _i;
 		ret = FALSE;
@@ -321,19 +348,43 @@ OpenFrameBuffer(
 		    if (sunFbData[fbattr->emu_types[_i]].init) {
 			sunFbs[screen].info.fb_type = fbattr->emu_types[_i];
 			ret = TRUE;
-			LogMessageVerb(X_INFO, verb, "%s is emulating a %s\n",
-			    device, sunFbData[fbattr->fbtype.fb_type].name);
+			if (sunFbInfo)
+			    ErrorF ("%s is emulating a %s\n", device,
+				sunFbData[fbattr->fbtype.fb_type].name);
 			break;
 		    }
 		}
 	    }
-	    LogMessageVerb(X_INFO, verb, "%s is really a %s\n", device,
-		sunFbData[fbattr ? fbattr->fbtype.fb_type : sunFbs[screen].info.fb_type].name);
+	    if (sunFbInfo) 
+		ErrorF ("%s is really a %s\n", device, 
+		    sunFbData[fbattr ? fbattr->fbtype.fb_type : sunFbs[screen].info.fb_type].name);
 	}
     }
     if (!ret)
 	sunFbs[screen].fd = -1;
     return ret;
+}
+
+/*-
+ *-----------------------------------------------------------------------
+ * SigIOHandler --
+ *	Signal handler for SIGIO - input is available.
+ *
+ * Results:
+ *	sunSigIO is set - ProcessInputEvents() will be called soon.
+ *
+ * Side Effects:
+ *	None
+ *
+ *-----------------------------------------------------------------------
+ */
+/*ARGSUSED*/
+static void SigIOHandler(sig)
+    int		sig;
+{
+    int olderrno = errno;
+    sunEnqueueEvents ();
+    errno = olderrno;
 }
 
 /*-
@@ -350,8 +401,7 @@ OpenFrameBuffer(
  *
  *-----------------------------------------------------------------------
  */
-void
-sunNonBlockConsoleOff(
+void sunNonBlockConsoleOff(
 #if defined(SVR4) || defined(CSRG_BASED)
     void
 #else
@@ -363,17 +413,23 @@ sunNonBlockConsoleOff(
 
     i = fcntl(2, F_GETFL, 0);
     if (i >= 0)
-	(void) fcntl(2, F_SETFL, i & ~O_NONBLOCK);
+	(void) fcntl(2, F_SETFL, i & ~FNDELAY);
 }
 
-static char**
-GetDeviceList(int argc, char **argv)
+static char** GetDeviceList (argc, argv)
+    int		argc;
+    const char	**argv;
 {
     int		i;
     char	*envList = NULL;
-    char	*cmdList = sunDeviceList;
-    char	**deviceList = NULL;
+    char	*cmdList = NULL;
+    char	**deviceList = (char **)NULL; 
 
+    for (i = 1; i < argc; i++)
+	if (strcmp (argv[i], "-dev") == 0 && i+1 < argc) {
+	    cmdList = (char *)argv[i + 1];
+	    break;
+	}
     if (!cmdList)
 	envList = getenv ("XDEVICE");
 
@@ -381,7 +437,7 @@ GetDeviceList(int argc, char **argv)
 	char	*_tmpa;
 	char	*_tmpb;
 	int	_i1;
-	deviceList = malloc ((MAXSCREENS + 1) * sizeof (char *));
+	deviceList = (char **) xalloc ((MAXSCREENS + 1) * sizeof (char *));
 	_tmpa = (cmdList) ? cmdList : envList;
 	for (_i1 = 0; _i1 < MAXSCREENS; _i1++) {
 	    _tmpb = strtok (_tmpa, ":");
@@ -395,8 +451,8 @@ GetDeviceList(int argc, char **argv)
     }
     if (!deviceList) {
 	/* no environment and no cmdline, so default */
-	deviceList =
-	    malloc ((FALLBACK_LIST_LEN + 1) * sizeof (char *));
+	deviceList = 
+	    (char **) xalloc ((FALLBACK_LIST_LEN + 1) * sizeof (char *));
 	for (i = 0; i < FALLBACK_LIST_LEN; i++)
 	    deviceList[i] = fallbackList[i];
 	deviceList[FALLBACK_LIST_LEN] = NULL;
@@ -404,17 +460,69 @@ GetDeviceList(int argc, char **argv)
     return deviceList;
 }
 
-void
-OsVendorInit(void)
+static void getKbdType()
+{
+/*
+ * The Sun 386i has system include files that preclude this pre SunOS 4.1
+ * test for the presence of a type 4 keyboard however it really doesn't
+ * matter since no 386i has ever been shipped with a type 3 keyboard.
+ * SunOS 4.1 no longer needs this kludge.
+ */
+#if !defined(i386) && !defined(KIOCGKEY)
+#define TYPE4KEYBOARDOVERRIDE
+#endif
+
+    int ii;
+
+    for (ii = 0; ii < 3; ii++) {
+	sunKbdWait();
+	(void) ioctl (sunKbdPriv.fd, KIOCTYPE, &sunKbdPriv.type);
+#ifdef TYPE4KEYBOARDOVERRIDE
+	/*
+	 * Magic. Look for a key which is non-existent on a real type
+	 * 3 keyboard but does exist on a type 4 keyboard.
+	 */
+	if (sunKbdPriv.type == KB_SUN3) {
+	    struct kiockeymap key;
+
+	    key.kio_tablemask = 0;
+	    key.kio_station = 118;
+	    if (ioctl(sunKbdPriv.fd, KIOCGKEY, &key) == -1) {
+		Error( "ioctl KIOCGKEY" );
+		FatalError("Can't KIOCGKEY on fd %d\n", sunKbdPriv.fd);
+	    }
+	    if (key.kio_entry != HOLE)
+		sunKbdPriv.type = KB_SUN4;
+	}
+#endif
+	switch (sunKbdPriv.type) {
+	case KB_SUN2:
+	case KB_SUN3:
+	case KB_SUN4: return;
+	default: 
+	    sunChangeKbdTranslation(sunKbdPriv.fd, FALSE);
+	    continue;
+	}
+    }
+    FatalError ("Unsupported keyboard type %d\n", sunKbdPriv.type);
+}
+
+void OsVendorPreInit(
+    void
+)
+{
+}
+
+void OsVendorInit(
+    void
+)
 {
     static int inited;
     if (!inited) {
-	const char *logfile;
-	char *lf;
 #ifndef i386
 	struct rlimit rl;
 
-	/*
+	/* 
 	 * one per client, one per screen, one per listen endpoint,
 	 * keyboard, mouse, and stderr
 	 */
@@ -425,85 +533,32 @@ OsVendorInit(void)
 	    (void) setrlimit (RLIMIT_NOFILE, &rl);
 	}
 #endif
-
-#define LOGSUFFIX ".log"
-#define LOGOLDSUFFIX ".old"
-
-	logfile = DEFAULT_LOGDIR "/" DEFAULT_LOGPREFIX;
-	if (asprintf(&lf, "%s%%s" LOGSUFFIX, logfile) == -1)
-	    FatalError("Cannot allocate space for the log file name\n");
-	LogInit(lf, LOGOLDSUFFIX);
-
-#undef LOGSUFFIX
-#undef LOGOLDSUFFIX
-
-	free(lf);
-
+	sunKbdPriv.fd = open ("/dev/kbd", O_RDWR, 0);
+	if (sunKbdPriv.fd < 0)
+	    FatalError ("Cannot open /dev/kbd, error %d\n", errno);
+	sunPtrPriv.fd = open ("/dev/mouse", O_RDWR, 0);
+	if (sunPtrPriv.fd < 0)
+	    FatalError ("Cannot open /dev/mouse, error %d\n", errno);
+	getKbdType ();
+	if (sunKbdPriv.type == KB_SUN4) {
+	    (void) ioctl (sunKbdPriv.fd, KIOCLAYOUT, &sunKbdPriv.layout);
+	    if (sunKbdPriv.layout < 0 ||
+		sunKbdPriv.layout > sunMaxLayout ||
+		sunType4KeyMaps[sunKbdPriv.layout] == NULL)
+		FatalError ("Unsupported keyboard type 4 layout %d\n",
+			    sunKbdPriv.layout);
+	    sunKeySyms[KB_SUN4].map = sunType4KeyMaps[sunKbdPriv.layout];
+	    sunModMaps[KB_SUN4] = sunType4ModMaps[sunKbdPriv.layout];
+        }
 	inited = 1;
     }
 }
 
-void
-OsVendorFatalError(const char *f, va_list arg)
-{
-}
-
-#ifdef GLXEXT
-void
-GlxExtensionInit(void)
+#ifdef DDXOSFATALERROR
+void OsVendorFatalError(void)
 {
 }
 #endif
-
-/*-
- *-----------------------------------------------------------------------
- * sunConfig --
- *	The Xsun server does not use a config file for customization.
- *	On the other hand, the XFree86 DDX server initializes various
- *	settings based on xorg.conf in hw/xfree86/common/xf86Config.c,
- *	before calling InitInput().  The X.Org DIX appears to implicitly
- *	expect such initialization to be performed by each DDX.
- *	This function handles those implicit initialzations for Xsun.
- *
- *-----------------------------------------------------------------------
- */
-static void
-sunConfig(void)
-{
-    XkbRMLVOSet set;
-
-    /*
-     * This Xkb initialzation seems required before InitCoreDevices() for
-     * Core Keyboard, but InitCoreDevices() is called before InitInput().
-     */
-    XkbInitRules(&set, "base", "empty", "empty", NULL, NULL);
-    XkbSetRulesDflts(&set);
-    XkbFreeRMLVOSet(&set, FALSE);
-}
-
-/*-
- *-----------------------------------------------------------------------
- * AddVTAtom --
- *	Callback to register "XFree86_VT" Atom for xinit(1) to appease
- *	"XFree86_VT property unexpectedly has 0 items instead of 1"
- *	warning on startup.  Pulled from hw/xfree86/common/xf86Init.c.
- *
- *-----------------------------------------------------------------------
- */
-static void
-AddVTAtoms(CallbackListPtr *pcbl, void *data, void *screen)
-{
-#define VT_ATOM_NAME	"XFree86_VT"
-    int err, vtno = 0;
-    ScreenPtr pScreen = screen;
-    Atom VTAtom = MakeAtom(VT_ATOM_NAME, sizeof(VT_ATOM_NAME) - 1, TRUE);
-
-    err = dixChangeWindowProperty(serverClient, pScreen->root, VTAtom,
-	XA_INTEGER, 32, PropModeReplace, 1, &vtno, FALSE);
-
-    if (err != Success)
-        LogMessage(X_WARNING, "Failed to register VT properties\n");
-}
 
 /*-
  *-----------------------------------------------------------------------
@@ -520,24 +575,25 @@ AddVTAtoms(CallbackListPtr *pcbl, void *data, void *screen)
  *-----------------------------------------------------------------------
  */
 
-void
-InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
+void InitOutput(pScreenInfo, argc, argv)
+    ScreenInfo 	  *pScreenInfo;
+    const int     argc;
+    const char    **argv;
 {
     int     	i, scr;
     int		nonBlockConsole = 0;
     char	**devList;
     static int	setup_on_exit = 0;
-
-    sunConfig();
-
-    AddCallback(&RootWindowFinalizeCallback, AddVTAtoms, NULL);
+    extern Bool	RunFromSmartParent;
 
     if (!monitorResolution)
 	monitorResolution = 90;
-    if (RunFromSigStopParent)
+    if (RunFromSmartParent)
 	nonBlockConsole = 1;
-    if (sunDebug)
-	nonBlockConsole = 0;
+    for (i = 1; i < argc; i++) {
+	if (!strcmp(argv[i],"-debug"))
+	    nonBlockConsole = 0;
+    }
 
     /*
      *	Writes to /dev/console can block - causing an
@@ -557,9 +613,9 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	}
 	i = fcntl(2, F_GETFL, 0);
 	if (i >= 0)
-	    i = fcntl(2, F_SETFL, i | O_NONBLOCK);
+	    i = fcntl(2, F_SETFL, i | FNDELAY);
 	if (i < 0) {
-	    ErrorF("fcntl\n");
+	    Error("fcntl");
 	    ErrorF("InitOutput: can't put stderr in non-block mode\n");
 	}
     }
@@ -571,6 +627,10 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     pScreenInfo->numPixmapFormats = NUMFORMATS;
     for (i=0; i< NUMFORMATS; i++)
         pScreenInfo->formats[i] = formats[i];
+#ifdef XKB
+    if (noXkbExtension)
+#endif
+    sunAutoRepeatHandlersInstalled = FALSE;
     if (!sunDevsInited) {
 	/* first time ever */
 	for (scr = 0; scr < MAXSCREENS; scr++)
@@ -580,11 +640,11 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	    if (OpenFrameBuffer (devList[i], scr))
 		scr++;
 	sunDevsInited = TRUE;
-	free (devList);
+	xfree (devList);
     }
     for (scr = 0; scr < MAXSCREENS; scr++)
 	if (sunFbs[scr].fd != -1)
-	    (void) AddScreen (sunFbData[sunFbs[scr].info.fb_type].init,
+	    (void) AddScreen (sunFbData[sunFbs[scr].info.fb_type].init, 
 			      argc, argv);
     (void) OsSignal(SIGWINCH, SIG_IGN);
 }
@@ -604,118 +664,188 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
  *
  *-----------------------------------------------------------------------
  */
-void
-InitInput(int argc, char **argv)
+void InitInput(argc, argv)
+    const int     argc;
+    const char    **argv;
 {
-    int rc;
+    pointer	p, k;
+    extern Bool mieqInit();
 
-    rc = AllocDevicePair(serverClient, "sun",
-			 &sunPointerDevice, &sunKeyboardDevice,
-			 sunMouseProc, sunKbdProc, FALSE);
-    if (rc != Success)
-	FatalError("Failed to init sun default input devices.\n");
+    p = AddInputDevice(sunMouseProc, TRUE);
+    k = AddInputDevice(sunKbdProc, TRUE);
+    if (!p || !k)
+	FatalError("failed to create input devices in InitInput");
 
-    (void)mieqInit();
+    RegisterPointerDevice(p);
+    RegisterKeyboardDevice(k);
+    miRegisterPointerDevice(screenInfo.screens[0], p);
+    (void) mieqInit (k, p);
+#define SET_FLOW(fd) fcntl(fd, F_SETFL, FNDELAY | FASYNC)
+#ifdef SVR4
+    (void) OsSignal(SIGPOLL, SigIOHandler);
+#define WANT_SIGNALS(fd) ioctl(fd, I_SETSIG, S_INPUT | S_HIPRI)
+#else
+    (void) OsSignal(SIGIO, SigIOHandler);
+#define WANT_SIGNALS(fd) fcntl(fd, F_SETOWN, getpid())
+#endif
+    if (sunKbdPriv.fd >= 0) {
+	if (SET_FLOW(sunKbdPriv.fd) == -1 || WANT_SIGNALS(sunKbdPriv.fd) == -1) {	
+	    (void) close (sunKbdPriv.fd);
+	    sunKbdPriv.fd = -1;
+	    FatalError("Async kbd I/O failed in InitInput");
+	}
+    }
+    if (sunPtrPriv.fd >= 0) {
+	if (SET_FLOW(sunPtrPriv.fd) == -1 || WANT_SIGNALS(sunPtrPriv.fd) == -1) {	
+	    (void) close (sunPtrPriv.fd);
+	    sunPtrPriv.fd = -1;
+	    FatalError("Async mouse I/O failed in InitInput");
+	}
+    }
 }
 
-void
-CloseInput(void)
-{
-    mieqFini();
-}
 
 #if SUNMAXDEPTH == 8
 
 Bool
-sunCfbSetupScreen(
-    ScreenPtr pScreen,
-    void *pbits,		/* pointer to screen bitmap */
-    int xsize,			/* in pixels */
-    int ysize,			/* in pixels */
-    int dpix,			/* dots per inch */
-    int dpiy,			/* dots per inch */
-    int width,			/* pixel width of frame buffer */
-    int	bpp			/* bits per pixel of root */
-)
+sunCfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
+    int	bpp;			/* bits per pixel of root */
 {
-    return fbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy,
-			 width, bpp);
+    return cfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy,
+			  width);
 }
 
 Bool
-sunCfbFinishScreenInit(
-    ScreenPtr pScreen,
-    void *pbits,		/* pointer to screen bitmap */
-    int xsize,			/* in pixels */
-    int ysize,			/* in pixels */
-    int dpix,			/* dots per inch */
-    int dpiy,			/* dots per inch */
-    int width,			/* pixel width of frame buffer */
-    int bpp			/* bits per pixel of root */
-)
+sunCfbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
+    int bpp;			/* bits per pixel of root */
 {
-    return fbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy,
-			      width, bpp);
+    return cfbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy,
+			       width);
 }
 
 Bool
-sunCfbScreenInit(
-    ScreenPtr pScreen,
-    void *pbits,		/* pointer to screen bitmap */
-    int xsize,			/* in pixels */
-    int ysize,			/* in pixels */
-    int dpix,			/* dots per inch */
-    int dpiy,			/* dots per inch */
-    int width,			/* pixel width of frame buffer */
-    int bpp			/* bits per pixel of root */
-)
+sunCfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
+    int bpp;			/* bits per pixel of root */
 {
-    return fbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp);
+    return cfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width);
 }
 
 #else /* SUNMAXDEPTH != 8 */
 #if SUNMAXDEPTH == 32
 
 static Bool
-sunCfbCreateGC(GCPtr pGC)
+sunCfbCreateGC(pGC)
+    GCPtr   pGC;
 {
-    return fbCreateGC (pGC);
+    if (pGC->depth == 1)
+    {
+	return mfbCreateGC (pGC);
+    }
+    else if (pGC->depth <= 8)
+    {
+	return cfbCreateGC (pGC);
+    }
+    else if (pGC->depth <= 16)
+    {
+	return cfb16CreateGC (pGC);
+    }
+    else if (pGC->depth <= 32)
+    {
+	return cfb32CreateGC (pGC);
+    }
+    return FALSE;
 }
 
 static void
-sunCfbGetSpans(
-    DrawablePtr		pDrawable,	/* drawable from which to get bits */
-    int			wMax,		/* largest value of all *pwidths */
-    DDXPointPtr		ppt,		/* points to start copying from */
-    int			*pwidth,	/* list of number of bits to copy */
-    int			nspans,		/* number of scanlines to copy */
-    char		*pdstStart	/* where to put the bits */
-)
+sunCfbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart)
+    DrawablePtr		pDrawable;	/* drawable from which to get bits */
+    int			wMax;		/* largest value of all *pwidths */
+    register DDXPointPtr ppt;		/* points to start copying from */
+    int			*pwidth;	/* list of number of bits to copy */
+    int			nspans;		/* number of scanlines to copy */
+    char		*pdstStart;	/* where to put the bits */
 {
-    fbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+    switch (pDrawable->bitsPerPixel) {
+    case 1:
+	mfbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+	break;
+    case 8:
+	cfbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+	break;
+    case 16:
+	cfb16GetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+	break;
+    case 32:
+	cfb32GetSpans(pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+	break;
+    }
+    return;
 }
 
 static void
-sunCfbGetImage(DrawablePtr pDrawable, int sx, int sy, int w, int h, unsigned int format, unsigned long planeMask, char *pdstLine)
+sunCfbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine)
+    DrawablePtr pDrawable;
+    int		sx, sy, w, h;
+    unsigned int format;
+    unsigned long planeMask;
+    char	*pdstLine;
 {
-    fbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+    switch (pDrawable->bitsPerPixel)
+    {
+    case 1:
+	mfbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+	break;
+    case 8:
+	cfbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+	break;
+    case 16:
+	cfb16GetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+	break;
+    case 32:
+	cfb32GetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine);
+	break;
+    }
 }
 
 Bool
-sunCfbSetupScreen(
-    ScreenPtr pScreen,
-    void *pbits,		/* pointer to screen bitmap */
-    int xsize,			/* in pixels */
-    int ysize,			/* in pixels */
-    int dpix,			/* dots per inch */
-    int dpiy,			/* dots per inch */
-    int width,			/* pixel width of frame buffer */
-    int	bpp			/* bits per pixel of root */
-)
+sunCfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
+    int	bpp;			/* bits per pixel of root */
 {
     int ret;
 
-    ret = fbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp);
+    switch (bpp) {
+    case 8:
+	ret = cfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width);
+	break;
+    case 16:
+	ret = cfb16SetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width);
+	break;
+    case 32:
+	ret = cfb32SetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width);
+	break;
+    default:
+	return FALSE;
+    }
     pScreen->CreateGC = sunCfbCreateGC;
     pScreen->GetImage = sunCfbGetImage;
     pScreen->GetSpans = sunCfbGetSpans;
@@ -723,19 +853,29 @@ sunCfbSetupScreen(
 }
 
 /* Adapt cfb logic */
+#undef CFB_NEED_SCREEN_PRIVATE
+#if !defined(SINGLEDEPTH) || defined(FORDE_SEPARATE_PRIVATE)
+#define CFB_NEED_SCREEN_PRIVATE
+#endif
+
+extern BSFuncRec cfbBSFuncRec, cfb16BSFuncRec, cfb32BSFuncRec;
+extern Bool	 cfbCloseScreen(), cfb16CloseScreen(), cfb32CloseScreen();
+#ifdef CFB_NEED_SCREEN_PRIVATE
+extern int	 cfb16ScreenPrivateIndex, cfb32ScreenPrivateIndex;
+#endif
 
 Bool
-sunCfbFinishScreenInit(
-    ScreenPtr pScreen,
-    void *pbits,		/* pointer to screen bitmap */
-    int xsize,			/* in pixels */
-    int ysize,			/* in pixels */
-    int dpix,			/* dots per inch */
-    int dpiy,			/* dots per inch */
-    int width,			/* pixel width of frame buffer */
-    int bpp
-)
+sunCfbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
+    int bpp;
 {
+#ifdef CFB_NEED_SCREEN_PRIVATE
+    pointer	oldDevPrivate;
+#endif
     VisualPtr	visuals;
     int		nvisuals;
     DepthPtr	depths;
@@ -743,29 +883,53 @@ sunCfbFinishScreenInit(
     VisualID	defaultVisual;
     int		rootdepth = 0;
 
-    if (!fbInitVisuals(&visuals, &depths, &nvisuals, &ndepths,
-		       &rootdepth, &defaultVisual, 1 << (bpp - 1), 8))
+    if (!cfbInitVisuals(&visuals, &depths, &nvisuals, &ndepths,
+			&rootdepth, &defaultVisual, 1 << (bpp - 1), 8))
 	return FALSE;
+#ifdef CFB_NEED_SCREEN_PRIVATE
+    oldDevPrivate = pScreen->devPrivate;
+#endif
     if (! miScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width,
 			rootdepth, ndepths, depths,
 			defaultVisual, nvisuals, visuals))
 	return FALSE;
-    pScreen->CloseScreen = fbCloseScreen;
+    switch (bpp)
+    {
+    case 8:
+	pScreen->CloseScreen = cfbCloseScreen;
+	pScreen->BackingStoreFuncs = cfbBSFuncRec;
+	break;
+    case 16:
+	pScreen->CloseScreen = cfb16CloseScreen;
+	pScreen->BackingStoreFuncs = cfb16BSFuncRec;
+#ifdef CFB_NEED_SCREEN_PRIVATE
+	pScreen->devPrivates[cfb16ScreenPrivateIndex].ptr =
+	    pScreen->devPrivate;
+	pScreen->devPrivate = oldDevPrivate;
+#endif
+	break;
+    case 32:
+	pScreen->CloseScreen = cfb32CloseScreen;
+	pScreen->BackingStoreFuncs = cfb32BSFuncRec;
+#ifdef CFB_NEED_SCREEN_PRIVATE
+	pScreen->devPrivates[cfb32ScreenPrivateIndex].ptr =
+	    pScreen->devPrivate;
+	pScreen->devPrivate = oldDevPrivate;
+#endif
+	break;
+    }
     return TRUE;
 }
 
 
 Bool
-sunCfbScreenInit(
-    ScreenPtr pScreen,
-    void *pbits,		/* pointer to screen bitmap */
-    int xsize,			/* in pixels */
-    int ysize,			/* in pixels */
-    int dpix,			/* dots per inch */
-    int dpiy,			/* dots per inch */
-    int width,			/* pixel width of frame buffer */
-    int bpp
-)
+sunCfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
+    int bpp;
 {
     if (!sunCfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy,
 			   width, bpp))

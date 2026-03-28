@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mipushpxl.c,v 3.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mipushpxl.c,v 3.13 2003/07/16 01:38:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mipushpxl.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+#include "X.h"
 #include "gcstruct.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -76,15 +83,18 @@ bitsizeof(int) padding and sacnline unit == bitsizeof(int).)
  * in the server, we need to rename one of them
  */
 void
-miPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
-	     int dx, int dy, int xOrg, int yOrg)
+miPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
+    GCPtr	pGC;
+    PixmapPtr	pBitMap;
+    DrawablePtr pDrawable;
+    int		dx, dy, xOrg, yOrg;
 {
     int		h, dxDivPPW, ibEnd;
     MiBits *pwLineStart;
-    MiBits	*pw, *pwEnd;
-    MiBits msk;
-    int ib, w;
-    int ipt;		/* index into above arrays */
+    register MiBits	*pw, *pwEnd;
+    register MiBits msk;
+    register int ib, w;
+    register int ipt;		/* index into above arrays */
     Bool 	fInBox;
     DDXPointRec	pt[NPT], ptThisLine;
     int		width[NPT];

@@ -1,5 +1,12 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,29 +26,32 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stdlib.h>
+/* $XFree86: xc/programs/Xserver/fb/fbpixmap.c,v 1.13 2006/01/09 14:59:47 dawes Exp $ */
 
 #include "fb.h"
+#ifdef IN_MODULE
+#include "xf86_ansic.h"
+#endif
 
 PixmapPtr
 fbCreatePixmapBpp (ScreenPtr pScreen, int width, int height, int depth, int bpp)
 {
     PixmapPtr	pPixmap;
-    size_t	datasize;
-    size_t	paddedWidth;
+    int		datasize;
+    int		paddedWidth;
     int		adjust;
     int		base;
 
-    paddedWidth = ((width * bpp + FB_MASK) >> FB_SHIFT) * sizeof (FbBits);
-    if (paddedWidth / 4 > 32767 || height > 32767)
+    if ((width > MAXSHORT) || (height > MAXSHORT))
 	return NullPixmap;
+
+    paddedWidth = ((width * bpp + FB_MASK) >> FB_SHIFT) * sizeof (FbBits);
     datasize = height * paddedWidth;
+#ifdef PIXPRIV
     base = pScreen->totalPixmapSize;
+#else
+    base = sizeof (PixmapRec);
+#endif
     adjust = 0;
     if (base & 7)
 	adjust = 8 - (base & 7);
@@ -69,11 +79,6 @@ fbCreatePixmapBpp (ScreenPtr pScreen, int width, int height, int depth, int bpp)
 #ifdef FB_DEBUG
     pPixmap->devPrivate.ptr = (void *) ((char *) pPixmap->devPrivate.ptr + paddedWidth);
     fbInitializeDrawable (&pPixmap->drawable);
-#endif
-
-#ifdef COMPOSITE
-    pPixmap->screen_x = 0;
-    pPixmap->screen_y = 0;
 #endif
 
     return pPixmap;
@@ -154,8 +159,6 @@ fbPixmapToRegion(PixmapPtr pPix)
     FirstRect = REGION_BOXPTR(pReg);
     rects = FirstRect;
 
-    fbPrepareAccess(&pPix->drawable);
-
     pwLine = (FbBits *) pPix->devPrivate.ptr;
     nWidth = pPix->devKind >> (FB_SHIFT-3);
 
@@ -170,7 +173,7 @@ fbPixmapToRegion(PixmapPtr pPix)
 	irectLineStart = rects - FirstRect;
 	/* If the Screen left most bit of the word is set, we're starting in
 	 * a box */
-	if(READ(pw) & mask0)
+	if(*pw & mask0)
 	{
 	    fInBox = TRUE;
 	    rx1 = 0;
@@ -181,7 +184,7 @@ fbPixmapToRegion(PixmapPtr pPix)
 	pwLineEnd = pw + (width >> FB_SHIFT);
 	for (base = 0; pw < pwLineEnd; base += FB_UNIT)
 	{
-	    w = READ(pw++);
+	    w = *pw++;
 	    if (fInBox)
 	    {
 		if (!~w)
@@ -222,7 +225,7 @@ fbPixmapToRegion(PixmapPtr pPix)
 	if(width & FB_MASK)
 	{
 	    /* Process final partial word on line */
-	    w = READ(pw++);
+	    w = *pw++;
 	    for(ib = 0; ib < (width & FB_MASK); ib++)
 	    {
 	        /* If the Screen left most bit of the word is set, we're
@@ -307,8 +310,6 @@ fbPixmapToRegion(PixmapPtr pPix)
 	    pReg->data = (RegDataPtr)NULL;
 	}
     }
-
-    fbFinishAccess(&pPix->drawable);
 #ifdef DEBUG
     if (!miValidRegion(pReg))
 	FatalError("Assertion failed file %s, line %d: expr\n", __FILE__, __LINE__);
@@ -360,7 +361,6 @@ fbValidateDrawable (DrawablePtr pDrawable)
     if (!fbValidateBits (first, stride, FB_HEAD_BITS) ||
 	!fbValidateBits (last, stride, FB_TAIL_BITS))
 	fbInitializeDrawable(pDrawable);
-    fbFinishAccess (pDrawable);
 }
 
 void
@@ -382,6 +382,5 @@ fbInitializeDrawable (DrawablePtr pDrawable)
     last = bits + stride * pDrawable->height;
     fbSetBits (first, stride, FB_HEAD_BITS);
     fbSetBits (last, stride, FB_TAIL_BITS);
-    fbFinishAccess (pDrawable);
 }
 #endif /* FB_DEBUG */

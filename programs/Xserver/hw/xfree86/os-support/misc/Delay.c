@@ -1,9 +1,16 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/Delay.c,v 3.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/Delay.c,v 3.4 2003/03/25 04:18:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  
 #ifdef __UNIXOS2__
 #define I_NEED_OS2_H
 #endif
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"

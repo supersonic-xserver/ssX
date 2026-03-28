@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mipolygen.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mipolygen.c,v 1.3 2001/12/14 20:00:25 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mipolygen.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+#include "X.h"
 #include "gcstruct.h"
 #include "miscanfill.h"
 #include "mipoly.h"
@@ -64,14 +71,18 @@ SOFTWARE.
  */
 
 Bool
-miFillGeneralPoly(DrawablePtr dst, GCPtr pgc, int count, DDXPointPtr ptsIn)
+miFillGeneralPoly(dst, pgc, count, ptsIn)
+    DrawablePtr dst;
+    GCPtr	pgc;
+    int		count;              /* number of points        */
+    DDXPointPtr ptsIn;              /* the points              */
 {
-    EdgeTableEntry *pAET;  /* the Active Edge Table   */
-    int y;                 /* the current scanline    */
-    int nPts = 0;          /* number of pts in buffer */
-    EdgeTableEntry *pWETE; /* Winding Edge Table      */
-    ScanLineList *pSLL;    /* Current ScanLineList    */
-    DDXPointPtr ptsOut;      /* ptr to output buffers   */
+    register EdgeTableEntry *pAET;  /* the Active Edge Table   */
+    register int y;                 /* the current scanline    */
+    register int nPts = 0;          /* number of pts in buffer */
+    register EdgeTableEntry *pWETE; /* Winding Edge Table      */
+    register ScanLineList *pSLL;    /* Current ScanLineList    */
+    register DDXPointPtr ptsOut;      /* ptr to output buffers   */
     int *width;
     DDXPointRec FirstPoint[NUMPTSTOBUFFER]; /* the output buffers */
     int FirstWidth[NUMPTSTOBUFFER];

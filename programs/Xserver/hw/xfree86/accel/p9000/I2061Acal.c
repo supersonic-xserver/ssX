@@ -1,4 +1,11 @@
 /* $XFree86$ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Id: ICD2061Acal.c,v 4.0 1994/05/28 01:24:17 nygren Exp */
 /* Based on the number 9 Inc code */
 /* Copyright (c) 1992, Number Nine Computer Corp.  All Rights Reserved.

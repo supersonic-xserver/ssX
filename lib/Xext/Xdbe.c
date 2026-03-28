@@ -1,4 +1,11 @@
 /******************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * 
  * Copyright (c) 1994, 1995  Hewlett-Packard Company
  *
@@ -29,7 +36,7 @@
  *     Xlib DBE code
  *
  *****************************************************************************/
-/* $XFree86: xc/lib/Xext/Xdbe.c,v 3.8 2003/11/17 22:20:21 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/Xdbe.c,v 3.9 2005/01/27 02:28:59 dawes Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES

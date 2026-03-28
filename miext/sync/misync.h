@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2010 NVIDIA Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,6 +35,18 @@
 #ifndef _MISYNC_H_
 #define _MISYNC_H_
 
+#include "scrnintstr.h"
+
+/* Don't redefine if already defined by misyncstr.h */
+#ifdef SyncFenceFuncsRec
+typedef struct _syncFenceFuncs {
+    SyncFenceSetTriggeredFunc	SetTriggered;
+    SyncFenceResetFunc		Reset;
+    SyncFenceCheckTriggeredFunc	CheckTriggered;
+    SyncFenceAddTriggerFunc	AddTrigger;
+    SyncFenceDeleteTriggerFunc	DeleteTrigger;
+} SyncFenceFuncsRec, *SyncFenceFuncsPtr;
+#else
 typedef struct _SyncFence SyncFence;
 typedef struct _SyncTrigger SyncTrigger;
 
@@ -54,7 +73,7 @@ typedef Bool (*SyncFenceCheckTriggeredFunc) (SyncFence* pFence);
 typedef void (*SyncFenceAddTriggerFunc) (SyncTrigger* pTrigger);
 typedef void (*SyncFenceDeleteTriggerFunc) (SyncTrigger* pTrigger);
 
-typedef struct _syncFenceFuncs {
+typedef struct _SyncFenceFuncs {
     SyncFenceSetTriggeredFunc	SetTriggered;
     SyncFenceResetFunc		Reset;
     SyncFenceCheckTriggeredFunc	CheckTriggered;
@@ -74,4 +93,5 @@ miSyncGetScreenFuncs(ScreenPtr pScreen);
 extern _X_EXPORT Bool
 miSyncSetup(ScreenPtr pScreen);
 
+#endif /* SyncFenceFuncsRec check */
 #endif /* _MISYNC_H_ */

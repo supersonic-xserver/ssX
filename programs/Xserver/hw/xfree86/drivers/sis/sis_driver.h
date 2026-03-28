@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_driver.h,v 1.44tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_driver.h,v 1.41 2005/02/19 01:03:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Global data and definitions
  *
@@ -1266,7 +1274,7 @@ static const unsigned char SiS301CScaling[] = {
 static void SISIdentify(int flags);
 static Bool SISProbe(DriverPtr drv, int flags);
 static Bool SISPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool SISScreenInit(int Index, ScreenPtr pScreen, const int argc, const char **argv);
+static Bool SISScreenInit(int Index, ScreenPtr pScreen, int argc, char **argv);
 static Bool SISEnterVT(int scrnIndex, int flags);
 static void SISLeaveVT(int scrnIndex, int flags);
 static Bool SISCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -1319,7 +1327,7 @@ BOOLEAN        SiSBridgeIsInSlaveMode(ScrnInfoPtr pScrn);
 USHORT	       SiS_GetModeNumber(ScrnInfoPtr pScrn, DisplayModePtr mode, unsigned long VBFlags);
 unsigned char  SiS_GetSetBIOSScratch(ScrnInfoPtr pScrn, USHORT offset, unsigned char value);
 #ifdef DEBUG
-void           SiSDumpModeInfo(ScrnInfoPtr pScrn, DisplayModePtr mode);
+static void    SiSDumpModeInfo(ScrnInfoPtr pScrn, DisplayModePtr mode);
 #endif
 void           SISDetermineLCDACap(ScrnInfoPtr pScrn);
 void           SISSaveDetectedDevices(ScrnInfoPtr pScrn);

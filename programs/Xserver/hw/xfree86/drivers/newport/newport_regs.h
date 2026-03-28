@@ -1,4 +1,13 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: newport_regs.h,v 1.5 2000/11/18 23:23:14 agx Exp $
+ *
  * Register Layouts of the various newport chips
  * mostly as found in linux/include/asm/newport.h 
  */

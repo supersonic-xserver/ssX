@@ -1,4 +1,8 @@
-XCOMM $XFree86: xc/config/cf/xf86.tmpl,v 3.39tsi Exp $
+XCOMM $Xorg: xf86.tmpl,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
+
+
+
+XCOMM $XFree86: xc/config/cf/xf86.tmpl,v 3.37 2005/02/07 01:38:23 tsi Exp $
 
 #ifdef BuilderEMailAddr
 BUILDERADDR = BuilderEMailAddr
@@ -35,11 +39,6 @@ BUGMSG = -DBUILDERADDR='$(BUILDERADDR)'
 #define JoystickSupport		NO
 #endif
 
-#if UseStackTrace && HasGcc
-/* Make stack traces more accurate */
-CCOPTIONS = ServerCCOptions -fno-omit-frame-pointer
-#endif
-
 /*
  * Module support: These overrides must be here, not in xf86.rules,
  * because they will replace rules after having seen the first lines
@@ -50,11 +49,9 @@ CCOPTIONS = ServerCCOptions -fno-omit-frame-pointer
 #define HasGccStackProtector	NO
 #endif
 
-#if 0
 #if HasGccStackProtector
 MODULE_GCC_FLAGS1 = -fno-stack-protector
 #endif 
-#endif
 
 #ifndef HasGccMergeConstants
 #define HasGccMergeConstants	NO
@@ -93,7 +90,7 @@ MODULE_DEFINES = -DXFree86Module
  * rules file.
  */
 #define ModCPPOnlyAsm(basename,options) RemoveFile(basename.i)		@@\
-	$(MODCPP) CPPAsmOptions AsmDefines $(ALLDEFINES) options basename.S | \	@@\
+	$(MODCPP) CPPAsmOptions AsmDefines $(DEFINES) $(INCLUDES) options basename.S | \	@@\
 		grep -v '^\#' > basename.i
 
 #undef AssembleObject
@@ -141,7 +138,7 @@ objname.Osuf: deplist $(EXTRALIBRARYDEPS)				@@\
 /* This overrides the ObjectAsm in Imake.rules */
 #undef ObjectAsm
 #define ObjectAsm(options) RemoveFiles($@ $*.i)				@@\
-	$(MODCPP) CPPAsmOptions AsmDefines $(ALLDEFINES) options $*.S | \	@@\
+	$(MODCPP) CPPAsmOptions AsmDefines $(DEFINES) $(INCLUDES) options $*.S | \	@@\
 		grep -v '^\#' > $*.i					@@\
 	$(MODAS) $(ASMOPTS) -o $*.o $*.i				@@\
 	RemoveFile($*.i)

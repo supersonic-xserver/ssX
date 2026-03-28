@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Common internal rootless definitions and code
  */
 /*
@@ -27,10 +34,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessCommon.h,v 1.8 2006/02/22 14:49:06 tsi Exp $ */
 
 #ifndef _ROOTLESSCOMMON_H
 #define _ROOTLESSCOMMON_H
@@ -43,33 +47,41 @@
 #endif
 
 
-// Debug output, or not.
+/* Debug output, or not */
 #ifdef ROOTLESSDEBUG
-#define RL_DEBUG_MSG ErrorF
+#define RL_DEBUG_MSG(a) ErrorF a
 #else
-#define RL_DEBUG_MSG(a, ...)
+#define RL_DEBUG_MSG(a)
 #endif
 
 
-// Global variables
+/* Deal with inline */
+#if defined(__GNUC__)
+#define inline __inline__
+#else
+#define inline /* */
+#endif
+
+
+/* Global variables */
 extern int rootlessGCPrivateIndex;
 extern int rootlessScreenPrivateIndex;
 extern int rootlessWindowPrivateIndex;
 
 
-// RootlessGCRec: private per-gc data
+/* RootlessGCRec: private per-gc data */
 typedef struct {
     GCFuncs *originalFuncs;
     GCOps *originalOps;
 } RootlessGCRec;
 
 
-// RootlessScreenRec: per-screen private data
+/* RootlessScreenRec: per-screen private data */
 typedef struct _RootlessScreenRec {
-    // Rootless implementation functions
+    /* Rootless implementation functions */
     RootlessFrameProcsPtr imp;
 
-    // Wrapped screen functions
+    /* Wrapped screen functions */
     CreateScreenResourcesProcPtr CreateScreenResources;
     CloseScreenProcPtr CloseScreen;
 
@@ -119,9 +131,11 @@ typedef struct _RootlessScreenRec {
 #undef MAX
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 
-// "Definition of the Porting Layer for the X11 Sample Server" says
-// unwrap and rewrap of screen functions is unnecessary, but
-// screen->CreateGC changes after a call to cfbCreateGC.
+/*
+ * "Definition of the Porting Layer for the X11 Sample Server" says
+ * unwrap and rewrap of screen functions is unnecessary, but
+ * screen->CreateGC changes after a call to cfbCreateGC.
+ */
 
 #define SCREEN_UNWRAP(screen, fn) \
     screen->fn = SCREENREC(screen)->fn;
@@ -131,26 +145,29 @@ typedef struct _RootlessScreenRec {
     screen->fn = Rootless##fn
 
 
-// Accessors for screen and window privates
+/* Accessors for screen and window privates */
 
+#define SCREENPRV(pScreen) \
+   (pScreen)->devPrivates[rootlessScreenPrivateIndex].ptr
 #define SCREENREC(pScreen) \
-   ((RootlessScreenRec *)(pScreen)->devPrivates[rootlessScreenPrivateIndex].ptr)
+   ((RootlessScreenRec *)(SCREENPRV(pScreen)))
 
+#define WINPRV(pWin) \
+    (pWin)->devPrivates[rootlessWindowPrivateIndex].ptr
 #define WINREC(pWin) \
-    ((RootlessWindowRec *)(pWin)->devPrivates[rootlessWindowPrivateIndex].ptr)
+    ((RootlessWindowRec *)(WINPRV(pWin)))
 
 
-// Call a rootless implementation function.
-// Many rootless implementation functions are allowed to be NULL.
-#define CallFrameProc(pScreen, proc, params)            \
-    if (SCREENREC(pScreen)->frameProcs.proc) {          \
-        RL_DEBUG_MSG("calling frame proc " #proc " ");  \
-        SCREENREC(pScreen)->frameProcs.proc params;     \
+/* Call a rootless implementation function */
+/* Many rootless implementation functions are allowed to be NULL */
+#define CallFrameProc(pScreen, proc, params)             \
+    if (SCREENREC(pScreen)->frameProcs.proc) {           \
+        RL_DEBUG_MSG(("calling frame proc " #proc " ")); \
+        SCREENREC(pScreen)->frameProcs.proc params;      \
     }
 
 
-// BoxRec manipulators
-// Copied from shadowfb
+/* BoxRec manipulators, copied from shadowfb */
 
 #define TRIM_BOX(box, pGC) { \
     BoxPtr extents = &pGC->pCompositeClip->extents;\
@@ -176,12 +193,14 @@ typedef struct _RootlessScreenRec {
     (((box.x2 - box.x1) > 0) && ((box.y2 - box.y1) > 0))
 
 
-// HUGE_ROOT and NORMAL_ROOT
-// We don't want to clip windows to the edge of the screen.
-// HUGE_ROOT temporarily makes the root window really big.
-// This is needed as a wrapper around any function that calls
-// SetWinSize or SetBorderSize which clip a window against its
-// parents, including the root.
+/*
+ * HUGE_ROOT and NORMAL_ROOT
+ * We don't want to clip windows to the edge of the screen.
+ * HUGE_ROOT temporarily makes the root window really big.
+ * This is needed as a wrapper around any function that calls
+ * SetWinSize or SetBorderSize which clip a window against its
+ * parents, including the root.
+ */
 
 extern RegionRec rootlessHugeRoot;
 
@@ -203,12 +222,14 @@ extern RegionRec rootlessHugeRoot;
     } while (0)
 
 
-// Returns TRUE if this window is a top-level window (i.e. child of the root)
-// The root is not a top-level window.
+/*
+ * Returns TRUE if this window is a top-level window (i.e. child of the root)
+ * The root is not a top-level window.
+ */
 #define IsTopLevel(pWin) \
     ((pWin)  &&  (pWin)->parent  &&  !(pWin)->parent->parent)
 
-// Returns TRUE if this window is a root window
+/* Returns TRUE if this window is a root window */
 #define IsRoot(pWin) \
     ((pWin) == WindowTable[(pWin)->drawable.pScreen->myNum])
 
@@ -226,7 +247,7 @@ extern RegionRec rootlessHugeRoot;
                             ((int)(_x) * _pPix->drawable.bitsPerPixel/8 +   \
                              (int)(_y) * _pPix->devKind);                   \
     if (_pPix->drawable.bitsPerPixel != FB_UNIT) {                          \
-        unsigned _diff = ((unsigned) _pPix->devPrivate.ptr) &               \
+        unsigned long _diff = ((unsigned long) _pPix->devPrivate.ptr) &     \
                          (FB_UNIT / CHAR_BIT - 1);                          \
         _pPix->devPrivate.ptr = (char *) (_pPix->devPrivate.ptr) -          \
                                 _diff;                                      \
@@ -236,13 +257,17 @@ extern RegionRec rootlessHugeRoot;
 }
 
 
-// Returns TRUE if this window is visible inside a frame
-// (e.g. it is visible and has a top-level or root parent)
+/*
+ * Returns TRUE if this window is visible inside a frame
+ * (e.g. it is visible and has a top-level or root parent)
+ */
 Bool IsFramedWindow(WindowPtr pWin);
 
-// Routines that cause regions to get redrawn.
-// DamageRegion and DamageRect are in global coordinates.
-// DamageBox is in window-local coordinates.
+/*
+ * Routines that cause regions to get redrawn.
+ * DamageRegion and DamageRect are in global coordinates.
+ * DamageBox is in window-local coordinates.
+ */
 void RootlessDamageRegion(WindowPtr pWindow, RegionPtr pRegion);
 void RootlessDamageRect(WindowPtr pWindow, int x, int y, int w, int h);
 void RootlessDamageBox(WindowPtr pWindow, BoxPtr pBox);
@@ -251,10 +276,10 @@ void RootlessRedisplayScreen(ScreenPtr pScreen);
 
 void RootlessQueueRedisplay(ScreenPtr pScreen);
 
-// Move a window to its proper location on the screen.
+/* Move a window to its proper location on the screen */
 void RootlessRepositionWindow(WindowPtr pWin);
 
-// Move the window to it's correct place in the physical stacking order.
+/* Move the window to it's correct place in the physical stacking order */
 void RootlessReorderWindow(WindowPtr pWin);
 
 #endif /* _ROOTLESSCOMMON_H */

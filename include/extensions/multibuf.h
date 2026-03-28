@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: multibuf.h,v 1.4 2001/02/09 02:03:24 xorgcvs Exp $
  *
 Copyright 1989, 1998  The Open Group
 
@@ -273,19 +281,16 @@ _XFUNCPROTOEND
 
 #include "scrnintstr.h"
 
-struct _mbufScreen;		/* declared in multibufst.h */
-struct _mbufWindow;
+typedef Bool	(* mbInitFunc)();
 
-typedef Bool (* mbInitFunc)(ScreenPtr pScreen, struct _mbufScreen *pMBScreen);
-typedef void (*mbufCopyBufferBitsFunc)(struct _mbufWindow *pMBWindow,
-				       int srcBufferNum, int dstBufferNum);
-typedef void (*mbufDrawSelectPlaneFunc)(ScreenPtr pScreen,
-					DevUnion selectPlane, RegionPtr prgn,
-					long bufferNum);
+struct _mbufScreen;		/* declared in multibufst.h */
 
 extern void	RegisterMultibufferInit(
     ScreenPtr			/* pScreen */,
-    mbInitFunc			/* bufMultibufferInit */
+    Bool (* /* bufMultibufferInit */)(
+	ScreenPtr		/* pScreen */,
+	struct _mbufScreen *	/* pMBScreen */
+    )
 );
 
 struct xMbufBufferInfo;		/* declared in multibufst.h */
@@ -296,8 +301,8 @@ extern void	RegisterDoubleBufferHardware(
     struct xMbufBufferInfo *	/* pInfo */,
     DevUnion *			/* frameBuffer */,
     DevUnion			/* selectPlane */,
-    mbufCopyBufferBitsFunc	/* CopyBufferBitsFunc */,
-    mbufDrawSelectPlaneFunc	/* DrawSelectPlaneFunc */
+    void (* /* CopyBufferBitsFunc */ )(),
+    void (* /* DrawSelectPlaneFunc */ )()
 );
 
 extern int	CreateImageBuffers (

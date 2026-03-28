@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -69,6 +76,7 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
 #include "swaprep.h"
 #include <X11/extensions/panoramiXproto.h>
 
@@ -101,10 +109,10 @@ ProcRRXineramaQueryVersion(ClientPtr client)
     rep.majorVersion = RR_XINERAMA_MAJOR_VERSION;
     rep.minorVersion = RR_XINERAMA_MINOR_VERSION;
     if(client->swapped) {
-        swaps(&rep.sequenceNumber, n);
-        swapl(&rep.length, n);
-        swaps(&rep.majorVersion, n);
-        swaps(&rep.minorVersion, n);
+        swaps(&rep.sequenceNumber);
+        swapl(&rep.length);
+        swaps(&rep.majorVersion);
+        swaps(&rep.minorVersion);
     }
     WriteToClient(client, sizeof(xPanoramiXQueryVersionReply), (char *)&rep);
     return (client->noClientException);
@@ -139,9 +147,9 @@ ProcRRXineramaGetState(ClientPtr client)
     rep.sequenceNumber = client->sequence;
     rep.state = active;
     if(client->swapped) {
-       swaps (&rep.sequenceNumber, n);
-       swapl (&rep.length, n);
-       swaps (&rep.state, n);
+       swaps(&rep.sequenceNumber);
+       swapl(&rep.length);
+       swaps(&rep.state);
     }
     WriteToClient(client, sizeof(xPanoramiXGetStateReply), (char *)&rep);
     return client->noClientException;
@@ -193,9 +201,9 @@ ProcRRXineramaGetScreenCount(ClientPtr client)
     rep.sequenceNumber = client->sequence;
     rep.ScreenCount = RRXineramaScreenCount (pWin->drawable.pScreen);
     if(client->swapped) {
-       swaps(&rep.sequenceNumber, n);
-       swapl(&rep.length, n);
-       swaps(&rep.ScreenCount, n);
+       swaps(&rep.sequenceNumber);
+       swapl(&rep.length);
+       swaps(&rep.ScreenCount);
     }
     WriteToClient(client, sizeof(xPanoramiXGetScreenCountReply), (char *)&rep);
     return client->noClientException;
@@ -224,10 +232,10 @@ ProcRRXineramaGetScreenSize(ClientPtr client)
     rep.width  = pRoot->drawable.width;
     rep.height = pRoot->drawable.height;
     if(client->swapped) {
-       swaps(&rep.sequenceNumber, n);
-       swapl(&rep.length, n);
-       swaps(&rep.width, n);
-       swaps(&rep.height, n);
+       swaps(&rep.sequenceNumber);
+       swapl(&rep.length);
+       swaps(&rep.width);
+       swaps(&rep.height);
     }
     WriteToClient(client, sizeof(xPanoramiXGetScreenSizeReply), (char *)&rep);
     return client->noClientException;
@@ -246,9 +254,9 @@ ProcRRXineramaIsActive(ClientPtr client)
     rep.state = RRXineramaScreenActive (screenInfo.screens[RR_XINERAMA_SCREEN]);
     if(client->swapped) {
 	register int n;
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.state, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.state);
     }
     WriteToClient(client, sizeof(xXineramaIsActiveReply), (char *) &rep);
     return client->noClientException;
@@ -266,7 +274,7 @@ ProcRRXineramaQueryScreens(ClientPtr client)
     {
 	rrScrPriv(pScreen);
 	if (pScrPriv->numCrtcs == 0 || pScrPriv->numOutputs == 0)
-	    RRGetInfo (pScreen);
+	    RRGetInfo (pScreen, FALSE);
     }
     
     rep.type = X_Reply;
@@ -275,9 +283,9 @@ ProcRRXineramaQueryScreens(ClientPtr client)
     rep.length = rep.number * sz_XineramaScreenInfo >> 2;
     if(client->swapped) {
 	register int n;
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.number, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.number);
     }
     WriteToClient(client, sizeof(xXineramaQueryScreensReply), (char *)&rep);
 
@@ -298,10 +306,10 @@ ProcRRXineramaQueryScreens(ClientPtr client)
 		scratch.height = height;
 		if(client->swapped) {
 		    register int n;
-		    swaps(&scratch.x_org, n);
-		    swaps(&scratch.y_org, n);
-		    swaps(&scratch.width, n);
-		    swaps(&scratch.height, n);
+		    swaps(&scratch.x_org);
+		    swaps(&scratch.y_org);
+		    swaps(&scratch.width);
+		    swaps(&scratch.height);
 		}
 		WriteToClient(client, sz_XineramaScreenInfo, (char *)&scratch);
 	    }
@@ -339,7 +347,7 @@ SProcRRXineramaQueryVersion (ClientPtr client)
 {
     REQUEST(xPanoramiXQueryVersionReq);
     register int n;
-    swaps(&stuff->length,n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH (xPanoramiXQueryVersionReq);
     return ProcRRXineramaQueryVersion(client);
 }
@@ -349,7 +357,7 @@ SProcRRXineramaGetState(ClientPtr client)
 {
     REQUEST(xPanoramiXGetStateReq);
     register int n;
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xPanoramiXGetStateReq);
     return ProcRRXineramaGetState(client);
 }
@@ -359,7 +367,7 @@ SProcRRXineramaGetScreenCount(ClientPtr client)
 {
     REQUEST(xPanoramiXGetScreenCountReq);
     register int n;
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xPanoramiXGetScreenCountReq);
     return ProcRRXineramaGetScreenCount(client);
 }
@@ -369,7 +377,7 @@ SProcRRXineramaGetScreenSize(ClientPtr client)
 {
     REQUEST(xPanoramiXGetScreenSizeReq);
     register int n;
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xPanoramiXGetScreenSizeReq);
     return ProcRRXineramaGetScreenSize(client);
 }
@@ -379,7 +387,7 @@ SProcRRXineramaIsActive(ClientPtr client)
 {
     REQUEST(xXineramaIsActiveReq);
     register int n;
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xXineramaIsActiveReq);
     return ProcRRXineramaIsActive(client);
 }
@@ -389,7 +397,7 @@ SProcRRXineramaQueryScreens(ClientPtr client)
 {
     REQUEST(xXineramaQueryScreensReq);
     register int n;
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xXineramaQueryScreensReq);
     return ProcRRXineramaQueryScreens(client);
 }

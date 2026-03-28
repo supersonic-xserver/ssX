@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993 by Davor Matic
 
@@ -11,18 +25,26 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xnest/XNPixmap.h,v 1.5 2006/01/09 15:00:30 dawes Exp $ */
 
 #ifndef XNESTPIXMAP_H
 #define XNESTPIXMAP_H
 
+#ifdef PIXPRIV
 extern int xnestPixmapPrivateIndex;
+#endif
 
 typedef struct {
   Pixmap pixmap;
 } xnestPrivPixmap;
 
+#ifdef PIXPRIV
 #define xnestPixmapPriv(pPixmap) \
   ((xnestPrivPixmap *)((pPixmap)->devPrivates[xnestPixmapPrivateIndex].ptr))
+#else
+#define xnestPixmapPriv(pPixmap) \
+  ((xnestPrivPixmap *)((pPixmap)->devPrivate.ptr))
+#endif
 
 #define xnestPixmap(pPixmap) (xnestPixmapPriv(pPixmap)->pixmap)
 

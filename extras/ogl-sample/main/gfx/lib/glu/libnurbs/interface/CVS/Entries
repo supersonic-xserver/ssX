@@ -1,0 +1,21 @@
+/GNUmakefile/1.1.1.1/Sat Jun  9 15:20:46 2001//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.1/Sat Jun  9 15:20:46 2001//Tnetbsd-5-2-3-RELEASE
+/bezierEval.cc/1.1.1.2/Fri Mar  5 14:26:35 2004//Tnetbsd-5-2-3-RELEASE
+/bezierEval.h/1.1.1.1/Sat Jun  9 15:20:46 2001//Tnetbsd-5-2-3-RELEASE
+/bezierPatch.cc/1.1.1.1/Sat Jun  9 15:20:46 2001//Tnetbsd-5-2-3-RELEASE
+/bezierPatch.h/1.1.1.1/Sat Jun  9 15:20:46 2001//Tnetbsd-5-2-3-RELEASE
+/bezierPatchMesh.cc/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/bezierPatchMesh.h/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/glcurveval.cc/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/glcurveval.h/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/glimports.h/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/glinterface.cc/1.1.1.2/Fri Mar  5 14:26:35 2004//Tnetbsd-5-2-3-RELEASE
+/glrenderer.cc/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/glrenderer.h/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/glsurfeval.cc/1.1.1.2/Fri Mar  5 14:26:35 2004//Tnetbsd-5-2-3-RELEASE
+/glsurfeval.h/1.1.1.1/Sat Jun  9 15:20:48 2001//Tnetbsd-5-2-3-RELEASE
+/incurveeval.cc/1.1.1.2/Fri Mar  5 14:26:35 2004//Tnetbsd-5-2-3-RELEASE
+/insurfeval.cc/1.1.1.3/Fri Mar  5 14:26:35 2004//Tnetbsd-5-2-3-RELEASE
+/mystdio.h/1.1.1.1/Sat Jun  9 15:20:47 2001//Tnetbsd-5-2-3-RELEASE
+/mystdlib.h/1.1.1.1/Sat Jun  9 15:20:49 2001//Tnetbsd-5-2-3-RELEASE
+D

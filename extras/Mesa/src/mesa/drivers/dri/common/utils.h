@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (C) Copyright IBM Corporation 2002, 2004
  * All Rights Reserved.
  *
@@ -24,7 +31,7 @@
  * Authors:
  *    Ian Romanick <idr@us.ibm.com>
  */
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/utils.h,v 1.1.1.2tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/utils.h,v 1.2 2004/12/13 22:40:49 tsi Exp $ */
 
 #ifndef DRI_DEBUG_H
 #define DRI_DEBUG_H

@@ -1,0 +1,41 @@
+/Imakefile/1.1.1.1/Fri Mar 18 13:11:09 2005//Tnetbsd-5-2-3-RELEASE
+/TinyX.man/1.1.1.1/Fri Mar 18 13:11:09 2005//Tnetbsd-5-2-3-RELEASE
+/TinyX.tmpl/1.1.1.1/Fri Mar 18 13:11:09 2005//Tnetbsd-5-2-3-RELEASE
+/tinyx.c/1.1.1.1/Fri Mar 18 13:11:09 2005//Tnetbsd-5-2-3-RELEASE
+/tinyx.h/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txaa.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txasync.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txcmap.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txcolor.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txcurscol.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txinfo.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txinput.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txkeymap.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txkeymap.h/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txloadmap.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txmap.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txmode.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txnoop.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txpict.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txshadow.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txtest.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txxv.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/txxv.h/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/vga.c/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+/vga.h/1.1.1.1/Fri Mar 18 13:11:10 2005//Tnetbsd-5-2-3-RELEASE
+D/chips////
+D/fbdev////
+D/i810////
+D/igs////
+D/ipaq////
+D/itsy////
+D/linux////
+D/mach64////
+D/pcmcia////
+D/savage////
+D/sis530////
+D/trident////
+D/trio////
+D/ts300////
+D/vesa////
+D/vxworks////

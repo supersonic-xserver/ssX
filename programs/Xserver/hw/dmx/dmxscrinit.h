@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxscrinit.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxscrinit.h,v 1.1 2004/06/30 20:21:39 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -44,7 +51,7 @@
 /** Private index.  \see dmxscrrinit.c \see input/dmxconcole.c */
 extern int dmxScreenPrivateIndex;
 
-extern Bool dmxScreenInit(int idx, ScreenPtr pScreen, const int argc, const char *argv[]);
+extern Bool dmxScreenInit(int idx, ScreenPtr pScreen, int argc, char *argv[]);
 
 extern void dmxBEScreenInit(int idx, ScreenPtr pScreen);
 extern void dmxBECloseScreen(ScreenPtr pScreen);

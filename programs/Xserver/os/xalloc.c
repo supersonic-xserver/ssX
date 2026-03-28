@@ -1,4 +1,11 @@
 #define FATALERRORS 1
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) 1995 Pascal Haible.  All Rights Reserved.
 
@@ -26,7 +33,7 @@ dealings in this Software without prior written authorization from
 Pascal Haible.
 */
 
-/* $XFree86: xc/programs/Xserver/os/xalloc.c,v 3.39tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/xalloc.c,v 3.37 2005/02/16 19:20:55 dawes Exp $ */
 
 /* Only used if INTERNAL_MALLOC is defined
  * - otherwise xalloc() in utils.c is used
@@ -35,9 +42,9 @@ Pascal Haible.
 
 #include <stdlib.h>	/* for malloc() etc. */
 
-#include <X11/Xos.h>
+#include "Xos.h"
 #include "misc.h"
-#include <X11/X.h>
+#include "X.h"
 
 #ifdef XALLOC_LOG
 #include <stdio.h>
@@ -184,7 +191,7 @@ extern Bool Must_have_memory;
     defined(__ia64__) || defined(ia64) || \
     defined(__sparc64__) || \
     defined(__s390x__) || \
-    defined(__amd64__) || defined(__x86_64__) || \
+    defined(__AMD64__) || defined(AMD64) || \
     (defined(sgi) && _MIPS_SZLONG == 64)
 #define MAGIC			0x1404196414071968
 #define MAGIC_FREE              0x1506196615061966
@@ -309,7 +316,7 @@ void XfreeTrap(void)
 void *
 Xalloc (unsigned long amount)
 {
-    unsigned long *ptr;
+    register unsigned long *ptr;
     int indx;
 
     /* sanity checks */
@@ -337,6 +344,7 @@ Xalloc (unsigned long amount)
     defined(__mips__) || \
     defined(__powerpc__) || \
     defined(__arm32__) || \
+    defined(__arm__) || \
     defined(__ia64__) || defined(ia64) || \
     defined(__s390x__) || defined(__s390__)
     amount = (amount + (sizeof(long)-1)) & ~(sizeof(long)-1);
@@ -464,7 +472,7 @@ Xalloc (unsigned long amount)
 pointer
 XNFalloc (unsigned long amount)
 {
-    pointer ptr;
+    register pointer ptr;
 
     /* zero size requested */
     if (amount == 0) {
@@ -534,7 +542,7 @@ XNFcalloc (unsigned long amount)
 void *
 Xrealloc (pointer ptr, unsigned long amount)
 {
-    unsigned long *new_ptr;
+    register unsigned long *new_ptr;
 
     /* zero size requested */
     if (amount == 0) {

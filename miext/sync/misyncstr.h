@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2010 NVIDIA Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,7 +36,12 @@
 #define _MISYNCSTR_H_
 
 #include "dix.h"
+#include "privates.h"
 #include <X11/extensions/syncconst.h>
+
+/* Forward declarations for SyncTrigger only - SyncFenceFuncsRec is defined in misync.h */
+struct _SyncTrigger;
+typedef struct _SyncTrigger SyncTrigger;
 
 #define CARD64 XSyncValue /* XXX temporary! need real 64 bit values for Alpha */
 

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atidga.c,v 1.17tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atidga.c,v 1.14 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -395,6 +402,9 @@ ATIDGAInit
 
     if (!pATI->nDGAMode)
     {
+
+#ifndef AVOID_CPIO
+
         /*
          * Contrary to previous extension versions, DGA 2 does not support
          * banked framebuffers.  Also, disable DGA when non-DGA server modes
@@ -402,6 +412,8 @@ ATIDGAInit
          */
         if (pATI->BankInfo.BankSize || (pScreenInfo->depth <= 4))
             return FALSE;
+
+#endif /* AVOID_CPIO */
 
         /* Set up DGA callbacks */
         pATI->ATIDGAFunctions.OpenFramebuffer = ATIDGAOpenFramebuffer;

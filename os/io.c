@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1989, 1998  The Open Group
 
@@ -22,17 +36,18 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
+
 Copyright 1987, 1989 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -42,7 +57,9 @@ WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
 ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
+
 ******************************************************************/
+
 /*****************************************************************
  * i/o functions
  *
@@ -50,76 +67,81 @@ SOFTWARE.
  *   InsertFakeRequest, ResetCurrentRequest
  *
  *****************************************************************/
+/* $XFree86: xc/programs/Xserver/os/io.c,v 3.38 2005/10/14 15:17:26 tsi Exp $ */
 
-#include <X11/Xpoll.h>
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
+#if 0
+#define DEBUG_COMMUNICATION
 #endif
-
-#undef DEBUG_COMMUNICATION
-
 #ifdef WIN32
 #include <X11/Xwinsock.h>
 #endif
 #include <stdio.h>
-#define XSERV_t
 #define TRANS_SERVER
-#define TRANS_REOPEN
+#define XSERV_t
 #include <X11/Xtrans/Xtrans.h>
+#include <X11/Xtrans/Xtransint.h>
 #include <X11/Xmd.h>
 #include <errno.h>
-#if !defined(WIN32)
+#if !defined(__UNIXOS2__) && !defined(WIN32)
+#ifndef Lynx
 #include <sys/uio.h>
+#else
+#include <uio.h>
+#endif
 #endif
 #include <X11/X.h>
+#define NEED_REPLIES
 #include <X11/Xproto.h>
 #include "os.h"
 #include "osdep.h"
+#include <X11/Xpoll.h>
 #include "opaque.h"
 #include "dixstruct.h"
 #include "misc.h"
+#ifdef LBX
+#include "colormapst.h"
+#include "propertyst.h"
+#include "lbxserve.h"
+#endif
 
-CallbackListPtr ReplyCallback;
-CallbackListPtr FlushCallback;
+CallbackListPtr       ReplyCallback;
+CallbackListPtr       FlushCallback;
 
-typedef struct _connectionInput {
-    struct _connectionInput *next;
-    char *buffer;               /* contains current client input */
-    char *bufptr;               /* pointer to current start of data */
-    int bufcnt;                 /* count of bytes in buffer */
-    int lenLastReq;
-    int size;
-    unsigned int ignoreBytes;   /* bytes to ignore before the next request */
-} ConnectionInput;
+/* check for both EAGAIN and EWOULDBLOCK, because some supposedly POSIX
+ * systems are broken and return EWOULDBLOCK when they should return EAGAIN
+ */
+#ifndef __UNIXOS2__
+#if defined(EAGAIN) && defined(EWOULDBLOCK)
+#define ETEST(err) (err == EAGAIN || err == EWOULDBLOCK)
+#else
+#ifdef EAGAIN
+#define ETEST(err) (err == EAGAIN)
+#else
+#define ETEST(err) (err == EWOULDBLOCK)
+#endif
+#endif
+#else /* __UNIXOS2__  Writing to full pipes may return ENOSPC */
+#define ETEST(err) (err == EAGAIN || err == EWOULDBLOCK || err == ENOSPC)
+#endif
 
-typedef struct _connectionOutput {
-    struct _connectionOutput *next;
-    unsigned char *buf;
-    int size;
-    int count;
-} ConnectionOutput;
-
-static ConnectionInputPtr AllocateInputBuffer(void);
-static ConnectionOutputPtr AllocateOutputBuffer(void);
-
-static Bool CriticalOutputPending;
-static int timesThisConnection = 0;
-static ConnectionInputPtr FreeInputs = (ConnectionInputPtr) NULL;
-static ConnectionOutputPtr FreeOutputs = (ConnectionOutputPtr) NULL;
-static OsCommPtr AvailableInput = (OsCommPtr) NULL;
+Bool CriticalOutputPending;
+int timesThisConnection = 0;
+ConnectionInputPtr FreeInputs = (ConnectionInputPtr)NULL;
+ConnectionOutputPtr FreeOutputs = (ConnectionOutputPtr)NULL;
+OsCommPtr AvailableInput = (OsCommPtr)NULL;
 
 #define get_req_len(req,cli) ((cli)->swapped ? \
-			      bswap_16((req)->length) : (req)->length)
+			      lswaps((req)->length) : (req)->length)
 
-#include <X11/extensions/bigreqsproto.h>
+#ifdef BIGREQS
+#include <X11/extensions/bigreqstr.h>
 
 #define get_big_req_len(req,cli) ((cli)->swapped ? \
-				  bswap_32(((xBigReq *)(req))->length) : \
+				  lswapl(((xBigReq *)(req))->length) : \
 				  ((xBigReq *)(req))->length)
+#endif
 
-#define BUFSIZE 16384
-#define BUFWATERMARK 32768
+#define MAX_TIMES_PER         10
 
 /*
  *   A lot of the code in this file manipulates a ConnectionInputPtr:
@@ -151,6 +173,7 @@ static OsCommPtr AvailableInput = (OsCommPtr) NULL;
  *  counts CARD32's.
  */
 
+
 /*****************************************************************
  * ReadRequestFromClient
  *    Returns one request in client->requestBuffer.  The request
@@ -177,264 +200,267 @@ static OsCommPtr AvailableInput = (OsCommPtr) NULL;
  *    a partial request) because others clients need to be scheduled.
  *****************************************************************/
 
-static void
-YieldControl(void)
-{
-    isItTimeToYield = TRUE;
-    timesThisConnection = 0;
-}
+#define YieldControl()				\
+        { isItTimeToYield = TRUE;		\
+	  timesThisConnection = 0; }
+#define YieldControlNoInput()			\
+        { YieldControl();			\
+	  FD_CLR(fd, &ClientsWithInput); }
+#define YieldControlDeath()			\
+        { timesThisConnection = 0; }
 
-static void
-YieldControlNoInput(ClientPtr client)
-{
-    OsCommPtr oc = client->osPrivate;
-    YieldControl();
-    if (oc->trans_conn)
-        ospoll_reset_events(server_poll, oc->fd);
-}
+#ifdef hpux_not_tog
+#define LBX_NEED_OLD_SYMBOL_FOR_LOADABLES
+#endif
 
-static void
-YieldControlDeath(void)
-{
-    timesThisConnection = 0;
-}
-
-/* If an input buffer was empty, either free it if it is too big or link it
- * into our list of free input buffers.  This means that different clients can
- * share the same input buffer (at different times).  This was done to save
- * memory.
- */
-static void
-NextAvailableInput(OsCommPtr oc)
-{
-    if (AvailableInput) {
-        if (AvailableInput != oc) {
-            ConnectionInputPtr aci = AvailableInput->input;
-
-            if (aci->size > BUFWATERMARK) {
-                free(aci->buffer);
-                free(aci);
-            }
-            else {
-                aci->next = FreeInputs;
-                FreeInputs = aci;
-            }
-            AvailableInput->input = NULL;
-        }
-        AvailableInput = NULL;
-    }
-}
-
+#ifdef LBX
+#ifdef LBX_NEED_OLD_SYMBOL_FOR_LOADABLES
+#undef ReadRequestFromClient
 int
 ReadRequestFromClient(ClientPtr client)
 {
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
+    return (*client->readRequest)(client);
+}
+#endif
+int
+StandardReadRequestFromClient(ClientPtr client)
+#else
+int
+ReadRequestFromClient(ClientPtr client)
+#endif
+{
+    OsCommPtr oc = (OsCommPtr)client->osPrivate;
     ConnectionInputPtr oci = oc->input;
+    int fd = oc->fd;
     unsigned int gotnow, needed;
     int result;
-    register xReq *request;
+    xReq *request;
     Bool need_header;
+#ifdef BIGREQS
     Bool move_header;
+#endif
 
-    NextAvailableInput(oc);
+    /* If an input buffer was empty, either free it if it is too big
+     * or link it into our list of free input buffers.  This means that
+     * different clients can share the same input buffer (at different
+     * times).  This was done to save memory.
+     */
+
+    if (AvailableInput)
+    {
+	if (AvailableInput != oc)
+	{
+	    ConnectionInputPtr aci = AvailableInput->input;
+	    if (aci->size > BUFWATERMARK)
+	    {
+		xfree(aci->buffer);
+		xfree(aci);
+	    }
+	    else
+	    {
+		aci->next = FreeInputs;
+		FreeInputs = aci;
+	    }
+	    AvailableInput->input = (ConnectionInputPtr)NULL;
+	}
+	AvailableInput = (OsCommPtr)NULL;
+    }
 
     /* make sure we have an input buffer */
 
-    if (!oci) {
-        if ((oci = FreeInputs)) {
-            FreeInputs = oci->next;
-        }
-        else if (!(oci = AllocateInputBuffer())) {
-            YieldControlDeath();
-            return -1;
-        }
-        oc->input = oci;
+    if (!oci)
+    {
+	if ((oci = FreeInputs))
+	{
+	    FreeInputs = oci->next;
+	}
+	else if (!(oci = AllocateInputBuffer()))
+	{
+	    YieldControlDeath();
+	    return -1;
+	}
+	oc->input = oci;
     }
 
-#if XTRANS_SEND_FDS
-    /* Discard any unused file descriptors */
-    while (client->req_fds > 0) {
-        int req_fd = ReadFdFromClient(client);
-        if (req_fd >= 0)
-            close(req_fd);
-    }
-#endif
     /* advance to start of next request */
 
     oci->bufptr += oci->lenLastReq;
 
     need_header = FALSE;
+#ifdef BIGREQS
     move_header = FALSE;
-    gotnow = oci->bufcnt + oci->buffer - oci->bufptr;
-
-    if (oci->ignoreBytes > 0) {
-        if (oci->ignoreBytes > oci->size)
-            needed = oci->size;
-        else
-            needed = oci->ignoreBytes;
-    }
-    else if (gotnow < sizeof(xReq)) {
-        /* We don't have an entire xReq yet.  Can't tell how big
-         * the request will be until we get the whole xReq.
-         */
-        needed = sizeof(xReq);
-        need_header = TRUE;
-    }
-    else {
-        /* We have a whole xReq.  We can tell how big the whole
-         * request will be unless it is a Big Request.
-         */
-        request = (xReq *) oci->bufptr;
-        needed = get_req_len(request, client);
-        if (!needed && client->big_requests) {
-            /* It's a Big Request. */
-            move_header = TRUE;
-            if (gotnow < sizeof(xBigReq)) {
-                /* Still need more data to tell just how big. */
-                needed = bytes_to_int32(sizeof(xBigReq));       /* needed is in CARD32s now */
-                need_header = TRUE;
-            }
-            else
-                needed = get_big_req_len(request, client);
-        }
-        client->req_len = needed;
-        if (needed > MAXINT >> 2) {
-            /* Check for potential integer overflow */
-            return -(BadLength);
-        }
-        needed <<= 2;           /* needed is in bytes now */
-    }
-    if (gotnow < needed) {
-        /* Need to read more data, either so that we can get a
-         * complete xReq (if need_header is TRUE), a complete
-         * xBigReq (if move_header is TRUE), or the rest of the
-         * request (if need_header and move_header are both FALSE).
-         */
-
-        oci->lenLastReq = 0;
-        if (needed > maxBigRequestSize << 2) {
-            /* request is too big for us to handle */
-            /*
-             * Mark the rest of it as needing to be ignored, and then return
-             * the full size.  Dispatch() will turn it into a BadLength error.
-             */
-            oci->ignoreBytes = needed - gotnow;
-            oci->lenLastReq = gotnow;
-            return needed;
-        }
-        if ((gotnow == 0) || ((oci->bufptr - oci->buffer + needed) > oci->size)) {
-            /* no data, or the request is too big to fit in the buffer */
-
-            if ((gotnow > 0) && (oci->bufptr != oci->buffer))
-                /* save the data we've already read */
-                memmove(oci->buffer, oci->bufptr, gotnow);
-            if (needed > oci->size) {
-                /* make buffer bigger to accommodate request */
-                char *ibuf;
-
-                ibuf = (char *) realloc(oci->buffer, needed);
-                if (!ibuf) {
-                    YieldControlDeath();
-                    return -1;
-                }
-                oci->size = needed;
-                oci->buffer = ibuf;
-            }
-            oci->bufptr = oci->buffer;
-            oci->bufcnt = gotnow;
-        }
-        /*  XXX this is a workaround.  This function is sometimes called
-         *  after the trans_conn has been freed.  In this case trans_conn
-         *  will be null.  Really ought to restructure things so that we
-         *  never get here in those circumstances.
-         */
-        if (!oc->trans_conn) {
-            /*  treat as if an error occurred on the read, which is what
-             *  used to happen
-             */
-            YieldControlDeath();
-            return -1;
-        }
-        result = _XSERVTransRead(oc->trans_conn, oci->buffer + oci->bufcnt,
-                                 oci->size - oci->bufcnt);
-        if (result <= 0) {
-            if ((result < 0) && ETEST(errno)) {
-                mark_client_not_ready(client);
-#if defined(SVR4) && defined(__i386__) && !defined(__sun)
-                if (0)
 #endif
-                {
-                    YieldControlNoInput(client);
-                    return 0;
-                }
-            }
-            YieldControlDeath();
-            return -1;
-        }
-        oci->bufcnt += result;
-        gotnow += result;
-        /* free up some space after huge requests */
-        if ((oci->size > BUFWATERMARK) &&
-            (oci->bufcnt < BUFSIZE) && (needed < BUFSIZE)) {
-            char *ibuf;
-
-            ibuf = (char *) realloc(oci->buffer, BUFSIZE);
-            if (ibuf) {
-                oci->size = BUFSIZE;
-                oci->buffer = ibuf;
-                oci->bufptr = ibuf + oci->bufcnt - gotnow;
-            }
-        }
-        if (need_header && gotnow >= needed) {
-            /* We wanted an xReq, now we've gotten it. */
-            request = (xReq *) oci->bufptr;
-            needed = get_req_len(request, client);
-            if (!needed && client->big_requests) {
-                move_header = TRUE;
-                if (gotnow < sizeof(xBigReq))
-                    needed = bytes_to_int32(sizeof(xBigReq));
-                else
-                    needed = get_big_req_len(request, client);
-            }
-            client->req_len = needed;
-            if (needed > MAXINT >> 2)
-                return -(BadLength);
-            needed <<= 2;
-        }
-        if (gotnow < needed) {
-            /* Still don't have enough; punt. */
-            YieldControlNoInput(client);
-            return 0;
-        }
+    gotnow = oci->bufcnt + oci->buffer - oci->bufptr;
+    if (gotnow < sizeof(xReq))
+    {
+	/* We don't have an entire xReq yet.  Can't tell how big
+	 * the request will be until we get the whole xReq.
+	 */
+	needed = sizeof(xReq);
+	need_header = TRUE;
     }
-    if (needed == 0) {
-        if (client->big_requests)
-            needed = sizeof(xBigReq);
-        else
-            needed = sizeof(xReq);
+    else
+    {
+	/* We have a whole xReq.  We can tell how big the whole
+	 * request will be unless it is a Big Request.
+	 */
+	request = (xReq *)oci->bufptr;
+	needed = get_req_len(request, client);
+#ifdef BIGREQS
+	if (!needed && client->big_requests)
+	{
+	    /* It's a Big Request. */
+	    move_header = TRUE;
+	    if (gotnow < sizeof(xBigReq))
+	    {
+		/* Still need more data to tell just how big. */
+		needed = sizeof(xBigReq) >> 2; /* needed is in CARD32s now */
+		need_header = TRUE;
+	    }
+	    else
+		needed = get_big_req_len(request, client);
+	}
+#endif
+	client->req_len = needed;
+	needed <<= 2; /* needed is in bytes now */
     }
+    if (gotnow < needed)
+    {
+	/* Need to read more data, either so that we can get a
+	 * complete xReq (if need_header is TRUE), a complete
+	 * xBigReq (if move_header is TRUE), or the rest of the
+	 * request (if need_header and move_header are both FALSE).
+	 */
 
-    /* If there are bytes to ignore, ignore them now. */
+	oci->lenLastReq = 0;
+	if (needed > MAXBUFSIZE)
+	{
+	    /* request is too big for us to handle */
+	    YieldControlDeath();
+	    return -1;
+	}
+	if ((gotnow == 0) ||
+	    ((oci->bufptr - oci->buffer + needed) > oci->size))
+	{
+	    /* no data, or the request is too big to fit in the buffer */
 
-    if (oci->ignoreBytes > 0) {
-        assert(needed == oci->ignoreBytes || needed == oci->size);
-        /*
-         * The _XSERVTransRead call above may return more or fewer bytes than we
-         * want to ignore.  Ignore the smaller of the two sizes.
-         */
-        if (gotnow < needed) {
-            oci->ignoreBytes -= gotnow;
-            oci->bufptr += gotnow;
-            gotnow = 0;
-        }
-        else {
-            oci->ignoreBytes -= needed;
-            oci->bufptr += needed;
-            gotnow -= needed;
-        }
-        needed = 0;
+	    if ((gotnow > 0) && (oci->bufptr != oci->buffer))
+		/* save the data we've already read */
+		memmove(oci->buffer, oci->bufptr, gotnow);
+	    if (needed > oci->size)
+	    {
+		/* make buffer bigger to accomodate request */
+		char *ibuf;
+
+		ibuf = (char *)xrealloc(oci->buffer, needed);
+		if (!ibuf)
+		{
+		    YieldControlDeath();
+		    return -1;
+		}
+		oci->size = needed;
+		oci->buffer = ibuf;
+	    }
+	    oci->bufptr = oci->buffer;
+	    oci->bufcnt = gotnow;
+	}
+	/*  XXX this is a workaround.  This function is sometimes called
+	 *  after the trans_conn has been freed.  In this case trans_conn
+	 *  will be null.  Really ought to restructure things so that we
+	 *  never get here in those circumstances.
+	 */
+	if (!oc->trans_conn)
+	{
+	    /*  treat as if an error occured on the read, which is what
+	     *  used to happen
+	     */
+	    YieldControlDeath();
+	    return -1;
+	}
+#ifdef LBX
+	if (oc->proxy && oc->proxy->compHandle)
+	    result = (*oc->proxy->streamOpts.streamCompRead)(fd,
+			     (unsigned char *)oci->buffer + oci->bufcnt,
+			     oci->size - oci->bufcnt);
+	else
+#endif
+	    result = _XSERVTransRead(oc->trans_conn, oci->buffer + oci->bufcnt,
+				     oci->size - oci->bufcnt); 
+	if (result <= 0)
+	{
+	    if ((result < 0) && ETEST(errno))
+	    {
+#if defined(SVR4) && defined(i386) && !defined(sun)
+#if defined(LBX) && 0
+		/*
+		 * For LBX connections, we can get a valid EWOULDBLOCK
+		 * There is probably a better way of distinguishing LBX
+		 * connections, but this works. (DHD)
+		 */
+		extern int LbxRead();
+		if (oc->Read == LbxRead)
+#else
+		if (0)
+#endif
+#endif
+		{
+		    YieldControlNoInput();
+		    return 0;
+		}
+	    }
+	    YieldControlDeath();
+	    return -1;
+	}
+	oci->bufcnt += result;
+	gotnow += result;
+	/* free up some space after huge requests */
+	if ((oci->size > BUFWATERMARK) &&
+	    (oci->bufcnt < BUFSIZE) && (needed < BUFSIZE))
+	{
+	    char *ibuf;
+
+	    ibuf = (char *)xrealloc(oci->buffer, BUFSIZE);
+	    if (ibuf)
+	    {
+		oci->size = BUFSIZE;
+		oci->buffer = ibuf;
+		oci->bufptr = ibuf + oci->bufcnt - gotnow;
+	    }
+	}
+	if (need_header && gotnow >= needed)
+	{
+	    /* We wanted an xReq, now we've gotten it. */
+	    request = (xReq *)oci->bufptr;
+	    needed = get_req_len(request, client);
+#ifdef BIGREQS
+	    if (!needed && client->big_requests)
+	    {
+		move_header = TRUE;
+		if (gotnow < sizeof(xBigReq))
+		    needed = sizeof(xBigReq) >> 2;
+		else
+		    needed = get_big_req_len(request, client);
+	    }
+#endif
+	    client->req_len = needed;
+	    needed <<= 2;
+	}
+	if (gotnow < needed)
+	{
+	    /* Still don't have enough; punt. */
+	    YieldControlNoInput();
+	    return 0;
+	}
     }
-
+    if (needed == 0)
+    {
+#ifdef BIGREQS
+	if (client->big_requests)
+	    needed = sizeof(xBigReq);
+	else
+#endif
+	    needed = sizeof(xReq);
+    }
     oci->lenLastReq = needed;
 
     /*
@@ -442,64 +468,70 @@ ReadRequestFromClient(ClientPtr client)
      *  buffer beyond the request we're returning to the caller.
      *  If there is only a partial request, treat like buffer
      *  is empty so that select() will be called again and other clients
-     *  can get into the queue.
+     *  can get into the queue.   
      */
 
     gotnow -= needed;
-    if (!gotnow && !oci->ignoreBytes)
-        AvailableInput = oc;
-    if (move_header) {
-        if (client->req_len < bytes_to_int32(sizeof(xBigReq) - sizeof(xReq))) {
-            YieldControlDeath();
-            return -1;
-        }
-
-        request = (xReq *) oci->bufptr;
-        oci->bufptr += (sizeof(xBigReq) - sizeof(xReq));
-        *(xReq *) oci->bufptr = *request;
-        oci->lenLastReq -= (sizeof(xBigReq) - sizeof(xReq));
-        client->req_len -= bytes_to_int32(sizeof(xBigReq) - sizeof(xReq));
+    if (gotnow >= sizeof(xReq)) 
+    {
+	request = (xReq *)(oci->bufptr + needed);
+	if (gotnow >= (result = (get_req_len(request, client) << 2))
+#ifdef BIGREQS
+	    && (result ||
+		(client->big_requests &&
+		 (gotnow >= sizeof(xBigReq) &&
+		  gotnow >= (get_big_req_len(request, client) << 2))))
+#endif
+	    )
+	    FD_SET(fd, &ClientsWithInput);
+	else
+	{
+#ifdef SMART_SCHEDULE
+	    if (!SmartScheduleDisable)
+		FD_CLR(fd, &ClientsWithInput);
+	    else
+#endif
+		YieldControlNoInput();
+	}
     }
-    client->requestBuffer = (void *) oci->bufptr;
+    else
+    {
+	if (!gotnow)
+	    AvailableInput = oc;
+#ifdef SMART_SCHEDULE
+	if (!SmartScheduleDisable)
+	    FD_CLR(fd, &ClientsWithInput);
+	else
+#endif
+	    YieldControlNoInput();
+    }
+#ifdef SMART_SCHEDULE
+    if (SmartScheduleDisable)
+#endif
+    if (++timesThisConnection >= MAX_TIMES_PER)
+	YieldControl();
+#ifdef BIGREQS
+    if (move_header)
+    {
+	request = (xReq *)oci->bufptr;
+	oci->bufptr += (sizeof(xBigReq) - sizeof(xReq));
+	*(xReq *)oci->bufptr = *request;
+	oci->lenLastReq -= (sizeof(xBigReq) - sizeof(xReq));
+	if (client->req_len > (sizeof(xBigReq) - sizeof(xReq)) >> 2)
+	    client->req_len -= (sizeof(xBigReq) - sizeof(xReq)) >> 2;
+	else
+	    client->req_len = 0;
+    }
+#endif
+    client->requestBuffer = (pointer)oci->bufptr;
 #ifdef DEBUG_COMMUNICATION
     {
-        xReq *req = client->requestBuffer;
-
-        ErrorF("REQUEST: ClientIDX: %i, type: 0x%x data: 0x%x len: %i\n",
-               client->index, req->reqType, req->data, req->length);
+	xReq *req = client->requestBuffer;
+	ErrorF("REQUEST: ClientIDX: %i, type: 0x%x data: 0x%x len: %i\n",
+	       client->index,req->reqType,req->data,req->length);
     }
 #endif
     return needed;
-}
-
-int
-ReadFdFromClient(ClientPtr client)
-{
-    int fd = -1;
-
-#if XTRANS_SEND_FDS
-    if (client->req_fds > 0) {
-        OsCommPtr oc = (OsCommPtr) client->osPrivate;
-
-        --client->req_fds;
-        fd = _XSERVTransRecvFd(oc->trans_conn);
-    } else
-        LogMessage(X_ERROR, "Request asks for FD without setting req_fds\n");
-#endif
-
-    return fd;
-}
-
-int
-WriteFdToClient(ClientPtr client, int fd, Bool do_close)
-{
-#if XTRANS_SEND_FDS
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-
-    return _XSERVTransSendFd(oc->trans_conn, fd, do_close);
-#else
-    return -1;
-#endif
 }
 
 /*****************************************************************
@@ -511,48 +543,69 @@ WriteFdToClient(ClientPtr client, int fd, Bool do_close)
 Bool
 InsertFakeRequest(ClientPtr client, char *data, int count)
 {
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
+    OsCommPtr oc = (OsCommPtr)client->osPrivate;
     ConnectionInputPtr oci = oc->input;
+    int fd = oc->fd;
     int gotnow, moveup;
 
-    NextAvailableInput(oc);
-
-    if (!oci) {
-        if ((oci = FreeInputs))
-            FreeInputs = oci->next;
-        else if (!(oci = AllocateInputBuffer()))
-            return FALSE;
-        oc->input = oci;
+    if (AvailableInput)
+    {
+	if (AvailableInput != oc)
+	{
+	    ConnectionInputPtr aci = AvailableInput->input;
+	    if (aci->size > BUFWATERMARK)
+	    {
+		xfree(aci->buffer);
+		xfree(aci);
+	    }
+	    else
+	    {
+		aci->next = FreeInputs;
+		FreeInputs = aci;
+	    }
+	    AvailableInput->input = (ConnectionInputPtr)NULL;
+	}
+	AvailableInput = (OsCommPtr)NULL;
+    }
+    if (!oci)
+    {
+	if ((oci = FreeInputs))
+	    FreeInputs = oci->next;
+	else if (!(oci = AllocateInputBuffer()))
+	    return FALSE;
+	oc->input = oci;
     }
     oci->bufptr += oci->lenLastReq;
     oci->lenLastReq = 0;
     gotnow = oci->bufcnt + oci->buffer - oci->bufptr;
-    if ((gotnow + count) > oci->size) {
-        char *ibuf;
+    if ((gotnow + count) > oci->size)
+    {
+	char *ibuf;
 
-        ibuf = (char *) realloc(oci->buffer, gotnow + count);
-        if (!ibuf)
-            return FALSE;
-        oci->size = gotnow + count;
-        oci->buffer = ibuf;
-        oci->bufptr = ibuf + oci->bufcnt - gotnow;
+	ibuf = (char *)xrealloc(oci->buffer, gotnow + count);
+	if (!ibuf)
+	    return(FALSE);
+	oci->size = gotnow + count;
+	oci->buffer = ibuf;
+	oci->bufptr = ibuf + oci->bufcnt - gotnow;
     }
     moveup = count - (oci->bufptr - oci->buffer);
-    if (moveup > 0) {
-        if (gotnow > 0)
-            memmove(oci->bufptr + moveup, oci->bufptr, gotnow);
-        oci->bufptr += moveup;
-        oci->bufcnt += moveup;
+    if (moveup > 0)
+    {
+	if (gotnow > 0)
+	    memmove(oci->bufptr + moveup, oci->bufptr, gotnow);
+	oci->bufptr += moveup;
+	oci->bufcnt += moveup;
     }
     memmove(oci->bufptr - count, data, count);
     oci->bufptr -= count;
     gotnow += count;
     if ((gotnow >= sizeof(xReq)) &&
-        (gotnow >= (int) (get_req_len((xReq *) oci->bufptr, client) << 2)))
-        mark_client_ready(client);
+	(gotnow >= (int)(get_req_len((xReq *)oci->bufptr, client) << 2)))
+	FD_SET(fd, &ClientsWithInput);
     else
-        YieldControlNoInput(client);
-    return TRUE;
+	YieldControlNoInput();
+    return(TRUE);
 }
 
 /*****************************************************************
@@ -564,43 +617,199 @@ InsertFakeRequest(ClientPtr client, char *data, int count)
 void
 ResetCurrentRequest(ClientPtr client)
 {
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-
-    /* ignore dying clients */
-    if (!oc)
-        return;
-
-    register ConnectionInputPtr oci = oc->input;
-    register xReq *request;
+    OsCommPtr oc = (OsCommPtr)client->osPrivate;
+    ConnectionInputPtr oci = oc->input;
+    int fd = oc->fd;
+    xReq *request;
     int gotnow, needed;
+#ifdef LBX
+    LbxClientPtr lbxClient = LbxClient(client);
 
+    if (lbxClient) {
+	LbxSetForBlock(lbxClient);
+	if (!oci) {
+	    AppendFakeRequest(client,
+			      client->requestBuffer, client->req_len << 2);
+	    return;
+	}
+    }
+#endif
     if (AvailableInput == oc)
-        AvailableInput = (OsCommPtr) NULL;
+	AvailableInput = (OsCommPtr)NULL;
     oci->lenLastReq = 0;
     gotnow = oci->bufcnt + oci->buffer - oci->bufptr;
-    if (gotnow < sizeof(xReq)) {
-        YieldControlNoInput(client);
+    if (gotnow < sizeof(xReq))
+    {
+	YieldControlNoInput();
     }
-    else {
-        request = (xReq *) oci->bufptr;
-        needed = get_req_len(request, client);
-        if (!needed && client->big_requests) {
-            oci->bufptr -= sizeof(xBigReq) - sizeof(xReq);
-            *(xReq *) oci->bufptr = *request;
-            ((xBigReq *) oci->bufptr)->length = client->req_len;
-            if (client->swapped) {
-                swapl(&((xBigReq *) oci->bufptr)->length);
-            }
-        }
-        if (gotnow >= (needed << 2)) {
-            if (listen_to_client(client))
-                mark_client_ready(client);
-            YieldControl();
-        }
-        else
-            YieldControlNoInput(client);
+    else
+    {
+	request = (xReq *)oci->bufptr;
+	needed = get_req_len(request, client);
+#ifdef BIGREQS
+	if (!needed && client->big_requests)
+	{
+	    oci->bufptr -= sizeof(xBigReq) - sizeof(xReq);
+	    *(xReq *)oci->bufptr = *request;
+	    ((xBigReq *)oci->bufptr)->length = client->req_len;
+	    if (client->swapped)
+	    {
+		char n;
+		swapl(&((xBigReq *)oci->bufptr)->length, n);
+	    }
+	}
+#endif
+	if (gotnow >= (needed << 2))
+	{
+	    if (FD_ISSET(fd, &AllClients))
+	    {
+		FD_SET(fd, &ClientsWithInput);
+	    }
+	    else
+	    {
+		FD_SET(fd, &IgnoredClientsWithInput);
+	    }
+	    YieldControl();
+	}
+	else
+	    YieldControlNoInput();
     }
 }
+
+
+
+/*****************************************************************
+ *  PeekNextRequest and SkipRequests were implemented to support DBE 
+ *  idioms, but can certainly be used outside of DBE.  There are two 
+ *  related macros in os.h, ReqLen and CastxReq.  See the porting 
+ *  layer document for more details.
+ *
+ **********************/
+
+
+/*****************************************************************
+ *  PeekNextRequest
+ *      lets you look ahead at the unexecuted requests in a 
+ *      client's request buffer.
+ *
+ *      Note: this implementation of PeekNextRequest ignores the
+ *      readmore parameter.
+ *
+ **********************/
+
+xReqPtr
+PeekNextRequest(
+    xReqPtr req,	/* request we're starting from */
+    ClientPtr client,	/* client whose requests we're skipping */
+    Bool readmore)	/* attempt to read more if next request isn't there? */
+{
+    ConnectionInputPtr oci = ((OsCommPtr)client->osPrivate)->input;
+    xReqPtr pnextreq;
+    int needed, gotnow, reqlen;
+
+    if (!oci) return NULL;
+
+    if (!req)
+    {
+	/* caller wants the request after the one currently being executed */
+	pnextreq = (xReqPtr)
+	    (((CARD32 *)client->requestBuffer) + client->req_len);
+    }
+    else
+    {
+	/* caller wants the request after the one specified by req */
+	reqlen = get_req_len(req, client);
+#ifdef BIGREQS
+	if (!reqlen) reqlen = get_big_req_len(req, client);
+#endif
+	pnextreq = (xReqPtr)(((char *)req) + (reqlen << 2));
+    }
+
+    /* see how much of the next request we have available */
+
+    gotnow = oci->bufcnt - (((char *)pnextreq) - oci->buffer);
+
+    if (gotnow < sizeof(xReq))
+	return NULL;
+
+    needed = get_req_len(pnextreq, client) << 2;
+#ifdef BIGREQS
+    if (!needed)
+    {
+	/* it's a big request */
+	if (gotnow < sizeof(xBigReq))
+	    return NULL;
+	needed = get_big_req_len(pnextreq, client) << 2;
+    }
+#endif
+
+    /* if we have less than we need, return NULL */
+
+    return (gotnow < needed) ? NULL : pnextreq;
+}
+
+/*****************************************************************
+ *  SkipRequests 
+ *      lets you skip over some of the requests in a client's
+ *      request buffer.  Presumably the caller has used PeekNextRequest
+ *      to examine the requests being skipped and has performed whatever 
+ *      actions they dictate.
+ *
+ **********************/
+
+CallbackListPtr SkippedRequestsCallback = NULL;
+
+void
+SkipRequests(
+    xReqPtr req,	/* last request being skipped */
+    ClientPtr client,   /* client whose requests we're skipping */
+    int numskipped)	/* how many requests we're skipping */
+{
+    OsCommPtr oc = (OsCommPtr)client->osPrivate;
+    ConnectionInputPtr oci = oc->input;
+    int reqlen;
+
+    /* see if anyone wants to snoop the skipped requests */
+
+    if (SkippedRequestsCallback)
+    {
+	SkippedRequestInfoRec skipinfo;
+	skipinfo.req = req;
+	skipinfo.client = client;
+	skipinfo.numskipped = numskipped;
+	CallCallbacks(&SkippedRequestsCallback, &skipinfo);
+    }
+
+    /* adjust the sequence number */
+    client->sequence += numskipped;
+
+    /* twiddle the oci to skip over the requests */
+
+    reqlen = get_req_len(req, client);
+#ifdef BIGREQS
+    if (!reqlen) reqlen = get_big_req_len(req, client);
+#endif
+    reqlen <<= 2;
+    oci->bufptr = (char *)req;
+    oci->lenLastReq = reqlen;
+
+    /* see if any requests left in the buffer */
+
+    if ( ((char *)req + reqlen) == (oci->buffer + oci->bufcnt) )
+    {
+	/* no requests; mark input buffer as available and client
+	 * as having no input
+	 */
+	int fd = oc->fd;
+	AvailableInput = oc;
+	YieldControlNoInput();
+    }
+}
+
+
+    /* lookup table for adding padding bytes to data that is read from
+    	or written to the X socket.  */
+static int padlength[4] = {0, 3, 2, 1};
 
  /********************
  * FlushAllOutput()
@@ -615,12 +824,20 @@ ResetCurrentRequest(ClientPtr client)
 void
 FlushAllOutput(void)
 {
+    int index, base;
+    fd_mask mask; /* raphael */
     OsCommPtr oc;
-    register ClientPtr client, tmp;
+    ClientPtr client;
     Bool newoutput = NewOutputPending;
+#if defined(WIN32)
+    fd_set newOutputPending;
+#endif
+
+    if (FlushCallback)
+	CallCallbacks(&FlushCallback, NULL);
 
     if (!newoutput)
-        return;
+	return;
 
     /*
      * It may be that some client still has critical output pending,
@@ -630,48 +847,72 @@ FlushAllOutput(void)
     CriticalOutputPending = FALSE;
     NewOutputPending = FALSE;
 
-    xorg_list_for_each_entry_safe(client, tmp, &output_pending_clients, output_pending) {
-        if (client->clientGone)
-            continue;
-        if (!client_is_ready(client)) {
-            oc = (OsCommPtr) client->osPrivate;
-            (void) FlushClient(client, oc, (char *) NULL, 0);
-        } else
-            NewOutputPending = TRUE;
+#ifndef WIN32
+    for (base = 0; base < howmany(XFD_SETSIZE, NFDBITS); base++)
+    {
+	mask = OutputPending.fds_bits[ base ];
+	OutputPending.fds_bits[ base ] = 0;
+	while (mask)
+	{
+	    index = ffs(mask) - 1;
+	    mask &= ~lowbit(mask);
+	    if ((index = ConnectionTranslation[(base * (sizeof(fd_mask)*8)) + index]) == 0)
+		continue;
+	    client = clients[index];
+	    if (client->clientGone)
+		continue;
+	    oc = (OsCommPtr)client->osPrivate;
+	    if (
+#ifdef LBX
+		!oc->proxy &&
+#endif
+		FD_ISSET(oc->fd, &ClientsWithInput))
+	    {
+		FD_SET(oc->fd, &OutputPending); /* set the bit again */
+		NewOutputPending = TRUE;
+	    }
+	    else
+		(void)FlushClient(client, oc, (char *)NULL, 0);
+	}
     }
+#else  /* WIN32 */
+    FD_ZERO(&newOutputPending);
+    for (base = 0; base < XFD_SETCOUNT(&OutputPending); base++)
+    {
+	    index = XFD_FD(&OutputPending, base);
+	    if ((index = ConnectionTranslation[index]) == 0)
+		continue;
+	    client = clients[index];
+	    if (client->clientGone)
+		continue;
+	    oc = (OsCommPtr)client->osPrivate;
+	    if (
+#ifdef LBX
+		!oc->proxy &&
+#endif
+		FD_ISSET(oc->fd, &ClientsWithInput))
+	    {
+		FD_SET(oc->fd, &newOutputPending); /* set the bit again */
+		NewOutputPending = TRUE;
+	    }
+	    else
+		(void)FlushClient(client, oc, (char *)NULL, 0);
+    }
+    XFD_COPYSET(&newOutputPending, &OutputPending);
+#endif /* WIN32 */
 }
 
 void
 FlushIfCriticalOutputPending(void)
 {
     if (CriticalOutputPending)
-        FlushAllOutput();
+	FlushAllOutput();
 }
 
 void
 SetCriticalOutputPending(void)
 {
     CriticalOutputPending = TRUE;
-}
-
-/*****************
- * AbortClient:
- *    When a write error occurs to a client, close
- *    the connection and clean things up. Mark
- *    the client as 'ready' so that the server will
- *    try to read from it again, notice that the fd is
- *    closed and clean up from there.
- *****************/
-
-static void
-AbortClient(ClientPtr client)
-{
-    OsCommPtr oc = client->osPrivate;
-
-    if (oc->trans_conn) {
-        CloseDownFileDescriptor(oc);
-        mark_client_ready(client);
-    }
 }
 
 /*****************
@@ -686,157 +927,168 @@ AbortClient(ClientPtr client)
  *****************/
 
 int
-WriteToClient(ClientPtr who, int count, const void *__buf)
+WriteToClient (ClientPtr who, int count, char *buf)
 {
-    OsCommPtr oc;
-    ConnectionOutputPtr oco;
+    OsCommPtr oc = (OsCommPtr)who->osPrivate;
+    ConnectionOutputPtr oco = oc->output;
     int padBytes;
-    const char *buf = __buf;
-
-    BUG_RETURN_VAL_MSG(in_input_thread(), 0,
-                       "******** %s called from input thread *********\n", __func__);
-
 #ifdef DEBUG_COMMUNICATION
     Bool multicount = FALSE;
 #endif
-    if (!count || !who || who == serverClient || who->clientGone)
-        return 0;
-    oc = who->osPrivate;
-    oco = oc->output;
+    if (!count)
+	return(0);
 #ifdef DEBUG_COMMUNICATION
     {
-        char info[128];
-        xError *err;
-        xGenericReply *rep;
-        xEvent *ev;
-
-        if (!who->replyBytesRemaining) {
-            switch (buf[0]) {
-            case X_Reply:
-                rep = (xGenericReply *) buf;
-                if (rep->sequenceNumber == who->sequence) {
-                    snprintf(info, 127, "Xreply: type: 0x%x data: 0x%x "
-                             "len: %i seq#: 0x%x", rep->type, rep->data1,
-                             rep->length, rep->sequenceNumber);
-                    multicount = TRUE;
-                }
-                break;
-            case X_Error:
-                err = (xError *) buf;
-                snprintf(info, 127, "Xerror: Code: 0x%x resID: 0x%x maj: 0x%x "
-                         "min: %x", err->errorCode, err->resourceID,
-                         err->minorCode, err->majorCode);
-                break;
-            default:
-                if ((buf[0] & 0x7f) == KeymapNotify)
-                    snprintf(info, 127, "KeymapNotifyEvent: %i", buf[0]);
-                else {
-                    ev = (xEvent *) buf;
-                    snprintf(info, 127, "XEvent: type: 0x%x detail: 0x%x "
-                             "seq#: 0x%x", ev->u.u.type, ev->u.u.detail,
-                             ev->u.u.sequenceNumber);
-                }
-            }
-            ErrorF("REPLY: ClientIDX: %i %s\n", who->index, info);
-        }
-        else
-            multicount = TRUE;
+	char info[128];
+	xError *err;
+	xGenericReply *rep;
+	xEvent *ev;
+	
+	if (!who->replyBytesRemaining) {
+	    switch(buf[0]) {
+	    case X_Reply:
+		rep = (xGenericReply*)buf;
+		if (rep->sequenceNumber == who->sequence) {
+		    snprintf(info,127,"Xreply: type: 0x%x data: 0x%x "
+			     "len: %i seq#: 0x%x", rep->type, rep->data1,
+			     rep->length, rep->sequenceNumber);
+		    multicount = TRUE;
+		}
+		break;
+	    case X_Error:
+		err = (xError*)buf;
+		snprintf(info,127,"Xerror: Code: 0x%x resID: 0x%x maj: 0x%x "
+			 "min: %x", err->errorCode,err->resourceID,
+			 err->minorCode,err->majorCode);
+		break;
+	    default:
+		if ((buf[0] & 0x7f) == KeymapNotify) 
+		    snprintf(info,127,"KeymapNotifyEvent: %i",buf[0]);
+		else {
+		    ev = (xEvent*)buf;
+		    snprintf(info,127,"XEvent: type: 0x%x detail: 0x%x "
+			     "seq#: 0x%x",  ev->u.u.type, ev->u.u.detail,
+			     ev->u.u.sequenceNumber);
+		}
+	    }
+	    ErrorF("REPLY: ClientIDX: %i %s\n",who->index, info);
+	} else
+	    multicount = TRUE;
     }
 #endif
 
-    if (!oco) {
-        if ((oco = FreeOutputs)) {
-            FreeOutputs = oco->next;
-        }
-        else if (!(oco = AllocateOutputBuffer())) {
-            AbortClient(who);
-            MarkClientException(who);
-            return -1;
-        }
-        oc->output = oco;
+    if (!oco)
+    {
+	if ((oco = FreeOutputs))
+	{
+	    FreeOutputs = oco->next;
+	}
+	else if (!(oco = AllocateOutputBuffer()))
+	{
+	    if (oc->trans_conn) {
+		_XSERVTransDisconnect(oc->trans_conn);
+		_XSERVTransClose(oc->trans_conn);
+		oc->trans_conn = NULL;
+	    }
+	    MarkClientException(who);
+	    return -1;
+	}
+	oc->output = oco;
     }
 
-    padBytes = padding_for_int32(count);
+    padBytes = padlength[count & 3];
 
-    if (ReplyCallback) {
+    if(ReplyCallback)
+    {
         ReplyInfoRec replyinfo;
 
-        replyinfo.client = who;
-        replyinfo.replyData = buf;
-        replyinfo.dataLenBytes = count + padBytes;
-        replyinfo.padBytes = padBytes;
-        if (who->replyBytesRemaining) { /* still sending data of an earlier reply */
-            who->replyBytesRemaining -= count + padBytes;
-            replyinfo.startOfReply = FALSE;
-            replyinfo.bytesRemaining = who->replyBytesRemaining;
-            CallCallbacks((&ReplyCallback), (void *) &replyinfo);
-        }
-        else if (who->clientState == ClientStateRunning && buf[0] == X_Reply) { /* start of new reply */
-            CARD32 replylen;
-            unsigned long bytesleft;
+	replyinfo.client = who;
+	replyinfo.replyData = buf;
+	replyinfo.dataLenBytes = count + padBytes;
+	if (who->replyBytesRemaining)
+	{ /* still sending data of an earlier reply */
+	    who->replyBytesRemaining -= count + padBytes;
+	    replyinfo.startOfReply = FALSE;
+	    replyinfo.bytesRemaining = who->replyBytesRemaining;
+	    CallCallbacks((&ReplyCallback), (pointer)&replyinfo);
+	}
+	else if (who->clientState == ClientStateRunning
+		 && buf[0] == X_Reply)
+        { /* start of new reply */
+	    CARD32 replylen;
+	    unsigned long bytesleft;
+	    char n;
 
-            replylen = ((const xGenericReply *) buf)->length;
-            if (who->swapped)
-                swapl(&replylen);
-            bytesleft = (replylen * 4) + SIZEOF(xReply) - count - padBytes;
-            replyinfo.startOfReply = TRUE;
-            replyinfo.bytesRemaining = who->replyBytesRemaining = bytesleft;
-            CallCallbacks((&ReplyCallback), (void *) &replyinfo);
-        }
+	    replylen = ((xGenericReply *)buf)->length;
+	    if (who->swapped)
+		swapl(&replylen);
+	    bytesleft = (replylen * 4) + SIZEOF(xReply) - count - padBytes;
+	    replyinfo.startOfReply = TRUE;
+	    replyinfo.bytesRemaining = who->replyBytesRemaining = bytesleft;
+	    CallCallbacks((&ReplyCallback), (pointer)&replyinfo);
+	} 	                      
     }
 #ifdef DEBUG_COMMUNICATION
     else if (multicount) {
-        if (who->replyBytesRemaining) {
-            who->replyBytesRemaining -= (count + padBytes);
-        }
-        else {
-            CARD32 replylen;
-
-            replylen = ((xGenericReply *) buf)->length;
-            who->replyBytesRemaining =
-                (replylen * 4) + SIZEOF(xReply) - count - padBytes;
-        }
+	if (who->replyBytesRemaining) {
+	    who->replyBytesRemaining -= (count + padBytes);
+	} else {
+	    CARD32 replylen;
+	    replylen = ((xGenericReply *)buf)->length;
+	    who->replyBytesRemaining =
+		(replylen * 4) + SIZEOF(xReply) - count - padBytes;
+	}
     }
 #endif
-    if (oco->count == 0 || oco->count + count + padBytes > oco->size) {
-        output_pending_clear(who);
-        if (!any_output_pending()) {
-            CriticalOutputPending = FALSE;
-            NewOutputPending = FALSE;
-        }
-
-        return FlushClient(who, oc, buf, count);
+    if (oco->count + count + padBytes > oco->size)
+    {
+	FD_CLR(oc->fd, &OutputPending);
+	if(!XFD_ANYSET(&OutputPending)) {
+	  CriticalOutputPending = FALSE;
+	  NewOutputPending = FALSE;
+	}
+	return FlushClient(who, oc, buf, count);
     }
 
     NewOutputPending = TRUE;
-    output_pending_mark(who);
-    memmove((char *) oco->buf + oco->count, buf, count);
-    oco->count += count;
-    if (padBytes) {
-        memset(oco->buf + oco->count, '\0', padBytes);
-        oco->count += padBytes;
-    }
-    return count;
+    FD_SET(oc->fd, &OutputPending);
+    memmove((char *)oco->buf + oco->count, buf, count);
+    oco->count += count + padBytes;
+    return(count);
 }
 
  /********************
  * FlushClient()
  *    If the client isn't keeping up with us, then we try to continue
- *    buffering the data and set the appropriate bit in ClientsWritable
+ *    buffering the data and set the apropriate bit in ClientsWritable
  *    (which is used by WaitFor in the select).  If the connection yields
  *    a permanent error, or we can't allocate any more space, we then
  *    close the connection.
  *
  **********************/
 
+#ifdef LBX
+#ifdef LBX_NEED_OLD_SYMBOL_FOR_LOADABLES
+#undef FlushClient
 int
-FlushClient(ClientPtr who, OsCommPtr oc, const void *__extraBuf, int extraCount)
+FlushClient(ClientPtr who, OsCommPtr oc, char *extraBuf, int extraCount)
+{
+    return (*oc->Flush)(who, oc, extraBuf, extraCount);
+}
+#endif
+int
+StandardFlushClient(ClientPtr who, OsCommPtr oc, 
+    char *extraBuf, int extraCount)
+#else
+int
+FlushClient(ClientPtr who, OsCommPtr oc, char *extraBuf, int extraCount)
+#endif
 {
     ConnectionOutputPtr oco = oc->output;
+    int connection = oc->fd;
     XtransConnInfo trans_conn = oc->trans_conn;
     struct iovec iov[3];
     static char padBuffer[3];
-    const char *extraBuf = __extraBuf;
     long written;
     long padsize;
     long notWritten;
@@ -845,34 +1097,28 @@ FlushClient(ClientPtr who, OsCommPtr oc, const void *__extraBuf, int extraCount)
     if (!oco)
 	return 0;
     written = 0;
-    padsize = padding_for_int32(extraCount);
+    padsize = padlength[extraCount & 3];
     notWritten = oco->count + extraCount + padsize;
-    if (!notWritten)
-        return 0;
-
-    if (FlushCallback)
-        CallCallbacks(&FlushCallback, who);
-
     todo = notWritten;
     while (notWritten) {
-        long before = written;  /* amount of whole thing written */
-        long remain = todo;     /* amount to try this time, <= notWritten */
-        int i = 0;
-        long len;
-
-        /* You could be very general here and have "in" and "out" iovecs
-         * and write a loop without using a macro, but what the heck.  This
-         * translates to:
-         *
-         *     how much of this piece is new?
-         *     if more new then we are trying this time, clamp
-         *     if nothing new
-         *         then bump down amount already written, for next piece
-         *         else put new stuff in iovec, will need all of next piece
-         *
-         * Note that todo had better be at least 1 or else we'll end up
-         * writing 0 iovecs.
-         */
+	long before = written;	/* amount of whole thing written */
+	long remain = todo;	/* amount to try this time, <= notWritten */
+	int i = 0;
+	long len;
+	
+	/* You could be very general here and have "in" and "out" iovecs
+	 * and write a loop without using a macro, but what the heck.  This
+	 * translates to:
+	 *
+	 *     how much of this piece is new?
+	 *     if more new then we are trying this time, clamp
+	 *     if nothing new
+	 *         then bump down amount already written, for next piece
+	 *         else put new stuff in iovec, will need all of next piece
+	 *
+	 * Note that todo had better be at least 1 or else we'll end up
+	 * writing 0 iovecs.
+	 */
 #define InsertIOV(pointer, length) \
 	len = (length) - before; \
 	if (len > remain) \
@@ -881,141 +1127,168 @@ FlushClient(ClientPtr who, OsCommPtr oc, const void *__extraBuf, int extraCount)
 	    before = (-len); \
 	} else { \
 	    iov[i].iov_len = len; \
-	    iov[i].iov_base = (pointer) + before;	\
+	    iov[i].iov_base = (pointer) + before; \
 	    i++; \
 	    remain -= len; \
 	    before = 0; \
 	}
 
-        InsertIOV((char *) oco->buf, oco->count)
-            InsertIOV((char *) extraBuf, extraCount)
-            InsertIOV(padBuffer, padsize)
+	InsertIOV ((char *)oco->buf, oco->count)
+	InsertIOV (extraBuf, extraCount)
+	InsertIOV (padBuffer, padsize)
 
-            errno = 0;
-        if (trans_conn && (len = _XSERVTransWritev(trans_conn, iov, i)) >= 0) {
-            written += len;
-            notWritten -= len;
-            todo = notWritten;
-        }
-        else if (ETEST(errno)
-#ifdef SUNSYSV                  /* check for another brain-damaged OS bug */
-                 || (errno == 0)
+	errno = 0;
+	if (trans_conn && (len = _XSERVTransWritev(trans_conn, iov, i)) >= 0)
+	{
+	    written += len;
+	    notWritten -= len;
+	    todo = notWritten;
+	}
+	else if (ETEST(errno)
+#ifdef SUNSYSV /* check for another brain-damaged OS bug */
+		 || (errno == 0)
 #endif
-#ifdef EMSGSIZE                 /* check for another brain-damaged OS bug */
-                 || ((errno == EMSGSIZE) && (todo == 1))
+#ifdef EMSGSIZE /* check for another brain-damaged OS bug */
+		 || ((errno == EMSGSIZE) && (todo == 1))
 #endif
-            ) {
-            /* If we've arrived here, then the client is stuffed to the gills
-               and not ready to accept more.  Make a note of it and buffer
-               the rest. */
-            output_pending_mark(who);
+		)
+	{
+	    /* If we've arrived here, then the client is stuffed to the gills
+	       and not ready to accept more.  Make a note of it and buffer
+	       the rest. */
+	    FD_SET(connection, &ClientsWriteBlocked);
+	    AnyClientsWriteBlocked = TRUE;
 
-            if (written < oco->count) {
-                if (written > 0) {
-                    oco->count -= written;
-                    memmove((char *) oco->buf,
-                            (char *) oco->buf + written, oco->count);
-                    written = 0;
-                }
-            }
-            else {
-                written -= oco->count;
-                oco->count = 0;
-            }
+	    if (written < oco->count)
+	    {
+		if (written > 0)
+		{
+		    oco->count -= written;
+		    memmove((char *)oco->buf,
+			    (char *)oco->buf + written,
+			  oco->count);
+		    written = 0;
+		}
+	    }
+	    else
+	    {
+		written -= oco->count;
+		oco->count = 0;
+	    }
 
-            if (notWritten > oco->size) {
-                unsigned char *obuf = NULL;
+	    if (notWritten > oco->size)
+	    {
+		unsigned char *obuf;
 
-                if (notWritten + BUFSIZE <= INT_MAX) {
-                    obuf = realloc(oco->buf, notWritten + BUFSIZE);
-                }
-                if (!obuf) {
-                    AbortClient(who);
-                    MarkClientException(who);
-                    oco->count = 0;
-                    return -1;
-                }
-                oco->size = notWritten + BUFSIZE;
-                oco->buf = obuf;
-            }
+		obuf = (unsigned char *)xrealloc(oco->buf,
+						 notWritten + BUFSIZE);
+		if (!obuf)
+		{
+		    _XSERVTransDisconnect(oc->trans_conn);
+		    _XSERVTransClose(oc->trans_conn);
+		    oc->trans_conn = NULL;
+		    MarkClientException(who);
+		    oco->count = 0;
+		    return(-1);
+		}
+		oco->size = notWritten + BUFSIZE;
+		oco->buf = obuf;
+	    }
 
-            /* If the amount written extended into the padBuffer, then the
-               difference "extraCount - written" may be less than 0 */
-            if ((len = extraCount - written) > 0)
-                memmove((char *) oco->buf + oco->count,
-                        extraBuf + written, len);
+	    /* If the amount written extended into the padBuffer, then the
+	       difference "extraCount - written" may be less than 0 */
+	    if ((len = extraCount - written) > 0)
+		memmove ((char *)oco->buf + oco->count,
+			 extraBuf + written,
+		       len);
 
-            oco->count = notWritten;    /* this will include the pad */
-            ospoll_listen(server_poll, oc->fd, X_NOTIFY_WRITE);
-
-            /* return only the amount explicitly requested */
-            return extraCount;
-        }
-#ifdef EMSGSIZE                 /* check for another brain-damaged OS bug */
-        else if (errno == EMSGSIZE) {
-            todo >>= 1;
-        }
+	    oco->count = notWritten; /* this will include the pad */
+	    /* return only the amount explicitly requested */
+	    return extraCount;
+	}
+#ifdef EMSGSIZE /* check for another brain-damaged OS bug */
+	else if (errno == EMSGSIZE)
+	{
+	    todo >>= 1;
+	}
 #endif
-        else {
-            AbortClient(who);
-            MarkClientException(who);
-            oco->count = 0;
-            return -1;
-        }
+	else
+	{
+	    if (oc->trans_conn)
+	    {
+		_XSERVTransDisconnect(oc->trans_conn);
+		_XSERVTransClose(oc->trans_conn);
+		oc->trans_conn = NULL;
+	    }
+	    MarkClientException(who);
+	    oco->count = 0;
+	    return(-1);
+	}
     }
 
     /* everything was flushed out */
     oco->count = 0;
-    output_pending_clear(who);
-
-    if (oco->size > BUFWATERMARK) {
-        free(oco->buf);
-        free(oco);
+    /* check to see if this client was write blocked */
+    if (AnyClientsWriteBlocked)
+    {
+	FD_CLR(oc->fd, &ClientsWriteBlocked);
+ 	if (! XFD_ANYSET(&ClientsWriteBlocked))
+	    AnyClientsWriteBlocked = FALSE;
     }
-    else {
-        oco->next = FreeOutputs;
-        FreeOutputs = oco;
+    if (oco->size > BUFWATERMARK)
+    {
+	xfree(oco->buf);
+	xfree(oco);
     }
-    oc->output = (ConnectionOutputPtr) NULL;
-    return extraCount;          /* return only the amount explicitly requested */
+    else
+    {
+	oco->next = FreeOutputs;
+	FreeOutputs = oco;
+    }
+    oc->output = (ConnectionOutputPtr)NULL;
+    return extraCount; /* return only the amount explicitly requested */
 }
 
-static ConnectionInputPtr
+ConnectionInputPtr
 AllocateInputBuffer(void)
 {
     ConnectionInputPtr oci;
 
-    oci = malloc(sizeof(ConnectionInput));
+    oci = (ConnectionInputPtr)xalloc(sizeof(ConnectionInput));
     if (!oci)
-        return NULL;
-    oci->buffer = malloc(BUFSIZE);
-    if (!oci->buffer) {
-        free(oci);
-        return NULL;
+	return (ConnectionInputPtr)NULL;
+    oci->buffer = (char *)xalloc(BUFSIZE);
+    if (!oci->buffer)
+    {
+	xfree(oci);
+	return (ConnectionInputPtr)NULL;
     }
     oci->size = BUFSIZE;
     oci->bufptr = oci->buffer;
     oci->bufcnt = 0;
     oci->lenLastReq = 0;
-    oci->ignoreBytes = 0;
     return oci;
 }
 
-static ConnectionOutputPtr
+ConnectionOutputPtr
 AllocateOutputBuffer(void)
 {
     ConnectionOutputPtr oco;
 
-    oco = malloc(sizeof(ConnectionOutput));
+    oco = (ConnectionOutputPtr)xalloc(sizeof(ConnectionOutput));
     if (!oco)
-        return NULL;
-    oco->buf = calloc(1, BUFSIZE);
-    if (!oco->buf) {
-        free(oco);
-        return NULL;
+	return (ConnectionOutputPtr)NULL;
+    oco->buf = (unsigned char *) xalloc(BUFSIZE);
+    if (!oco->buf)
+    {
+	xfree(oco);
+	return (ConnectionOutputPtr)NULL;
     }
     oco->size = BUFSIZE;
     oco->count = 0;
+#ifdef LBX
+    oco->nocompress = FALSE;
+#endif
     return oco;
 }
 
@@ -1026,32 +1299,43 @@ FreeOsBuffers(OsCommPtr oc)
     ConnectionOutputPtr oco;
 
     if (AvailableInput == oc)
-        AvailableInput = (OsCommPtr) NULL;
-    if ((oci = oc->input)) {
-        if (FreeInputs) {
-            free(oci->buffer);
-            free(oci);
-        }
-        else {
-            FreeInputs = oci;
-            oci->next = (ConnectionInputPtr) NULL;
-            oci->bufptr = oci->buffer;
-            oci->bufcnt = 0;
-            oci->lenLastReq = 0;
-            oci->ignoreBytes = 0;
-        }
+	AvailableInput = (OsCommPtr)NULL;
+    if ((oci = oc->input))
+    {
+	if (FreeInputs)
+	{
+	    xfree(oci->buffer);
+	    xfree(oci);
+	}
+	else
+	{
+	    FreeInputs = oci;
+	    oci->next = (ConnectionInputPtr)NULL;
+	    oci->bufptr = oci->buffer;
+	    oci->bufcnt = 0;
+	    oci->lenLastReq = 0;
+	}
     }
-    if ((oco = oc->output)) {
-        if (FreeOutputs) {
-            free(oco->buf);
-            free(oco);
-        }
-        else {
-            FreeOutputs = oco;
-            oco->next = (ConnectionOutputPtr) NULL;
-            oco->count = 0;
-        }
+    if ((oco = oc->output))
+    {
+	if (FreeOutputs)
+	{
+	    xfree(oco->buf);
+	    xfree(oco);
+	}
+	else
+	{
+	    FreeOutputs = oco;
+	    oco->next = (ConnectionOutputPtr)NULL;
+	    oco->count = 0;
+	}
     }
+#ifdef LBX
+    if ((oci = oc->largereq)) {
+	xfree(oci->buffer);
+	xfree(oci);
+    }
+#endif
 }
 
 void
@@ -1060,14 +1344,16 @@ ResetOsBuffers(void)
     ConnectionInputPtr oci;
     ConnectionOutputPtr oco;
 
-    while ((oci = FreeInputs)) {
-        FreeInputs = oci->next;
-        free(oci->buffer);
-        free(oci);
+    while ((oci = FreeInputs))
+    {
+	FreeInputs = oci->next;
+	xfree(oci->buffer);
+	xfree(oci);
     }
-    while ((oco = FreeOutputs)) {
-        FreeOutputs = oco->next;
-        free(oco->buf);
-        free(oco);
+    while ((oco = FreeOutputs))
+    {
+	FreeOutputs = oco->next;
+	xfree(oco->buf);
+	xfree(oco);
     }
 }

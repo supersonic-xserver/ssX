@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2003 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -39,7 +46,7 @@
 #include    "damage.h"
 #include    "damagestr.h"
 #ifdef COMPOSITE
-#include    "cw.h"
+#include    "../cw/cw.h"
 #endif
 
 #define wrap(priv, real, mem, func) {\
@@ -120,6 +127,7 @@ getDrawableDamageRef (DrawablePtr pDrawable)
 static void
 DamageReportDamage (DamagePtr pDamage, RegionPtr pDamageRegion)
 {
+    ScreenPtr pScreen = pDamage->pDrawable->pScreen;
     BoxRec tmpBox;
     RegionRec tmpRegion;
     Bool was_empty;
@@ -332,6 +340,7 @@ damageDamageRegion (DrawablePtr pDrawable, RegionPtr pRegion, Bool clip,
 static void
 damageReportPostOp (DrawablePtr pDrawable)
 {
+    ScreenPtr pScreen = pDrawable->pScreen;
     drawableDamage(pDrawable);
 
     for (; pDamage != NULL; pDamage = pDamage->pNext)

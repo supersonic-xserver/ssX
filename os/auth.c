@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/os/auth.c,v 1.16 2006/09/02 16:44:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -31,117 +39,132 @@ from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
+#ifdef K5AUTH
+# include   <krb5/krb5.h>
 #endif
-
-#include   <X11/X.h>
-#include   <X11/Xauth.h>
-#include   "misc.h"
-#include   "osdep.h"
-#include   "dixstruct.h"
-#include   <sys/types.h>
-#include   <sys/stat.h>
-#include   <errno.h>
+# include   <X11/X.h>
+# include   <X11/Xauth.h>
+# include   "misc.h"
+# include   "osdep.h"
+# include   "dixstruct.h"
+# include   <sys/types.h>
+# include   <sys/stat.h>
+#ifdef XCSECURITY
+#define _SECURITY_SERVER
+# include   <X11/extensions/security.h>
+#endif
 #ifdef WIN32
-#include    <X11/Xw32defs.h>
+#include <X11/Xw32defs.h>
 #endif
-#include   <stdlib.h>       /* for arc4random_buf() */
 
 struct protocol {
-    unsigned short name_length;
-    const char *name;
-    AuthAddCFunc Add;           /* new authorization data */
-    AuthCheckFunc Check;        /* verify client authorization data */
-    AuthRstCFunc Reset;         /* delete all authorization data entries */
-    AuthFromIDFunc FromID;      /* convert ID to cookie */
-    AuthRemCFunc Remove;        /* remove a specific cookie */
+    unsigned short   name_length;
+    char    *name;
+    AuthAddCFunc	Add;	/* new authorization data */
+    AuthCheckFunc	Check;	/* verify client authorization data */
+    AuthRstCFunc	Reset;	/* delete all authorization data entries */
+    AuthToIDFunc	ToID;	/* convert cookie to ID */
+    AuthFromIDFunc	FromID;	/* convert ID to cookie */
+    AuthRemCFunc	Remove;	/* remove a specific cookie */
 #ifdef XCSECURITY
-    AuthGenCFunc Generate;
+    AuthGenCFunc	Generate;
 #endif
 };
 
-static struct protocol protocols[] = {
-    {(unsigned short) 18, "MIT-MAGIC-COOKIE-1",
-     MitAddCookie, MitCheckCookie, MitResetCookie,
-     MitFromID, MitRemoveCookie,
+static struct protocol   protocols[] = {
+{   (unsigned short) 18,    "MIT-MAGIC-COOKIE-1",
+		MitAddCookie,	MitCheckCookie,	MitResetCookie,
+		MitToID,	MitFromID,	MitRemoveCookie,
 #ifdef XCSECURITY
-     MitGenerateCookie
+		MitGenerateCookie
 #endif
-     },
+},
 #ifdef HASXDMAUTH
-    {(unsigned short) 19, "XDM-AUTHORIZATION-1",
-     XdmAddCookie, XdmCheckCookie, XdmResetCookie,
-     XdmFromID, XdmRemoveCookie,
+{   (unsigned short) 19,    "XDM-AUTHORIZATION-1",
+		XdmAddCookie,	XdmCheckCookie,	XdmResetCookie,
+		XdmToID,	XdmFromID,	XdmRemoveCookie,
 #ifdef XCSECURITY
-     NULL
+		NULL
 #endif
-     },
+},
 #endif
 #ifdef SECURE_RPC
-    {(unsigned short) 9, "SUN-DES-1",
-     SecureRPCAdd, SecureRPCCheck, SecureRPCReset,
-     SecureRPCFromID, SecureRPCRemove,
+{   (unsigned short) 9,    "SUN-DES-1",
+		SecureRPCAdd,	SecureRPCCheck,	SecureRPCReset,
+		SecureRPCToID,	SecureRPCFromID,SecureRPCRemove,
 #ifdef XCSECURITY
-     NULL
+		NULL
 #endif
-     },
+},
+#endif
+#ifdef K5AUTH
+{   (unsigned short) 14, "MIT-KERBEROS-5",
+		K5Add, K5Check, K5Reset,
+		K5ToID, K5FromID, K5Remove,
+#ifdef XCSECURITY
+		NULL
+#endif
+},
+#endif
+#ifdef XCSECURITY
+{   (unsigned short) XSecurityAuthorizationNameLen,
+	XSecurityAuthorizationName,
+		NULL, AuthSecurityCheck, NULL,
+		NULL, NULL, NULL,
+		NULL
+},
 #endif
 };
 
-#define NUM_AUTHORIZATION  ARRAY_SIZE(protocols)
+# define NUM_AUTHORIZATION  (sizeof (protocols) /\
+			     sizeof (struct protocol))
 
 /*
  * Initialize all classes of authorization by reading the
  * specified authorization file
  */
 
-static const char *authorization_file = NULL;
+static const char *authorization_file = (char *)NULL;
 
 static Bool ShouldLoadAuth = TRUE;
 
 void
-InitAuthorization(const char *file_name)
+InitAuthorization (const char *file_name)
 {
     authorization_file = file_name;
 }
 
 static int
-LoadAuthorization(void)
+LoadAuthorization (void)
 {
-    FILE *f;
-    Xauth *auth;
-    int i;
-    int count = 0;
+    FILE    *f;
+    Xauth   *auth;
+    int	    i;
+    int	    count = 0;
 
     ShouldLoadAuth = FALSE;
     if (!authorization_file)
-        return 0;
+	return 0;
 
-    errno = 0;
-    f = Fopen(authorization_file, "r");
-    if (!f) {
-        LogMessageVerb(X_ERROR, 0,
-                       "Failed to open authorization file \"%s\": %s\n",
-                       authorization_file,
-                       errno != 0 ? strerror(errno) : "Unknown error");
-        return -1;
+    f = Fopen (authorization_file, "r");
+    if (!f)
+	return -1;
+
+    while ((auth = XauReadAuth (f)) != 0) {
+	for (i = 0; i < NUM_AUTHORIZATION; i++) {
+	    if (protocols[i].name_length == auth->name_length &&
+		memcmp (protocols[i].name, auth->name, (int) auth->name_length) == 0 &&
+		protocols[i].Add)
+	    {
+		++count;
+		(*protocols[i].Add) (auth->data_length, auth->data,
+					 FakeClientID(0));
+	    }
+	}
+	XauDisposeAuth (auth);
     }
 
-    while ((auth = XauReadAuth(f)) != 0) {
-        for (i = 0; i < NUM_AUTHORIZATION; i++) {
-            if (protocols[i].name_length == auth->name_length &&
-                memcmp(protocols[i].name, auth->name,
-                       (int) auth->name_length) == 0 && protocols[i].Add) {
-                ++count;
-                (*protocols[i].Add) (auth->data_length, auth->data,
-                                     FakeClientID(0));
-            }
-        }
-        XauDisposeAuth(auth);
-    }
-
-    Fclose(f);
+    Fclose (f);
     return count;
 }
 
@@ -151,134 +174,165 @@ LoadAuthorization(void)
  * schemes supported by the display
  */
 void
-RegisterAuthorizations(void)
+RegisterAuthorizations (void)
 {
-    int i;
+    int	    i;
 
     for (i = 0; i < NUM_AUTHORIZATION; i++)
-        XdmcpRegisterAuthorization(protocols[i].name,
-                                   (int) protocols[i].name_length);
+	XdmcpRegisterAuthorization (protocols[i].name,
+				    (int)protocols[i].name_length);
 }
 #endif
 
 XID
-CheckAuthorization(unsigned int name_length,
-                   const char *name,
-                   unsigned int data_length,
-                   const char *data, ClientPtr client, const char **reason)
-{                               /* failure message.  NULL for default msg */
-    int i;
+CheckAuthorization (
+    unsigned int name_length,
+    char	*name,
+    unsigned int data_length,
+    char	*data,
+    ClientPtr client,
+    char	**reason)	/* failure message.  NULL for default msg */
+{
+    int	i;
     struct stat buf;
     static time_t lastmod = 0;
     static Bool loaded = FALSE;
 
-    if (!authorization_file || stat(authorization_file, &buf)) {
-        if (lastmod != 0) {
-            lastmod = 0;
-            ShouldLoadAuth = TRUE;      /* stat lost, so force reload */
-        }
+    if (!authorization_file || stat(authorization_file, &buf))
+    {
+	if (lastmod != 0) {
+	    lastmod = 0;
+	    ShouldLoadAuth = TRUE;	/* stat lost, so force reload */
+	}
     }
-    else if (buf.st_mtime > lastmod) {
-        lastmod = buf.st_mtime;
-        ShouldLoadAuth = TRUE;
+    else if (buf.st_mtime > lastmod)
+    {
+	lastmod = buf.st_mtime;
+	ShouldLoadAuth = TRUE;
     }
-    if (ShouldLoadAuth) {
-        int loadauth = LoadAuthorization();
+    if (ShouldLoadAuth)
+    {
+	int loadauth = LoadAuthorization();
 
-        /*
-         * If the authorization file has at least one entry for this server,
-         * disable local access. (loadauth > 0)
-         *
-         * If there are zero entries (either initially or when the
-         * authorization file is later reloaded), or if a valid
-         * authorization file was never loaded, enable local access.
-         * (loadauth == 0 || !loaded)
-         *
-         * If the authorization file was loaded initially (with valid
-         * entries for this server), and reloading it later fails, don't
-         * change anything. (loadauth == -1 && loaded)
-         */
-
-        if (loadauth > 0) {
-            DisableLocalAccess(); /* got at least one */
-            loaded = TRUE;
-        }
-        else if (loadauth == 0 || !loaded)
-            EnableLocalAccess();
+	/*
+	 * If the authorization file has at least one entry for this server,
+	 * disable local host access. (loadauth > 0)
+	 *
+	 * If there are zero entries (either initially or when the
+	 * authorization file is later reloaded), or if a valid
+	 * authorization file was never loaded, enable local host access.
+	 * (loadauth == 0 || !loaded)
+	 *
+	 * If the authorization file was loaded initially (with valid
+	 * entries for this server), and reloading it later fails, don't
+	 * change anything. (loadauth == -1 && loaded)
+	 */
+	
+	if (loadauth > 0)
+	{
+	    DisableLocalHost(); /* got at least one */
+	    loaded = TRUE;
+	}
+	else if (loadauth == 0 || !loaded)
+	    EnableLocalHost ();
     }
     if (name_length) {
-        for (i = 0; i < NUM_AUTHORIZATION; i++) {
-            if (protocols[i].name_length == name_length &&
-                memcmp(protocols[i].name, name, (int) name_length) == 0) {
-                return (*protocols[i].Check) (data_length, data, client,
-                                              reason);
-            }
-            *reason = "Authorization protocol not supported by server\n";
-        }
-    }
-    else
-        *reason = "Authorization required, but no authorization protocol specified\n";
+	for (i = 0; i < NUM_AUTHORIZATION; i++) {
+	    if (protocols[i].name_length == name_length &&
+		memcmp (protocols[i].name, name, (int) name_length) == 0)
+	    {
+		return (*protocols[i].Check) (data_length, data, client, reason);
+	    }
+	    *reason = "Protocol not supported by server\n";
+	}
+    } else *reason = "No protocol specified\n";
     return (XID) ~0L;
 }
 
 void
-ResetAuthorization(void)
+ResetAuthorization (void)
 {
-    int i;
+    int	i;
 
     for (i = 0; i < NUM_AUTHORIZATION; i++)
-        if (protocols[i].Reset)
-            (*protocols[i].Reset) ();
+	if (protocols[i].Reset)
+	    (*protocols[i].Reset)();
     ShouldLoadAuth = TRUE;
 }
 
-int
-AuthorizationFromID(XID id,
-                    unsigned short *name_lenp,
-                    const char **namep, unsigned short *data_lenp, char **datap)
+XID
+AuthorizationToID (
+	unsigned short	name_length,
+	char		*name,
+	unsigned short	data_length,
+	char		*data)
 {
-    int i;
+    int	i;
 
     for (i = 0; i < NUM_AUTHORIZATION; i++) {
-        if (protocols[i].FromID &&
-            (*protocols[i].FromID) (id, data_lenp, datap)) {
-            *name_lenp = protocols[i].name_length;
-            *namep = protocols[i].name;
-            return 1;
-        }
+    	if (protocols[i].name_length == name_length &&
+	    memcmp (protocols[i].name, name, (int) name_length) == 0 &&
+	    protocols[i].ToID)
+    	{
+	    return (*protocols[i].ToID) (data_length, data);
+    	}
+    }
+    return (XID) ~0L;
+}
+
+int
+AuthorizationFromID (
+	XID 		id,
+	unsigned short	*name_lenp,
+	char		**namep,
+	unsigned short	*data_lenp,
+	char		**datap)
+{
+    int	i;
+
+    for (i = 0; i < NUM_AUTHORIZATION; i++) {
+	if (protocols[i].FromID &&
+	    (*protocols[i].FromID) (id, data_lenp, datap)) {
+	    *name_lenp = protocols[i].name_length;
+	    *namep = protocols[i].name;
+	    return 1;
+	}
     }
     return 0;
 }
 
 int
-RemoveAuthorization(unsigned short name_length,
-                    const char *name,
-                    unsigned short data_length, const char *data)
+RemoveAuthorization (
+	unsigned short	name_length,
+	char		*name,
+	unsigned short	data_length,
+	char		*data)
 {
-    int i;
+    int	i;
 
     for (i = 0; i < NUM_AUTHORIZATION; i++) {
-        if (protocols[i].name_length == name_length &&
-            memcmp(protocols[i].name, name, (int) name_length) == 0 &&
-            protocols[i].Remove) {
-            return (*protocols[i].Remove) (data_length, data);
-        }
+    	if (protocols[i].name_length == name_length &&
+	    memcmp (protocols[i].name, name, (int) name_length) == 0 &&
+	    protocols[i].Remove)
+    	{
+	    return (*protocols[i].Remove) (data_length, data);
+    	}
     }
     return 0;
 }
 
 int
-AddAuthorization(unsigned name_length, const char *name,
-                 unsigned data_length, char *data)
+AddAuthorization (unsigned name_length, char *name, unsigned data_length, char *data)
 {
-    int i;
+    int	i;
 
     for (i = 0; i < NUM_AUTHORIZATION; i++) {
-        if (protocols[i].name_length == name_length &&
-            memcmp(protocols[i].name, name, (int) name_length) == 0 &&
-            protocols[i].Add) {
-            return (*protocols[i].Add) (data_length, data, FakeClientID(0));
-        }
+    	if (protocols[i].name_length == name_length &&
+	    memcmp (protocols[i].name, name, (int) name_length) == 0 &&
+	    protocols[i].Add)
+    	{
+	    return (*protocols[i].Add) (data_length, data, FakeClientID(0));
+    	}
     }
     return 0;
 }
@@ -286,38 +340,63 @@ AddAuthorization(unsigned name_length, const char *name,
 #ifdef XCSECURITY
 
 XID
-GenerateAuthorization(unsigned name_length,
-                      const char *name,
-                      unsigned data_length,
-                      const char *data,
-                      unsigned *data_length_return, char **data_return)
+GenerateAuthorization(
+	unsigned name_length,
+	char	*name,
+	unsigned data_length,
+	char	*data,
+	unsigned *data_length_return,
+	char	**data_return)
 {
-    int i;
+    int	i;
 
     for (i = 0; i < NUM_AUTHORIZATION; i++) {
-        if (protocols[i].name_length == name_length &&
-            memcmp(protocols[i].name, name, (int) name_length) == 0 &&
-            protocols[i].Generate) {
-            return (*protocols[i].Generate) (data_length, data,
-                                             FakeClientID(0),
-                                             data_length_return, data_return);
-        }
+    	if (protocols[i].name_length == name_length &&
+	    memcmp (protocols[i].name, name, (int) name_length) == 0 &&
+	    protocols[i].Generate)
+    	{
+	    return (*protocols[i].Generate) (data_length, data,
+			FakeClientID(0), data_length_return, data_return);
+    	}
     }
     return -1;
 }
 
-#endif                          /* XCSECURITY */
+/* A random number generator that is more unpredictable
+   than that shipped with some systems.
+   This code is taken from the C standard. */
+
+static unsigned long int next = 1;
+
+static int
+xdm_rand(void)
+{
+    next = next * 1103515245 + 12345;
+    return (unsigned int)(next/65536) % 32768;
+}
+
+static void
+xdm_srand(unsigned int seed)
+{
+    next = seed;
+}
 
 void
-GenerateRandomData(int len, char *buf)
+GenerateRandomData (int len, char *buf)
 {
-#ifdef HAVE_ARC4RANDOM_BUF
-    arc4random_buf(buf, len);
-#else
-    int fd;
+    static int seed;
+    int value;
+    int i;
 
-    fd = open("/dev/urandom", O_RDONLY);
-    read(fd, buf, len);
-    close(fd);
-#endif
+    seed += GetTimeInMillis();
+    xdm_srand (seed);
+    for (i = 0; i < len; i++)
+    {
+	value = xdm_rand ();
+	buf[i] ^= (value & 0xff00) >> 8;
+    }
+
+    /* XXX add getrusage, popen("ps -ale") */
 }
+
+#endif /* XCSECURITY */

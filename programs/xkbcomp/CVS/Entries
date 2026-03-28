@@ -1,0 +1,48 @@
+/Imakefile/1.1.1.6/Fri Mar  5 14:27:17 2004//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.1/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/README.config/1.1.1.3/Fri Mar 18 13:09:29 2005//Tnetbsd-5-2-3-RELEASE
+/README.enhancing/1.1.1.3/Fri Mar 18 13:09:29 2005//Tnetbsd-5-2-3-RELEASE
+/action.c/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/action.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/alias.c/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/alias.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/compat.c/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/compat.h/1.1.1.1/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/expr.c/1.1.1.5/Fri Mar  5 14:27:17 2004//Tnetbsd-5-2-3-RELEASE
+/expr.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/geometry.c/1.1.1.5/Fri Mar  5 14:27:17 2004//Tnetbsd-5-2-3-RELEASE
+/indicators.c/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/indicators.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/keycodes.c/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/keycodes.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/keymap.c/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/keytypes.c/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/listing.c/1.1.1.5/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/misc.c/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/misc.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/parseutils.c/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/parseutils.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/symbols.c/1.1.1.5/Fri Mar  5 14:27:18 2004//Tnetbsd-5-2-3-RELEASE
+/tokens.h/1.1.1.2/Sat Jun  9 15:14:22 2001//Tnetbsd-5-2-3-RELEASE
+/utils.c/1.1.1.5/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/utils.h/1.1.1.5/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/vmod.c/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/vmod.h/1.1.1.3/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/xkbcomp.c/1.1.1.6/Fri Mar  5 14:27:18 2004//Tnetbsd-5-2-3-RELEASE
+/xkbcomp.h/1.1.1.5/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/xkbcomp.man/1.1.1.6/Fri Mar 18 13:09:30 2005//Tnetbsd-5-2-3-RELEASE
+/xkbparse.y/1.1.1.4/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/xkbpath.c/1.1.1.5/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/xkbpath.h/1.1.1.2/Fri Feb 28 13:19:38 2003//Tnetbsd-5-2-3-RELEASE
+/xkbscan.c/1.1.1.5/Fri Mar  5 14:27:18 2004//Tnetbsd-5-2-3-RELEASE
+D/compat////
+D/compiled////
+D/cross////
+D/geometry////
+D/keycodes////
+D/keymap////
+D/rules////
+D/semantics////
+D/symbols////
+D/torture////
+D/types////

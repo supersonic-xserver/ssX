@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/afb/afbpntwin.c,v 3.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbpntwin.c,v 3.0 1996/08/18 01:45:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: afbpntwin.c,v 5.12 94/04/17 20:28:30 dpw Exp $ */
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -48,7 +56,7 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -60,9 +68,12 @@ SOFTWARE.
 #include "mi.h"
 
 void
-afbPaintWindow(WindowPtr pWin, RegionPtr pRegion, int what)
+afbPaintWindow(pWin, pRegion, what)
+	WindowPtr		pWin;
+	RegionPtr		pRegion;
+	int				what;
 {
-	afbPrivWin		*pPrivWin;
+	register afbPrivWin		*pPrivWin;
 	unsigned char rrops[AFB_MAX_DEPTH];
 
 	pPrivWin = (afbPrivWin *)(pWin->devPrivates[afbWindowPrivateIndex].ptr);

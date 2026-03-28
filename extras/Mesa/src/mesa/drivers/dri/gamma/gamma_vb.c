@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/gamma/gamma_vb.c,v 1.4 2003/03/26 20:43:48 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/gamma/gamma_vb.c,v 1.1.1.2 2004/12/10 15:06:07 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001 by Alan Hourihane.
  *
@@ -51,8 +58,8 @@
 
 static struct {
    void                (*emit)( GLcontext *, GLuint, GLuint, void *, GLuint );
-   interp_func		interp;
-   copy_pv_func	        copy_pv;
+   tnl_interp_func		interp;
+   tnl_copy_pv_func	        copy_pv;
    GLboolean           (*check_tex_sizes)( GLcontext *ctx );
    GLuint               vertex_size;
    GLuint               vertex_format;

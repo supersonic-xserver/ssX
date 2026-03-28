@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbpntwin.c,v 3.11tsi Exp $ */
+/* $Xorg: cfbpntwin.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbpntwin.c,v 3.8 2003/10/29 22:44:53 tsi Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -57,10 +65,18 @@ SOFTWARE.
 #include "cfbmskbits.h"
 #include "mi.h"
 
+#ifdef PANORAMIX
+#include "panoramiX.h"
+#include "panoramiXsrv.h"
+#endif
+
 void
-cfbPaintWindow(WindowPtr pWin, RegionPtr pRegion, int what)
+cfbPaintWindow(pWin, pRegion, what)
+    WindowPtr	pWin;
+    RegionPtr	pRegion;
+    int		what;
 {
-    cfbPrivWin	*pPrivWin;
+    register cfbPrivWin	*pPrivWin;
     WindowPtr	pBgWin;
 
     pPrivWin = cfbGetWindowPrivate(pWin);
@@ -88,11 +104,22 @@ cfbPaintWindow(WindowPtr pWin, RegionPtr pRegion, int what)
 	    }
 	    else
 	    {
+		int xorg = pWin->drawable.x;
+		int yorg = pWin->drawable.y;
+#ifdef PANORAMIX
+		if(!noPanoramiXExtension) {
+		    int index = pWin->drawable.pScreen->myNum;
+		    if(WindowTable[index] == pWin) {
+			xorg -= panoramiXdataPtr[index].x;
+			yorg -= panoramiXdataPtr[index].y;
+		    }
+		}
+#endif
 		cfbFillBoxTileOdd ((DrawablePtr)pWin,
 				   (int)REGION_NUM_RECTS(pRegion),
 				   REGION_RECTS(pRegion),
 				   pWin->background.pixmap,
-				   pWin->drawable.x, pWin->drawable.y);
+				   xorg, yorg);
 	    }
 	    break;
 	case BackgroundPixel:
@@ -120,15 +147,30 @@ cfbPaintWindow(WindowPtr pWin, RegionPtr pRegion, int what)
 	}
 	else
 	{
+	    int xorg, yorg;
+
 	    for (pBgWin = pWin;
 		 pBgWin->backgroundState == ParentRelative;
 		 pBgWin = pBgWin->parent);
+
+	    xorg = pBgWin->drawable.x;
+	    yorg = pBgWin->drawable.y;
+
+#ifdef PANORAMIX
+	    if(!noPanoramiXExtension) {
+		int index = pWin->drawable.pScreen->myNum;
+		if(WindowTable[index] == pBgWin) {
+		    xorg -= panoramiXdataPtr[index].x;
+		    yorg -= panoramiXdataPtr[index].y;
+		}
+	    }
+#endif
 
 	    cfbFillBoxTileOdd ((DrawablePtr)pWin,
 			       (int)REGION_NUM_RECTS(pRegion),
 			       REGION_RECTS(pRegion),
 			       pWin->border.pixmap,
-			       pBgWin->drawable.x, pBgWin->drawable.y);
+			       xorg, yorg);
 	}
 	break;
     }
@@ -182,13 +224,16 @@ cfbPaintWindow(WindowPtr pWin, RegionPtr pRegion, int what)
 #endif
 
 void
-cfbFillBoxSolid(DrawablePtr pDrawable, int nBox, BoxPtr pBox,
-		unsigned long pixel)
+cfbFillBoxSolid (pDrawable, nBox, pBox, pixel)
+    DrawablePtr	    pDrawable;
+    int		    nBox;
+    BoxPtr	    pBox;
+    unsigned long   pixel;
 {
     CfbBits   *pdstBase;
     int		    widthDst;
-    int    h;
-    CfbBits   *pdst;
+    register int    h;
+    register CfbBits   *pdst;
     int		    nmiddle;
     int		    w;
 #if PSZ == 24
@@ -199,9 +244,9 @@ cfbFillBoxSolid(DrawablePtr pDrawable, int nBox, BoxPtr pBox,
     piQxelArray[1] = ((pixel&0xFFFF00)>>8) | ((pixel&0xFFFF)<<16);
     piQxelArray[2] = ((pixel&0xFFFFFF)<<8) | ((pixel&0xFF0000)>>16);
 #else
-    CfbBits   rrop_xor;
-    CfbBits   leftMask, rightMask;
-    int    m;
+    register CfbBits   rrop_xor;
+    register CfbBits   leftMask, rightMask;
+    register int    m;
 #endif
 
     cfbGetLongWidthAndPointer(pDrawable, widthDst, pdstBase);
@@ -217,7 +262,7 @@ cfbFillBoxSolid(DrawablePtr pDrawable, int nBox, BoxPtr pBox,
 #if PSZ == 8
 	if (w == 1)
 	{
-	    char    *pdstb = ((char *) pdst) + pBox->x1;
+	    register char    *pdstb = ((char *) pdst) + pBox->x1;
 	    int	    incr = widthDst * PGSZB;
 
 	    while (h--)
@@ -230,18 +275,18 @@ cfbFillBoxSolid(DrawablePtr pDrawable, int nBox, BoxPtr pBox,
 	{
 #endif
 #if PSZ == 24
-	  /* _Box has x1, y1, x2, y2*/
-	  leftIndex = pBox->x1 & (PGSZB - 1);
-	  rightIndex = ((leftIndex + w) < 5) ? 0 : (pBox->x2 & (PGSZB - 1));
+/* _Box has x1, y1, x2, y2*/
+	  leftIndex = pBox->x1 & 3;
+	  rightIndex = ((leftIndex+w)<5)?0:(pBox->x2 &3);
 	  nmiddle = w - rightIndex;
 	  if(leftIndex){
-	      nmiddle -= (PGSZB - leftIndex);
+	      nmiddle -= (4 - leftIndex);
 	  }
 	  nmiddle >>= 2;
 	  if(nmiddle < 0)
 	    nmiddle = 0;
 
-	  pdst = pdstBase + pBox->y1 * widthDst + ((pBox->x1 * PSZB) / PGSZB);
+	  pdst = pdstBase + pBox->y1 * widthDst + ((pBox->x1*3) >> 2);
 
 	  switch(leftIndex+w){
 	  case 4:
@@ -341,7 +386,7 @@ cfbFillBoxSolid(DrawablePtr pDrawable, int nBox, BoxPtr pBox,
 	  {
 	    w = nmiddle;
 	    pdstULC = pdst;
-/*	    maskbits (pBox->x1, w, leftMask, rightMask, nmiddle); */
+/*	    maskbits (pBox->x1, w, leftMask, rightMask, nmiddle);*/
 	    while(h--){
 	      nmiddle = w;
 	      pdst = pdstULC;
@@ -442,9 +487,13 @@ cfbFillBoxSolid(DrawablePtr pDrawable, int nBox, BoxPtr pBox,
 }
 
 void
-cfbFillBoxTile32(DrawablePtr pDrawable, int nBox, BoxPtr pBox, PixmapPtr tile)
+cfbFillBoxTile32 (pDrawable, nBox, pBox, tile)
+    DrawablePtr	    pDrawable;
+    int		    nBox;	/* number of boxes to fill */
+    BoxPtr 	    pBox;	/* pointer to list of boxes to fill */
+    PixmapPtr	    tile;	/* rotated, expanded tile */
 {
-    CfbBits  *pdst;
+    register CfbBits  *pdst;
     CfbBits	    *psrc;
     int			    tileHeight;
 
@@ -460,10 +509,10 @@ cfbFillBoxTile32(DrawablePtr pDrawable, int nBox, BoxPtr pBox, PixmapPtr tile)
     int			    leftIndex, rightIndex;
     CfbBits piQxelArray[3], *pdstULC;
 #else
-    CfbBits  rrop_xor;	
-    CfbBits  leftMask;
-    CfbBits  rightMask;
-    int      m;
+    register CfbBits  rrop_xor;	
+    register CfbBits  leftMask;
+    register CfbBits  rightMask;
+    register int      m;
 #endif
 
     tileHeight = tile->drawable.height;
@@ -477,29 +526,28 @@ cfbFillBoxTile32(DrawablePtr pDrawable, int nBox, BoxPtr pBox, PixmapPtr tile)
 	w = pBox->x2 - pBox->x1;
 	h = pBox->y2 - pBox->y1;
 	y = pBox->y1;
-	leftIndex = pBox->x1 & (PGSZB - 1);
-/*	rightIndex = ((leftIndex + w) < 5) ? 0 : pBox->x2 & (PGSZB - 1); */
-	rightIndex = pBox->x2 & (PGSZB - 1);
+	leftIndex = pBox->x1 & 3;
+/*	rightIndex = ((leftIndex+w)<5)?0:pBox->x2 &3;*/
+	rightIndex = pBox->x2 &3;
 	nmiddle = w - rightIndex;
 	if(leftIndex){
-	  nmiddle -= (PGSZB - leftIndex);
+	  nmiddle -= (4 - leftIndex);
 	}
 	nmiddle >>= 2;
 	if(nmiddle < 0)
 	  nmiddle = 0;
 
-	pdst = pdstBase + ((pBox->x1 * PSZB) / PGSZB) + pBox->y1 * widthDst;
+	pdst = pdstBase + ((pBox->x1 *3)>> 2) +  pBox->y1 * widthDst;
 	srcy = y % tileHeight;
 
-#define StepTile \
-    piQxelArray[0] = (psrc[srcy] & 0xFFFFFF) | ((psrc[srcy] & 0xFF) << 24); \
-    piQxelArray[1] = (psrc[srcy] & 0xFFFF00) | ((psrc[srcy] & 0xFFFF) << 16); \
-    piQxelArray[2] = ((psrc[srcy] & 0xFF0000) >> 16) | \
-		     ((psrc[srcy] & 0xFFFFFF) << 8); \
- /* rrop_xor = psrc[srcy]; */ \
-    ++srcy; \
-    if (srcy == tileHeight) \
-	srcy = 0;
+#define StepTile    piQxelArray[0] = (psrc[srcy] & 0xFFFFFF) | ((psrc[srcy] & 0xFF)<<24); \
+		    piQxelArray[1] = (psrc[srcy] & 0xFFFF00) | ((psrc[srcy] & 0xFFFF)<<16); \
+		    piQxelArray[2] = ((psrc[srcy] & 0xFF0000)>>16) | \
+		    		     ((psrc[srcy] & 0xFFFFFF)<<8); \
+		    /*rrop_xor = psrc[srcy];*/ \
+		    ++srcy; \
+		    if (srcy == tileHeight) \
+		        srcy = 0;
 
 	  switch(leftIndex+w){
 	  case 4:

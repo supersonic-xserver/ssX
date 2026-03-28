@@ -1,3 +1,11 @@
+/* Header:   //Mercury/Projects/archives/XFree86/4.0/smi_video.c.-arc   1.14   30 Nov 2000 16:51:40   Frido  $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) 1994-1999 The XFree86 Project, Inc.  All Rights Reserved.
 Copyright (C) 2000 Silicon Motion, Inc.  All Rights Reserved.
@@ -40,7 +48,7 @@ Author of changes: Corvin Zahn <zahn@zac.de>
 Date:   2.11.2001
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi_video.c,v 1.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi_video.c,v 1.14 2003/12/08 16:03:58 alanh Exp $ */
 
 #include "smi.h"
 #include "smi_video.h"
@@ -52,10 +60,10 @@ new attribute:
 
 XV_INTERLACED = 0: only one field of an interlaced video signal is displayed:
                -> half vertical resolution, but no comb like artifacts from
-           moving vertical edges
+	       moving vertical edges
 XV_INTERLACED = 1: both fields of an interlaced video signal are displayed:
                -> full vertical resolution, but comb like artifacts from
-           moving vertical edges
+	       moving vertical edges
 
 The default value can be set with the driver option Interlaced
 
@@ -69,21 +77,21 @@ The default value can be set with the driver option Interlaced
 #undef CLAMP
 #undef ENTRIES
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b)) 
 #define ABS(n) (((n) < 0) ? -(n) : (n))
 #define CLAMP(v, min, max) (((v) < (min)) ? (min) : MIN(v, max))
 
 #define ENTRIES(array) (sizeof(array) / sizeof((array)[0]))
-#define nElems(x)       (sizeof(x) / sizeof(x[0]))
+#define nElems(x)		(sizeof(x) / sizeof(x[0]))
 
-#define MAKE_ATOM(a)    MakeAtom(a, sizeof(a) - 1, TRUE)
+#define MAKE_ATOM(a)	MakeAtom(a, sizeof(a) - 1, TRUE)
 
 #if SMI_USE_VIDEO
 #include "dixstruct.h"
 
 
 static int SMI_AddEncoding(XF86VideoEncodingPtr enc, int i,
-               int norm, int input, int channel);
+			   int norm, int input, int channel);
 static void SMI_BuildEncodings(SMI_PortPtr p);
 
 static XF86VideoAdaptorPtr SMI_SetupVideo(ScreenPtr pScreen);
@@ -91,41 +99,38 @@ static void SMI_ResetVideo(ScrnInfoPtr pScrn);
 
 #if SMI_USE_CAPTURE
 static int SMI_PutVideo(ScrnInfoPtr pScrn,
-        short vid_x, short vid_y, short drw_x, short drw_y,
-        short vid_w, short vid_h, short drw_w, short drw_h,
-        RegionPtr clipBoxes, pointer data);
+		short vid_x, short vid_y, short drw_x, short drw_y,
+		short vid_w, short vid_h, short drw_w, short drw_h,
+		RegionPtr clipBoxes, pointer data);
 #endif
 static void SMI_StopVideo(ScrnInfoPtr pScrn, pointer data, Bool shutdown);
 static int SMI_SetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
-        INT32 value, pointer data);
+		INT32 value, pointer data);
 static int SMI_GetPortAttribute(ScrnInfoPtr pScrn, Atom attribute,
-        INT32 *value, pointer data);
+		INT32 *value, pointer data);
 static void SMI_QueryBestSize(ScrnInfoPtr pScrn, Bool motion,
-        short vid_w, short vid_h, short drw_w, short drw_h,
-        unsigned int *p_w, unsigned int *p_h, pointer data);
+		short vid_w, short vid_h, short drw_w, short drw_h,
+		unsigned int *p_w, unsigned int *p_h, pointer data);
 static int SMI_PutImage(ScrnInfoPtr pScrn,
-        short src_x, short src_y, short drw_x, short drw_y,
-        short src_w, short src_h, short drw_w, short drw_h,
-        int id, unsigned char *buf, short width, short height, Bool sync,
-        RegionPtr clipBoxes, pointer data);
+		short src_x, short src_y, short drw_x, short drw_y,
+		short src_w, short src_h, short drw_w, short drw_h,
+		int id, unsigned char *buf, short width, short height, Bool sync,
+		RegionPtr clipBoxes, pointer data);
 static int SMI_QueryImageAttributes(ScrnInfoPtr pScrn,
-        int id, unsigned short *width, unsigned short *height,
-        int *picthes, int *offsets);
+		int id, unsigned short *width, unsigned short *height,
+		int *picthes, int *offsets);
 
 static Bool SMI_ClipVideo(ScrnInfoPtr pScrn, BoxPtr dst,
-        INT32 *x1, INT32 *y1, INT32 *x2, INT32 *y2,
-        RegionPtr reg, INT32 width, INT32 height);
+		INT32 *x1, INT32 *y1, INT32 *x2, INT32 *y2,
+		RegionPtr reg, INT32 width, INT32 height);
 static void SMI_DisplayVideo(ScrnInfoPtr pScrn, int id, int offset,
-        short width, short height, int pitch, int x1, int y1, int x2, int y2,
-        BoxPtr dstBox, short vid_w, short vid_h, short drw_w, short drw_h);
-static void SMI_DisplayVideo0501(ScrnInfoPtr pScrn, int id, int offset,
-        short width, short height, int pitch, int x1, int y1, int x2, int y2,
-        BoxPtr dstBox, short vid_w, short vid_h, short drw_w, short drw_h);
+		short width, short height, int pitch, int x1, int y1, int x2, int y2,
+		BoxPtr dstBox, short vid_w, short vid_h, short drw_w, short drw_h);
 static void SMI_DisplayVideo0730(ScrnInfoPtr pScrn, int id, int offset,
-        short width, short height, int pitch, int x1, int y1, int x2, int y2,
-        BoxPtr dstBox, short vid_w, short vid_h, short drw_w, short drw_h);
+		short width, short height, int pitch, int x1, int y1, int x2, int y2,
+		BoxPtr dstBox, short vid_w, short vid_h, short drw_w, short drw_h);
 static void SMI_BlockHandler(int i, pointer blockData, pointer pTimeout,
-        pointer pReadMask);
+		pointer pReadMask);
 #if 0
 static void SMI_WaitForSync(ScrnInfoPtr pScrn);
 #endif
@@ -134,16 +139,16 @@ static void SMI_WaitForSync(ScrnInfoPtr pScrn);
 
 static void SMI_InitOffscreenImages(ScreenPtr pScreen);
 static FBAreaPtr SMI_AllocateMemory(ScrnInfoPtr pScrn, FBAreaPtr area,
-        int numLines);
+		int numLines);
 
 static int SMI_AllocSurface(ScrnInfoPtr pScrn,
-        int id, unsigned short width, unsigned short height,
-        XF86SurfacePtr surface);
+		int id, unsigned short width, unsigned short height,
+		XF86SurfacePtr surface);
 static int SMI_FreeSurface(XF86SurfacePtr surface);
 static int SMI_DisplaySurface(XF86SurfacePtr surface,
-        short vid_x, short vid_y, short drw_x, short drw_y,
-        short vid_w, short vid_h, short drw_w, short drw_h,
-        RegionPtr clipBoxes);
+		short vid_x, short vid_y, short drw_x, short drw_y,
+		short vid_w, short vid_h, short drw_w, short drw_h,
+		RegionPtr clipBoxes);
 static int SMI_StopSurface(XF86SurfacePtr surface);
 static int SMI_GetSurfaceAttribute(ScrnInfoPtr pScrn, Atom attr, INT32 *value);
 static int SMI_SetSurfaceAttribute(ScrnInfoPtr pScrn, Atom attr, INT32 value);
@@ -153,6 +158,9 @@ static int SetAttrSAA7110(ScrnInfoPtr pScrn, int i, int value);
 static int SetAttrSAA7111(ScrnInfoPtr pScrn, int i, int value);
 static void SetKeyReg(SMIPtr pSmi, int reg, int value);
 
+#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,3,99,0,0)
+static Bool RegionsEqual(RegionPtr A, RegionPtr B);
+#endif
 /**
  * Atoms
  */
@@ -164,9 +172,9 @@ static Atom xvInterlaced;
 
 
 /******************************************************************************\
-**                                                                            **
+**																			  **
 **                           C A P A B I L I T I E S                          **
-**                                                                            **
+**																			  **
 \******************************************************************************/
 
 
@@ -231,9 +239,9 @@ static VideoNormDataRec VideoNorms[] =
 
 static XF86VideoFormatRec SMI_VideoFormats[] =
 {
-    { 15, TrueColor },                  /* depth, class             */
-    { 16, TrueColor },                  /* depth, class             */
-    { 24, TrueColor },                  /* depth, class             */
+	{ 15, TrueColor },					/* depth, class				*/
+	{ 16, TrueColor },					/* depth, class				*/
+	{ 24, TrueColor },					/* depth, class				*/
 };
 
 
@@ -274,135 +282,86 @@ static XF86AttributeRec SMI_VideoAttributes[2] = {
 /**************************************************************************/
 static XF86ImageRec SMI_VideoImages[] =
 {
-    XVIMAGE_YUY2,
-    XVIMAGE_YV12,
-    XVIMAGE_I420,
-    {
-        FOURCC_RV15,                    /* id                       */
-        XvRGB,                          /* type                     */
-        LSBFirst,                       /* byte_order               */
-        { 'R', 'V' ,'1', '5',
-          0x00, '5',  0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00 },     /* guid                     */
-        16,                             /* bits_per_pixel           */
-        XvPacked,                       /* format                   */
-        1,                              /* num_planes               */
-        15,                             /* depth                    */
-        0x001F, 0x03E0, 0x7C00,         /* red_mask, green, blue    */
-        0, 0, 0,                        /* y_sample_bits, u, v      */
-        0, 0, 0,                        /* horz_y_period, u, v      */
-        0, 0, 0,                        /* vert_y_period, u, v      */
-        { 'R', 'V', 'B' },              /* component_order          */
-        XvTopToBottom                   /* scaline_order            */
-    },
-    {
-        FOURCC_RV16,                    /* id                       */
-        XvRGB,                          /* type                     */
-        LSBFirst,                       /* byte_order               */
-        { 'R', 'V' ,'1', '6',
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00 },     /* guid                     */
-        16,                             /* bits_per_pixel           */
-        XvPacked,                       /* format                   */
-        1,                              /* num_planes               */
-        16,                             /* depth                    */
-        0x001F, 0x07E0, 0xF800,         /* red_mask, green, blue    */
-        0, 0, 0,                        /* y_sample_bits, u, v      */
-        0, 0, 0,                        /* horz_y_period, u, v      */
-        0, 0, 0,                        /* vert_y_period, u, v      */
-        { 'R', 'V', 'B' },              /* component_order          */
-        XvTopToBottom                   /* scaline_order            */
-    },
-    {
-        FOURCC_RV24,                    /* id                       */
-        XvRGB,                          /* type                     */
-        LSBFirst,                       /* byte_order               */
-        { 'R', 'V' ,'2', '4',
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00 },     /* guid                     */
-        24,                             /* bits_per_pixel           */
-        XvPacked,                       /* format                   */
-        1,                              /* num_planes               */
-        24,                             /* depth                    */
-        0x0000FF, 0x00FF00, 0xFF0000,   /* red_mask, green, blue    */
-        0, 0, 0,                        /* y_sample_bits, u, v      */
-        0, 0, 0,                        /* horz_y_period, u, v      */
-        0, 0, 0,                        /* vert_y_period, u, v      */
-        { 'R', 'V', 'B' },              /* component_order          */
-        XvTopToBottom                   /* scaline_order            */
-    },
-    {
-        FOURCC_RV32,                    /* id                       */
-        XvRGB,                          /* type                     */
-        LSBFirst,                       /* byte_order               */
-        { 'R', 'V' ,'3', '2',
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00 },     /* guid                     */
-        32,                             /* bits_per_pixel           */
-        XvPacked,                       /* format                   */
-        1,                              /* num_planes               */
-        24,                             /* depth                    */
-        0x0000FF, 0x00FF00, 0xFF0000,   /* red_mask, green, blue    */
-        0, 0, 0,                        /* y_sample_bits, u, v      */
-        0, 0, 0,                        /* horz_y_period, u, v      */
-        0, 0, 0,                        /* vert_y_period, u, v      */
-        { 'R', 'V', 'B' },              /* component_order          */
-        XvTopToBottom                   /* scaline_order            */
-    },
+	XVIMAGE_YUY2,
+	XVIMAGE_YV12,
+	XVIMAGE_I420,
+	{
+		FOURCC_RV15,					/* id						*/
+		XvRGB,							/* type						*/
+		LSBFirst,						/* byte_order				*/
+		{ 'R', 'V' ,'1', '5',
+		  0x00, '5',  0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00 },		/* guid						*/
+		16,								/* bits_per_pixel			*/
+		XvPacked,						/* format					*/
+		1,								/* num_planes				*/
+		15,								/* depth					*/
+		0x001F, 0x03E0, 0x7C00,			/* red_mask, green, blue	*/
+		0, 0, 0,						/* y_sample_bits, u, v		*/
+		0, 0, 0,						/* horz_y_period, u, v		*/
+		0, 0, 0,						/* vert_y_period, u, v		*/
+		{ 'R', 'V', 'B' },				/* component_order			*/
+		XvTopToBottom					/* scaline_order			*/
+	},
+	{
+		FOURCC_RV16,					/* id						*/
+		XvRGB,							/* type						*/
+		LSBFirst,						/* byte_order				*/
+		{ 'R', 'V' ,'1', '6',
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00 },		/* guid						*/
+		16,								/* bits_per_pixel			*/
+		XvPacked,						/* format					*/
+		1,								/* num_planes				*/
+		16,								/* depth					*/
+		0x001F, 0x07E0, 0xF800,			/* red_mask, green, blue	*/
+		0, 0, 0,						/* y_sample_bits, u, v		*/
+		0, 0, 0,						/* horz_y_period, u, v		*/
+		0, 0, 0,						/* vert_y_period, u, v		*/
+		{ 'R', 'V', 'B' },				/* component_order			*/
+		XvTopToBottom					/* scaline_order			*/
+	},
+	{
+		FOURCC_RV24,					/* id						*/
+		XvRGB,							/* type						*/
+		LSBFirst,						/* byte_order				*/
+		{ 'R', 'V' ,'2', '4',
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00 },		/* guid						*/
+		24,								/* bits_per_pixel			*/
+		XvPacked,						/* format					*/
+		1,								/* num_planes				*/
+		24,								/* depth					*/
+		0x0000FF, 0x00FF00, 0xFF0000,	/* red_mask, green, blue	*/
+		0, 0, 0,						/* y_sample_bits, u, v		*/
+		0, 0, 0,						/* horz_y_period, u, v		*/
+		0, 0, 0,						/* vert_y_period, u, v		*/
+		{ 'R', 'V', 'B' },				/* component_order			*/
+		XvTopToBottom					/* scaline_order			*/
+	},
+	{
+		FOURCC_RV32,					/* id						*/
+		XvRGB,							/* type						*/
+		LSBFirst,						/* byte_order				*/
+		{ 'R', 'V' ,'3', '2',
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00 },		/* guid						*/
+		32,								/* bits_per_pixel			*/
+		XvPacked,						/* format					*/
+		1,								/* num_planes				*/
+		24,								/* depth					*/
+		0x0000FF, 0x00FF00, 0xFF0000,	/* red_mask, green, blue	*/
+		0, 0, 0,						/* y_sample_bits, u, v		*/
+		0, 0, 0,						/* horz_y_period, u, v		*/
+		0, 0, 0,						/* vert_y_period, u, v		*/
+		{ 'R', 'V', 'B' },				/* component_order			*/
+		XvTopToBottom					/* scaline_order			*/
+	},
 };
-
-/**************************************************************************/
-static XF86ImageRec SMI501_VideoImages[] =
-{
-    XVIMAGE_YUY2,
-    XVIMAGE_YV12,
-    XVIMAGE_I420,
-    {
-        FOURCC_RV16,                    /* id                       */
-        XvRGB,                          /* type                     */
-        LSBFirst,                       /* byte_order               */
-        { 'R', 'V' ,'1', '6',
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00 },     /* guid                     */
-        16,                             /* bits_per_pixel           */
-        XvPacked,                       /* format                   */
-        1,                              /* num_planes               */
-        16,                             /* depth                    */
-        0x001F, 0x07E0, 0xF800,         /* red_mask, green, blue    */
-        0, 0, 0,                        /* y_sample_bits, u, v      */
-        0, 0, 0,                        /* horz_y_period, u, v      */
-        0, 0, 0,                        /* vert_y_period, u, v      */
-        { 'R', 'V', 'B' },              /* component_order          */
-        XvTopToBottom                   /* scaline_order            */
-    },
-    {
-        FOURCC_RV32,                    /* id                       */
-        XvRGB,                          /* type                     */
-        LSBFirst,                       /* byte_order               */
-        { 'R', 'V' ,'3', '2',
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00,
-          0x00, 0x00, 0x00, 0x00 },     /* guid                     */
-        32,                             /* bits_per_pixel           */
-        XvPacked,                       /* format                   */
-        1,                              /* num_planes               */
-        24,                             /* depth                    */
-        0x0000FF, 0x00FF00, 0xFF0000,   /* red_mask, green, blue    */
-        0, 0, 0,                        /* y_sample_bits, u, v      */
-        0, 0, 0,                        /* horz_y_period, u, v      */
-        0, 0, 0,                        /* vert_y_period, u, v      */
-        { 'R', 'V', 'B' },              /* component_order          */
-        XvTopToBottom                   /* scaline_order            */
-    },
-};
-
-
-
 
 
 /**************************************************************************/
@@ -442,7 +401,7 @@ static I2CByte SAA7111VideoStd[3][8] = {
 #if 0
 static I2CByte SAA7110InitData[] =
 {
-    /* Configuration */
+	/* Configuration */
     0x00, 0x4C, 0x01, 0x3C, 0x02, 0x00, 0x03, 0xEF,
     0x04, 0xBD, 0x05, 0xE2, 0x06, 0x00, 0x07, 0x00,
     0x08, 0xF8, 0x09, 0xF8, 0x0A, 0x60, 0x0B, 0x60,
@@ -456,10 +415,10 @@ static I2CByte SAA7110InitData[] =
     0x2E, 0x83, 0x2F, 0x03, 0x30, 0x40, 0x31, 0x35,
     0x32, 0x02, 0x33, 0x8C, 0x34, 0x03,
 
-    /* NTSC */
+	/* NTSC */
     0x11, 0x2B, 0x0F, 0xD9,
 
-    /* RCA input connector */
+	/* RCA input connector */
     0x06, 0x00, 0x0E, 0x18, 0x20, 0xD9, 0x21, 0x16,
     0x22, 0x40, 0x2C, 0x03,
 
@@ -469,9 +428,9 @@ static I2CByte SAA7110InitData[] =
 static I2CByte SAA7111InitData[] =
 {
     0x11, 0x1D, /* 0D D0=1: automatic colour killer off
-           D1=0: DMSD data to YUV output
-           D2=1: output enable H/V sync on
-           D3=1: output enable YUV data on */
+		   D1=0: DMSD data to YUV output
+		   D2=1: output enable H/V sync on
+		   D3=1: output enable YUV data on */
     0x02, 0xC0, /* Mode 0 */
     0x03, 0x23, /* automatic gain */
     0x04, 0x00, /*  */
@@ -479,23 +438,23 @@ static I2CByte SAA7111InitData[] =
     0x06, 108,  /* hor sync begin */
     0x07, 108,  /* hor sync stop */
     0x08, 0x88, /* sync control:
-           D1-0=00: VNOI = normal mode
-           D2=0: PLL closed
-           D3=1: VTR mode
-           D7=1: automatic field detection */
+		   D1-0=00: VNOI = normal mode
+		   D2=0: PLL closed
+		   D3=1: VTR mode
+		   D7=1: automatic field detection */
     0x09, 0x41, /* 4A luminance control */
     0x0A, 0x80, /* brightness = 128 (CCIR level) */
     0x0B, 0x40, /* contrast = 1.0 */
     0x0C, 0x40, /* crominance = 1.0 (CCIR level) */
     0x0D, 0x00, /* hue = 0 */
     0x0E, 0x01, /* chroma bandwidth = nominal
-           fast colour time constant = nominal
-           chrom comp filter on
-           colour standard PAL BGHI, NTSC M */
+		   fast colour time constant = nominal
+		   chrom comp filter on
+		   colour standard PAL BGHI, NTSC M */
     0x10, 0x48, /* luminance delay compensation = 0
-           VRLN = 1
-           fine pos of hs = 0
-           output format = YUV 422 */
+		   VRLN = 1
+		   fine pos of hs = 0
+		   output format = YUV 422 */
     0x12, 0x00, /* 20 D5=1: VPO in tristate */
     0x13, 0x00,
     0x15, 0x00,
@@ -505,13 +464,64 @@ static I2CByte SAA7111InitData[] =
 };
 
 
+/**************************************************************************/
+
+/* To allow this ddx to work on 4_3_0 and above, we need to include this */
+#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,3,99,0,0)
+static Bool
+RegionsEqual(
+	RegionPtr	A,
+	RegionPtr	B
+)
+{
+	int *dataA, *dataB;
+	int num;
+
+	ENTER_PROC("RegionsEqual");
+
+	num = REGION_NUM_RECTS(A);
+	if (num != REGION_NUM_RECTS(B))
+	{
+		LEAVE_PROC("RegionsEqual");
+		return(FALSE);
+	}
+
+	if (   (A->extents.x1 != B->extents.x1)
+		|| (A->extents.y1 != B->extents.y1)
+		|| (A->extents.x2 != B->extents.x2)
+		|| (A->extents.y2 != B->extents.y2)
+	)
+	{
+		LEAVE_PROC("RegionsEqual");
+		return(FALSE);
+	}
+
+	dataA = (int*) REGION_RECTS(A);
+	dataB = (int*) REGION_RECTS(B);
+
+	while (num--)
+	{
+		if ((dataA[0] != dataB[0]) || (dataA[1] != dataB[1]))
+		{
+			return(FALSE);
+		}
+		dataA += 2;
+		dataB += 2;
+	}
+
+	LEAVE_PROC("RegionsEqual");
+	return(TRUE);
+}
+#endif
+
+
 /**
  * generates XF86VideoEncoding[i] with video norm norm, video input format
  * input and video input channel channel
  */
 static int
 SMI_AddEncoding(XF86VideoEncodingPtr enc, int i,
-        int norm, int input, int channel)
+		int norm, int input, int channel)
 {
     char* norm_string;
     char* input_string;
@@ -523,12 +533,12 @@ SMI_AddEncoding(XF86VideoEncodingPtr enc, int i,
     input_string = VideoInputs[input].name;
     sprintf(channel_string, "%d", channel);
     enc[i].id     = i;
-    enc[i].name   = xalloc(strlen(norm_string) +
-               strlen(input_string) +
-               strlen(channel_string)+3);
+    enc[i].name   = xalloc(strlen(norm_string) + 
+			   strlen(input_string) + 
+			   strlen(channel_string)+3);
     if (NULL == enc[i].name) {
-    LEAVE_PROC("SMI_AddEncoding");
-    return -1;
+	LEAVE_PROC("SMI_AddEncoding");
+	return -1;
     }
     enc[i].width  = VideoNorms[norm].Wa;
     enc[i].height = VideoNorms[norm].Ha;
@@ -554,47 +564,47 @@ SMI_BuildEncodings(SMI_PortPtr p)
     /* allocate memory for encoding array */
     p->enc = xalloc(sizeof(XF86VideoEncodingRec) * N_ENCODINGS);
     if (NULL == p->enc)
-    goto fail;
+	goto fail;
     memset(p->enc,0,sizeof(XF86VideoEncodingRec) * N_ENCODINGS);
     /* allocate memory for video norm array */
     p->norm = xalloc(sizeof(int) * N_ENCODINGS);
     if (NULL == p->norm)
-    goto fail;
+	goto fail;
     memset(p->norm,0,sizeof(int) * N_ENCODINGS);
     /* allocate memory for video input format array */
     p->input = xalloc(sizeof(int) * N_ENCODINGS);
     if (NULL == p->input)
-    goto fail;
+	goto fail;
     memset(p->input,0,sizeof(int) * N_ENCODINGS);
     /* allocate memory for video channel number array */
     p->channel = xalloc(sizeof(int) * N_ENCODINGS);
     if (NULL == p->channel)
-    goto fail;
+	goto fail;
     memset(p->channel,0,sizeof(int) * N_ENCODINGS);
 
     /* fill arrays */
     p->nenc = 0;
     for (ch = 0; ch < N_COMPOSITE_CHANNELS; ch++) {
-    for (n = 0; n < N_VIDEO_NORMS; n++) {
-        SMI_AddEncoding(p->enc, p->nenc, n, COMPOSITE, ch);
-        p->norm[p->nenc]  = n;
-        p->input[p->nenc] = COMPOSITE;
-        p->channel[p->nenc] = ch;
-        p->nenc++;
-    }
+	for (n = 0; n < N_VIDEO_NORMS; n++) {
+	    SMI_AddEncoding(p->enc, p->nenc, n, COMPOSITE, ch);
+	    p->norm[p->nenc]  = n;
+	    p->input[p->nenc] = COMPOSITE;
+	    p->channel[p->nenc] = ch;
+	    p->nenc++;
+	}
     }
     for (ch = 0; ch < N_SVIDEO_CHANNELS; ch++) {
-    for (n = 0; n < N_VIDEO_NORMS; n++) {
-        SMI_AddEncoding(p->enc, p->nenc, n, SVIDEO, ch);
-        p->norm[p->nenc]  = n;
-        p->input[p->nenc] = SVIDEO;
-        p->channel[p->nenc] = ch;
-        p->nenc++;
-    }
+	for (n = 0; n < N_VIDEO_NORMS; n++) {
+	    SMI_AddEncoding(p->enc, p->nenc, n, SVIDEO, ch);
+	    p->norm[p->nenc]  = n;
+	    p->input[p->nenc] = SVIDEO;
+	    p->channel[p->nenc] = ch;
+	    p->nenc++;
+	}
     }
     LEAVE_PROC("SMI_BuildEncodings");
     return;
-
+    
  fail:
     if (p->input) xfree(p->input);
     p->input = NULL;
@@ -628,12 +638,12 @@ SMI_InitVideo(ScreenPtr pScreen)
 
     numAdaptors = xf86XVListGenericAdaptors(pScrn, &ptrAdaptors);
 
-    DEBUG((VERBLEV, "numAdaptors=%d\n", numAdaptors));
+    DEBUGX((VERBLEV, "numAdaptors=%d\n", numAdaptors));
 
     if (psmi->rotate == 0)
     {
         newAdaptor = SMI_SetupVideo(pScreen);
-        DEBUG((VERBLEV, "newAdaptor=%p\n", newAdaptor));
+        DEBUGX((VERBLEV, "newAdaptor=%p\n", newAdaptor));
         SMI_InitOffscreenImages(pScreen);
     }
 
@@ -660,7 +670,7 @@ SMI_InitVideo(ScreenPtr pScreen)
 
     if (numAdaptors != 0)
     {
-      DEBUG((VERBLEV, "ScreenInit %i\n",numAdaptors));
+      DEBUGX((VERBLEV, "ScreenInit %i\n",numAdaptors));
         xf86XVScreenInit(pScreen, ptrAdaptors, numAdaptors);
     }
 
@@ -687,7 +697,7 @@ static int
 Scale(int i, int value, int min, int max)
 {
     return min + (value - SMI_VideoAttributes[i].min_value) * (max - min) /
-    (SMI_VideoAttributes[i].max_value - SMI_VideoAttributes[i].min_value);
+	(SMI_VideoAttributes[i].max_value - SMI_VideoAttributes[i].min_value);
 }
 #endif
 /**
@@ -700,24 +710,24 @@ SetAttr(ScrnInfoPtr pScrn, int i, int value)
     SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
 
     if (i < XV_ENCODING || i > XV_HUE)
-    return BadMatch;
-
+	return BadMatch;
+    
     /* clamps value to attribute range */
     value = CLAMP(value, SMI_VideoAttributes[i].min_value,
-          SMI_VideoAttributes[i].max_value);
+		  SMI_VideoAttributes[i].max_value);
 
     if (i == XV_BRIGHTNESS) {
-    int my_value = (value <= 128? value + 128 : value - 128);
-    SetKeyReg(pSmi, 0x5C, 0xEDEDED | (my_value << 24));
+	int my_value = (value <= 128? value + 128 : value - 128);
+	SetKeyReg(pSmi, 0x5C, 0xEDEDED | (my_value << 24));
     } else if (pPort->I2CDev.SlaveAddr == SAA7110) {
-    return SetAttrSAA7110(pScrn, i, value);
+	return SetAttrSAA7110(pScrn, i, value);
     }
     else if (pPort->I2CDev.SlaveAddr == SAA7111) {
-    return SetAttrSAA7111(pScrn, i, value);
+	return SetAttrSAA7111(pScrn, i, value);
     }
 #if 0
     else {
-    return XvBadAlloc;
+	return XvBadAlloc;
     }
 #endif
 
@@ -747,82 +757,82 @@ SetAttrSAA7111(ScrnInfoPtr pScrn, int i, int value)
     SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
 
     if (i == XV_ENCODING) {
-    int norm;
-    int input;
-    int channel;
-    norm = pPort->norm[value];
-    input = pPort->input[value];
-    channel = pPort->channel[value];
+	int norm;
+	int input;
+	int channel;
+	norm = pPort->norm[value];
+	input = pPort->input[value];
+	channel = pPort->channel[value];
 
-    DEBUG((VERBLEV, "SetAttribute XV_ENCODING: %d. norm=%d input=%d channel=%d\n",
-           value, norm, input, channel));
+	DEBUGX((VERBLEV, "SetAttribute XV_ENCODING: %d. norm=%d input=%d channel=%d\n",
+	       value, norm, input, channel));
 
-    /* set video norm */
-    if (!xf86I2CWriteVec(&(pPort->I2CDev), SAA7111VideoStd[norm],
-                 ENTRIES(SAA7111VideoStd[norm]) / 2)) {
-        return XvBadAlloc;
-    }
-    /* set video input format and channel */
-    if (input == COMPOSITE) {
-        if (!xf86I2CWriteVec(&(pPort->I2CDev),
-                 SAA7111CompositeChannelSelect[channel],
-                 ENTRIES(SAA7111CompositeChannelSelect[channel]) / 2)) {
-        return XvBadAlloc;
-        }
-    }
-    else {
-        if (!xf86I2CWriteVec(&(pPort->I2CDev),
-                 SAA7111SVideoChannelSelect[channel],
-                 ENTRIES(SAA7111SVideoChannelSelect[channel]) / 2)) {
-        return XvBadAlloc;
-        }
-    }
+	/* set video norm */
+	if (!xf86I2CWriteVec(&(pPort->I2CDev), SAA7111VideoStd[norm],
+			     ENTRIES(SAA7111VideoStd[norm]) / 2)) {
+	    return XvBadAlloc;
+	}
+	/* set video input format and channel */
+	if (input == COMPOSITE) {
+	    if (!xf86I2CWriteVec(&(pPort->I2CDev),
+				 SAA7111CompositeChannelSelect[channel],
+				 ENTRIES(SAA7111CompositeChannelSelect[channel]) / 2)) {
+		return XvBadAlloc;
+	    }
+	}
+	else {
+	    if (!xf86I2CWriteVec(&(pPort->I2CDev),
+				 SAA7111SVideoChannelSelect[channel],
+				 ENTRIES(SAA7111SVideoChannelSelect[channel]) / 2)) {
+		return XvBadAlloc;
+	    }
+	}
     }
     else if (i >= XV_CAPTURE_BRIGHTNESS && i <= XV_HUE) {
-    int slave_adr = 0;
+	int slave_adr = 0;
 
-    switch (i) {
+	switch (i) {
 
-    case XV_CAPTURE_BRIGHTNESS:
-        DEBUG((VERBLEV, "SetAttribute XV_BRIGHTNESS: %d\n", value));
-        slave_adr = 0x0a;
-        break;
+	case XV_CAPTURE_BRIGHTNESS:
+	    DEBUGX((VERBLEV, "SetAttribute XV_BRIGHTNESS: %d\n", value));
+	    slave_adr = 0x0a;
+	    break;
+		
+	case XV_CONTRAST:
+	    DEBUGX((VERBLEV, "SetAttribute XV_CONTRAST: %d\n", value));
+	    slave_adr = 0x0b;
+	    break;
 
-    case XV_CONTRAST:
-        DEBUG((VERBLEV, "SetAttribute XV_CONTRAST: %d\n", value));
-        slave_adr = 0x0b;
-        break;
+	case XV_SATURATION:
+	    DEBUGX((VERBLEV, "SetAttribute XV_SATURATION: %d\n", value));
+	    slave_adr = 0x0c;
+	    break;
 
-    case XV_SATURATION:
-        DEBUG((VERBLEV, "SetAttribute XV_SATURATION: %d\n", value));
-        slave_adr = 0x0c;
-        break;
+	case XV_HUE:
+	    DEBUGX((VERBLEV, "SetAttribute XV_HUE: %d\n", value));
+	    slave_adr = 0x0d;
+	    break;
 
-    case XV_HUE:
-        DEBUG((VERBLEV, "SetAttribute XV_HUE: %d\n", value));
-        slave_adr = 0x0d;
-        break;
-
-    default:
-        return XvBadAlloc;
-    }
-    if (!xf86I2CWriteByte(&(pPort->I2CDev), slave_adr, (value & 0xff)))
-        return XvBadAlloc;
+	default:
+	    return XvBadAlloc;
+	}
+	if (!xf86I2CWriteByte(&(pPort->I2CDev), slave_adr, (value & 0xff)))
+	    return XvBadAlloc;
     }
     else {
-    return BadMatch;
+	return BadMatch;
     }
 
     /* debug: show registers */
     {
-    I2CByte i2c_bytes[32];
-    int i;
-    xf86I2CReadBytes(&(pPort->I2CDev), 0, i2c_bytes, 32);
-    DEBUG((VERBLEV, "SAA7111 Registers\n"));
-    for (i=0; i<32; i++) {
-        DEBUG((VERBLEV, "%02X=%02X ", i, i2c_bytes[i]));
-        if ((i&7) == 7) DEBUG((VERBLEV, "\n"));
-    }
+	I2CByte i2c_bytes[32];
+	int i;
+	xf86I2CReadBytes(&(pPort->I2CDev), 0, i2c_bytes, 32);
+	DEBUGX((VERBLEV, "SAA7111 Registers\n"));
+	for (i=0; i<32; i++) {
+	    DEBUGX((VERBLEV, "%02X=%02X ", i, i2c_bytes[i]));
+	    if ((i&7) == 7) DEBUGX((VERBLEV, "\n"));
+	}
     }
 
     return Success;
@@ -830,45 +840,45 @@ SetAttrSAA7111(ScrnInfoPtr pScrn, int i, int value)
 
 
 /******************************************************************************\
-**                                                                            **
-**                       V I D E O   M A N A G E M E N T                      **
-**                                                                            **
+**																			  **
+**						 V I D E O   M A N A G E M E N T					  **
+**																			  **
 \******************************************************************************/
 
 static XF86VideoAdaptorPtr
 SMI_SetupVideo(
-    ScreenPtr   pScreen
+	ScreenPtr	pScreen
 )
 {
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-    SMIPtr pSmi = SMIPTR(pScrn);
-    SMI_PortPtr smiPortPtr;
-    XF86VideoAdaptorPtr ptrAdaptor;
+	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+	SMIPtr pSmi = SMIPTR(pScrn);
+	SMI_PortPtr smiPortPtr;
+	XF86VideoAdaptorPtr ptrAdaptor;
 
-    ENTER_PROC("SMI_SetupVideo");
+	ENTER_PROC("SMI_SetupVideo");
 
-    ptrAdaptor = xcalloc(1, sizeof(XF86VideoAdaptorRec) +
-            sizeof(DevUnion) + sizeof(SMI_PortRec));
-    if (ptrAdaptor == NULL)
-    {
-        LEAVE_PROC("SMI_SetupVideo");
-        return(NULL);
-    }
+	ptrAdaptor = xcalloc(1, sizeof(XF86VideoAdaptorRec) +
+			sizeof(DevUnion) + sizeof(SMI_PortRec));
+	if (ptrAdaptor == NULL)
+	{
+		LEAVE_PROC("SMI_SetupVideo");
+		return(NULL);
+	}
 
-    ptrAdaptor->type = XvInputMask
+	ptrAdaptor->type = XvInputMask
 #if SMI_USE_CAPTURE
-                     | XvOutputMask
-                     | XvVideoMask
+					 | XvOutputMask
+					 | XvVideoMask
 #endif
-                     | XvImageMask
-                     | XvWindowMask
-                     ;
+					 | XvImageMask
+					 | XvWindowMask
+					 ;
 
-    ptrAdaptor->flags = VIDEO_OVERLAID_IMAGES
-                      | VIDEO_CLIP_TO_VIEWPORT
-                      ;
+	ptrAdaptor->flags = VIDEO_OVERLAID_IMAGES
+					  | VIDEO_CLIP_TO_VIEWPORT
+					  ;
 
-    ptrAdaptor->name = "Silicon Motion Lynx Series Video Engine";
+	ptrAdaptor->name = "Silicon Motion Lynx Series Video Engine";
 
     ptrAdaptor->nPorts = 1;
     ptrAdaptor->pPortPrivates = (DevUnion*) &ptrAdaptor[1];
@@ -881,54 +891,46 @@ SMI_SetupVideo(
     ptrAdaptor->pEncodings = smiPortPtr->enc;
 #if 0
     /* aaa whats this? */
-    for (i = 0; i < nElems(SMI_VideoEncodings); i++)
-    {
-        SMI_VideoEncodings[i].width = pSmi->lcdWidth;
-        SMI_VideoEncodings[i].height = pSmi->lcdHeight;
-    }
+	for (i = 0; i < nElems(SMI_VideoEncodings); i++)
+	{
+		SMI_VideoEncodings[i].width = pSmi->lcdWidth;
+		SMI_VideoEncodings[i].height = pSmi->lcdHeight;
+	}
 #endif
 
-    ptrAdaptor->nFormats = nElems(SMI_VideoFormats);
-    ptrAdaptor->pFormats = SMI_VideoFormats;
+	ptrAdaptor->nFormats = nElems(SMI_VideoFormats);
+	ptrAdaptor->pFormats = SMI_VideoFormats;
 
-    ptrAdaptor->nAttributes = nElems(SMI_VideoAttributes);
-    ptrAdaptor->pAttributes = SMI_VideoAttributes;
+	ptrAdaptor->nAttributes = nElems(SMI_VideoAttributes);
+	ptrAdaptor->pAttributes = SMI_VideoAttributes;
 
-    if (pSmi->Chipset != SMI_MSOC)
-    {
-    ptrAdaptor->nImages = nElems(SMI_VideoImages);
-    ptrAdaptor->pImages = SMI_VideoImages;
-    }
-    else
-    {
-        ptrAdaptor->nImages = nElems(SMI501_VideoImages);
-        ptrAdaptor->pImages = SMI501_VideoImages;
-    }
+	ptrAdaptor->nImages = nElems(SMI_VideoImages);
+	ptrAdaptor->pImages = SMI_VideoImages;
 
 #if SMI_USE_CAPTURE
-    if ((pSmi->Chipset == SMI_COUGAR3DR) || (pSmi->Chipset == SMI_MSOC))
-        ptrAdaptor->PutVideo = NULL;
-    else
-        ptrAdaptor->PutVideo = SMI_PutVideo;
-    ptrAdaptor->PutStill = NULL;
+	if (pSmi->Chipset == SMI_COUGAR3DR)
+		ptrAdaptor->PutVideo = NULL;
+	else
+		ptrAdaptor->PutVideo = SMI_PutVideo;
+	ptrAdaptor->PutStill = NULL;
     ptrAdaptor->GetVideo = NULL;
-    ptrAdaptor->GetStill = NULL;
+	ptrAdaptor->GetStill = NULL;
 #else
-    ptrAdaptor->PutVideo = NULL;
-    ptrAdaptor->PutStill = NULL;
-    ptrAdaptor->GetVideo = NULL;
-    ptrAdaptor->GetStill = NULL;
+	ptrAdaptor->PutVideo = NULL;
+	ptrAdaptor->PutStill = NULL;
+	ptrAdaptor->GetVideo = NULL;
+	ptrAdaptor->GetStill = NULL;
 #endif
-    ptrAdaptor->StopVideo = SMI_StopVideo;
-    ptrAdaptor->SetPortAttribute = SMI_SetPortAttribute;
-    ptrAdaptor->GetPortAttribute = SMI_GetPortAttribute;
-    ptrAdaptor->QueryBestSize = SMI_QueryBestSize;
-    ptrAdaptor->PutImage = SMI_PutImage;
-    ptrAdaptor->QueryImageAttributes = SMI_QueryImageAttributes;
+	ptrAdaptor->StopVideo = SMI_StopVideo;
+	ptrAdaptor->SetPortAttribute = SMI_SetPortAttribute;
+	ptrAdaptor->GetPortAttribute = SMI_GetPortAttribute;
+	ptrAdaptor->QueryBestSize = SMI_QueryBestSize;
+	ptrAdaptor->PutImage = SMI_PutImage;
+	ptrAdaptor->QueryImageAttributes = SMI_QueryImageAttributes;
 
     smiPortPtr->Attribute[XV_COLORKEY] = pSmi->videoKey;
     smiPortPtr->Attribute[XV_INTERLACED] = pSmi->interlaced;
-    smiPortPtr->videoStatus = 0;
+	smiPortPtr->videoStatus = 0;
 
 #if 0
     /* aaa does not work ? */
@@ -937,47 +939,48 @@ SMI_SetupVideo(
         LEAVE_PROC("SMI_SetupVideo");
         return(NULL);
     }
-    DEBUG((VERBLEV, "SAA7111 detected\n"));
+    DEBUGX((VERBLEV, "SAA7111 detected\n"));
 #endif
 
     smiPortPtr->I2CDev.DevName = "SAA 7111A";
     smiPortPtr->I2CDev.SlaveAddr = SAA7111;
     smiPortPtr->I2CDev.pI2CBus = pSmi->I2C;
 
-    if ((pSmi->Chipset != SMI_MSOC) && (xf86I2CDevInit(&(smiPortPtr->I2CDev))))
+    
+    if (xf86I2CDevInit(&(smiPortPtr->I2CDev)))
     {
-
-    if (xf86I2CWriteVec(&(smiPortPtr->I2CDev),  SAA7111InitData,
-                ENTRIES(SAA7111InitData) / 2)) {
-        xvEncoding   = MAKE_ATOM(XV_ENCODING_NAME);
-        xvHue        = MAKE_ATOM(XV_HUE_NAME);
-        xvSaturation = MAKE_ATOM(XV_SATURATION_NAME);
-        xvContrast   = MAKE_ATOM(XV_CONTRAST_NAME);
-
-        xvInterlaced = MAKE_ATOM(XV_INTERLACED_NAME);
-        DEBUG((VERBLEV, "SAA7111 intialized\n"));
-
-    } else {
-        xf86DestroyI2CDevRec(&(smiPortPtr->I2CDev),FALSE);
-        smiPortPtr->I2CDev.SlaveAddr = 0;
-    }
+	
+	if (xf86I2CWriteVec(&(smiPortPtr->I2CDev), 	SAA7111InitData, 
+			    ENTRIES(SAA7111InitData) / 2)) {
+	    xvEncoding   = MAKE_ATOM(XV_ENCODING_NAME);
+	    xvHue        = MAKE_ATOM(XV_HUE_NAME);
+	    xvSaturation = MAKE_ATOM(XV_SATURATION_NAME);
+	    xvContrast   = MAKE_ATOM(XV_CONTRAST_NAME);
+	    
+	    xvInterlaced = MAKE_ATOM(XV_INTERLACED_NAME);
+	    DEBUGX((VERBLEV, "SAA7111 intialized\n"));
+    
+	} else { 
+	    xf86DestroyI2CDevRec(&(smiPortPtr->I2CDev),FALSE);
+	    smiPortPtr->I2CDev.SlaveAddr = 0;
+	}
     } else
-    smiPortPtr->I2CDev.SlaveAddr = 0;
-
+	smiPortPtr->I2CDev.SlaveAddr = 0;
+	
 #if defined(REGION_NULL)
     REGION_NULL(pScreen, &smiPortPtr->clip);
 #else
     REGION_INIT(pScreen, &smiPortPtr->clip, NullBox, 0);
 #endif
-
+    
     pSmi->ptrAdaptor = ptrAdaptor;
     pSmi->BlockHandler = pScreen->BlockHandler;
     pScreen->BlockHandler = SMI_BlockHandler;
-
+    
     xvColorKey   = MAKE_ATOM(XV_COLORKEY_NAME);
     xvBrightness = MAKE_ATOM(XV_BRIGHTNESS_NAME);
     xvCapBrightness = MAKE_ATOM(XV_CAPTURE_BRIGHTNESS_NAME);
-
+    
     SMI_ResetVideo(pScrn);
     LEAVE_PROC("SMI_SetupVideo");
     return(ptrAdaptor);
@@ -986,14 +989,14 @@ SMI_SetupVideo(
 
 static void
 SMI_ResetVideo(
-    ScrnInfoPtr pScrn
+	ScrnInfoPtr	pScrn
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMIPtr pSmi = SMIPTR(pScrn);
     SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
-    int r, g, b;
+	int r, g, b;
 
-    ENTER_PROC("SMI_ResetVideo");
+	ENTER_PROC("SMI_ResetVideo");
 
     SetAttr(pScrn, XV_ENCODING, 0);     /* Encoding = pal-composite-0 */
     SetAttr(pScrn, XV_BRIGHTNESS, 128); /* Brightness = 128 (CCIR level) */
@@ -1002,68 +1005,68 @@ SMI_ResetVideo(
     SetAttr(pScrn, XV_SATURATION, 64);  /* Color saturation = 64 (CCIR level) */
     SetAttr(pScrn, XV_HUE, 0);          /* Hue = 0 */
 
-    switch (pScrn->depth)
-    {
-        case 8:
+	switch (pScrn->depth)
+	{
+		case 8:
             SetKeyReg(pSmi, FPR04, pPort->Attribute[XV_COLORKEY] & 0x00FF);
-            SetKeyReg(pSmi, FPR08, 0);
-            break;
+			SetKeyReg(pSmi, FPR08, 0);
+			break;
 
-        case 15:
-        case 16:
-            SetKeyReg(pSmi, FPR04, pPort->Attribute[XV_COLORKEY] & 0xFFFF);
-            SetKeyReg(pSmi, FPR08, 0);
-            break;
+		case 15:
+		case 16:
+			SetKeyReg(pSmi, FPR04, pPort->Attribute[XV_COLORKEY] & 0xFFFF);
+			SetKeyReg(pSmi, FPR08, 0);
+			break;
 
-        default:
+		default:
             r = (pPort->Attribute[XV_COLORKEY] & pScrn->mask.red) >> pScrn->offset.red;
             g = (pPort->Attribute[XV_COLORKEY] & pScrn->mask.green) >> pScrn->offset.green;
             b = (pPort->Attribute[XV_COLORKEY] & pScrn->mask.blue) >> pScrn->offset.blue;
-            SetKeyReg(pSmi, FPR04, ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3));
-            SetKeyReg(pSmi, FPR08, 0);
-            break;
-    }
+			SetKeyReg(pSmi, FPR04, ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3));
+			SetKeyReg(pSmi, FPR08, 0);
+			break;
+	}
 
-    SetKeyReg(pSmi, FPR5C, 0xEDEDED | (pPort->Attribute[XV_BRIGHTNESS] << 24));
+	SetKeyReg(pSmi, FPR5C, 0xEDEDED | (pPort->Attribute[XV_BRIGHTNESS] << 24));
 
-    LEAVE_PROC("SMI_ResetVideo");
+	LEAVE_PROC("SMI_ResetVideo");
 }
 
 
 #if SMI_USE_CAPTURE
 static int
 SMI_PutVideo(
-    ScrnInfoPtr pScrn,
-    short       vid_x,
-    short       vid_y,
-    short       drw_x,
-    short       drw_y,
-    short       vid_w,
-    short       vid_h,
-    short       drw_w,
-    short       drw_h,
-    RegionPtr   clipBoxes,
-    pointer     data
+	ScrnInfoPtr	pScrn,
+	short		vid_x,
+	short		vid_y,
+	short		drw_x,
+	short		drw_y,
+	short		vid_w,
+	short		vid_h,
+	short		drw_w,
+	short		drw_h,
+	RegionPtr	clipBoxes,
+	pointer		data
 )
 {
     SMI_PortPtr pPort = (SMI_PortPtr) data;
-    SMIPtr pSmi = SMIPTR(pScrn);
-    CARD32 vid_pitch, vid_address;
-    CARD32 vpr00, cpr00;
-    int xscale, yscale;
-    BoxRec dstBox;
-    INT32 x1, y1, x2, y2;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	CARD32 vid_pitch, vid_address;
+	CARD32 vpr00, cpr00;
+	int xscale, yscale;
+	BoxRec dstBox;
+	INT32 x1, y1, x2, y2;
     int norm;
-    int areaHeight, width, height, fbPitch;
-    int top, left;
+	int areaHeight, width, height, fbPitch;
+	int top, left;
 
     ENTER_PROC("SMI_PutVideo");
 
-    DEBUG((VERBLEV, "Interlaced Video %d\n", pPort->Attribute[XV_INTERLACED]));
+    DEBUGX((VERBLEV, "Interlaced Video %d\n", pPort->Attribute[XV_INTERLACED]));
 
     if (!pPort->Attribute[XV_INTERLACED]) {
-    /* no interlace: lines will be doubled */
-    vid_h /= 2;
+	/* no interlace: lines will be doubled */
+	vid_h /= 2;
     }
 
     /* field start aaa*/
@@ -1073,46 +1076,46 @@ SMI_PutVideo(
     /* only even values allowed (UV-phase) */
     vid_x &= ~1;
 
-    DEBUG((VERBLEV, "vid_x=%d vid_y=%d drw_x=%d drw_y=%d  "
-       "vid_w=%d vid_h=%d drw_w=%d drw_h=%d\n",
-       vid_x, vid_y, drw_x, drw_y, vid_w, vid_h, drw_w, drw_h));
+    DEBUGX((VERBLEV, "vid_x=%d vid_y=%d drw_x=%d drw_y=%d  "
+	   "vid_w=%d vid_h=%d drw_w=%d drw_h=%d\n",
+	   vid_x, vid_y, drw_x, drw_y, vid_w, vid_h, drw_w, drw_h));
 
-    x1 = vid_x;
-    y1 = vid_y;
-    x2 = vid_x + vid_w;
-    y2 = vid_y + vid_h;
+	x1 = vid_x;
+	y1 = vid_y;
+	x2 = vid_x + vid_w;
+	y2 = vid_y + vid_h;
 
-    width = vid_w;
-    height = vid_h;
+	width = vid_w;
+	height = vid_h;
 
-    dstBox.x1 = drw_x;
-    dstBox.y1 = drw_y;
-    dstBox.x2 = drw_x + drw_w;
-    dstBox.y2 = drw_y + drw_h;
+	dstBox.x1 = drw_x;
+	dstBox.y1 = drw_y;
+	dstBox.x2 = drw_x + drw_w;
+	dstBox.y2 = drw_y + drw_h;
 
 #if 1
-    if (!SMI_ClipVideo(pScrn, &dstBox, &x1, &y1, &x2, &y2, clipBoxes, width,
-            height))
+	if (!SMI_ClipVideo(pScrn, &dstBox, &x1, &y1, &x2, &y2, clipBoxes, width,
+			height))
 #else
     if (!xf86XVClipVideoHelper(&dstBox, &x1, &y1, &x2, &y2, clipBoxes, width,
             height))
 #endif
-    {
+	{
         LEAVE_PROC("SMI_PutVideo");
-        return(Success);
-    }
+		return(Success);
+	}
 
-    DEBUG((VERBLEV, "Clip: x1=%d y1=%d x2=%d y2=%d\n",  x1 >> 16, y1 >> 16, x2 >> 16, y2 >> 16));
+    DEBUGX((VERBLEV, "Clip: x1=%d y1=%d x2=%d y2=%d\n",  x1 >> 16, y1 >> 16, x2 >> 16, y2 >> 16));
 
-    dstBox.x1 -= pScrn->frameX0;
-    dstBox.y1 -= pScrn->frameY0;
-    dstBox.x2 -= pScrn->frameX0;
-    dstBox.y2 -= pScrn->frameY0;
+	dstBox.x1 -= pScrn->frameX0;
+	dstBox.y1 -= pScrn->frameY0;
+	dstBox.x2 -= pScrn->frameX0;
+	dstBox.y2 -= pScrn->frameY0;
 
-    vid_pitch = (vid_w * 2 + 7) & ~7;
+	vid_pitch = (vid_w * 2 + 7) & ~7;
 
-    vpr00 = READ_VPR(pSmi, 0x00) & ~0x0FF000FF;
-    cpr00 = READ_CPR(pSmi, 0x00) & ~0x000FFF00;
+	vpr00 = READ_VPR(pSmi, 0x00) & ~0x0FF000FF;
+	cpr00 = READ_CPR(pSmi, 0x00) & ~0x000FFF00;
 
     /* vpr00:
        Bit 2..0   = 6: Video Window I Format                    = YUV4:2:2
@@ -1127,26 +1130,26 @@ SMI_PutVideo(
        Bit 21     = 0: Vertical Interpolation                   = s. below
        Bit 22     = 0: Flicker Reduction for TV Modes           = disabled
        Bit 23     = 0: Fixed Vertical Interpolation             = disabled
-       Bit 24     = 1: Select Video Window I Source Addr        =
+       Bit 24     = 1: Select Video Window I Source Addr        = 
        Bit 25     = 0: Enable V0FIFO to fetch 8-Bit color data  = disabled
        Bit 26     = 0:
        Bit 27     = 1: Color Key for Window II                  = disabled
        Bit 31..28 = reserved
     */
     if (pPort->Attribute[XV_INTERLACED]) {
-    /*
-      Bit 21     = 0: Vertical Interpolation                   = disabled
-      Bit 24     = 0: Select Video Window I Source Addr        = 0
-    */
-    vpr00 |= 0x0010000E;
+	/*
+	  Bit 21     = 0: Vertical Interpolation                   = disabled
+	  Bit 24     = 0: Select Video Window I Source Addr        = 0
+	*/
+	vpr00 |= 0x0010000E;
     }
     else {
-    /*
-      Bit 21     = 10: Vertical Interpolation                   = enabled
-      Bit 24     = 1: Select Video Window I Source Addr        = 1
-      1= Video window I source addr = capture port buffer ?
-    */
-    vpr00 |= 0x0130000E;
+	/*
+	  Bit 21     = 10: Vertical Interpolation                   = enabled
+	  Bit 24     = 1: Select Video Window I Source Addr        = 1
+	  1= Video window I source addr = capture port buffer ?
+	*/
+	vpr00 |= 0x0130000E;
     }
 
     /* cpr00:
@@ -1164,327 +1167,327 @@ SMI_PutVideo(
        Bit 24     = 1: Field Detection Method VSYNC edge        = rising
     */
     if (pPort->Attribute[XV_INTERLACED]) {
-    /*
-      Bit 9      = 1: Double Buffer Enable                  = enabled
-      Bit 10     = 1: Interlace Data Capture                = enabled
-      Bit 13..11 = 0: Frame Skip Enable                     = no skip
-    */
-    cpr00 |= 0x01000601;
+	/*
+	  Bit 9      = 1: Double Buffer Enable                  = enabled
+	  Bit 10     = 1: Interlace Data Capture                = enabled
+	  Bit 13..11 = 0: Frame Skip Enable                     = no skip
+	*/
+	cpr00 |= 0x01000601;
     }
     else {
-    /*
-      Bit 9      = 0: Double Buffer Enable                  = disabled
-      Bit 10     = 0: Interlace Data Capture                = disabled
-      Bit 13..11 = 010: Frame Skip Enable                   = skip every other frame
-    */
-    cpr00 |= 0x01000801;
+	/*
+	  Bit 9      = 0: Double Buffer Enable                  = disabled
+	  Bit 10     = 0: Interlace Data Capture                = disabled
+	  Bit 13..11 = 010: Frame Skip Enable                   = skip every other frame
+	*/
+	cpr00 |= 0x01000801;
     }
 
-    if (pSmi->ByteSwap)
-        cpr00 |= 0x00004000;
+	if (pSmi->ByteSwap)
+		cpr00 |= 0x00004000;
 
-    fbPitch = pSmi->Stride;
-    if (pSmi->Bpp != 3)
-    {
-        fbPitch *= pSmi->Bpp;
-    }
+	fbPitch = pSmi->Stride;
+	if (pSmi->Bpp != 3)
+	{
+		fbPitch *= pSmi->Bpp;
+	}
 
-    if (vid_w <= drw_w)
-    {
-        xscale = (256 * vid_w / drw_w) & 0xFF;
-    }
-    else if (vid_w / 2 <= drw_w)
-    {
-        xscale = (128 * vid_w / drw_w) & 0xFF;
-        width /= 2;
-        vid_pitch /= 2;
-        cpr00 |= 0x00010000;
-    }
-    else if (vid_w / 4 <= drw_w)
-    {
-        xscale = (64 * vid_w / drw_w) & 0xFF;
-        width /= 4;
-        vid_pitch /= 4;
-        cpr00 |= 0x00020000;
-    }
-    else
-    {
-        xscale = 0;
-        width /= 4;
-        vid_pitch /= 4;
-        cpr00 |= 0x00020000;
-    }
+	if (vid_w <= drw_w)
+	{
+		xscale = (256 * vid_w / drw_w) & 0xFF;
+	}
+	else if (vid_w / 2 <= drw_w)
+	{
+		xscale = (128 * vid_w / drw_w) & 0xFF;
+		width /= 2;
+		vid_pitch /= 2;
+		cpr00 |= 0x00010000;
+	}
+	else if (vid_w / 4 <= drw_w)
+	{
+		xscale = (64 * vid_w / drw_w) & 0xFF;
+		width /= 4;
+		vid_pitch /= 4;
+		cpr00 |= 0x00020000;
+	}
+	else
+	{
+		xscale = 0;
+		width /= 4;
+		vid_pitch /= 4;
+		cpr00 |= 0x00020000;
+	}
 
-    if (vid_h <= drw_h)
-    {
-        yscale = (256 * vid_h / drw_h) & 0xFF;
-    }
-    else if (vid_h / 2 <= drw_h)
-    {
-        yscale = (128 * vid_h / drw_h) & 0xFF;
-        height /= 2;
-        cpr00 |= 0x00040000;
-    }
-    else if (vid_h / 4 <= drw_h)
-    {
-        yscale = (64 * vid_h / drw_h) & 0xFF;
-        height /= 4;
-        cpr00 |= 0x00080000;
-    }
-    else
-    {
-        yscale = 0;
-        height /= 4;
-        cpr00 |= 0x00080000;
-    }
+	if (vid_h <= drw_h)
+	{
+		yscale = (256 * vid_h / drw_h) & 0xFF;
+	}
+	else if (vid_h / 2 <= drw_h)
+	{
+		yscale = (128 * vid_h / drw_h) & 0xFF;
+		height /= 2;
+		cpr00 |= 0x00040000;
+	}
+	else if (vid_h / 4 <= drw_h)
+	{
+		yscale = (64 * vid_h / drw_h) & 0xFF;
+		height /= 4;
+		cpr00 |= 0x00080000;
+	}
+	else
+	{
+		yscale = 0;
+		height /= 4;
+		cpr00 |= 0x00080000;
+	}
 
-    do
-    {
-        areaHeight = (vid_pitch * height + fbPitch - 1) / fbPitch;
-    DEBUG((VERBLEV, "SMI_AllocateMemory: vid_pitch=%d height=%d fbPitch=%d areaHeight=%d\n",
-           vid_pitch, height, fbPitch, areaHeight));
+	do
+	{
+		areaHeight = (vid_pitch * height + fbPitch - 1) / fbPitch;
+	DEBUGX((VERBLEV, "SMI_AllocateMemory: vid_pitch=%d height=%d fbPitch=%d areaHeight=%d\n",
+	       vid_pitch, height, fbPitch, areaHeight));
         pPort->area = SMI_AllocateMemory(pScrn, pPort->area, areaHeight);
         if (pPort->area == NULL)
-        {
-            if ((cpr00 & 0x000C0000) == 0)
-            {
-                /* height -> 1/2 height */
-                yscale = (128 * vid_h / drw_h) & 0xFF;
-                height = vid_h / 2;
-                cpr00 |= 0x00040000;
-            }
-            else if (cpr00 & 0x00040000)
-            {
-                /* 1/2 height -> 1/4 height */
-                yscale = (64 * vid_h / drw_h) & 0xFF;
-                height = vid_h / 4;
-                cpr00 ^= 0x000C0000;
-            }
-            else
-            {
-                /* 1/4 height */
-                if ((cpr00 & 0x00030000) == 0)
-                {
-                    /* width -> 1/2 width */
-                    xscale = (128 * vid_w / drw_w) & 0xFF;
-                    width = vid_w / 2;
-                    cpr00 |= 0x00010000;
-                }
-                else if (cpr00 & 0x00010000)
-                {
-                    /* 1/2 width -> 1/4 width */
-                    xscale = (64 * vid_w / drw_w) & 0xFF;
-                    width = vid_w / 4;
-                    cpr00 ^= 0x00030000;
-                }
-                else
-                {
-            DEBUG((VERBLEV, "allocate error\n"));
+		{
+			if ((cpr00 & 0x000C0000) == 0)
+			{
+				/* height -> 1/2 height */
+				yscale = (128 * vid_h / drw_h) & 0xFF;
+				height = vid_h / 2;
+				cpr00 |= 0x00040000;
+			}
+			else if (cpr00 & 0x00040000)
+			{
+				/* 1/2 height -> 1/4 height */
+				yscale = (64 * vid_h / drw_h) & 0xFF;
+				height = vid_h / 4;
+				cpr00 ^= 0x000C0000;
+			}
+			else
+			{
+				/* 1/4 height */
+				if ((cpr00 & 0x00030000) == 0)
+				{
+					/* width -> 1/2 width */
+					xscale = (128 * vid_w / drw_w) & 0xFF;
+					width = vid_w / 2;
+					cpr00 |= 0x00010000;
+				}
+				else if (cpr00 & 0x00010000)
+				{
+					/* 1/2 width -> 1/4 width */
+					xscale = (64 * vid_w / drw_w) & 0xFF;
+					width = vid_w / 4;
+					cpr00 ^= 0x00030000;
+				}
+				else
+				{
+		    DEBUGX((VERBLEV, "allocate error\n"));
                     LEAVE_PROC("SMI_PutVideo");
-                    return(BadAlloc);
-                }
-            }
-        }
-    }
+					return(BadAlloc);
+				}
+			}
+		}
+	}
     while (pPort->area == NULL);
 
-    DEBUG((VERBLEV, "xscale==%d yscale=%d width=%d height=%d\n",
-       xscale, yscale, width, height));
+    DEBUGX((VERBLEV, "xscale==%d yscale=%d width=%d height=%d\n",
+	   xscale, yscale, width, height));
 
     /* aaa whats this                     ----------------------v ?
     vid_address = (pPort->area->box.y1 * fbPitch) + ((y1 >> 16) * vid_pitch);*/
     vid_address = (pPort->area->box.y1 * fbPitch);
 
-    DEBUG((VERBLEV, "test RegionsEqual\n"));
+    DEBUGX((VERBLEV, "test RegionsEqual\n"));
+#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,3,99,0,0)
+    if (!RegionsEqual(&pPort->clip, clipBoxes))
+#else
     if (!REGION_EQUAL(pScrn->pScreen, &pPort->clip, clipBoxes))
+#endif
     {
-    DEBUG((VERBLEV, "RegionCopy\n"));
+	DEBUGX((VERBLEV, "RegionCopy\n"));
         REGION_COPY(pScrn->pScreen, &pPort->clip, clipBoxes);
-    DEBUG((VERBLEV, "FillKey\n"));
-    xf86XVFillKeyHelper(pScrn->pScreen, pPort->Attribute[XV_COLORKEY], clipBoxes);
+	DEBUGX((VERBLEV, "FillKey\n"));
+	xf86XVFillKeyHelper(pScrn->pScreen, pPort->Attribute[XV_COLORKEY], clipBoxes);
 
-    }
+	}
 
-    left = x1 >> 16;
-    top = y1 >> 16;
-    width = (x2 - x1) >> 16;
-    height = (y2 - y1) >> 16;
+	left = x1 >> 16;
+	top = y1 >> 16;
+	width = (x2 - x1) >> 16;
+	height = (y2 - y1) >> 16;
 
-    OUT_SEQ(pSmi, 0x21, IN_SEQ(pSmi, 0x21) & ~0x04);
-    WRITE_VPR(pSmi, 0x54, READ_VPR(pSmi, 0x54) | 0x00200000);
+	OUT_SEQ(pSmi, 0x21, IN_SEQ(pSmi, 0x21) & ~0x04);
+	WRITE_VPR(pSmi, 0x54, READ_VPR(pSmi, 0x54) | 0x00200000);
 #if 0
-    SMI_WaitForSync(pScrn);
+	SMI_WaitForSync(pScrn);
 #endif
     /* Video Window I Left and Top Boundaries */
-    WRITE_VPR(pSmi, 0x14, dstBox.x1 + (dstBox.y1 << 16));
+	WRITE_VPR(pSmi, 0x14, dstBox.x1 + (dstBox.y1 << 16));
     /* Video Window I Right and Bottom Boundaries */
-    WRITE_VPR(pSmi, 0x18, dstBox.x2 + (dstBox.y2 << 16));
+	WRITE_VPR(pSmi, 0x18, dstBox.x2 + (dstBox.y2 << 16));
     /* Video Window I Source Width and Offset */
-    WRITE_VPR(pSmi, 0x20, (vid_pitch / 8) + ((vid_pitch / 8) << 16));
+	WRITE_VPR(pSmi, 0x20, (vid_pitch / 8) + ((vid_pitch / 8) << 16));
     /* Video Window I Stretch Factor */
-    WRITE_VPR(pSmi, 0x24, (xscale << 8) + yscale);
+	WRITE_VPR(pSmi, 0x24, (xscale << 8) + yscale);
 
     if (pPort->Attribute[XV_INTERLACED]) {
-    /* Video Window II Left and Top Boundaries */
-    WRITE_VPR(pSmi, 0x28, dstBox.x1 + (dstBox.y1 << 16));
-    /* Video Window II Right and Bottom Boundaries */
-    WRITE_VPR(pSmi, 0x2C, dstBox.x2 + (dstBox.y2 << 16));
-    /* Video Window II Source Width and Offset */
-    WRITE_VPR(pSmi, 0x34, (vid_pitch / 8) + ((vid_pitch / 8) << 16));
-    /* Video Window II Stretch Factor */
-    WRITE_VPR(pSmi, 0x38, (xscale << 8) + yscale);
+	/* Video Window II Left and Top Boundaries */
+	WRITE_VPR(pSmi, 0x28, dstBox.x1 + (dstBox.y1 << 16));
+	/* Video Window II Right and Bottom Boundaries */
+	WRITE_VPR(pSmi, 0x2C, dstBox.x2 + (dstBox.y2 << 16));
+	/* Video Window II Source Width and Offset */
+	WRITE_VPR(pSmi, 0x34, (vid_pitch / 8) + ((vid_pitch / 8) << 16));
+	/* Video Window II Stretch Factor */
+	WRITE_VPR(pSmi, 0x38, (xscale << 8) + yscale);
 
-    /* Video Window I Source Start Address */
-    WRITE_VPR(pSmi, 0x1C, vid_address / 8);
-    /* Video Window II Source Start Address */
-    WRITE_VPR(pSmi, 0x30, vid_address / 8);
+	/* Video Window I Source Start Address */
+	WRITE_VPR(pSmi, 0x1C, vid_address / 8);
+	/* Video Window II Source Start Address */
+	WRITE_VPR(pSmi, 0x30, vid_address / 8);
 
-    /* Video Window I Source Start Address */
-    WRITE_VPR(pSmi, 0x48, vid_address / 8);
-    /* Video Window II Source Start Address */
-    WRITE_VPR(pSmi, 0x4C, vid_address / 8 + vid_pitch / 8);
-
-    /* Video Source Clipping Control */
-    WRITE_CPR(pSmi, 0x04, left + ((top/2) << 16));
-    /* Video Source Capture Size Control */
-    WRITE_CPR(pSmi, 0x08, width + ((height/2) << 16));
-    /* Capture Port Buffer I Source Start Address */
-    WRITE_CPR(pSmi, 0x0C, vid_address / 8);
-    /* Capture Port Buffer II Source Start Address */
-    WRITE_CPR(pSmi, 0x10, vid_address / 8 + vid_pitch / 8);
-    /* Capture Port Source Offset Address */
-    WRITE_CPR(pSmi, 0x14, 2*(vid_pitch / 8) + ((2*(vid_pitch / 8)) << 16));
+	/* Video Window I Source Start Address */
+	WRITE_VPR(pSmi, 0x48, vid_address / 8);
+	/* Video Window II Source Start Address */
+	WRITE_VPR(pSmi, 0x4C, vid_address / 8 + vid_pitch / 8);
+	
+	/* Video Source Clipping Control */
+	WRITE_CPR(pSmi, 0x04, left + ((top/2) << 16));
+	/* Video Source Capture Size Control */
+	WRITE_CPR(pSmi, 0x08, width + ((height/2) << 16));
+	/* Capture Port Buffer I Source Start Address */
+	WRITE_CPR(pSmi, 0x0C, vid_address / 8);
+	/* Capture Port Buffer II Source Start Address */
+	WRITE_CPR(pSmi, 0x10, vid_address / 8 + vid_pitch / 8);
+	/* Capture Port Source Offset Address */
+	WRITE_CPR(pSmi, 0x14, 2*(vid_pitch / 8) + ((2*(vid_pitch / 8)) << 16));
     }
     else {
-    /* Video Source Clipping Control */
-    WRITE_CPR(pSmi, 0x04, left + (top << 16));
-    /* Video Source Capture Size Control */
-    WRITE_CPR(pSmi, 0x08, width + (height << 16));
-    /* Capture Port Buffer I Source Start Address */
-    WRITE_CPR(pSmi, 0x0C, vid_address / 8);
-    /* Capture Port Buffer II Source Start Address */
-    WRITE_CPR(pSmi, 0x10, vid_address / 8);
-    /* Capture Port Source Offset Address */
-    WRITE_CPR(pSmi, 0x14, (vid_pitch / 8) + ((vid_pitch / 8) << 16));
+	/* Video Source Clipping Control */
+	WRITE_CPR(pSmi, 0x04, left + (top << 16));
+	/* Video Source Capture Size Control */
+	WRITE_CPR(pSmi, 0x08, width + (height << 16));
+	/* Capture Port Buffer I Source Start Address */
+	WRITE_CPR(pSmi, 0x0C, vid_address / 8);
+	/* Capture Port Buffer II Source Start Address */
+	WRITE_CPR(pSmi, 0x10, vid_address / 8);
+	/* Capture Port Source Offset Address */
+	WRITE_CPR(pSmi, 0x14, (vid_pitch / 8) + ((vid_pitch / 8) << 16));
     }
 
-    WRITE_CPR(pSmi, 0x00, cpr00);
-    WRITE_VPR(pSmi, 0x00, vpr00);
+	WRITE_CPR(pSmi, 0x00, cpr00);
+	WRITE_VPR(pSmi, 0x00, vpr00);
 
     pPort->videoStatus = CLIENT_VIDEO_ON;
-    DEBUG((VERBLEV, "SMI_PutVideo success\n"));
+    DEBUGX((VERBLEV, "SMI_PutVideo success\n"));
     LEAVE_PROC("SMI_PutVideo");
-    return(Success);
+	return(Success);
 }
 #endif
 
 
 static void
 SMI_StopVideo(
-    ScrnInfoPtr pScrn,
-    pointer     data,
-    Bool        shutdown
+	ScrnInfoPtr	pScrn,
+	pointer		data,
+	Bool		shutdown
 )
 {
-    SMI_PortPtr pPort = (SMI_PortPtr) data;
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMI_PortPtr pPort = (SMI_PortPtr) data;
+	SMIPtr pSmi = SMIPTR(pScrn);
 
-    ENTER_PROC("SMI_StopVideo");
+	ENTER_PROC("SMI_StopVideo");
 
-    REGION_EMPTY(pScrn->pScreen, &pPort->clip);
+	REGION_EMPTY(pScrn->pScreen, &pPort->clip);
 
-    if (shutdown)
-    {
-        if (pPort->videoStatus & CLIENT_VIDEO_ON)
-        {
-            if (pSmi->Chipset == SMI_COUGAR3DR)
-            {
-                WRITE_FPR(pSmi, FPR00, READ_FPR(pSmi, 0x00) & ~(FPR00_VWIENABLE));
-            }
-            else if (pSmi->Chipset == SMI_MSOC)
-            {
-                WRITE_DCR(pSmi, DCR40, READ_DCR(pSmi, DCR40) & ~0x00000004);
-            }
-            else
-            {
-                WRITE_VPR(pSmi, 0x00, READ_VPR(pSmi, 0x00) & ~0x01000008);
-            }
+	if (shutdown)
+	{
+		if (pPort->videoStatus & CLIENT_VIDEO_ON)
+		{
+			if (pSmi->Chipset == SMI_COUGAR3DR)
+			{
+				WRITE_FPR(pSmi, FPR00, READ_FPR(pSmi, 0x00) & ~(FPR00_VWIENABLE));
+			}
+			else
+			{
+				WRITE_VPR(pSmi, 0x00, READ_VPR(pSmi, 0x00) & ~0x01000008);
+			}
 #if SMI_USE_CAPTURE
-            if ((pSmi->Chipset != SMI_COUGAR3DR) && (pSmi->Chipset != SMI_MSOC))
-            {
-                WRITE_CPR(pSmi, 0x00, READ_CPR(pSmi, 0x00) & ~0x00000001);
-                WRITE_VPR(pSmi, 0x54, READ_VPR(pSmi, 0x54) & ~0x00F00000);
-            }
-            /* #864     OUT_SEQ(pSmi, 0x21, IN_SEQ(pSmi, 0x21) | 0x04); */
+			if (pSmi->Chipset != SMI_COUGAR3DR)
+			{
+				WRITE_CPR(pSmi, 0x00, READ_CPR(pSmi, 0x00) & ~0x00000001);
+				WRITE_VPR(pSmi, 0x54, READ_VPR(pSmi, 0x54) & ~0x00F00000);
+			}
+			/* #864		OUT_SEQ(pSmi, 0x21, IN_SEQ(pSmi, 0x21) | 0x04); */
 #endif
-        }
+		}
         if (pPort->area != NULL)
-        {
+		{
             xf86FreeOffscreenArea(pPort->area);
             pPort->area = NULL;
-        }
+		}
         pPort->videoStatus = 0;
         /* pPort->i2cDevice = 0;aaa*/
-    }
-    else
-    {
+	}
+	else
+	{
         if (pPort->videoStatus & CLIENT_VIDEO_ON)
-        {
+		{
             pPort->videoStatus |= OFF_TIMER;
             pPort->offTime = currentTime.milliseconds + OFF_DELAY;
-        }
-    }
+		}
+	}
 
-    LEAVE_PROC("SMI_StopVideo");
+	LEAVE_PROC("SMI_StopVideo");
 }
 
 
 static int
 SMI_SetPortAttribute(
-    ScrnInfoPtr pScrn,
-    Atom        attribute,
-    INT32       value,
-    pointer     data
+	ScrnInfoPtr	pScrn,
+	Atom		attribute,
+	INT32		value,
+	pointer		data
 )
 {
     int res;
     SMI_PortPtr pPort = (SMI_PortPtr) data;
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMIPtr pSmi = SMIPTR(pScrn);
 
-    ENTER_PROC("SMI_SetPortAttribute");
+	ENTER_PROC("SMI_SetPortAttribute");
 
     if (attribute == xvColorKey) {
-        int r, g, b;
+		int r, g, b;
 
         pPort->Attribute[XV_COLORKEY] = value;
-        switch (pScrn->depth)
-        {
-            case 8:
-                SetKeyReg(pSmi, FPR04, value & 0x00FF);
-                break;
+		switch (pScrn->depth)
+		{
+			case 8:
+				SetKeyReg(pSmi, FPR04, value & 0x00FF);
+				break;
 
-            case 15:
-            case 16:
-                SetKeyReg(pSmi, FPR04, value & 0xFFFF);
-                break;
+			case 15:
+			case 16:
+				SetKeyReg(pSmi, FPR04, value & 0xFFFF);
+				break;
 
-            default:
-                r = (value & pScrn->mask.red) >> pScrn->offset.red;
-                g = (value & pScrn->mask.green) >> pScrn->offset.green;
-                b = (value & pScrn->mask.blue) >> pScrn->offset.blue;
-                SetKeyReg(pSmi, FPR04,
-                        ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3));
-                break;
-        }
-    res = Success;
-    }
+			default:
+				r = (value & pScrn->mask.red) >> pScrn->offset.red;
+				g = (value & pScrn->mask.green) >> pScrn->offset.green;
+				b = (value & pScrn->mask.blue) >> pScrn->offset.blue;
+				SetKeyReg(pSmi, FPR04,
+						((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3));
+				break;
+		}
+	res = Success;
+	}
     else if (attribute == xvInterlaced) {
         pPort->Attribute[XV_INTERLACED] = (value != 0);
-    res = Success;
-        }
+	res = Success;
+		}
     else if (attribute == xvEncoding) {
         res = SetAttr(pScrn, XV_ENCODING, value);
-    }
+	}
     else if (attribute == xvBrightness) {
         res = SetAttr(pScrn, XV_BRIGHTNESS, value);
     }
@@ -1502,24 +1505,24 @@ SMI_SetPortAttribute(
     }
     else {
         res = BadMatch;
-    }
+	}
 
-    LEAVE_PROC("SMI_SetPortAttribute");
+	LEAVE_PROC("SMI_SetPortAttribute");
     return(res);
 }
 
 
 static int
 SMI_GetPortAttribute(
-    ScrnInfoPtr pScrn,
-    Atom        attribute,
-    INT32       *value,
-    pointer     data
+	ScrnInfoPtr	pScrn,
+	Atom		attribute,
+	INT32		*value,
+	pointer		data
 )
 {
     SMI_PortPtr pPort = (SMI_PortPtr) data;
 
-    ENTER_PROC("SMI_GetPortAttribute");
+	ENTER_PROC("SMI_GetPortAttribute");
     if (attribute == xvEncoding)
         *value = pPort->Attribute[XV_ENCODING];
     else if (attribute == xvBrightness)
@@ -1535,1218 +1538,1092 @@ SMI_GetPortAttribute(
     else if (attribute == xvColorKey)
         *value = pPort->Attribute[XV_COLORKEY];
 
-    else
-    {
-        LEAVE_PROC("SMI_GetPortAttribute");
-        return(BadMatch);
-    }
+	else
+	{
+		LEAVE_PROC("SMI_GetPortAttribute");
+		return(BadMatch);
+	}
 
-    LEAVE_PROC("SMI_GetPortAttribute");
-    return(Success);
+	LEAVE_PROC("SMI_GetPortAttribute");
+	return(Success);
 }
 
 
 static void
 SMI_QueryBestSize(
-    ScrnInfoPtr     pScrn,
-    Bool            motion,
-    short           vid_w,
-    short           vid_h,
-    short           drw_w,
-    short           drw_h,
-    unsigned int    *p_w,
-    unsigned int    *p_h,
-    pointer         data
+	ScrnInfoPtr		pScrn,
+	Bool			motion,
+	short			vid_w,
+	short			vid_h,
+	short			drw_w,
+	short			drw_h,
+	unsigned int	*p_w,
+	unsigned int	*p_h,
+	pointer			data
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMIPtr pSmi = SMIPTR(pScrn);
 
-    ENTER_PROC("SMI_QueryBestSize");
+	ENTER_PROC("SMI_QueryBestSize");
 
-    *p_w = min(drw_w, pSmi->lcdWidth);
-    *p_h = min(drw_h, pSmi->lcdHeight);
+	*p_w = min(drw_w, pSmi->lcdWidth);
+	*p_h = min(drw_h, pSmi->lcdHeight);
 
-    LEAVE_PROC("SMI_QueryBestSize");
+	LEAVE_PROC("SMI_QueryBestSize");
 }
 
 
 static int
 SMI_PutImage(
-    ScrnInfoPtr     pScrn,
-    short           src_x,
-    short           src_y,
-    short           drw_x,
-    short           drw_y,
-    short           src_w,
-    short           src_h,
-    short           drw_w,
-    short           drw_h,
-    int             id,
-    unsigned char   *buf,
-    short           width,
-    short           height,
-    Bool            sync,
-    RegionPtr       clipBoxes,
-    pointer         data
+	ScrnInfoPtr		pScrn,
+	short			src_x,
+	short			src_y,
+	short			drw_x,
+	short			drw_y,
+	short			src_w,
+	short			src_h,
+	short			drw_w,
+	short			drw_h,
+	int				id,
+	unsigned char	*buf,
+	short			width,
+	short			height,
+	Bool			sync,
+	RegionPtr		clipBoxes,
+	pointer			data
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMIPtr pSmi = SMIPTR(pScrn);
     SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
-    INT32 x1, y1, x2, y2;
-    int bpp = 0;
-    int fbPitch, srcPitch, srcPitch2 = 0, dstPitch, areaHeight;
-    BoxRec dstBox;
-    CARD32 offset, offset2 = 0, offset3 = 0, tmp;
-    int left, top, nPixels, nLines;
-    unsigned char *dstStart;
+	INT32 x1, y1, x2, y2;
+	int bpp = 0;
+	int fbPitch, srcPitch, srcPitch2 = 0, dstPitch, areaHeight;
+	BoxRec dstBox;
+	CARD32 offset, offset2 = 0, offset3 = 0, tmp;
+	int left, top, nPixels, nLines;
+	unsigned char *dstStart;
 
-    ENTER_PROC("SMI_PutImage");
+	ENTER_PROC("SMI_PutImage");
 
-    x1 = src_x;
-    y1 = src_y;
-    x2 = src_x + src_w;
-    y2 = src_y + src_h;
+	x1 = src_x;
+	y1 = src_y;
+	x2 = src_x + src_w;
+	y2 = src_y + src_h;
 
-    dstBox.x1 = drw_x;
-    dstBox.y1 = drw_y;
-    dstBox.x2 = drw_x + drw_w;
-    dstBox.y2 = drw_y + drw_h;
+	dstBox.x1 = drw_x;
+	dstBox.y1 = drw_y;
+	dstBox.x2 = drw_x + drw_w;
+	dstBox.y2 = drw_y + drw_h;
 
-    if (!SMI_ClipVideo(pScrn, &dstBox, &x1, &y1, &x2, &y2, clipBoxes, width,
-            height))
-    {
-        LEAVE_PROC("SMI_PutImage");
-        return(Success);
-    }
+	if (!SMI_ClipVideo(pScrn, &dstBox, &x1, &y1, &x2, &y2, clipBoxes, width,
+			height))
+	{
+		LEAVE_PROC("SMI_PutImage");
+		return(Success);
+	}
 
-    dstBox.x1 -= pScrn->frameX0;
-    dstBox.y1 -= pScrn->frameY0;
-    dstBox.x2 -= pScrn->frameX0;
-    dstBox.y2 -= pScrn->frameY0;
+	dstBox.x1 -= pScrn->frameX0;
+	dstBox.y1 -= pScrn->frameY0;
+	dstBox.x2 -= pScrn->frameX0;
+	dstBox.y2 -= pScrn->frameY0;
 
-    if (pSmi->Bpp == 3)
-    {
-        fbPitch = pSmi->Stride;
-    }
-    else
-    {
-        fbPitch = pSmi->Stride * pSmi->Bpp;
-    }
+	if (pSmi->Bpp == 3)
+	{
+		fbPitch = pSmi->Stride;
+	}
+	else
+	{
+		fbPitch = pSmi->Stride * pSmi->Bpp;
+	}
 
-    switch (id)
-    {
-        case FOURCC_YV12:
-            srcPitch  = (width + 3) & ~3;
-            offset2   = srcPitch * height;
-            srcPitch2 = ((width >> 1) + 3) & ~3;
-            offset3   = offset2 + (srcPitch2 * (height >> 1));
-            dstPitch  = ((width << 1) + 15) & ~15;
-            break;
+	switch (id)
+	{
+		case FOURCC_YV12:
+			srcPitch  = (width + 3) & ~3;
+			offset2   = srcPitch * height;
+			srcPitch2 = ((width >> 1) + 3) & ~3;
+			offset3   = offset2 + (srcPitch2 * (height >> 1));
+			dstPitch  = ((width << 1) + 15) & ~15;
+			break;
 
-        case FOURCC_I420:
-            srcPitch  = (width + 3) & ~3;
-            offset3   = srcPitch * height;
-            srcPitch2 = ((width >> 1) + 3) & ~3;
-            offset2   = offset3 + (srcPitch2 * (height >> 1));
-            dstPitch  = ((width << 1) + 15) & ~15;
-            break;
+		case FOURCC_I420:
+			srcPitch  = (width + 3) & ~3;
+			offset3   = srcPitch * height;
+			srcPitch2 = ((width >> 1) + 3) & ~3;
+			offset2   = offset3 + (srcPitch2 * (height >> 1));
+			dstPitch  = ((width << 1) + 15) & ~15;
+			break;
 
-        case FOURCC_RV24:
-            bpp = 3;
-            srcPitch = width * bpp;
-            dstPitch = (srcPitch + 15) & ~15;
-            break;
+		case FOURCC_RV24:
+			bpp = 3;
+			srcPitch = width * bpp;
+			dstPitch = (srcPitch + 15) & ~15;
+			break;
 
-        case FOURCC_RV32:
-            bpp = 4;
-            srcPitch = width * bpp;
-            dstPitch = (srcPitch + 15) & ~15;
-            break;
+		case FOURCC_RV32:
+			bpp = 4;
+			srcPitch = width * bpp;
+			dstPitch = (srcPitch + 15) & ~15;
+			break;
 
-        case FOURCC_YUY2:
-        case FOURCC_RV15:
-        case FOURCC_RV16:
-        default:
-            bpp = 2;
-            srcPitch = width * bpp;
-            dstPitch = (srcPitch + 15) & ~15;
-            break;
-    }
+		case FOURCC_YUY2:
+		case FOURCC_RV15:
+		case FOURCC_RV16:
+		default:
+			bpp = 2;
+			srcPitch = width * bpp;
+			dstPitch = (srcPitch + 15) & ~15;
+			break;
+	}
 
-    areaHeight = ((dstPitch * height) + fbPitch - 1) / fbPitch;
+	areaHeight = ((dstPitch * height) + fbPitch - 1) / fbPitch;
     pPort->area = SMI_AllocateMemory(pScrn, pPort->area, areaHeight);
     if (pPort->area == NULL)
-    {
-        LEAVE_PROC("SMI_PutImage");
-        return(BadAlloc);
-    }
+	{
+		LEAVE_PROC("SMI_PutImage");
+		return(BadAlloc);
+	}
 
-    top = y1 >> 16;
-    left = (x1 >> 16) & ~1;
-    nPixels = ((((x2 + 0xFFFF) >> 16) + 1) & ~1) - left;
-    left *= bpp;
+	top = y1 >> 16;
+	left = (x1 >> 16) & ~1;
+	nPixels = ((((x2 + 0xFFFF) >> 16) + 1) & ~1) - left;
+	left *= bpp;
 
     offset = (pPort->area->box.y1 * fbPitch) + (top * dstPitch);
-    dstStart = pSmi->FBBase + offset + left;
+	dstStart = pSmi->FBBase + offset + left;
 
    switch(id) {
     case FOURCC_YV12:
     case FOURCC_I420:
-    top &= ~1;
-    tmp = ((top >> 1) * srcPitch2) + (left >> 2);
-    offset2 += tmp;
-    offset3 += tmp;
-    if(id == FOURCC_I420) {
-       tmp = offset2;
-       offset2 = offset3;
-       offset3 = tmp;
-    }
-    nLines = ((((y2 + 0xffff) >> 16) + 1) & ~1) - top;
-    xf86XVCopyYUV12ToPacked(buf + (top * srcPitch) + (left >> 1),
-                buf + offset2, buf + offset3, dstStart,
-                srcPitch, srcPitch2, dstPitch, nLines, nPixels);
-    break;
+	top &= ~1;
+	tmp = ((top >> 1) * srcPitch2) + (left >> 2);
+	offset2 += tmp;
+	offset3 += tmp;
+	if(id == FOURCC_I420) {
+	   tmp = offset2;
+	   offset2 = offset3;
+	   offset3 = tmp;
+	}
+	nLines = ((((y2 + 0xffff) >> 16) + 1) & ~1) - top;
+	xf86XVCopyYUV12ToPacked(buf + (top * srcPitch) + (left >> 1), 
+				buf + offset2, buf + offset3, dstStart,
+				srcPitch, srcPitch2, dstPitch, nLines, nPixels);
+	break;
     case FOURCC_UYVY:
     case FOURCC_YUY2:
     default:
-    buf += (top * srcPitch) + left;
-    nLines = ((y2 + 0xffff) >> 16) - top;
-    xf86XVCopyPacked(buf, dstStart, srcPitch, dstPitch, nLines, nPixels);
+	buf += (top * srcPitch) + left;
+	nLines = ((y2 + 0xffff) >> 16) - top;
+	xf86XVCopyPacked(buf, dstStart, srcPitch, dstPitch, nLines, nPixels);
         break;
     }
 
-    if ((pSmi->Chipset == SMI_MSOC) ||
-        !REGION_EQUAL(pScrn->pScreen, &pPort->clip, clipBoxes))
-    {
+#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,3,99,0,0)
+    if (!RegionsEqual(&pPort->clip, clipBoxes))
+#else
+    if (!REGION_EQUAL(pScrn->pScreen, &pPort->clip, clipBoxes))
+#endif
+	{
         REGION_COPY(pScrn->pScreen, &pPort->clip, clipBoxes);
-        xf86XVFillKeyHelper(pScrn->pScreen, pPort->Attribute[XV_COLORKEY],
-                            clipBoxes);
-    }
+	xf86XVFillKeyHelper(pScrn->pScreen, pPort->Attribute[XV_COLORKEY],
+			    clipBoxes);
+	}
 
-    if (pSmi->Chipset == SMI_COUGAR3DR)
-    {
-        SMI_DisplayVideo0730(pScrn, id, offset, width, height, dstPitch, x1, y1, x2, y2,
-                &dstBox, src_w, src_h, drw_w, drw_h);
-    }
-    else if (pSmi->Chipset == SMI_MSOC)
-    {
-        SMI_DisplayVideo0501(pScrn, id, offset, width, height, dstPitch, x1, y1, x2, y2,
-                &dstBox, src_w, src_h, drw_w, drw_h);
-    }
-    else
-    {
-        SMI_DisplayVideo(pScrn, id, offset, width, height, dstPitch, x1, y1, x2, y2,
-                &dstBox, src_w, src_h, drw_w, drw_h);
-    }
+	if (pSmi->Chipset != SMI_COUGAR3DR)
+		SMI_DisplayVideo(pScrn, id, offset, width, height, dstPitch, x1, y1, x2, y2,
+				&dstBox, src_w, src_h, drw_w, drw_h);
+	else
+		SMI_DisplayVideo0730(pScrn, id, offset, width, height, dstPitch, x1, y1, x2, y2,
+				&dstBox, src_w, src_h, drw_w, drw_h);
 
     pPort->videoStatus = CLIENT_VIDEO_ON;
-    LEAVE_PROC("SMI_PutImage");
-    return(Success);
-
+	LEAVE_PROC("SMI_PutImage");
+	return(Success);
+	
 }
 
 
 static int
 SMI_QueryImageAttributes(
-    ScrnInfoPtr     pScrn,
-    int             id,
-    unsigned short  *width,
-    unsigned short  *height,
-    int             *pitches,
-    int             *offsets
+	ScrnInfoPtr		pScrn,
+	int				id,
+	unsigned short	*width,
+	unsigned short	*height,
+	int				*pitches,
+	int				*offsets
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
-    int size, tmp;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	int size, tmp;
 
-    ENTER_PROC("SMI_QueryImageAttributes");
+	ENTER_PROC("SMI_QueryImageAttributes");
 
-    if (*width > pSmi->lcdWidth)
-    {
-        *width = pSmi->lcdWidth;
-    }
-    if (*height > pSmi->lcdHeight)
-    {
-        *height = pSmi->lcdHeight;
-    }
+	if (*width > pSmi->lcdWidth)
+	{
+		*width = pSmi->lcdWidth;
+	}
+	if (*height > pSmi->lcdHeight)
+	{
+		*height = pSmi->lcdHeight;
+	}
 
-    *width = (*width + 1) & ~1;
-    if (offsets != NULL)
-    {
-        offsets[0] = 0;
-    }
+	*width = (*width + 1) & ~1;
+	if (offsets != NULL)
+	{
+		offsets[0] = 0;
+	}
 
-    switch (id)
-    {
-        case FOURCC_YV12:
-        case FOURCC_I420:
-            *height = (*height + 1) & ~1;
-            size = (*width + 3) & ~3;
-            if (pitches != NULL)
-            {
-                pitches[0] = size;
-            }
-            size *= *height;
-            if (offsets != NULL)
-            {
-                offsets[1] = size;
-            }
-            tmp = ((*width >> 1) + 3) & ~3;
-            if (pitches != NULL)
-            {
-                pitches[1] = pitches[2] = tmp;
-            }
-            tmp *= (*height >> 1);
-            size += tmp;
-            if (offsets != NULL)
-            {
-                offsets[2] = size;
-            }
-            size += tmp;
-            break;
+	switch (id)
+	{
+		case FOURCC_YV12:
+		case FOURCC_I420:
+			*height = (*height + 1) & ~1;
+			size = (*width + 3) & ~3;
+			if (pitches != NULL)
+			{
+				pitches[0] = size;
+			}
+			size *= *height;
+			if (offsets != NULL)
+			{
+				offsets[1] = size;
+			}
+			tmp = ((*width >> 1) + 3) & ~3;
+			if (pitches != NULL)
+			{
+				pitches[1] = pitches[2] = tmp;
+			}
+			tmp *= (*height >> 1);
+			size += tmp;
+			if (offsets != NULL)
+			{
+				offsets[2] = size;
+			}
+			size += tmp;
+			break;
 
-        case FOURCC_YUY2:
-        case FOURCC_RV15:
-        case FOURCC_RV16:
-        default:
-            size = *width * 2;
-            if (pitches != NULL)
-            {
-                pitches[0] = size;
-            }
-            size *= *height;
-            break;
+		case FOURCC_YUY2:
+		case FOURCC_RV15:
+		case FOURCC_RV16:
+		default:
+			size = *width * 2;
+			if (pitches != NULL)
+			{
+				pitches[0] = size;
+			}
+			size *= *height;
+			break;
 
-        case FOURCC_RV24:
-            size = *width * 3;
-            if (pitches != NULL)
-            {
-                pitches[0] = size;
-            }
-            size *= *height;
-            break;
+		case FOURCC_RV24:
+			size = *width * 3;
+			if (pitches != NULL)
+			{
+				pitches[0] = size;
+			}
+			size *= *height;
+			break;
 
-        case FOURCC_RV32:
-            size = *width * 4;
-            if (pitches != NULL)
-            {
-                pitches[0] = size;
-            }
-            size *= *height;
-            break;
-    }
+		case FOURCC_RV32:
+			size = *width * 4;
+			if (pitches != NULL)
+			{
+				pitches[0] = size;
+			}
+			size *= *height;
+			break;
+	}
 
-    LEAVE_PROC("SMI_QueryImageAttributes");
-    return(size);
+	LEAVE_PROC("SMI_QueryImageAttributes");
+	return(size);
 }
 
 
 /******************************************************************************\
-**                                                                            **
-**                      S U P P O R T   F U N C T I O N S                     **
-**                                                                            **
+**																			  **
+**						S U P P O R T   F U N C T I O N S					  **
+**																			  **
 \******************************************************************************/
 #if 0
 static void
 SMI_WaitForSync(
-    ScrnInfoPtr pScrn
+	ScrnInfoPtr	pScrn
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
-    vgaHWPtr hwp = VGAHWPTR(pScrn);
-    int vgaIOBase  = hwp->IOBase;
-    int vgaCRIndex = vgaIOBase + VGA_CRTC_INDEX_OFFSET;
-    int vgaCRData  = vgaIOBase + VGA_CRTC_DATA_OFFSET;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	vgaHWPtr hwp = VGAHWPTR(pScrn);
+	int vgaIOBase  = hwp->IOBase;
+	int vgaCRIndex = vgaIOBase + VGA_CRTC_INDEX_OFFSET;
+	int vgaCRData  = vgaIOBase + VGA_CRTC_DATA_OFFSET;
 
-    VerticalRetraceWait();
+	VerticalRetraceWait();
 }
 #endif
 
 static Bool
 SMI_ClipVideo(
-    ScrnInfoPtr pScrn,
-    BoxPtr      dst,
-    INT32       *x1,
-    INT32       *y1,
-    INT32       *x2,
-    INT32       *y2,
-    RegionPtr   reg,
-    INT32       width,
-    INT32       height
+	ScrnInfoPtr	pScrn,
+	BoxPtr		dst,
+	INT32		*x1,
+	INT32		*y1,
+	INT32		*x2,
+	INT32		*y2,
+	RegionPtr	reg,
+	INT32		width,
+	INT32		height
 )
 {
     ScreenPtr pScreen = pScrn->pScreen;
     INT32 vscale, hscale;
-    BoxPtr extents = REGION_EXTENTS(pScreen, reg);
-    int diff;
+	BoxPtr extents = REGION_EXTENTS(pScreen, reg);
+	int diff;
 
-    ENTER_PROC("SMI_ClipVideo");
+	ENTER_PROC("SMI_ClipVideo");
 
-    DEBUG((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
-    /* PDR#941 */
-    extents->x1 = max(extents->x1, pScrn->frameX0);
-    extents->y1 = max(extents->y1, pScrn->frameY0);
+    DEBUGX((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
+	/* PDR#941 */
+	extents->x1 = max(extents->x1, pScrn->frameX0);
+	extents->y1 = max(extents->y1, pScrn->frameY0);
 
-    hscale = ((*x2 - *x1) << 16) / (dst->x2 - dst->x1);
-    vscale = ((*y2 - *y1) << 16) / (dst->y2 - dst->y1);
+	hscale = ((*x2 - *x1) << 16) / (dst->x2 - dst->x1);
+	vscale = ((*y2 - *y1) << 16) / (dst->y2 - dst->y1);
 
-    *x1 <<= 16; *y1 <<= 16;
-    *x2 <<= 16; *y2 <<= 16;
+	*x1 <<= 16; *y1 <<= 16;
+	*x2 <<= 16; *y2 <<= 16;
 
-    DEBUG((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
+    DEBUGX((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
 
-    diff = extents->x1 - dst->x1;
-    if (diff > 0)
-    {
-        dst->x1 = extents->x1;
-        *x1 += diff * hscale;
-    }
+	diff = extents->x1 - dst->x1;
+	if (diff > 0)
+	{
+		dst->x1 = extents->x1;
+		*x1 += diff * hscale;
+	}
 
-    diff = extents->y1 - dst->y1;
-    if (diff > 0)
-    {
-        dst->y1 = extents->y1;
-        *y1 += diff * vscale;
-    }
+	diff = extents->y1 - dst->y1;
+	if (diff > 0)
+	{
+		dst->y1 = extents->y1;
+		*y1 += diff * vscale;
+	}
 
-    diff = dst->x2 - extents->x2;
-    if (diff > 0)
-    {
-        dst->x2 = extents->x2; /* PDR#687 */
-        *x2 -= diff * hscale;
-    }
+	diff = dst->x2 - extents->x2;
+	if (diff > 0)
+	{
+		dst->x2 = extents->x2; /* PDR#687 */
+		*x2 -= diff * hscale;
+	}
 
-    diff = dst->y2 - extents->y2;
-    if (diff > 0)
-    {
-        dst->y2 = extents->y2;
-        *y2 -= diff * vscale;
-    }
+	diff = dst->y2 - extents->y2;
+	if (diff > 0)
+	{
+		dst->y2 = extents->y2;
+		*y2 -= diff * vscale;
+	}
 
-    DEBUG((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
+    DEBUGX((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
 
-    if (*x1 < 0)
-    {
-        diff = (-*x1 + hscale - 1) / hscale;
-        dst->x1 += diff;
-        *x1 += diff * hscale;
-    }
+	if (*x1 < 0)
+	{
+		diff = (-*x1 + hscale - 1) / hscale;
+		dst->x1 += diff;
+		*x1 += diff * hscale;
+	}
 
-    if (*y1 < 0)
-    {
-        diff = (-*y1 + vscale - 1) / vscale;
-        dst->y1 += diff;
-        *y1 += diff * vscale;
-    }
+	if (*y1 < 0)
+	{
+		diff = (-*y1 + vscale - 1) / vscale;
+		dst->y1 += diff;
+		*y1 += diff * vscale;
+	}
 
-    DEBUG((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
+    DEBUGX((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
 
 #if 0 /* aaa was macht dieser code? */
-    delta = *x2 - (width << 16);
-    if (delta > 0)
-    {
-        diff = (delta + hscale - 1) / hscale;
-        dst->x2 -= diff;
-        *x2 -= diff * hscale;
-    }
+	delta = *x2 - (width << 16);
+	if (delta > 0)
+	{
+		diff = (delta + hscale - 1) / hscale;
+		dst->x2 -= diff;
+		*x2 -= diff * hscale;
+	}
 
-    delta = *y2 - (height << 16);
-    if (delta > 0)
-    {
-        diff = (delta + vscale - 1) / vscale;
-        dst->y2 -= diff;
-        *y2 -= diff * vscale;
-    }
+	delta = *y2 - (height << 16);
+	if (delta > 0)
+	{
+		diff = (delta + vscale - 1) / vscale;
+		dst->y2 -= diff;
+		*y2 -= diff * vscale;
+	}
 #endif
 
-    DEBUG((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
+    DEBUGX((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
 
-    if ((*x1 >= *x2) || (*y1 >= *y2))
-    {
-        LEAVE_PROC("SMI_ClipVideo");
-        return(FALSE);
-    }
+	if ((*x1 >= *x2) || (*y1 >= *y2))
+	{
+		LEAVE_PROC("SMI_ClipVideo");
+		return(FALSE);
+	}
 
-    if (   (dst->x1 != extents->x1) || (dst->y1 != extents->y1)
-        || (dst->x2 != extents->x2) || (dst->y2 != extents->y2)
-    )
-    {
-        RegionRec clipReg;
-        REGION_INIT(pScreen, &clipReg, dst, 1);
-        REGION_INTERSECT(pScreen, reg, reg, &clipReg);
-        REGION_UNINIT(pScreen, &clipReg);
-    }
+	if (   (dst->x1 != extents->x1) || (dst->y1 != extents->y1)
+		|| (dst->x2 != extents->x2) || (dst->y2 != extents->y2)
+	)
+	{
+		RegionRec clipReg;
+		REGION_INIT(pScreen, &clipReg, dst, 1);
+		REGION_INTERSECT(pScreen, reg, reg, &clipReg);
+		REGION_UNINIT(pScreen, &clipReg);
+	}
 
-    DEBUG((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
+    DEBUGX((VERBLEV, "ClipVideo(%d): x1=%d y1=%d x2=%d y2=%d\n",  __LINE__, *x1 >> 16, *y1 >> 16, *x2 >> 16, *y2 >> 16));
 
-    LEAVE_PROC("SMI_ClipVideo");
-    return(TRUE);
+	LEAVE_PROC("SMI_ClipVideo");
+	return(TRUE);
 }
 
 static void
 SMI_DisplayVideo(
-    ScrnInfoPtr pScrn,
-    int         id,
-    int         offset,
-    short       width,
-    short       height,
-    int         pitch,
-    int         x1,
-    int         y1,
-    int         x2,
-    int         y2,
-    BoxPtr      dstBox,
-    short       vid_w,
-    short       vid_h,
-    short       drw_w,
-    short       drw_h
+	ScrnInfoPtr	pScrn,
+	int			id,
+	int			offset,
+	short		width,
+	short		height,
+	int			pitch,
+	int			x1,
+	int			y1,
+	int			x2,
+	int			y2,
+	BoxPtr		dstBox,
+	short		vid_w,
+	short		vid_h,
+	short		drw_w,
+	short		drw_h
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
-    CARD32 vpr00;
-    int hstretch, vstretch;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	CARD32 vpr00;
+	int hstretch, vstretch;
 
-    ENTER_PROC("SMI_DisplayVideo");
+	ENTER_PROC("SMI_DisplayVideo");
 
-    vpr00 = READ_VPR(pSmi, 0x00) & ~0x0CB800FF;
+	vpr00 = READ_VPR(pSmi, 0x00) & ~0x0CB800FF;
 
-    switch (id)
-    {
-        case FOURCC_YV12:
-        case FOURCC_I420:
-        case FOURCC_YUY2:
-            vpr00 |= 0x6;
-            break;
+	switch (id)
+	{
+		case FOURCC_YV12:
+		case FOURCC_I420:
+		case FOURCC_YUY2:
+			vpr00 |= 0x6;
+			break;
 
-        case FOURCC_RV15:
-            vpr00 |= 0x1;
-            break;
+		case FOURCC_RV15:
+			vpr00 |= 0x1;
+			break;
 
-        case FOURCC_RV16:
-            vpr00 |= 0x2;
-            break;
+		case FOURCC_RV16:
+			vpr00 |= 0x2;
+			break;
 
-        case FOURCC_RV24:
-            vpr00 |= 0x4;
-            break;
+		case FOURCC_RV24:
+			vpr00 |= 0x4;
+			break;
 
-        case FOURCC_RV32:
-            vpr00 |= 0x3;
-            break;
-    }
+		case FOURCC_RV32:
+			vpr00 |= 0x3;
+			break;
+	}
 
+	
+	if (drw_w > vid_w)
+	{
+		hstretch = (2560 * vid_w / drw_w + 5) / 10;
+	}
+	else
+	{
+		hstretch = 0;
+	}
 
-    if (drw_w > vid_w)
-    {
-        hstretch = (2560 * vid_w / drw_w + 5) / 10;
-    }
-    else
-    {
-        hstretch = 0;
-    }
-
-    if (drw_h > vid_h)
-    {
-        vstretch = (2560 * vid_h / drw_h + 5) / 10;
-        vpr00 |= 1 << 21;
-    }
-    else
-    {
-        vstretch = 0;
-    }
+	if (drw_h > vid_h)
+	{
+		vstretch = (2560 * vid_h / drw_h + 5) / 10;
+		vpr00 |= 1 << 21;
+	}
+	else
+	{
+		vstretch = 0;
+	}
 #if 0
-    SMI_WaitForSync(pScrn);
+	SMI_WaitForSync(pScrn);
 #endif
-    WRITE_VPR(pSmi, 0x00, vpr00 | (1 << 3) | (1 << 20));
-    WRITE_VPR(pSmi, 0x14, (dstBox->x1) | (dstBox->y1 << 16));
-    WRITE_VPR(pSmi, 0x18, (dstBox->x2) | (dstBox->y2 << 16));
-    WRITE_VPR(pSmi, 0x1C, offset >> 3);
-    WRITE_VPR(pSmi, 0x20, (pitch >> 3) | ((pitch >> 3) << 16));
-    WRITE_VPR(pSmi, 0x24, (hstretch << 8) | vstretch);
+	WRITE_VPR(pSmi, 0x00, vpr00 | (1 << 3) | (1 << 20));
+	WRITE_VPR(pSmi, 0x14, (dstBox->x1) | (dstBox->y1 << 16));
+	WRITE_VPR(pSmi, 0x18, (dstBox->x2) | (dstBox->y2 << 16));
+	WRITE_VPR(pSmi, 0x1C, offset >> 3);
+	WRITE_VPR(pSmi, 0x20, (pitch >> 3) | ((pitch >> 3) << 16));
+	WRITE_VPR(pSmi, 0x24, (hstretch << 8) | vstretch);
 
-    LEAVE_PROC("SMI_DisplayVideo");
-}
-
-static void
-SMI_DisplayVideo0501(
-    ScrnInfoPtr pScrn,
-    int         id,
-    int         offset,
-    short       width,
-    short       height,
-    int         pitch,
-    int         x1,
-    int         y1,
-    int         x2,
-    int         y2,
-    BoxPtr      dstBox,
-    short       vid_w,
-    short       vid_h,
-    short       drw_w,
-    short       drw_h
-)
-{
-    SMIPtr pSmi = SMIPTR(pScrn);
-    CARD32 dcr40;
-    int hstretch, vstretch;
-
-    ENTER_PROC("SMI_DisplayVideo0501");
-
-    dcr40 = READ_DCR(pSmi, DCR40) & ~0x00003FFF;
-
-    switch (id)
-    {
-        case FOURCC_YV12:
-        case FOURCC_I420:
-        case FOURCC_YUY2:
-            dcr40 |= 0x3;
-            break;
-
-        case FOURCC_RV16:
-            dcr40 |= 0x1;
-            break;
-
-        case FOURCC_RV32:
-            dcr40 |= 0x2;
-            break;
-    }
-
-
-    if (drw_w > vid_w)  /*  Horizontal Stretch */
-    {
-        hstretch = ((40960 * vid_w / drw_w + 5) / 10);
-        dcr40 |= 1 << 8;
-    }
-    else                /*  Horizontal Shrink */
-    {
-        hstretch = ((40960 * drw_w / vid_w + 5) / 10) | 0x8000;
-    }
-
-    if (drw_h > vid_h)  /* Vertical Stretch */
-    {
-        vstretch = ((40960 * vid_h / drw_h + 5) / 10);
-        dcr40 |= 1 << 9;
-    }
-    else                /* Vertical Shrink */
-    {
-        vstretch = ((40960 * drw_h / vid_h + 5) / 10) | 0x8000;
-    }
-#if 0
-    SMI_WaitForSync(pScrn);
-#endif
-
-    /* Set Color Key Enable bit */
-    WRITE_DCR(pSmi, DCR00, READ_DCR(pSmi, DCR00) | (1 << 9));
-
-    WRITE_DCR(pSmi, DCR40, dcr40 | (1 << 2));
-    WRITE_DCR(pSmi, DCR50, (dstBox->x1) | (dstBox->y1 << 16));
-    WRITE_DCR(pSmi, DCR54, (dstBox->x2) | (dstBox->y2 << 16));
-    WRITE_DCR(pSmi, DCR44, offset);
-    WRITE_DCR(pSmi, DCR48, (pitch) | ((pitch) << 16));
-    WRITE_DCR(pSmi, DCR4C, (offset + (pitch * height))) ;
-    WRITE_DCR(pSmi, DCR58, (vstretch << 16) | hstretch);
-    WRITE_DCR(pSmi, DCR5C, 0x00000000);
-    WRITE_DCR(pSmi, DCR60, 0x00EDEDED);
-
-    /*
-    ErrorF("SMI 510 Video Debug Parameters\n");
-    ErrorF("offset = %8X, pitch = %8X, width = %8X, height = %8X\n", offset, pitch, width, height);
-    ErrorF("drw_w = %8X, vid_w = %8X, drw_h = %8X, vid_h = %8X\n", drw_w, vid_w, drw_h, vid_h);
-    ErrorF("dstBox  x1 = %8X, y1 = %8X, x2 = %8X, y2 = %8X\n", dstBox->x1, dstBox->y1, dstBox->x2, dstBox->y2);
-    ErrorF("DCR40 = %8X\n", READ_DCR(pSmi, DCR40));
-    ErrorF("DCR50 = %8X\n", READ_DCR(pSmi, DCR50));
-    ErrorF("DCR54 = %8X\n", READ_DCR(pSmi, DCR54));
-    ErrorF("DCR44 = %8X\n", READ_DCR(pSmi, DCR44));
-    ErrorF("DCR48 = %8X\n", READ_DCR(pSmi, DCR48));
-    ErrorF("DCR4C = %8X\n", READ_DCR(pSmi, DCR4C));
-    ErrorF("DCR58 = %8X\n", READ_DCR(pSmi, DCR58));
-    ErrorF("DCR5C = %8X\n", READ_DCR(pSmi, DCR5C));
-    */
-
-    LEAVE_PROC("SMI_DisplayVideo0501");
+	LEAVE_PROC("SMI_DisplayVideo");
 }
 
 static void
 SMI_DisplayVideo0730(
-    ScrnInfoPtr pScrn,
-    int         id,
-    int         offset,
-    short       width,
-    short       height,
-    int         pitch,
-    int         x1,
-    int         y1,
-    int         x2,
-    int         y2,
-    BoxPtr      dstBox,
-    short       vid_w,
-    short       vid_h,
-    short       drw_w,
-    short       drw_h
+	ScrnInfoPtr	pScrn,
+	int			id,
+	int			offset,
+	short		width,
+	short		height,
+	int			pitch,
+	int			x1,
+	int			y1,
+	int			x2,
+	int			y2,
+	BoxPtr		dstBox,
+	short		vid_w,
+	short		vid_h,
+	short		drw_w,
+	short		drw_h
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
-    CARD32 fpr00;
-    int hstretch, vstretch;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	CARD32 fpr00;
+	int hstretch, vstretch;
 
-    ENTER_PROC("SMI_DisplayVideo0730");
+	ENTER_PROC("SMI_DisplayVideo0730");
 
-    fpr00 = READ_FPR(pSmi, 0x00) & ~(FPR00_MASKBITS);
+	fpr00 = READ_FPR(pSmi, 0x00) & ~(FPR00_MASKBITS);
 
-    switch (id)
-    {
-        case FOURCC_YV12:
-        case FOURCC_I420:
-        case FOURCC_YUY2:
-            fpr00 |= FPR00_FMT_YUV422;
-            break;
+	switch (id)
+	{
+		case FOURCC_YV12:
+		case FOURCC_I420:
+		case FOURCC_YUY2:
+			fpr00 |= FPR00_FMT_YUV422;
+			break;
 
-        case FOURCC_RV15:
-            fpr00 |= FPR00_FMT_15P;
-            break;
+		case FOURCC_RV15:
+			fpr00 |= FPR00_FMT_15P;
+			break;
 
-        case FOURCC_RV16:
-            fpr00 |= FPR00_FMT_16P;
-            break;
+		case FOURCC_RV16:
+			fpr00 |= FPR00_FMT_16P;
+			break;
 
-        case FOURCC_RV24:
-            fpr00 |= FPR00_FMT_24P;
-            break;
+		case FOURCC_RV24:
+			fpr00 |= FPR00_FMT_24P;
+			break;
 
-        case FOURCC_RV32:
-            fpr00 |= FPR00_FMT_32P;
-            break;
-    }
+		case FOURCC_RV32:
+			fpr00 |= FPR00_FMT_32P;
+			break;
+	}
 
-    /* the formulas for calculating the stretch values do not match the
-       documentation, but they're the same as the ddraw driver and they work */
-    if (drw_w > vid_w)
-    {
-        hstretch = (8192 * vid_w / drw_w);
-    }
-    else
-    {
-        hstretch = 0;
-    }
+	/* the formulas for calculating the stretch values do not match the
+	   documentation, but they're the same as the ddraw driver and they work */
+	if (drw_w > vid_w)
+	{
+		hstretch = (8192 * vid_w / drw_w);
+	}
+	else
+	{
+		hstretch = 0;
+	}
 
-    if (drw_h > vid_h)
-    {
-        vstretch = (8192 * vid_h / drw_h);
-    }
-    else
-    {
-        vstretch = 0;
-    }
+	if (drw_h > vid_h)
+	{
+		vstretch = (8192 * vid_h / drw_h);
+	}
+	else
+	{
+		vstretch = 0;
+	}
+	
 
+	WRITE_FPR(pSmi, FPR00, fpr00 | FPR00_VWIENABLE | FPR00_VWIKEYENABLE);
+	WRITE_FPR(pSmi, FPR14, (dstBox->x1) | (dstBox->y1 << 16));
+	WRITE_FPR(pSmi, FPR18, (dstBox->x2) | (dstBox->y2 << 16));
+	WRITE_FPR(pSmi, FPR1C, offset >> 3);
+	WRITE_FPR(pSmi, FPR20, (pitch >> 3) | ((pitch >> 3) << 16));
+ 	WRITE_FPR(pSmi, FPR24, (hstretch & 0xFF00) | ((vstretch & 0xFF00)>>8)); 
+ 	WRITE_FPR(pSmi, FPR68, ((hstretch & 0x00FF)<<8) | (vstretch & 0x00FF)); 
 
-    WRITE_FPR(pSmi, FPR00, fpr00 | FPR00_VWIENABLE | FPR00_VWIKEYENABLE);
-    WRITE_FPR(pSmi, FPR14, (dstBox->x1) | (dstBox->y1 << 16));
-    WRITE_FPR(pSmi, FPR18, (dstBox->x2) | (dstBox->y2 << 16));
-    WRITE_FPR(pSmi, FPR1C, offset >> 3);
-    WRITE_FPR(pSmi, FPR20, (pitch >> 3) | ((pitch >> 3) << 16));
-    WRITE_FPR(pSmi, FPR24, (hstretch & 0xFF00) | ((vstretch & 0xFF00)>>8));
-    WRITE_FPR(pSmi, FPR68, ((hstretch & 0x00FF)<<8) | (vstretch & 0x00FF));
-
-    LEAVE_PROC("SMI_DisplayVideo0730");
+	LEAVE_PROC("SMI_DisplayVideo0730");
 }
 
 static void
 SMI_BlockHandler(
-    int     i,
-    pointer blockData,
-    pointer pTimeout,
-    pointer pReadMask
+	int		i,
+	pointer	blockData,
+	pointer	pTimeout,
+	pointer	pReadMask
 )
 {
-    ScreenPtr   pScreen = screenInfo.screens[i];
-    ScrnInfoPtr pScrn   = xf86Screens[i];
-    SMIPtr      pSmi    = SMIPTR(pScrn);
+	ScreenPtr	pScreen = screenInfo.screens[i];
+	ScrnInfoPtr	pScrn	= xf86Screens[i];
+	SMIPtr		pSmi    = SMIPTR(pScrn);
     SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
 
-    pScreen->BlockHandler = pSmi->BlockHandler;
-    (*pScreen->BlockHandler)(i, blockData, pTimeout, pReadMask);
-    pScreen->BlockHandler = SMI_BlockHandler;
+	pScreen->BlockHandler = pSmi->BlockHandler;
+	(*pScreen->BlockHandler)(i, blockData, pTimeout, pReadMask);
+	pScreen->BlockHandler = SMI_BlockHandler;
 
     if (pPort->videoStatus & TIMER_MASK)
-    {
-        UpdateCurrentTime();
+	{
+		UpdateCurrentTime();
         if (pPort->videoStatus & OFF_TIMER)
-        {
+		{
             if (pPort->offTime < currentTime.milliseconds)
-            {
-                if (pSmi->Chipset == SMI_COUGAR3DR)
-                {
-                    WRITE_FPR(pSmi, FPR00, READ_FPR(pSmi, 0x00) & ~(FPR00_VWIENABLE));
-                }
-                else if (pSmi->Chipset == SMI_MSOC)
-                {
-                    WRITE_DCR(pSmi, DCR40, READ_DCR(pSmi, DCR40) & ~0x00000004);
-                }
-                else
-                {
-                    WRITE_VPR(pSmi, 0x00, READ_VPR(pSmi, 0x00) & ~0x00000008);
-                }
+			{
+				if (pSmi->Chipset == SMI_COUGAR3DR)
+				{
+					WRITE_FPR(pSmi, FPR00, READ_FPR(pSmi, 0x00) & ~(FPR00_VWIENABLE));
+				}
+				else
+				{
+					WRITE_VPR(pSmi, 0x00, READ_VPR(pSmi, 0x00) & ~0x00000008);
+				}
                 pPort->videoStatus = FREE_TIMER;
                 pPort->freeTime = currentTime.milliseconds + FREE_DELAY;
-            }
-        }
-        else
-        {
+			}
+		}
+		else
+		{
             if (pPort->freeTime < currentTime.milliseconds)
-            {
+			{
                 xf86FreeOffscreenArea(pPort->area);
                 pPort->area = NULL;
-            }
+			}
             pPort->videoStatus = 0;
-        }
-    }
+		}
+	}
 }
 
 #if 0
 static int
 SMI_SendI2C(
-    ScrnInfoPtr     pScrn,
-    CARD8           device,
-    char            *devName,
-    SMI_I2CDataPtr  i2cData
+	ScrnInfoPtr		pScrn,
+	CARD8			device,
+	char			*devName,
+	SMI_I2CDataPtr	i2cData
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
-    I2CDevPtr dev;
-    int status = Success;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	I2CDevPtr dev;
+	int status = Success;
 
-    ENTER_PROC("SMI_SendI2C");
+	ENTER_PROC("SMI_SendI2C");
 
-    if (pSmi->I2C == NULL)
-    {
-        LEAVE_PROC("SMI_SendI2C");
-        return(BadAlloc);
-    }
+	if (pSmi->I2C == NULL)
+	{
+		LEAVE_PROC("SMI_SendI2C");
+		return(BadAlloc);
+	}
 
-    dev = xf86CreateI2CDevRec();
-    if (dev == NULL)
-    {
-        LEAVE_PROC("SMI_SendI2C");
-        return(BadAlloc);
-    }
-    dev->DevName = devName;
-    dev->SlaveAddr = device;
-    dev->pI2CBus = pSmi->I2C;
+	dev = xf86CreateI2CDevRec();
+	if (dev == NULL)
+	{
+		LEAVE_PROC("SMI_SendI2C");
+		return(BadAlloc);
+	}
+	dev->DevName = devName;
+	dev->SlaveAddr = device;
+	dev->pI2CBus = pSmi->I2C;
 
-    if (!xf86I2CDevInit(dev))
-    {
-        status = BadAlloc;
-    }
-    else
-    {
-        while (i2cData->address != 0xFF || i2cData->data != 0xFF) /* PDR#676 */
-        {
-            if (!xf86I2CWriteByte(dev, i2cData->address, i2cData->data))
-            {
-                status = BadAlloc;
-                break;
-            }
-            i2cData++;
-        }
-    }
+	if (!xf86I2CDevInit(dev))
+	{
+		status = BadAlloc;
+	}
+	else
+	{
+		while (i2cData->address != 0xFF || i2cData->data != 0xFF) /* PDR#676 */
+		{
+			if (!xf86I2CWriteByte(dev, i2cData->address, i2cData->data))
+			{
+				status = BadAlloc;
+				break;
+			}
+			i2cData++;
+		}
+	}
 
-    xf86DestroyI2CDevRec(dev, TRUE);
-    LEAVE_PROC("SMI_SendI2C");
-    return(status);
+	xf86DestroyI2CDevRec(dev, TRUE);
+	LEAVE_PROC("SMI_SendI2C");
+	return(status);
 }
 #endif
 
 /******************************************************************************\
-**                                                                            **
-**               O F F S C R E E N   M E M O R Y   M A N A G E R              **
-**                                                                            **
+**																			  **
+**				 O F F S C R E E N   M E M O R Y   M A N A G E R			  **
+**																			  **
 \******************************************************************************/
 
 static void
 SMI_InitOffscreenImages(
-    ScreenPtr   pScreen
+	ScreenPtr	pScreen
 )
 {
-    XF86OffscreenImagePtr offscreenImages;
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-    SMIPtr pSmi = SMIPTR(pScrn);
-    SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
+	XF86OffscreenImagePtr offscreenImages;
+	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+	SMIPtr pSmi = SMIPTR(pScrn);
+	SMI_PortPtr pPort = (SMI_PortPtr) pSmi->ptrAdaptor->pPortPrivates[0].ptr;
 
-    ENTER_PROC("SMI_InitOffscreenImages");
+	ENTER_PROC("SMI_InitOffscreenImages");
 
-    offscreenImages = xalloc(sizeof(XF86OffscreenImageRec));
-    if (offscreenImages == NULL)
-    {
-        LEAVE_PROC("SMI_InitOffscreenImages");
-        return;
-    }
+	offscreenImages = xalloc(sizeof(XF86OffscreenImageRec));
+	if (offscreenImages == NULL)
+	{
+		LEAVE_PROC("SMI_InitOffscreenImages");
+		return;
+	}
 
-    offscreenImages->image = SMI_VideoImages;
-    offscreenImages->flags = VIDEO_OVERLAID_IMAGES
-                           | VIDEO_CLIP_TO_VIEWPORT;
-    offscreenImages->alloc_surface = SMI_AllocSurface;
-    offscreenImages->free_surface = SMI_FreeSurface;
-    offscreenImages->display = SMI_DisplaySurface;
-    offscreenImages->stop = SMI_StopSurface;
-    offscreenImages->getAttribute = SMI_GetSurfaceAttribute;
-    offscreenImages->setAttribute = SMI_SetSurfaceAttribute;
-    offscreenImages->max_width = pSmi->lcdWidth;
-    offscreenImages->max_height = pSmi->lcdHeight;
-    if (!pPort->I2CDev.SlaveAddr) {
-        offscreenImages->num_attributes = nElems(SMI_VideoAttributes);
-        offscreenImages->attributes = SMI_VideoAttributes;
-    } else {
-        offscreenImages->num_attributes =
-        nElems(SMI_VideoAttributesSAA711x);
-        offscreenImages->attributes = SMI_VideoAttributesSAA711x;
-    }
-    xf86XVRegisterOffscreenImages(pScreen, offscreenImages, 1);
+	offscreenImages->image = SMI_VideoImages;
+	offscreenImages->flags = VIDEO_OVERLAID_IMAGES
+						   | VIDEO_CLIP_TO_VIEWPORT;
+	offscreenImages->alloc_surface = SMI_AllocSurface;
+	offscreenImages->free_surface = SMI_FreeSurface;
+	offscreenImages->display = SMI_DisplaySurface;
+	offscreenImages->stop = SMI_StopSurface;
+	offscreenImages->getAttribute = SMI_GetSurfaceAttribute;
+	offscreenImages->setAttribute = SMI_SetSurfaceAttribute;
+	offscreenImages->max_width = pSmi->lcdWidth;
+	offscreenImages->max_height = pSmi->lcdHeight;
+	if (!pPort->I2CDev.SlaveAddr) {
+	    offscreenImages->num_attributes = nElems(SMI_VideoAttributes);
+	    offscreenImages->attributes = SMI_VideoAttributes; 
+	} else {
+	    offscreenImages->num_attributes = 
+		nElems(SMI_VideoAttributesSAA711x);
+	    offscreenImages->attributes = SMI_VideoAttributesSAA711x; 
+	}
+	xf86XVRegisterOffscreenImages(pScreen, offscreenImages, 1);
 
-    LEAVE_PROC("SMI_InitOffscreenImages");
+	LEAVE_PROC("SMI_InitOffscreenImages");
 }
 
 static FBAreaPtr
 SMI_AllocateMemory(
-    ScrnInfoPtr pScrn,
-    FBAreaPtr   area,
-    int         numLines
+	ScrnInfoPtr	pScrn,
+	FBAreaPtr	area,
+	int			numLines
 )
 {
-    ScreenPtr pScreen = screenInfo.screens[pScrn->scrnIndex];
+	ScreenPtr pScreen = screenInfo.screens[pScrn->scrnIndex];
 
-    ENTER_PROC("SMI_AllocateMemory");
+	ENTER_PROC("SMI_AllocateMemory");
 
-    if (area != NULL)
-    {
-        if ((area->box.y2 - area->box.y1) >= numLines)
-        {
+	if (area != NULL)
+	{
+		if ((area->box.y2 - area->box.y1) >= numLines)
+		{
             LEAVE_PROC("SMI_AllocateMemory (area->box.y2 - area->box.y1) >= numLines ok");
-            return(area);
-        }
+			return(area);
+		}
 
-        if (xf86ResizeOffscreenArea(area, pScrn->displayWidth, numLines))
-        {
+		if (xf86ResizeOffscreenArea(area, pScrn->displayWidth, numLines))
+		{
             LEAVE_PROC("SMI_AllocateMemory xf86ResizeOffscreenArea ok");
-            return(area);
-        }
+			return(area);
+		}
 
-        xf86FreeOffscreenArea(area);
-    }
+		xf86FreeOffscreenArea(area);
+	}
 
-    area = xf86AllocateOffscreenArea(pScreen, pScrn->displayWidth, numLines, 0,
-            NULL, NULL, NULL);
+	area = xf86AllocateOffscreenArea(pScreen, pScrn->displayWidth, numLines, 0,
+			NULL, NULL, NULL);
 
-    if (area == NULL)
-    {
-        int maxW, maxH;
+	if (area == NULL)
+	{
+		int maxW, maxH;
 
-        xf86QueryLargestOffscreenArea(pScreen, &maxW, &maxH, 0,
-                FAVOR_WIDTH_THEN_AREA, PRIORITY_EXTREME);
+		xf86QueryLargestOffscreenArea(pScreen, &maxW, &maxH, 0,
+				FAVOR_WIDTH_THEN_AREA, PRIORITY_EXTREME);
 
-    DEBUG((VERBLEV, "QueryLargestOffscreenArea maxW=%d maxH=%d displayWidth=%d numlines=%d\n",
-           maxW, maxH, pScrn->displayWidth, numLines));
-        if ((maxW < pScrn->displayWidth) || (maxH < numLines))
-        {
+	DEBUGX((VERBLEV, "QueryLargestOffscreenArea maxW=%d maxH=%d displayWidth=%d numlines=%d\n",
+	       maxW, maxH, pScrn->displayWidth, numLines));
+		if ((maxW < pScrn->displayWidth) || (maxH < numLines))
+		{
             LEAVE_PROC("SMI_AllocateMemory (maxW < pScrn->displayWidth) || (maxH < numLines)");
-            return(NULL);
-        }
+			return(NULL);
+		}
 
-        xf86PurgeUnlockedOffscreenAreas(pScreen);
-        area = xf86AllocateOffscreenArea(pScreen, pScrn->displayWidth, numLines,
-                0, NULL, NULL, NULL);
-    }
+		xf86PurgeUnlockedOffscreenAreas(pScreen);
+		area = xf86AllocateOffscreenArea(pScreen, pScrn->displayWidth, numLines,
+				0, NULL, NULL, NULL);
+	}
 
-    DEBUG((VERBLEV, "area = %p\n", area));
-    LEAVE_PROC("SMI_AllocateMemory");
-    return(area);
+    DEBUGX((VERBLEV, "area = %p\n", area));
+	LEAVE_PROC("SMI_AllocateMemory");
+	return(area);
 }
 
 static int
 SMI_AllocSurface(
-    ScrnInfoPtr     pScrn,
-    int             id,
-    unsigned short  width,
-    unsigned short  height,
-    XF86SurfacePtr  surface
+	ScrnInfoPtr		pScrn,
+	int				id,
+	unsigned short	width,
+	unsigned short	height,
+	XF86SurfacePtr	surface
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
-    int numLines, pitch, fbPitch, bpp;
-    SMI_OffscreenPtr ptrOffscreen;
-    FBAreaPtr area;
+	SMIPtr pSmi = SMIPTR(pScrn);
+	int numLines, pitch, fbPitch, bpp;
+	SMI_OffscreenPtr ptrOffscreen;
+	FBAreaPtr area;
 
-    ENTER_PROC("SMI_AllocSurface");
+	ENTER_PROC("SMI_AllocSurface");
 
-    if ((width > pSmi->lcdWidth) || (height > pSmi->lcdHeight))
-    {
-        LEAVE_PROC("SMI_AllocSurface");
-        return(BadAlloc);
-    }
+	if ((width > pSmi->lcdWidth) || (height > pSmi->lcdHeight))
+	{
+		LEAVE_PROC("SMI_AllocSurface");
+		return(BadAlloc);
+	}
 
-    if (pSmi->Bpp == 3)
-    {
-        fbPitch = pSmi->Stride;
-    }
-    else
-    {
-        fbPitch = pSmi->Stride * pSmi->Bpp;
-    }
+	if (pSmi->Bpp == 3)
+	{
+		fbPitch = pSmi->Stride;
+	}
+	else
+	{
+		fbPitch = pSmi->Stride * pSmi->Bpp;
+	}
 
-    width = (width + 1) & ~1;
-    switch (id)
-    {
-        case FOURCC_YV12:
-        case FOURCC_I420:
-        case FOURCC_YUY2:
-        case FOURCC_RV15:
-        case FOURCC_RV16:
-            bpp = 2;
-            break;
+	width = (width + 1) & ~1;
+	switch (id)
+	{
+		case FOURCC_YV12:
+		case FOURCC_I420:
+		case FOURCC_YUY2:
+		case FOURCC_RV15:
+		case FOURCC_RV16:
+			bpp = 2;
+			break;
 
-        case FOURCC_RV24:
-            bpp = 3;
-            break;
+		case FOURCC_RV24:
+			bpp = 3;
+			break;
 
-        case FOURCC_RV32:
-            bpp = 4;
-            break;
+		case FOURCC_RV32:
+			bpp = 4;
+			break;
 
-        default:
-            LEAVE_PROC("SMI_AllocSurface");
-            return(BadAlloc);
-    }
-    pitch = (width * bpp + 15) & ~15;
+		default:
+			LEAVE_PROC("SMI_AllocSurface");
+			return(BadAlloc);
+	}
+	pitch = (width * bpp + 15) & ~15;
 
-    numLines = ((height * pitch) + fbPitch - 1) / fbPitch;
+	numLines = ((height * pitch) + fbPitch - 1) / fbPitch;
 
-    area = SMI_AllocateMemory(pScrn, NULL, numLines);
-    if (area == NULL)
-    {
-        LEAVE_PROC("SMI_AllocSurface");
-        return(BadAlloc);
-    }
+	area = SMI_AllocateMemory(pScrn, NULL, numLines);
+	if (area == NULL)
+	{
+		LEAVE_PROC("SMI_AllocSurface");
+		return(BadAlloc);
+	}
 
-    surface->pitches = xalloc(sizeof(int));
-    if (surface->pitches == NULL)
-    {
-        xf86FreeOffscreenArea(area);
-        LEAVE_PROC("SMI_AllocSurface");
-        return(BadAlloc);
-    }
-    surface->offsets = xalloc(sizeof(int));
-    if (surface->offsets == NULL)
-    {
-        xfree(surface->pitches);
-        xf86FreeOffscreenArea(area);
-        LEAVE_PROC("SMI_AllocSurface");
-        return(BadAlloc);
-    }
+	surface->pitches = xalloc(sizeof(int));
+	if (surface->pitches == NULL)
+	{
+		xf86FreeOffscreenArea(area);
+		LEAVE_PROC("SMI_AllocSurface");
+		return(BadAlloc);
+	}
+	surface->offsets = xalloc(sizeof(int));
+	if (surface->offsets == NULL)
+	{
+		xfree(surface->pitches);
+		xf86FreeOffscreenArea(area);
+		LEAVE_PROC("SMI_AllocSurface");
+		return(BadAlloc);
+	}
 
-    ptrOffscreen = xalloc(sizeof(SMI_OffscreenRec));
-    if (ptrOffscreen == NULL)
-    {
-        xfree(surface->offsets);
-        xfree(surface->pitches);
-        xf86FreeOffscreenArea(area);
-        LEAVE_PROC("SMI_AllocSurface");
-        return(BadAlloc);
-    }
+	ptrOffscreen = xalloc(sizeof(SMI_OffscreenRec));
+	if (ptrOffscreen == NULL)
+	{
+		xfree(surface->offsets);
+		xfree(surface->pitches);
+		xf86FreeOffscreenArea(area);
+		LEAVE_PROC("SMI_AllocSurface");
+		return(BadAlloc);
+	}
 
-    surface->pScrn = pScrn;
-    surface->id = id;
-    surface->width = width;
-    surface->height = height;
-    surface->pitches[0] = pitch;
-    surface->offsets[0] = area->box.y1 * fbPitch;
-    surface->devPrivate.ptr = (pointer) ptrOffscreen;
+	surface->pScrn = pScrn;
+	surface->id = id;
+	surface->width = width;
+	surface->height = height;
+	surface->pitches[0] = pitch;
+	surface->offsets[0] = area->box.y1 * fbPitch;
+	surface->devPrivate.ptr = (pointer) ptrOffscreen;
 
-    ptrOffscreen->area = area;
-    ptrOffscreen->isOn = FALSE;
+	ptrOffscreen->area = area;
+	ptrOffscreen->isOn = FALSE;
 
-    LEAVE_PROC("SMI_AllocSurface");
-    return(Success);
+	LEAVE_PROC("SMI_AllocSurface");
+	return(Success);
 }
 
 static int
 SMI_FreeSurface(
-    XF86SurfacePtr  surface
+	XF86SurfacePtr	surface
 )
 {
-    SMI_OffscreenPtr ptrOffscreen = (SMI_OffscreenPtr) surface->devPrivate.ptr;
+	SMI_OffscreenPtr ptrOffscreen = (SMI_OffscreenPtr) surface->devPrivate.ptr;
 
-    ENTER_PROC("SMI_FreeSurface");
+	ENTER_PROC("SMI_FreeSurface");
 
-    if (ptrOffscreen->isOn)
-    {
-        SMI_StopSurface(surface);
-    }
+	if (ptrOffscreen->isOn)
+	{
+		SMI_StopSurface(surface);
+	}
 
-    xf86FreeOffscreenArea(ptrOffscreen->area);
-    xfree(surface->pitches);
-    xfree(surface->offsets);
-    xfree(surface->devPrivate.ptr);
+	xf86FreeOffscreenArea(ptrOffscreen->area);
+	xfree(surface->pitches);
+	xfree(surface->offsets);
+	xfree(surface->devPrivate.ptr);
 
-    LEAVE_PROC("SMI_FreeSurface");
-    return(Success);
+	LEAVE_PROC("SMI_FreeSurface");
+	return(Success);
 }
 
 static int
 SMI_DisplaySurface(
-    XF86SurfacePtr  surface,
-    short           vid_x,
-    short           vid_y,
-    short           drw_x,
-    short           drw_y,
-    short           vid_w,
-    short           vid_h,
-    short           drw_w,
-    short           drw_h,
-    RegionPtr       clipBoxes
+	XF86SurfacePtr	surface,
+	short			vid_x,
+	short			vid_y,
+	short			drw_x,
+	short			drw_y,
+	short			vid_w,
+	short			vid_h,
+	short			drw_w,
+	short			drw_h,
+	RegionPtr		clipBoxes
 )
 {
-    SMI_OffscreenPtr ptrOffscreen = (SMI_OffscreenPtr) surface->devPrivate.ptr;
-    SMIPtr pSmi = SMIPTR(surface->pScrn);
+	SMI_OffscreenPtr ptrOffscreen = (SMI_OffscreenPtr) surface->devPrivate.ptr;
+	SMIPtr pSmi = SMIPTR(surface->pScrn);
     SMI_PortPtr pPort = pSmi->ptrAdaptor->pPortPrivates[0].ptr;
-    INT32 x1, y1, x2, y2;
-    BoxRec dstBox;
+	INT32 x1, y1, x2, y2;
+	BoxRec dstBox;
 
-    ENTER_PROC("SMI_DisplaySurface");
+	ENTER_PROC("SMI_DisplaySurface");
 
-    x1 = vid_x;
-    x2 = vid_x + vid_w;
-    y1 = vid_y;
-    y2 = vid_y + vid_h;
+	x1 = vid_x;
+	x2 = vid_x + vid_w;
+	y1 = vid_y;
+	y2 = vid_y + vid_h;
 
-    dstBox.x1 = drw_x;
-    dstBox.x2 = drw_x + drw_w;
-    dstBox.y1 = drw_y;
-    dstBox.y2 = drw_y + drw_h;
+	dstBox.x1 = drw_x;
+	dstBox.x2 = drw_x + drw_w;
+	dstBox.y1 = drw_y;
+	dstBox.y2 = drw_y + drw_h;
 
-    if (!SMI_ClipVideo(surface->pScrn, &dstBox, &x1, &y1, &x2, &y2, clipBoxes,
-            surface->width, surface->height))
-    {
-        LEAVE_PROC("SMI_DisplaySurface");
-        return(Success);
-    }
+	if (!SMI_ClipVideo(surface->pScrn, &dstBox, &x1, &y1, &x2, &y2, clipBoxes,
+			surface->width, surface->height))
+	{
+		LEAVE_PROC("SMI_DisplaySurface");
+		return(Success);
+	}
 
-    dstBox.x1 -= surface->pScrn->frameX0;
-    dstBox.y1 -= surface->pScrn->frameY0;
-    dstBox.x2 -= surface->pScrn->frameX0;
-    dstBox.y2 -= surface->pScrn->frameY0;
+	dstBox.x1 -= surface->pScrn->frameX0;
+	dstBox.y1 -= surface->pScrn->frameY0;
+	dstBox.x2 -= surface->pScrn->frameX0;
+	dstBox.y2 -= surface->pScrn->frameY0;
 
-    xf86XVFillKeyHelper(surface->pScrn->pScreen,
-                pPort->Attribute[XV_COLORKEY], clipBoxes);
+	xf86XVFillKeyHelper(surface->pScrn->pScreen,
+			    pPort->Attribute[XV_COLORKEY], clipBoxes);
 
-    if (pSmi->Chipset == SMI_COUGAR3DR)
-    {
-        SMI_ResetVideo(surface->pScrn);
-        SMI_DisplayVideo0730(surface->pScrn, surface->id, surface->offsets[0],
-                surface->width, surface->height, surface->pitches[0], x1, y1, x2,
-                y2, &dstBox, vid_w, vid_h, drw_w, drw_h);
-    }
-    else if (pSmi->Chipset == SMI_MSOC)
-    {
-        SMI_ResetVideo(surface->pScrn);
-        SMI_DisplayVideo0501(surface->pScrn, surface->id, surface->offsets[0],
-                surface->width, surface->height, surface->pitches[0], x1, y1, x2,
-                y2, &dstBox, vid_w, vid_h, drw_w, drw_h);
-    }
-    else
-    {
-        SMI_ResetVideo(surface->pScrn);
-        SMI_DisplayVideo(surface->pScrn, surface->id, surface->offsets[0],
-                surface->width, surface->height, surface->pitches[0], x1, y1, x2,
-                y2, &dstBox, vid_w, vid_h, drw_w, drw_h);
-    }
+	if (pSmi->Chipset != SMI_COUGAR3DR)
+	{
+		SMI_ResetVideo(surface->pScrn);
+		SMI_DisplayVideo(surface->pScrn, surface->id, surface->offsets[0],
+				surface->width, surface->height, surface->pitches[0], x1, y1, x2,
+				y2, &dstBox, vid_w, vid_h, drw_w, drw_h);
+	}
+	else
+	{
+		SMI_ResetVideo(surface->pScrn);
+		SMI_DisplayVideo0730(surface->pScrn, surface->id, surface->offsets[0],
+				surface->width, surface->height, surface->pitches[0], x1, y1, x2,
+				y2, &dstBox, vid_w, vid_h, drw_w, drw_h);
+	}
 
-    ptrOffscreen->isOn = TRUE;
+	ptrOffscreen->isOn = TRUE;
     if (pPort->videoStatus & CLIENT_VIDEO_ON)
-    {
+	{
         REGION_EMPTY(surface->pScrn->pScreen, &pPort->clip);
-        UpdateCurrentTime();
+		UpdateCurrentTime();
         pPort->videoStatus = FREE_TIMER;
         pPort->freeTime = currentTime.milliseconds + FREE_DELAY;
-    }
+	}
 
-    LEAVE_PROC("SMI_DisplaySurface");
-    return(Success);
+	LEAVE_PROC("SMI_DisplaySurface");
+	return(Success);
 }
 
 static int
 SMI_StopSurface(
-    XF86SurfacePtr  surface
+	XF86SurfacePtr	surface
 )
 {
-    SMI_OffscreenPtr ptrOffscreen = (SMI_OffscreenPtr) surface->devPrivate.ptr;
+	SMI_OffscreenPtr ptrOffscreen = (SMI_OffscreenPtr) surface->devPrivate.ptr;
 
-    ENTER_PROC("SMI_StopSurface");
+	ENTER_PROC("SMI_StopSurface");
 
-    if (ptrOffscreen->isOn)
-    {
-        SMIPtr pSmi = SMIPTR(surface->pScrn);
-        if (pSmi->Chipset == SMI_COUGAR3DR)
-        {
-            WRITE_FPR(pSmi, FPR00, READ_FPR(pSmi, 0x00) & ~(FPR00_VWIENABLE));
-        }
-        else
-        {
-            WRITE_VPR(pSmi, 0x00, READ_VPR(pSmi, 0x00) & ~0x00000008);
-        }
+	if (ptrOffscreen->isOn)
+	{
+		SMIPtr pSmi = SMIPTR(surface->pScrn);
+		if (pSmi->Chipset == SMI_COUGAR3DR)
+		{
+			WRITE_FPR(pSmi, FPR00, READ_FPR(pSmi, 0x00) & ~(FPR00_VWIENABLE));
+		}
+		else
+		{
+			WRITE_VPR(pSmi, 0x00, READ_VPR(pSmi, 0x00) & ~0x00000008);
+		}
 
-        ptrOffscreen->isOn = FALSE;
-    }
+		ptrOffscreen->isOn = FALSE;
+	}
 
-    LEAVE_PROC("SMI_StopSurface");
-    return(Success);
+	LEAVE_PROC("SMI_StopSurface");
+	return(Success);
 }
 
 static int
 SMI_GetSurfaceAttribute(
-    ScrnInfoPtr pScrn,
-    Atom        attr,
-    INT32       *value
+	ScrnInfoPtr	pScrn,
+	Atom		attr,
+	INT32		*value
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMIPtr pSmi = SMIPTR(pScrn);
 
-    return(SMI_GetPortAttribute(pScrn, attr, value,
-            (pointer) pSmi->ptrAdaptor->pPortPrivates[0].ptr));
+	return(SMI_GetPortAttribute(pScrn, attr, value,
+			(pointer) pSmi->ptrAdaptor->pPortPrivates[0].ptr));
 }
 
 static int
 SMI_SetSurfaceAttribute(
-    ScrnInfoPtr pScrn,
-    Atom        attr,
-    INT32       value
+	ScrnInfoPtr	pScrn,
+	Atom		attr,
+	INT32		value
 )
 {
-    SMIPtr pSmi = SMIPTR(pScrn);
+	SMIPtr pSmi = SMIPTR(pScrn);
 
-    return(SMI_SetPortAttribute(pScrn, attr, value,
-            (pointer) pSmi->ptrAdaptor->pPortPrivates[0].ptr));
+	return(SMI_SetPortAttribute(pScrn, attr, value,
+			(pointer) pSmi->ptrAdaptor->pPortPrivates[0].ptr));
 }
 
 static void
 SetKeyReg(SMIPtr pSmi, int reg, int value)
 {
-    if (pSmi->Chipset == SMI_COUGAR3DR)
-    {
-        WRITE_FPR(pSmi, reg, value);
-    }
-    else if (pSmi->Chipset == SMI_MSOC)
-    {
-        /* We don't change the color mask, and we don't do brightness.  IF
-         * they write to the colorkey register, we'll write the value to the
-         * 501 colorkey register */
-        if (FPR04 == reg)   /* Only act on colorkey value writes */
-        {
-            WRITE_DCR(pSmi, DCR08, value);  /* ColorKey register is DCR08 */
-        }
-    }
-    else
-    {
-        WRITE_VPR(pSmi, reg, value);
-    }
+	if (pSmi->Chipset == SMI_COUGAR3DR)
+	{
+		WRITE_FPR(pSmi, reg, value);
+	}
+	else
+	{
+		WRITE_VPR(pSmi, reg, value);
+	}
 }
 
 #else /* SMI_USE_VIDEO */

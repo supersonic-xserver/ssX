@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1989, 1994, 1998  The Open Group
 
@@ -2970,17 +2984,10 @@ static void
 TextEnterWindow(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     TextWidget ctx = (TextWidget)w;
-    Bool display_caret = ctx->text.display_caret;
 
     if ((event->xcrossing.detail != NotifyInferior) && event->xcrossing.focus
 	&& !ctx->text.hasfocus)
 	_XawImSetFocusValues(w, NULL, 0);
-
-    if (display_caret)
-	StartAction(ctx, event);
-    ctx->text.hasfocus = TRUE;
-    if (display_caret)
-	EndAction(ctx);
 }
 
 /*ARGSUSED*/
@@ -2988,17 +2995,10 @@ static void
 TextLeaveWindow(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     TextWidget ctx = (TextWidget)w;
-    Bool display_caret = ctx->text.display_caret;
 
     if ((event->xcrossing.detail != NotifyInferior) && event->xcrossing.focus
 	&& !ctx->text.hasfocus)
 	_XawImUnsetFocus(w);
-
-    if (display_caret)
-	StartAction(ctx, event);
-    ctx->text.hasfocus = FALSE;
-    if (display_caret)
-	EndAction(ctx);
 }
 
 /*

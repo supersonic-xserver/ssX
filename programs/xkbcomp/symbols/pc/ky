@@ -14,7 +14,7 @@
 // equal (key <AE12>) with Cyrillic_en_with_descender (U04a3),
 // bksl (key <BKSL>) with Cyrillic_straight_u (U04af)
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/ky,v 1.1 2005/02/25 18:25:36 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/ky,v 1.2 2005/03/15 21:05:52 dawes Exp $
 
 partial default alphanumeric_keys 
 xkb_symbols "basic" {

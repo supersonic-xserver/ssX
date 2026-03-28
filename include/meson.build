@@ -91,7 +91,8 @@ conf_data.set_quoted('SERVER_MISC_CONFIG_PATH', serverconfigdir)
 conf_data.set_quoted('PROJECTROOT', get_option('prefix'))
 conf_data.set_quoted('SYSCONFDIR', join_paths(get_option('prefix'), get_option('sysconfdir')))
 conf_data.set_quoted('SUID_WRAPPER_DIR', join_paths(get_option('prefix'), get_option('libexecdir')))
-conf_data.set_quoted('COMPILEDDEFAULTFONTPATH', default_font_path)
+conf_data.set_quoted('COMPILEDDEFAULTFONTPATH', '/usr/share/fonts/X11/misc/,/usr/share/fonts/X11/75dpi/:unscaled')
+conf_data.set_quoted('RGB_DB', join_paths(get_option('datadir'), 'X11/rgb'))
 
 conf_data.set('XORG_VERSION_CURRENT', release)
 
@@ -149,9 +150,8 @@ conf_data.set('HAVE_WALKCONTEXT', cc.has_function('walkcontext'))
 
 conf_data.set('BUSFAULT', conf_data.get('HAVE_SIGACTION'))
 
-# Don't let X dependencies typedef 'pointer'
-conf_data.set('_XTYPEDEF_POINTER', '1')
-conf_data.set('_XITYPEDEF_POINTER', '1')
+# _XTYPEDEF_POINTER and _XITYPEDEF_POINTER are now defined in site.h with guards
+# to prevent redefinition warnings when the system's Xdefs.h is also included
 
 conf_data.set('LISTEN_TCP', get_option('listen_tcp'))
 conf_data.set('LISTEN_UNIX', get_option('listen_unix'))
@@ -216,6 +216,12 @@ conf_data.set_quoted('__VENDORDWEBSUPPORT__', get_option('vendor_web'))
 conf_data.set_quoted('OSVENDOR', get_option('os_vendor'))
 conf_data.set_quoted('BUILDERADDR', get_option('builder_addr'))
 conf_data.set_quoted('BUILDERSTRING', get_option('builder_string'))
+
+# Legacy XFree86 4.8.0 defines - sync with site.h
+conf_data.set('VENDOR_RELEASE', 40800000)
+conf_data.set_quoted('VENDOR_STRING', 'XFree86 4.8.0 (Super Sonic X)')
+conf_data.set_quoted('VENDOR_NAME', 'The XFree86 Project')
+conf_data.set('SSX_LEGACY_BUILD', '1')
 
 #
 # for xorg-server.h only
@@ -374,7 +380,7 @@ if build_xorg
             'closure.h',
             'colormap.h',
             'colormapst.h',
-            'hotplug.h',
+            # 'hotplug.h',  # Removed - post-2009
             'cursor.h',
             'cursorstr.h',
             'dix.h',
@@ -392,15 +398,15 @@ if build_xorg
             'gc.h',
             'gcstruct.h',
             'globals.h',
-            'glx_extinit.h',
-            'glxvndabi.h',
+            # 'glx_extinit.h',  # Removed - post-2009
+            # 'glxvndabi.h',    # Removed - post-2009
             'input.h',
             'inputstr.h',
             'list.h',
             'misc.h',
             'miscstruct.h',
             'opaque.h',
-            'nonsdk_extinit.h',
+            # 'nonsdk_extinit.h',  # Removed - post-2009
             'optionstr.h',
             'os.h',
             'pixmap.h',
@@ -427,8 +433,8 @@ if build_xorg
             'xkbstr.h',
             'xkbrules.h',
             'Xprintf.h',
-            'xserver_poll.h',
-            'xserver-properties.h',
+            # 'xserver_poll.h',      # Removed - post-2009
+            # 'xserver-properties.h', # Removed - post-2009
         ],
         install_dir: xorgsdkdir,
     )

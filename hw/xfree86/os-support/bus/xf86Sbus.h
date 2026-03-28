@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/xf86Sbus.h,v 1.14 2008/06/18 15:37:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Platform specific SBUS and OpenPROM access declarations.
  *
@@ -21,39 +29,96 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #ifndef _XF86_SBUS_H
 #define _XF86_SBUS_H
 
-#if defined(__linux__)
-#include <asm/types.h>
-#include <linux/fb.h>
-#include <asm/fbio.h>
-#include <asm/openpromio.h>
+#ifdef XFree86Module
+# error XFree86 module code must not #include "xf86Sbus.h"
+#else
+
+#if defined(linux)
+# include <asm/types.h>
+# include <asm/fbio.h>
+# include <asm/openpromio.h>
 #elif defined(SVR4)
-#include <sys/fbio.h>
-#include <sys/openpromio.h>
-#elif defined(__OpenBSD__) && defined(__sparc64__)
-/* XXX */
+# include <sys/fbio.h>
+# include <sys/openpromio.h>
+#elif defined(__OpenBSD__)
+# include <machine/openpromio.h>
+# include <dev/wscons/wsconsio.h>
+  /* Compatibility #defines */
+# define FBTYPE_SUN2BW		WSDISPLAY_TYPE_SUNBW
+# define FBTYPE_SUN2COLOR	WSDISPLAY_TYPE_SUNCG2
+# define FBTYPE_SUN3COLOR	WSDISPLAY_TYPE_SUNCG3
+# define FBTYPE_SUN4COLOR	WSDISPLAY_TYPE_SUNCG4
+# define FBTYPE_SUNFAST_COLOR	WSDISPLAY_TYPE_SUNCG6
+# define FBTYPE_MEMCOLOR	WSDISPLAY_TYPE_SUNCG8
+# define FBTYPE_SUNGP3		WSDISPLAY_TYPE_SUNCG12
+# define FBTYPE_SUNGT		(-1)	/* Doesn't seem to exist */
+# define FBTYPE_SUNLEO		WSDISPLAY_TYPE_SUNLEO
+# define FBTYPE_MDICOLOR	WSDISPLAY_TYPE_SUNCG14
+# define FBTYPE_TCXCOLOR	WSDISPLAY_TYPE_SUNTCX
+# define FBTYPE_CREATOR		WSDISPLAY_TYPE_SUNFFB
+
+# define fbcmap			wsdisplay_cmap
+
+# define FBIOGETCMAP		WSDISPLAYIO_GETCMAP
+# define FBIOPUTCMAP		WSDISPLAYIO_PUTCMAP
+
+# define fbcursor		wsdisplay_cursor
+# define set			which
+
+# define FBIOSCURSOR		WSDISPLAYIO_SCURSOR
+# define FBIOGCURSOR		WSDISPLAYIO_GCURSOR
+# define FBIOSCURPOS		WSDISPLAYIO_SCURPOS
+
+# define FB_CUR_SETCUR		WSDISPLAY_CURSOR_DOCUR
+# define FB_CUR_SETPOS		WSDISPLAY_CURSOR_DOPOS
+# define FB_CUR_SETHOT		WSDISPLAY_CURSOR_DOHOT
+# define FB_CUR_SETCMAP		WSDISPLAY_CURSOR_DOCMAP
+# define FB_CUR_SETSHAPE	WSDISPLAY_CURSOR_DOSHAPE
+# define FB_CUR_SETALL		WSDISPLAY_CURSOR_DOALL
+
+# define FBIOSVIDEO		WSDISPLAYIO_SVIDEO
 #elif defined(CSRG_BASED)
-#if defined(__FreeBSD__)
-#include <sys/types.h>
-#include <sys/fbio.h>
-#include <dev/ofw/openpromio.h>
-#elif defined(__NetBSD__)
-#include <dev/sun/fbio.h>
-#include <dev/ofw/openfirmio.h>
+# if defined(__FreeBSD__)
+#  include <sys/types.h>
+#  include <sys/fbio.h>
+#  include <dev/ofw/openpromio.h>
+# elif defined(__NetBSD__)
+#  include <dev/sun/fbio.h>
+#  include <dev/ofw/openfirmio.h>
+   /*
+    * Translate from openpromio to openfirmio.  This could likely be avoided by
+    * #include'ing <machine/openpromio.h> or <sparc/openpromio.h> instead.
+    */
+#  define opiocdesc		ofiocdesc
+#  define op_nodeid		of_nodeid
+#  define op_namelen		of_namelen
+#  define op_name		of_name
+#  define op_buflen		of_buflen
+#  define op_buf		of_buf
+
+#  define OPIOCGET		OFIOCGET
+#  define OPIOCSET		OFIOCSET
+#  define OPIOCNEXTPROP		OFIOCNEXTPROP
+#  define OPIOCGETOPTNODE	OFIOCGETOPTNODE
+#  define OPIOCGETNEXT		OFIOCGETNEXT
+#  define OPIOCGETCHILD		OFIOCGETCHILD
+#  define OPIOCFINDDEVICE	OFIOCFINDDEVICE
+# else
+#  include <machine/fbio.h>
+# endif
 #else
-#include <machine/fbio.h>
-#endif
-#else
-#include <sun/fbio.h>
+# include <sun/fbio.h>
 #endif
 
-#ifdef __NetBSD__
+/*
+ * Some of these vary by OS (or are non-existent on some).  Also,
+ * adapter-specific headers are not always installed/available, so don't
+ * #include them.
+ */
+
 #ifndef   FBTYPE_SUN2BW
 # define  FBTYPE_SUN2BW 2
 #endif
@@ -83,7 +148,7 @@
 #endif
 
 #ifndef   FBTYPE_MDICOLOR
-# ifdef CSRG_BASED
+# if defined(CSRG_BASED) && !defined(__NetBSD__)
 #  define FBTYPE_MDICOLOR 28
 # else
 #  define FBTYPE_MDICOLOR 20
@@ -99,35 +164,23 @@
 #endif
 
 #ifndef   FBTYPE_CREATOR
+# if defined(linux) || defined(__NetBSD__)
 #  define FBTYPE_CREATOR 22
+# elif defined(CSRG_BASED)
+#  define FBTYPE_CREATOR 30
+# elif defined(sun)
+#  define FBTYPE_CREATOR 65535	/* Larger than life ... */
+# endif
 #endif
 
-#ifndef FBTYPE_P9100
-#define FBTYPE_P9100 21
+#ifndef   FBTYPE_P9100
+# ifdef __NetBSD__
+#  define  FBTYPE_P9100 21
+# else
+#  define  FBTYPE_P9100 -1	/* Not supported */
+# endif
 #endif
 
-#ifndef FBTYPE_AG10E
-#define FBTYPE_AG10E 24
-#endif
+#endif /* XFree86Module */
 
-#else /* !__NetBSD__ */
-
-#ifndef FBTYPE_SUNGP3
-#define FBTYPE_SUNGP3 -1
-#endif
-#ifndef FBTYPE_MDICOLOR
-#define FBTYPE_MDICOLOR -1
-#endif
-#ifndef FBTYPE_SUNLEO
-#define FBTYPE_SUNLEO -1
-#endif
-#ifndef FBTYPE_TCXCOLOR
-#define FBTYPE_TCXCOLOR -1
-#endif
-#ifndef FBTYPE_CREATOR
-#define FBTYPE_CREATOR -1
-#endif
-
-#endif /* __NetBSD__ */
-
-#endif                          /* _XF86_SBUS_H */
+#endif /* _XF86_SBUS_H */

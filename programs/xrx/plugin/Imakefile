@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xrx/plugin/Imakefile,v 1.16 2005/10/14 15:17:34 tsi Exp $
+XCOMM $XFree86: xc/programs/xrx/plugin/Imakefile,v 1.15 2004/06/01 00:17:08 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -132,10 +132,10 @@ FUNCPROTO_DEFINES = -DXFUNCPROTO_NOT_AVAILABLE
 #endif /* UseInstalledX11 */
 
  PLUGIN_DEFINES = -DXP_UNIX
-PLUGIN_INCLUDES = -Iinclude
+PLUGIN_INCLUDES = -I./include
 
         DEFINES = StrcasecmpDefines -DNETSCAPE_PLUGIN $(PLUGIN_DEFINES) $(XT_DEFINES) $(SOCKET_DEFINES) $(FUNCPROTO_DEFINES)
-       INCLUDES = $(PLUGIN_INCLUDES) $(RX_INCLUDES) $(VENDOR_INCLUDES)
+       INCLUDES = -I. $(PLUGIN_INCLUDES) $(RX_INCLUDES) $(VENDOR_INCLUDES)
 
     PARAMS_SRCS = PRead.c PParse.c BuildReq.c
     PARAMS_OBJS = PRead.o PParse.o BuildReq.o

@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,7 +58,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $XFree86: xc/programs/Xserver/include/screenint.h,v 1.9 2006/09/02 16:44:23 dawes Exp $ */
 #ifndef SCREENINT_H
 #define SCREENINT_H
 
@@ -77,14 +91,18 @@ extern Bool AllocateGCPrivate(
     int /* index */,
     unsigned /* amount */);
 
+typedef Bool (*ScrnInitProcPtr)(
+    int /* index */,
+    ScreenPtr /* pScreen */,
+    const int /* argc */,
+    const char ** /* argv */);
+
 extern int AddScreen(
-    Bool (* /*pfnInit*/)(
-	int /*index*/,
-	ScreenPtr /*pScreen*/,
-	int /*argc*/,
-	char ** /*argv*/),
-    int /*argc*/,
-    char** /*argv*/);
+    ScrnInitProcPtr /* pfnInit */,
+    const int /* argc */,
+    const char** /* argv */);
+
+#ifdef PIXPRIV
 
 extern void ResetPixmapPrivates(void);
 
@@ -95,11 +113,13 @@ extern Bool AllocatePixmapPrivate(
     int /* index */,
     unsigned /* amount */);
 
+#endif /* PIXPRIV */
+
 extern void ResetColormapPrivates(void);
 
 
 typedef struct _ColormapRec *ColormapPtr;
-typedef int (*InitCmapPrivFunc)(ColormapPtr, int);
+typedef int (*InitCmapPrivFunc)(ColormapPtr);
 
 extern int AllocateColormapPrivateIndex(
     InitCmapPrivFunc /* initPrivFunc */);

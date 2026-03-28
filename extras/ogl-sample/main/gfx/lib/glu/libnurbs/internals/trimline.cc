@@ -36,6 +36,8 @@
 /*
  * trimline.c++
  *
+ * $Date: 2004/03/05 14:26:37 $ $Revision: 1.1.1.2 $
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/trimline.cc,v 1.1.1.2 2004/03/05 14:26:37 tron Exp $
  */
 
 #include "glimports.h"

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/attributes.c,v 1.24tsi Exp $ */
+/* $Xorg: attributes.c,v 1.3 2000/08/17 19:48:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -44,6 +51,7 @@ copyright holders.
 **    *********************************************************
 ** 
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/attributes.c,v 1.22 2004/04/03 22:26:22 dawes Exp $ */
 
 #include <X11/Xproto.h>
 #include <string.h>
@@ -61,8 +69,8 @@ copyright holders.
 
 #include "attributes.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
+#include "Xlib.h"
+#include "Xresource.h"
 #include "Xrm.c"
 
 static XrmDatabase CopyDb(XrmDatabase inDb);
@@ -268,8 +276,8 @@ AddDbEntry(
     for(;*quarks; quarks++)
 	xrm_name[1] = xrm_class[1] = *quarks;
 
-    xrm_name[2] = (XrmQuark)0;
-    xrm_class[2] = (XrmQuark)0;
+    xrm_name[2] = (XrmQuark)NULL;
+    xrm_class[2] = (XrmQuark)NULL;
 
     if(XrmQGetResource (*sourceDB, xrm_name, xrm_class, &rep_type, &realVal))
     {
@@ -317,7 +325,7 @@ BuildPrinterAttrs(
          */
         xrm_name[0] = XrmStringToQuark (qualifierName);
         xrm_name[1] = XrmStringToQuark ("xp-model-identifier");
-        xrm_name[2] = (XrmQuark)0;
+        xrm_name[2] = (XrmQuark)NULL;
         XrmQGetResource (systemAttributes.printers, xrm_name, xrm_name, 
 			 &rep_type, &value);
 
@@ -350,9 +358,9 @@ BuildPrinterAttrs(
 	     modelDB = systemAttributes.printers;
 
         xrm_name[0] = XrmStringToQuark (qualifierName);
-	xrm_name[1] = (XrmQuark)0;
+	xrm_name[1] = (XrmQuark)NULL;
 	xrm_class[0] = XrmStringToQuark((char *)value.addr);
-	xrm_class[1] = (XrmQuark)0;
+	xrm_class[1] = (XrmQuark)NULL;
 	enumStruct.pDb = &printerDB;
 	enumStruct.qualifier = (char *)qualifierName;
 	enumStruct.modelId = (char *)value.addr;
@@ -397,7 +405,7 @@ BuildABase(
          */
         xrm_name[0] = XrmStringToQuark (printerName);
         xrm_name[1] = XrmStringToQuark ("xp-model-identifier");
-        xrm_name[2] = (XrmQuark)0;
+        xrm_name[2] = (XrmQuark)NULL;
         XrmQGetResource (systemAttributes.printers, xrm_name, xrm_name, 
 			 &rep_type, &value);
 	/*
@@ -408,9 +416,9 @@ BuildABase(
 	    xrm_class[0] = XrmStringToQuark((char *)value.addr);
 	else
 	    xrm_class[0] = xrm_name[0];
-	xrm_class[1] = (XrmQuark)0;
+	xrm_class[1] = (XrmQuark)NULL;
 
-	xrm_name[1] = (XrmQuark)0;
+	xrm_name[1] = (XrmQuark)NULL;
 
 	enumStruct.pDb = &builtDB;
 	enumStruct.qualifier = (char *)qualifierName;
@@ -615,7 +623,7 @@ XpGetOneAttribute(
 	    return NULL_STRING;
 
         xrm_name[0] = XrmStringToQuark (attributeName);
-        xrm_name[1] = (XrmQuark)0;
+        xrm_name[1] = (XrmQuark)NULL;
         XrmQGetResource(systemAttributes.server, xrm_name, xrm_name, 
 			&rep_type, &value);
 
@@ -648,12 +656,12 @@ XpGetOneAttribute(
 	return NULL_STRING;
 
     xrm_name[0] = XrmStringToQuark ("qualifier");
-    xrm_name[1] = (XrmQuark)0;
+    xrm_name[1] = (XrmQuark)NULL;
     XrmQGetResource(db, xrm_name, xrm_name, &rep_type, &value);
 
     xrm_name[0] = XrmStringToQuark (value.addr);
     xrm_name[1] = XrmStringToQuark (attributeName);
-    xrm_name[2] = (XrmQuark)0;
+    xrm_name[2] = (XrmQuark)NULL;
     if(XrmQGetResource(db, xrm_name, xrm_name, &rep_type, &value))
 	return (char *)value.addr;
     else
@@ -698,7 +706,7 @@ XpPutOneAttribute(
     }
     bindings[0] = XrmBindLoosely;
     quarks[0] = XrmStringToQuark(attributeName);
-    quarks[1] = (XrmQuark)0;
+    quarks[1] = (XrmQuark)NULL;
     XrmQPutStringResource(&db, bindings, quarks, value ? value : "");
 }
 
@@ -1366,8 +1374,6 @@ VectorizeCommand(
     XpContextPtr pContext)
 {
     char *cmdName;
-
-    *pVector = NULL;
 
     if(command == (char *)NULL)
 	return (char *)NULL;

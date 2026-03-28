@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/os.c,v 1.7 2005/07/19 14:42:26 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/os.c,v 1.6 2004/04/03 22:26:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1999-2002 by The XFree86 Project, Inc.
@@ -56,8 +70,6 @@
 
 #if defined(__linux__)
 #define OSNAME "linux"
-#elif defined(__DragonFly__)
-#define OSNAME "dragonfly"
 #elif defined(__FreeBSD__)
 #define OSNAME "freebsd"
 #elif defined(__NetBSD__)
@@ -75,7 +87,7 @@
 #elif defined(ISC)
 #define OSNAME "isc"
 #elif defined(SVR4) && defined(sun)
-#define OSNAME "sunos"
+#define OSNAME "solaris"
 #elif defined(SVR4)
 #define OSNAME "svr4"
 #elif defined(__UNIXOS2__)

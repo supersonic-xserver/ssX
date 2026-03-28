@@ -1,9 +1,16 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** interpret.c
 **
 ** interprets and executes lines in the Xgc syntax.
 */
-/* $XFree86: xc/programs/xgc/interpret.c,v 1.4 2002/01/07 20:38:30 dawes Exp $ */
+/* $XFree86: xc/programs/xgc/interpret.c,v 1.5 2003/05/07 21:02:07 herrb Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

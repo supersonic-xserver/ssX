@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 2000 VA Linux Systems Inc., Fremont, California.
  *
@@ -23,7 +30,7 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/tdfx_screen.h,v 1.2 2002/02/22 21:45:03 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/tdfx_screen.h,v 1.1.1.2 2004/12/10 15:06:04 alanh Exp $ */
 
 /*
  * Original rewrite:
@@ -40,7 +47,7 @@
 #ifdef GLX_DIRECT_RENDERING
 
 typedef struct {
-   drmHandle handle;
+   drm_handle_t handle;
    drmSize size;
    drmAddress map;
 } tdfxRegion, *tdfxRegionPtr;

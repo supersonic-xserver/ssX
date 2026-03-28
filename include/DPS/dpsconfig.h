@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * dpsconfig.h
  *
  * (c) Copyright 1984-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/include/DPS/dpsconfig.h,v 1.9tsi Exp $ */
+/* $XFree86: xc/include/DPS/dpsconfig.h,v 1.8 2004/03/21 11:27:05 herrb Exp $ */
 
 #ifndef	DPSCONFIG_H
 #define	DPSCONFIG_H
@@ -89,7 +96,7 @@
 #if defined(__alpha) || defined(__alpha__) || \
     defined(__ia64__) || defined(ia64) || \
     defined(__s390x__) || \
-    defined(__amd64__) || defined(__x86_64__)
+    defined(__AMD64__) || defined(AMD64) || defined(__amd64__)
 #define IEEEFLOAT 1
 #endif
 
@@ -161,7 +168,7 @@
 #define SWAPBITS 0
 #endif /* _IBMR2 */
 
-#if defined(__i386__) || defined(__amd64__) || defined(__x86_64__)
+#ifdef __i386__
 #define SWAPBITS 1
 #endif /* __i386__ */
 

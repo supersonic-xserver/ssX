@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/lbx/lbxexts.c,v 1.4tsi Exp $ */
+/* $Xorg: lbxexts.c,v 1.3 2000/08/17 19:53:31 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1994 Network Computing Devices, Inc.
  *
@@ -21,19 +28,20 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/Xserver/lbx/lbxexts.c,v 1.4 2001/02/16 13:24:10 eich Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "colormapst.h"
 #include "propertyst.h"
 #define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
+#include "lbxstr.h"
 #include "lbxserve.h"
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#include "extensions/security.h"
 #endif
 
 typedef struct _lbxext {

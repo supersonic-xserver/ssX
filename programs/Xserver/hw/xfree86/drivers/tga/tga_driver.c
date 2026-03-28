@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997,1998 by Alan Hourihane, Wigan, England.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -22,7 +29,7 @@
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  *           Matthew Grossman, <mattg@oz.net> - acceleration and misc fixes
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tga/tga_driver.c,v 1.66tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tga/tga_driver.c,v 1.62 2005/02/18 02:55:10 dawes Exp $ */
 
 /* everybody includes these */
 #include "xf86.h"
@@ -38,6 +45,8 @@
 
 /* RAC stuff */
 #include "xf86Resources.h"
+
+/*  #include "vgaHW.h" */
 
 /* software cursor */
 #include "mipointer.h"
@@ -61,21 +70,21 @@
 #include "tga.h"
 
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 static const OptionInfoRec * TGAAvailableOptions(int chipid, int busid);
 static void	TGAIdentify(int flags);
 static Bool	TGAProbe(DriverPtr drv, int flags);
 static Bool	TGAPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	TGAScreenInit(int Index, ScreenPtr pScreen,
-			      const int argc, const char **argv);
+static Bool	TGAScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	TGAEnterVT(int scrnIndex, int flags);
 static void	TGALeaveVT(int scrnIndex, int flags);
 static Bool	TGACloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -219,7 +228,7 @@ static XF86ModuleVersionInfo tgaVersRec =
 XF86ModuleData tgaModuleData = { &tgaVersRec, tgaSetup, NULL };
 
 pointer
-tgaSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+tgaSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -232,8 +241,7 @@ tgaSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * by calling LoadSubModule().
 	 */
 
-	LoaderModRefSymLists(module, ramdacSymbols, fbSymbols,
-			     xaaSymbols, NULL);
+	LoaderRefSymLists(ramdacSymbols, fbSymbols, xaaSymbols, NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -453,7 +461,6 @@ TGAPreInit(ScrnInfoPtr pScrn, int flags)
     int i;
     ClockRangePtr clockRanges;
     pointer Base;
-    ModuleDescPtr pMod;
 
     if (flags & PROBE_DETECT) return FALSE;
 
@@ -471,10 +478,10 @@ TGAPreInit(ScrnInfoPtr pScrn, int flags)
      */
 
     /* The ramdac module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "ramdac")))
+    if (!xf86LoadSubModule(pScrn, "ramdac"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    xf86LoaderReqSymLists(ramdacSymbols, NULL);
 
     /* Allocate the TGARec driverPrivate */
     if (!TGAGetRec(pScrn)) {
@@ -786,20 +793,20 @@ TGAPreInit(ScrnInfoPtr pScrn, int flags)
 
     pTga->FbMapSize = pScrn->videoRam * 1024;
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	TGAFreeRec(pScrn);
 	return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
     /* Load XAA if needed */
     if (!pTga->NoAccel || pTga->HWCursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    TGAFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     
@@ -1222,8 +1229,7 @@ TGARestore(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 static Bool
-TGAScreenInit(int scrnIndex, ScreenPtr pScreen,
-	      const int argc, const char **argv)
+TGAScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     TGAPtr pTga;

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997, 1998 by UCHIYAMA Yasushi
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,14 +27,10 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/hurd/hurd_video.c,v 1.5 2005/10/14 15:17:03 tsi Exp $ */
 
 #include <mach.h>
 #include <device/device.h>
-#include <hurd.h>
 
 #include <X11/X.h>
 #include "input.h"
@@ -36,7 +39,6 @@
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
-#include "xf86OSpriv.h"
 
 /**************************************************************************
  * Video Memory Mapping section                                            
@@ -116,32 +118,44 @@ xf86LinearVidMem()
 /**************************************************************************
  * I/O Permissions section                                                 
  ***************************************************************************/
-
-/*
- * Due to conflicts with "compiler.h", don't rely on <sys/io.h> to declare
- * this.
- */
-extern int ioperm(unsigned long __from, unsigned long __num, int __turn_on);
-
-Bool
+void
 xf86EnableIO()
 {
-    if (ioperm(0, 0xffff, 1)) {
-	FatalError("xf86EnableIO: ioperm() failed (%s)\n", strerror(errno));
-	return FALSE;
-    }
-    ioperm(0x40,4,0); /* trap access to the timer chip */
-    ioperm(0x60,4,0); /* trap access to the keyboard controller */
-    return TRUE;
+	return;
 }
 	
 void
 xf86DisableIO()
 {
-    ioperm(0,0xffff,0);
+	return;
+}
+
+void 
+xf86ClearIOPortList(int ScreenNum)
+{
+    return;
+}
+void 
+xf86AddIOPorts(int ScreenNum,int NumPorts,unsigned int *Ports)
+{
+    return;
+}
+void 
+xf86EnableIOPorts(int ScreenNum)
+{
     return;
 }
 
+void 
+xf86DisableIOPorts(int ScreenNum)
+{
+    return;
+}
+void 
+xf86DisableIOPrivs()
+{
+    return;
+}
 /**************************************************************************
  * Interrupt Handling section                                              
  **************************************************************************/

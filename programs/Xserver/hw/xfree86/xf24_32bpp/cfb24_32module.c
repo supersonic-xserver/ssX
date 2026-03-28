@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfb24_32module.c,v 1.3 1999/01/26 05:54:20 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifdef XFree86LOADER
 
@@ -23,7 +37,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData xf24_32bppModuleData = { &VersRec, xf24_32bppSetup, NULL };
 
 static pointer
-xf24_32bppSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+xf24_32bppSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     if (!LoadSubModule(module, "cfb24", NULL, NULL, NULL, NULL,
 			errmaj, errmin))

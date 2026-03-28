@@ -1,3 +1,19 @@
+/* $Xorg: FSlibint.h,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -48,7 +64,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/FS/FSlibint.h,v 3.10tsi Exp $ */
+/* $XFree86: xc/lib/FS/FSlibint.h,v 3.9 2003/09/01 20:50:09 herrb Exp $ */
 
 /*
  * FSlib internal decls
@@ -70,7 +86,7 @@ in this Software without prior written authorization from The Open Group.
 #endif /* USG */
 
 #include	"FSlib.h"
-#include	<X11/fonts/FSproto.h>
+#include	"FSproto.h"
 #include	"FSlibos.h"
 #include	<errno.h>
 #include	<stddef.h>
@@ -113,9 +129,6 @@ extern int _FSGetHostname ( char *buf, int maxlen );
 
 extern FSErrorHandler  FSSetErrorHandler ( FSErrorHandler handler );
 extern FSIOErrorHandler FSSetIOErrorHandler ( FSIOErrorHandler handler );
-
-extern FSServer *_FSHeadOfServerList;
-extern _FSQEvent  *_FSqfree;
 
 #ifndef BUFSIZE
 #define BUFSIZE 2048		/* FS output buffer size. */

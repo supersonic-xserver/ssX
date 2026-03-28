@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -51,7 +58,6 @@ static void feedback_vertex( GLcontext *ctx,
    GLfloat win[4];
    GLfloat color[4];
    GLfloat tc[4];
-   GLuint index;
 
    win[0] = v->win[0];
    win[1] = v->win[1];
@@ -75,9 +81,7 @@ static void feedback_vertex( GLcontext *ctx,
       COPY_4V(tc, v->texcoord[texUnit]);
    }
 
-   index = v->index;
-
-   _mesa_feedback_vertex( ctx, win, color, (GLfloat)index, tc );
+   _mesa_feedback_vertex( ctx, win, color, (GLfloat) v->index, tc );
 }
 
 

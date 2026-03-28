@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/twm/session.c,v 3.13 2007/10/10 00:56:11 tsi Exp $ */
+/* $Xorg: session.c,v 1.5 2001/02/09 02:05:37 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 Copyright 1994, 1998  The Open Group
@@ -25,6 +32,7 @@ in this Software without prior written authorization from The Open Group.
 
 Author:  Ralph Mor, X Consortium
 ******************************************************************************/
+/* $XFree86: xc/programs/twm/session.c,v 3.9 2003/04/21 11:46:13 herrb Exp $ */
 
 #include <X11/Xos.h>
 
@@ -76,7 +84,10 @@ static char *unique_filename ( char *path, char *prefix, int *pFd );
 
 
 char *
-GetClientID (Window window)
+GetClientID (window)
+
+Window window;
+
 {
     char *client_id = NULL;
     Window client_leader;
@@ -107,14 +118,17 @@ GetClientID (Window window)
 	if (prop)
 	    XFree (prop);
     }
-
+    
     return client_id;
 }
 
 
 
 char *
-GetWindowRole (Window window)
+GetWindowRole (window)
+
+Window window;
+
 {
     XTextProperty tp;
 
@@ -165,7 +179,11 @@ write_short (FILE *file, short s)
 
 
 int
-write_counted_string (FILE *file, char *string)
+write_counted_string (file, string)
+
+FILE	*file;
+char	*string;
+
 {
     if (string)
     {
@@ -188,7 +206,11 @@ write_counted_string (FILE *file, char *string)
 
 
 int
-read_byte (FILE *file, unsigned char *bp)
+read_byte (file, bp)
+
+FILE		*file;
+unsigned char	*bp;
+
 {
     if (fread ((char *) bp, 1, 1, file) != 1)
 	return 0;
@@ -197,7 +219,11 @@ read_byte (FILE *file, unsigned char *bp)
 
 
 int
-read_ushort (FILE *file, unsigned short *shortp)
+read_ushort (file, shortp)
+
+FILE		*file;
+unsigned short	*shortp;
+
 {
     unsigned char   file_short[2];
 
@@ -209,7 +235,11 @@ read_ushort (FILE *file, unsigned short *shortp)
 
 
 int
-read_short (FILE *file, short *shortp)
+read_short (file, shortp)
+
+FILE	*file;
+short	*shortp;
+
 {
     unsigned char   file_short[2];
 
@@ -221,7 +251,11 @@ read_short (FILE *file, short *shortp)
 
 
 int
-read_counted_string (FILE *file, char **stringp)
+read_counted_string (file, stringp)
+
+FILE	*file;
+char	**stringp;
+
 {
     unsigned char  len;
     char	   *data;
@@ -231,13 +265,13 @@ read_counted_string (FILE *file, char **stringp)
     if (len == 0) {
 	data = 0;
     } else {
-	data = malloc ((unsigned) len + 1);
-	if (!data)
+    	data = malloc ((unsigned) len + 1);
+    	if (!data)
 	    return 0;
-	if (fread (data, (int) sizeof (char), (int) len, file) != len) {
+    	if (fread (data, (int) sizeof (char), (int) len, file) != len) {
 	    free (data);
 	    return 0;
-	}
+    	}
 	data[len] = '\0';
     }
     *stringp = data;
@@ -265,7 +299,7 @@ read_counted_string (FILE *file, char **stringp)
  *   WM_CLASS "res class"               LIST of bytes
  *   WM_NAME length			1		(0 if name changed)
  *   WM_NAME				LIST of bytes
- *   WM_COMMAND arg count		1		(0 if no SM_CLIENT_ID)
+ *   WM_COMMAND arg count		1      		(0 if no SM_CLIENT_ID)
  *   For each arg in WM_COMMAND
  *      arg length			1
  *      arg				LIST of bytes
@@ -287,8 +321,13 @@ read_counted_string (FILE *file, char **stringp)
  */
 
 int
-WriteWinConfigEntry (FILE *configFile, TwmWindow *theWindow, char *clientId,
-		     char *windowRole)
+WriteWinConfigEntry (configFile, theWindow, clientId, windowRole)
+
+FILE *configFile;
+TwmWindow *theWindow;
+char *clientId;
+char *windowRole;
+
 {
     char **wm_command;
     int wm_command_count, i;
@@ -321,7 +360,7 @@ WriteWinConfigEntry (FILE *configFile, TwmWindow *theWindow, char *clientId,
 	    if (!write_counted_string (configFile, theWindow->name))
 		return 0;
 	}
-
+    
 	wm_command = NULL;
 	wm_command_count = 0;
 	XGetCommand (dpy, theWindow->w, &wm_command, &wm_command_count);
@@ -392,6 +431,7 @@ ReadWinConfigEntry (FILE *configFile, unsigned short version,
 	sizeof (TWMWinConfigEntry));
     if (!*pentry)
 	return 0;
+    memset(entry, 0, sizeof(TWMWinConfigEntry));
 
     entry->tag = 0;
     entry->client_id = NULL;
@@ -416,20 +456,21 @@ ReadWinConfigEntry (FILE *configFile, unsigned short version,
 	    goto give_up;
 	if (!read_counted_string (configFile, &entry->wm_name))
 	    goto give_up;
-
+    
 	if (!read_byte (configFile, &byte))
 	    goto give_up;
 	entry->wm_command_count = byte;
-
+	
 	if (entry->wm_command_count == 0)
 	    entry->wm_command = NULL;
 	else
 	{
 	    entry->wm_command = (char **) malloc (entry->wm_command_count *
-		sizeof (char *));
+	        sizeof (char *));
 
 	    if (!entry->wm_command)
 		goto give_up;
+	    memset(entry->wm_command, 0, entry->wm_command_count * sizeof(char *));
 
 	    for (i = 0; i < entry->wm_command_count; i++)
 		if (!read_counted_string (configFile, &entry->wm_command[i]))
@@ -467,6 +508,7 @@ ReadWinConfigEntry (FILE *configFile, unsigned short version,
 	if (!read_byte (configFile, &byte))
 	    goto give_up;
 	entry->width_ever_changed_by_user = byte;
+
 	if (!read_byte (configFile, &byte))
 	    goto give_up;
 	entry->height_ever_changed_by_user = byte;
@@ -499,7 +541,7 @@ give_up:
     }
     if (entry->wm_command)
 	free ((char *) entry->wm_command);
-
+    
     free ((char *) entry);
     *pentry = NULL;
 
@@ -508,12 +550,15 @@ give_up:
 
 
 void
-ReadWinConfigFile (char *filename)
+ReadWinConfigFile (filename)
+
+char *filename;
+
 {
     FILE *configFile;
     TWMWinConfigEntry *entry;
     int done = 0;
-    unsigned short version = 0;
+    unsigned short version;
 
     configFile = fopen (filename, "rb");
     if (!configFile)
@@ -542,12 +587,19 @@ ReadWinConfigFile (char *filename)
 
 
 int
-GetWindowConfig (TwmWindow *theWindow, short *x, short *y,
-		 unsigned short *width, unsigned short *height,
-		 Bool *iconified, Bool *icon_info_present,
-		 short *icon_x, short *icon_y,
-		 Bool *width_ever_changed_by_user,
-		 Bool *height_ever_changed_by_user)
+GetWindowConfig (theWindow, x, y, width, height,
+    iconified, icon_info_present, icon_x, icon_y,
+    width_ever_changed_by_user, height_ever_changed_by_user)
+
+TwmWindow *theWindow;
+short *x, *y;
+unsigned short *width, *height;
+Bool *iconified;
+Bool *icon_info_present;
+short *icon_x, *icon_y;
+Bool *width_ever_changed_by_user;
+Bool *height_ever_changed_by_user;
+
 {
     char *clientId, *windowRole;
     TWMWinConfigEntry *ptr;
@@ -593,10 +645,10 @@ GetWindowConfig (TwmWindow *theWindow, short *x, short *y,
 		 */
 
 		if (strcmp (theWindow->class.res_name,
-			ptr->class.res_name) == 0 &&
+		        ptr->class.res_name) == 0 &&
 		    strcmp (theWindow->class.res_class,
 			ptr->class.res_class) == 0 &&
-		   (ptr->wm_name == NULL ||
+	    	   (ptr->wm_name == NULL ||
 		    strcmp (theWindow->name, ptr->wm_name) == 0))
 		{
 		    if (clientId)
@@ -619,7 +671,7 @@ GetWindowConfig (TwmWindow *theWindow, short *x, short *y,
 			int wm_command_count = 0, i;
 
 			XGetCommand (dpy, theWindow->w,
-			    &wm_command, &wm_command_count);
+		            &wm_command, &wm_command_count);
 
 			if (wm_command_count == ptr->wm_command_count)
 			{
@@ -674,11 +726,17 @@ GetWindowConfig (TwmWindow *theWindow, short *x, short *y,
 
 #ifndef HAS_MKSTEMP
 static char *
-unique_filename (char *path, char *prefix)
+unique_filename (path, prefix)
+char *path;
+char *prefix;
 #else
 static char *
-unique_filename (char *path, char *prefix, int *pFd)
+unique_filename (path, prefix, pFd)
+char *path;
+char *prefix;
+int *pFd;
 #endif
+
 {
 #ifndef HAS_MKSTEMP
 #ifndef X_NOT_POSIX
@@ -687,28 +745,22 @@ unique_filename (char *path, char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *tmp;
 
-    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    snprintf (tempFile, sizeof(tempFile), "%s/%sXXXXXX", path, prefix);
     tmp = (char *) mktemp (tempFile);
     if (tmp)
     {
-	char *ptr = (char *) malloc (strlen (tmp) + 1);
-	strcpy (ptr, tmp);
+	char *ptr = strdup(tmp);
 	return (ptr);
     }
     else
 	return (NULL);
 #endif
-#else
+#else 
     char tempFile[PATH_MAX];
     char *ptr;
 
-    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
-    ptr = (char *)malloc(strlen(tempFile) + 1);
-    if (ptr != NULL)
-    {
-	strcpy(ptr, tempFile);
-	*pFd =  mkstemp(ptr);
-    }
+    snprintf (tempFile, sizeof(tempFile), "%s/%sXXXXXX", path, prefix);
+    ptr = strdup(tempFile);
     return ptr;
 #endif
 }
@@ -716,7 +768,11 @@ unique_filename (char *path, char *prefix, int *pFd)
 
 
 void
-SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
+SaveYourselfPhase2CB (smcConn, clientData)
+
+SmcConn smcConn;
+SmPointer clientData;
+
 {
     int scrnum;
     ScreenInfo *theScreen;
@@ -747,21 +803,21 @@ SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
 	prop1val.value = Argv[0];
 	prop1val.length = strlen (Argv[0]);
 
-	sprintf (userId, "%ld", (long)getuid());
+	snprintf (userId, sizeof(userId), "%ld", (long)getuid());
 	prop2.name = SmUserID;
 	prop2.type = SmARRAY8;
 	prop2.num_vals = 1;
 	prop2.vals = &prop2val;
 	prop2val.value = (SmPointer) userId;
 	prop2val.length = strlen (userId);
-
+	
 	prop3.name = SmRestartStyleHint;
 	prop3.type = SmCARD8;
 	prop3.num_vals = 1;
 	prop3.vals = &prop3val;
 	prop3val.value = (SmPointer) &hint;
 	prop3val.length = 1;
-
+	
 	props[0] = &prop1;
 	props[1] = &prop2;
 	props[2] = &prop3;
@@ -787,8 +843,8 @@ SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
 #else
     if ((filename = unique_filename (path, ".twm", &fd)) == NULL)
 	goto bad;
-
-    if (!(configFile = fdopen(fd, "wb")))
+    
+    if (!(configFile = fdopen(fd, "wb"))) 
 	goto bad;
 #endif
 
@@ -823,7 +879,7 @@ SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
 	    }
 	}
     }
-
+    
     prop1.name = SmRestartCommand;
     prop1.type = SmLISTofARRAY8;
 
@@ -835,6 +891,7 @@ SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
 	success = False;
 	goto bad;
     }
+    memset(prop1.vals, 0, (Argc + 4) * sizeof (SmPropValue));
 
     numVals = 0;
 
@@ -866,7 +923,7 @@ SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
 
     prop1.num_vals = numVals;
 
-    sprintf (discardCommand, "rm %s", filename);
+    snprintf (discardCommand, sizeof(discardCommand), "rm %s", filename);
     prop2.name = SmDiscardCommand;
     prop2.type = SmARRAY8;
     prop2.num_vals = 1;
@@ -894,8 +951,15 @@ SaveYourselfPhase2CB (SmcConn smcConn, SmPointer clientData)
 
 
 void
-SaveYourselfCB (SmcConn smcConn, SmPointer clientData, int saveType,
-		Bool shutdown, int interactStyle, Bool fast)
+SaveYourselfCB (smcConn, clientData, saveType, shutdown, interactStyle, fast)
+
+SmcConn smcConn;
+SmPointer clientData;
+int saveType;
+Bool shutdown;
+int interactStyle;
+Bool fast;
+
 {
     if (!SmcRequestSaveYourselfPhase2 (smcConn, SaveYourselfPhase2CB, NULL))
     {
@@ -909,7 +973,11 @@ SaveYourselfCB (SmcConn smcConn, SmPointer clientData, int saveType,
 
 
 void
-DieCB (SmcConn smcConn, SmPointer clientData)
+DieCB (smcConn, clientData)
+
+SmcConn smcConn;
+SmPointer clientData;
+
 {
     SmcCloseConnection (smcConn, 0, NULL);
     XtRemoveInput (iceInputId);
@@ -919,7 +987,11 @@ DieCB (SmcConn smcConn, SmPointer clientData)
 
 
 void
-SaveCompleteCB (SmcConn smcConn, SmPointer clientData)
+SaveCompleteCB (smcConn, clientData)
+
+SmcConn smcConn;
+SmPointer clientData;
+
 {
     ;
 }
@@ -927,7 +999,11 @@ SaveCompleteCB (SmcConn smcConn, SmPointer clientData)
 
 
 void
-ShutdownCancelledCB (SmcConn smcConn, SmPointer clientData)
+ShutdownCancelledCB (smcConn, clientData)
+
+SmcConn smcConn;
+SmPointer clientData;
+
 {
     if (!sent_save_done)
     {
@@ -939,7 +1015,12 @@ ShutdownCancelledCB (SmcConn smcConn, SmPointer clientData)
 
 
 void
-ProcessIceMsgProc (XtPointer client_data, int *source, XtInputId *id)
+ProcessIceMsgProc (client_data, source, id)
+
+XtPointer	client_data;
+int 		*source;
+XtInputId	*id;
+
 {
     IceConn	ice_conn = (IceConn) client_data;
 
@@ -949,7 +1030,10 @@ ProcessIceMsgProc (XtPointer client_data, int *source, XtInputId *id)
 
 
 void
-ConnectToSessionManager (char *previous_id)
+ConnectToSessionManager (previous_id)
+
+char *previous_id;
+
 {
     char errorMsg[256];
     unsigned long mask;
@@ -972,7 +1056,7 @@ ConnectToSessionManager (char *previous_id)
     callbacks.shutdown_cancelled.client_data = (SmPointer) NULL;
 
     smcConn = SmcOpenConnection (
-	NULL,			/* use SESSION_MANAGER env */
+	NULL, 			/* use SESSION_MANAGER env */
 	(SmPointer) appContext,
 	SmProtoMajor,
 	SmProtoMinor,
@@ -990,7 +1074,10 @@ ConnectToSessionManager (char *previous_id)
     iceInputId = XtAppAddInput (
 	    appContext,
 	    IceConnectionNumber (iceConn),
-	    (XtPointer) XtInputReadMask,
+            (XtPointer) XtInputReadMask,
 	    ProcessIceMsgProc,
 	    (XtPointer) iceConn);
 }
+
+
+

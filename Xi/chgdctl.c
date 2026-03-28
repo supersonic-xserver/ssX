@@ -1,3 +1,19 @@
+/* $XFree86: xc/programs/Xserver/Xi/chgdctl.c,v 3.5 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -50,17 +66,18 @@ SOFTWARE.
  *
  */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include "inputstr.h"           /* DeviceIntPtr      */
+#define	 NEED_EVENTS			/* for inputstr.h    */
+#define	 NEED_REPLIES
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>     /* control constants */
+#include <X11/extensions/XIproto.h>			/* control constants */
 #include "XIstubs.h"
 
+#include "extnsionst.h"
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
-#include "exevents.h"
 
 #include "chgdctl.h"
 
@@ -71,53 +88,18 @@ SOFTWARE.
  *
  */
 
-int _X_COLD
-SProcXChangeDeviceControl(ClientPtr client)
-{
-    xDeviceCtl *ctl;
+int
+SProcXChangeDeviceControl(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xChangeDeviceControlReq);
-    swaps(&stuff->length);
-    REQUEST_AT_LEAST_EXTRA_SIZE(xChangeDeviceControlReq, sizeof(xDeviceCtl));
-    swaps(&stuff->control);
-    ctl = (xDeviceCtl *) &stuff[1];
-    swaps(&ctl->control);
-    swaps(&ctl->length);
-    switch (stuff->control) {
-    case DEVICE_ABS_CALIB:
-#if 0
-        calib = (xDeviceAbsCalibCtl*)ctl;
-        swaps(&calib->length, n);
-        swapl(&calib->min_x, n);
-        swapl(&calib->max_x, n);
-        swapl(&calib->min_y, n);
-        swapl(&calib->max_y, n);
-        swapl(&calib->flip_x, n);
-        swapl(&calib->flip_y, n);
-        swapl(&calib->rotation, n);
-        swapl(&calib->button_threshold, n);
-        break;
-#endif
-    case DEVICE_ABS_AREA:
-#if 0
-        area = (xDeviceAbsAreaCtl*)ctl;
-        swapl(&area->offset_x, n);
-        swapl(&area->offset_y, n);
-        swapl(&area->width, n);
-        swapl(&area->height, n);
-        swapl(&area->screen, n);
-        swapl(&area->following, n);
-        break;
-#endif
-    case DEVICE_CORE:
-    case DEVICE_ENABLE:
-    case DEVICE_RESOLUTION:
-        /* hmm. beer. *drool* */
-        break;
-
+    swaps(&stuff->length, n);
+    REQUEST_AT_LEAST_SIZE(xChangeDeviceControlReq);
+    swaps(&stuff->control, n);
+    return(ProcXChangeDeviceControl(client));
     }
-    return (ProcXChangeDeviceControl(client));
-}
 
 /***********************************************************************
  *
@@ -126,142 +108,103 @@ SProcXChangeDeviceControl(ClientPtr client)
  */
 
 int
-ProcXChangeDeviceControl(ClientPtr client)
-{
+ProcXChangeDeviceControl(client)
+    ClientPtr client;
+    {
     unsigned len;
-    int i, status, ret = BadValue;
+    int i, status;
     DeviceIntPtr dev;
     xDeviceResolutionCtl *r;
     xChangeDeviceControlReply rep;
     AxisInfoPtr a;
     CARD32 *resolution;
-    xDeviceEnableCtl *e;
 
     REQUEST(xChangeDeviceControlReq);
-    REQUEST_AT_LEAST_EXTRA_SIZE(xChangeDeviceControlReq, sizeof(xDeviceCtl));
+    REQUEST_AT_LEAST_SIZE(xChangeDeviceControlReq);
 
-    len = stuff->length - bytes_to_int32(sizeof(xChangeDeviceControlReq));
-    ret = dixLookupDevice(&dev, stuff->deviceid, client, DixManageAccess);
-    if (ret != Success)
-        goto out;
+    len = stuff->length - (sizeof(xChangeDeviceControlReq) >>2);
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	SendErrorToClient (client, IReqCode, X_ChangeDeviceControl, 0, 
+		BadDevice);
+	return Success;
+	}
 
-    /* XTest devices are special, none of the below apply to them anyway */
-    if (IsXTestDevice(dev, NULL)) {
-        ret = BadMatch;
-        goto out;
+    rep.repType = X_Reply;
+    rep.RepType = X_ChangeDeviceControl;
+    rep.length = 0;
+    rep.sequenceNumber = client->sequence;
+
+    switch (stuff->control) 
+	{
+	case DEVICE_RESOLUTION:
+    	    r = (xDeviceResolutionCtl *) &stuff[1];
+	    if ((len < (sizeof(xDeviceResolutionCtl)>>2)) ||
+	        (len != (sizeof(xDeviceResolutionCtl)>>2) +
+		 r->num_valuators))
+		{
+		SendErrorToClient (client, IReqCode, X_ChangeDeviceControl, 
+			0, BadLength);
+		return Success;
+		}
+	    if (!dev->valuator)
+		{
+		SendErrorToClient (client, IReqCode, X_ChangeDeviceControl, 0, 
+		    BadMatch);
+		return Success;
+		}
+	    if ((dev->grab) && !SameClient(dev->grab, client))
+		{
+		rep.status = AlreadyGrabbed;
+		WriteReplyToClient(client, sizeof(xChangeDeviceControlReply), 
+		    &rep);
+		return Success;
+		}
+	    resolution = (CARD32 *) (r + 1);
+	    if (r->first_valuator + r->num_valuators > dev->valuator->numAxes)
+		{
+		SendErrorToClient (client, IReqCode, X_ChangeDeviceControl, 0, 
+		    BadValue);
+		return Success;
+		}
+	    status = ChangeDeviceControl(client, dev, (xDeviceCtl*) r);
+	    if (status == Success)
+		{
+	        a = &dev->valuator->axes[r->first_valuator];
+		for (i=0; i<r->num_valuators; i++)
+		    if (*(resolution+i) < (a+i)->min_resolution ||
+		        *(resolution+i) > (a+i)->max_resolution)
+			{
+			SendErrorToClient (client, IReqCode, 
+			    X_ChangeDeviceControl, 0, BadValue);
+			return Success;
+			}
+		for (i=0; i<r->num_valuators; i++)
+		    (a++)->resolution = *resolution++; 
+		}
+	    else if (status == DeviceBusy)
+		{
+		rep.status = DeviceBusy;
+		WriteReplyToClient(client, sizeof(xChangeDeviceControlReply), 
+		    &rep);
+		return Success;
+		}
+	    else 
+		{
+		SendErrorToClient (client, IReqCode, X_ChangeDeviceControl, 0, 
+		    BadMatch);
+		return Success;
+		}
+	    break;
+	default:
+	    SendErrorToClient (client, IReqCode, X_ChangeDeviceControl, 0, 
+		BadValue);
+	    return Success;
+	}
+    WriteReplyToClient(client, sizeof(xChangeDeviceControlReply), &rep);
+    return Success;
     }
-
-    rep = (xChangeDeviceControlReply) {
-        .repType = X_Reply,
-        .RepType = X_ChangeDeviceControl,
-        .sequenceNumber = client->sequence,
-        .length = 0,
-        .status = Success,
-    };
-
-    switch (stuff->control) {
-    case DEVICE_RESOLUTION:
-        r = (xDeviceResolutionCtl *) &stuff[1];
-        if ((len < bytes_to_int32(sizeof(xDeviceResolutionCtl))) ||
-            (len !=
-             bytes_to_int32(sizeof(xDeviceResolutionCtl)) + r->num_valuators)) {
-            ret = BadLength;
-            goto out;
-        }
-        if (!dev->valuator) {
-            ret = BadMatch;
-            goto out;
-        }
-        if ((dev->deviceGrab.grab) && !SameClient(dev->deviceGrab.grab, client)) {
-            rep.status = AlreadyGrabbed;
-            ret = Success;
-            goto out;
-        }
-        resolution = (CARD32 *) (r + 1);
-        if (r->first_valuator + r->num_valuators > dev->valuator->numAxes) {
-            ret = BadValue;
-            goto out;
-        }
-        status = ChangeDeviceControl(client, dev, (xDeviceCtl *) r);
-        if (status == Success) {
-            a = &dev->valuator->axes[r->first_valuator];
-            for (i = 0; i < r->num_valuators; i++)
-                if (*(resolution + i) < (a + i)->min_resolution ||
-                    *(resolution + i) > (a + i)->max_resolution)
-                    return BadValue;
-            for (i = 0; i < r->num_valuators; i++)
-                (a++)->resolution = *resolution++;
-
-            ret = Success;
-        }
-        else if (status == DeviceBusy) {
-            rep.status = DeviceBusy;
-            ret = Success;
-        }
-        else {
-            ret = BadMatch;
-        }
-        break;
-    case DEVICE_ABS_CALIB:
-    case DEVICE_ABS_AREA:
-        /* Calibration is now done through properties, and never had any effect
-         * on anything (in the open-source world). Thus, be honest. */
-        ret = BadMatch;
-        break;
-    case DEVICE_CORE:
-        /* Sorry, no device core switching no more. If you want a device to
-         * send core events, attach it to a master device */
-        ret = BadMatch;
-        break;
-    case DEVICE_ENABLE:
-        e = (xDeviceEnableCtl *) &stuff[1];
-        if ((len != bytes_to_int32(sizeof(xDeviceEnableCtl)))) {
-            ret = BadLength;
-            goto out;
-        }
-
-        if (IsXTestDevice(dev, NULL))
-            status = !Success;
-        else
-            status = ChangeDeviceControl(client, dev, (xDeviceCtl *) e);
-
-        if (status == Success) {
-            if (e->enable)
-                EnableDevice(dev, TRUE);
-            else
-                DisableDevice(dev, TRUE);
-            ret = Success;
-        }
-        else if (status == DeviceBusy) {
-            rep.status = DeviceBusy;
-            ret = Success;
-        }
-        else {
-            ret = BadMatch;
-        }
-
-        break;
-    default:
-        ret = BadValue;
-    }
-
- out:
-    if (ret == Success) {
-        devicePresenceNotify dpn = {
-            .type = DevicePresenceNotify,
-            .time = currentTime.milliseconds,
-            .devchange = DeviceControlChanged,
-            .deviceid = dev->id,
-            .control = stuff->control
-        };
-        SendEventToAllWindows(dev, DevicePresenceNotifyMask,
-                              (xEvent *) &dpn, 1);
-
-        WriteReplyToClient(client, sizeof(xChangeDeviceControlReply), &rep);
-    }
-
-    return ret;
-}
 
 /***********************************************************************
  *
@@ -270,11 +213,16 @@ ProcXChangeDeviceControl(ClientPtr client)
  *
  */
 
-void _X_COLD
-SRepXChangeDeviceControl(ClientPtr client, int size,
-                         xChangeDeviceControlReply * rep)
-{
-    swaps(&rep->sequenceNumber);
-    swapl(&rep->length);
-    WriteToClient(client, size, rep);
-}
+void
+SRepXChangeDeviceControl (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xChangeDeviceControlReply	*rep;
+    {
+    register char n;
+
+    swaps(&rep->sequenceNumber, n);
+    swapl(&rep->length, n);
+    WriteToClient(client, size, (char *)rep);
+    }
+

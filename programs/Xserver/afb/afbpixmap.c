@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbpixmap.c,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbpixmap.c,v 3.1 1997/06/03 14:11:07 hohndel Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,6 +53,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbpixmap.c,v 5.13 94/04/17 20:28:28 dpw Exp $ */
 
 /* pixmap management
    written by drewry, september 1986
@@ -53,7 +61,7 @@ SOFTWARE.
    on a monchrome device, a pixmap is a bitmap.
 */
 
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "maskbits.h"
@@ -65,7 +73,11 @@ SOFTWARE.
 #include "mfb.h"
 
 PixmapPtr
-afbCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
+afbCreatePixmap(pScreen, width, height, depth)
+	ScreenPtr		pScreen;
+	int				width;
+	int				height;
+	int				depth;
 {
 	PixmapPtr pPixmap;
 	int datasize;
@@ -102,7 +114,8 @@ afbCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
 }
 
 Bool
-afbDestroyPixmap(PixmapPtr pPixmap)
+afbDestroyPixmap(pPixmap)
+	PixmapPtr pPixmap;
 {
 	if(--pPixmap->refcnt)
 		return(TRUE);
@@ -112,9 +125,10 @@ afbDestroyPixmap(PixmapPtr pPixmap)
 
 
 PixmapPtr
-afbCopyPixmap(PixmapPtr pSrc)
+afbCopyPixmap(pSrc)
+	register PixmapPtr pSrc;
 {
-	PixmapPtr pDst;
+	register PixmapPtr pDst;
 	int size;
 	ScreenPtr pScreen;
 
@@ -141,14 +155,15 @@ afbCopyPixmap(PixmapPtr pSrc)
 	  left shift and or in original as many times as needed
 */
 void
-afbPadPixmap(PixmapPtr pPixmap)
+afbPadPixmap(pPixmap)
+	PixmapPtr pPixmap;
 {
-	int width = pPixmap->drawable.width;
-	int h;
-	PixelType mask;
-	PixelType *p;
-	PixelType bits;		/* real pattern bits */
-	int i;
+	register int width = pPixmap->drawable.width;
+	register int h;
+	register PixelType mask;
+	register PixelType *p;
+	register PixelType bits;		/* real pattern bits */
+	register int i;
 	int d;
 	int rep;						/* repeat count for pattern */
 
@@ -182,10 +197,12 @@ afbPadPixmap(PixmapPtr pPixmap)
  * left.
  */
 void
-afbXRotatePixmap(PixmapPtr pPix, int rw)
+afbXRotatePixmap(pPix, rw)
+	PixmapPtr		pPix;
+	register int rw;
 {
-	PixelType		*pw, *pwFinal;
-	PixelType		t;
+	register PixelType		*pw, *pwFinal;
+	register PixelType		t;
 
 	if (pPix == NullPixmap)
 		return;
@@ -216,7 +233,9 @@ afbXRotatePixmap(PixmapPtr pPix, int rw)
    works on any width.
  */
 void
-afbYRotatePixmap(PixmapPtr pPix, int rh)
+afbYRotatePixmap(pPix, rh)
+	register PixmapPtr		pPix;
+	int		rh;
 {
 	int nbyDown;		/* bytes to move down to row 0; also offset of
 								row rh */
@@ -251,9 +270,11 @@ afbYRotatePixmap(PixmapPtr pPix, int rh)
 }
 
 void
-afbCopyRotatePixmap(PixmapPtr psrcPix, PixmapPtr *ppdstPix, int xrot, int yrot)
+afbCopyRotatePixmap(psrcPix, ppdstPix, xrot, yrot)
+	register PixmapPtr psrcPix, *ppdstPix;
+	int		xrot, yrot;
 {
-	PixmapPtr pdstPix;
+	register PixmapPtr pdstPix;
 
 	if ((pdstPix = *ppdstPix) &&
 		(pdstPix->devKind == psrcPix->devKind) &&

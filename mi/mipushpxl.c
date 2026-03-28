@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mipushpxl.c,v 3.15 2005/10/14 15:17:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,9 +52,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include <X11/X.h>
 #include "gcstruct.h"
@@ -77,23 +82,20 @@ bitsizeof(int) padding and sacnline unit == bitsizeof(int).)
  * in order to have both (MSB_FIRST and LSB_FIRST) versions of this
  * in the server, we need to rename one of them
  */
-_X_EXPORT void
-miPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
-    GCPtr	pGC;
-    PixmapPtr	pBitMap;
-    DrawablePtr pDrawable;
-    int		dx, dy, xOrg, yOrg;
+void
+miPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
+	     int dx, int dy, int xOrg, int yOrg)
 {
     int		h, dxDivPPW, ibEnd;
-    MiBits 	*pwLineStart;
+    MiBits *pwLineStart;
     MiBits	*pw, *pwEnd;
-    MiBits 	msk;
-    int 	ib, w;
-    int 	ipt;		/* index into above arrays */
+    MiBits msk;
+    int ib, w;
+    int ipt;		/* index into above arrays */
     Bool 	fInBox;
     DDXPointRec	pt[NPT], ptThisLine;
     int		width[NPT];
-#if 1
+#ifdef XFree86Server
     PixelType	startmask;
     if (screenInfo.bitmapBitOrder == IMAGE_BYTE_ORDER)
       if (screenInfo.bitmapBitOrder == LSBFirst)
@@ -133,7 +135,7 @@ miPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
 	while(pw  < pwEnd)
 	{
 	    w = *pw;
-#if 1
+#ifdef XFree86Server
 	    msk = startmask;
 #else
 	    msk = (MiBits)(-1) ^ SCRRIGHT((MiBits)(-1), 1);
@@ -166,7 +168,7 @@ miPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
 			fInBox = FALSE;
 		    }
 		}
-#if 1
+#ifdef XFree86Server
     		/* This is not quite right, but it'll do for now */
 		if (screenInfo.bitmapBitOrder == IMAGE_BYTE_ORDER)
 		  if (screenInfo.bitmapBitOrder == LSBFirst)
@@ -189,7 +191,7 @@ miPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
 	{
 	    /* Process final partial word on line */
 	    w = *pw;
-#if 1
+#ifdef XFree86Server
 	    msk = startmask;
 #else
 	    msk = (MiBits)(-1) ^ SCRRIGHT((MiBits)(-1), 1);
@@ -222,7 +224,7 @@ miPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
 			fInBox = FALSE;
 		    }
 		}
-#if 1
+#ifdef XFree86Server
     		/* This is not quite right, but it'll do for now */
 		if (screenInfo.bitmapBitOrder == IMAGE_BYTE_ORDER)
 		  if (screenInfo.bitmapBitOrder == LSBFirst)

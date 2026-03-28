@@ -1,10 +1,28 @@
-/* $XTermId: misc.c,v 1.301 2006/06/16 22:51:39 tom Exp $ */
+/* $XTermId: misc.c,v 1.247 2005/01/29 22:05:32 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/misc.c,v 3.106 2006/04/10 00:34:37 dickey Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*
+ *	$Xorg: misc.c,v 1.3 2000/08/17 19:55:09 cpqbld Exp $
+ */
+
+/* $XFree86: xc/programs/xterm/misc.c,v 3.95 2005/01/29 22:17:32 dickey Exp $ */
 
 /*
  *
- * Copyright 1999-2005,2006 by Thomas E. Dickey
+ * Copyright 1999-2004,2005 by Thomas E. Dickey
  *
  *                        All Rights Reserved
  *
@@ -71,16 +89,9 @@
 #include <X11/Xmu/Error.h>
 #include <X11/Xmu/SysUtil.h>
 #include <X11/Xmu/WinUtil.h>
-#include <X11/Xmu/Xmu.h>
 #if HAVE_X11_SUNKEYSYM_H
 #include <X11/Sunkeysym.h>
 #endif
-
-#ifdef HAVE_LANGINFO_CODESET
-#include <langinfo.h>
-#endif
-
-#include <xutf8.h>
 
 #include <data.h>
 #include <error.h>
@@ -148,9 +159,6 @@ xevents(void)
     XtInputMask input_mask;
     TScreen *screen = &term->screen;
 
-    if (need_cleanup)
-	Cleanup(0);
-
     if (screen->scroll_amt)
 	FlushScroll(screen);
     /*
@@ -203,7 +211,7 @@ xevents(void)
 		 )
 		 && event.xany.type == MotionNotify
 		 && event.xcrossing.window == XtWindow(term)) {
-	    SendMousePosition(term, &event);
+	    SendMousePosition((Widget) term, &event);
 	    continue;
 	}
 
@@ -327,15 +335,15 @@ HandleInterpret(Widget w GCC_UNUSED,
     if (*param_count == 1) {
 	char *value = params[0];
 	int need = strlen(value);
-	int used = VTbuffer->next - VTbuffer->buffer;
-	int have = VTbuffer->last - VTbuffer->buffer;
+	int used = VTbuffer.next - VTbuffer.buffer;
+	int have = VTbuffer.last - VTbuffer.buffer;
 
-	if (have - used + need < BUF_SIZE) {
+	if (have - used + need < (int) sizeof(VTbuffer.buffer)) {
 
-	    fillPtyData(&term->screen, VTbuffer, value, (int) strlen(value));
+	    fillPtyData(&term->screen, &VTbuffer, value, (int) strlen(value));
 
 	    TRACE(("Interpret %s\n", value));
-	    VTbuffer->update++;
+	    VTbuffer.update++;
 	}
     }
 }
@@ -345,13 +353,15 @@ DoSpecialEnterNotify(XEnterWindowEvent * ev)
 {
     TScreen *screen = &term->screen;
 
-    TRACE(("DoSpecialEnterNotify(%d)\n", screen->select));
 #ifdef ACTIVEWINDOWINPUTONLY
     if (ev->window == XtWindow(XtParent(CURRENT_EMU(screen))))
 #endif
+#if 0
 	if (((ev->detail) != NotifyInferior) &&
 	    ev->focus &&
 	    !(screen->select & FOCUS))
+#endif
+	if (((ev->detail) != NotifyInferior) && ev->focus)
 	    selectwindow(screen, INWINDOW);
 }
 
@@ -363,7 +373,6 @@ HandleEnterWindow(Widget w GCC_UNUSED,
 		  Boolean * cont GCC_UNUSED)
 {
     /* NOP since we handled it above */
-    TRACE(("HandleEnterWindow ignored\n"));
 }
 
 static void
@@ -371,13 +380,15 @@ DoSpecialLeaveNotify(XEnterWindowEvent * ev)
 {
     TScreen *screen = &term->screen;
 
-    TRACE(("DoSpecialLeaveNotify(%d)\n", screen->select));
 #ifdef ACTIVEWINDOWINPUTONLY
     if (ev->window == XtWindow(XtParent(CURRENT_EMU(screen))))
 #endif
+#if 0
 	if (((ev->detail) != NotifyInferior) &&
 	    ev->focus &&
 	    !(screen->select & FOCUS))
+#endif
+	if (((ev->detail) != NotifyInferior) && ev->focus)
 	    unselectwindow(screen, INWINDOW);
 }
 
@@ -389,7 +400,6 @@ HandleLeaveWindow(Widget w GCC_UNUSED,
 		  Boolean * cont GCC_UNUSED)
 {
     /* NOP since we handled it above */
-    TRACE(("HandleLeaveWindow ignored\n"));
 }
 
 /*ARGSUSED*/
@@ -402,28 +412,10 @@ HandleFocusChange(Widget w GCC_UNUSED,
     XFocusChangeEvent *event = (XFocusChangeEvent *) ev;
     TScreen *screen = &term->screen;
 
-    TRACE(("HandleFocusChange type=%d, mode=%d, detail=%d\n",
-	   event->type,
-	   event->mode,
-	   event->detail));
-
     if (event->type == FocusIn) {
-	/*
-	 * NotifyNonlinear only happens (on FocusIn) if the pointer was not in
-	 * one of our windows.  Use this to reset a case where one xterm is
-	 * partly obscuring another, and X gets (us) confused about whether the
-	 * pointer was in the window.  In particular, this can happen if the
-	 * user is resizing the obscuring window, causing some events to not be
-	 * delivered to the obscured window.
-	 */
-	if (event->detail == NotifyNonlinear
-	    && (screen->select & INWINDOW) != 0) {
-	    unselectwindow(screen, INWINDOW);
-	}
 	selectwindow(screen,
-		     ((event->detail == NotifyPointer)
-		      ? INWINDOW
-		      : FOCUS));
+		     (event->detail == NotifyPointer) ? INWINDOW :
+		     FOCUS);
     } else {
 	/*
 	 * XGrabKeyboard() will generate FocusOut/NotifyGrab event that we want
@@ -431,9 +423,8 @@ HandleFocusChange(Widget w GCC_UNUSED,
 	 */
 	if (event->mode != NotifyGrab) {
 	    unselectwindow(screen,
-			   ((event->detail == NotifyPointer)
-			    ? INWINDOW
-			    : FOCUS));
+			   (event->detail == NotifyPointer) ? INWINDOW :
+			   FOCUS);
 	}
 	if (screen->grabbedKbd && (event->mode == NotifyUngrab)) {
 	    Bell(XkbBI_Info, 100);
@@ -447,8 +438,6 @@ HandleFocusChange(Widget w GCC_UNUSED,
 static void
 selectwindow(TScreen * screen, int flag)
 {
-    TRACE(("selectwindow(%d) flag=%d\n", screen->select, flag));
-
 #if OPT_TEK4014
     if (screen->TekEmu) {
 	if (!Ttoggled)
@@ -475,8 +464,6 @@ selectwindow(TScreen * screen, int flag)
 static void
 unselectwindow(TScreen * screen, int flag)
 {
-    TRACE(("unselectwindow(%d) flag=%d\n", screen->select, flag));
-
     if (screen->always_highlight)
 	return;
 
@@ -490,9 +477,13 @@ unselectwindow(TScreen * screen, int flag)
     } else
 #endif
     {
+#if 0
 	if (screen->xic)
 	    XUnsetICFocus(screen->xic);
+#endif
 	screen->select &= ~flag;
+	if (screen->xic && screen->select == 0)
+	    XUnsetICFocus(screen->xic);
 	if (screen->cursor_state && CursorMoved(screen))
 	    HideCursor();
 	if (screen->cursor_state)
@@ -503,16 +494,13 @@ unselectwindow(TScreen * screen, int flag)
 static long lastBellTime;	/* in milliseconds */
 
 void
-Bell(Atom which GCC_UNUSED, int percent)
+Bell(int which GCC_UNUSED, int percent)
 {
     TScreen *screen = &term->screen;
     struct timeval curtime;
     long now_msecs;
 
-    TRACE(("BELL %ld %d%%\n", (long) which, percent));
-    if (!XtIsRealized((Widget) term)) {
-	return;
-    }
+    TRACE(("BELL %d\n", percent));
 
     /* has enough time gone by that we are allowed to ring
        the bell again? */
@@ -535,7 +523,7 @@ Bell(Atom which GCC_UNUSED, int percent)
     if (screen->visualbell) {
 	VisualBell();
     } else {
-#if defined(HAVE_XKB_BELL_EXT)
+#if defined(HAVE_XKBBELL)
 	XkbBell(screen->display, VShellWindow, percent, which);
 #else
 	XBell(screen->display, percent);
@@ -660,7 +648,7 @@ dabbrev_prev_char(int *xp, int *yp, TScreen * screen)
 	    return linep[*xp];
 	if (--*yp < 0)		/* go to previous line */
 	    break;
-	*xp = MaxCols(screen);
+	*xp = screen->max_col + 1;
 	if (!((long) BUF_FLAGS(screen->allbuf, *yp) & LINEWRAPPED))
 	    return ' ';		/* treat lines as separate */
     }
@@ -802,9 +790,8 @@ HandleIconify(Widget gw,
 }
 
 int
-QueryMaximize(XtermWidget termw, unsigned *width, unsigned *height)
+QueryMaximize(TScreen * screen, unsigned *width, unsigned *height)
 {
-    TScreen *screen = &termw->screen;
     XSizeHints hints;
     long supp = 0;
     Window root_win;
@@ -814,7 +801,7 @@ QueryMaximize(XtermWidget termw, unsigned *width, unsigned *height)
     unsigned root_depth;
 
     if (XGetGeometry(screen->display,
-		     RootWindowOfScreen(XtScreen(termw)),
+		     XDefaultRootWindow(screen->display),
 		     &root_win,
 		     &root_x,
 		     &root_y,
@@ -862,7 +849,7 @@ RequestMaximize(XtermWidget termw, int maximize)
 
     if (maximize) {
 
-	if (QueryMaximize(termw, &root_width, &root_height)) {
+	if (QueryMaximize(screen, &root_width, &root_height)) {
 
 	    if (XGetWindowAttributes(screen->display,
 				     WMFrameWindow(termw),
@@ -991,7 +978,7 @@ timestamp_filename(char *dst, const char *src)
     time_t tstamp;
     struct tm *tstruct;
 
-    tstamp = time((time_t *) 0);
+    time(&tstamp);
     tstruct = localtime(&tstamp);
     sprintf(dst, TIMESTAMP_FMT,
 	    src,
@@ -1022,7 +1009,7 @@ open_userfile(uid_t uid, gid_t gid, char *path, Bool append)
     chown(path, uid, gid);
 #else
     if ((access(path, F_OK) != 0 && (errno != ENOENT))
-	|| (creat_as(uid, gid, append, path, 0644) <= 0)
+	|| (!(creat_as(uid, gid, append, path, 0644)))
 	|| ((fd = open(path, O_WRONLY | O_APPEND)) < 0)) {
 	int the_error = errno;
 	fprintf(stderr, "%s: cannot open %s: %d:%s\n",
@@ -1060,10 +1047,8 @@ open_userfile(uid_t uid, gid_t gid, char *path, Bool append)
  * effective user ids are the same, so this remains as a convenience function
  * for the debug logs.
  *
- * Returns
- *	 1 if we can proceed to open the file in relative safety,
- *	-1 on error, e.g., cannot fork
- *	 0 otherwise.
+ * Returns 1 if we can proceed to open the file in relative safety, 0
+ * otherwise.
  */
 int
 creat_as(uid_t uid, gid_t gid, Bool append, char *pathname, int mode)
@@ -1098,22 +1083,16 @@ creat_as(uid_t uid, gid_t gid, Bool append, char *pathname, int mode)
     pid = fork();
     switch (pid) {
     case 0:			/* child */
-	if (setgid(gid) == -1
-	    || setuid(uid) == -1) {
-	    /* we cannot report an error here via stderr, just quit */
-	    retval = 1;
-	} else {
-	    fd = open(pathname,
-		      O_WRONLY | O_CREAT | (append ? O_APPEND : O_EXCL),
-		      mode);
-	    if (fd >= 0) {
-		close(fd);
-		retval = 0;
-	    } else {
-		retval = 1;
-	    }
-	}
-	_exit(retval);
+	setgid(gid);
+	setuid(uid);
+	fd = open(pathname,
+		  O_WRONLY | O_CREAT | (append ? O_APPEND : O_EXCL),
+		  mode);
+	if (fd >= 0) {
+	    close(fd);
+	    _exit(0);
+	} else
+	    _exit(1);
 	/* NOTREACHED */
     case -1:			/* error */
 	return retval;
@@ -1152,21 +1131,6 @@ creat_as(uid_t uid, gid_t gid, Bool append, char *pathname, int mode)
     }
 }
 #endif /* !VMS */
-
-int
-xtermResetIds(TScreen * screen)
-{
-    int result = 0;
-    if (setgid(screen->gid) == -1) {
-	fprintf(stderr, "%s: unable to reset group-id\n", ProgramName);
-	result = -1;
-    }
-    if (setuid(screen->uid) == -1) {
-	fprintf(stderr, "%s: unable to reset user-id\n", ProgramName);
-	result = -1;
-    }
-    return result;
-}
 
 #ifdef ALLOWLOGGING
 
@@ -1222,7 +1186,7 @@ StartLog(TScreen * screen)
 	    time_t now;
 	    struct tm *ltm;
 
-	    now = time((time_t *) 0);
+	    (void) time(&now);
 	    ltm = (struct tm *) localtime(&now);
 	    if ((gethostname(hostname, sizeof(hostname)) == 0) &&
 		(strftime(yyyy_mm_dd_hh_mm_ss,
@@ -1287,8 +1251,8 @@ StartLog(TScreen * screen)
 	    signal(SIGCHLD, SIG_DFL);
 
 	    /* (this is redundant) */
-	    if (xtermResetIds(screen) < 0)
-		exit(ERROR_SETUID);
+	    setgid(screen->gid);
+	    setuid(screen->uid);
 
 	    execl(shell, shell, "-c", &screen->logfile[1], (void *) 0);
 
@@ -1312,7 +1276,7 @@ StartLog(TScreen * screen)
 	    return;
     }
 #endif /*VMS */
-    screen->logstart = VTbuffer->next;
+    screen->logstart = VTbuffer.next;
     screen->logging = True;
     update_logging();
 }
@@ -1341,12 +1305,12 @@ FlushLog(TScreen * screen)
 	    return;
 	tt_new_output = False;
 #endif /* VMS */
-	cp = VTbuffer->next;
+	cp = VTbuffer.next;
 	if (screen->logstart != 0
 	    && (i = cp - screen->logstart) > 0) {
 	    write(screen->logfd, (char *) screen->logstart, (unsigned) i);
 	}
-	screen->logstart = VTbuffer->next;
+	screen->logstart = VTbuffer.next;
     }
 }
 
@@ -1566,85 +1530,6 @@ ChangeAnsiColorRequest(XtermWidget pTerm,
 #define find_closest_color(display, cmap, def) 0
 #endif /* OPT_ISO_COLORS */
 
-#if OPT_PASTE64
-static void
-ManipulateSelectionData(TScreen * screen, char *buf, int final)
-{
-#define PDATA(a,b) { a, #b }
-    static struct {
-	char given;
-	char *result;
-    } table[] = {
-	PDATA('s', SELECT),
-	    PDATA('p', PRIMARY),
-	    PDATA('c', CLIPBOARD),
-	    PDATA('0', CUT_BUFFER0),
-	    PDATA('1', CUT_BUFFER1),
-	    PDATA('2', CUT_BUFFER2),
-	    PDATA('3', CUT_BUFFER3),
-	    PDATA('4', CUT_BUFFER4),
-	    PDATA('5', CUT_BUFFER5),
-	    PDATA('6', CUT_BUFFER6),
-	    PDATA('7', CUT_BUFFER7),
-    };
-
-    char *base = buf;
-    char *used = x_strdup(base);
-    Cardinal j, n = 0;
-    char **select_args = 0;
-
-    TRACE(("Manipulate selection data\n"));
-
-    while (*buf != ';' && *buf != '\0') {
-	++buf;
-    }
-
-    if (*buf == ';') {
-	*buf++ = '\0';
-
-	if (*base == '\0')
-	    base = "s0";
-	if ((select_args = TypeCallocN(String, 1 + strlen(base))) == 0)
-	    return;
-	while (*base != '\0') {
-	    for (j = 0; j < XtNumber(table); ++j) {
-		if (*base == table[j].given) {
-		    used[n] = *base;
-		    select_args[n++] = table[j].result;
-		    TRACE(("atom[%d] %s\n", n, table[j].result));
-		    break;
-		}
-	    }
-	    ++base;
-	}
-	used[n] = 0;
-
-	if (!strcmp(buf, "?")) {
-	    TRACE(("Getting selection\n"));
-	    unparseputc1(OSC, screen->respond);
-	    unparseputs("52", screen->respond);
-	    unparseputc(';', screen->respond);
-
-	    unparseputs(used, screen->respond);
-	    unparseputc(';', screen->respond);
-
-	    /* Tell xtermGetSelection data is base64 encoded */
-	    screen->base64_paste = n;
-	    screen->base64_final = final;
-
-	    /* terminator will be written in this call */
-	    xtermGetSelection((Widget) term, 0, select_args, n, NULL);
-	} else {
-	    TRACE(("Setting selection with %s\n", buf));
-	    ClearSelectionBuffer(screen);
-	    while (*buf != '\0')
-		AppendToSelectionBuffer(screen, CharOf(*buf++));
-	    CompleteSelection(term, select_args, n);
-	}
-    }
-}
-#endif /* OPT_PASTE64 */
-
 /***====================================================================***/
 
 void
@@ -1655,8 +1540,6 @@ do_osc(Char * oscbuf, unsigned len GCC_UNUSED, int final)
     Char *cp;
     int state = 0;
     char *buf = 0;
-
-    TRACE(("do_osc %s\n", oscbuf));
 
     /*
      * Lines should be of the form <OSC> number ; string <ST>, however
@@ -1671,18 +1554,14 @@ do_osc(Char * oscbuf, unsigned len GCC_UNUSED, int final)
 	case 0:
 	    if (isdigit(*cp)) {
 		mode = 10 * mode + (*cp - '0');
-		if (mode > 65535) {
-		    TRACE(("do_osc found unknown mode %d\n", mode));
+		if (mode > 65535)
 		    return;
-		}
 		break;
 	    }
 	    /* FALLTHRU */
 	case 1:
-	    if (*cp != ';') {
-		TRACE(("do_osc did not find semicolon offset %d\n", cp - oscbuf));
+	    if (*cp != ';')
 		return;
-	    }
 	    state = 2;
 	    break;
 	case 2:
@@ -1690,26 +1569,8 @@ do_osc(Char * oscbuf, unsigned len GCC_UNUSED, int final)
 	    state = 3;
 	    /* FALLTHRU */
 	default:
-	    if (ansi_table[CharOf(*cp)] != CASE_PRINT) {
-		switch (mode) {
-		case 0:
-		case 1:
-		case 2:
-#if OPT_WIDE_CHARS
-		    /*
-		     * If we're running with UTF-8, it is possible for title
-		     * strings to contain "nonprinting" text.
-		     */
-		    if (xtermEnvUTF8())
-#endif
-			break;
-		default:
-		    TRACE(("do_osc found nonprinting char %02X offset %d\n",
-			   CharOf(*cp),
-			   cp - oscbuf));
-		    return;
-		}
-	    }
+	    if (ansi_table[CharOf(*cp)] != CASE_PRINT)
+		return;
 	}
     }
     if (buf == 0)
@@ -1788,7 +1649,7 @@ do_osc(Char * oscbuf, unsigned len GCC_UNUSED, int final)
 	    unparseputc1(OSC, screen->respond);
 	    unparseputs("50", screen->respond);
 
-	    if ((buf = screen->MenuFontName(num)) != 0) {
+	    if ((buf = screen->menu_font_names[num]) != 0) {
 		unparseputc(';', screen->respond);
 		unparseputs(buf, screen->respond);
 	    }
@@ -1833,25 +1694,19 @@ do_osc(Char * oscbuf, unsigned len GCC_UNUSED, int final)
 
 		if (num < 0
 		    || num > fontMenu_lastBuiltin
-		    || (buf = screen->MenuFontName(num)) == 0) {
+		    || (buf = screen->menu_font_names[num]) == 0) {
 		    Bell(XkbBI_MinorError, 0);
 		    break;
 		}
 	    }
 	    fonts.f_n = buf;
-	    SetVTFont(term, fontMenu_fontescape, True, &fonts);
+	    SetVTFont(fontMenu_fontescape, True, &fonts);
 	}
 	break;
     case 51:
-	/* reserved for Emacs shell (Rob Mayoff <mayoff@dqd.com>) */
+	/* reserved for Emacs shell (Rob Myoff <mayoff@dqd.com>) */
 	break;
 
-#if OPT_PASTE64
-    case 52:
-	if (screen->allowWindowOps && (buf != 0))
-	    ManipulateSelectionData(screen, buf, final);
-	break;
-#endif
 	/*
 	 * One could write code to send back the display and host names,
 	 * but that could potentially open a fairly nasty security hole.
@@ -2207,56 +2062,38 @@ do_dcs(Char * dcsbuf, size_t dcslen)
 	    unsigned state;
 	    int code;
 	    char *tmp;
-	    char *parsed = ++cp;
 
+	    ++cp;
+	    code = xtermcapKeycode(cp, &state);
 	    unparseputc1(DCS, screen->respond);
-
-	    code = xtermcapKeycode(&parsed, &state);
 	    unparseputc(code >= 0 ? '1' : '0', screen->respond);
-
 	    unparseputc('+', screen->respond);
 	    unparseputc('r', screen->respond);
-
-	    while (*cp != 0) {
-		if (cp == parsed)
-		    break;	/* no data found, error */
-
-		for (tmp = cp; tmp != parsed; ++tmp)
-		    unparseputc(*tmp, screen->respond);
-
-		if (code >= 0) {
-		    unparseputc('=', screen->respond);
-		    screen->tc_query = code;
-		    /* XK_COLORS is a fake code for the "Co" entry (maximum
-		     * number of colors) */
-		    if (code == XK_COLORS) {
+	    for (tmp = cp; *tmp; ++tmp)
+		unparseputc(*tmp, screen->respond);
+	    if (code >= 0) {
+		unparseputc('=', screen->respond);
+		screen->tc_query = code;
+		/* XK_COLORS is a fake code for the "Co" entry (maximum
+		 * number of colors) */
+		if (code == XK_COLORS) {
 # if OPT_256_COLORS
-			unparseputc('2', screen->respond);
-			unparseputc('5', screen->respond);
-			unparseputc('6', screen->respond);
+		    unparseputc('2', screen->respond);
+		    unparseputc('5', screen->respond);
+		    unparseputc('6', screen->respond);
 # elif OPT_88_COLORS
-			unparseputc('8', screen->respond);
-			unparseputc('8', screen->respond);
+		    unparseputc('8', screen->respond);
+		    unparseputc('8', screen->respond);
 # else
-			unparseputc('1', screen->respond);
-			unparseputc('6', screen->respond);
+		    unparseputc('1', screen->respond);
+		    unparseputc('6', screen->respond);
 # endif
-		    } else {
-			XKeyEvent event;
-			event.state = state;
-			Input(&(term->keyboard), screen, &event, False);
-		    }
-		    screen->tc_query = -1;
 		} else {
-		    break;	/* no match found, error */
+		    XKeyEvent event;
+		    event.state = state;
+		    Input(&(term->keyboard), screen, &event, False);
 		}
-
-		cp = parsed;
-		if (*parsed == ';') {
-		    unparseputc(*parsed++, screen->respond);
-		    cp = parsed;
-		    code = xtermcapKeycode(&parsed, &state);
-		}
+		screen->tc_query = -1;
 	    }
 	    unparseputc1(ST, screen->respond);
 	}
@@ -2291,94 +2128,24 @@ udk_lookup(int keycode, int *len)
 static void
 ChangeGroup(String attribute, char *value)
 {
-#if OPT_WIDE_CHARS
-    static Char *converted;	/* NO_LEAKS */
-#endif
     Arg args[1];
-    char *original = (value != 0) ? value : "";
-    char *name = original;
-    TScreen *screen = &term->screen;
-    Widget w = CURRENT_EMU(screen);
-    Widget top = SHELL_OF(w);
-    unsigned limit = strlen(name);
+    const char *name = (value != 0) ? (char *) value : "";
 
     TRACE(("ChangeGroup(attribute=%s, value=%s)\n", attribute, name));
-
-    /*
-     * Ignore titles that are too long to be plausible requests.
-     */
-    if (limit >= 1024)
-	return;
-
-#if OPT_WIDE_CHARS
-    /*
-     * Title strings are limited to ISO-8859-1, which is consistent with the
-     * printable data in sos_table.  However, if we're running in UTF-8 mode,
-     * it is likely that non-ASCII text in the string will be rejected because
-     * it is not printable in the current locale.  So we convert it to UTF-8,
-     * allowing the X library to convert it back.
-     */
-    if (xtermEnvUTF8() && !screen->utf8_title) {
-	int n;
-
-	for (n = 0; name[n] != '\0'; ++n) {
-	    if (CharOf(name[n]) > 127) {
-		if (converted != 0)
-		    free(converted);
-		if ((converted = TypeMallocN(Char, 1 + (5 * limit))) != 0) {
-		    Char *temp = converted;
-		    while (*name != 0) {
-			temp = convertToUTF8(temp, CharOf(*name));
-			++name;
-		    }
-		    *temp = 0;
-		    name = (char *) converted;
-		    TRACE(("...converted{%s}\n", name));
-		}
-		break;
-	    }
-	}
-    }
-#endif
-
 #if OPT_SAME_NAME
     /* If the attribute isn't going to change, then don't bother... */
 
     if (sameName) {
 	char *buf;
 	XtSetArg(args[0], attribute, &buf);
-	XtGetValues(top, args, 1);
-	TRACE(("...comparing{%s}\n", buf));
+	XtGetValues(toplevel, args, 1);
 	if (strcmp(name, buf) == 0)
 	    return;
     }
 #endif /* OPT_SAME_NAME */
 
-    TRACE(("...updating %s\n", attribute));
     XtSetArg(args[0], attribute, name);
-    XtSetValues(top, args, 1);
-
-#if OPT_WIDE_CHARS
-    if (xtermEnvUTF8()) {
-	Display *dpy = XtDisplay(term);
-	Atom my_atom;
-	char *propname = (!strcmp(attribute, XtNtitle)
-			  ? "_NET_WM_NAME"
-			  : "_NET_WM_ICON_NAME");
-	if ((my_atom = XInternAtom(dpy, propname, False)) != None) {
-	    if (screen->utf8_title) {
-		TRACE(("...updating %s\n", propname));
-		XChangeProperty(dpy, VShellWindow,
-				my_atom, XA_UTF8_STRING(dpy), 8,
-				PropModeReplace,
-				(Char *) original, (int) strlen(original));
-	    } else {
-		TRACE(("...deleting %s\n", propname));
-		XDeleteProperty(dpy, VShellWindow, my_atom);
-	    }
-	}
-    }
-#endif
+    XtSetValues(toplevel, args, 1);
 }
 
 void
@@ -2542,10 +2309,6 @@ UpdateOldColors(XtermWidget pTerm GCC_UNUSED, ScrnColors * pNew)
     return (True);
 }
 
-/*
- * This is part of ReverseVideo().  It reverses the data stored for the old
- * "dynamic" colors that might have been retrieved using OSC 10-18.
- */
 void
 ReverseOldColors(void)
 {
@@ -2562,7 +2325,9 @@ ReverseOldColors(void)
 		pOld->names[TEXT_CURSOR] = NULL;
 	    }
 	    if (pOld->names[TEXT_BG]) {
-		if ((tmpName = x_strdup(pOld->names[TEXT_BG])) != 0) {
+		tmpName = XtMalloc(strlen(pOld->names[TEXT_BG]) + 1);
+		if (tmpName) {
+		    strcpy(tmpName, pOld->names[TEXT_BG]);
 		    pOld->names[TEXT_CURSOR] = tmpName;
 		}
 	    }
@@ -2596,10 +2361,9 @@ AllocateTermColor(XtermWidget pTerm,
     if (XParseColor(screen->display, cmap, name, &def)
 	&& (XAllocColor(screen->display, cmap, &def)
 	    || find_closest_color(screen->display, cmap, &def))
-	&& (newName = x_strdup(name)) != 0) {
-	if (COLOR_DEFINED(pNew, ndx))
-	    free(pNew->names[ndx]);
+	&& (newName = XtMalloc(strlen(name) + 1)) != 0) {
 	SET_COLOR_VALUE(pNew, ndx, def.pixel);
+	strcpy(newName, name);
 	SET_COLOR_NAME(pNew, ndx, newName);
 	TRACE(("AllocateTermColor #%d: %s (pixel %#lx)\n", ndx, newName, def.pixel));
 	return (True);
@@ -2796,7 +2560,6 @@ Cleanup(int code)
 	}
 
 	cleaning = True;
-	need_cleanup = FALSE;
 
 	TRACE(("Cleanup %d\n", code));
 
@@ -2822,61 +2585,6 @@ Cleanup(int code)
     Exit(code);
 }
 
-#ifndef VMS
-char *
-xtermFindShell(char *leaf, Bool warning)
-{
-    char *s;
-    char *d;
-    char *tmp;
-    char *result = leaf;
-
-    TRACE(("xtermFindShell(%s)\n", leaf));
-    if (*result != '\0' && strchr("+/-", *result) == 0) {
-	/* find it in $PATH */
-	if ((s = getenv("PATH")) != 0) {
-	    if ((tmp = TypeMallocN(char, strlen(leaf) + strlen(s) + 1)) != 0) {
-		Bool found = False;
-		while (*s != '\0') {
-		    strcpy(tmp, s);
-		    for (d = tmp;; ++d) {
-			if (*d == ':' || *d == '\0') {
-			    int skip = (*d != '\0');
-			    *d = '/';
-			    strcpy(d + 1, leaf);
-			    if (skip)
-				++d;
-			    s += (d - tmp);
-			    if (*tmp == '/'
-				&& strstr(tmp, "..") == 0
-				&& access(tmp, X_OK) == 0) {
-				result = x_strdup(tmp);
-				found = True;
-			    }
-			    break;
-			}
-			if (found)
-			    break;
-		    }
-		    if (found)
-			break;
-		}
-		free(tmp);
-	    }
-	}
-    }
-    TRACE(("...xtermFindShell(%s)\n", result));
-    if (*result != '/'
-	|| strstr(result, "..") != 0
-	|| access(result, X_OK) != 0) {
-	if (warning)
-	    fprintf(stderr, "No absolute path found for shell: %s\n", result);
-	result = 0;
-    }
-    return result;
-}
-#endif /* VMS */
-
 /*
  * sets the value of var to be arg in the Unix 4.2 BSD environment env.
  * Var should end with '=' (bindings are of the form "var=value").
@@ -2887,30 +2595,28 @@ xtermFindShell(char *leaf, Bool warning)
 void
 xtermSetenv(char *var, char *value)
 {
-    if (value != 0) {
-	int envindex = 0;
-	size_t len = strlen(var);
+    int envindex = 0;
+    size_t len = strlen(var);
 
-	TRACE(("xtermSetenv(var=%s, value=%s)\n", var, value));
+    TRACE(("xtermSetenv(var=%s, value=%s)\n", var, value));
 
-	while (environ[envindex] != NULL) {
-	    if (strncmp(environ[envindex], var, len) == 0) {
-		/* found it */
-		environ[envindex] = CastMallocN(char, len + strlen(value));
-		strcpy(environ[envindex], var);
-		strcat(environ[envindex], value);
-		return;
-	    }
-	    envindex++;
+    while (environ[envindex] != NULL) {
+	if (strncmp(environ[envindex], var, len) == 0) {
+	    /* found it */
+	    environ[envindex] = CastMallocN(char, len + strlen(value));
+	    strcpy(environ[envindex], var);
+	    strcat(environ[envindex], value);
+	    return;
 	}
-
-	TRACE(("...expanding env to %d\n", envindex + 1));
-
-	environ[envindex] = CastMallocN(char, len + strlen(value));
-	(void) strcpy(environ[envindex], var);
-	strcat(environ[envindex], value);
-	environ[++envindex] = NULL;
+	envindex++;
     }
+
+    TRACE(("...expanding env to %d\n", envindex + 1));
+
+    environ[envindex] = CastMallocN(char, len + strlen(value));
+    (void) strcpy(environ[envindex], var);
+    strcat(environ[envindex], value);
+    environ[++envindex] = NULL;
 }
 
 /*ARGSUSED*/
@@ -2990,7 +2696,6 @@ set_vt_visibility(Bool on)
 #if OPT_TOOLBAR
 	    /* we need both of these during initialization */
 	    XtMapWidget(SHELL_OF(term));
-	    ShowToolbar(resource.toolBar);
 #endif
 	    screen->Vshow = True;
 	}
@@ -2999,7 +2704,7 @@ set_vt_visibility(Bool on)
     else {
 	if (screen->Vshow && term) {
 	    withdraw_window(XtDisplay(term),
-			    VShellWindow,
+			    XtWindow(SHELL_OF(term)),
 			    XScreenNumberOfScreen(XtScreen(term)));
 	    screen->Vshow = False;
 	}
@@ -3041,7 +2746,7 @@ set_tek_visibility(Bool on)
     } else {
 	if (screen->Tshow && tekWidget) {
 	    withdraw_window(XtDisplay(tekWidget),
-			    TShellWindow,
+			    XtWindow(SHELL_OF(tekWidget)),
 			    XScreenNumberOfScreen(XtScreen(tekWidget)));
 	    screen->Tshow = False;
 	}
@@ -3142,12 +2847,6 @@ sortedOptDescs(XrmOptionDescRec * descs, Cardinal res_count)
 {
     static XrmOptionDescRec *res_array = 0;
 
-#ifdef NO_LEAKS
-    if (descs == 0 && res_array != 0) {
-	free(res_array);
-	res_array = 0;
-    } else
-#endif
     if (res_array == 0) {
 	Cardinal j;
 
@@ -3171,13 +2870,6 @@ sortedOpts(OptionHelp * options, XrmOptionDescRec * descs, Cardinal numDescs)
 {
     static OptionHelp *opt_array = 0;
 
-#ifdef NO_LEAKS
-    if (descs == 0 && opt_array != 0) {
-	sortedOptDescs(descs, numDescs);
-	free(opt_array);
-	opt_array = 0;
-    } else
-#endif
     if (opt_array == 0) {
 	Cardinal opt_count, j;
 #if OPT_TRACE
@@ -3254,70 +2946,6 @@ sortedOpts(OptionHelp * options, XrmOptionDescRec * descs, Cardinal numDescs)
     }
     return opt_array;
 }
-
-/*
- * Report the locale that xterm was started in.
- */
-char *
-xtermEnvLocale(void)
-{
-    static char *result;
-
-    if (result == 0) {
-	if ((result = getenv("LC_ALL")) == 0 || *result == '\0')
-	    if ((result = getenv("LC_CTYPE")) == 0 || *result == '\0')
-		if ((result = getenv("LANG")) == 0 || *result == '\0')
-		    result = "";
-	TRACE(("xtermEnvLocale ->%s\n", result));
-    }
-    return result;
-}
-
-char *
-xtermEnvEncoding(void)
-{
-    static char *result;
-
-    if (result == 0) {
-#ifdef HAVE_LANGINFO_CODESET
-	result = nl_langinfo(CODESET);
-#else
-	char *locale = xtermEnvLocale();
-	if (*locale == 0 || !strcmp(locale, "C") || !strcmp(locale, "POSIX")) {
-	    result = "ASCII";
-	} else {
-	    result = "ISO-8859-1";
-	}
-#endif
-	TRACE(("xtermEnvEncoding ->%s\n", result));
-    }
-    return result;
-}
-
-#if OPT_WIDE_CHARS
-/*
- * Tell whether xterm was started in a locale that uses UTF-8 encoding for
- * characters.  That environment is inherited by subprocesses and used in
- * various library calls.
- */
-Bool
-xtermEnvUTF8(void)
-{
-    static Bool init = False;
-    static Bool result = False;
-
-    if (!init) {
-	init = True;
-#ifdef HAVE_LANGINFO_CODESET
-	result = (strcmp(xtermEnvEncoding(), "UTF-8") == 0);
-#else
-	result = (strstr(xtermEnvLocale(), "UTF-8") != NULL);
-#endif
-	TRACE(("xtermEnvUTF8 ->%s\n", BtoS(result)));
-    }
-    return result;
-}
-#endif /* OPT_WIDE_CHARS */
 
 /*
  * Returns the version-string used in the "-v' message as well as a few other

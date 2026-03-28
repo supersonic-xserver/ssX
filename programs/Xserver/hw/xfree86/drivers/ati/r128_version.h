@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_version.h,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_version.h,v 1.8 2004/12/31 16:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -38,8 +45,8 @@
 #define R128_DRIVER_NAME   "r128"
 
 #define R128_VERSION_MAJOR 4
-#define R128_VERSION_MINOR 1
-#define R128_VERSION_PATCH 0
+#define R128_VERSION_MINOR 0
+#define R128_VERSION_PATCH 1
 
 #ifndef R128_VERSION_EXTRA
 #define R128_VERSION_EXTRA ""

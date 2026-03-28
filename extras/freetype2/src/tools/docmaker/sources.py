@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# $XFree86$
 #
 # this file contains definitions of classes needed to decompose
 # C sources files into a series of multi-line "blocks". There are

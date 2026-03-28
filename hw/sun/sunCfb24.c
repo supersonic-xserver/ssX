@@ -1,6 +1,18 @@
-/* $Xorg: sunCfb24.c,v 1.4 2001/02/09 02:04:43 xorgcvs Exp $ */
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1994, 1998  The Open Group
 
@@ -25,12 +37,12 @@ used in advertising or otherwise to promote the sale, use or other dealings in
 this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb24.c,v 1.3 2001/12/14 19:59:42 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb24.c,v 1.5 2007/01/02 01:24:12 tsi Exp $ */
 
 /*
- * The CG8 is similar to the CG4 in that it has a mono plane, an enable
+ * The CG8 is similar to the CG4 in that it has a mono plane, an enable 
  * plane, and a color plane. While the CG4 only has an 8-bit color
- * plane the CG8 has a 24-bit color plane.
+ * plane the CG8 has a 24-bit color plane. 
  *
  * If you have a CG4 you know that you can switch between the mono and
  * the color screens merely by dragging the pointer off the edge of the
@@ -44,18 +56,16 @@ this Software without prior written authorization from The Open Group.
 
 #define PSZ 32
 #include "sun.h"
-#include "fb.h"
+#include "cfb/cfb.h"
 
 #define PIXPG_24BIT_COLOR 5
 #define PIXPG_24BIT_COLOR_INDEX (PIXPG_24BIT_COLOR << 25)
 #define PR_FORCE_UPDATE (1 << 24)
 
-static void CG24UpdateColormap(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-static void CG24StoreColors(ColormapPtr, int, xColorItem *);
-static void CG24ScreenInit(ScreenPtr);
-
-static void
-CG24UpdateColormap(ScreenPtr pScreen, int index, int count, u_char *rmap, u_char *gmap, u_char *bmap)
+static void CG24UpdateColormap(pScreen, index, count, rmap, gmap, bmap)
+    ScreenPtr	pScreen;
+    int		index, count;
+    u_char	*rmap, *gmap, *bmap;
 {
     struct fbcmap sunCmap;
 
@@ -69,11 +79,13 @@ CG24UpdateColormap(ScreenPtr pScreen, int index, int count, u_char *rmap, u_char
 	FatalError( "CG24UpdateColormap: FBIOPUTCMAP failed\n");
 }
 
-static void
-CG24StoreColors(ColormapPtr pmap, int ndef, xColorItem *pdefs)
+static void CG24StoreColors (pmap, ndef, pdefs)
+    ColormapPtr pmap;
+    int ndef;
+    xColorItem* pdefs;
 {
   u_char rmap[256], gmap[256], bmap[256];
-  sunScreenPtr pPrivate = sunGetScreenPrivate(pmap->pScreen);
+  SetupScreen (pmap->pScreen);
   VisualPtr pVisual = pmap->pVisual;
   int i;
 
@@ -99,11 +111,11 @@ CG24StoreColors(ColormapPtr pmap, int ndef, xColorItem *pdefs)
 
 #define CG8_COLOR_OFFSET 0x40000
 
-static void
-CG24ScreenInit(ScreenPtr pScreen)
+static void CG24ScreenInit (pScreen)
+    ScreenPtr pScreen;
 {
 #ifndef STATIC_COLOR
-    sunScreenPtr pPrivate = sunGetScreenPrivate(pScreen);
+    SetupScreen (pScreen);
 #endif
     int i;
 
@@ -125,18 +137,15 @@ CG24ScreenInit(ScreenPtr pScreen)
 #endif
 }
 
-Bool
-sunCG8Init(
-    ScreenPtr	    pScreen,  	/* The Screen to initialize */
-    int		    argc,    	/* The number of the Server's arguments. */
-    char	    **argv   	/* The arguments themselves. Don't change! */
-)
+Bool sunCG8Init (screen, pScreen, argc, argv)
+    int		    screen;    	/* what screen am I going to be */
+    ScreenPtr	    pScreen;  	/* The Screen to initialize */
+    int		    argc;    	/* The number of the Server's arguments. */
+    const char	    **argv;   	/* The arguments themselves. Don't change! */
 {
-    int	screen = pScreen->myNum;
-
-    sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
+    sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     return sunInitCommon (screen, pScreen, (off_t) 0,
-	fbScreenInit, CG24ScreenInit,
-	fbCreateDefColormap, sunSaveScreen, CG8_COLOR_OFFSET);
+	cfb32ScreenInit, CG24ScreenInit,
+	cfbCreateDefColormap, sunSaveScreen, CG8_COLOR_OFFSET);
 }
 

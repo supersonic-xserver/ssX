@@ -1,5 +1,12 @@
-/* $XFree86: xc/util/memleak/getretspar.c,v 1.4 2006/03/02 03:00:40 dawes Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: getretspar.c,v 1.4 2001/02/09 02:06:19 xorgcvs Exp $
  *
 Copyright 1992, 1998  The Open Group
 
@@ -28,48 +35,39 @@ in this Software without prior written authorization from The Open Group.
 
 /* Trace up the stack and build a call history -- SPARC specific code */
 
-#include "getstack.h"
-
 /* hack -- flush out the register windows by recursing */
 
 static void
-flushWindows(int depth)
+flushWindows (depth)
 {
     if (depth == 0)
 	return;
-    flushWindows(depth - 1);
+    flushWindows (depth-1);
 }
 
-#ifndef __GNUC__
-extern unsigned long *getStackPointer(void);
-#endif
-extern int main(int, char **);
-
-void
-getStackTrace(unsigned long *results, int max)
+getStackTrace (results, max)
+    unsigned long   *results;
+    int		    max;
 {
-    unsigned long *sp;
-    unsigned long *ra, mainCall;
+    unsigned long   *sp, *getStackPointer (), *getFramePointer();
+    unsigned long   *ra, mainCall;
+    extern int	    main ();
 
-    flushWindows(32);
-#ifdef __GNUC__
-    __asm__ volatile ("mov %%sp, %0" : "=r" (sp));
-#else
-    sp = getStackPointer();
-#endif
-
-    while (max) {
+    flushWindows (32);
+    sp = getFramePointer ();
+    while (max) 
+    {
 	/* sparc stack traces are easy -- chain up the saved FP/SP values */
-	ra = (unsigned long *)sp[15];
-	sp = (unsigned long *)sp[14];
+	ra = (unsigned long *) sp[15];
+	sp = (unsigned long *) sp[14];
 	/* stop when we get the call to main */
-	mainCall = ((((unsigned long)main) -
-		     ((unsigned long)ra)) >> 2) | 0x40000000;
-	if (!ra || ra[0] == mainCall) {
+	mainCall = ((((unsigned long) main) - ((unsigned long) ra)) >> 2) | 0x40000000;
+	if (ra[0] == mainCall)
+	{
 	    *results++ = 0;
 	    break;
 	}
-	*results++ = (unsigned long)ra;
+	*results++ = (unsigned long) ra;
 	max--;
     }
 }

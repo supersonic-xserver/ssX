@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/misc.h,v 3.32 2006/01/09 15:00:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -65,12 +73,20 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 OF THIS SOFTWARE.
 
 ******************************************************************/
+
 #ifndef MISC_H
 #define MISC_H 1
 /*
  *  X internal definitions 
  *
  */
+
+#ifndef SSX_MODERN_STUBS
+#define SSX_MODERN_STUBS
+/* Stub types for DRI3/RandR 1.4 compatibility */
+#include <stdint.h>
+typedef struct _RRProvider *RRProviderPtr;
+#endif
 
 extern unsigned long globalSerialNumber;
 extern unsigned long serverGeneration;
@@ -81,7 +97,11 @@ extern unsigned long serverGeneration;
 #include <X11/X.h>
 #include <X11/Xdefs.h>
 
+#ifndef IN_MODULE
+#ifndef NULL
 #include <stddef.h>
+#endif
+#endif
 
 #ifndef MAXSCREENS
 #define MAXSCREENS	16
@@ -109,7 +129,9 @@ typedef struct _CallbackList *CallbackListPtr; /* also in dix.h */
 typedef struct _xReq *xReqPtr;
 
 #include "os.h" 	/* for ALLOCATE_LOCAL and DEALLOCATE_LOCAL */
+#ifndef IN_MODULE
 #include <X11/Xfuncs.h> /* for bcopy, bzero, and bcmp */
+#endif
 
 #define NullBox ((BoxPtr)0)
 #define MILLI_PER_MIN (1000 * 60)
@@ -137,10 +159,12 @@ typedef struct _xReq *xReqPtr;
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
+#ifndef IN_MODULE
 /* abs() is a function, not a macro; include the file declaring
  * it in case we haven't done that yet.
- */
+ */  
 #include <stdlib.h>
+#endif /* IN_MODULE */
 #ifndef Fabs
 #define Fabs(a) ((a) > 0.0 ? (a) : -(a))	/* floating absolute value */
 #endif
@@ -156,6 +180,7 @@ typedef struct _xReq *xReqPtr;
  */
 #define lowbit(x) ((x) & (~(x) + 1))
 
+#ifndef IN_MODULE
 /* XXX Not for modules */
 #include <limits.h>
 #if !defined(MAXSHORT) || !defined(MINSHORT) || \
@@ -166,6 +191,7 @@ typedef struct _xReq *xReqPtr;
  */
 
 #include <math.h>
+#endif
 #undef MAXSHORT
 #define MAXSHORT SHRT_MAX
 #undef MINSHORT
@@ -177,7 +203,7 @@ typedef struct _xReq *xReqPtr;
 
 #include <assert.h>
 #include <ctype.h>
-#include <stdio.h>     /* for fopen, etc... */
+#include <stdio.h>	/* for fopen, etc... */
 
 #endif
 
@@ -198,8 +224,8 @@ typedef struct _xReq *xReqPtr;
 #define SwapRestL(stuff) \
     SwapLongs((CARD32 *)(stuff + 1), LengthRestL(stuff))
 
-/* byte swap a 32-bit value */
-#define swapl(x, n) { \
+/* byte swap a 32-bit value - 2-arg form (legacy) */
+#define swapl_2(x, n) { \
 		 n = ((char *) (x))[0];\
 		 ((char *) (x))[0] = ((char *) (x))[3];\
 		 ((char *) (x))[3] = n;\
@@ -207,11 +233,14 @@ typedef struct _xReq *xReqPtr;
 		 ((char *) (x))[1] = ((char *) (x))[2];\
 		 ((char *) (x))[2] = n; }
 
-/* byte swap a short */
-#define swaps(x, n) { \
-		 n = ((char *) (x))[0];\
-		 ((char *) (x))[0] = ((char *) (x))[1];\
-		 ((char *) (x))[1] = n; }
+/* byte swap a 16-bit value - in-place single arg form (modern xorg-server) */
+#define swaps(x) (*(CARD16*)(x) = (((*(CARD16*)(x)) >> 8) | ((*(CARD16*)(x)) << 8)))
+
+/* byte swap a 32-bit value - in-place single arg form (modern xorg-server) */
+#define swapl(x) (*(CARD32*)(x) = (((*(CARD32*)(x)) >> 24) | \
+                                  (((*(CARD32*)(x)) >> 8) & 0x0000ff00U) | \
+                                  (((*(CARD32*)(x)) << 8) & 0x00ff0000U) | \
+                                  (((CARD32)(*(CARD32*)(x))) << 24)))
 
 /* copy 32-bit value from src to dst byteswapping on the way */
 #define cpswapl(src, dst) { \
@@ -224,6 +253,19 @@ typedef struct _xReq *xReqPtr;
 #define cpswaps(src, dst) { \
 		 ((char *) &(dst))[0] = ((char *) &(src))[1];\
 		 ((char *) &(dst))[1] = ((char *) &(src))[0]; }
+
+/* byte swap a 64-bit value - added in xorg-server 1.16+ */
+#ifndef swapll
+#define swapll(x) ((CARD64)( \
+    (((CARD64)(x) & 0x00000000000000FFULL) << 56) | \
+    (((CARD64)(x) & 0x000000000000FF00ULL) << 40) | \
+    (((CARD64)(x) & 0x0000000000FF0000ULL) << 24) | \
+    (((CARD64)(x) & 0x00000000FF000000ULL) <<  8) | \
+    (((CARD64)(x) & 0x000000FF00000000ULL) >>  8) | \
+    (((CARD64)(x) & 0x0000FF0000000000ULL) >> 24) | \
+    (((CARD64)(x) & 0x00FF000000000000ULL) >> 40) | \
+    (((CARD64)(x) & 0xFF00000000000000ULL) >> 56)))
+#endif
 
 extern void SwapLongs(
     CARD32 *list,
@@ -239,7 +281,7 @@ extern int Ones(
     unsigned long /*mask*/);
 
 typedef struct _xPoint *DDXPointPtr;
-typedef struct pixman_box16 *BoxPtr;
+typedef struct _Box *BoxPtr;
 typedef struct _xEvent *xEventPtr;
 typedef struct _xRectangle *xRectanglePtr;
 typedef struct _GrabRec *GrabPtr;

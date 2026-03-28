@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/Init.c,v 1.19tsi Exp $ */
+/* $Xorg: Init.c,v 1.5 2001/03/07 17:31:33 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -50,6 +57,7 @@ copyright holders.
 **    *********************************************************
 ** 
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/Init.c,v 1.15 2003/10/29 22:11:54 tsi Exp $ */
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -64,9 +72,9 @@ copyright holders.
 #include <sys/sysmacros.h>
 #endif
 
-#include <X11/X.h>
+#include "X.h"
 #define NEED_EVENTS 1
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include <servermd.h>
 
 #include "screenint.h"
@@ -77,14 +85,14 @@ copyright holders.
 #include "inputstr.h"
 
 #include "gcstruct.h"
-#include <X11/fonts/fontstruct.h>
+#include "fonts/fontstruct.h"
 #include "errno.h"
 
 typedef char *XPointer;
 #define HAVE_XPointer 1
 
 #define Status int
-#include <X11/Xresource.h>
+#include <Xresource.h>
 
 #include "DiPrint.h"
 #include "attributes.h"
@@ -95,12 +103,12 @@ static void GenericScreenInit(
     int index,
     ScreenPtr pScreen,
     int argc,
-    const char **argv);
+    char **argv);
 static Bool InitPrintDrivers(
     int index,
     ScreenPtr pScreen,
-    const int argc,
-    const char **argv);
+    int argc,
+    char **argv);
 
 /*
  * The following two defines are used to build the name "X*printers", where
@@ -324,9 +332,9 @@ typedef struct _driverMapping {
     int screenNum;
 } DriverMapEntry, *DriverMapPtr;
 
-static const char *configFileName = (char *)NULL;
+static char *configFileName = (char *)NULL;
 static Bool freeDefaultFontPath = FALSE;
-static const char *origFontPath = (char *)NULL;
+static char *origFontPath = (char *)NULL;
 
 /*
  * XprintOptions checks argv[i] to see if it is our command line
@@ -336,7 +344,7 @@ static const char *origFontPath = (char *)NULL;
 int
 XprintOptions(
     int argc,
-    const char **argv,
+    char **argv,
     int i)
 {
     if(strcmp(argv[i], "-XpFile") == 0)
@@ -716,66 +724,53 @@ BuildPrinterDb(void)
 	char line[256];
 	FILE *fp = fopen(configFileName, "r");
 
-	if(!fp)
+	while(fgets(line, 256, fp) != (char *)NULL)
 	{
-	    ErrorF("Xp Extension: Can't open file %s\n", configFileName);
-	    configFileName = (char *)NULL;
-	}
-	else
-	{
-	    while(fgets(line, 256, fp) != (char *)NULL)
+	    char *tok, *ptr;
+	    if((tok = strtok(line, " \t\012")) != (char *)NULL)
 	    {
-		char *tok, *ptr;
-		if((tok = strtok(line, " \t\012")) != (char *)NULL)
+		if(tok[0] == (char)'#') continue;
+		if(strcmp(tok, "Printer") == 0)
 		{
-		    if(tok[0] == (char)'#')
-			continue;
-		    if(strcmp(tok, "Printer") == 0)
+		    while((tok = strtok((char *)NULL, " \t")) != (char *)NULL)
 		    {
-			while((tok = strtok((char *)NULL, " \t")) !=
-			      (char *)NULL)
-			{
-			    if ((ptr = MbStrchr(tok, '\012')) != 0)
-				*ptr = (char)'\0';
-			    AddPrinterDbName(tok);
-			}
+		        if ((ptr = MbStrchr(tok, '\012')) != 0)
+		            *ptr = (char)'\0';
+			AddPrinterDbName(tok);
 		    }
-		    else if(strcmp(tok, "Map") == 0)
-		    {
-			char *name, *qualifier;
-
-			if((tok = strtok((char *)NULL, " \t\012")) ==
-			   (char *)NULL)
-			    continue;
-			name = strdup(tok);
-			if((tok = strtok((char *)NULL, " \t\012")) ==
-			   (char *)NULL)
-			{
-			    xfree(name);
-			    continue;
-			}
-			qualifier = strdup(tok);
-			AddNameMap(name, qualifier);
-		    }
-		    else if(strcmp(tok, "Augment_Printer_List") == 0)
-		    {
-			if((tok = strtok((char *)NULL, " \t\012")) ==
-			   (char *)NULL)
-			    continue;
-
-			if(strcmp(tok, "%default%") == 0)
-			    continue;
-			defaultAugment = FALSE;
-			if(strcmp(tok, "%none%") == 0)
-			    continue;
-			AugmentPrinterDb(tok);
-		    }
-		    else
-			break; /* XXX Generate an error? */
 		}
+		else if(strcmp(tok, "Map") == 0)
+		{
+		    char *name, *qualifier;
+
+		    if((tok = strtok((char *)NULL, " \t\012")) == (char *)NULL)
+			continue;
+		    name = strdup(tok);
+		    if((tok = strtok((char *)NULL, " \t\012")) == (char *)NULL)
+		    {
+			xfree(name);
+			continue;
+		    }
+		    qualifier = strdup(tok);
+		    AddNameMap(name, qualifier);
+		}
+		else if(strcmp(tok, "Augment_Printer_List") == 0)
+		{
+		    if((tok = strtok((char *)NULL, " \t\012")) == (char *)NULL)
+			continue;
+
+		    if(strcmp(tok, "%default%") == 0)
+			continue;
+		    defaultAugment = FALSE;
+		    if(strcmp(tok, "%none%") == 0)
+			continue;
+		    AugmentPrinterDb(tok);
+		}
+		else
+		    break; /* XXX Generate an error? */
 	    }
-	    fclose(fp);
 	}
+	fclose(fp);
     }
 
     if(defaultAugment == TRUE)
@@ -1240,20 +1235,12 @@ void
 PrinterInitOutput(
      ScreenInfo *pScreenInfo,
      int argc,
-     const char **argv)
+     char **argv)
 {
     PrinterDbPtr pDb, pDbEntry;
-    int driverCount, i;
+    int driverCount = 0, i;
     char **driverNames;
     char *configDir;
-
-    static char beenHere = FALSE;
-
-    if (beenHere)
-	return;
-    beenHere = TRUE;
-
-    driverCount = 0;
 
     /* 
      * this little test is just a warning at startup to make sure
@@ -1412,8 +1399,8 @@ static Bool
 InitPrintDrivers(
     int index,
     ScreenPtr pScreen,
-    const int argc,
-    const char **argv)
+    int argc,
+    char **argv)
 {
     PrinterDbPtr pDb, pDb2;
 
@@ -1469,7 +1456,7 @@ GenericScreenInit(
      int index,
      ScreenPtr pScreen,
      int argc,
-     const char **argv)
+     char **argv)
 {
     float fWidth, fHeight, maxWidth, maxHeight;
     unsigned short width, height;

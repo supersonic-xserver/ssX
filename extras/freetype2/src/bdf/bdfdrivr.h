@@ -1,8 +1,22 @@
 /*  bdfdrivr.h
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
     FreeType font driver for bdf fonts
 
-  Copyright (C) 2001, 2002 by
+  Copyright (C) 2001, 2002, 2003 by
   Francesco Zappa Nardelli
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,8 +53,8 @@ FT_BEGIN_HEADER
 
   typedef struct  BDF_encoding_el_
   {
-    FT_ULong  enc;
-    FT_Short  glyph;
+    FT_ULong   enc;
+    FT_UShort  glyph;
 
   } BDF_encoding_el;
 

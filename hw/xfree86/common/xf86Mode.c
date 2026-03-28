@@ -1,5 +1,61 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Mode.c,v 1.83 2005/10/14 15:16:33 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * Copyright © 2003, 2004, 2005 David H. Dawes.
+ * Copyright © 2003, 2004, 2005 X-Oz Technologies.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -7,22 +63,38 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
+ * 
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions, and the following disclaimer.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *  2. Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ * 
+ *  3. The end-user documentation included with the redistribution,
+ *     if any, must include the following acknowledgment: "This product
+ *     includes software developed by X-Oz Technologies
+ *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
+ *     appear in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *  4. Except as contained in this notice, the name of X-Oz
+ *     Technologies shall not be used in advertising or otherwise to
+ *     promote the sale, use or other dealings in this Software without
+ *     prior written authorization from X-Oz Technologies.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
@@ -34,10 +106,6 @@
  * This file includes helper functions for mode related things.
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include <X11/X.h>
 #include "os.h"
 #include "servermd.h"
@@ -45,32 +113,14 @@
 #include "globals.h"
 #include "xf86.h"
 #include "xf86Priv.h"
-#include "edid.h"
-
-static void
-printModeRejectMessage(int index, DisplayModePtr p, int status)
-{
-    char *type;
-
-    if (p->type & M_T_BUILTIN)
-	type = "built-in ";
-    else if (p->type & M_T_DEFAULT)
-	type = "default ";
-    else if (p->type & M_T_DRIVER)
-	type = "driver ";
-    else
-	type = "";
-
-    xf86DrvMsg(index, X_INFO, "Not using %smode \"%s\" (%s)\n", type, p->name,
-	       xf86ModeStatusToString(status));
-}
+#include "xf86DDC.h"
 
 /*
  * xf86GetNearestClock --
  *	Find closest clock to given frequency (in kHz).  This assumes the
  *	number of clocks is greater than zero.
  */
-_X_EXPORT int
+int
 xf86GetNearestClock(ScrnInfoPtr scrp, int freq, Bool allowDiv2,
     int DivFactor, int MulFactor, int *divider)
 {
@@ -109,7 +159,7 @@ xf86GetNearestClock(ScrnInfoPtr scrp, int freq, Bool allowDiv2,
  * Convert a ModeStatus value to a printable message
  */
 
-_X_EXPORT const char *
+const char *
 xf86ModeStatusToString(ModeStatus status)
 {
     switch (status) {
@@ -181,8 +231,14 @@ xf86ModeStatusToString(ModeStatus status)
         return "all modes must have the same height";
     case MODE_ONE_SIZE:
         return "all modes must have the same resolution";
-    case MODE_NO_REDUCED:
-        return "monitor doesn't support reduced blanking";
+    case MODE_REFRESH_LOW:
+	return "refresh rate is below the target";
+    case MODE_TOO_BIG:
+	return "size is larger than the preferred mode";
+    case MODE_PANEL_NOSCALE:
+	return "cannot be scaled by the panel";
+    case MODE_ASPECT_RATIO:
+	return "aspect ratio is too large";
     case MODE_BAD:
 	return "unknown reason";
     case MODE_ERROR:
@@ -192,11 +248,26 @@ xf86ModeStatusToString(ModeStatus status)
     }
 }
 
+const char *
+xf86ModeTypeToString(int mType)
+{
+    if (mType & M_T_BUILTIN)
+	return "built-in mode";
+    else if (mType & M_T_EDID && mType & M_T_PREFER)
+	return "preferred EDID mode";
+    else if (mType & M_T_EDID)
+	return "EDID mode";
+    else if (mType & M_T_DEFAULT)
+	return "default mode";
+    else
+	return "mode";
+}
+
 /*
  * xf86ShowClockRanges() -- Print the clock ranges allowed
  * and the clock values scaled by ClockMulFactor and ClockDivFactor
  */
-_X_EXPORT void
+void
 xf86ShowClockRanges(ScrnInfoPtr scrp, ClockRangePtr clockRanges)
 {
     ClockRangePtr cp;
@@ -368,24 +439,8 @@ xf86HandleBuiltinMode(ScrnInfoPtr scrp,
     return MODE_OK;
 }
 
-#if 0
-/** Calculates the horizontal sync rate of a mode */
-_X_EXPORT double
-xf86ModeHSync(DisplayModePtr mode)
-{
-    double hsync = 0.0;
-    
-    if (mode->HSync > 0.0)
-	    hsync = mode->HSync;
-    else if (mode->HTotal > 0)
-	    hsync = (float)mode->Clock / (float)mode->HTotal;
-
-    return hsync;
-}
-
-/** Calculates the vertical refresh rate of a mode */
-_X_EXPORT double
-xf86ModeVRefresh(DisplayModePtr mode)
+static double
+ModeVRefresh(DisplayModePtr mode)
 {
     double refresh = 0.0;
 
@@ -398,21 +453,10 @@ xf86ModeVRefresh(DisplayModePtr mode)
 	if (mode->Flags & V_DBLSCAN)
 	    refresh /= 2.0;
 	if (mode->VScan > 1)
-	    refresh /= (float)(mode->VScan);
+	    refresh /= mode->VScan;
     }
     return refresh;
 }
-
-/** Sets a default mode name of <width>x<height> on a mode. */
-_X_EXPORT void
-xf86SetModeDefaultName(DisplayModePtr mode)
-{
-    if (mode->name != NULL)
-	xfree(mode->name);
-
-    mode->name = XNFprintf("%dx%d", mode->HDisplay, mode->VDisplay);
-}
-#endif
 
 /*
  * xf86LookupMode
@@ -442,7 +486,7 @@ xf86SetModeDefaultName(DisplayModePtr mode)
  * reason.
  */
 
-_X_EXPORT ModeStatus
+ModeStatus
 xf86LookupMode(ScrnInfoPtr scrp, DisplayModePtr modep,
 	       ClockRangePtr clockRanges, LookupModeFlags strategy)
 {
@@ -458,28 +502,18 @@ xf86LookupMode(ScrnInfoPtr scrp, DisplayModePtr modep,
     int ModePrivFlags = 0;
     ModeStatus status = MODE_NOMODE;
     Bool allowDiv2 = (strategy & LOOKUP_CLKDIV2) != 0;
-    int n;
-    const int types[] = {
-	M_T_BUILTIN | M_T_PREFERRED,
-	M_T_BUILTIN,
-	M_T_USERDEF | M_T_PREFERRED,
-	M_T_USERDEF,
-	M_T_DRIVER | M_T_PREFERRED,
-	M_T_DRIVER,
-	0
-    };
-    const int ntypes = sizeof(types) / sizeof(int);
+    Bool haveBuiltin;
 
     strategy &= ~(LOOKUP_CLKDIV2 | LOOKUP_OPTIONAL_TOLERANCES);
 
     /* Some sanity checking */
     if (scrp == NULL || scrp->modePool == NULL ||
 	(!scrp->progClock && scrp->numClocks == 0)) {
-	ErrorF("xf86LookupMode: called with invalid scrnInfoRec\n");
+	xf86Msg(X_ERROR, "xf86LookupMode: called with invalid scrnInfoRec.\n");
 	return MODE_ERROR;
     }
     if (modep == NULL || modep->name == NULL) {
-	ErrorF("xf86LookupMode: called with invalid modep\n");
+	xf86Msg(X_ERROR, "xf86LookupMode: called with invalid modep.\n");
 	return MODE_ERROR;
     }
     for (cp = clockRanges; cp != NULL; cp = cp->next) {
@@ -488,141 +522,150 @@ xf86LookupMode(ScrnInfoPtr scrp, DisplayModePtr modep,
 	cp->ClockMulFactor = max(1, cp->ClockMulFactor);
     }
 
+    haveBuiltin = FALSE;
     /* Scan the mode pool for matching names */
-    for (n = 0; n < ntypes; n++) {
-	int type = types[n];
-	for (p = scrp->modePool; p != NULL; p = p->next) {
+    for (p = scrp->modePool; p != NULL; p = p->next) {
+	if (strcmp(p->name, modep->name) == 0) {
+	    /*
+	     * Requested mode is a built-in mode. Don't let the user
+	     * override it.
+	     * Since built-in modes always come before user specified
+	     * modes it will always be found first.  
+	     */
+	    if (p->type & M_T_BUILTIN) {
+		haveBuiltin = TRUE;
+	    }
 
-	    /* scan through the modes in the sort order above */
-	    if ((p->type & type) != type)
+	    if (haveBuiltin && !(p->type & M_T_BUILTIN))
 		continue;
 
-	    if (strcmp(p->name, modep->name) == 0) {
-
-		/* Skip over previously rejected modes */
-		if (p->status != MODE_OK) {
-		    if (!found)
-			status = p->status;
-		    continue;
-		}
-
-		/* Skip over previously considered modes */
-		if (p->prev)
-		    continue;
-
-		if (p->type & M_T_BUILTIN) {
-		    return xf86HandleBuiltinMode(scrp, p,modep, clockRanges,
-			    allowDiv2);
-		}
-
-		/* Check clock is in range */
-		cp = xf86FindClockRangeForMode(clockRanges, p);
-		if (cp == NULL) {
-		    /*
-		     * XXX Could do more here to provide a more detailed
-		     * reason for not finding a mode.
-		     */
-		    p->status = MODE_CLOCK_RANGE;
-		    if (!found)
-			status = MODE_CLOCK_RANGE;
-		    continue;
-		}
-
-		/*
-		 * If programmable clock and strategy is not
-		 * LOOKUP_BEST_REFRESH, the required mode has been found,
-		 * otherwise record the refresh and continue looking.
-		 */
-		if (scrp->progClock) {
-		    found = TRUE;
-		    if (strategy != LOOKUP_BEST_REFRESH) {
-			bestMode = p;
-			DivFactor = cp->ClockDivFactor;
-			MulFactor = cp->ClockMulFactor;
-			ModePrivFlags = cp->PrivFlags;
-			break;
-		    }
-		    refresh = xf86ModeVRefresh(p);
-		    if (p->Flags & V_INTERLACE)
-			refresh /= INTERLACE_REFRESH_WEIGHT;
-		    if (refresh > bestRefresh) {
-			bestMode = p;
-			DivFactor = cp->ClockDivFactor;
-			MulFactor = cp->ClockMulFactor;
-			ModePrivFlags = cp->PrivFlags;
-			bestRefresh = refresh;
-		    }
-		    continue;
-		}
-
-		/*
-		 * Clock is in range, so if it is not a programmable clock, find
-		 * a matching clock.
-		 */
-
-		i = xf86GetNearestClock(scrp, p->Clock, allowDiv2,
-			cp->ClockDivFactor, cp->ClockMulFactor, &k);
-		/*
-		 * If the clock is too far from the requested clock, this
-		 * mode is no good.
-		 */
-		if (k & V_CLKDIV2)
-		    gap = abs((p->Clock * 2) -
-			    ((scrp->clock[i] * cp->ClockDivFactor) /
-				cp->ClockMulFactor));
-		else
-		    gap = abs(p->Clock -
-			    ((scrp->clock[i] * cp->ClockDivFactor) /
-				cp->ClockMulFactor));
-		if (gap > minimumGap) {
-		    p->status = MODE_NOCLOCK;
-		    if (!found)
-			status = MODE_NOCLOCK;
-		    continue;
-		}
-		found = TRUE;
-
-		if (strategy == LOOKUP_BEST_REFRESH) {
-		    refresh = xf86ModeVRefresh(p);
-		    if (p->Flags & V_INTERLACE)
-			refresh /= INTERLACE_REFRESH_WEIGHT;
-		    if (refresh > bestRefresh) {
-			bestMode = p;
-			DivFactor = cp->ClockDivFactor;
-			MulFactor = cp->ClockMulFactor;
-			ModePrivFlags = cp->PrivFlags;
-			extraFlags = k;
-			clockIndex = i;
-			bestRefresh = refresh;
-		    }
-		    continue;
-		}
-		if (strategy == LOOKUP_CLOSEST_CLOCK) {
-		    if (gap < minimumGap) {
-			bestMode = p;
-			DivFactor = cp->ClockDivFactor;
-			MulFactor = cp->ClockMulFactor;
-			ModePrivFlags = cp->PrivFlags;
-			extraFlags = k;
-			clockIndex = i;
-			minimumGap = gap;
-		    }
-		    continue;
-		}
-		/*
-		 * If strategy is neither LOOKUP_BEST_REFRESH or
-		 * LOOKUP_CLOSEST_CLOCK the required mode has been found.
-		 */
-		bestMode = p;
-		DivFactor = cp->ClockDivFactor;
-		MulFactor = cp->ClockMulFactor;
-		ModePrivFlags = cp->PrivFlags;
-		extraFlags = k;
-		clockIndex = i;
-		break;
+	    /* Skip over previously rejected modes */
+	    if (p->status != MODE_OK) {
+		if (!found)
+		    status = p->status;
+		continue;
 	    }
+		
+	    /* Skip over previously considered modes */
+	    if (p->prev)
+		continue;
+
+	    if (p->type & M_T_BUILTIN) {
+		return xf86HandleBuiltinMode(scrp, p,modep, clockRanges,
+					     allowDiv2);
+	    }
+
+	    /* Check clock is in range */
+	    cp = xf86FindClockRangeForMode(clockRanges, p);
+	    if (cp == NULL) {
+		/*
+		 * XXX Could do more here to provide a more detailed
+		 * reason for not finding a mode.
+		 */
+		p->status = MODE_CLOCK_RANGE;
+		if (!found)
+		    status = MODE_CLOCK_RANGE;
+		continue;
+	    }
+
+	    /*
+	     * If programmable clock and strategy is not LOOKUP_BEST_REFRESH,
+	     * the required mode has been found, otherwise record the refresh
+	     * and continue looking.
+	     */
+	    if (scrp->progClock) {
+		found = TRUE;
+		if (strategy != LOOKUP_BEST_REFRESH) {
+		    bestMode = p;
+		    DivFactor = cp->ClockDivFactor;
+		    MulFactor = cp->ClockMulFactor;
+		    ModePrivFlags = cp->PrivFlags;
+		    break;
+		}
+		refresh = ModeVRefresh(p);
+		if (p->Flags & V_INTERLACE)
+		    refresh /= INTERLACE_REFRESH_WEIGHT;
+		/* Force the preferred mode over others. */
+		if (p->type & M_T_PREFER) {
+		    xf86DrvMsgVerb(scrp->scrnIndex, X_INFO, 4,
+			"forcing high priority to the M_T_PREFER mode %s.\n",
+			p->name);
+		    refresh = 100000000;
+		}
+		if (refresh > bestRefresh) {
+		    bestMode = p;
+		    DivFactor = cp->ClockDivFactor;
+		    MulFactor = cp->ClockMulFactor;
+		    ModePrivFlags = cp->PrivFlags;
+		    bestRefresh = refresh;
+		}
+		continue;
+	    }
+
+	    /*
+	     * Clock is in range, so if it is not a programmable clock, find
+	     * a matching clock.
+	     */
+
+	    i = xf86GetNearestClock(scrp, p->Clock, allowDiv2,
+		cp->ClockDivFactor, cp->ClockMulFactor, &k);
+	    /*
+	     * If the clock is too far from the requested clock, this
+	     * mode is no good.
+	     */
+	    if (k & V_CLKDIV2)
+		gap = abs((p->Clock * 2) -
+		    ((scrp->clock[i] * cp->ClockDivFactor) / cp->ClockMulFactor));
+	    else
+		gap = abs(p->Clock -
+		    ((scrp->clock[i] * cp->ClockDivFactor) / cp->ClockMulFactor));
+	    if (gap > minimumGap) {
+		p->status = MODE_NOCLOCK;
+		if (!found)
+		    status = MODE_NOCLOCK;
+		continue;
+	    }
+	    found = TRUE;
+
+	    if (strategy == LOOKUP_BEST_REFRESH) {
+		refresh = ModeVRefresh(p);
+		if (p->Flags & V_INTERLACE)
+		    refresh /= INTERLACE_REFRESH_WEIGHT;
+		if (refresh > bestRefresh) {
+		    bestMode = p;
+		    DivFactor = cp->ClockDivFactor;
+		    MulFactor = cp->ClockMulFactor;
+		    ModePrivFlags = cp->PrivFlags;
+		    extraFlags = k;
+		    clockIndex = i;
+		    bestRefresh = refresh;
+		}
+		continue;
+	    }
+	    if (strategy == LOOKUP_CLOSEST_CLOCK) {
+		if (gap < minimumGap) {
+		    bestMode = p;
+		    DivFactor = cp->ClockDivFactor;
+		    MulFactor = cp->ClockMulFactor;
+		    ModePrivFlags = cp->PrivFlags;
+		    extraFlags = k;
+		    clockIndex = i;
+		    minimumGap = gap;
+		}
+		continue;
+	    }
+	    /*
+	     * If strategy is neither LOOKUP_BEST_REFRESH or
+	     * LOOKUP_CLOSEST_CLOCK the required mode has been found.
+	     */
+	    bestMode = p;
+	    DivFactor = cp->ClockDivFactor;
+	    MulFactor = cp->ClockMulFactor;
+	    ModePrivFlags = cp->PrivFlags;
+	    extraFlags = k;
+	    clockIndex = i;
+	    break;
 	}
-	if (found) break;
     }
     if (!found || bestMode == NULL)
 	return status;
@@ -633,8 +676,7 @@ xf86LookupMode(ScrnInfoPtr scrp, DisplayModePtr modep,
 	modep->ClockIndex	= -1;
 	modep->SynthClock	= (modep->Clock * MulFactor) / DivFactor;
     } else {
-	modep->Clock		= (scrp->clock[clockIndex] * DivFactor) /
-				    MulFactor;
+	modep->Clock		= (scrp->clock[clockIndex] * DivFactor) / MulFactor;
 	modep->ClockIndex	= clockIndex;
 	modep->SynthClock	= scrp->clock[clockIndex];
 	if (extraFlags & V_CLKDIV2) {
@@ -681,14 +723,13 @@ xf86LookupMode(ScrnInfoPtr scrp, DisplayModePtr modep,
 }
 
 
-#if 0
 /*
  * xf86SetModeCrtc
  *
  * Initialises the Crtc parameters for a mode.  The initialisation includes
  * adjustments for interlaced and double scan modes.
  */
-_X_EXPORT void
+static void
 xf86SetModeCrtc(DisplayModePtr p, int adjustFlags)
 {
     if ((p == NULL) || ((p->type & M_T_CRTC_C) == M_T_BUILTIN))
@@ -703,18 +744,13 @@ xf86SetModeCrtc(DisplayModePtr p, int adjustFlags)
     p->CrtcVSyncStart           = p->VSyncStart;
     p->CrtcVSyncEnd             = p->VSyncEnd;
     p->CrtcVTotal               = p->VTotal;
-    if (p->Flags & V_INTERLACE) {
-	if (adjustFlags & INTERLACE_HALVE_V) {
-	    p->CrtcVDisplay         /= 2;
-	    p->CrtcVSyncStart       /= 2;
-	    p->CrtcVSyncEnd         /= 2;
-	    p->CrtcVTotal           /= 2;
-	}
-	/* Force interlaced modes to have an odd VTotal */
-	/* maybe we should only do this when INTERLACE_HALVE_V is set? */
-	p->CrtcVTotal |= 1;
+    if ((p->Flags & V_INTERLACE) && (adjustFlags & INTERLACE_HALVE_V))
+    {
+        p->CrtcVDisplay         /= 2;
+        p->CrtcVSyncStart       /= 2;
+        p->CrtcVSyncEnd         /= 2;
+        p->CrtcVTotal           /= 2;
     }
-
     if (p->Flags & V_DBLSCAN) {
         p->CrtcVDisplay         *= 2;
         p->CrtcVSyncStart       *= 2;
@@ -727,98 +763,34 @@ xf86SetModeCrtc(DisplayModePtr p, int adjustFlags)
         p->CrtcVSyncEnd         *= p->VScan;
         p->CrtcVTotal           *= p->VScan;
     }
-    p->CrtcVBlankStart = min(p->CrtcVSyncStart, p->CrtcVDisplay);
-    p->CrtcVBlankEnd = max(p->CrtcVSyncEnd, p->CrtcVTotal);
-    p->CrtcHBlankStart = min(p->CrtcHSyncStart, p->CrtcHDisplay);
-    p->CrtcHBlankEnd = max(p->CrtcHSyncEnd, p->CrtcHTotal);
-
     p->CrtcHAdjusted = FALSE;
     p->CrtcVAdjusted = FALSE;
-}
-#endif
 
-#if 0
-/**
- * Allocates and returns a copy of pMode, including pointers within pMode.
- */
-_X_EXPORT DisplayModePtr
-xf86DuplicateMode(DisplayModePtr pMode)
-{
-    DisplayModePtr pNew;
-
-    pNew = xnfalloc(sizeof(DisplayModeRec));
-    *pNew = *pMode;
-    pNew->next = NULL;
-    pNew->prev = NULL;
-    if (pNew->name == NULL) {
-	xf86SetModeDefaultName(pMode);
-    } else {
-	pNew->name = xnfstrdup(pMode->name);
+    /*
+     * XXX
+     *
+     * The following is taken from VGA, but applies to other cores as well.
+     */
+    p->CrtcVBlankStart = min(p->CrtcVSyncStart, p->CrtcVDisplay);
+    p->CrtcVBlankEnd = max(p->CrtcVSyncEnd, p->CrtcVTotal);
+    if ((p->CrtcVBlankEnd - p->CrtcVBlankStart) >= 127) {
+        /* 
+         * V Blanking size must be < 127.
+         * Moving blank start forward is safer than moving blank end
+         * back, since monitors clamp just AFTER the sync pulse (or in
+         * the sync pulse), but never before.
+         */
+        p->CrtcVBlankStart = p->CrtcVBlankEnd - 127;
     }
-
-    return pNew;
-}
-
-/**
- * Duplicates every mode in the given list and returns a pointer to the first
- * mode.
- *
- * \param modeList doubly-linked mode list
- */
-_X_EXPORT DisplayModePtr
-xf86DuplicateModes(ScrnInfoPtr pScrn, DisplayModePtr modeList)
-{
-    DisplayModePtr first = NULL, last = NULL;
-    DisplayModePtr mode;
-
-    for (mode = modeList; mode != NULL; mode = mode->next) {
-	DisplayModePtr new;
-
-	new = xf86DuplicateMode(mode);
-
-	/* Insert pNew into modeList */
-	if (last) {
-	    last->next = new;
-	    new->prev = last;
-	} else {
-	    first = new;
-	    new->prev = NULL;
-	}
-	new->next = NULL;
-	last = new;
+    p->CrtcHBlankStart = min(p->CrtcHSyncStart, p->CrtcHDisplay);
+    p->CrtcHBlankEnd = max(p->CrtcHSyncEnd, p->CrtcHTotal);
+    if ((p->CrtcHBlankEnd - p->CrtcHBlankStart) >= 63 * 8) {
+        /*
+         * H Blanking size must be < 63*8. Same remark as above.
+         */
+        p->CrtcHBlankStart = p->CrtcHBlankEnd - 63 * 8;
     }
-
-    return first;
 }
-
-/**
- * Returns true if the given modes should program to the same timings.
- *
- * This doesn't use Crtc values, as it might be used on ModeRecs without the
- * Crtc values set.  So, it's assumed that the other numbers are enough.
- */
-_X_EXPORT Bool
-xf86ModesEqual(DisplayModePtr pMode1, DisplayModePtr pMode2)
-{
-     if (pMode1->Clock == pMode2->Clock &&
-	 pMode1->HDisplay == pMode2->HDisplay &&
-	 pMode1->HSyncStart == pMode2->HSyncStart &&
-	 pMode1->HSyncEnd == pMode2->HSyncEnd &&
-	 pMode1->HTotal == pMode2->HTotal &&
-	 pMode1->HSkew == pMode2->HSkew &&
-	 pMode1->VDisplay == pMode2->VDisplay &&
-	 pMode1->VSyncStart == pMode2->VSyncStart &&
-	 pMode1->VSyncEnd == pMode2->VSyncEnd &&
-	 pMode1->VTotal == pMode2->VTotal &&
-	 pMode1->VScan == pMode2->VScan &&
-	 pMode1->Flags == pMode2->Flags)
-     {
-	return TRUE;
-     } else {
-	return FALSE;
-     }
-}
-#endif
 
 /*
  * xf86CheckModeForMonitor
@@ -826,21 +798,61 @@ xf86ModesEqual(DisplayModePtr pMode1, DisplayModePtr pMode2)
  * This function takes a mode and monitor description, and determines
  * if the mode is valid for the monitor.
  */
-_X_EXPORT ModeStatus
+ModeStatus
 xf86CheckModeForMonitor(DisplayModePtr mode, MonPtr monitor)
 {
     int i;
+    float hsync, vrefresh;
 
     /* Sanity checks */
     if (mode == NULL || monitor == NULL) {
-	ErrorF("xf86CheckModeForMonitor: called with invalid parameters\n");
+	xf86Msg(X_ERROR,
+		"xf86CheckModeForMonitor: called with invalid parameters.\n");
 	return MODE_ERROR;
+    }
+
+    if (monitor->nHsync <= 0 && !(monitor->flags & MON_TOLERANCES_OPTIONAL)) {
+	xf86Msg(X_WARNING,
+		"xf86CheckModeForMonitor: "
+		"called before monitor hsync is set.\n");
+    }
+
+    if (monitor->nVrefresh <= 0 &&
+	!(monitor->flags & MON_TOLERANCES_OPTIONAL)) {
+	xf86Msg(X_WARNING,
+		"xf86CheckModeForMonitor: "
+		"called before monitor vrefresh is set.\n");
     }
 
 #ifdef DEBUG
     ErrorF("xf86CheckModeForMonitor(%p %s, %p %s)\n",
 	   mode, mode->name, monitor, monitor->id);
 #endif
+
+    if (monitor->DDC) {
+	xf86MonPtr DDC = monitor->DDC;
+	struct detailed_monitor_section* detMon;
+	struct monitor_ranges *mon_range;
+	int i;
+
+	mon_range = NULL;
+	for (i = 0; i < 4; i++) {
+	    detMon = &DDC->det_mon[i];
+	    if(detMon->type == DS_RANGES) {
+		mon_range = &detMon->section.ranges;
+	    }
+	}
+	if (mon_range) {
+	    /* mode->Clock in kHz, DDC in MHz */
+	    if (mon_range->max_clock < 2550 &&
+		 mode->Clock / 1000.0 > mon_range->max_clock) {
+		xf86Msg(X_WARNING,
+		   "(%s,%s) mode clock %gMHz exceeds DDC maximum %dMHz\n",
+		   mode->name, monitor->id,
+		   mode->Clock/1000.0, mon_range->max_clock);
+	    }
+	}
+    }
 
     /* Some basic mode validity checks */
     if (0 >= mode->HDisplay || mode->HDisplay > mode->HSyncStart ||
@@ -853,23 +865,29 @@ xf86CheckModeForMonitor(DisplayModePtr mode, MonPtr monitor)
 
     if (monitor->nHsync > 0) {
 	/* Check hsync against the allowed ranges */
-	float hsync = xf86ModeHSync(mode);
-	for (i = 0; i < monitor->nHsync; i++) 
+	hsync = (float)mode->Clock / (float)mode->HTotal;
+	for (i = 0; i < monitor->nHsync; i++)
 	    if ((hsync > monitor->hsync[i].lo * (1.0 - SYNC_TOLERANCE)) &&
 		(hsync < monitor->hsync[i].hi * (1.0 + SYNC_TOLERANCE)))
 		break;
-	
+
 	/* Now see whether we ran out of sync ranges without finding a match */
-	if (i == monitor->nHsync) 
+	if (i == monitor->nHsync)
 	    return MODE_HSYNC;
     }
 
     if (monitor->nVrefresh > 0) {
 	/* Check vrefresh against the allowed ranges */
-	float vrefrsh = xf86ModeVRefresh(mode);
+	vrefresh = mode->Clock * 1000.0 / (mode->HTotal * mode->VTotal);
+	if (mode->Flags & V_INTERLACE)
+	    vrefresh *= 2.0;
+	if (mode->Flags & V_DBLSCAN)
+	    vrefresh /= 2.0;
+	if (mode->VScan > 1)
+	    vrefresh /= (float)(mode->VScan);
 	for (i = 0; i < monitor->nVrefresh; i++)
-	    if ((vrefrsh > monitor->vrefresh[i].lo * (1.0 - SYNC_TOLERANCE)) &&
-		(vrefrsh < monitor->vrefresh[i].hi * (1.0 + SYNC_TOLERANCE)))
+	    if ((vrefresh > monitor->vrefresh[i].lo * (1.0 - SYNC_TOLERANCE)) &&
+		(vrefresh < monitor->vrefresh[i].hi * (1.0 + SYNC_TOLERANCE)))
 		break;
 
 	/* Now see whether we ran out of refresh ranges without finding a match */
@@ -880,29 +898,6 @@ xf86CheckModeForMonitor(DisplayModePtr mode, MonPtr monitor)
     /* Force interlaced modes to have an odd VTotal */
     if (mode->Flags & V_INTERLACE)
 	mode->CrtcVTotal = mode->VTotal |= 1;
-
-    /*
-     * This code stops cvt -r modes, and only cvt -r modes, from hitting 15y+
-     * old CRTs which might, when there is a lot of solar flare activity and
-     * when the celestial bodies are unfavourably aligned, implode trying to
-     * sync to it. It's called "Protecting the user from doing anything stupid".
-     * -- libv
-     */
-
-    /* Is the horizontal blanking a bit lowish? */
-    if (((mode->HDisplay * 5 / 4) & ~0x07) > mode->HTotal) {
-        /* is this a cvt -r mode, and only a cvt -r mode? */
-        if (((mode->HTotal - mode->HDisplay) == 160) &&
-            ((mode->HSyncEnd - mode->HDisplay) == 80) &&
-            ((mode->HSyncEnd - mode->HSyncStart) == 32) &&
-            ((mode->VSyncStart - mode->VDisplay) == 3)) {
-            if (!monitor->reducedblanking && !(mode->type & M_T_DRIVER))
-                return MODE_NO_REDUCED;
-        }
-    }
-
-    if ((monitor->maxPixClock) && (mode->Clock > monitor->maxPixClock))
-	return MODE_CLOCK_HIGH;
 
     return MODE_OK;
 }
@@ -980,21 +975,22 @@ xf86CheckModeSize(ScrnInfoPtr scrp, int w, int x, int y)
  *    maxVValue    maximum vertical timing value
  */
 
-_X_EXPORT ModeStatus
+ModeStatus
 xf86InitialCheckModeForDriver(ScrnInfoPtr scrp, DisplayModePtr mode,
 			      ClockRangePtr clockRanges,
 			      LookupModeFlags strategy,
 			      int maxPitch, int virtualX, int virtualY)
 {
+    MonPtr monitor;
     ClockRangePtr cp;
     ModeStatus status;
     Bool allowDiv2 = (strategy & LOOKUP_CLKDIV2) != 0;
     int i, needDiv2;
-    
+
     /* Sanity checks */
     if (!scrp || !mode || !clockRanges) {
-	ErrorF("xf86InitialCheckModeForDriver: "
-		"called with invalid parameters\n");
+	xf86Msg(X_ERROR, "xf86InitialCheckModeForDriver: "
+		"called with invalid parameters.\n");
 	return MODE_ERROR;
     }
 
@@ -1041,64 +1037,80 @@ xf86InitialCheckModeForDriver(ScrnInfoPtr scrp, DisplayModePtr mode,
      * user-supplied values as these are reported back when mode validation is
      * said and done.
      */
+    xf86SetModeCrtc(mode, INTERLACE_HALVE_V);
+
+    cp = xf86FindClockRangeForMode(clockRanges, mode);
+    if (!cp)
+	return MODE_CLOCK_RANGE;
+
+    if (cp->ClockMulFactor < 1)
+	cp->ClockMulFactor = 1;
+    if (cp->ClockDivFactor < 1)
+	cp->ClockDivFactor = 1;
+
     /*
-     * NOTE: We (ab)use the mode->Crtc* values here to store timing
-     * information for the calculation of Hsync and Vrefresh. Before
-     * these values are calculated the driver is given the opportunity
-     * to either set these HSync and VRefresh itself or modify the timing
-     * values.
-     * The difference to the final calculation is small but imortand:
-     * here we pass the flag INTERLACE_HALVE_V regardless if the driver
-     * sets it or not. This way our calculation of VRefresh has the same
-     * effect as if we do if (flags & V_INTERLACE) refresh *= 2.0
-     * This dual use of the mode->Crtc* values will certainly create
-     * confusion and is bad software design. However since it's part of
-     * the driver API it's hard to change.
+     * XXX  The effect of clock dividers and multipliers on the monitor's
+     *      pixel clock needs to be verified.
      */
-     
+    if (scrp->progClock) {
+	mode->SynthClock = mode->Clock;
+    } else {
+	i = xf86GetNearestClock(scrp, mode->Clock, allowDiv2,
+				cp->ClockDivFactor, cp->ClockMulFactor,
+				&needDiv2);
+	mode->SynthClock = (scrp->clock[i] * cp->ClockDivFactor) /
+			   cp->ClockMulFactor;
+	if (needDiv2 & V_CLKDIV2)
+	    mode->SynthClock /= 2;
+    }
+
     if (scrp->ValidMode) {
-	
-	xf86SetModeCrtc(mode, INTERLACE_HALVE_V);
-
-	cp = xf86FindClockRangeForMode(clockRanges, mode);
-	if (!cp)
-	    return MODE_CLOCK_RANGE;
-
-	if (cp->ClockMulFactor < 1)
-	    cp->ClockMulFactor = 1;
-	if (cp->ClockDivFactor < 1)
-	    cp->ClockDivFactor = 1;
-	
-	/*
-	 * XXX  The effect of clock dividers and multipliers on the monitor's
-	 *      pixel clock needs to be verified.
-	 */
-	if (scrp->progClock) {
-	    mode->SynthClock = mode->Clock;
-	} else {
-	    i = xf86GetNearestClock(scrp, mode->Clock, allowDiv2,
-				    cp->ClockDivFactor, cp->ClockMulFactor,
-				    &needDiv2);
-	    mode->SynthClock = (scrp->clock[i] * cp->ClockDivFactor) /
-		cp->ClockMulFactor;
-	    if (needDiv2 & V_CLKDIV2)
-		mode->SynthClock /= 2;
-	}
-
 	status = (*scrp->ValidMode)(scrp->scrnIndex, mode, FALSE,
 				    MODECHECK_INITIAL);
 	if (status != MODE_OK)
 	    return status;
-
-	if (mode->HSync <= 0.0)
-	    mode->HSync = (float)mode->SynthClock / (float)mode->CrtcHTotal;
-	if (mode->VRefresh <= 0.0)
-	    mode->VRefresh = (mode->SynthClock * 1000.0)
-		/ (mode->CrtcHTotal * mode->CrtcVTotal);
     }
-    
-    mode->HSync = xf86ModeHSync(mode);
-    mode->VRefresh = xf86ModeVRefresh(mode);
+
+    if (!(monitor = scrp->monitor)) {
+	xf86Msg(X_ERROR, "xf86InitialCheckModeForDriver: "
+		"called with invalid monitor.\n");
+	return MODE_ERROR;
+    }
+
+    if (mode->HSync <= 0.0)
+	mode->HSync = (float)mode->SynthClock / (float)mode->CrtcHTotal;
+    if (monitor->nHsync > 0) {
+	/* Check hsync against the allowed ranges */
+	for (i = 0; i < monitor->nHsync; i++)
+	    if ((mode->HSync > monitor->hsync[i].lo * (1.0 - SYNC_TOLERANCE)) &&
+		(mode->HSync < monitor->hsync[i].hi * (1.0 + SYNC_TOLERANCE)))
+		break;
+
+	/* Now see whether we ran out of sync ranges without finding a match */
+	if (i == monitor->nHsync)
+	    return MODE_HSYNC;
+    }
+
+    if (mode->VRefresh <= 0.0)
+	mode->VRefresh = (mode->SynthClock * 1000.0) /
+	    (mode->CrtcHTotal * mode->CrtcVTotal);
+    if (monitor->nVrefresh > 0) {
+	/* Check vrefresh against the allowed ranges */
+	for (i = 0; i < monitor->nVrefresh; i++)
+	    if ((mode->VRefresh >
+		 monitor->vrefresh[i].lo * (1.0 - SYNC_TOLERANCE)) &&
+		(mode->VRefresh <
+		 monitor->vrefresh[i].hi * (1.0 + SYNC_TOLERANCE)))
+		break;
+
+	/* Now see whether we ran out of refresh ranges without finding a match */
+	if (i == monitor->nVrefresh)
+	    return MODE_VSYNC;
+    }
+
+    /* Force interlaced modes to have an odd VTotal */
+    if (mode->Flags & V_INTERLACE)
+	mode->CrtcVTotal |= 1;
 
     /* Assume it is OK */
     return MODE_OK;
@@ -1128,7 +1140,7 @@ xf86InitialCheckModeForDriver(ScrnInfoPtr scrp, DisplayModePtr mode,
  *    clockRanges  allowable clock ranges
  */
 
-_X_EXPORT ModeStatus
+ModeStatus
 xf86CheckModeForDriver(ScrnInfoPtr scrp, DisplayModePtr mode, int flags)
 {
     ClockRangesPtr cp;
@@ -1143,11 +1155,13 @@ xf86CheckModeForDriver(ScrnInfoPtr scrp, DisplayModePtr mode, int flags)
 
     /* Some sanity checking */
     if (scrp == NULL ||	(!scrp->progClock && scrp->numClocks == 0)) {
-	ErrorF("xf86CheckModeForDriver: called with invalid scrnInfoRec\n");
+	xf86Msg(X_ERROR, "xf86CheckModeForDriver: "
+			 "called with invalid scrnInfoRec.\n");
 	return MODE_ERROR;
     }
     if (mode == NULL) {
-	ErrorF("xf86CheckModeForDriver: called with invalid modep\n");
+	xf86Msg(X_ERROR,
+		"xf86CheckModeForDriver: called with invalid modep.\n");
 	return MODE_ERROR;
     }
 
@@ -1254,56 +1268,381 @@ xf86CheckModeForDriver(ScrnInfoPtr scrp, DisplayModePtr mode, int flags)
     return MODE_OK;
 }
 
-static int 
-inferVirtualSize(ScrnInfoPtr scrp, DisplayModePtr modes, int *vx, int *vy)
-{
-    float aspect = 0.0;
-    MonPtr mon = scrp->monitor;
-    int x = 0, y = 0;
-    DisplayModePtr mode;
+static struct std_timings est_timings[17] = {
+    { 720, 400, 70 },
+    { 720, 400, 88 },
+    { 640, 480, 60 },
+    { 640, 480, 67 },
+    { 640, 480, 72 },
+    { 640, 480, 75 },
+    { 800, 600, 56 },
+    { 800, 600, 60 },
+    { 800, 600, 72 },
+    { 800, 600, 75 },
+    { 832, 624, 75 },
+    { 1024, 768, 44 },
+    { 1024, 768, 60 },
+    { 1024, 768, 70 },
+    { 1024, 768, 75 },
+    { 1280, 1024, 75 },
+    { 1152, 870, 75 }
+};
 
-    if (!mon) return 0;
+Bool
+xf86SetMonitorParameters(ScrnInfoPtr pScrn, MonPtr monitor,
+			 int hSize, int vSize, int refresh)
+{
+    int numTimings = 0;
+    struct monitor_ranges *mon_range = NULL;
+    range hsync[MAX_HSYNC];
+    range vrefresh[MAX_VREFRESH];
+    const char *type;
+    int i;
+
+    if (monitor->flags & MON_PARAMETERS_SET)
+	return TRUE;
 
     /*
-     * technically this triggers if _either_ is zero, which is not what EDID
-     * says, but if only one is zero this is best effort.  also we don't
-     * know that all projectors are 4:3, but we certainly suspect it.
+     * Probe monitor so that we can enforce/warn about its limits.
+     * If one or more DS_RANGES descriptions are present, use the parameters
+     * that they provide.  Otherwise, deduce limits based on the modes that
+     * are shown as supported via standard and detailed timings.
      */
-    if (!mon->widthmm || !mon->heightmm)
-	aspect = 4.0/3.0;
-    else
-	aspect = (float)mon->widthmm / (float)mon->heightmm;
+    if (monitor->DDC) {
+	xf86MonPtr DDC = monitor->DDC;
+	int i, j;
+	float hmin = 1e6, hmax = 0.0, vmin = 1e6, vmax = 0.0;
+	float h;
+	struct std_timings *t;
+	struct detailed_timings *dt;
+	int est_mask;
 
-    /* find the largest M_T_DRIVER mode with that aspect ratio */
-    for (mode = modes; mode; mode = mode->next) {
-	float mode_aspect, metaspect;
-	if (!(mode->type & (M_T_DRIVER|M_T_USERDEF)))
-	    continue;
-	mode_aspect = (float)mode->HDisplay / (float)mode->VDisplay;
-	metaspect = aspect / mode_aspect;
-	/* 5% slop or so, since we only get size in centimeters */
-	if (fabs(1.0 - metaspect) < 0.05) {
-	    if ((mode->HDisplay > x) && (mode->VDisplay > y)) {
-		x = mode->HDisplay;
-		y = mode->VDisplay;
+	est_mask = (DDC->timings1.t1 << 9) |
+		   (DDC->timings1.t2 << 1) |
+		   (DDC->timings1.t_manu & 0x80) >> 7;
+
+	for (i = 0; i < 17; i++) {
+	    if (est_mask & (0x10000 >> i)) {
+		if (est_timings[i].refresh < vmin)
+		    vmin = est_timings[i].refresh;
+		if (est_timings[i].refresh > vmax)
+		    vmax = est_timings[i].refresh;
+		/*
+		 * For typical modes this is a reasonable estimate
+		 * of the horizontal sync rate.
+		 */
+		h = est_timings[i].refresh * 1.07 *
+			est_timings[i].vsize / 1000.0;
+		if (h < hmin)
+		    hmin = h;
+		if (h > hmax)
+		    hmax = h;
 	    }
+	}
+
+	numTimings = 0;
+	for (i = 0; i < DET_TIMINGS; i++) {
+	    switch (DDC->det_mon[i].type) {
+	    case DS_RANGES:
+		mon_range = &DDC->det_mon[i].section.ranges;
+		hsync[numTimings].lo = mon_range->min_h;
+		hsync[numTimings].hi = mon_range->max_h;
+		vrefresh[numTimings].lo = mon_range->min_v;
+		vrefresh[numTimings].hi = mon_range->max_v;
+		numTimings++;
+		break;
+
+	    case DS_STD_TIMINGS:
+		t = DDC->det_mon[i].section.std_t;
+		for (j = 0; j < 5; j++) {
+		    if (t[j].hsize > 256) { /* sanity check */
+			if (t[j].refresh < vmin)
+			    vmin = t[i].refresh;
+			if (t[j].refresh > vmax)
+			    vmax = t[i].refresh;
+			/*
+			 * For typical modes this is a reasonable estimate
+			 * of the horizontal sync rate.
+			 */
+			h = t[j].refresh * 1.07 * t[j].vsize / 1000.0;
+			if (h < hmin)
+			    hmin = h;
+			if (h > hmax)
+			    hmax = h;
+		    }
+		}
+		break;
+
+	    case DT:
+		dt = &DDC->det_mon[i].section.d_timings;
+		if (dt->clock > 15000000) { /* sanity check */
+		    float v;
+		    h = (float)dt->clock / (dt->h_active + dt->h_blanking);
+		    v = h / (dt->v_active + dt->v_blanking);
+		    h /= 1000.0;
+		    if (dt->interlaced) 
+			v /= 2.0;
+
+		    if (v < vmin)
+			vmin = v;
+		    if (v > vmax)
+			vmax = v;
+		    if (h < hmin)
+			hmin = h;
+		    if (h > hmax)
+			hmax = h;
+		}
+		break;
+	    }
+
+	    if (numTimings > MAX_HSYNC)
+		break;
+	}
+
+	t = DDC->timings2;
+	for (i = 0; i < STD_TIMINGS; i++) {
+	    if (t[i].hsize > 256) { /* sanity check */
+		if (t[i].refresh < vmin)
+		    vmin = t[i].refresh;
+		if (t[i].refresh > vmax)
+		    vmax = t[i].refresh;
+		/*
+		 * For typical modes this is a reasonable estimate
+		 * of the horizontal sync rate.
+		 */
+		h = t[i].refresh * 1.07 * t[i].vsize / 1000.0;
+		if (h < hmin)
+		    hmin = h;
+		if (h > hmax)
+		    hmax = h;
+	    }
+	}
+
+	if (hmax > 0.0 && numTimings == 0) {
+	    hsync[numTimings].lo = hmin;
+	    hsync[numTimings].hi = hmax;
+	    vrefresh[numTimings].lo = vmin;
+	    vrefresh[numTimings].hi = vmax;
+	    numTimings++;
+	}
+
+	if (numTimings > 0) {
+
+#ifdef DEBUG
+	    for (i = 0; i < numTimings; i++) {
+		ErrorF("DDC - Hsync %.1f-%.1f kHz - Vrefresh %.1f-%.1f Hz\n",
+		       hsync[i].lo, hsync[i].hi,
+		       vrefresh[i].lo, vrefresh[i].hi);
+	    }
+#endif
+
+#define DDC_SYNC_TOLERANCE SYNC_TOLERANCE
+	    if (monitor->nHsync > 0) {
+		for (i = 0; i < monitor->nHsync; i++) {
+		    Bool good = FALSE;
+		    for (j = 0; j < numTimings; j++) {
+			if ((1.0 - DDC_SYNC_TOLERANCE) * hsync[j].lo <=
+				monitor->hsync[i].lo &&
+			    (1.0 + DDC_SYNC_TOLERANCE) * hsync[j].hi >=
+				monitor->hsync[i].hi) {
+			    good = TRUE;
+			    break;
+			}
+		    }
+		    if (!good) {
+			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			  "config file hsync range %g-%gkHz not within DDC "
+			  "hsync ranges.\n",
+			  monitor->hsync[i].lo, monitor->hsync[i].hi);
+		    }
+		}
+	    }
+
+	    if (monitor->nVrefresh > 0) {
+		for (i = 0; i < monitor->nVrefresh; i++) {
+		    Bool good = FALSE;
+		    for (j = 0; j < numTimings; j++) {
+			if ((1.0 - DDC_SYNC_TOLERANCE) * vrefresh[j].lo <=
+				monitor->vrefresh[i].lo &&
+			    (1.0 + DDC_SYNC_TOLERANCE) * vrefresh[j].hi >=
+				monitor->vrefresh[i].hi) {
+			    good = TRUE;
+			    break;
+			}
+		    }
+		    if (!good) {
+			xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			  "config file vrefresh range %g-%gHz not within DDC "
+			  "vrefresh ranges.\n",
+			  monitor->vrefresh[i].lo, monitor->vrefresh[i].hi);
+		    }
+		}
+	    }
+        }
+    }
+
+    /*
+     * If requested by the driver, allow missing hsync and/or vrefresh ranges
+     * in the monitor section.
+     */
+    if (!(monitor->flags & MON_TOLERANCES_OPTIONAL)) {
+	type = "";
+	if (monitor->nHsync <= 0) {
+	    if (numTimings > 0) {
+		monitor->nHsync = numTimings;
+		for (i = 0; i < numTimings; i++) {
+		    monitor->hsync[i].lo = hsync[i].lo;
+		    monitor->hsync[i].hi = hsync[i].hi;
+		}
+		type = "DDC-derived ";
+	    } else {
+		monitor->hsync[0].lo = 28;
+		monitor->nHsync = 1;
+		if (hSize > 0 && vSize > 0) {
+		    if (refresh <= 0)
+			refresh = 60;
+		    monitor->hsync[0].hi =
+			refresh * 1.07 * vSize / 1000.0;
+		    type = "native ";
+		} else {
+		    monitor->hsync[0].hi = 33;
+		    type = "default ";
+		}
+	    }
+	}
+	for (i = 0; i < monitor->nHsync; i++) {
+	    if (monitor->hsync[i].lo == monitor->hsync[i].hi)
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+			   "%s: Using %shsync value of %.2f kHz\n",
+			   monitor->id, type,
+			   monitor->hsync[i].lo);
+	    else
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+			   "%s: Using %shsync range of %.2f-%.2f kHz\n",
+			   monitor->id, type,
+			   monitor->hsync[i].lo,
+			   monitor->hsync[i].hi);
+	}
+
+	type = "";
+	if (monitor->nVrefresh <= 0) {
+	    if (numTimings > 0) {
+		monitor->nVrefresh = numTimings;
+		for (i = 0; i < numTimings; i++) {
+		    monitor->vrefresh[i].lo = vrefresh[i].lo;
+		    monitor->vrefresh[i].hi = vrefresh[i].hi;
+		}
+		type = "DDC-derived ";
+	    } else {
+		monitor->nVrefresh = 1;
+		if (hSize > 0 && vSize > 0) {
+		    if (refresh <= 0)
+			refresh = 60;
+		    monitor->vrefresh[0].lo = refresh * 0.95;
+		    monitor->vrefresh[0].hi = refresh * 1.05;
+		    type = "native ";
+		} else {
+		    monitor->vrefresh[0].lo = 43;
+		    monitor->vrefresh[0].hi = 72;
+		    type = "default ";
+		}
+	    }
+	}
+	for (i = 0; i < monitor->nVrefresh; i++) {
+	    if (monitor->vrefresh[i].lo == monitor->vrefresh[i].hi)
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+			   "%s: Using %svrefresh value of %.2f Hz\n",
+			   monitor->id, type,
+			   monitor->vrefresh[i].lo);
+	    else
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+			   "%s: Using %svrefresh range of %.2f-%.2f Hz\n",
+			   monitor->id, type,
+			   monitor->vrefresh[i].lo,
+			   monitor->vrefresh[i].hi);
+	}
+    }
+    monitor->flags |= MON_PARAMETERS_SET;
+    return TRUE;
+}
+
+Bool
+xf86AddEDIDModes(ScrnInfoPtr pScrn, MonPtr monitor, int flags)
+{
+    xf86MonPtr DDC;
+    int i;
+    struct detailed_timings *dt;
+    Bool firstPreferred, firstDetailed;
+    DisplayModePtr p, new;
+
+    /*
+     * Add detailed EDID modes to the monitor's mode list.
+     */
+    if (!monitor->DDC)
+	return TRUE;
+
+    DDC = monitor->DDC;
+
+    /*
+     * Check if the monitor's mode list already includes any
+     * EDID-derived modes.  If so, there's nothing for us to do here.
+     */
+    for (p = monitor->Modes; p; p = p->next)
+	if (p->type & M_T_EDID)
+	    return TRUE;
+
+    firstPreferred = PREFERRED_TIMING_MODE(DDC->features.msc);
+    firstDetailed = TRUE;
+
+    for (i = 0; i < DET_TIMINGS; i++) {
+	switch (DDC->det_mon[i].type) {
+	case DS_RANGES:
+		break;
+
+	case DS_STD_TIMINGS:
+		break;
+
+	case DT:
+	    dt = &DDC->det_mon[i].section.d_timings;
+	    if (dt->clock > 15000000) { /* sanity check */
+		char *newName = NULL;
+
+		xasprintf(&newName, "%dx%d", dt->h_active, dt->v_active);
+		if (newName && !xf86ModeIsPresent(newName, monitor->Modes,
+						  0, M_T_DEFAULT)) {
+		    new = xcalloc(1, sizeof(DisplayModeRec));
+		    if (new) {
+			new->type = M_T_DEFAULT | M_T_EDID;
+			new->Clock = dt->clock / 1000;
+			new->HDisplay = dt->h_active;
+			new->HSyncStart = new->HDisplay + dt->h_sync_off;
+			new->HSyncEnd = new->HSyncStart + dt->h_sync_width;
+			new->HTotal = new->HDisplay + dt->h_blanking;
+			new->VDisplay = dt->v_active;
+			new->VSyncStart = new->VDisplay + dt->v_sync_off;
+			new->VSyncEnd = new->VSyncStart + dt->v_sync_width;
+			new->VTotal = new->VDisplay + dt->v_blanking;
+			new->name = newName;
+			newName = NULL;
+			if (firstPreferred && firstDetailed) {
+			    new->type |= M_T_PREFER;
+			}
+			xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+			    "Adding detailed EDID mode %s to monitor "
+			    "(preferred: %s).\n",
+			    new->name, new->type & M_T_PREFER ? "yes" : "no");
+			xf86AddModeToMonitor(monitor, new);
+		    }
+		}
+		if (newName)
+		    xfree(newName);
+	    }
+	    firstDetailed = FALSE;
+	    break;
 	}
     }
 
-    if (!x || !y) {
-	xf86DrvMsg(scrp->scrnIndex, X_WARNING,
-		   "Unable to estimate virtual size\n");
-	return 0;
-    }
-
-    *vx = x;
-    *vy = y;
-
-    xf86DrvMsg(scrp->scrnIndex, X_INFO,
-	       "Estimated virtual size for aspect ratio %.4f is %dx%d\n",
-	       aspect, *vx, *vy);
-
-    return 1;
+    return TRUE;
 }
 
 /*
@@ -1354,7 +1693,7 @@ inferVirtualSize(ScrnInfoPtr scrp, DisplayModePtr modes, int *vx, int *vy)
  * if an unrecoverable error was encountered.
  */
 
-_X_EXPORT int
+int
 xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 		  char **modeNames, ClockRangePtr clockRanges,
 		  int *linePitches, int minPitch, int maxPitch, int pitchInc,
@@ -1374,10 +1713,12 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
     ClockRangePtr cp;
     ClockRangesPtr storeClockRanges;
     double targetRefresh = 0.0;
+    int preferredH = 0, preferredV = 0;
+    const char *preferredName = NULL;
+    Bool preferredOption = FALSE;
+    Bool havePreferredMode = FALSE;
+    Bool usePreferred = FALSE;
     int numTimings = 0;
-    range hsync[MAX_HSYNC];
-    range vrefresh[MAX_VREFRESH];
-    Bool inferred_virtual = FALSE;
 
 #ifdef DEBUG
     ErrorF("xf86ValidateModes(%p, %p, %p, %p,\n\t\t  %p, %d, %d, %d, %d, %d, %d, %d, %d, 0x%x)\n",
@@ -1391,20 +1732,113 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
     /* Some sanity checking */
     if (scrp == NULL || scrp->name == NULL || !scrp->monitor ||
 	(!scrp->progClock && scrp->numClocks == 0)) {
-	ErrorF("xf86ValidateModes: called with invalid scrnInfoRec\n");
+	xf86Msg(X_ERROR, "xf86ValidateModes: called with invalid scrnInfoRec.\n");
 	return -1;
     }
     if (linePitches != NULL && linePitches[0] <= 0) {
-	ErrorF("xf86ValidateModes: called with invalid linePitches\n");
+	xf86Msg(X_ERROR,
+		"xf86ValidateModes: called with invalid linePitches.\n");
 	return -1;
     }
     if (pitchInc <= 0) {
-	ErrorF("xf86ValidateModes: called with invalid pitchInc\n");
+	xf86Msg(X_ERROR,
+		"xf86ValidateModes: called with invalid pitchInc.\n");
 	return -1;
     }
     if ((virtualX > 0) != (virtualY > 0)) {
-	ErrorF("xf86ValidateModes: called with invalid virtual resolution\n");
+	xf86Msg(X_ERROR,
+		"xf86ValidateModes: called with invalid virtual resolution.\n");
 	return -1;
+    }
+
+    /*
+     * Probe monitor for preferred DDC/EDID modes.
+     */
+    if (scrp->monitor->DDC) {
+	xf86MonPtr DDC = scrp->monitor->DDC;
+	int i, j;
+	struct std_timings *t;
+	struct detailed_timings *dt;
+	Bool digital, firstPreferred, firstDetailed = TRUE;
+	int est_mask;
+
+	/*
+	 * Check if the monitor's mode list already includes any
+	 * EDID-derived modes.
+	 */
+	xf86AddEDIDModes(scrp, scrp->monitor, 0);
+
+	digital = DIGITAL(DDC->features.input_type);
+	firstPreferred = PREFERRED_TIMING_MODE(DDC->features.msc);
+	
+	est_mask = (DDC->timings1.t1 << 9) |
+		   (DDC->timings1.t2 << 1) |
+		   (DDC->timings1.t_manu & 0x80) >> 7;
+
+	for (i = 0; i < 17; i++) {
+	    if (est_mask & (0x10000 >> i)) {
+		if (digital && !firstPreferred) {
+		    if (est_timings[i].hsize > preferredH ||
+			est_timings[i].vsize > preferredV) {
+			preferredH = est_timings[i].hsize;
+			preferredV = est_timings[i].vsize;
+		    }
+		}
+	    }
+	}
+
+	numTimings = 0;
+	for (i = 0; i < DET_TIMINGS; i++) {
+	    switch (DDC->det_mon[i].type) {
+	    case DS_RANGES:
+		break;
+
+	    case DS_STD_TIMINGS:
+		t = DDC->det_mon[i].section.std_t;
+		for (j = 0; j < 5; j++) {
+		    if (t[j].hsize > 256) { /* sanity check */
+			if (digital && !firstPreferred) {
+			    if (t[j].hsize > preferredH ||
+				t[j].vsize > preferredV) {
+				preferredH = t[j].hsize;
+				preferredV = t[j].vsize;
+			    }
+			}
+		    }
+		}
+		break;
+
+	    case DT:
+		dt = &DDC->det_mon[i].section.d_timings;
+		if (dt->clock > 15000000) { /* sanity check */
+		    if (digital || (firstPreferred && firstDetailed)) {
+			if (dt->h_active > preferredH ||
+			    dt->v_active > preferredV) {
+			    preferredH = dt->h_active;
+			    preferredV = dt->v_active;
+			}
+		    }
+		}
+		firstDetailed = FALSE;
+		break;
+	    }
+
+	    if (numTimings > MAX_HSYNC)
+		break;
+	}
+
+	t = DDC->timings2;
+	for (i = 0; i < STD_TIMINGS; i++) {
+	    if (t[i].hsize > 256) { /* sanity check */
+		if (digital && !firstPreferred) {
+		    if (t[i].hsize > preferredH ||
+			t[i].vsize > preferredV) {
+			preferredH = t[i].hsize;
+			preferredV = t[i].vsize;
+		    }
+		}
+	    }
+	}
     }
 
     /*
@@ -1413,72 +1847,9 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
      */
     if (strategy & LOOKUP_OPTIONAL_TOLERANCES) {
 	strategy &= ~LOOKUP_OPTIONAL_TOLERANCES;
-    } else {
-	const char *type = "";
-
-	if (scrp->monitor->nHsync <= 0) {
-	    if (numTimings > 0) {
-		scrp->monitor->nHsync = numTimings;
-		for (i = 0; i < numTimings; i++) {
-		    scrp->monitor->hsync[i].lo = hsync[i].lo;
-		    scrp->monitor->hsync[i].hi = hsync[i].hi;
-		}
-	    } else {
-		scrp->monitor->hsync[0].lo = 31.5;
-		scrp->monitor->hsync[0].hi = 37.9;
-		scrp->monitor->nHsync = 1;
-	    }
-	    type = "default ";
-	}
-	for (i = 0; i < scrp->monitor->nHsync; i++) {
-	    if (scrp->monitor->hsync[i].lo == scrp->monitor->hsync[i].hi)
-	      xf86DrvMsg(scrp->scrnIndex, X_INFO,
-			 "%s: Using %shsync value of %.2f kHz\n",
-			 scrp->monitor->id, type,
-			 scrp->monitor->hsync[i].lo);
-	    else
-	      xf86DrvMsg(scrp->scrnIndex, X_INFO,
-			 "%s: Using %shsync range of %.2f-%.2f kHz\n",
-			 scrp->monitor->id, type,
-			 scrp->monitor->hsync[i].lo,
-			 scrp->monitor->hsync[i].hi);
-	}
-
-	type = "";
-	if (scrp->monitor->nVrefresh <= 0) {
-	    if (numTimings > 0) {
-		scrp->monitor->nVrefresh = numTimings;
-		for (i = 0; i < numTimings; i++) {
-		    scrp->monitor->vrefresh[i].lo = vrefresh[i].lo;
-		    scrp->monitor->vrefresh[i].hi = vrefresh[i].hi;
-		}
-	    } else {
-		scrp->monitor->vrefresh[0].lo = 50;
-		scrp->monitor->vrefresh[0].hi = 70;
-		scrp->monitor->nVrefresh = 1;
-	    }
-	    type = "default ";
-	}
-	for (i = 0; i < scrp->monitor->nVrefresh; i++) {
-	    if (scrp->monitor->vrefresh[i].lo == scrp->monitor->vrefresh[i].hi)
-	      xf86DrvMsg(scrp->scrnIndex, X_INFO,
-			 "%s: Using %svrefresh value of %.2f Hz\n",
-			 scrp->monitor->id, type,
-			 scrp->monitor->vrefresh[i].lo);
-	    else
-	      xf86DrvMsg(scrp->scrnIndex, X_INFO,
-			 "%s: Using %svrefresh range of %.2f-%.2f Hz\n",
-			 scrp->monitor->id, type,
-			 scrp->monitor->vrefresh[i].lo,
-			 scrp->monitor->vrefresh[i].hi);
-	}
-	if (scrp->monitor->maxPixClock) {
-	    xf86DrvMsg(scrp->scrnIndex, X_INFO,
-		       "%s: Using maximum pixel clock of %.2f MHz\n",
-		       scrp->monitor->id,
-		       (float)scrp->monitor->maxPixClock / 1000.0);
-	}
+	scrp->monitor->flags |= MON_TOLERANCES_OPTIONAL;
     }
+    xf86SetMonitorParameters(scrp, scrp->monitor, 0, 0, 0);
 
     /*
      * Store the clockRanges for later use by the VidMode extension. Must
@@ -1576,13 +1947,6 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 	virtX = virtualX;
 	virtY = virtualY;
 	scrp->virtualFrom = X_CONFIG;
-    } else if (!modeNames || !*modeNames) {
-	/* No virtual size given in the config, try to infer */
-	/* XXX this doesn't take m{in,ax}Pitch into account; oh well */
-	inferred_virtual = inferVirtualSize(scrp, availModes, &virtX, &virtY);
-	if (inferred_virtual)
-	    linePitch = miScanLineWidth(virtX, virtY, minPitch, apertureSize,
-					BankFormat, pitchInc);
     }
 
     /* Print clock ranges and scaled clocks */
@@ -1599,12 +1963,11 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 	for (p = availModes; p != NULL; p = p->next) {
 	    status = xf86InitialCheckModeForDriver(scrp, p, clockRanges,
 						   strategy, maxPitch,
-						   virtX, virtY);
+						   virtualX, virtualY);
 
-	    if (status == MODE_OK) {
+	    if (status == MODE_OK)
 		status = xf86CheckModeForMonitor(p, scrp->monitor);
-	    }
-	    
+
 	    if (status == MODE_OK) {
 		new = xnfalloc(sizeof(DisplayModeRec));
 		*new = *p;
@@ -1619,7 +1982,10 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 		q->name = xnfstrdup(p->name);
 	        q->status = MODE_OK;
 	    } else {
-		printModeRejectMessage(scrp->scrnIndex, p, status);
+		xf86DrvMsg(scrp->scrnIndex, X_INFO,
+			   "Not using %s \"%s\" (%s)\n",
+			   xf86ModeTypeToString(p->type),
+			   p->name, xf86ModeStatusToString(status));
 	    }
 	}
 
@@ -1631,6 +1997,14 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 	for (p = scrp->modePool; p != NULL; p = p->next) {
 	    p->prev = NULL;
 	    p->status = MODE_OK;
+	    /*
+	     * Mark modes with no clock that match the preferred EDID mode
+	     * name as preferred.
+	     */
+	    if (preferredName && p->Clock == 0 && p->name &&
+		strcmp(preferredName, p->name) == 0) {
+		p->type |= M_T_PREFER;
+	    }
 	}
     }
 
@@ -1642,7 +2016,7 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 				      "TargetRefresh", 0.0);
     if (targetRefresh > 0.0) {
 	for (p = scrp->modePool; p != NULL; p = p->next) {
-	    if (xf86ModeVRefresh(p) > targetRefresh * (1.0 - SYNC_TOLERANCE))
+	    if (ModeVRefresh(p) > targetRefresh * (1.0 - SYNC_TOLERANCE))
 		break;
 	}
 	if (!p)
@@ -1652,6 +2026,118 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
     if (targetRefresh > 0.0) {
 	xf86DrvMsg(scrp->scrnIndex, X_CONFIG,
 		   "Target refresh rate is %.1f Hz\n", targetRefresh);
+    }
+
+    usePreferred = xf86SetBoolOption(scrp->options, "UsePreferredMode", TRUE);
+    if (usePreferred) {
+	char *s, *end;
+	int newH = 0, newV = 0;
+
+	s = xf86SetStrOption(scrp->options, "PreferredMode", NULL);
+	if (s) {
+	    while (*s && isspace(*s))
+		s++;
+	    newH = strtol(s, &end, 10);
+	    s = end;
+	    while (*s && isspace(*s))
+		s++;
+	    if (*s == 'x' || *s == 'X') {
+		s++;
+		while (*s && isspace(*s))
+		    s++;
+		newV = strtol(s, &end, 10);
+		s = end;
+		while (*s && isspace(*s))
+		    s++;
+	    }
+	    if (!*s && newH > 0 && newV > 0) {
+		preferredH = newH;
+		preferredV = newV;
+	    }
+	    preferredOption = TRUE;
+	}
+	/*
+	 * If there is no preferredMode option, check the mode pool for a mode
+	 * tagged as preferred.
+	 */
+	if (!preferredOption) {
+	    for (p = scrp->modePool; p != NULL; p = p->next) {
+		if (p->type & M_T_PREFER) {
+		    havePreferredMode = TRUE;
+		    xf86DrvMsgVerb(scrp->scrnIndex, X_INFO, 4,
+			"preferredMode is %s (%dx%d) vs preferredHxV %dx%d.\n",
+			p->name, p->HDisplay, p->VDisplay,
+			preferredH, preferredV);
+		}
+	    }
+	}
+
+	/*
+	 * If there is no mode tagged as preferred, go through the mode pool
+	 * and see if any modes match the preferred mode size, (if specified).
+	 * If no modes match, abandon it.
+	 */
+	if (!havePreferredMode && preferredH > 0 && preferredV > 0) {
+	    for (p = scrp->modePool; p != NULL; p = p->next) {
+		if (p->HDisplay == preferredH && p->VDisplay == preferredV)
+		    break;
+	    }
+	    if (!p) {
+		xf86DrvMsgVerb(scrp->scrnIndex, X_INFO, 4,
+			       "No preferred mode match found.\n");
+		preferredH = 0;
+		preferredV = 0;
+	    }
+	}
+
+	if (preferredH > 0 && preferredV > 0) {
+	    xf86DrvMsg(scrp->scrnIndex, X_CONFIG,
+		       "Preferred mode size is %dx%d\n",
+		       preferredH, preferredV);
+	}
+    } else {
+	xf86DrvMsg(scrp->scrnIndex, X_CONFIG,
+		   "Use of a preferred mode has been disabled.\n");
+	preferredH = 0;
+	preferredV = 0;
+    }
+
+    xf86DrvMsgVerb(scrp->scrnIndex, X_INFO, 4,
+		   "usePreferred is %s havePreferredMode is %s, "
+		   "preferredH is %d, preferredV is %d.\n",
+		   BOOLTOSTRING(usePreferred), BOOLTOSTRING(havePreferredMode),
+		   preferredH, preferredV);
+
+    /*
+     * Check the mode pool against a preferred refresh rate and preferred
+     * mode size.  Mark those modes that do not match as "low preference"
+     * modes.  Low preference modes may be used, but will not be selected
+     * by default.
+     */
+    for (q = scrp->modePool;  q != NULL;  q = q->next) {
+	if (q->status != MODE_OK)
+	    continue;
+
+	if (ModeVRefresh(q) < (1.0 - SYNC_TOLERANCE) * targetRefresh) {
+	    if (preferredH <= 0 || preferredV <= 0) {
+		xf86DrvMsg(scrp->scrnIndex, X_INFO,
+			   "Low preference %s \"%s\" because its "
+			   "refresh (%.1f) is below the target (%.1f).\n",
+			   xf86ModeTypeToString(q->type),
+			   q->name, ModeVRefresh(q), targetRefresh);
+		q->type |= M_T_LOWPREF;
+	    }
+	}
+
+	if (preferredH > 0 && preferredV > 0 &&
+	    (q->HDisplay > preferredH || q->VDisplay > preferredV)) {
+	    xf86DrvMsg(scrp->scrnIndex, X_INFO,
+		       "Low preference %s \"%s\" because it is "
+		       "larger than the preferred mode (%dx%d).\n",
+		       xf86ModeTypeToString(q->type), q->name,
+		       preferredH, preferredV);
+	    q->type |= M_T_LOWPREF;
+	}
     }
 
     /*
@@ -1722,22 +2208,19 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 			 * horizontal timing parameters that CRTs may have
 			 * problems with.
 			 */
-			if (!scrp->monitor->reducedblanking &&
-			    (q->type & M_T_DEFAULT) &&
+			if ((q->type & M_T_DEFAULT) &&
 			    ((double)q->HTotal / (double)q->HDisplay) < 1.15)
 			    continue;
 
 			/*
-			 * If there is a target refresh rate, skip modes that
-			 * don't match up.
+			 * Do not allow low preference modes to influence the
+			 * the default mode choice.
 			 */
-			if (xf86ModeVRefresh(q) <
-			    (1.0 - SYNC_TOLERANCE) * targetRefresh)
-			    continue;
-
-			if (modeSize < (q->HDisplay * q->VDisplay)) {
-			    r = q;
-			    modeSize = q->HDisplay * q->VDisplay;
+			if (!(q->type & M_T_LOWPREF)) {
+			    if (modeSize < (q->HDisplay * q->VDisplay)) {
+				r = q;
+				modeSize = q->HDisplay * q->VDisplay;
+			    }
 			}
 		    }
 		}
@@ -1749,8 +2232,9 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 	    p = xnfcalloc(1, sizeof(DisplayModeRec));
 	    p->prev = last;
 	    p->name = xnfalloc(strlen(r->name) + 1);
-	    if (!userModes)
+	    if (!userModes && (!last || strcmp(last->name, r->name) != 0)) {
 		p->type = M_T_USERDEF;
+	    }
 	    strcpy(p->name, r->name);
 	    if (p->prev)
 		p->prev->next = p;
@@ -1760,17 +2244,26 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 
 	repeat = FALSE;
     lookupNext:
-	if (repeat && ((status = p->status) != MODE_OK))
-	    printModeRejectMessage(scrp->scrnIndex, p, status);
+	if (repeat && ((status = p->status) != MODE_OK)) {
+	    xf86DrvMsg(scrp->scrnIndex, X_INFO,
+		       "Not using %s \"%s\" (%s)\n",
+		       xf86ModeTypeToString(p->type),
+		       p->name, xf86ModeStatusToString(status));
+	}
 	saveType = p->type;
 	status = xf86LookupMode(scrp, p, clockRanges, strategy);
-	if (repeat && status == MODE_NOMODE)
+	if (repeat && status == MODE_NOMODE) {
 	    continue;
-	if (status != MODE_OK)
-	    printModeRejectMessage(scrp->scrnIndex, p, status);
+	}
+	if (status != MODE_OK) {
+	    xf86DrvMsg(scrp->scrnIndex, X_INFO,
+		       "Not using %s \"%s\" (%s)\n",
+		       xf86ModeTypeToString(p->type),
+		       p->name, xf86ModeStatusToString(status));
+	}
 	if (status == MODE_ERROR) {
-	    ErrorF("xf86ValidateModes: "
-		   "unexpected result from xf86LookupMode()\n");
+	    xf86Msg(X_ERROR, "xf86ValidateModes: "
+		   "unexpected result from xf86LookupMode().\n");
 	    return -1;
 	}
 	if (status != MODE_OK) {
@@ -1876,30 +2369,6 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
 
 #undef _VIRTUALX
 
-    /*
-     * If we estimated the virtual size above, we may have filtered away all
-     * the modes that maximally match that size; scan again to find out and
-     * fix up if so.
-     */
-    if (inferred_virtual) {
-	int vx = 0, vy = 0;
-	for (p = scrp->modes; p; p = p->next) {
-	    if (p->HDisplay > vx && p->VDisplay > vy) {
-		vx = p->HDisplay;
-		vy = p->VDisplay;
-	    }
-	}
-	if (vx < virtX || vy < virtY) {
-	    xf86DrvMsg(scrp->scrnIndex, X_WARNING,
-		       "Shrinking virtual size estimate from %dx%d to %dx%d\n",
-		       virtX, virtY, vx, vy);
-	    virtX = vx;
-	    virtY = vy;
-	    linePitch = miScanLineWidth(vx, vy, minPitch, apertureSize,
-					BankFormat, pitchInc);
-	}
-    }
-
     /* Update the ScrnInfoRec parameters */
     
     scrp->virtualX = virtX;
@@ -1940,7 +2409,7 @@ xf86ValidateModes(ScrnInfoPtr scrp, DisplayModePtr availModes,
  *
  */
  
-_X_EXPORT void
+void
 xf86DeleteMode(DisplayModePtr *modeList, DisplayModePtr mode)
 {
     /* Catch the easy/insane cases */
@@ -1972,7 +2441,7 @@ xf86DeleteMode(DisplayModePtr *modeList, DisplayModePtr mode)
  * invalid.
  */
 
-_X_EXPORT void
+void
 xf86PruneDriverModes(ScrnInfoPtr scrp)
 {
     DisplayModePtr first, p, n;
@@ -1986,6 +2455,12 @@ xf86PruneDriverModes(ScrnInfoPtr scrp)
 	    return;
 	n = p->next;
 	if (p->status != MODE_OK) {
+#if 0
+	    xf86DrvMsg(scrp->scrnIndex, X_INFO,
+		       "Not using %s \"%s\" (%s)\n", p->name,
+		       xf86ModeTypeToString(p->type),
+		       xf86ModeStatusToString(p->status));
+#endif
 	    xf86DeleteMode(&(scrp->modes), p);
 	}
 	p = n;
@@ -2012,7 +2487,7 @@ xf86PruneDriverModes(ScrnInfoPtr scrp)
  * parameters for each mode.  The initialisation includes adjustments
  * for interlaced and double scan modes.
  */
-_X_EXPORT void
+void
 xf86SetCrtcForModes(ScrnInfoPtr scrp, int adjustFlags)
 {
     DisplayModePtr p;
@@ -2043,7 +2518,6 @@ xf86SetCrtcForModes(ScrnInfoPtr scrp, int adjustFlags)
 }
 
 
-#if 0
 static void
 add(char **p, char *new)
 {
@@ -2052,19 +2526,25 @@ add(char **p, char *new)
     strcat(*p, new);
 }
 
-_X_EXPORT void
-xf86PrintModeline(int scrnIndex,DisplayModePtr mode)
+static void
+PrintModeline(int scrnIndex,DisplayModePtr mode)
 {
-    char tmp[256];
+    char *tmp;
     char *flags = xnfcalloc(1, 1);
 
     if (mode->HSkew) { 
-	snprintf(tmp, 256, "hskew %i", mode->HSkew); 
-	add(&flags, tmp);
+	xasprintf(&tmp, "hskew %i", mode->HSkew); 
+	if (tmp) {
+	    add(&flags, tmp);
+	    xfree(tmp);
+	}
     }
     if (mode->VScan) { 
-	snprintf(tmp, 256, "vscan %i", mode->VScan); 
-	add(&flags, tmp);
+	xasprintf(&tmp, "vscan %i", mode->VScan); 
+	if (tmp) {
+	    add(&flags, tmp);
+	    xfree(tmp);
+	}
     }
     if (mode->Flags & V_INTERLACE) add(&flags, "interlace");
     if (mode->Flags & V_CSYNC) add(&flags, "composite");
@@ -2087,9 +2567,8 @@ xf86PrintModeline(int scrnIndex,DisplayModePtr mode)
 		   mode->VTotal, flags);
     xfree(flags);
 }
-#endif
 
-_X_EXPORT void
+void
 xf86PrintModes(ScrnInfoPtr scrp)
 {
     DisplayModePtr p;
@@ -2109,8 +2588,13 @@ xf86PrintModes(ScrnInfoPtr scrp)
 
     do {
 	desc = desc2 = "";
-	hsync = xf86ModeHSync(p);
-	refresh = xf86ModeVRefresh(p);
+	if (p->HSync > 0.0)
+	    hsync = p->HSync;
+	else if (p->HTotal > 0)
+	    hsync = (float)p->Clock / (float)p->HTotal;
+	else
+	    hsync = 0.0;
+	refresh = ModeVRefresh(p);
 	if (p->Flags & V_INTERLACE) {
 	    desc = " (I)";
 	}
@@ -2120,14 +2604,11 @@ xf86PrintModes(ScrnInfoPtr scrp)
 	if (p->VScan > 1) {
 	    desc2 = " (VScan)";
 	}
-	if (p->type & M_T_BUILTIN)
-	    prefix = "Built-in mode";
-	else if (p->type & M_T_DEFAULT)
-	    prefix = "Default mode";
-	else if (p->type & M_T_DRIVER)
-	    prefix = "Driver mode";
-	else
-	    prefix = "Mode";
+	prefix = xstrdup(xf86ModeTypeToString(p->type));
+	if (!prefix)
+	    continue;
+	if (islower(prefix[0]))
+	    prefix[0] = toupper(prefix[0]);
 	if (p->type & M_T_USERDEF)
 	    uprefix = "*";
 	else
@@ -2152,34 +2633,85 @@ xf86PrintModes(ScrnInfoPtr scrp)
 			uprefix, prefix, p->name, p->Clock / 1000.0,
 			p->SynthClock / 1000.0, hsync, refresh, desc, desc2);
 	}
+	xfree(prefix);
 	if (hsync != 0 && refresh != 0)
-	    xf86PrintModeline(scrp->scrnIndex,p);
+	    PrintModeline(scrp->scrnIndex,p);
 	p = p->next;
     } while (p != NULL && p != scrp->modes);
 }
 
-#if 0
-/**
- * Adds the new mode into the mode list, and returns the new list
- *
- * \param modes doubly-linked mode list.
- */
-_X_EXPORT DisplayModePtr
-xf86ModesAdd(DisplayModePtr modes, DisplayModePtr new)
+Bool
+xf86ModeIsPresent(const char *modeName, const DisplayModeRec *modeList,
+		  int inclTypeMask, int exclTypeMask)
 {
-    if (modes == NULL)
-	return new;
+    const DisplayModeRec *p;
 
-    if (new) {
-        DisplayModePtr mode = modes;
-
-        while (mode->next)
-            mode = mode->next;
-
-        mode->next = new;
-        new->prev = mode;
+    p = modeList;
+    while (p) {
+	if (p->name && strcmp(modeName, p->name) == 0) {
+	    if (!inclTypeMask && !exclTypeMask) {
+		return TRUE;
+	    } else {
+		if (inclTypeMask) {
+		    if (p->type & inclTypeMask) {
+			return TRUE;
+		    }
+		}
+		if (exclTypeMask) {
+		    if (!(p->type & exclTypeMask)) {
+			return TRUE;
+		    }
+		}
+	    }
+	}
+	p = p->next;
     }
-
-    return modes;
+    return FALSE;
 }
-#endif
+
+/* This is intended for non-circular mode lists. */
+void
+xf86AddModeAfter(DisplayModePtr *ppOld, DisplayModePtr pNew)
+{
+    /* First check for an empty list. */
+    if (!*ppOld) {
+	*ppOld = pNew;
+	pNew->prev = NULL;
+	pNew->next = NULL;
+    } else {
+	if ((*ppOld)->next)
+	    (*ppOld)->next->prev = pNew;
+	pNew->next = (*ppOld)->next;
+	(*ppOld)->next = pNew;
+	pNew->prev = *ppOld;
+    }
+}
+
+/* This is intended for non-circular mode lists. */
+void
+xf86AddModeBefore(DisplayModePtr *ppOld, DisplayModePtr pNew)
+{
+    /* First check for an empty list. */
+    if (!*ppOld) {
+	*ppOld = pNew;
+	pNew->prev = NULL;
+	pNew->next = NULL;
+    } else {
+	if ((*ppOld)->prev)
+	    (*ppOld)->prev->next = pNew;
+	pNew->prev = (*ppOld)->prev;
+	(*ppOld)->prev = pNew;
+	pNew->next = *ppOld;
+    }
+}
+
+void
+xf86AddModeToMonitor(MonPtr pMonitor, DisplayModePtr pNew)
+{
+    if (pMonitor->Last)
+	xf86AddModeAfter(&pMonitor->Last, pNew);
+    else
+	xf86AddModeAfter(&pMonitor->Modes, pNew);
+    pMonitor->Last = pNew;
+}
+

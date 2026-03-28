@@ -1,5 +1,5 @@
 #! /bin/sh -v
-# $XFree86$
+# $XConsortium: Tests,v 1.3 94/06/03 15:58:32 gildea Exp $
 xmessage this is standard usage, message on the command line
 echo this is a message from standard input | xmessage -file -
 xmessage -file Imakefile -buttons print,me -print

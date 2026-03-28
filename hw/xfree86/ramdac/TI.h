@@ -1,3 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/TI.h,v 1.5 2003/02/17 16:08:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <xf86RamDac.h>
 
@@ -18,9 +33,6 @@ void TIramdacHWCursorInit(xf86CursorInfoPtr infoPtr);
 void TIramdacLoadPalette( ScrnInfoPtr pScrn, int numColors, int *indices,
     LOCO *colors, VisualPtr pVisual);
 
-typedef void TIramdacLoadPaletteProc(ScrnInfoPtr, int, int *, LOCO *,
-    VisualPtr);
-TIramdacLoadPaletteProc *TIramdacLoadPaletteWeak(void);
 
 #define TI3030_RAMDAC		(VENDOR_TI << 16) | 0x00
 #define TI3026_RAMDAC		(VENDOR_TI << 16) | 0x01

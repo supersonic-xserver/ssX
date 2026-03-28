@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_pixel.c,v 1.2 2002/12/16 16:18:54 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_pixel.c,v 1.1.1.2 2004/12/10 15:05:56 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -36,7 +43,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "enums.h"
 #include "mtypes.h"
 #include "macros.h"
-#include "texutil.h"
 #include "swrast/swrast.h"
 
 #include "r200_context.h"
@@ -153,9 +159,10 @@ r200TryReadPixels( GLcontext *ctx,
 		  GLvoid *pixels )
 {
    r200ContextPtr rmesa = R200_CONTEXT(ctx);
-   GLint size;
    GLint pitch = pack->RowLength ? pack->RowLength : width;
    GLint blit_format;
+   GLuint cpp = rmesa->r200Screen->cpp;
+   GLint size = width * height * cpp;
 
    if (R200_DEBUG & DEBUG_PIXEL)
       fprintf(stderr, "%s\n", __FUNCTION__);
@@ -220,7 +227,7 @@ r200TryReadPixels( GLcontext *ctx,
       int src_pitch = rmesa->state.color.drawPitch * rmesa->r200Screen->cpp;
       int dst_offset = r200GartOffsetFromVirtual( rmesa, pixels );
       int dst_pitch = pitch * rmesa->r200Screen->cpp;
-      XF86DRIClipRectRec *box = dPriv->pClipRects;
+      drm_clip_rect_t *box = dPriv->pClipRects;
       int i;
 
       r200EmitWait( rmesa, RADEON_WAIT_3D ); 
@@ -293,7 +300,7 @@ static void do_draw_pix( GLcontext *ctx,
 {
    r200ContextPtr rmesa = R200_CONTEXT(ctx);
    __DRIdrawablePrivate *dPriv = rmesa->dri.drawable;
-   XF86DRIClipRectPtr box = dPriv->pClipRects;
+   drm_clip_rect_t *box = dPriv->pClipRects;
    int nbox = dPriv->numClipRects;
    int i;
    int blit_format;

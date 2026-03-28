@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/glxvisuals.c,v 1.2 2005/01/21 21:22:45 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -37,7 +44,6 @@
 #include "dmx.h"
 #include "glxserver.h"
 #include "glxutil.h"
-#include "glxvisuals.h"
 #include "dmx_glxvisuals.h"
 
 static int                 numConfigs     = 0;

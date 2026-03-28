@@ -1,4 +1,11 @@
 #define DEBUG_VERB 2
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright © 2002 David Dawes
  *
@@ -27,7 +34,7 @@
  *
  * Authors: David Dawes <dawes@xfree86.org>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_modes.c,v 1.9 2005/07/04 20:49:11 alanh Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_modes.c,v 1.4 2005/03/03 18:06:27 alanh Exp $
  */
 /*
  * Modified by Alan Hourihane <alanh@tungstengraphics.com>
@@ -342,7 +349,7 @@ I830GetGTF (int h_pixels, int v_lines, float freq,
     m->HSync = h_freq;
     m->VRefresh = freq;
 
-    snprintf(modename, sizeof(modename), "%dx%d", m->HDisplay,m->VDisplay);
+    sprintf(modename, "%dx%d", m->HDisplay,m->VDisplay);
     m->name = xnfstrdup(modename);
 
     return (m);
@@ -354,7 +361,7 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
 {
     CARD16 major, minor;
     VbeModeInfoBlock *mode;
-    DisplayModePtr p = NULL, pMode = NULL;
+    DisplayModePtr pMode = NULL;
     VbeModeInfoData *data;
     Bool modeOK = FALSE;
     ModeStatus status = MODE_OK;
@@ -380,75 +387,14 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
 	xf86ErrorFVerb(DEBUG_VERB, "*");
     }
 
-    if (mode->XResolution && mode->YResolution &&
-	!I830CheckModeSupport(pScrn, mode->XResolution, mode->YResolution, id)) 
-	modeOK = FALSE;
-
-
-    /*
-     * Check if there's a valid monitor mode that this one can be matched
-     * up with from the 'specified' modes list.
-     */
-    if (modeOK) {
-	for (p = pScrn->monitor->Modes; p != NULL; p = p->next) {
-	    if ((p->type != 0) ||
-		(p->HDisplay != mode->XResolution) ||
-		(p->VDisplay != mode->YResolution) ||
-		(p->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
-		continue;
-	    status = xf86CheckModeForMonitor(p, pScrn->monitor);
-	    if (status == MODE_OK) {
-		modeOK = TRUE;
-		break;
-	    }
-	}
-	if (p) {
-    		pMode = xnfcalloc(sizeof(DisplayModeRec), 1);
-		memcpy((char*)pMode,(char*)p,sizeof(DisplayModeRec));
-    		pMode->name = xnfstrdup(p->name);
-	}
-    } 
-
-    /*
-     * Now, check if there's a valid monitor mode that this one can be matched
-     * up with from the default modes list. i.e. VESA modes in xf86DefModes.c
-     */
-    if (modeOK && !pMode) {
-	int refresh = 0, calcrefresh = 0;
-	DisplayModePtr newMode = NULL;
-
-	for (p = pScrn->monitor->Modes; p != NULL; p = p->next) {
-	    calcrefresh = (int)(((double)(p->Clock * 1000) /
-                       (double)(p->HTotal * p->VTotal)) * 100);
-	    if ((p->type != M_T_DEFAULT) ||
-		(p->HDisplay != mode->XResolution) ||
-		(p->VDisplay != mode->YResolution) ||
-		(p->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
-		continue;
-	    status = xf86CheckModeForMonitor(p, pScrn->monitor);
-	    if (status == MODE_OK) {
-	    	if (calcrefresh > refresh) {
-			refresh = calcrefresh;
-			newMode = p;
-		}
-		modeOK = TRUE;
-	    }
-	}
-	if (newMode) {
-    		pMode = xnfcalloc(sizeof(DisplayModeRec), 1);
-		memcpy((char*)pMode,(char*)newMode,sizeof(DisplayModeRec));
-    		pMode->name = xnfstrdup(newMode->name);
-	}
-    } 
-
     /*
      * Check if there's a valid monitor mode that this one can be matched
      * up with.  The actual matching is done later.
      */
-    if (modeOK && !pMode) {
+    if (modeOK) {
 	float vrefresh = 0.0f;
 	int i;
-
+	
 	for (i=0;i<pScrn->monitor->nVrefresh;i++) {
 
   	    for (vrefresh = pScrn->monitor->vrefresh[i].hi; 
@@ -469,15 +415,9 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
     	            pMode->type = M_T_BUILTIN;
 
 	            status = xf86CheckModeForMonitor(pMode, pScrn->monitor);
-	            if (status == MODE_OK) {
-			if (major >= 3) {
-			    if (pMode->Clock * 1000 <= mode->MaxPixelClock)
-				modeOK = TRUE;
-			    else
-				modeOK = FALSE;
-			} else
-			    modeOK = TRUE;
-	            } else
+	            if (status == MODE_OK)
+	                modeOK = TRUE;
+	            else
 	    	        modeOK = FALSE;
   	            pMode->status = status;
 	        } else { 
@@ -609,14 +549,18 @@ CheckMode(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe, int id,
  */
 
 DisplayModePtr
-I830GetModePool(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe)
+i830GetModePool(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe,
+	       int modeTypes)
 {
-   DisplayModePtr pMode, p = NULL, modePool = NULL;
-   int i = 0;
+    DisplayModePtr pMode, p = NULL, modePool = NULL;
+    int i = 0;
 
-   for (i = 0; i < 0x7F; i++) {
-      if ((pMode = CheckMode(pScrn, pVbe, vbe, i, V_MODETYPE_VGA)) != NULL) {
-         ModeStatus status = MODE_OK;
+    if (modeTypes & V_MODETYPE_VBE) {
+	while (vbe->VideoModePtr[i] != 0xffff) {
+	    int id = vbe->VideoModePtr[i++];
+
+	    if ((pMode = CheckMode(pScrn, pVbe, vbe, id, modeTypes)) != NULL) {
+		ModeStatus status = MODE_OK;
 
 		/* Check the mode against a specified virtual size (if any) */
 		if (pScrn->display->virtualX > 0 &&
@@ -643,6 +587,38 @@ I830GetModePool(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe)
 		}
 	    }
 	}
+    }
+    if (modeTypes & V_MODETYPE_VGA) {
+	for (i = 0; i < 0x7F; i++) {
+	    if ((pMode = CheckMode(pScrn, pVbe, vbe, i, modeTypes)) != NULL) {
+		ModeStatus status = MODE_OK;
+
+		/* Check the mode against a specified virtual size (if any) */
+		if (pScrn->display->virtualX > 0 &&
+		    pMode->HDisplay > pScrn->display->virtualX) {
+		    status = MODE_VIRTUAL_X;
+		}
+		if (pScrn->display->virtualY > 0 &&
+		    pMode->VDisplay > pScrn->display->virtualY) {
+		    status = MODE_VIRTUAL_Y;
+		}
+		if (status != MODE_OK) {
+		     xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+				"Not using mode \"%dx%d\" (%s)\n",
+				pMode->HDisplay, pMode->VDisplay,
+				xf86ModeStatusToString(status));
+		} else {
+		    if (p == NULL) {
+			modePool = pMode;
+		    } else {
+			p->next = pMode;
+		    }
+		    pMode->prev = NULL;
+		    p = pMode;
+		}
+	    }
+	}
+    }
     return modePool;
 }
 
@@ -652,7 +628,7 @@ I830GetModePool(ScrnInfoPtr pScrn, vbeInfoPtr pVbe, VbeInfoBlock *vbe)
  * VBE version 3.0 or later.
  */
 void
-I830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
+i830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
 {
     DisplayModePtr pMode;
     VbeModeInfoData *data;
@@ -662,6 +638,9 @@ I830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
 	int clock;
 
 	data = (VbeModeInfoData*)pMode->Private;
+	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		       "Attempting to use %dHz refresh for mode \"%s\" (%x)\n",
+		       (int)pMode->VRefresh, pMode->name, data->mode);
 	data->block = xcalloc(sizeof(VbeCRTCInfoBlock), 1);
 	data->block->HorizontalTotal = pMode->HTotal;
 	data->block->HorizontalSyncStart = pMode->HSyncStart;
@@ -674,38 +653,23 @@ I830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe)
 	data->block->PixelClock = pMode->Clock * 1000;
 	/* XXX May not have this. */
 	clock = VBEGetPixelClock(pVbe, data->mode, data->block->PixelClock);
-	if (clock)
-	    data->block->PixelClock = clock;
 #ifdef DEBUG
 	ErrorF("Setting clock %.2fMHz, closest is %.2fMHz\n",
 		(double)data->block->PixelClock / 1000000.0, 
 		(double)clock / 1000000.0);
 #endif
+	if (clock)
+	    data->block->PixelClock = clock;
 	data->mode |= (1 << 11);
-	if (pMode->VRefresh != 0) {
-	    data->block->RefreshRate = pMode->VRefresh * 100;
-	} else {
-	    data->block->RefreshRate = (int)(((double)(data->block->PixelClock)/
-                       (double)(pMode->HTotal * pMode->VTotal)) * 100);
-	}
-	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		       "Attempting to use %2.2fHz refresh for mode \"%s\" (%x)\n",
-		       (float)(((double)(data->block->PixelClock) / (double)(pMode->HTotal * pMode->VTotal))), pMode->name, data->mode);
-#ifdef DEBUG
-	ErrorF("Video Modeline: ID: 0x%x Name: %s %i %i %i %i - "
-	       "  %i %i %i %i %.2f MHz Refresh: %.2f Hz\n",
-	       data->mode, pMode->name, pMode->HDisplay, pMode->HSyncStart,
-	       pMode->HSyncEnd, pMode->HTotal, pMode->VDisplay,
-	       pMode->VSyncStart,pMode->VSyncEnd,pMode->VTotal,
-	       (double)data->block->PixelClock/1000000.0,
-	       (double)data->block->RefreshRate/100);
-#endif
+	data->block->RefreshRate = ((double)(data->block->PixelClock) /
+                       (double)(pMode->HTotal * pMode->VTotal)) * 100;
+ 	data->block->RefreshRate = i830refreshes[I830GetBestRefresh(pScrn, data->block->RefreshRate / 100)] * 100;
 	pMode = pMode->next;
     } while (pMode != pScrn->modes);
 }
 
 void
-I830PrintModes(ScrnInfoPtr scrp)
+i830PrintModes(ScrnInfoPtr scrp)
 {
     DisplayModePtr p;
     float hsync, refresh = 0;

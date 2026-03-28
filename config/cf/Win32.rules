@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/config/cf/Win32.rules,v 1.8tsi Exp $
+XCOMM platform:  $Xorg: Win32.rules,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/config/cf/Win32.rules,v 1.6 2004/03/25 03:36:21 dawes Exp $
 
 #define HasSharedLibraries YES
 #define NeedLibInsideFlag YES
@@ -30,7 +35,7 @@ XCOMM $XFree86: xc/config/cf/Win32.rules,v 1.8tsi Exp $
 
 #define RemoveFile(file) if exist file $(RM) file
 
-#define RemoveFiles(files) @$(MAKE) $(PASSMFLAGS) -f <<			@@\
+#define RemoveFiles(files) @$(MAKE) $(MFLAGS) -f <<			@@\
 .SUFFIXES:								@@\
 									@@\
 all: files								@@\
@@ -55,7 +60,7 @@ Avoid.Error files:							@@\
 #define BuildIncludesTop(srclist,dstsubdir,dstupdir)			@@\
 includes:: srclist							@@\
 	MakeDir($(BUILDINCDIR:/=\))					@@\
-	@$(MAKE) $(PASSMFLAGS) -f <<					@@\
+	@$(MAKE) $(MFLAGS) -f <<					@@\
 .SUFFIXES:								@@\
 									@@\
 all: srclist								@@\
@@ -72,7 +77,7 @@ XVARdef1 = $(BUILDINCTOP)/dstupdir/$(CURRENT_DIR)			@@\
 									@@\
 includes:: srclist							@@\
 	MakeDir($(XVARuse0:/=\))					@@\
-	@$(MAKE) -A $(PASSMFLAGS) -f <<					@@\
+	@$(MAKE) -A $(MFLAGS) -f <<					@@\
 .SUFFIXES:								@@\
 									@@\
 all: srclist								@@\
@@ -297,7 +302,7 @@ $(DEPENDFLAGS) -- $(ALLDEFINES) $(DEPEND_DEFINES) -- srcs1 srcs2 srcs3	@@\
 Avoid.Error dirs: FRC							@@\
 	@cd $@								@@\
 	@echo making all in $(CURRENT_DIR)/$@...			@@\
-	$(MAKE) $(PASSMFLAGS) PassCDebugFlags all			@@\
+	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
 	cd ..								@@\
 									@@\
 FRC:
@@ -307,7 +312,7 @@ XVARdef0 = dirs								@@\
 XVARdef1 = $$								@@\
 									@@\
 target::								@@\
-	@$(MAKE) -A $(PASSMFLAGS) -f <<					@@\
+	@$(MAKE) -A $(MFLAGS) -f <<					@@\
 .SUFFIXES:								@@\
 									@@\
 all: $(XVARuse0:/=\)							@@\
@@ -316,7 +321,7 @@ Avoid.Error $(XVARuse0:/=\):						@@\
 	cd $(XVARuse1)@							@@\
 	RMoveToBakFile(Makefile)					@@\
 	ImakeSubCmdHelper -DTOPDIR=../$(TOP) -DCURDIR=$(CURRENT_DIR)/$(XVARuse1)@ @@\
-	$(MAKE) $(PASSMFLAGS) Makefiles					@@\
+	$(MAKE) $(MFLAGS) Makefiles					@@\
 	cd ..								@@\
 <<
 
@@ -332,7 +337,7 @@ XVARdef0 = dirs								@@\
 XVARdef1 = $$								@@\
 									@@\
 name::									@@\
-	@$(MAKE) -A $(PASSMFLAGS) -f <<					@@\
+	@$(MAKE) -A $(MFLAGS) -f <<					@@\
 .SUFFIXES:								@@\
 									@@\
 all: $(XVARuse0:/=\)							@@\
@@ -340,7 +345,7 @@ all: $(XVARuse0:/=\)							@@\
 Avoid.Error $(XVARuse0:/=\):						@@\
 	cd $(XVARuse1)@							@@\
 	@echo verb in $(CURRENT_DIR)/$(XVARuse1)@...			@@\
-	$(MAKE) $(PASSMFLAGS) flags subname				@@\
+	$(MAKE) $(MFLAGS) flags subname					@@\
 	cd ..								@@\
 <<
 
@@ -506,11 +511,7 @@ LintLibReferences(varname,libname,libsource)
 XVARdef0 = objects							@@\
 									@@\
 AllTarget(ProgramTargetName(server))					@@\
-									@@\
-$(XVARuse0:.o=.obj) libs:: subdirs					@@\
-	$(_NULLCMD_)							@@\
-									@@\
-ProgramTargetName(server): $(XVARuse0:.o=.obj) libs			@@\
+ProgramTargetName(server): subdirs $(XVARuse0:.o=.obj) libs		@@\
 	MoveToBakFile($@)						@@\
 	LinkRule($@,$(LDOPTIONS),$(XVARuse0:.o=.obj),libs $(LDLIBS) syslibs) @@\
 									@@\

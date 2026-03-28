@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/xf86Wacom.c,v 1.50 2006/02/19 15:51:27 tsi Exp $ */
+/* $XConsortium: xf86Wacom.c /main/20 1996/10/27 11:05:20 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1995-2001 by Frederic Lepied, France. <Lepied@XFree86.org>
  *                                                                            
@@ -21,6 +28,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/xf86Wacom.c,v 1.47 2004/10/23 15:29:31 dawes Exp $ */
 
 /*
  * This driver is only able to handle the Wacom IV and Wacom V protocols.
@@ -86,7 +95,7 @@ static const char identification[] = "$Identification: 42 $";
 #include "xf86_OSproc.h"
 #include "xf86Xinput.h"
 #include "exevents.h"		/* Needed for InitValuator/Proximity stuff */
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "mipointer.h"
 
 #include "xf86Module.h"
@@ -2767,7 +2776,8 @@ xf86WcmDevConvert(LocalDevicePtr	local,
     if (first != 0 || num == 1)
       return FALSE;
    
-    if (IsXineramaActive() && (priv->flags & ABSOLUTE_FLAG) &&
+#ifdef PANORAMIX
+    if (!noPanoramiXExtension && (priv->flags & ABSOLUTE_FLAG) &&
                 priv->common->wcmGimp) {
 	int i, totalWidth, leftPadding = 0;
 	for (i = 0; i < priv->currentScreen; i++)
@@ -2777,7 +2787,7 @@ xf86WcmDevConvert(LocalDevicePtr	local,
 	    v0 -= (priv->bottomX - priv->topX) * leftPadding
                         / (double)totalWidth + 0.5;
     }
-
+#endif
     if (priv->twinview != TV_NONE && (priv->flags & ABSOLUTE_FLAG)) {
 	v0 -= priv->topX;
 	v1 -= priv->topY;
@@ -2860,7 +2870,8 @@ xf86WcmDevReverseConvert(LocalDevicePtr	local,
     valuators[0] = x / priv->factorX + 0.5;
     valuators[1] = y / priv->factorY + 0.5;
 
-    if (IsXineramaActive() && (priv->flags & ABSOLUTE_FLAG) &&
+#ifdef PANORAMIX
+    if (!noPanoramiXExtension && (priv->flags & ABSOLUTE_FLAG) &&
                 priv->common->wcmGimp) {
 	int i, totalWidth, leftPadding = 0;
 	for (i = 0; i < priv->currentScreen; i++)
@@ -2870,7 +2881,7 @@ xf86WcmDevReverseConvert(LocalDevicePtr	local,
 	valuators[0] += (priv->bottomX - priv->topX)
                         * leftPadding / (double)totalWidth + 0.5;
     }
-
+#endif
     if (priv->twinview != TV_NONE && (priv->flags & ABSOLUTE_FLAG)) {
  	if (priv->twinview == TV_LEFT_RIGHT) {
 	    if (x > priv->tvResolution[0]) {
@@ -2990,7 +3001,8 @@ xf86WcmSetScreen(LocalDevicePtr   local,
 	    leftPadding += screenInfo.screens[i]->width;
 	}
     }
-    else if (IsXineramaActive() && priv->common->wcmGimp) {
+#ifdef PANORAMIX
+    else if (!noPanoramiXExtension && priv->common->wcmGimp) {
 	screenToSet = priv->screen_no;
 	for (i = 0; i < screenToSet; i++)
 	    leftPadding += screenInfo.screens[i]->width;
@@ -2999,7 +3011,7 @@ xf86WcmSetScreen(LocalDevicePtr   local,
 	*v1 = *v1 * screenInfo.screens[screenToSet]->height / (double)maxHeight + 0.5;
     }
 
-    if (IsXineramaActive() && priv->common->wcmGimp) {
+    if (!noPanoramiXExtension && priv->common->wcmGimp) {
 	priv->factorX = totalWidth/sizeX;
 	priv->factorY = maxHeight/sizeY;
 	x = (*v0 - sizeX * leftPadding / totalWidth) * priv->factorX + 0.5;
@@ -3011,6 +3023,7 @@ xf86WcmSetScreen(LocalDevicePtr   local,
 	    y = screenInfo.screens[screenToSet]->height - 1;
     }
     else
+#endif
     {
 	if (priv->screen_no == -1)
 	    *v0 = (*v0 * totalWidth - sizeX * leftPadding)
@@ -5218,8 +5231,6 @@ InputDriverRec WACOM = {
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULETEARDOWNPROTO(xf86WcmUnplug);
-
 static void
 xf86WcmUnplug(pointer	p)
 {
@@ -5231,10 +5242,8 @@ xf86WcmUnplug(pointer	p)
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULESETUPPROTO(xf86WcmPlug);
-
 static pointer
-xf86WcmPlug(ModuleDescPtr	module,
+xf86WcmPlug(pointer	module,
 	    pointer	options,
 	    int		*errmaj,
 	    int		*errmin)

@@ -1,4 +1,13 @@
+/* $XFree86: xc/programs/Xserver/dbe/midbe.h,v 3.4 2006/02/19 15:51:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
+ * 
  * Copyright (c) 1994, 1995  Hewlett-Packard Company
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -29,12 +38,13 @@
  *
  *****************************************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #ifndef MIDBE_H
 #define MIDBE_H
+
+/* INCLUDES */
+
+#include "dbestruct.h"
 
 /* EXTERNS */
 

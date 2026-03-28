@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 //
 //  XServer.h
 //
@@ -29,10 +36,10 @@
  * sale, use or other dealings in this Software without prior written
  * authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XServer.h,v 1.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XServer.h,v 1.19 2004/06/08 22:58:10 torrey Exp $ */
 
 #define BOOL xBOOL
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #undef BOOL
 
 #import <Cocoa/Cocoa.h>

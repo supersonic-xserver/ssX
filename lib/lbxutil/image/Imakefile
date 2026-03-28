@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/lib/lbxutil/image/Imakefile,v 1.4tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:46:40 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/lib/lbxutil/image/Imakefile,v 1.4 2001/06/25 08:12:32 alanh Exp $
 
 #define IncSubdir X11
 #include <Library.tmpl>
@@ -7,7 +12,7 @@ SRCS = dfaxg42d.c dpackbits.c efaxg42d.c epackbits.c misc.c
 
 OBJS = dfaxg42d.o dpackbits.o efaxg42d.o epackbits.o misc.o
 
-INCLUDES = -I$(SERVERSRC)/include
+INCLUDES = -I$(XINCLUDESRC) -I$(EXTINCSRC) -I$(SERVERSRC)/include -I../../../include/extensions
 
 SubdirLibraryRule($(OBJS))
 NormalLibraryObjectRule()

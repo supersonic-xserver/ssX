@@ -1,5 +1,12 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,14 +26,12 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stdlib.h>
+/* $XFree86: xc/programs/Xserver/fb/fbgc.c,v 1.16 2006/01/09 14:59:47 dawes Exp $ */
 
 #include "fb.h"
+#ifdef IN_MODULE
+#include "xf86_ansic.h"
+#endif
 
 const GCFuncs fbGCFuncs = {
     fbValidateGC,
@@ -59,6 +64,9 @@ const GCOps	fbGCOps = {
     fbImageGlyphBlt,
     fbPolyGlyphBlt,
     fbPushPixels
+#ifdef NEED_LINEHELPER
+    ,NULL
+#endif
 };
 
 Bool
@@ -93,29 +101,22 @@ fbPadPixmap (PixmapPtr pPixmap)
     FbBits  mask;
     int	    height;
     int	    w;
-    int     stride;
-    int     bpp;
-    int     xOff, yOff;
-
-    fbGetDrawable (&pPixmap->drawable, bits, stride, bpp, xOff, yOff);
 
     width = pPixmap->drawable.width * pPixmap->drawable.bitsPerPixel;
+    bits = pPixmap->devPrivate.ptr;
     height = pPixmap->drawable.height;
     mask = FbBitsMask (0, width);
     while (height--)
     {
-	b = READ(bits) & mask;
+	b = *bits & mask;
 	w = width;
 	while (w < FB_UNIT)
 	{
 	    b = b | FbScrRight(b, w);
 	    w <<= 1;
 	}
-	WRITE(bits, b);
-	bits += stride;
+	*bits++ = b;
     }
-
-    fbFinishAccess (&pPixmap->drawable);
 }
 
 /*
@@ -153,7 +154,7 @@ fbLineRepeat (FbBits *bits, int len, int width)
     width = (width + FB_UNIT-1) >> FB_SHIFT;
     bits++;
     while (--width)
-	if (READ(bits) != first)
+	if (*bits != first)
 	    return FALSE;
     return TRUE;
 }
@@ -183,13 +184,10 @@ fbCanEvenStipple (PixmapPtr pStipple, int bpp)
     /* check to see that the stipple repeats horizontally */
     while (h--)
     {
-	if (!fbLineRepeat (bits, len, pStipple->drawable.width)) {
-	    fbFinishAccess (&pStipple->drawable);
+	if (!fbLineRepeat (bits, len, pStipple->drawable.width))
 	    return FALSE;
-	}
 	bits += stride;
     }
-    fbFinishAccess (&pStipple->drawable);
     return TRUE;
 }
 

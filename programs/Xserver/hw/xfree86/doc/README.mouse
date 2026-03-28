@@ -6,7 +6,7 @@
 
 1.  Introduction
 
-This document describes mouse support in XFree86 4.7.0.
+This document describes mouse support in XFree86 4.5.0.
 
 Mouse configuration has often been a mysterious task for novice users.  With
 XFree86 4.5.0 and later, mouse configuration is automatic for most common
@@ -1001,4 +1001,4 @@ time. They may prefer the following InputDevice section which defines button
      Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/mouse.sgml,v 1.16 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.mouse,v 1.35tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.mouse,v 1.34 2005/03/17 01:11:55 dawes Exp $

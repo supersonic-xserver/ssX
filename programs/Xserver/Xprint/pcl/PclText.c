@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclText.c,v 1.11tsi Exp $ */
+/* $Xorg: PclText.c,v 1.5 2001/03/06 16:28:48 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -44,6 +51,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclText.c,v 1.11 2003/10/29 22:11:00 tsi Exp $ */
 
 #ifdef DO_TWO_BYTE_PCL
 #include "iconv.h"
@@ -53,7 +61,7 @@ copyright holders.
 
 #include "Pcl.h"
 #include "migc.h"
-#include <X11/Xatom.h>
+#include "Xatom.h"
 
 #include "PclSFonts.h"
 

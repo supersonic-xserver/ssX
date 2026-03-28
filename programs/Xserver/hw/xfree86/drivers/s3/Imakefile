@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/Imakefile,v 1.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/Imakefile,v 1.13 2004/06/01 00:17:02 dawes Exp $ */
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -58,14 +58,20 @@ OBJS = s3_driver.o s3_IBMRGB.o s3_Trio64DAC.o s3_accel_newmmio.o \
        s3_Ti.o
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-           -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(XF86SRC)/xaa \
-           -I$(SERVERSRC)/Xext -I$(XF86SRC)/vgahw -I$(XF86SRC)/ramdac \
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi \
+	   -I$(SERVERSRC)/mfb \
+           -I$(XF86SRC)/xaa -I$(SERVERSRC)/cfb \
+           -I$(XF86SRC)/xf1bpp -I$(XF86SRC)/xf4bpp \
+           -I$(XF86SRC)/xf24_32bpp -I$(SERVERSRC)/Xext \
+           -I$(XF86SRC)/vgahw -I$(XF86SRC)/ramdac \
            -I$(XF86SRC)/rac -I$(XF86SRC)/int10 \
-           -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-           -I$(SERVERSRC)/include -I$(SERVERSRC)/render
+           -I$(XF86SRC)/fbdevhw -I$(XF86SRC)/ddc \
+           -I$(XF86SRC)/i2c -I$(XF86SRC)/vbe \
+           -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(FONTINCSRC) \
+           -I$(EXTINCSRC) -I$(SERVERSRC)/render
 #endif     
 
 #if MakeHasPosixVariableSubstitutions

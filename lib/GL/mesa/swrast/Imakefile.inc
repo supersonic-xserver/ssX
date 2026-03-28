@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/swrast/Imakefile.inc,v 1.2 2004/04/22 13:58:41 tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/swrast/Imakefile.inc,v 1.3 2004/12/10 17:47:25 alanh Exp $
 
 #ifndef MesaSwrastBuildDir
 #define MesaSwrastBuildDir $(GLXLIBSRC)/mesa/swrast/

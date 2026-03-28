@@ -1,3 +1,8 @@
+.\" $Xorg: buffer.ms,v 1.3 2000/08/17 19:42:31 cpqbld Exp $
+.\"
+.\"
+.\"
+.\"
 .\" $XFree86: xc/doc/specs/Xext/buffer.ms,v 1.4 2001/01/17 16:57:43 dawes Exp $
 .TL
 Extending X for Double-Buffering, Multi-Buffering, and Stereo

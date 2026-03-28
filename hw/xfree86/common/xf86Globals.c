@@ -1,6 +1,69 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Globals.c,v 1.49 2006/09/02 16:44:08 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * Copyright © 2004, 2005 X-Oz Technologies.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -8,31 +71,44 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
+ * 
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions, and the following disclaimer.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *  2. Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ * 
+ *  3. The end-user documentation included with the redistribution,
+ *     if any, must include the following acknowledgment: "This product
+ *     includes software developed by X-Oz Technologies
+ *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
+ *     appear in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *  4. Except as contained in this notice, the name of X-Oz
+ *     Technologies shall not be used in advertising or otherwise to
+ *     promote the sale, use or other dealings in this Software without
+ *     prior written authorization from X-Oz Technologies.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
  */
 
 /*
  * This file contains all the XFree86 global variables.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include <X11/X.h>
 #include "os.h"
@@ -43,19 +119,15 @@
 #include "xf86Parser.h"
 #include "xf86Xinput.h"
 #include "xf86InPriv.h"
-#include "xf86Config.h"
 
 /* Globals that video drivers may access */
 
-DevPrivateKeyRec xf86CreateRootWindowKeyRec;
-DevPrivateKeyRec xf86ScreenKeyRec;
-
-ScrnInfoPtr *xf86Screens = NULL;        /* List of ScrnInfos */
-ScrnInfoPtr *xf86GPUScreens = NULL;        /* List of ScrnInfos */
-
-int xf86DRMMasterFd = -1;  /* Command line argument for DRM master file descriptor */
-
-const unsigned char byte_reversed[256] = {
+int xf86ScreenIndex = -1;	/* Index of ScrnInfo in pScreen.devPrivates */
+int xf86CreateRootWindowIndex = -1;	/* Index into pScreen.devPrivates */
+ScrnInfoPtr *xf86Screens = NULL;	/* List of ScrnInfos */
+int xf86PixmapIndex = 0;
+const unsigned char byte_reversed[256] =
+{
     0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
     0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
     0x08, 0x88, 0x48, 0xc8, 0x28, 0xa8, 0x68, 0xe8,
@@ -93,109 +165,171 @@ const unsigned char byte_reversed[256] = {
 /* Globals that input drivers may access */
 InputInfoPtr xf86InputDevs = NULL;
 
+
 /* Globals that video drivers may not access */
 
 xf86InfoRec xf86Info = {
-    .consoleFd = -1,
-    .vtno = -1,
-    .lastEventTime = -1,
-    .vtRequestsPending = FALSE,
-#ifdef __sun
-    .vtPendingNum = -1,
+	NULL,		/* pKeyboard */
+	NULL,		/* kbdProc */
+	NULL,		/* kbdEvents */
+	-1,		/* consoleFd */
+	-1,		/* kbdFd */
+	-1,		/* vtno */
+	-1,		/* kbdType */
+	-1,		/* kbdRate */
+	-1, 		/* kbdDelay */
+	-1,		/* bell_pitch */
+	-1,		/* bell_duration */
+	TRUE,		/* autoRepeat */
+	0,		/* leds */
+	0,		/* xleds */
+	NULL,		/* vtinit */
+	0,		/* scanPrefix */
+	FALSE,		/* capsLock */
+	FALSE,		/* numLock */
+	FALSE,		/* scrollLock */
+	FALSE,		/* modeSwitchLock */
+	FALSE,		/* composeLock */
+	FALSE,		/* vtSysreq */
+	SKWhenNeeded,	/* ddxSpecialKeys */
+	FALSE,		/* ActionKeyBindingsSet */
+#if defined(SVR4) && defined(i386)
+	FALSE,		/* panix106 */
 #endif
-    .dontVTSwitch = FALSE,
-    .autoVTSwitch = TRUE,
-    .ShareVTs = FALSE,
-    .dontZap = FALSE,
-    .dontZoom = FALSE,
-    .currentScreen = NULL,
+#if defined(__OpenBSD__) || defined(__NetBSD__)
+	0,		/* wskbdType */
+#endif
+	NULL,		/* pMouse */
+#ifdef XINPUT
+	NULL,		/* mouseLocal */
+#endif
+	-1,		/* lastEventTime */
+	FALSE,		/* vtRequestsPending */
+	FALSE,		/* inputPending */
+	FALSE,		/* dontVTSwitch */
+	FALSE,		/* dontZap */
+	FALSE,		/* dontZoom */
+	FALSE,		/* notrapSignals */
+	FALSE,		/* caughtSignal */
+	FALSE,		/* sharedMonitor */
+	NULL,		/* currentScreen */
 #ifdef CSRG_BASED
-    .consType = -1,
+	-1,		/* screenFd */
+	-1,		/* consType */
 #endif
-    .allowMouseOpenFail = FALSE,
-    .vidModeEnabled = TRUE,
-    .vidModeAllowNonLocal = FALSE,
-    .miscModInDevEnabled = TRUE,
-    .miscModInDevAllowNonLocal = FALSE,
-    .pmFlag = TRUE,
-#if defined(CONFIG_HAL) || defined(CONFIG_UDEV) || defined(CONFIG_WSCONS)
-    .forceInputDevices = FALSE,
-    .autoAddDevices = TRUE,
-    .autoEnableDevices = TRUE,
-#else
-    .forceInputDevices = TRUE,
-    .autoAddDevices = FALSE,
-    .autoEnableDevices = FALSE,
+#ifdef XKB
+	NULL,		/* xkbkeymap */
+	NULL,		/* xkbkeycodes */
+	NULL,		/* xkbtypes */
+	NULL,		/* xkbcompat */
+	NULL,		/* xkbsymbols */
+	NULL,		/* xkbgeometry */
+	FALSE,		/* xkbcomponents_specified */
+	NULL,		/* xkbrules */
+	NULL,		/* xkbmodel */
+	NULL,		/* xkblayout */
+	NULL,		/* xkbvariant */
+	NULL,		/* xkboptions */
 #endif
-#if defined(CONFIG_UDEV_KMS)
-    .autoAddGPU = TRUE,
-#else
-    .autoAddGPU = FALSE,
+	FALSE,		/* allowMouseOpenFail */
+	TRUE,		/* vidModeEnabled */
+	FALSE,		/* vidModeAllowNonLocal */
+	TRUE,		/* miscModInDevEnabled */
+	FALSE,		/* miscModInDevAllowNonLocal */
+	PCIProbe1,	/* pciFlags */
+	Pix24DontCare,	/* pixmap24 */
+	X_DEFAULT,	/* pix24From */
+#if defined(i386) || defined(__i386__)
+	FALSE,		/* pc98 */
 #endif
-    .autoBindGPU = TRUE,
+	TRUE,		/* pmFlag */
+	0,		/* estimateSizesAggressively */
+	FALSE,		/* kbdCustomKeycodes */
+	FALSE,		/* disableRandR */
+	X_DEFAULT,	/* randRFrom */
+	{ FALSE, NULL, FALSE, FALSE, },	/* grabInfo */
+	NULL,		/* config */
+	NULL,		/* serverLayout */
+	NULL,		/* confFiles */
+	NULL,		/* confFlags */
+	NULL		/* confModules */
 };
-
 const char *xf86ConfigFile = NULL;
-const char *xf86ConfigDir = NULL;
-const char *xf86ModulePath = DEFAULT_MODULE_PATH;
-MessageType xf86ModPathFrom = X_DEFAULT;
-const char *xf86LogFile = DEFAULT_LOGDIR "/" DEFAULT_LOGPREFIX;
-MessageType xf86LogFileFrom = X_DEFAULT;
 Bool xf86LogFileWasOpened = FALSE;
-serverLayoutRec xf86ConfigLayout = { NULL, };
-confDRIRec xf86ConfigDRI = { 0, };
-
-XF86ConfigPtr xf86configptr = NULL;
+confDRIRec xf86ConfigDRI = {0, };
+confFilesRec xf86FileDefaults = {
+	NULL, "<defaults>",
+	DEFAULT_LOGPREFIX, X_DEFAULT,
+	NULL, X_NONE,
+	DEFAULT_MODULE_PATH, X_DEFAULT,
+	NULL, X_NONE,
+	NULL, X_NONE,
+	NULL
+};
+confFilesRec xf86FileCmdline = {
+	NULL, "<commandline>",
+	NULL, X_NONE,
+	NULL, X_NONE,
+	NULL, X_NONE,
+	NULL, X_NONE,
+	NULL, X_NONE,
+	NULL
+};
+confFilesPtr xf86FilePaths = NULL;
 Bool xf86Resetting = FALSE;
 Bool xf86Initialising = FALSE;
+Bool xf86ProbeFailed = FALSE;
+Bool xf86DoProbe = FALSE;
 Bool xf86DoConfigure = FALSE;
-Bool xf86ProbeIgnorePrimary = FALSE;
-Bool xf86DoShowOptions = FALSE;
+#ifdef XFree86LOADER
 DriverPtr *xf86DriverList = NULL;
 int xf86NumDrivers = 0;
 InputDriverPtr *xf86InputDriverList = NULL;
 int xf86NumInputDrivers = 0;
+ModuleInfoPtr *xf86ModuleInfoList = NULL;
+int xf86NumModuleInfos = 0;
+#endif
 int xf86NumScreens = 0;
-int xf86NumGPUScreens = 0;
 
 const char *xf86VisualNames[] = {
-    "StaticGray",
-    "GrayScale",
-    "StaticColor",
-    "PseudoColor",
-    "TrueColor",
-    "DirectColor"
+	"StaticGray",
+	"GrayScale",
+	"StaticColor",
+	"PseudoColor",
+	"TrueColor",
+	"DirectColor"
 };
 
 /* Parameters set only from the command line */
-Bool xf86fpFlag = FALSE;
+const char *xf86ServerName = "no-name";
 Bool xf86sFlag = FALSE;
 Bool xf86bsEnableFlag = FALSE;
 Bool xf86bsDisableFlag = FALSE;
 Bool xf86silkenMouseDisableFlag = FALSE;
-Bool xf86xkbdirFlag = FALSE;
-
-#ifdef HAVE_ACPI
-Bool xf86acpiDisableFlag = FALSE;
-#endif
-char *xf86LayoutName = NULL;
-char *xf86ScreenName = NULL;
-char *xf86PointerName = NULL;
-char *xf86KeyboardName = NULL;
+const char *xf86LayoutName = NULL;
+const char *xf86ScreenName = NULL;
+const char *xf86PointerName = NULL;
+const char *xf86KeyboardName = NULL;
+Bool xf86ProbeOnly = FALSE;
 int xf86Verbose = DEFAULT_VERBOSE;
 int xf86LogVerbose = DEFAULT_LOG_VERBOSE;
 int xf86FbBpp = -1;
+Pix24Flags xf86Pix24 = Pix24DontCare;
 int xf86Depth = -1;
-rgb xf86Weight = { 0, 0, 0 };
-
+rgb xf86Weight = {0, 0, 0};
 Bool xf86FlipPixels = FALSE;
-Gamma xf86Gamma = { 0.0, 0.0, 0.0 };
-
+Gamma xf86Gamma = {0.0, 0.0, 0.0};
+Bool xf86ShowUnresolved = DEFAULT_UNRESOLVED;
+Bool xf86BestRefresh = DEFAULT_BEST_REFRESH;
 Bool xf86AllowMouseOpenFail = FALSE;
-Bool xf86AutoBindGPUDisabled = FALSE;
-
 #ifdef XF86VIDMODE
 Bool xf86VidModeDisabled = FALSE;
 Bool xf86VidModeAllowNonLocal = FALSE;
 #endif
-Bool xorgHWAccess = FALSE;
+#ifdef XF86MISC
+Bool xf86MiscModInDevDisabled = FALSE;
+Bool xf86MiscModInDevAllowNonLocal = FALSE;
+#endif
+RootWinPropPtr *xf86RegisteredPropertiesTable = NULL;
+Bool xf86inSuspend = FALSE;
+

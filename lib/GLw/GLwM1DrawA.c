@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (c) Copyright 1993, Silicon Graphics, Inc.
  * ALL RIGHTS RESERVED 
  * Permission to use, copy, modify, and distribute this software for 
@@ -35,7 +42,7 @@
  *
  * OpenGL(TM) is a trademark of Silicon Graphics, Inc.
  */
-/* $XFree86$ */
+/* $XFree86: xc/lib/GLw/GLwM1DrawA.c,v 1.1 2000/11/02 20:39:07 dawes Exp $ */
 
 #define __GLX_MOTIF 1
 

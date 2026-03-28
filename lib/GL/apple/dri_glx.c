@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 Copyright (c) 2002 Apple Computer, Inc.
@@ -26,7 +40,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/apple/dri_glx.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/lib/GL/apple/dri_glx.c,v 1.3 2004/12/10 17:47:24 alanh Exp $ */
 
 /*
  * Authors:
@@ -40,7 +54,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <X11/Xlibint.h>
 #include <X11/extensions/Xext.h>
-#include <X11/extensions/extutil.h>
+#include "extutil.h"
 #include "glxclient.h"
 #include "appledri.h"
 #include <stdio.h>
@@ -50,10 +64,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /* Apple OpenGL "driver" information. */
-static const char *__driAppleDriverName = "apple";
-static const int __driAppleDriverMajor = 1;
-static const int __driAppleDriverMinor = 0;
-static const int __driAppleDriverPatch = 0;
+static const char *__driDriverName = "apple";
+static const char __driConfigOptions[] = "";
+static const int __driDriverMajor = 1;
+static const int __driDriverMinor = 0;
+static const int __driDriverPatch = 0;
 
 
 /*
@@ -106,11 +121,11 @@ static Bool GetDriverName(Display *dpy, int scrNum, char **driverName)
         return False;
     }
 
-    *driverName = (char *) __driAppleDriverName;
+    *driverName = (char *) __driDriverName;
 
     InfoMessageF("XF86DRIGetClientDriverName: %d.%d.%d %s (screen %d)\n",
-                 __driAppleDriverMajor, __driAppleDriverMinor,
-                 __driAppleDriverPatch, *driverName, scrNum);
+                 __driDriverMajor, __driDriverMinor, __driDriverPatch,
+                 *driverName, scrNum);
 
     return True;
 }
@@ -152,9 +167,11 @@ const char *glXGetScreenDriver (Display *dpy, int scrNum) {
  * Note: In a standard GLX imlementation the driver remains opened after
  * this function returns.
  */
-const char *glXGetDriverConfig(const char *driverName) {
-    /* the apple stub driver does not support configuration */
-    return NULL;
+const char *glXGetDriverConfig (const char *driverName) {
+    if (strcmp(driverName, __driDriverName) == 0)
+        return __driConfigOptions;
+    else
+        return NULL;
 }
 
 

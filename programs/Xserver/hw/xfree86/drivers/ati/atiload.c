@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiload.c,v 1.25tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiload.c,v 1.18 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -28,8 +35,6 @@
 #include "atiload.h"
 #include "atistruct.h"
 
-#include "vbe.h"
-
 /*
  * All symbol lists belong here.  They are externalised so that they can be
  * referenced elsewhere.  Note the naming convention for these things...
@@ -46,7 +51,7 @@ const char *ATIint10Symbols[] =
 const char *ATIddcSymbols[] =
 {
     "xf86PrintEDID",
-    "xf86SetDDCproperties",
+    "xf86SetDDCProperties",
     NULL
 };
 
@@ -57,6 +62,8 @@ const char *ATIvbeSymbols[] =
     "vbeFree",
     NULL
 };
+
+#ifndef AVOID_CPIO
 
 const char *ATIxf1bppSymbols[] =
 {
@@ -69,6 +76,8 @@ const char *ATIxf4bppSymbols[] =
     "xf4bppScreenInit",
     NULL
 };
+
+#endif /* AVOID_CPIO */
 
 const char *ATIfbSymbols[] =
 {
@@ -112,53 +121,34 @@ const char *ATIi2cSymbols[] =
 };
 
 /*
- * ATILoadSubModule --
+ * ATILoadModule --
  *
  * Load a specific module and register with the loader those of its entry
  * points that are referenced by this driver.
  */
-ModuleDescPtr
-ATILoadSubModule
+pointer
+ATILoadModule
 (
     ScrnInfoPtr  pScreenInfo,
     const char  *Module,
     const char **SymbolList
 )
 {
-    ModuleDescPtr pModule = xf86LoadSubModule(pScreenInfo, Module);
+    pointer pModule = xf86LoadSubModule(pScreenInfo, Module);
 
     if (pModule)
-        xf86LoaderModReqSymLists(pModule, SymbolList, NULL);
+        xf86LoaderReqSymLists(SymbolList, NULL);
 
     return pModule;
 }
 
 /*
- * ATILoadVBEModule --
- *
- * A variant of ATILoadSubModule() specifically for loading the 'vbe' module.
- */
-ModuleDescPtr
-ATILoadVBEModule
-(
-    ScrnInfoPtr  pScreenInfo
-)
-{
-    ModuleDescPtr pModule = xf86LoadVBEModule(pScreenInfo);
-
-    if (pModule)
-        xf86LoaderModReqSymLists(pModule, ATIvbeSymbols, NULL);
-
-    return pModule;
-}
-
-/*
- * ATILoadSubModules --
+ * ATILoadModules --
  *
  * This function loads other modules required for a screen.
  */
-ModuleDescPtr
-ATILoadSubModules
+pointer
+ATILoadModules
 (
     ScrnInfoPtr pScreenInfo,
     ATIPtr      pATI
@@ -166,33 +156,38 @@ ATILoadSubModules
 {
     /* Load shadow frame buffer code if needed */
     if (pATI->OptionShadowFB &&
-        !ATILoadSubModule(pScreenInfo, "shadowfb", ATIshadowfbSymbols))
+        !ATILoadModule(pScreenInfo, "shadowfb", ATIshadowfbSymbols))
         return NULL;
 
     /* Load XAA if needed */
     if (pATI->OptionAccel &&
-        !ATILoadSubModule(pScreenInfo, "xaa", ATIxaaSymbols))
+        !ATILoadModule(pScreenInfo, "xaa", ATIxaaSymbols))
         return NULL;
 
     /* Load ramdac module if needed */
     if ((pATI->Cursor > ATI_CURSOR_SOFTWARE) &&
-        !ATILoadSubModule(pScreenInfo, "ramdac", ATIramdacSymbols))
+        !ATILoadModule(pScreenInfo, "ramdac", ATIramdacSymbols))
         return NULL;
 
     /* Load depth-specific entry points */
     switch (pATI->bitsPerPixel)
     {
+
+#ifndef AVOID_CPIO
+
         case 1:
-            return ATILoadSubModule(pScreenInfo, "xf1bpp", ATIxf1bppSymbols);
+            return ATILoadModule(pScreenInfo, "xf1bpp", ATIxf1bppSymbols);
 
         case 4:
-            return ATILoadSubModule(pScreenInfo, "xf4bpp", ATIxf4bppSymbols);
+            return ATILoadModule(pScreenInfo, "xf4bpp", ATIxf4bppSymbols);
+
+#endif /* AVOID_CPIO */
 
         case 8:
         case 16:
         case 24:
         case 32:
-            return ATILoadSubModule(pScreenInfo, "fb", ATIfbSymbols);
+            return ATILoadModule(pScreenInfo, "fb", ATIfbSymbols);
 
         default:
             return NULL;

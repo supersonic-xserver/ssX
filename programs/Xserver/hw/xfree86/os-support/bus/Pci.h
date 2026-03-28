@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/Pci.h,v 1.58 2008/03/26 18:57:50 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/Pci.h,v 1.49 2004/05/27 01:18:08 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *
@@ -70,7 +77,7 @@
  *
  */
 /*
- * Copyright (c) 1999-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1999-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -124,8 +131,8 @@
 #ifndef _PCI_H
 #define _PCI_H 1
 
-#include <X11/Xarch.h>
-#include <X11/Xfuncproto.h>
+#include "Xarch.h"
+#include "Xfuncproto.h"
 #include "xf86Pci.h"
 #include "xf86PciInfo.h"
 
@@ -134,8 +141,7 @@
  */
 #define MAX_PCI_DEVICES 128	/* Max number of devices accomodated */
 				/* by xf86scanpci		     */
-#if (defined(sparc) || defined(__sparc__)) && \
-    ((defined(sun) && defined(SVR4)) || defined(__OpenBSD__))
+#if defined(sun) && defined(SVR4) && defined(sparc)
 # define MAX_PCI_BUSES   4096	/* Max number of PCI buses           */
 #elif defined(__alpha__) && defined (linux)
 # define MAX_PCI_DOMAINS	512
@@ -168,7 +174,6 @@
 #define PCI_FUNC_FROM_TAG(tag) (((tag) & 0x00000700u) >> 8)
 
 #define PCI_DFN_FROM_TAG(tag)  (((tag) & 0x0000ff00u) >> 8)
-#define PCI_BDF_FROM_TAG(tag)  (((tag) & 0x00ffff00u) >> 8)
 #define PCI_BDEV_FROM_TAG(tag) ((tag) & 0x00fff800u)
 
 #define PCI_DOM_FROM_BUS(bus)  (((bus) >> 8) & (PCI_DOM_MASK))
@@ -245,16 +250,9 @@
 #define PCI_CFGMECH1_MAXDEV	32
 
 /*
- * CAN_HARDFAIL_MASTER_ABORTS can be #define'd to a Bool function or some
- * other boolean expression should the need arise.
- */
-#undef CAN_HARDFAIL_MASTER_ABORTS
-
-/*
  * Select architecture specific PCI init function
  */
 #if defined(__alpha__)
-# define CAN_HARDFAIL_MASTER_ABORTS FALSE	/* Uncertain */
 # if defined(linux)
 #  define ARCH_PCI_INIT axpPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
@@ -268,21 +266,22 @@
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__arm__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Unknown */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
+# elif defined(__NetBSD__)
+#  define ARCH_PCI_INIT netbsdPciInit
+#  define INCLUDE_XF86_MAP_PCI_MEM
+#  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__hppa__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Unknown */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__ia64__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Broken */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
@@ -294,7 +293,6 @@
 # endif
 # define XF86SCANPCI_WRAPPER ia64ScanPCIWrapper
 #elif defined(__i386__) || defined(i386)
-# define CAN_HARDFAIL_MASTER_ABORTS FALSE	/* Sane (so far) */
 # define ARCH_PCI_INIT ix86PciInit
 # define INCLUDE_XF86_MAP_PCI_MEM
 # define INCLUDE_XF86_NO_DOMAIN
@@ -302,21 +300,22 @@
 #  define ARCH_PCI_OS_INIT linuxPciInit
 # endif
 #elif defined(__mc68000__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Unknown */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__mips__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Unknown */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
+# elif defined(__NetBSD__)
+#  define ARCH_PCI_INIT netbsdPciInit
+#  define INCLUDE_XF86_MAP_PCI_MEM
+#  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__powerpc__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Broken */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
@@ -337,43 +336,40 @@
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__s390__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Unknown */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__sh__)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Unknown */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
 # endif
 #elif defined(__sparc__) || defined(sparc)
-# define CAN_HARDFAIL_MASTER_ABORTS TRUE	/* Broken */
 # if defined(linux)
 #  define ARCH_PCI_INIT linuxPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
+#  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
 # elif defined(sun)
 #  define ARCH_PCI_INIT sparcPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
-# elif defined(__FreeBSD__)
-#  define ARCH_PCI_INIT freebsdPciInit
+#  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
+# elif (defined(__OpenBSD__) || defined(__FreeBSD__)) && defined(__sparc64__)
+#  define  ARCH_PCI_INIT freebsdPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
-# elif defined(__NetBSD__)
+#  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
+# elif defined(__NetBSD__) && defined(__sparc__)
 #  define ARCH_PCI_INIT netbsdPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
-# elif defined(__OpenBSD__)
-#  define ARCH_PCI_INIT sparcPciInit
-#  define INCLUDE_XF86_MAP_PCI_MEM
-#  define ARCH_PCI_OS_INIT freebsdPciInit
 # endif
-# define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
-#elif defined(__amd64__) || defined(__x86_64__)
-# define CAN_HARDFAIL_MASTER_ABORTS FALSE	/* Likely */
+# if !defined(__FreeBSD__) && !defined(__NetBSD__)
+#  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
+# endif
+#elif defined(__AMD64__) || defined(__amd64__)
 # if defined(__FreeBSD__)
 #  define ARCH_PCI_INIT freebsdPciInit
 # else
@@ -387,11 +383,13 @@
 #endif
 
 #ifndef ARCH_PCI_INIT
+#if defined(__NetBSD__)
+#  define ARCH_PCI_INIT netbsdPciInit
+#  define INCLUDE_XF86_MAP_PCI_MEM
+#  define INCLUDE_XF86_NO_DOMAIN
+#else
 #error No PCI support available for this architecture/OS combination
 #endif
-
-#ifndef CAN_HARDFAIL_MASTER_ABORTS
-#define CAN_HARDFAIL_MASTER_ABORTS TRUE		/* Assume the worst */
 #endif
 
 extern void ARCH_PCI_INIT(void);
@@ -446,7 +444,6 @@ typedef struct pci_bus_info {
 	pciBusFuncs_p  funcs;        /* PCI access functions        */
 	void          *pciBusPriv;   /* Implementation private data */
 	pciConfigPtr   bridge;       /* bridge that opens this bus  */
-	int            pciMaxOffset; /* Size of config for one device */
 } pciBusInfo_t;
 
 #define HOST_NO_BUS ((pciBusInfo_t *)(-1))
@@ -460,6 +457,10 @@ typedef struct pci_bus_info {
 /* Generic PCI service functions and helpers */
 PCITAG        pciGenFindFirst(void);
 PCITAG        pciGenFindNext(void);
+CARD32        pciCfgMech1Read(PCITAG tag, int offset);
+void          pciCfgMech1Write(PCITAG tag, int offset, CARD32 val);
+void          pciCfgMech1SetBits(PCITAG tag, int offset, CARD32 mask,
+				 CARD32 val);
 CARD32        pciByteSwap(CARD32);
 Bool          pciMfDev(int, int);
 ADDRESS       pciAddrNOOP(PCITAG tag, PciAddrType type, ADDRESS);

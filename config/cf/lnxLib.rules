@@ -613,7 +613,7 @@ down/mk_JUMP_SA_1:: down/mk_JUMP_SO_2					@@\
 									@@\
 mk_JUMP_HOST:								@@\
 	@echo checking stub library $(JUMP_SA) in $(JUMP_HOST)...	@@\
-	@(cd $(JUMP_HOST); $(MAKE) $(PASSMFLAGS) $(JUMP_SA)) || exit 1	@@\
+	@(cd $(JUMP_HOST); $(MAKE) $(MFLAGS) $(JUMP_SA)) || exit 1	@@\
 	@echo ok. continuing in $(Concat(JUMP_ROOT_,libname))...	@@\
 									@@\
 $(JUMP_SO): down/mk_JUMP_SO_$(JUMP_IS_HOST)				@@\
@@ -636,7 +636,7 @@ down/mk_JUMP_SO_2: down/mk_JUMP_AR $(Concat(JUMP_SIBARS_,libname))	@@\
 mk_JUMP_SIBDIRS:							@@\
 	@for d in $(Concat(JUMP_SIBDIRS_,libname)); do \
 		echo checking ar library in $$d...; \
-		(cd $$d ; $(MAKE) $(PASSMFLAGS) fastdo_JUMP_AR) || exit 1; \
+		(cd $$d ; $(MAKE) $(MFLAGS) fastdo_JUMP_AR) || exit 1; \
 		echo ok. continuing in $(Concat(JUMP_ROOT_,libname))...;done@@\
 									@@\
 fastdo_JUMP_AR: $(JUMP_DIR) down/mk_JUMP_AR				@@\
@@ -652,13 +652,13 @@ $(JUMP_DIR):								@@\
 									@@\
 jumpsetup_0:								@@\
 	@echo doing jump setup in host $(JUMP_HOST)...			@@\
-	@(cd $(JUMP_HOST); $(MAKE) $(PASSMFLAGS) jumpsetup) || exit 1	@@\
+	@(cd $(JUMP_HOST); $(MAKE) $(MFLAGS) jumpsetup) || exit 1	@@\
 	@echo ok. continuing in $(Concat(JUMP_ROOT_,libname))...	@@\
 									@@\
 jumpsetup_1::								@@\
 	@for d in $(Concat(JUMP_SUBDIRS_,libname)); do \
 		echo checking stub library in $$d...; \
-		(cd $$d ; $(MAKE) $(PASSMFLAGS) do_JUMP_SA) || exit 1; \
+		(cd $$d ; $(MAKE) $(MFLAGS) do_JUMP_SA) || exit 1; \
 		echo ok. continuing in $(Concat(JUMP_ROOT_,libname))...;done@@\
 									@@\
 jumpsetup_1:: $(JUMP_DIR)/jump.funcs $(JUMP_DIR)/jump.vars \

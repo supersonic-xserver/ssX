@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -27,19 +34,16 @@
  *
  * Authors:     Earle F. Philhower, III
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winprefs.c,v 1.1 2003/10/02 13:30:11 eich Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __CYGWIN__
 #include <sys/resource.h>
-#endif
 #include "win.h"
 
-#include <X11/Xwindows.h>
-#include <shellapi.h>
+/* Fixups to prevent collisions between Windows and X headers */
+#define ATOM DWORD
+#include <windows.h>
 
 #include "winprefs.h"
 #include "winmultiwindowclass.h"
@@ -47,22 +51,14 @@
 /* Where will the custom menu commands start counting from? */
 #define STARTMENUID WM_USER
 
-/* External global variables */
-#ifdef XWIN_MULTIWINDOW
-extern DWORD g_dwCurrentThreadID;
-#endif
-
-extern const char *winGetBaseDir(void);
-
 /* From winmultiwindowflex.l, the real parser */
 extern void parse_file (FILE *fp);
 
-/* From winprefyacc.y, the pref structure loaded by the parser */
-extern WINPREFS pref;
+/* From winmultiwindowyacc.y, the pref structure loaded by the parser */
+extern WINMULTIWINDOWPREFS pref;
 
 /* The global X default icon */
-extern HICON		g_hIconX;
-extern HICON		g_hSmallIconX;
+extern HICON		g_hiconX;
 
 /* Currently in use command ID, incremented each new menu item created */
 static int g_cmdid = STARTMENUID;
@@ -70,11 +66,6 @@ static int g_cmdid = STARTMENUID;
 
 /* Defined in DIX */
 extern char *display;
-
-/* Local function to handle comma-ified icon names */
-static HICON
-LoadImageComma (char *fname, int sx, int sy, int flags);
-
 
 /*
  * Creates or appends a menu from a MENUPARSED structure
@@ -87,7 +78,7 @@ MakeMenu (char *name,
   int i;
   int item;
   MENUPARSED *m;
-  HMENU hmenu, hsub;
+  HMENU hmenu;
 
   for (i=0; i<pref.menuItems; i++)
     {
@@ -112,11 +103,6 @@ MakeMenu (char *name,
   else
     {
       hmenu = CreatePopupMenu();
-      if (!hmenu)
-	{
-	  ErrorF("MakeMenu: Unable to CreatePopupMenu() %s\n", name);
-	  return NULL;
-	}
       item = 0;
     }
 
@@ -149,13 +135,11 @@ MakeMenu (char *name,
 	  
 	case CMD_MENU:
 	  /* Recursive! */
-	  hsub = MakeMenu (m->menuItem[i].param, 0, 0);
-	  if (hsub)
-	    InsertMenu (hmenu,
-			item,
-			MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING,
-			(UINT_PTR)hsub,
-			m->menuItem[i].text);
+	  InsertMenu (hmenu,
+		      item,
+		      MF_BYPOSITION|MF_POPUP|MF_ENABLED|MF_STRING,
+		      (UINT_PTR)MakeMenu (m->menuItem[i].param, 0, 0),
+		      m->menuItem[i].text);
 	  break;
 	}
 
@@ -168,22 +152,23 @@ MakeMenu (char *name,
 }
 
 
-#ifdef XWIN_MULTIWINDOW
 /*
  * Callback routine that is executed once per window class.
  * Removes or creates custom window settings depending on LPARAM
  */
-static wBOOL CALLBACK
+static BOOL CALLBACK
 ReloadEnumWindowsProc (HWND hwnd, LPARAM lParam)
 {
+  char    szClassName[1024];
   HICON   hicon;
-  Window  wid;
 
-  if (!hwnd) {
-    ErrorF("ReloadEnumWindowsProc: hwnd==NULL!\n");
-    return FALSE;
-  }
+  if (!GetClassName (hwnd, szClassName, 1024))
+    return TRUE;
 
+  if (strncmp (szClassName, WINDOW_CLASS_X, strlen (WINDOW_CLASS_X)))
+    /* Not one of our windows... */
+    return TRUE;
+  
   /* It's our baby, either clean or dirty it */
   if (lParam==FALSE) 
     {
@@ -193,15 +178,8 @@ ReloadEnumWindowsProc (HWND hwnd, LPARAM lParam)
       SetClassLong (hwnd, GCL_HICON, (LONG)LoadIcon (NULL, IDI_APPLICATION));
 
       /* If it's generated on-the-fly, get rid of it, will regen */
-      winDestroyIcon (hicon);
-     
-      hicon = (HICON)GetClassLong(hwnd, GCL_HICONSM);
-
-      /* Unselect any icon in the class structure */
-      SetClassLong (hwnd, GCL_HICONSM, 0);
-
-      /* If it's generated on-the-fly, get rid of it, will regen */
-      winDestroyIcon (hicon);
+      if (!winIconIsOverride((unsigned long)hicon) && hicon!=g_hiconX)
+	DestroyIcon (hicon);
       
       /* Remove any menu additions, use bRevert flag */
       GetSystemMenu (hwnd, TRUE);
@@ -210,12 +188,9 @@ ReloadEnumWindowsProc (HWND hwnd, LPARAM lParam)
     }
   else
     {
-      /* Make the icon default, dynamic, or from xwinrc */
-      SetClassLong (hwnd, GCL_HICON, (LONG)g_hIconX);
-      SetClassLong (hwnd, GCL_HICONSM, (LONG)g_hSmallIconX);
-      wid = (Window)GetProp (hwnd, WIN_WID_PROP);
-      if (wid)
-	winUpdateIcon (wid);
+      /* Make the icon default, dynamic, of from xwinrc */
+      SetClassLong (hwnd, GCL_HICON, (LONG)g_hiconX);
+      winUpdateIcon ((Window)GetProp (hwnd, WIN_WID_PROP));
       /* Update the system menu for this window */
       SetupSysMenu ((unsigned long)hwnd);
 
@@ -224,7 +199,6 @@ ReloadEnumWindowsProc (HWND hwnd, LPARAM lParam)
 
   return TRUE;
 }
-#endif
 
 
 /*
@@ -234,15 +208,13 @@ ReloadEnumWindowsProc (HWND hwnd, LPARAM lParam)
  * Set custom icons and menus again.
  */
 static void
-ReloadPrefs (void)
+ReloadPrefs ()
 {
   int i;
 
-#ifdef XWIN_MULTIWINDOW
   /* First, iterate over all windows replacing their icon with system */
   /* default one and deleting any custom system menus                 */
-  EnumThreadWindows (g_dwCurrentThreadID, ReloadEnumWindowsProc, FALSE);
-#endif
+  EnumWindows (ReloadEnumWindowsProc, FALSE);
   
   /* Now, free/clear all info from our prefs structure */
   for (i=0; i<pref.menuItems; i++)
@@ -261,7 +233,6 @@ ReloadPrefs (void)
 
   pref.iconDirectory[0] = 0;
   pref.defaultIconName[0] = 0;
-  pref.trayIconName[0] = 0;
 
   for (i=0; i<pref.iconItems; i++)
     if (pref.icon[i].hicon)
@@ -271,10 +242,7 @@ ReloadPrefs (void)
   pref.iconItems = 0;
   
   /* Free global default X icon */
-  if (g_hIconX) 
-    DestroyIcon (g_hIconX);
-  if (g_hSmallIconX)
-    DestroyIcon (g_hSmallIconX);  
+  DestroyIcon (g_hiconX);
 
   /* Reset the custom command IDs */
   g_cmdid = STARTMENUID;
@@ -282,17 +250,13 @@ ReloadPrefs (void)
   /* Load the updated resource file */
   LoadPreferences();
 
-  g_hIconX = NULL;
-  g_hSmallIconX = NULL;
-
-#ifdef XWIN_MULTIWINDOW
-  winInitGlobalIcons();
-#endif
+  /* Define global icon, load it */
+  g_hiconX = (HICON)winOverrideDefaultIcon();
+  if (!g_hiconX)
+    g_hiconX = LoadIcon (g_hInstance, MAKEINTRESOURCE(IDI_XWIN));
   
-#ifdef XWIN_MULTIWINDOW
   /* Rebuild the icons and menus */
-  EnumThreadWindows (g_dwCurrentThreadID, ReloadEnumWindowsProc, TRUE);
-#endif
+  EnumWindows (ReloadEnumWindowsProc, TRUE);
 
   /* Whew, done */
 }
@@ -327,10 +291,9 @@ HandleCustomWM_INITMENU(unsigned long hwndIn,
 }
     
 /*
- * Searches for the custom WM_COMMAND command ID and performs action.
- * Return TRUE if command is proccessed, FALSE otherwise.
+ * Searches for the custom WM_COMMAND command ID and performs action
  */
-Bool
+int
 HandleCustomWM_COMMAND (unsigned long hwndIn,
 			int           command)
 {
@@ -342,7 +305,7 @@ HandleCustomWM_COMMAND (unsigned long hwndIn,
   hwnd = (HWND)hwndIn;
 
   if (!command)
-    return FALSE;
+    return 0;
 
   for (i=0; i<pref.menuItems; i++)
     {
@@ -354,7 +317,6 @@ HandleCustomWM_COMMAND (unsigned long hwndIn,
 	      /* Match! */
 	      switch(m->menuItem[j].cmd)
 		{
-#ifdef __CYGWIN__
 		case CMD_EXEC:
 		  if (fork()==0)
 		    {
@@ -377,36 +339,12 @@ HandleCustomWM_COMMAND (unsigned long hwndIn,
 		      exit (0);
 		    }
 		  else
-		    return TRUE;
+		    return 0;
 		  break;
-#else
-		case CMD_EXEC:
-                  {
-		    /* Start process without console window */
-		    STARTUPINFO start;
-		    PROCESS_INFORMATION child;
-
-		    memset (&start, 0, sizeof (start));
-		    start.cb = sizeof (start);
-		    start.dwFlags = STARTF_USESHOWWINDOW;
-		    start.wShowWindow = SW_HIDE;
-
-		    memset (&child, 0, sizeof (child));
-
-		    if (CreateProcess (NULL, m->menuItem[j].param, NULL, NULL, FALSE, 0,
-				       NULL, NULL, &start, &child))
-		    {
-			CloseHandle (child.hThread);
-			CloseHandle (child.hProcess);
-		    }
-		    else
-			MessageBox(NULL, m->menuItem[j].param, "Mingrc Exec Command Error!", MB_OK | MB_ICONEXCLAMATION);
-                  }
-		  return TRUE;
-#endif
+		  
 		case CMD_ALWAYSONTOP:
 		  if (!hwnd)
-		    return FALSE;
+		    return 0;
 
 		  /* Get extended window style */
 		  dwExStyle = GetWindowLong (hwnd, GWL_EXSTYLE);
@@ -424,28 +362,23 @@ HandleCustomWM_COMMAND (unsigned long hwndIn,
 				  0, 0,
 				  0, 0,
 				  SWP_NOSIZE | SWP_NOMOVE);
-#if XWIN_MULTIWINDOW
-		  /* Reflect the changed Z order */
-		  winReorderWindowsMultiWindow ();
-#endif
-		  return TRUE;
+		  return 0;
 		  
 		case CMD_RELOAD:
 		  ReloadPrefs();
-		  return TRUE;
+		  return 0;
 
 		default:
-		  return FALSE;
+		  return 0;
 	      }
 	    } /* match */
 	} /* for j */
     } /* for i */
 
-  return FALSE;
+  return 0;
 }
 
 
-#ifdef XWIN_MULTIWINDOW
 /*
  * Add the default or a custom menu depending on the class match
  */
@@ -502,7 +435,6 @@ SetupSysMenu (unsigned long hwndIn)
 	MakeMenu (pref.defaultSysMenuName, sys, -1);
     }
 }
-#endif
 
 
 /*
@@ -528,16 +460,28 @@ SetupRootMenu (unsigned long hmenuRoot)
  * Check for and return an overridden default ICON specified in the prefs
  */
 unsigned long
-winOverrideDefaultIcon(int size)
+winOverrideDefaultIcon()
 {
   HICON hicon;
+  char fname[PATH_MAX+NAME_MAX+2];
   
   if (pref.defaultIconName[0])
     {
-      hicon = LoadImageComma (pref.defaultIconName, size, size, 0);
+      /* Make sure we have a dir with trailing backslash */
+      /* Note we are using _Windows_ paths here, not cygwin */
+      strcpy (fname, pref.iconDirectory);
+      if (pref.iconDirectory[0])
+	if (fname[strlen(fname)-1]!='\\')
+	  strcat (fname, "\\");
+      strcat (fname, pref.defaultIconName);
+
+      hicon = (HICON)LoadImage(NULL,
+			       fname,
+			       IMAGE_ICON,
+			       0, 0,
+			       LR_DEFAULTSIZE|LR_LOADFROMFILE);
       if (hicon==NULL)
-        ErrorF ("winOverrideDefaultIcon: LoadImageComma(%s) failed\n",
-		pref.defaultIconName);
+	ErrorF ("winOverrideDefaultIcon: LoadIcon(%s) failed\n", fname);
 
       return (unsigned long)hicon;
     }
@@ -545,104 +489,6 @@ winOverrideDefaultIcon(int size)
   return 0;
 }
 
-
-/*
- * Return the HICON to use in the taskbar notification area
- */
-unsigned long
-winTaskbarIcon(void)
-{
-  HICON hicon;
-
-  hicon = 0;
-  /* First try and load an overridden, if success then return it */
-  if (pref.trayIconName[0])
-    {
-      hicon = LoadImageComma (pref.trayIconName,
-			      GetSystemMetrics (SM_CXSMICON),
-			      GetSystemMetrics (SM_CYSMICON),
-			      0 );
-    }
-
-  /* Otherwise return the default */
-  if (!hicon)
-    hicon =  (HICON) LoadImage (g_hInstance,
-				MAKEINTRESOURCE(IDI_XWIN),
-				IMAGE_ICON,
-				GetSystemMetrics (SM_CXSMICON),
-				GetSystemMetrics (SM_CYSMICON),
-				0);
-
-  return (unsigned long)hicon;
-}
-
-
-/*
- * Parse a filename to extract an icon:
- *  If fname is exactly ",nnn" then extract icon from our resource
- *  else if it is "file,nnn" then extract icon nnn from that file
- *  else try to load it as an .ico file and if that fails return NULL
- */
-static HICON
-LoadImageComma (char *fname, int sx, int sy, int flags)
-{
-  HICON  hicon;
-  int    index;
-  char   file[PATH_MAX+NAME_MAX+2];
-
-  /* Some input error checking */
-  if (!fname || !fname[0])
-    return NULL;
-
-  index = 0;
-  hicon = NULL;
-
-  if (fname[0]==',')
-    {
-      /* It's the XWIN.EXE resource they want */
-      index = atoi (fname+1);
-      hicon = LoadImage (g_hInstance,
-                        MAKEINTRESOURCE(index),
-                        IMAGE_ICON,
-                        sx,
-                        sy,
-                        flags);
-    }
-  else
-    {
-      file[0] = 0;
-      /* Prepend path if not given a "X:\" filename */
-      if ( !(fname[0] && fname[1]==':' && fname[2]=='\\') )
-        {
-         strcpy (file, pref.iconDirectory);
-         if (pref.iconDirectory[0])
-           if (fname[strlen(fname)-1]!='\\')
-             strcat (file, "\\");
-        }
-      strcat (file, fname);
-
-      if (strrchr (file, ','))
-       {
-         /* Specified as <fname>,<index> */
-
-         *(strrchr (file, ',')) = 0; /* End string at comma */
-         index = atoi (strrchr (fname, ',') + 1);
-         hicon = ExtractIcon (g_hInstance, file, index);
-       }
-      else
-       {
-         /* Just an .ico file... */
-
-         hicon = (HICON)LoadImage (NULL,
-                                   file,
-                                   IMAGE_ICON,
-                                   sx,
-                                   sy,
-                                   LR_LOADFROMFILE|flags);
-       }
-    }
-  return hicon;
-}
 
 /*
  * Check for a match of the window class to one specified in the
@@ -655,6 +501,7 @@ winOverrideIcon (unsigned long longWin)
   char *res_name, *res_class;
   int i;
   HICON hicon;
+  char fname[PATH_MAX+NAME_MAX+2];
   char *wmName;
 
   if (pWin==NULL)
@@ -679,10 +526,21 @@ winOverrideIcon (unsigned long longWin)
 	if (pref.icon[i].hicon)
 	  return pref.icon[i].hicon;
 
-       hicon = LoadImageComma (pref.icon[i].iconFile, 0, 0, LR_DEFAULTSIZE);
-       if (hicon==NULL)
-         ErrorF ("winOverrideIcon: LoadImageComma(%s) failed\n",
-                  pref.icon[i].iconFile);
+	/* Make sure we have a dir with trailing backslash */
+	/* Note we are using _Windows_ paths here, not cygwin */
+	strcpy (fname, pref.iconDirectory);
+	if (pref.iconDirectory[0])
+	  if (fname[strlen(fname)-1]!='\\')
+	    strcat (fname, "\\");
+	strcat (fname, pref.icon[i].iconFile);
+
+	hicon = (HICON)LoadImage(NULL,
+				 fname,
+				 IMAGE_ICON,
+				 0, 0,
+				 LR_DEFAULTSIZE|LR_LOADFROMFILE);
+	if (hicon==NULL)
+	  ErrorF ("winOverrideIcon: LoadIcon(%s) failed\n", fname);
 
 	pref.icon[i].hicon = (unsigned long)hicon;
 	return (unsigned long)hicon;
@@ -753,24 +611,11 @@ LoadPreferences ()
       strcat (fname, ".XWinrc");
       
       prefFile = fopen (fname, "r");
-      if (prefFile)
-	ErrorF ("winPrefsLoadPreferences: %s\n", fname);
     }
 
   /* No home file found, check system default */
   if (!prefFile)
-    {
-      char buffer[MAX_PATH];
-#ifdef RELOCATE_PROJECTROOT
-      snprintf(buffer, sizeof(buffer), "%s\\system.XWinrc", winGetBaseDir());
-#else
-      strncpy(buffer, PROJECTROOT"/lib/X11/system.XWinrc", sizeof(buffer));
-#endif
-      buffer[sizeof(buffer)-1] = 0;
-      prefFile = fopen (buffer, "r");
-      if (prefFile)
-	ErrorF ("winPrefsLoadPreferences: %s\n", buffer);
-    }
+    prefFile = fopen (PROJECTROOT"/lib/X11/system.XWinrc", "r");
 
   /* If we could open it, then read the settings and close it */
   if (prefFile)
@@ -820,3 +665,4 @@ LoadPreferences ()
     } /* for all menus */
 
 }
+

@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/miext/shadow/shadow.h,v 1.7 2002/12/02 20:37:24 tsi Exp $
  *
- * Copyright Â© 2000 Keith Packard
+ * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -26,35 +34,34 @@
 
 #include "scrnintstr.h"
 
+#ifdef RENDER
 #include "picturestr.h"
+#endif
 
-#include "damage.h"
-#include "damagestr.h"
-typedef struct _shadowBuf *shadowBufPtr;
+typedef struct _shadowBuf   *shadowBufPtr;
 
-typedef void (*ShadowUpdateProc) (ScreenPtr pScreen, shadowBufPtr pBuf);
+typedef void (*ShadowUpdateProc) (ScreenPtr pScreen,
+				  shadowBufPtr pBuf);
 
 #define SHADOW_WINDOW_RELOCATE 1
 #define SHADOW_WINDOW_READ 2
 #define SHADOW_WINDOW_WRITE 4
 
-typedef void *(*ShadowWindowProc) (ScreenPtr pScreen,
-                                   CARD32 row,
-                                   CARD32 offset,
-                                   int mode, CARD32 *size, void *closure);
+typedef void *(*ShadowWindowProc) (ScreenPtr	pScreen,
+				   CARD32	row,
+				   CARD32	offset,
+				   int		mode,
+				   CARD32	*size,
+				   void		*closure);
 
 typedef struct _shadowBuf {
-    DamagePtr pDamage;
-    ShadowUpdateProc update;
-    ShadowWindowProc window;
-    PixmapPtr pPixmap;
-    void *closure;
-    int randr;
-
-    /* screen wrappers */
-    GetImageProcPtr GetImage;
-    CloseScreenProcPtr CloseScreen;
-    ScreenBlockHandlerProcPtr BlockHandler;
+    shadowBufPtr	pNext;
+    ShadowUpdateProc	update;
+    ShadowWindowProc	window;
+    RegionRec		damage;
+    PixmapPtr		pPixmap;
+    void		*closure;
+    int			randr;
 } shadowBufRec;
 
 /* Match defines from randr extension */
@@ -68,91 +75,105 @@ typedef struct _shadowBuf {
 #define SHADOW_REFLECT_Y    32
 #define SHADOW_REFLECT_ALL  (SHADOW_REFLECT_X|SHADOW_REFLECT_Y)
 
-extern _X_EXPORT Bool
- shadowSetup(ScreenPtr pScreen);
+typedef struct _shadowScrPriv {
+    PaintWindowBackgroundProcPtr PaintWindowBackground;
+    PaintWindowBorderProcPtr	PaintWindowBorder;
+    CopyWindowProcPtr		CopyWindow;
+    CloseScreenProcPtr		CloseScreen;
+    CreateGCProcPtr		CreateGC;
+    GetImageProcPtr		GetImage;
+#ifdef RENDER
+    CompositeProcPtr		Composite;
+    GlyphsProcPtr		Glyphs;
+#endif
+    shadowBufPtr		pBuf;
+    BSFuncRec			BackingStoreFuncs;
+} shadowScrPrivRec, *shadowScrPrivPtr;
 
-extern _X_EXPORT Bool
+extern int shadowScrPrivateIndex;
 
-shadowAdd(ScreenPtr pScreen,
-          PixmapPtr pPixmap,
-          ShadowUpdateProc update,
-          ShadowWindowProc window, int randr, void *closure);
+#define shadowGetScrPriv(pScr)  ((shadowScrPrivPtr) (pScr)->devPrivates[shadowScrPrivateIndex].ptr)
+#define shadowScrPriv(pScr)	shadowScrPrivPtr    pScrPriv = shadowGetScrPriv(pScr)
 
-extern _X_EXPORT void
- shadowRemove(ScreenPtr pScreen, PixmapPtr pPixmap);
+Bool
+shadowSetup (ScreenPtr pScreen);
 
-extern _X_EXPORT void
- shadowUpdateAfb4(ScreenPtr pScreen, shadowBufPtr pBuf);
+Bool
+shadowAdd (ScreenPtr	    pScreen,
+	   PixmapPtr	    pPixmap,
+	   ShadowUpdateProc update,
+	   ShadowWindowProc window,
+	   int		    randr,
+	   void		    *closure);
 
-extern _X_EXPORT void
- shadowUpdateAfb8(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowRemove (ScreenPtr pScreen, PixmapPtr pPixmap);
 
-extern _X_EXPORT void
- shadowUpdateAfb4x8(ScreenPtr pScreen, shadowBufPtr pBuf);
+shadowBufPtr
+shadowFindBuf (WindowPtr pWindow);
 
-extern _X_EXPORT void
- shadowUpdateIplan2p4(ScreenPtr pScreen, shadowBufPtr pBuf);
+Bool
+shadowInit (ScreenPtr pScreen, ShadowUpdateProc update, ShadowWindowProc window);
 
-extern _X_EXPORT void
- shadowUpdateIplan2p8(ScreenPtr pScreen, shadowBufPtr pBuf);
+void *
+shadowAlloc (int width, int height, int bpp);
 
-extern _X_EXPORT void
- shadowUpdatePacked(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdatePacked (ScreenPtr	    pScreen,
+		    shadowBufPtr    pBuf);
 
-extern _X_EXPORT void
- shadowUpdatePlanar4(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdatePlanar4 (ScreenPtr	    pScreen,
+		     shadowBufPtr   pBuf);
 
-extern _X_EXPORT void
- shadowUpdatePlanar4x8(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdatePlanar4x8 (ScreenPtr    pScreen,
+		       shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotatePacked(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotatePacked (ScreenPtr    pScreen,
+			  shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate8_90(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate8_90 (ScreenPtr    pScreen,
+			shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate16_90(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate16_90 (ScreenPtr    pScreen,
+			 shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate16_90YX(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate32_90 (ScreenPtr    pScreen,
+			 shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate32_90(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate8_180 (ScreenPtr    pScreen,
+			 shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate8_180(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate16_180 (ScreenPtr    pScreen,
+			  shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate16_180(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate32_180 (ScreenPtr    pScreen,
+			  shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate32_180(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate8_270 (ScreenPtr    pScreen,
+			 shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate8_270(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate16_270 (ScreenPtr    pScreen,
+			  shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate16_270(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUpdateRotate32_270 (ScreenPtr    pScreen,
+			  shadowBufPtr pBuf);
 
-extern _X_EXPORT void
- shadowUpdateRotate16_270YX(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowWrapGC (GCPtr pGC);
 
-extern _X_EXPORT void
- shadowUpdateRotate32_270(ScreenPtr pScreen, shadowBufPtr pBuf);
+void
+shadowUnwrapGC (GCPtr pGC);
 
-extern _X_EXPORT void
- shadowUpdateRotate8(ScreenPtr pScreen, shadowBufPtr pBuf);
-
-extern _X_EXPORT void
- shadowUpdateRotate16(ScreenPtr pScreen, shadowBufPtr pBuf);
-
-extern _X_EXPORT void
- shadowUpdateRotate32(ScreenPtr pScreen, shadowBufPtr pBuf);
-
-extern _X_EXPORT void
- shadowUpdate32to24(ScreenPtr pScreen, shadowBufPtr pBuf);
-
-typedef void (*shadowUpdateProc) (ScreenPtr, shadowBufPtr);
-
-#endif                          /* _SHADOW_H_ */
+#endif /* _SHADOW_H_ */

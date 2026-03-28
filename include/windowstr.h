@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/windowstr.h,v 1.10 2008/01/04 17:50:13 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -56,7 +64,7 @@ SOFTWARE.
 #include "resource.h"	/* for ROOT_WINDOW_ID_BASE */
 #include "dix.h"
 #include "miscstruct.h"
-#include <X11/Xprotostr.h>
+#include "X11/Xprotostr.h"
 #include "opaque.h"
 
 #define GuaranteeNothing	0
@@ -94,33 +102,6 @@ typedef struct _WindowOpt {
 #define BackgroundPixel	    2L
 #define BackgroundPixmap    3L
 
-/*
- * The redirectDraw field can have one of three values:
- *
- *  RedirectDrawNone
- *	A normal window; painted into the same pixmap as the parent
- *	and clipping parent and siblings to its geometry. These
- *	windows get a clip list equal to the intersection of their
- *	geometry with the parent geometry, minus the geometry
- *	of overlapping None and Clipped siblings.
- *  RedirectDrawAutomatic
- *	A redirected window which clips parent and sibling drawing.
- *	Contents for these windows are manage inside the server.
- *	These windows get an internal clip list equal to their
- *	geometry.
- *  RedirectDrawManual
- *	A redirected window which does not clip parent and sibling
- *	drawing; the window must be represented within the parent
- *	geometry by the client performing the redirection management.
- *	Contents for these windows are managed outside the server.
- *	These windows get an internal clip list equal to their
- *	geometry.
- */
-
-#define RedirectDrawNone	0
-#define RedirectDrawAutomatic	1
-#define RedirectDrawManual	2
-
 typedef struct _Window {
     DrawableRec		drawable;
     WindowPtr		parent;		/* ancestor chain */
@@ -156,9 +137,17 @@ typedef struct _Window {
     unsigned		viewable:1;	/* realized && InputOutput */
     unsigned		dontPropagate:3;/* index into DontPropagateMasks */
     unsigned		forcedBS:1;	/* system-supplied backingStore */
-#ifdef COMPOSITE
-    unsigned		redirectDraw:2;	/* rendering is redirected from here */
-#endif
+
+#if defined(DBE) && defined(NEED_DBE_BUF_BITS)
+
+#define DBE_FRONT_BUFFER 1
+#define DBE_BACK_BUFFER  0
+
+    unsigned		dstBuffer:1;	/* destination buffer for rendering */
+    unsigned		srcBuffer:1;	/* source buffer for rendering */
+
+#endif /* NEED_DBE_BUF_BITS */
+
     DevUnion		*devPrivates;
 } WindowRec;
 
@@ -194,7 +183,7 @@ extern Mask	    DontPropagateMasks[];
 #ifdef SHAPE
 #define wBoundingShape(w)	wUseDefault(w, boundingShape, NULL)
 #define wClipShape(w)		wUseDefault(w, clipShape, NULL)
-#define wInputShape(w)          wUseDefault(w, inputShape, NULL)
+#define wInputShape(w)		wUseDefault(w, inputShape, NULL)
 #endif
 #define wClient(w)		(clients[CLIENT_ID((w)->drawable.id)])
 #define wBorderWidth(w)		((int) (w)->borderWidth)
@@ -245,9 +234,5 @@ extern ScreenSaverStuffRec savedScreenInfo[MAXSCREENS];
 
 extern int numSaveUndersViewable;
 extern int deltaSaveUndersViewable;
-
-#ifdef XEVIE
-extern WindowPtr xeviewin;
-#endif
 
 #endif /* WINDOWSTRUCT_H */

@@ -1,6 +1,13 @@
 /* $XFree86: xc/programs/Xserver/mi/micoord.h,v 1.9 2004/03/21 11:27:06 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (C) 2000, 2005 The XFree86 Project, Inc.
+ * Copyright (C) 2000 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -70,7 +77,7 @@
     defined(__i386__) || defined(i386) || \
     defined(__ia64__) || defined(ia64) || \
     defined(__s390x__) || defined(__s390__) || \
-    defined(__amd64__) || defined(__x86_64__)
+    defined(__AMD64__) || defined(AMD64) || defined(__amd64__)
 #define GetHighWord(x) (((int) (x)) >> 16)
 #else
 #define GetHighWord(x) (((int) (x)) / 65536)

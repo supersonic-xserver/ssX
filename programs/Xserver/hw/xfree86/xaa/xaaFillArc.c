@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1996  The XFree86 Project
  *
  * Permission is hereby granted, free of charge, to any person obtaining a 
@@ -21,7 +28,7 @@
  * 
  * Written by Harm Hanemaayer (H.Hanemaayer@inter.nl.net).
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaFillArc.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaFillArc.c,v 1.4 1999/05/30 03:03:31 dawes Exp $ */
  
 /*
  * Filled solid arcs, based on cfbfillarc.c.
@@ -39,7 +46,7 @@
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "xf86str.h"

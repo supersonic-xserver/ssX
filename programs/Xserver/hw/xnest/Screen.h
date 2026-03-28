@@ -1,3 +1,11 @@
+/* $Xorg: Screen.h,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,7 +19,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Screen.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Screen.h,v 1.2 2003/11/16 05:05:20 dawes Exp $ */
 
 #ifndef XNESTSCREEN_H
 #define XNESTSCREEN_H
@@ -20,7 +28,7 @@ extern Window xnestDefaultWindows[MAXSCREENS];
 extern Window xnestScreenSaverWindows[MAXSCREENS];
 
 ScreenPtr xnestScreen(Window window);
-Bool xnestOpenScreen(int index, ScreenPtr pScreen, const int argc, const char *argv[]);
+Bool xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[]);
 Bool xnestCloseScreen(int index, ScreenPtr pScreen);
 
 #endif /* XNESTSCREEN_H */

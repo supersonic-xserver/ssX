@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/Xft/xftswap.c,v 1.1tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/Xft/xftswap.c,v 1.1 2002/02/15 07:37:35 keithp Exp $
  *
  * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -28,7 +35,7 @@
 int
 XftNativeByteOrder (void)
 {
-    static const int whichbyte = 1;
+    int	    whichbyte = 1;
 
     if (*((char *) &whichbyte))
 	return LSBFirst;
@@ -117,11 +124,6 @@ XftSwapImage (XImage *image)
 		       image->height * image->bytes_per_line >> 1);
 	break;
     default:
-	return;
+	break;
     }
-
-    if (MSBFirst == image->byte_order)
-	image->byte_order = LSBFirst;
-    else
-	image->byte_order = MSBFirst;
 }

@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/sym.h,v 1.7 2003/10/15 16:29:04 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *
@@ -26,22 +40,21 @@
 #ifndef _SYM_H
 #define _SYM_H
 
-typedef void (*funcptr)(void);
-
 /*
  * This structure is used to pass in symbol information that is being
  * added to the symbol table.
  */
+
+typedef void (*funcptr) (void);
+
 typedef struct {
     char *symName;
     funcptr offset;
 } LOOKUP;
 
-#define SYMFUNC(func)			{ #func, (funcptr)&func },
-#define SYMFUNCALIAS(name, func)	{ name, (funcptr)&func },
-#define SYMVAR(var)			{ #var, (funcptr)&var },
-#define SYMVARALIAS(name, var)		{ name, (funcptr)&var },
-
-#define LOOKUP_TERMINATOR		{ NULL, NULL }
+#define SYMFUNC( func ) { #func, (funcptr)&func },
+#define SYMFUNCALIAS( name, func ) { name, (funcptr)&func },
+#define SYMVAR( var ) { #var, (funcptr)&var },
+#define SYMVARALIAS( name, var ) { name, (funcptr)&var },
 
 #endif /* _SYM_H */

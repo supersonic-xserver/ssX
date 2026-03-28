@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/t1info.c,v 1.20tsi Exp $ */
+/* $Xorg: t1info.c,v 1.4 2001/02/09 02:04:01 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -99,6 +106,7 @@ from The Open Group.
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
+/* $XFree86: xc/lib/font/Type1/t1info.c,v 1.19 2003/05/27 22:26:47 tsi Exp $ */
 
 #include "fntfilst.h"
 #include "fontutil.h"
@@ -110,7 +118,7 @@ from The Open Group.
 #else
 #include "xf86_ansic.h"
 #endif
-#include <X11/fonts/FSproto.h>
+#include "FSproto.h"
 
 #ifdef BUILDCID
 #ifndef FONTMODULE
@@ -1046,7 +1054,7 @@ T1FillFontInfo(FontPtr pFont, FontScalablePtr Vals,
 {
     FontInfoPtr         pInfo = &pFont->info;
     struct type1font *p = (struct type1font *)pFont->fontPrivate;
-    long sAscent = 0, sDescent = 0;	/* Scalable 1000-pixel values */
+    long sAscent, sDescent;	/* Scalable 1000-pixel values */
  
     FillHeader(pInfo, Vals);
  

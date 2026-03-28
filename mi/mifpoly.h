@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -44,11 +58,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/mi/mifpoly.h,v 1.5 2006/01/09 15:00:37 dawes Exp $ */
 
 #ifndef __MIFPOLY_H__
 #define __MIFPOLY_H__
-
-#include <X11/Xfuncproto.h>
 
 #define EPSILON	0.000001
 #define ISEQUAL(a,b) (Fabs((a) - (b)) <= EPSILON)
@@ -68,11 +81,20 @@ SOFTWARE.
 #define SQSECANT 108.856472512142 /* 1/sin^2(11/2) - for 11o miter cutoff */
 #define D2SECANT 5.21671526231167 /* 1/2*sin(11/2) - max extension per width */
 
-static _X_INLINE int ICEIL(double x)
+#ifdef NOINLINEICEIL
+#define ICEIL(x) ((int)ceil(x))
+#else
+#ifdef __GNUC__
+static __inline int ICEIL(double x)
 {
     int _cTmp = x;
     return ((x == _cTmp) || (x < 0.0)) ? _cTmp : _cTmp+1;
 }
+#else
+#define ICEIL(x) ((((x) == (_cTmp = (x))) || ((x) < 0.0)) ? _cTmp : _cTmp+1)
+#define ICEILTEMPDECL static int _cTmp;
+#endif
+#endif
 
 /* Point with sub-pixel positioning.  In this case we use doubles, but
  * see mifpolycon.c for other suggestions 

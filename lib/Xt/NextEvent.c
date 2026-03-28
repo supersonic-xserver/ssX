@@ -1,3 +1,19 @@
+/* $Xorg: NextEvent.c,v 1.8 2001/02/09 02:03:55 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts,
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -56,7 +72,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xt/NextEvent.c,v 3.30tsi Exp $ */
+/* $XFree86: xc/lib/Xt/NextEvent.c,v 3.29 2004/05/05 00:07:03 dickey Exp $ */
 
 #include "IntrinsicI.h"
 #include <stdio.h>
@@ -574,7 +590,6 @@ int _XtWaitForSomething(
 #ifdef USE_POLL
     wf.fdlist = NULL;
     wf.stack = fdlist;
-    wf.fdlistlen = wf.num_dpys = 0;
 #endif
 
     app->rebuild_fdlist = TRUE;

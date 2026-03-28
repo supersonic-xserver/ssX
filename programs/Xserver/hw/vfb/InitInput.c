@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/vfb/InitInput.c,v 3.13tsi Exp $ */
+/* $Xorg: InitInput.c,v 1.4 2001/02/09 02:04:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -26,6 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/vfb/InitInput.c,v 3.10 2003/11/16 03:16:59 dawes Exp $ */
 
 #include "X11/X.h"
 #define NEED_EVENTS
@@ -37,7 +45,7 @@ from The Open Group.
 #include "mibstore.h"
 #include "mipointer.h"
 #include "lk201kbd.h"
-#include <X11/keysym.h>
+#include "keysym.h"
 
 Bool
 LegalModifier(unsigned int key, DevicePtr pDev)
@@ -308,7 +316,7 @@ vfbMouseProc(DeviceIntPtr pDevice, int onoff)
 }
 
 void
-InitInput(const int argc, const char *argv[])
+InitInput(int argc, char *argv[])
 {
     DeviceIntPtr p, k;
     p = AddInputDevice(vfbMouseProc, TRUE);
@@ -318,3 +326,22 @@ InitInput(const int argc, const char *argv[])
     miRegisterPointerDevice(screenInfo.screens[0], p);
     (void)mieqInit ((DevicePtr) k, (DevicePtr) p);
 }
+
+#ifdef XTESTEXT1
+void
+XTestGenerateEvent(int dev_type, int keycode, int keystate, int mousex,
+		   int mousey)
+{
+}
+
+void
+XTestGetPointerPos(short *fmousex, short *fmousey)
+{
+}
+
+void
+XTestJumpPointer(int jx, int jy, int dev_type)
+{
+}
+#endif
+

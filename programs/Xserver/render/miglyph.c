@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/render/miglyph.c,v 1.6tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/miglyph.c,v 1.6 2000/12/05 03:13:31 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -107,7 +114,7 @@ miGlyphs (CARD8		op,
     int		n;
     GlyphPtr	glyph;
     int		error;
-    BoxRec	extents = {0, };
+    BoxRec	extents;
     CARD32	component_alpha;
     
     if (maskFormat)

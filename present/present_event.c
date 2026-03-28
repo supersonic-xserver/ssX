@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -89,8 +96,23 @@ present_event_swap(xGenericEvent *from, xGenericEvent *to)
         swapl(&c->eid);
         swapl(&c->window);
         swapl(&c->serial);
-        swapll(&c->ust);
-        swapll(&c->msc);
+        /* XSyncValue is a struct {int hi; unsigned int lo}; swap each member */
+        {
+            CARD32 temp;
+            /* swap ust.hi */
+            temp = (CARD32)c->ust.hi;
+            c->ust.hi = (int)(((CARD32)temp >> 24) | (((CARD32)temp >> 8) & 0x0000ff00U) | (((CARD32)temp << 8) & 0x00ff0000U) | ((CARD32)((CARD32)temp) << 24));
+            /* swap ust.lo */
+            temp = c->ust.lo;
+            c->ust.lo = (((CARD32)temp >> 24) | (((CARD32)temp >> 8) & 0x0000ff00U) | (((CARD32)temp << 8) & 0x00ff0000U) | ((CARD32)((CARD32)temp) << 24));
+            /* swap msc.hi */
+            temp = (CARD32)c->msc.hi;
+            c->msc.hi = (int)(((CARD32)temp >> 24) | (((CARD32)temp >> 8) & 0x0000ff00U) | (((CARD32)temp << 8) & 0x00ff0000U) | ((CARD32)((CARD32)temp) << 24));
+            /* swap msc.lo */
+            temp = c->msc.lo;
+            c->msc.lo = (((CARD32)temp >> 24) | (((CARD32)temp >> 8) & 0x0000ff00U) | (((CARD32)temp << 8) & 0x00ff0000U) | ((CARD32)((CARD32)temp) << 24));
+        }
+        break;
     }
     case PresentIdleNotify:
     {
@@ -238,7 +260,7 @@ present_select_input(ClientPtr client, XID eid, WindowPtr window, CARD32 mask)
 Bool
 present_event_init(void)
 {
-    present_event_type = CreateNewResourceType(present_free_event, "PresentEvent");
+    present_event_type = CreateNewResourceType(present_free_event);
     if (!present_event_type)
         return FALSE;
 

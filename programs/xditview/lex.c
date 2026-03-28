@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/xditview/lex.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/xditview/lex.c,v 1.4 2001/08/01 00:45:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <X11/Xos.h>
 #include <X11/IntrinsicP.h>
@@ -31,7 +45,7 @@ GetLine(dw, Buffer, Length)
 	char	*Buffer;
 	int	Length;
 {
-	int 	i = 0, c = 0;
+	int 	i = 0, c;
 	char	*p = Buffer;
 
 	Length--;			    /* Save room for final NULL */

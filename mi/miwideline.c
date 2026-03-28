@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1988, 1998  The Open Group
 
@@ -25,6 +39,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/mi/miwideline.c,v 1.16 2007/04/09 15:37:18 tsi Exp $ */
 
 /* Author:  Keith Packard, MIT X Consortium */
 
@@ -32,10 +47,6 @@ from The Open Group.
  * Mostly integer wideline code.  Uses a technique similar to
  * bresenham zero-width lines, except walks an X edge
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include <stdio.h>
 #ifdef _XOPEN_SOURCE
@@ -52,10 +63,13 @@ from The Open Group.
 #include "miwideline.h"
 #include "mi.h"
 
+#ifdef ICEILTEMPDECL
+ICEILTEMPDECL
+#endif
+
 static void miLineArc(DrawablePtr pDraw, GCPtr pGC,
 		      unsigned long pixel, SpanDataPtr spanData,
-		      LineFacePtr leftFace,
-		      LineFacePtr rightFace,
+		      LineFacePtr leftFace, LineFacePtr rightFace,
 		      double xorg, double yorg, Bool isInt);
 
 
@@ -63,11 +77,11 @@ static void miLineArc(DrawablePtr pDraw, GCPtr pGC,
  * spans-based polygon filler
  */
 
-static void
-miFillPolyHelper (DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
-		  SpanDataPtr spanData, int y, int overall_height,
-		  PolyEdgePtr left, PolyEdgePtr right,
-		  int left_count, int right_count)
+void
+miFillPolyHelper(DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
+		 SpanDataPtr spanData, int y, int overall_height,
+		 PolyEdgePtr left, PolyEdgePtr right,
+		 int left_count, int right_count)
 {
     int left_x = 0, left_e = 0;
     int	left_stepx = 0;
@@ -84,8 +98,8 @@ miFillPolyHelper (DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
 
     DDXPointPtr ppt;
     DDXPointPtr pptInit = NULL;
-    int 	*pwidth;
-    int 	*pwidthInit = NULL;
+    int *pwidth;
+    int *pwidthInit = NULL;
     XID		oldPixel;
     int		xorg;
     Spans	spanRec;
@@ -109,8 +123,7 @@ miFillPolyHelper (DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
     	oldPixel = pGC->fgPixel;
     	if (pixel != oldPixel)
     	{
-	    XID tmpPixel = (XID)pixel;
-    	    DoChangeGC (pGC, GCForeground, &tmpPixel, FALSE);
+    	    DoChangeGC (pGC, GCForeground, (XID *)&pixel, FALSE);
     	    ValidateGC (pDrawable, pGC);
     	}
     }
@@ -193,8 +206,8 @@ miFillRectPolyHelper (
     int		w,
     int		h)
 {
-    DDXPointPtr ppt;
-    int 	*pwidth;
+    DDXPointPtr	ppt;
+    int		*pwidth;
     XID		oldPixel;
     Spans	spanRec;
     xRectangle  rect;
@@ -208,8 +221,7 @@ miFillRectPolyHelper (
     	oldPixel = pGC->fgPixel;
     	if (pixel != oldPixel)
     	{
-	    XID tmpPixel = (XID)pixel;
-    	    DoChangeGC (pGC, GCForeground, &tmpPixel, FALSE);
+    	    DoChangeGC (pGC, GCForeground, (XID *)&pixel, FALSE);
     	    ValidateGC (pDrawable, pGC);
     	}
 	(*pGC->ops->PolyFillRect) (pDrawable, pGC, 1, &rect);
@@ -251,14 +263,9 @@ miFillRectPolyHelper (
     }
 }
 
-_X_EXPORT /* static */ int
-miPolyBuildEdge (x0, y0, k, dx, dy, xi, yi, left, edge)
-    double	x0, y0;
-    double	k;  /* x0 * dy - y0 * dx */
-    int 	dx, dy;
-    int		xi, yi;
-    int		left;
-    PolyEdgePtr edge;
+/* static */ int
+miPolyBuildEdge(double x0, double y0, double k, int dx, int dy, int xi, int yi,
+		int left, PolyEdgePtr edge)
 {
     int	    x, y, e;
     int	    xady;
@@ -310,25 +317,20 @@ miPolyBuildEdge (x0, y0, k, dx, dy, xi, yi, left, edge)
 
 #define StepAround(v, incr, max) (((v) + (incr) < 0) ? (max - 1) : ((v) + (incr) == max) ? 0 : ((v) + (incr)))
 
-_X_EXPORT /* static */ int
-miPolyBuildPoly (vertices, slopes, count, xi, yi, left, right, pnleft, pnright, h)
-    PolyVertexPtr 	vertices;
-    PolySlopePtr	slopes;
-    int			count;
-    int		   	xi, yi;
-    PolyEdgePtr	    	left, right;
-    int		    	*pnleft, *pnright;
-    int		    	*h;
+/* static */ int
+miPolyBuildPoly(PolyVertexPtr vertices, PolySlopePtr slopes, int count,
+		int xi, int yi, PolyEdgePtr left, PolyEdgePtr right,
+		int *pnleft, int *pnright, int *h)
 {
-    int 	top, bottom;
-    double 	miny, maxy;
-    int 	i;
-    int		j;
-    int		clockwise;
-    int		slopeoff;
-    int 	s;
-    int 	nright, nleft;
-    int	   	y, lasty = 0, bottomy, topy = 0;
+    int	    top, bottom;
+    double  miny, maxy;
+    int	    i;
+    int	    j;
+    int	    clockwise;
+    int	    slopeoff;
+    int     s;
+    int     nright, nleft;
+    int	    y, lasty = 0, bottomy, topy = 0;
 
     /* find the top of the polygon */
     maxy = miny = vertices[0].y;
@@ -457,12 +459,12 @@ miLineOnePoint (
 
 static void
 miLineJoin (
-    DrawablePtr 	pDrawable,
-    GCPtr		pGC,
-    unsigned long	pixel,
-    SpanDataPtr		spanData,
-    LineFacePtr		pLeft,
-    LineFacePtr 	pRight)
+    DrawablePtr	    pDrawable,
+    GCPtr	    pGC,
+    unsigned long   pixel,
+    SpanDataPtr	    spanData,
+    LineFacePtr     pLeft,
+    LineFacePtr     pRight)
 {
     double	    mx = 0, my = 0;
     double	    denom = 0.0;
@@ -863,8 +865,8 @@ miLineArcD (
     return (pts - points);
 }
 
-static int
-miRoundJoinFace (LineFacePtr face, PolyEdgePtr edge, Bool *leftEdge)
+int
+miRoundJoinFace(LineFacePtr face, PolyEdgePtr edge, Bool *leftEdge)
 {
     int	    y;
     int	    dx, dy;
@@ -909,12 +911,10 @@ miRoundJoinFace (LineFacePtr face, PolyEdgePtr edge, Bool *leftEdge)
     return y;
 }
 
-_X_EXPORT void
-miRoundJoinClip (pLeft, pRight, edge1, edge2, y1, y2, left1, left2)
-    LineFacePtr pLeft, pRight;
-    PolyEdgePtr	edge1, edge2;
-    int		*y1, *y2;
-    Bool	*left1, *left2;
+void
+miRoundJoinClip(LineFacePtr pLeft, LineFacePtr pRight,
+		PolyEdgePtr edge1, PolyEdgePtr edge2, int *y1, int *y2,
+		Bool *left1, Bool *left2)
 {
     double	denom;
 
@@ -934,16 +934,12 @@ miRoundJoinClip (pLeft, pRight, edge1, edge2, y1, y2, left1, left2)
     *y2 = miRoundJoinFace (pRight, edge2, left2);
 }
 
-_X_EXPORT int
-miRoundCapClip (face, isInt, edge, leftEdge)
-    LineFacePtr face;
-    Bool	isInt;
-    PolyEdgePtr edge;
-    Bool	*leftEdge;
+int
+miRoundCapClip(LineFacePtr face, Bool isInt, PolyEdgePtr edge, Bool *leftEdge)
 {
-    int		y;
-    int 	dx, dy;
-    double	xa, ya, k;
+    int	    y;
+    int dx, dy;
+    double  xa, ya, k;
     Bool	left;
 
     dx = -face->dy;
@@ -986,15 +982,15 @@ miRoundCapClip (face, isInt, edge, leftEdge)
 
 static void
 miLineArc (
-    DrawablePtr		pDraw,
-    GCPtr  		pGC,
-    unsigned long	pixel,
-    SpanDataPtr		spanData,
-    LineFacePtr		leftFace,
-    LineFacePtr 	rightFace,
-    double	    	xorg,
-    double          	yorg,
-    Bool	    	isInt)
+    DrawablePtr	    pDraw,
+    GCPtr	    pGC,
+    unsigned long   pixel,
+    SpanDataPtr	    spanData,
+    LineFacePtr	    leftFace,
+    LineFacePtr	    rightFace,
+    double	    xorg,
+    double          yorg,
+    Bool	    isInt)
 {
     DDXPointPtr points;
     int *widths;
@@ -1057,8 +1053,7 @@ miLineArc (
     	oldPixel = pGC->fgPixel;
     	if (pixel != oldPixel)
     	{
-	    XID tmpPixel = (XID)pixel;
-	    DoChangeGC(pGC, GCForeground, &tmpPixel, FALSE);
+	    DoChangeGC(pGC, GCForeground, (XID *)&pixel, FALSE);
 	    ValidateGC (pDraw, pGC);
     	}
     }
@@ -1101,10 +1096,10 @@ miLineArc (
     }
 }
 
-static void
-miLineProjectingCap (DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
-		     SpanDataPtr spanData, LineFacePtr face, Bool isLeft,
-		     double xorg, double yorg, Bool isInt)
+void
+miLineProjectingCap(DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
+		    SpanDataPtr spanData, LineFacePtr face, Bool isLeft,
+		    double xorg, double yorg, Bool isInt)
 {
     int	xorgi = 0, yorgi = 0;
     int	lw;
@@ -1154,10 +1149,6 @@ miLineProjectingCap (DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
     }
     else if (dx == 0)
     {
-	if (dy < 0) {
-	    dy = -dy;
-	    isLeft = !isLeft;
-	}
 	topy = yorgi;
 	bottomy = yorgi + dy;
 	if (isLeft)
@@ -1267,18 +1258,18 @@ miLineProjectingCap (DrawablePtr pDrawable, GCPtr pGC, unsigned long pixel,
 
 static void
 miWideSegment (
-    DrawablePtr		pDrawable,
-    GCPtr		pGC,
-    unsigned long	pixel,
-    SpanDataPtr		spanData,
-    int    		x1,
-    int    		y1,
-    int    		x2,
-    int    		y2,
-    Bool		projectLeft,
-    Bool		projectRight,
-    LineFacePtr 	leftFace,
-    LineFacePtr 	rightFace)
+    DrawablePtr	    pDrawable,
+    GCPtr	    pGC,
+    unsigned long   pixel,
+    SpanDataPtr	    spanData,
+    int		    x1,
+    int		    y1,
+    int		    x2,
+    int		    y2,
+    Bool	    projectLeft,
+    Bool	    projectRight,
+    LineFacePtr	    leftFace,
+    LineFacePtr	    rightFace)
 {
     double	l, L, r;
     double	xa, ya;
@@ -1487,8 +1478,8 @@ miWideSegment (
     }
 }
 
-static SpanDataPtr
-miSetupSpanData (GCPtr pGC, SpanDataPtr spanData, int npt)
+SpanDataPtr
+miSetupSpanData(GCPtr pGC, SpanDataPtr spanData, int npt)
 {
     if ((npt < 3 && pGC->capStyle != CapRound) || miSpansEasyRop(pGC->alu))
 	return (SpanDataPtr) NULL;
@@ -1498,8 +1489,8 @@ miSetupSpanData (GCPtr pGC, SpanDataPtr spanData, int npt)
     return spanData;
 }
 
-static void
-miCleanupSpanData (DrawablePtr pDrawable, GCPtr pGC, SpanDataPtr spanData)
+void
+miCleanupSpanData(DrawablePtr pDrawable, GCPtr pGC, SpanDataPtr spanData)
 {
     if (pGC->lineStyle == LineDoubleDash)
     {
@@ -1524,24 +1515,20 @@ miCleanupSpanData (DrawablePtr pDrawable, GCPtr pGC, SpanDataPtr spanData)
     miFreeSpanGroup (&spanData->fgGroup);
 }
 
-_X_EXPORT void
-miWideLine (pDrawable, pGC, mode, npt, pPts)
-    DrawablePtr	pDrawable;
-    GCPtr 	pGC;
-    int		mode;
-    int 	npt;
-    DDXPointPtr pPts;
+void
+miWideLine(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
+	   DDXPointPtr pPts)
 {
-    int		x1, y1, x2, y2;
-    SpanDataRec	spanDataRec;
-    SpanDataPtr	spanData;
-    long   	pixel;
-    Bool	projectLeft, projectRight;
-    LineFaceRec	leftFace, rightFace, prevRightFace;
-    LineFaceRec	firstFace;
-    int		first;
-    Bool	somethingDrawn = FALSE;
-    Bool	selfJoin;
+    int		    x1, y1, x2, y2;
+    SpanDataRec	    spanDataRec;
+    SpanDataPtr	    spanData;
+    unsigned long   pixel;
+    Bool	    projectLeft, projectRight;
+    LineFaceRec	    leftFace, rightFace, prevRightFace;
+    LineFaceRec	    firstFace;
+    int		    first;
+    Bool	    somethingDrawn = FALSE;
+    Bool	    selfJoin;
 
     spanData = miSetupSpanData (pGC, &spanDataRec, npt);
     pixel = pGC->fgPixel;
@@ -1668,7 +1655,7 @@ miWideLine (pDrawable, pGC, mode, npt, pPts)
 static void
 miWideDashSegment (
     DrawablePtr	    pDrawable,
-    GCPtr  	    pGC,
+    GCPtr	    pGC,
     SpanDataPtr	    spanData,
     int		    *pDashOffset,
     int		    *pDashIndex,
@@ -1686,7 +1673,7 @@ miWideDashSegment (
     double	    L, l;
     double	    k;
     PolyVertexRec   vertices[4];
-    PolyVertexRec   saveRight, saveBottom;
+    PolyVertexRec   saveRight = {0.0, 0.0}, saveBottom = {0.0, 0.0};
     PolySlopeRec    slopes[4];
     PolyEdgeRec	    left[2], right[2];
     LineFaceRec	    lcapFace, rcapFace;
@@ -2022,30 +2009,26 @@ miWideDashSegment (
     *pDashOffset = pDash[dashIndex] - dashRemain;
 }
 
-_X_EXPORT void
-miWideDash (pDrawable, pGC, mode, npt, pPts)
-    DrawablePtr	pDrawable;
-    GCPtr 	pGC;
-    int		mode;
-    int 	npt;
-    DDXPointPtr pPts;
+void
+miWideDash(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
+	   DDXPointPtr pPts)
 {
-    int			x1, y1, x2, y2;
-    unsigned long	pixel;
-    Bool		projectLeft, projectRight;
-    LineFaceRec		leftFace, rightFace, prevRightFace;
-    LineFaceRec		firstFace;
-    int			first;
-    int			dashIndex, dashOffset;
-    int			prevDashIndex;
-    SpanDataRec		spanDataRec;
-    SpanDataPtr		spanData;
-    Bool		somethingDrawn = FALSE;
-    Bool		selfJoin;
-    Bool		endIsFg = FALSE, startIsFg = FALSE;
-    Bool		firstIsFg = FALSE, prevIsFg = FALSE;
+    int		    x1, y1, x2, y2;
+    unsigned long   pixel;
+    Bool	    projectLeft, projectRight;
+    LineFaceRec	    leftFace, rightFace, prevRightFace;
+    LineFaceRec	    firstFace;
+    int		    first;
+    int		    dashIndex, dashOffset;
+    int		    prevDashIndex;
+    SpanDataRec	    spanDataRec;
+    SpanDataPtr	    spanData;
+    Bool	    somethingDrawn = FALSE;
+    Bool	    selfJoin;
+    Bool	    endIsFg = FALSE, startIsFg = FALSE;
+    Bool            firstIsFg = FALSE, prevIsFg = FALSE;
 
-#if 0
+#ifndef XFree86Server
     /* XXX backward compatibility */
     if (pGC->lineWidth == 0)
     {
@@ -2203,4 +2186,16 @@ miWideDash (pDrawable, pGC, mode, npt, pPts)
     }
     if (spanData)
 	miCleanupSpanData (pDrawable, pGC, spanData);
+}
+
+/* these are stubs to allow old ddx ValidateGCs to work without change */
+
+void
+miMiter()
+{
+}
+
+void
+miNotMiter()
+{
 }

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1989, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -43,7 +50,7 @@ in this Software without prior written authorization from The Open Group.
  *         XSetExtensionErrorHandler	establish an extension error handler
  *         XMissingExtension		raise an error about missing ext
  */
-/* $XFree86: xc/lib/Xext/extutil.c,v 1.7 2005/01/27 02:28:59 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/extutil.c,v 1.8 2005/01/27 03:03:09 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Xlibint.h>

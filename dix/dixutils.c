@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/dixutils.c,v 3.17 2006/02/19 15:51:19 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -81,11 +89,6 @@ Author:  Adobe Systems Incorporated
 
 */
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include "misc.h"
@@ -95,14 +98,17 @@ Author:  Adobe Systems Incorporated
 #include "scrnintstr.h"
 #define  XK_LATIN1
 #include <X11/keysymdef.h>
-#include "xace.h"
+#ifdef XCSECURITY
+#define _SECURITY_SERVER
+#include <X11/extensions/security.h>
+#endif
 
 /*
  * CompareTimeStamps returns -1, 0, or +1 depending on if the first
  * argument is less than, equal to or greater than the second argument.
  */
 
-_X_EXPORT int
+int
 CompareTimeStamps(TimeStamp a, TimeStamp b)
 {
     if (a.months < b.months)
@@ -121,7 +127,7 @@ CompareTimeStamps(TimeStamp a, TimeStamp b)
  */
 
 #define HALFMONTH ((unsigned long) 1<<31)
-_X_EXPORT TimeStamp
+TimeStamp
 ClientTimeToServerTime(CARD32 c)
 {
     TimeStamp ts;
@@ -149,196 +155,207 @@ ClientTimeToServerTime(CARD32 c)
  * beware of too-small buffers
  */
 
-static unsigned char
-ISOLatin1ToLower (unsigned char source)
-{
-    unsigned char   dest;
-    if ((source >= XK_A) && (source <= XK_Z))
-       dest = source + (XK_a - XK_A);
-    else if ((source >= XK_Agrave) && (source <= XK_Odiaeresis))
-       dest = source + (XK_agrave - XK_Agrave);
-    else if ((source >= XK_Ooblique) && (source <= XK_Thorn))
-       dest = source + (XK_oslash - XK_Ooblique);
-    else
-       dest = source;
-    return dest;
-}
-
-
-_X_EXPORT void
+void
 CopyISOLatin1Lowered(unsigned char *dest, unsigned char *source, int length)
 {
     int i;
 
     for (i = 0; i < length; i++, source++, dest++)
-	*dest = ISOLatin1ToLower (*source);
+    {
+	if ((*source >= XK_A) && (*source <= XK_Z))
+	    *dest = *source + (XK_a - XK_A);
+	else if ((*source >= XK_Agrave) && (*source <= XK_Odiaeresis))
+	    *dest = *source + (XK_agrave - XK_Agrave);
+	else if ((*source >= XK_Ooblique) && (*source <= XK_Thorn))
+	    *dest = *source + (XK_oslash - XK_Ooblique);
+	else
+	    *dest = *source;
+    }
     *dest = '\0';
 }
 
-int
-CompareISOLatin1Lowered(unsigned char *s1, int s1len, 
-			unsigned char *s2, int s2len)
-{
-    unsigned char   c1, c2;
-    
-    for (;;) 
-    {
-	/* note -- compare against zero so that -1 ignores len */
-	c1 = s1len-- ? *s1++ : '\0';
-	c2 = s2len-- ? *s2++ : '\0';
-	if (!c1 || 
-	    (c1 != c2 && 
-	     (c1 = ISOLatin1ToLower (c1)) != (c2 = ISOLatin1ToLower (c2))))
-	    break;
-    }
-    return (int) c1 - (int) c2;
-}
+#ifdef XCSECURITY
 
 /*
- * dixLookupWindow and dixLookupDrawable:
- * Look up the window/drawable taking into account the client doing the
- * lookup, the type of drawable desired, and the type of access desired.
- * Return Success with *pDraw set if the window/drawable exists and the client
- * is allowed access, else return an error code with *pDraw set to NULL.  The
- * access mask values are defined in resource.h.  The type mask values are
- * defined in pixmap.h, with zero equivalent to M_DRAWABLE.
+ * SecurityLookupWindow and SecurityLookupDrawable:
+ * Look up the window/drawable taking into account the client doing
+ * the lookup and the type of access desired.  Return the window/drawable
+ * if it exists and the client is allowed access, else return NULL.
+ * Most Proc* functions should be calling these instead of
+ * LookupWindow and LookupDrawable, which do no access checks.
  */
-_X_EXPORT int
-dixLookupDrawable(DrawablePtr *pDraw, XID id, ClientPtr client,
-		  Mask type, Mask access)
+
+WindowPtr
+SecurityLookupWindow(XID rid, ClientPtr client, Mask access_mode)
 {
-    DrawablePtr pTmp;
-    RESTYPE rtype;
-    *pDraw = NULL;
-    client->errorValue = id;
+    WindowPtr	pWin;
 
-    if (id == INVALID)
-	return BadDrawable;
-
-    if (id == client->lastDrawableID) {
-	pTmp = client->lastDrawable;
-
-	/* an access check is required for cached drawables */
-	rtype = (type & M_WINDOW) ? RT_WINDOW : RT_PIXMAP;
-	if (!XaceHook(XACE_RESOURCE_ACCESS, client, id, rtype, access, pTmp))
-	    return BadDrawable;
-    } else
-	pTmp = (DrawablePtr)SecurityLookupIDByClass(client, id, RC_DRAWABLE,
-						   access);
-    if (!pTmp)
-	return BadDrawable;
-    if (!((1 << pTmp->type) & (type ? type : M_DRAWABLE)))
-	return BadMatch;
-
-    if (type & M_DRAWABLE) {
-	client->lastDrawable = pTmp;
-	client->lastDrawableID = id;
+    client->errorValue = rid;
+    if(rid == INVALID)
+	return NULL;
+    if (client->trustLevel != XSecurityClientTrusted)
+	return (WindowPtr)SecurityLookupIDByType(client, rid, RT_WINDOW, access_mode);
+    if (client->lastDrawableID == rid)
+    {
+        if (client->lastDrawable->type == DRAWABLE_WINDOW)
+            return ((WindowPtr) client->lastDrawable);
+        return (WindowPtr) NULL;
+    }
+    pWin = (WindowPtr)SecurityLookupIDByType(client, rid, RT_WINDOW, access_mode);
+    if (pWin && pWin->drawable.type == DRAWABLE_WINDOW) {
+	client->lastDrawable = (DrawablePtr) pWin;
+	client->lastDrawableID = rid;
 	client->lastGCID = INVALID;
 	client->lastGC = (GCPtr)NULL;
     }
-    *pDraw = pTmp;
-    return Success;
+    return pWin;
 }
 
-_X_EXPORT int
-dixLookupWindow(WindowPtr *pWin, XID id, ClientPtr client, Mask access)
-{
-    int rc;
-    rc = dixLookupDrawable((DrawablePtr*)pWin, id, client, M_WINDOW, access);
-    return (rc == BadDrawable) ? BadWindow : rc;
-}
 
-_X_EXPORT int
-dixLookupGC(GCPtr *pGC, XID id, ClientPtr client, Mask access)
+pointer
+SecurityLookupDrawable(XID rid, ClientPtr client, Mask access_mode)
 {
-    GCPtr pTmp = (GCPtr)SecurityLookupIDByType(client, id, RT_GC, access);
-    if (pTmp) {
-	*pGC = pTmp;
-	return Success;
-    }
-    client->errorValue = id;
-    *pGC = NULL;
-    return BadGC;
-}
+    DrawablePtr pDraw;
 
-_X_EXPORT int
-dixLookupClient(ClientPtr *pClient, XID rid, ClientPtr client, Mask access)
-{
-    pointer pRes = (pointer)SecurityLookupIDByClass(client, rid, RC_ANY,
-						    access);
-    int clientIndex = CLIENT_ID(rid);
-    client->errorValue = rid;
-
-    if (clientIndex && pRes && clients[clientIndex] && !(rid & SERVER_BIT)) {
-	*pClient = clients[clientIndex];
-	return Success;
-    }
-    *pClient = NULL;
-    return BadValue;
+    if(rid == INVALID)
+	return (pointer) NULL;
+    if (client->trustLevel != XSecurityClientTrusted)
+	return (DrawablePtr)SecurityLookupIDByClass(client, rid, RC_DRAWABLE,
+						    access_mode);
+    if (client->lastDrawableID == rid)
+	return ((pointer) client->lastDrawable);
+    pDraw = (DrawablePtr)SecurityLookupIDByClass(client, rid, RC_DRAWABLE,
+						 access_mode);
+    if (pDraw && (pDraw->type != UNDRAWABLE_WINDOW))
+        return (pointer)pDraw;		
+    return (pointer)NULL;
 }
 
 /*
- * These are deprecated compatibility functions and will be removed soon!
- * Please use the new dixLookup*() functions above.
+ * We can't replace the LookupWindow and LookupDrawable functions with
+ * macros because of compatibility with loadable servers.
  */
-_X_EXPORT _X_DEPRECATED WindowPtr
-SecurityLookupWindow(XID id, ClientPtr client, Mask access_mode)
+
+WindowPtr
+LookupWindow(XID rid, ClientPtr client)
 {
-    WindowPtr pWin;
-    int i = dixLookupWindow(&pWin, id, client, access_mode);
-    static int warn = 1;
-    if (warn-- > 0)
-	ErrorF("Warning: LookupWindow()/SecurityLookupWindow() "
-	       "are deprecated.  Please convert your driver/module "
-	       "to use dixLookupWindow().\n");
-    return (i == Success) ? pWin : NULL;
+    return SecurityLookupWindow(rid, client, SecurityUnknownAccess);
 }
 
-_X_EXPORT _X_DEPRECATED WindowPtr
-LookupWindow(XID id, ClientPtr client)
+pointer
+LookupDrawable(XID rid, ClientPtr client)
 {
-    return SecurityLookupWindow(id, client, DixUnknownAccess);
+    return SecurityLookupDrawable(rid, client, SecurityUnknownAccess);
 }
 
-_X_EXPORT _X_DEPRECATED pointer
-SecurityLookupDrawable(XID id, ClientPtr client, Mask access_mode)
+#else /* not XCSECURITY */
+
+WindowPtr
+LookupWindow(XID rid, ClientPtr client)
+{
+    WindowPtr	pWin;
+
+    client->errorValue = rid;
+    if(rid == INVALID)
+	return NULL;
+    if (client->lastDrawableID == rid)
+    {
+        if (client->lastDrawable->type == DRAWABLE_WINDOW)
+            return ((WindowPtr) client->lastDrawable);
+        return (WindowPtr) NULL;
+    }
+    pWin = (WindowPtr)LookupIDByType(rid, RT_WINDOW);
+    if (pWin && pWin->drawable.type == DRAWABLE_WINDOW) {
+	client->lastDrawable = (DrawablePtr) pWin;
+	client->lastDrawableID = rid;
+	client->lastGCID = INVALID;
+	client->lastGC = (GCPtr)NULL;
+    }
+    return pWin;
+}
+
+
+pointer
+LookupDrawable(XID rid, ClientPtr client)
 {
     DrawablePtr pDraw;
-    int i = dixLookupDrawable(&pDraw, id, client, M_DRAWABLE, access_mode);
-    static int warn = 1;
-    if (warn-- > 0)
-	ErrorF("Warning: LookupDrawable()/SecurityLookupDrawable() "
-	       "are deprecated.  Please convert your driver/module "
-	       "to use dixLookupDrawable().\n");
-    return (i == Success) ? pDraw : NULL;
+
+    if(rid == INVALID)
+	return (pointer) NULL;
+    if (client->lastDrawableID == rid)
+	return ((pointer) client->lastDrawable);
+    pDraw = (DrawablePtr)LookupIDByClass(rid, RC_DRAWABLE);
+    if (pDraw && (pDraw->type != UNDRAWABLE_WINDOW))
+        return (pointer)pDraw;		
+    return (pointer)NULL;
 }
 
-_X_EXPORT _X_DEPRECATED pointer
-LookupDrawable(XID id, ClientPtr client)
+WindowPtr
+SecurityLookupWindow(XID rid, ClientPtr client, Mask access_mode)
 {
-    return SecurityLookupDrawable(id, client, DixUnknownAccess);
+    return LookupWindow(rid, client);
 }
 
-_X_EXPORT _X_DEPRECATED ClientPtr
-LookupClient(XID id, ClientPtr client)
+pointer
+SecurityLookupDrawable(XID rid, ClientPtr client, Mask access_mode)
 {
-    ClientPtr pClient;
-    int i = dixLookupClient(&pClient, id, client, DixUnknownAccess);
-    static int warn = 1;
-    if (warn-- > 0)
-	ErrorF("Warning: LookupClient() is deprecated.  Please convert your "
-	       "driver/module to use dixLookupClient().\n");
-    return (i == Success) ? pClient : NULL;
+    return LookupDrawable(rid, client);
 }
 
-/* end deprecated functions */
+#endif /* XCSECURITY */
+
+ClientPtr
+LookupClient(XID rid, ClientPtr client)
+{
+    pointer pRes = (pointer)SecurityLookupIDByClass(client, rid, RC_ANY,
+						    SecurityReadAccess);
+    int clientIndex = CLIENT_ID(rid);
+
+    if (clientIndex && pRes && clients[clientIndex] && !(rid & SERVER_BIT))
+    {
+	return clients[clientIndex];
+    }
+    return (ClientPtr)NULL;
+}
+
+
+/* Return the (possibly cached) Drawable that corresponds to an XID */
+DrawablePtr
+SecurityVerifyDrawable(XID did, ClientPtr client, Mask access_mode)
+{
+#ifdef XCSECURITY
+    if (client->lastDrawableID == did &&
+	client->trustLevel == XSecurityClientTrusted)
+	return client->lastDrawable;
+#else
+    if (client->lastDrawableID == did)
+	return client->lastDrawable;
+#endif
+    return SecurityLookupIDByClass(client, did, RC_DRAWABLE, access_mode);
+}
+
+
+/* Return the (possibly cached) GC that corresponds to an XID */
+GCPtr
+SecurityVerifyGC(XID rid, ClientPtr client, Mask access_mode)
+{
+#ifdef XCSECURITY
+    if (client->lastGCID == rid &&
+	client->trustLevel == XSecurityClientTrusted)
+	return client->lastGC;
+#else
+    if (client->lastGCID == rid)
+	return client->lastGC;
+#endif
+    return SecurityLookupIDByType(client, rid, RT_GC, access_mode);
+}
+
 
 int
-AlterSaveSetForClient(ClientPtr client, WindowPtr pWin, unsigned mode,
-                      Bool toRoot, Bool remap)
+AlterSaveSetForClient(ClientPtr client, WindowPtr pWin, unsigned mode)
 {
     int numnow;
-    SaveSetElt *pTmp = NULL;
+    pointer *pTmp = NULL;
     int j;
 
     numnow = client->numSaved;
@@ -346,7 +363,7 @@ AlterSaveSetForClient(ClientPtr client, WindowPtr pWin, unsigned mode,
     if (numnow)
     {
 	pTmp = client->saveSet;
-	while ((j < numnow) && (SaveSetWindow(pTmp[j]) != (pointer)pWin))
+	while ((j < numnow) && (pTmp[j] != (pointer)pWin))
 	    j++;
     }
     if (mode == SetModeInsert)
@@ -354,14 +371,12 @@ AlterSaveSetForClient(ClientPtr client, WindowPtr pWin, unsigned mode,
 	if (j < numnow)         /* duplicate */
 	   return(Success);
 	numnow++;
-	pTmp = (SaveSetElt *)xrealloc(client->saveSet, sizeof(*pTmp) * numnow);
+	pTmp = (pointer *)xrealloc(client->saveSet, sizeof(pointer) * numnow);
 	if (!pTmp)
 	    return(BadAlloc);
 	client->saveSet = pTmp;
        	client->numSaved = numnow;
-	SaveSetAssignWindow(client->saveSet[numnow - 1], pWin);
-	SaveSetAssignToRoot(client->saveSet[numnow - 1], toRoot);
-	SaveSetAssignRemap(client->saveSet[numnow - 1], remap);
+	client->saveSet[numnow - 1] = (pointer)pWin;
 	return(Success);
     }
     else if ((mode == SetModeDelete) && (j < numnow))
@@ -374,14 +389,15 @@ AlterSaveSetForClient(ClientPtr client, WindowPtr pWin, unsigned mode,
 	numnow--;
         if (numnow)
 	{
-	    pTmp = (SaveSetElt *)xrealloc(client->saveSet, sizeof(*pTmp) * numnow);
+    	    pTmp = (pointer *)xrealloc(client->saveSet,
+				       sizeof(pointer) * numnow);
 	    if (pTmp)
 		client->saveSet = pTmp;
 	}
         else
         {
             xfree(client->saveSet);
-	    client->saveSet = (SaveSetElt *)NULL;
+	    client->saveSet = (pointer *)NULL;
 	}
 	client->numSaved = numnow;
 	return(Success);
@@ -399,7 +415,7 @@ DeleteWindowFromAnySaveSet(WindowPtr pWin)
     {    
 	client = clients[i];
 	if (client && client->numSaved)
-	    (void)AlterSaveSetForClient(client, pWin, SetModeDelete, FALSE, TRUE);
+	    (void)AlterSaveSetForClient(client, pWin, SetModeDelete);
     }
 }
 
@@ -408,7 +424,7 @@ DeleteWindowFromAnySaveSet(WindowPtr pWin)
  * colormaps, if someone calls install colormap, it's easier to have a dummy
  * procedure to call than to check if there's a procedure 
  */
-_X_EXPORT void
+void
 NoopDDA(void)
 {
 }
@@ -426,11 +442,7 @@ static int		sizeHandlers;
 static Bool		inHandler;
 static Bool		handlerDeleted;
 
-/**
- * 
- *  \param pTimeout   DIX doesn't want to know how OS represents time
- *  \param pReadMask  nor how it represents the det of descriptors
- */
+/* called from the OS layer */
 void
 BlockHandler(pointer pTimeout, pointer pReadmask)
 {
@@ -460,11 +472,6 @@ BlockHandler(pointer pTimeout, pointer pReadmask)
     --inHandler;
 }
 
-/**
- *
- *  \param result    32 bits of undefined result from the wait
- *  \param pReadmask the resulting descriptor mask
- */
 void
 WakeupHandler(int result, pointer pReadmask)
 {
@@ -494,14 +501,14 @@ WakeupHandler(int result, pointer pReadmask)
     --inHandler;
 }
 
-/**
- * Reentrant with BlockHandler and WakeupHandler, except wakeup won't
+/* Reentrant with BlockHandler and WakeupHandler, except wakeup won't
  * get called until next time
  */
-_X_EXPORT Bool
-RegisterBlockAndWakeupHandlers (BlockHandlerProcPtr blockHandler, 
-                                WakeupHandlerProcPtr wakeupHandler, 
-                                pointer blockData)
+
+Bool
+RegisterBlockAndWakeupHandlers(BlockHandlerProcPtr blockHandler,
+			       WakeupHandlerProcPtr wakeupHandler,
+			       pointer blockData)
 {
     BlockHandlerPtr new;
 
@@ -522,10 +529,10 @@ RegisterBlockAndWakeupHandlers (BlockHandlerProcPtr blockHandler,
     return TRUE;
 }
 
-_X_EXPORT void
-RemoveBlockAndWakeupHandlers (BlockHandlerProcPtr blockHandler, 
-                              WakeupHandlerProcPtr wakeupHandler, 
-                              pointer blockData)
+void
+RemoveBlockAndWakeupHandlers(BlockHandlerProcPtr blockHandler,
+			     WakeupHandlerProcPtr wakeupHandler,
+			     pointer blockData)
 {
     int	    i;
 
@@ -550,7 +557,7 @@ RemoveBlockAndWakeupHandlers (BlockHandlerProcPtr blockHandler,
 }
 
 void
-InitBlockAndWakeupHandlers (void)
+InitBlockAndWakeupHandlers ()
 {
     xfree (handlers);
     handlers = (BlockHandlerPtr) 0;
@@ -617,10 +624,8 @@ ProcessWorkQueueZombies(void)
     workQueueLast = p;
 }
 
-_X_EXPORT Bool
-QueueWorkProc (
-    Bool (*function)(ClientPtr /* pClient */, pointer /* closure */),
-    ClientPtr client, pointer closure)
+Bool
+QueueWorkProc(WorkQueueProcPtr function, ClientPtr client, pointer closure)
 {
     WorkQueuePtr    q;
 
@@ -653,8 +658,8 @@ typedef struct _SleepQueue {
 
 static SleepQueuePtr	sleepQueue = NULL;
 
-_X_EXPORT Bool
-ClientSleep (ClientPtr client, ClientSleepProcPtr function, pointer closure)
+Bool
+ClientSleep(ClientPtr client, ClientSleepProcPtr function, pointer closure)
 {
     SleepQueuePtr   q;
 
@@ -672,7 +677,7 @@ ClientSleep (ClientPtr client, ClientSleepProcPtr function, pointer closure)
 }
 
 Bool
-ClientSignal (ClientPtr client)
+ClientSignal(ClientPtr client)
 {
     SleepQueuePtr   q;
 
@@ -684,8 +689,8 @@ ClientSignal (ClientPtr client)
     return FALSE;
 }
 
-_X_EXPORT void
-ClientWakeup (ClientPtr client)
+void
+ClientWakeup(ClientPtr client)
 {
     SleepQueuePtr   q, *prev;
 
@@ -711,7 +716,7 @@ ClientWakeup (ClientPtr client)
 }
 
 Bool
-ClientIsAsleep (ClientPtr client)
+ClientIsAsleep(ClientPtr client)
 {
     SleepQueuePtr   q;
 
@@ -731,10 +736,7 @@ static int numCallbackListsToCleanup = 0;
 static CallbackListPtr **listsToCleanup = NULL;
 
 static Bool 
-_AddCallback(
-    CallbackListPtr *pcbl,
-    CallbackProcPtr callback,
-    pointer         data)
+_AddCallback(CallbackListPtr *pcbl, CallbackProcPtr callback, pointer data)
 {
     CallbackPtr     cbr;
 
@@ -750,10 +752,7 @@ _AddCallback(
 }
 
 static Bool 
-_DeleteCallback(
-    CallbackListPtr *pcbl,
-    CallbackProcPtr callback,
-    pointer         data)
+_DeleteCallback(CallbackListPtr *pcbl, CallbackProcPtr callback, pointer data)
 {
     CallbackListPtr cbl = *pcbl;
     CallbackPtr     cbr, pcbr;
@@ -786,9 +785,7 @@ _DeleteCallback(
 }
 
 static void 
-_CallCallbacks(
-    CallbackListPtr    *pcbl,
-    pointer	    call_data)
+_CallCallbacks(CallbackListPtr *pcbl, pointer call_data)
 {
     CallbackListPtr cbl = *pcbl;
     CallbackPtr     cbr, pcbr;
@@ -843,8 +840,7 @@ _CallCallbacks(
 }
 
 static void
-_DeleteCallbackList(
-    CallbackListPtr    *pcbl)
+_DeleteCallbackList(CallbackListPtr *pcbl)
 {
     CallbackListPtr cbl = *pcbl;
     CallbackPtr     cbr, nextcbr;
@@ -882,7 +878,9 @@ static CallbackFuncsRec default_cbfuncs =
     _DeleteCallbackList
 };
 
-static Bool
+/* ===== Public Procedures ===== */
+
+Bool
 CreateCallbackList(CallbackListPtr *pcbl, CallbackFuncsPtr cbfuncs)
 {
     CallbackListPtr  cbl;
@@ -914,9 +912,7 @@ CreateCallbackList(CallbackListPtr *pcbl, CallbackFuncsPtr cbfuncs)
     return TRUE;
 }
 
-/* ===== Public Procedures ===== */
-
-_X_EXPORT Bool 
+Bool 
 AddCallback(CallbackListPtr *pcbl, CallbackProcPtr callback, pointer data)
 {
     if (!pcbl) return FALSE;
@@ -928,7 +924,7 @@ AddCallback(CallbackListPtr *pcbl, CallbackProcPtr callback, pointer data)
     return ((*(*pcbl)->funcs.AddCallback) (pcbl, callback, data));
 }
 
-_X_EXPORT Bool 
+Bool 
 DeleteCallback(CallbackListPtr *pcbl, CallbackProcPtr callback, pointer data)
 {
     if (!pcbl || !*pcbl) return FALSE;
@@ -950,7 +946,7 @@ DeleteCallbackList(CallbackListPtr *pcbl)
 }
 
 void 
-InitCallbackManager(void)
+InitCallbackManager()
 {
     int i;
 

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997,1998 by UCHIYAMA Yasushi
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,10 +27,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/hurd/hurd_init.c,v 1.4 2006/09/02 16:44:21 dawes Exp $ */
 
 #include <X11/X.h>
 
@@ -44,7 +48,7 @@
 #include <mach.h>
 
 int 
-xf86ProcessArgument( int argc,char **argv, int i )
+xf86ProcessArgument( int argc, const char **argv, int i )
 {
     return 0;
 }

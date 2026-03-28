@@ -1,0 +1,14 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/vesa/Imakefile,v 1.2 2005/10/14 15:16:30 tsi Exp $
+
+#include "../TinyX.tmpl"
+
+SRCS = 	vesa.c vesainit.c vbe.c vga.c vm86.c
+
+OBJS = 	vesa.o vesainit.o vbe.o vga.o vm86.o
+
+INCLUDES = $(TINYXINCLUDES)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(vesa,$(OBJS))
+InstallManPage(Xvesa,$(MANDIR))
+DependTarget()

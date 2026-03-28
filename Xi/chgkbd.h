@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/chgkbd.h,v 3.2 2003/11/17 22:20:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -23,17 +31,25 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #ifndef CHGKBD_H
 #define CHGKBD_H 1
 
-int SProcXChangeKeyboardDevice(ClientPtr	/* client */
-    );
+int
+SProcXChangeKeyboardDevice(
+	ClientPtr              /* client */
+	);
 
-int ProcXChangeKeyboardDevice(ClientPtr	/* client */
-    );
+int
+ProcXChangeKeyboardDevice (
+	ClientPtr              /* client */
+	);
+
+void
+SRepXChangeKeyboardDevice (
+	ClientPtr              /* client */,
+	int                    /* size */,
+	xChangeKeyboardDeviceReply * /* rep */
+	);
+
 
 #endif /* CHGKBD_H */

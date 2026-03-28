@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1998 by Alan Hourihane, Wigan, England.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,10 +30,7 @@
  *
  * Generic RAMDAC access to colormaps.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86RamDacCmap.c,v 1.8 2005/10/14 15:17:09 tsi Exp $ */
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -35,6 +39,7 @@
 #include "micmap.h"
 
 #include "xf86.h"
+#include "xf86_ansic.h"
 #include "compiler.h"
 #include "colormapst.h"
 #include "xf86RamDacPriv.h"

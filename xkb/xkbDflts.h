@@ -1,14 +1,23 @@
+/* $XFree86: xc/programs/Xserver/xkb/xkbDflts.h,v 1.4 2006/01/09 15:00:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* This file generated automatically by xkbcomp */
 /* DO  NOT EDIT */
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #ifndef DEFAULT_H
 #define DEFAULT_H 1
 
+#ifndef XKB_IN_SERVER
+#define GET_ATOM(d,s)	XInternAtom(d,s,0)
+#define DPYTYPE	Display *
+#else
 #define GET_ATOM(d,s)	MakeAtom(s,strlen(s),1)
 #define DPYTYPE	char *
+#endif
 #define NUM_KEYS	1
 
 #define	vmod_NumLock	0
@@ -456,6 +465,43 @@ static XkbCompatMapRec compatMap= {
     num_dfltSI, num_dfltSI
 };
 
+static XkbIndicatorRec indicators= {
+    0x0,
+    {
+        { 0x80, 0, 0x00, XkbIM_UseEffective, { LockMask,  LockMask, 0 }, 0 },
+        { 0x80, 0, 0x00, XkbIM_UseEffective, { 0,  0, vmod_NumLockMask }, 0 },
+        { 0x80, 0, 0x00, XkbIM_UseLocked, { ShiftMask,  ShiftMask, 0 }, 0 },
+        { 0x80, 0, 0x00, 0, { 0,  0, 0 }, XkbMouseKeysMask },
+        { 0x80, 0, 0x00, XkbIM_UseLocked, { 0,  0, vmod_ScrollLockMask }, 0 },
+        { 0x80, XkbIM_UseEffective, 0xfe, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 },
+        { 0x00, 0, 0x00, 0, { 0,  0, 0 }, 0 }
+    }
+};
 static void
 initIndicatorNames(DPYTYPE dpy,XkbDescPtr xkb)
 {

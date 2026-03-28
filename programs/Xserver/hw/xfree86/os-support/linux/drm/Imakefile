@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/drm/Imakefile,v 1.27tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/drm/Imakefile,v 1.27 2005/03/01 03:48:54 dawes Exp $
 /*
  * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -71,8 +71,9 @@ MTRR_DEFINES = -DHAS_MTRR_SUPPORT
 	xf86drmSL.o \
 	$(MOBJ)
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include \
-           -Ikernel -I$(DRMINCLUDESDIR)
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
+           -I$(XINCLUDESRC) -I$(EXTINCSRC) -I../.. -Ikernel \
+	   -I$(DRMINCLUDESDIR)
 
 DEFINES = $(MTRR_DEFINES) $(GLX_DEFINES)
 

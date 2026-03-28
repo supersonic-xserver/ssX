@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file macros.h
  * A collection of useful macros.
  */
@@ -101,6 +108,8 @@ extern GLfloat _mesa_ubyte_to_float_color_tab[256];
         us = ( (GLushort) IROUND( CLAMP((f), 0.0, 1.0) * 65535.0F) )
 #define CLAMPED_FLOAT_TO_USHORT(us, f)  \
         us = ( (GLushort) IROUND( (f) * 65535.0F) )
+
+/*@}*/
 
 
 /** Stepping a GLfloat pointer by a byte stride */
@@ -650,9 +659,6 @@ do {                        \
 
 #define LEN_SQUARED_3FV( V ) ((V)[0]*(V)[0]+(V)[1]*(V)[1]+(V)[2]*(V)[2])
 #define LEN_SQUARED_2FV( V ) ((V)[0]*(V)[0]+(V)[1]*(V)[1])
-
-
-/*@}*/
 
 
 #endif

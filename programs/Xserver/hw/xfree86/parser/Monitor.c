@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Monitor.c,v 1.32 2005/01/26 05:31:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -195,7 +202,7 @@ xf86parseModeLine (void)
 	/* Identifier */
 	if (xf86getSubToken (&(ptr->ml_comment)) != STRING)
 		Error ("ModeLine identifier expected", NULL);
-	ptr->ml_identifier = xf86configStrdup(val.str);
+	ptr->ml_identifier = val.str;
 
 	/* DotClock */
 	if (xf86getSubToken (&(ptr->ml_comment)) != NUMBER)
@@ -324,7 +331,7 @@ xf86parseVerboseMode (void)
 
 		if (xf86getSubToken (&(ptr->ml_comment)) != STRING)
 		Error ("Mode name expected", NULL);
-	ptr->ml_identifier = xf86configStrdup(val.str);
+	ptr->ml_identifier = val.str;
 	while ((token = xf86getToken (ModeTab)) != ENDMODE)
 	{
 		switch (token)
@@ -487,18 +494,18 @@ xf86parseMonitorSection (void)
 				Error (QUOTE_MSG, "Identifier");
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
-			ptr->mon_identifier = xf86configStrdup(val.str);
+			ptr->mon_identifier = val.str;
 			has_ident = TRUE;
 			break;
 		case VENDOR:
 			if (xf86getSubToken (&(ptr->mon_comment)) != STRING)
 				Error (QUOTE_MSG, "Vendor");
-			ptr->mon_vendor = xf86configStrdup(val.str);
+			ptr->mon_vendor = val.str;
 			break;
 		case MODEL:
 			if (xf86getSubToken (&(ptr->mon_comment)) != STRING)
 				Error (QUOTE_MSG, "ModelName");
-			ptr->mon_modelname = xf86configStrdup(val.str);
+			ptr->mon_modelname = val.str;
 			break;
 		case MODE:
 			HANDLE_LIST (mon_modeline_lst, xf86parseVerboseMode,
@@ -630,7 +637,7 @@ VertDone:
 				   referenced here */
 				mptr = xf86confcalloc (1, sizeof (XF86ConfModesLinkRec));
 				mptr->list.next = NULL;
-				mptr->ml_modes_str = xf86configStrdup(val.str);
+				mptr->ml_modes_str = val.str;
 				mptr->ml_modes = NULL;
 				ptr->mon_modes_sect_lst = (XF86ConfModesLinkPtr)
 					xf86addListItem((GenericListPtr)ptr->mon_modes_sect_lst,
@@ -678,7 +685,7 @@ xf86parseModesSection (void)
 				Error (QUOTE_MSG, "Identifier");
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
-			ptr->modes_identifier = xf86configStrdup(val.str);
+			ptr->modes_identifier = val.str;
 			has_ident = TRUE;
 			break;
 		case MODE:

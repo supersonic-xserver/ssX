@@ -1,3 +1,11 @@
+/* $Xorg: ICElibint.h,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -36,7 +44,6 @@ Author: Ralph Mor, X Consortium
 #include <X11/ICE/ICEproto.h>
 #include <X11/ICE/ICEconn.h>
 #include <X11/ICE/ICEmsg.h>
-#include "ICEutil.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -407,8 +414,6 @@ extern _IceWatchProc	*_IceWatchProcs;
 extern IceErrorHandler   _IceErrorHandler;
 extern IceIOErrorHandler _IceIOErrorHandler;
 
-extern int		_IcePaAuthDataEntryCount;
-extern IceAuthDataEntry	_IcePaAuthDataEntries[];
 
 extern void _IceErrorBadMajor (
     IceConn		/* iceConn */,
@@ -535,15 +540,5 @@ extern void _IceGetPaValidAuthIndices (
     int	*		/* num_indices_ret */,
     int	*		/* indices_ret */
 );
-
-extern void _IceDefaultErrorHandler(IceConn iceConn, Bool swap,
-	int offendingMinorOpcode, unsigned long offendingSequence,
-	int errorClass, int severity, IcePointer values);
-
-extern void _IceDefaultIOErrorHandler(IceConn iceConn);
-
-extern void _IceProcessCoreMessage(IceConn iceConn, int opcode,
-	unsigned long length, Bool swap, IceReplyWaitInfo *replyWait,
-	Bool *replyReadyRet, Bool *connectionClosedRet);
 
 #endif /* _ICELIBINT_H_ */

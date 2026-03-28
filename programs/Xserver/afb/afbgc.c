@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbgc.c,v 3.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbgc.c,v 3.3 2001/10/28 03:32:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,13 +53,14 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbgc.c,v 5.35 94/04/17 20:28:23 dpw Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "afb.h"
 #include "dixfontstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "gcstruct.h"
 #include "windowstr.h"
 #include "pixmapstr.h"
@@ -102,7 +110,8 @@ static GCOps afbGCOps = {
 
 
 Bool
-afbCreateGC(GCPtr pGC)
+afbCreateGC(pGC)
+	register GCPtr pGC;
 {
 	afbPrivGC 		*pPriv;
 
@@ -145,9 +154,12 @@ afbCreateGC(GCPtr pGC)
 
 /*ARGSUSED*/
 void
-afbValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
+afbValidateGC(pGC, changes, pDrawable)
+	register GCPtr 		pGC;
+	unsigned long		changes;
+	DrawablePtr 		pDrawable;
 {
-	afbPrivGCPtr devPriv;
+	register afbPrivGCPtr devPriv;
 	int mask;		/* stateChanges */
 	int index;		/* used for stepping through bitfields */
 	int xrot, yrot;		/* rotations for tile and stipple pattern */
@@ -429,7 +441,8 @@ afbValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 }
 
 void
-afbDestroyGC(GCPtr pGC)
+afbDestroyGC(pGC)
+	GCPtr pGC;
 {
 	if (pGC->pRotatedPixmap)
 		(*pGC->pScreen->DestroyPixmap)(pGC->pRotatedPixmap);
@@ -459,11 +472,15 @@ int afbInverseAlu[16] = {
 };
 
 void
-afbReduceOpaqueStipple(PixelType fg, PixelType bg, unsigned long planemask,
-		       int depth, unsigned char *rop)
+afbReduceOpaqueStipple(fg, bg, planemask, depth, rop)
+register PixelType fg;
+register PixelType bg;
+register unsigned long planemask;
+int depth;
+register unsigned char *rop;
 {
-	int d;
-	Pixel mask = 1;
+	register int d;
+	register Pixel mask = 1;
 
 	bg ^= fg;
 
@@ -487,11 +504,15 @@ afbReduceOpaqueStipple(PixelType fg, PixelType bg, unsigned long planemask,
 }
 
 void
-afbReduceRop(int alu, Pixel src, unsigned long planemask, int depth,
-	     unsigned char *rop)
+afbReduceRop(alu, src, planemask, depth, rop)
+	register int alu;
+	register Pixel src;
+	register unsigned long planemask;
+	int depth;
+	register unsigned char *rop;
 {
-	int d;
-	Pixel mask = 1;
+	register int d;
+	register Pixel mask = 1;
 
 	for (d = 0; d < depth; d++, mask <<= 1) {
 		if (!(planemask & mask))
@@ -602,7 +623,9 @@ afbReduceRop(int alu, Pixel src, unsigned long planemask, int depth,
 }
 
 void
-afbComputeCompositeClip(GCPtr pGC, DrawablePtr pDrawable)
+afbComputeCompositeClip(pGC, pDrawable)
+	GCPtr pGC;
+	DrawablePtr pDrawable;
 {
 	if (pDrawable->type == DRAWABLE_WINDOW) {
 		WindowPtr pWin = (WindowPtr) pDrawable;

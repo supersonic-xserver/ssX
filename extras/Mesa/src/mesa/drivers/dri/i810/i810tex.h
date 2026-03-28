@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX Hardware Device Driver for Intel i810
  * Copyright (C) 1999 Keith Whitwell
  *
@@ -70,7 +77,7 @@ struct i810_texture_object_t {
 };		
 
 void i810UpdateTextureState( GLcontext *ctx );
-void i810InitTextureFuncs( GLcontext *ctx );
+void i810InitTextureFuncs( struct dd_function_table *functions );
 
 void i810DestroyTexObj( i810ContextPtr imesa, i810TextureObjectPtr t );
 int i810UploadTexImagesLocked( i810ContextPtr imesa, i810TextureObjectPtr t );

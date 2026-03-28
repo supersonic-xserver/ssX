@@ -1,0 +1,318 @@
+XCOMM $XFree86: xc/programs/Xserver/Xext/Imakefile,v 3.51 2006/02/19 15:51:16 tsi Exp $
+
+/*
+ * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+#include <Server.tmpl>
+
+#if DoLoadableServer
+#define IHaveSubdirs
+         SUBDIRS = extmod
+#endif
+
+#if BuildEVI
+#ifdef SGIArchitectureNotTog
+         EVISRCS = EVI.c sgiEVI.c
+         EVIOBJS = EVI.o sgiEVI.o
+#else
+         EVISRCS = EVI.c sampleEVI.c
+         EVIOBJS = EVI.o sampleEVI.o
+#endif
+#endif
+
+#if HasShm
+         SHMSRCS = shm.c
+         SHMOBJS = shm.o
+#endif
+
+#if BuildMultibuffer
+     MULTIBUFSRC = mbuf.c
+     MULTIBUFOBJ = mbuf.o
+       SLEEPSRCS = sleepuntil.c
+       SLEEPOBJS = sleepuntil.o
+#endif
+
+#if BuildScreenSaverExt
+      SCRNSAVSRC = saver.c
+      SCRNSAVOBJ = saver.o
+#endif
+
+#if BuildXF86VidModeExt && XF86Server
+     VIDMODESRCS = xf86vmode.c
+     VIDMODEOBJS = xf86vmode.o
+#endif
+
+#if BuildXF86MiscExt && XF86Server
+    XF86MISCSRCS = xf86misc.c
+    XF86MISCOBJS = xf86misc.o
+#endif
+
+#if BuildXF86BigfontExt
+    XF86BIGFSRCS = xf86bigfont.c
+    XF86BIGFOBJS = xf86bigfont.o
+#if HasShm
+     SHM_DEFINES = -DHAS_SHM
+#endif
+#endif
+
+#if BuildXF86DGA
+     XF86DGASRCS = xf86dga.c xf86dga2.c
+     XF86DGAOBJS = xf86dga.o xf86dga2.o
+#endif
+
+#if BuildXvExt
+          XVSRCS = xvmain.c xvdisp.c
+          XVOBJS = xvmain.o xvdisp.o
+#endif
+
+#if BuildXvMCExt
+        XVMCSRCS = xvmc.c
+        XVMCOBJS = xvmc.o
+#endif
+
+#if BuildXResExt
+        XRESSRCS = xres.c
+        XRESOBJS = xres.o
+#endif
+
+#if BuildAppgroup
+    APPGROUPSRCS = appgroup.c
+    APPGROUPOBJS = appgroup.o
+#endif
+
+#if BuildXCSecurity
+    SECURITYSRCS = security.c
+    SECURITYOBJS = security.o
+ SERVERCONFIGDIR = ServerConfigDir
+   POLICYFILEDEF = -DDEFAULTPOLICYFILE=\"$(SERVERCONFIGDIR)/SecurityPolicy\"
+#endif
+
+#if BuildCup
+         CUPSRCS = cup.c
+         CUPOBJS = cup.o
+#endif
+
+#if BuildXinerama
+        PNRXSRCS = panoramiX.c panoramiXSwap.c panoramiXprocs.c
+        PNRXOBJS = panoramiX.o panoramiXSwap.o panoramiXprocs.o
+    PNRXINCLUDES = -I$(SERVERSRC)/mi -I$(SERVERSRC)/render
+#endif
+
+#if XdmxServer
+         DMXSRCS = dmx.c
+         DMXOBJS = dmx.o
+     DMXINCLUDES = -I$(SERVERSRC)/hw/dmx
+#endif
+
+#if BuildDPMS
+        DPMSSRCS = dpms.c
+        DPMSOBJS = dpms.o
+#endif
+
+#if BuildFontCache
+   FONTCACHESRCS = fontcache.c
+   FONTCACHEOBJS = fontcache.o
+#endif
+
+#if BuildMITMiscExt
+     MITMISCSRCS = mitmisc.c
+     MITMISCOBJS = mitmisc.o
+#endif
+
+#if BuildTestExt
+       XTESTSRCS = xtest.c xtest1di.c xtest1dd.c
+       XTESTOBJS = xtest.o xtest1di.o xtest1dd.o
+       SLEEPSRCS = sleepuntil.c
+       SLEEPOBJS = sleepuntil.o
+#endif
+
+#if BuildSyncExt
+        SYNCSRCS = sync.c
+        SYNCOBJS = sync.o
+#endif
+
+#if BuildXCMiscExt
+      XCMISCSRCS = xcmisc.c
+      XCMISCOBJS = xcmisc.o
+#endif
+
+#if BuildShapeExt
+       SHAPESRCS = shape.c
+       SHAPEOBJS = shape.o
+#endif
+
+#if BuildBigReqsExt
+      BIGREQSRCS = bigreq.c
+      BIGREQOBJS = bigreq.o
+#endif
+
+            SRCS = $(SHAPESRCS) $(SHMSRCS) $(MULTIBUFSRC) $(MITMISCSRCS) \
+		   $(XTESTSRCS) $(SLEEPSRCS) $(BIGREQSRCS) $(SYNCSRCS) \
+		   $(SCRNSAVSRC) $(XCMISCSRCS) $(VIDMODESRCS) $(XF86MISCSRCS) \
+		   $(XF86BIGFSRCS) $(XF86DGASRCS) $(SECURITYSRCS) \
+		   $(APPGROUPSRCS) xprint.c $(CUPSRCS) $(PNRXSRCS) \
+		   $(DPMSSRCS) $(EVISRCS) $(XVSRCS) $(XVMCSRCS) \
+		   $(FONTCACHESRCS) $(XRESSRCS) $(DMXSRCS)
+
+            OBJS = $(SHAPEOBJS) $(SHMOBJS) $(MULTIBUFOBJ) $(MITMISCOBJS) \
+		   $(XTESTOBJS) $(SLEEPOBJS) $(BIGREQOBJS) $(SYNCOBJS) \
+		   $(SCRNSAVOBJ) $(XCMISCOBJS) $(VIDMODEOBJS) $(XF86MISCOBJS) \
+		   $(XF86BIGFOBJS) $(XF86DGAOBJS) $(SECURITYOBJS) \
+		   $(APPGROUPOBJS) xprint.o $(CUPOBJS) $(PNRXOBJS) \
+		   $(DPMSOBJS) $(EVIOBJS) $(XVOBJS) $(XVMCOBJS) \
+		   $(FONTCACHEOBJS) $(XRESOBJS) $(DMXOBJS)
+
+#if DoLoadableServer
+           SOBJS = $(SHMOBJS) $(APPGROUPOBJS) $(SECURITYOBJS) xprint.o \
+		   $(XTESTOBJS) $(SLEEPOBJS) $(PNRXOBJS) \
+		   $(XF86BIGFOBJS)
+#endif
+
+#ifdef XFree86Version
+/* XXX Check if this can be eliminated */
+    XF86INCLUDES = -I$(XF86COMSRC)
+#endif
+        INCLUDES = -I$(SERVERSRC)/Xext -I$(SERVERSRC)/include \
+		   $(PNRXINCLUDES) $(XF86INCLUDES) $(DMXINCLUDES)
+        LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln
+
+#ifndef LinkDefines
+#define LinkDefines /**/
+#endif
+
+         DEFINES = $(EXT_DEFINES) LinkDefines
+
+NormalLibraryObjectRule()
+
+/*
+ * A hack to work around an optimization problem with gcc 2.95.2
+ */
+#if BuildXF86VidModeExt && defined(GccOptBug295)
+SpecialCObjectRule(xf86vmode,NullParameter,-O0)
+#endif
+
+NormalLibraryTarget(ext,$(OBJS))
+LintLibraryTarget(ext,$(SRCS))
+NormalLintTarget($(SRCS))
+
+#if DoLoadableServer
+NormalLibraryTarget(exts,$(SOBJS))
+#endif
+
+#if BuildXF86BigfontExt
+SpecialCObjectRule(xf86bigfont,$(ICONFIGFILES),$(SHM_DEFINES))
+#endif
+#if BuildXCSecurity
+SpecialCObjectRule(security,$(ICONFIGFILES),$(POLICYFILEDEF))
+#endif
+
+
+LinkSourceFile(modinit.h,$(SERVERSRC)/Xext/extmod)
+
+#if !defined(LinkDirectory)
+
+LinkConfDirectory(xserver,.,xserver,.)
+
+#if BuildXCSecurity && InstallSecurityConfig
+InstallNonExecFile(SecurityPolicy,$(SERVERCONFIGDIR))
+#endif
+
+#endif
+
+DependTarget()
+
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif
+
+InstallDriverSDKNonExecFile(dgaproc.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(xvdix.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(xvmcext.h,$(DRIVERSDKINCLUDEDIR))
+
+#ifdef LinkDirectory
+LinkSourceFile(EVI.c,LinkDirectory)
+LinkSourceFile(appgroup.c,LinkDirectory)
+LinkSourceFile(bigreq.c,LinkDirectory)
+LinkSourceFile(cup.c,LinkDirectory)
+LinkSourceFile(dmx.c,LinkDirectory)
+LinkSourceFile(dpms.c,LinkDirectory)
+LinkSourceFile(fontcache.c,LinkDirectory)
+LinkSourceFile(mbuf.c,LinkDirectory)
+LinkSourceFile(mbufbf.c,LinkDirectory)
+LinkSourceFile(mbufpx.c,LinkDirectory)
+LinkSourceFile(mitmisc.c,LinkDirectory)
+LinkSourceFile(panoramiX.c,LinkDirectory)
+LinkSourceFile(panoramiXSwap.c,LinkDirectory)
+LinkSourceFile(panoramiXprocs.c,LinkDirectory)
+LinkSourceFile(sampleEVI.c,LinkDirectory)
+LinkSourceFile(saver.c,LinkDirectory)
+LinkSourceFile(security.c,LinkDirectory)
+LinkSourceFile(shape.c,LinkDirectory)
+LinkSourceFile(shm.c,LinkDirectory)
+LinkSourceFile(sleepuntil.c,LinkDirectory)
+LinkSourceFile(sync.c,LinkDirectory)
+LinkSourceFile(xcmisc.c,LinkDirectory)
+LinkSourceFile(xf86bigfont.c,LinkDirectory)
+LinkSourceFile(xf86dga.c,LinkDirectory)
+LinkSourceFile(xf86dga2.c,LinkDirectory)
+LinkSourceFile(xf86misc.c,LinkDirectory)
+LinkSourceFile(xf86vmode.c,LinkDirectory)
+LinkSourceFile(xprint.c,LinkDirectory)
+LinkSourceFile(xres.c,LinkDirectory)
+LinkSourceFile(xtest.c,LinkDirectory)
+LinkSourceFile(xtest1dd.c,LinkDirectory)
+LinkSourceFile(xtest1di.c,LinkDirectory)
+LinkSourceFile(xvdisp.c,LinkDirectory)
+LinkSourceFile(xvmain.c,LinkDirectory)
+LinkSourceFile(xvmc.c,LinkDirectory)
+#endif
+
+LinkSourceFile(recordproc.h,$(SERVERSRC)/record)
+LinkSourceFile(dbeproc.h,$(SERVERSRC)/dbe)
+LinkSourceFile(dbestruct.h,$(SERVERSRC)/dbe)

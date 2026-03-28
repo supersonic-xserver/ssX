@@ -1,8 +1,8 @@
- $XFree86: xc/programs/Xserver/hw/xfree86/doc/CODING,v 3.7 2006/01/09 14:59:52 dawes Exp $
+ $XFree86: xc/programs/Xserver/hw/xfree86/doc/CODING,v 3.6 1996/12/23 06:44:38 dawes Exp $
  GNU indent options:
 
 -bad -bap -c40 -cd0 -ncdb -ci4 -cli0 -cp0 -ncs -d0
--di4 -i4 -ip4 -l78 -nlp -npcs -psl -sob -ss -br -ce -sc -ts8 -ut
+-di4 -i4 -ip4 -l78 -nlp -npcs -psl -sob -ss -br -ce -sc
 
 -bad  forces a blank line after every block of declarations.
 -bap  forces a blank line after every procedure body.
@@ -18,7 +18,7 @@
 -i4   set indentation level to 4 spaces
 -ip4  indent parameter types in old-style function definitions by 4 spaces
 -l78  set maximum line length to 78
--lp   line up continued lines at parentheses
+-nlp  don't line up continued lines at parentheses
 -npcs do not put space after the function in function calls
 -psl  put the type of a procedure on the line before its name
 -sob  swallow optional blank lines
@@ -26,11 +26,10 @@
 n
 -ce   cuddle else and preceeding `}'
 -sc   put the `*' character at the left of comments
--t8   <tab> size is 8 spaces
--ut   use <tab> characters for indentations greater than the <tab> size
 -br   formats braces like this:
 
                  if (x > 0) {
                         x--;
                  }
 
+$XConsortium: CODING /main/2 1996/02/21 17:41:28 kaleb $

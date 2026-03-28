@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1998 by Alan Hourihane, Wigan, England.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -24,13 +31,11 @@
  * Modified from IBM.c to support TI RAMDAC routines 
  *   by Jens Owen, <jens@tungstengraphics.com>.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/TI.c,v 1.9 2006/12/10 15:58:33 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
+#include "xf86_ansic.h"
 
 #include "xf86Cursor.h"
 
@@ -116,7 +121,7 @@ TIramdacCalculateMNPForClock(
     ActualClock = VCO / ( 1 << p );
 
 #ifdef DEBUG
-    ErrorF( "f_out=%ld f_vco=%.1f n=%d m=%d p=%d\n",
+    ErrorF( "f_out=%ld f_vco=%.1f n=%ld m=%ld p=%ld\n",
 	    ActualClock, VCO, *rN, *rM, *rP);
 #endif
 
@@ -712,8 +717,4 @@ void TIramdacLoadPalette(
 	(*hwp->WriteData)(pScrn, colors[index].blue);
     }
 }
-}
-
-TIramdacLoadPaletteProc *TIramdacLoadPaletteWeak(void) {
-    return TIramdacLoadPalette;
 }

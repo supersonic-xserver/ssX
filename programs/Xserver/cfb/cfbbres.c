@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbbres.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbbres.c,v 3.5 2001/12/14 19:59:21 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: cfbbres.c,v 1.4 2001/02/09 02:04:37 xorgcvs Exp $ */
+#include "X.h"
 #include "misc.h"
 #include "cfb.h"
 #include "cfbmskbits.h"
@@ -54,31 +61,34 @@ SOFTWARE.
 #include "miline.h"
 
 /* Solid bresenham line */
-/*
-    CfbBits   *addrl;		pointer to base of bitmap
-    int	       nlwidth;		width in longwords of bitmap
-    int        signdx;
-    int	       signdy;		signs of directions
-    int	       axis;		major axis (Y_AXIS or X_AXIS)
-    int	       x1, y1;		initial point
-    int        e;		error accumulator
-    int        e1;		bresenham increments
-    int	       len;		length of line
+/* NOTES
+   e2 is used less often than e1, so it's not in a register
 */
 
 void
-cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
-	 int signdx, int signdy, int axis, int x1, int y1, int e, int e1,
-	 int e2, int len)
+cfbBresS(rop, and, xor, addrl, nlwidth, signdx, signdy, axis, x1, y1, e, e1,
+	 e2, len)
+    int		    rop;
+    CfbBits   and, xor;
+    CfbBits   *addrl;		/* pointer to base of bitmap */
+    int		    nlwidth;		/* width in longwords of bitmap */
+    register int    signdx;
+    int		    signdy;		/* signs of directions */
+    int		    axis;		/* major axis (Y_AXIS or X_AXIS) */
+    int		    x1, y1;		/* initial point */
+    register int    e;			/* error accumulator */
+    register int    e1;			/* bresenham increments */
+    int		    e2;
+    int		    len;		/* length of line */
 {
-    int	e3 = e2-e1;
+    register int	e3 = e2-e1;
 #if PSZ == 24
     CfbBits piQxelXor[3],piQxelAnd[3];
     char *addrb;
     int nlwidth3, signdx3;
 #endif
 #ifdef PIXEL_ADDR
-    PixelType	*addrp;		/* Pixel pointer */
+    register PixelType	*addrp;		/* Pixel pointer */
 
     if (len == 0)
     	return;
@@ -86,7 +96,7 @@ cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
     nlwidth <<= PWSH;
 #if PSZ == 24
     addrp = (PixelType *)(addrl) + (y1 * nlwidth);
-    addrb = (char *)addrp + x1 * PSZB;
+    addrb = (char *)addrp + x1 * 3;
 
     piQxelXor[0] = (xor << 24) | xor;
     piQxelXor[1] = (xor << 16)| (xor >> 8);
@@ -102,7 +112,7 @@ cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
     e = e-e1;			/* to make looping easier */
 #if PSZ == 24
     nlwidth3 = nlwidth * sizeof (CfbBits);
-    signdx3 = signdx * PSZB;
+    signdx3 = signdx * 3;
 #endif
     
     if (axis == Y_AXIS)
@@ -123,8 +133,8 @@ cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
 	--len;
 #if PSZ == 24
 #define body_copy \
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1)); \
-	    switch((unsigned long)addrb & (PGSZB - 1)){ \
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03); \
+	    switch((unsigned long)addrb & 3){ \
 	    case 0: \
 	      *addrp = ((*addrp)&0xFF000000)|(piQxelXor[0] & 0xFFFFFF); \
 	      break; \
@@ -184,8 +194,8 @@ cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
 	while(len--)
 	{ 
 #if PSZ == 24
-	    addrp = (PixelType *)((unsigned long)addrb & ~(PGSZB - 1));
-	    switch((unsigned long)addrb & (PGSZB - 1)){
+	    addrp = (PixelType *)((unsigned long)addrb & ~0x03);
+	    switch((unsigned long)addrb & 3){
 	    case 0:
 	      *addrp = (*addrp & (piQxelAnd[0]|0xFF000000))
 			^ (piQxelXor[0] & 0xFFFFFF);
@@ -227,12 +237,12 @@ cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
 	}
     }
 #else /* !PIXEL_ADDR */
-    CfbBits   tmp, bit;
+    register CfbBits   tmp, bit;
     CfbBits leftbit, rightbit;
 
     /* point to longword containing first point */
 #if PSZ == 24
-    addrl = (addrl + (y1 * nlwidth) + ((x1 * PSZB) / PGSZB);
+    addrl = (addrl + (y1 * nlwidth) + ((x1 * 3) >>2);
 #else
     addrl = (addrl + (y1 * nlwidth) + (x1 >> PWSH));
 #endif
@@ -242,8 +252,8 @@ cfbBresS(int rop, CfbBits and, CfbBits xor, CfbBits *addrl, int nlwidth,
 
     leftbit = cfbmask[0];
 #if PSZ == 24
-    rightbit = cfbmask[(PPW - 1) << 1];
-    bit = cfbmask[(x1 & (PGSZB - 1)) << 1];
+    rightbit = cfbmask[(PPW-1)<<1];
+    bit = cfbmask[(x1 & 3)<<1];
 #else
     rightbit = cfbmask[PPW-1];
     bit = cfbmask[x1 & PIM];

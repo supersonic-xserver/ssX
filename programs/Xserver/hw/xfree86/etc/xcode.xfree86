@@ -10,6 +10,8 @@
 # There must be a different version of this table for each supported
 # X-server.
 #
+# $XConsortium: xcode.xfree86 /main/4 1996/02/21 17:48:48 kaleb $
+#
 # Keycodes are the internal key identifiers that the X server uses.
 # Keynumbers are the internal key identifiers that Merge uses, and they
 # are the same as the key numbering scheme in the the PC keyboard Tech

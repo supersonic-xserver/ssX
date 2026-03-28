@@ -1,3 +1,19 @@
+/* $Xorg: FSSynchro.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* @(#)FSSynchro.c	4.1	91/05/02
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -74,7 +90,9 @@ FSSynchronize(FSServer *svr, int onoff)
 }
 
 FSSyncHandler 
-FSSetAfterFunction(FSServer *svr, FSSyncHandler func)
+FSSetAfterFunction(svr, func)
+    FSServer     *svr;
+    FSSyncHandler func;
 {
     FSSyncHandler temp;
 

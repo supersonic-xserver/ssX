@@ -1,5 +1,14 @@
-/* $XFree86: xc/programs/Xserver/hw/sun/sun.h,v 3.15tsi Exp $ */
-/*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* $Xorg: sun.h,v 1.3 2000/08/17 19:48:29 cpqbld Exp $ */
+
+/*-
  * Copyright (c) 1987 by the Regents of the University of California
  *
  * Permission to use, copy, modify, and distribute this
@@ -11,15 +20,16 @@
  * express or implied warranty.
  */
 
+/* $XFree86: xc/programs/Xserver/hw/sun/sun.h,v 3.13 2003/11/17 22:20:36 dawes Exp $ */
 
 #ifndef _SUN_H_ 
 #define _SUN_H_
 
 /* X headers */
-#include <X11/Xos.h>
+#include "Xos.h"
 #undef index /* don't mangle silly Sun structure member names */
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 
 /* general system headers */
 #ifndef NOSTDHDRS
@@ -111,8 +121,8 @@ extern int getpagesize();
 #  ifdef __NetBSD__
 #   include <dev/sun/fbio.h>
 #   include <machine/kbd.h>
-#   include <dev/sun/kbio.h>
-#   include <dev/sun/vuid_event.h>
+#   include <dev/sun/kbio.h>	   /* also <sparc/kbio.h> -wsr */
+#   include <dev/sun/vuid_event.h> /* also <sparc/vud_event.h> -wsr */
 #  endif
 # endif
 #endif
@@ -270,7 +280,7 @@ typedef Bool (*sunFbInitProc)(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 
 typedef struct {
@@ -394,7 +404,7 @@ extern void sunKbdWait(
     void
 );
 
-/*
+/*-
  * TVTOMILLI(tv)
  *	Given a struct timeval, convert its time into milliseconds...
  */

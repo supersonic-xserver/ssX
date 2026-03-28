@@ -1,7 +1,5 @@
 #! /bin/sh
 
-# $XFree86$
-
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 libdir="@libdir@"

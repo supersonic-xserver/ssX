@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DoProbe.c,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DoProbe.c,v 1.18 2005/01/26 05:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1999-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -53,8 +60,8 @@
 
 #include <ctype.h>
 #include <stdlib.h>
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "os.h"
 #ifdef XFree86LOADER
 #include "loaderProcs.h"
@@ -66,7 +73,7 @@
 #endif /* XFree86LOADER */
 
 void
-DoProbeArgs(int argc, const char **argv, int i)
+DoProbeArgs(int argc, char **argv, int i)
 {
 }
 
@@ -120,7 +127,6 @@ DoProbe()
 	}
     }
 
-    CloseWellKnownConnections();
     OsCleanup(TRUE);
     AbortDDX();
     fflush(stderr);

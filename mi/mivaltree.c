@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * mivaltree.c --
  *	Functions for recalculating window clip lists. Main function
  *	is miValidateTree.
@@ -51,34 +58,28 @@ in this Software without prior written authorization from The Open Group.
  ******************************************************************/
 
 /* The panoramix components contained the following notice */
-/*****************************************************************
+/****************************************************************
+*                                                               *
+*    Copyright (c) Digital Equipment Corporation, 1991, 1997    *
+*                                                               *
+*   All Rights Reserved.  Unpublished rights  reserved  under   *
+*   the copyright laws of the United States.                    *
+*                                                               *
+*   The software contained on this media  is  proprietary  to   *
+*   and  embodies  the  confidential  technology  of  Digital   *
+*   Equipment Corporation.  Possession, use,  duplication  or   *
+*   dissemination of the software and media is authorized only  *
+*   pursuant to a valid written license from Digital Equipment  *
+*   Corporation.                                                *
+*                                                               *
+*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  *
+*   by the U.S. Government is subject to restrictions  as  set  *
+*   forth in Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  *
+*   or  in  FAR 52.227-19, as applicable.                       *
+*                                                               *
+*****************************************************************/
 
-Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
-BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of Digital Equipment Corporation
-shall not be used in advertising or otherwise to promote the sale, use or other
-dealings in this Software without prior written authorization from Digital
-Equipment Corporation.
-
-******************************************************************/
-
+/* $XFree86: xc/programs/Xserver/mi/mivaltree.c,v 1.12 2005/10/14 15:17:23 tsi Exp $ */
 
  /* 
   * Aug '86: Susan Angebranndt -- original code
@@ -89,10 +90,6 @@ Equipment Corporation.
   *		Bob Scheifler -- avoid miComputeClips for unmapped windows,
   *				 valdata changes
   */
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include    <X11/X.h>
 #include    "scrnintstr.h"
 #include    "validate.h"
@@ -107,18 +104,15 @@ Equipment Corporation.
 /*
  * Compute the visibility of a shaped window
  */
-_X_EXPORT int
-miShapedWindowIn (pScreen, universe, bounding, rect, x, y)
-    ScreenPtr	pScreen;
-    RegionPtr	universe, bounding;
-    BoxPtr	rect;
-    int 	x, y;
+int
+miShapedWindowIn(ScreenPtr pScreen, RegionPtr universe, RegionPtr bounding,
+		 BoxPtr rect, int x, int y)
 {
-    BoxRec  	box;
-    BoxPtr	boundBox;
-    int		nbox;
-    Bool	someIn, someOut;
-    int 	t, x1, y1, x2, y2;
+    BoxRec  box;
+    BoxPtr  boundBox;
+    int	    nbox;
+    Bool    someIn, someOut;
+    int     t, x1, y1, x2, y2;
 
     nbox = REGION_NUM_RECTS (bounding);
     boundBox = REGION_RECTS (bounding);
@@ -168,28 +162,6 @@ miShapedWindowIn (pScreen, universe, bounding, rect, x, y)
 }
 #endif
 
-static GetRedirectBorderClipProcPtr	miGetRedirectBorderClipProc;
-static SetRedirectBorderClipProcPtr	miSetRedirectBorderClipProc;
-
-void
-miRegisterRedirectBorderClipProc (SetRedirectBorderClipProcPtr setBorderClip,
-				  GetRedirectBorderClipProcPtr getBorderClip)
-{
-    miSetRedirectBorderClipProc = setBorderClip;
-    miGetRedirectBorderClipProc = getBorderClip;
-}
-
-/*
- * Manual redirected windows are treated as transparent; they do not obscure
- * siblings or parent windows
- */
-
-#ifdef COMPOSITE
-#define TreatAsTransparent(w)	((w)->redirectDraw == RedirectDrawManual)
-#else
-#define TreatAsTransparent(w)	FALSE
-#endif
-
 #define HasParentRelativeBorder(w) (!(w)->borderIsPixel && \
 				    HasBorder(w) && \
 				    (w)->backgroundState == ParentRelative)
@@ -216,8 +188,8 @@ miComputeClips (
     WindowPtr	pParent,
     ScreenPtr	pScreen,
     RegionPtr	universe,
-    VTKind		kind,
-    RegionPtr		exposed ) /* for intermediate calculations */
+    VTKind	kind,
+    RegionPtr	exposed ) /* for intermediate calculations */
 {
     int			dx,
 			dy;
@@ -247,18 +219,6 @@ miComputeClips (
     if (dy > 32767)
 	dy = 32767;
     borderSize.y2 = dy;
-
-#ifdef COMPOSITE
-    /*
-     * In redirected drawing case, reset universe to borderSize
-     */
-    if (pParent->redirectDraw != RedirectDrawNone)
-    {
-	if (miSetRedirectBorderClipProc)
-	    (*miSetRedirectBorderClipProc) (pParent, universe);
-	REGION_COPY(pScreen, universe, &pParent->borderSize);
-    }
-#endif
 
     oldVis = pParent->visibility;
     switch (RECT_IN_REGION( pScreen, universe, &borderSize)) 
@@ -443,7 +403,7 @@ miComputeClips (
 	{
 	    for (; pChild; pChild = pChild->nextSib)
 	    {
-		if (pChild->viewable && !TreatAsTransparent(pChild))
+		if (pChild->viewable)
 		    REGION_APPEND( pScreen, &childUnion, &pChild->borderSize);
 	    }
 	}
@@ -451,7 +411,7 @@ miComputeClips (
 	{
 	    for (pChild = pParent->lastChild; pChild; pChild = pChild->prevSib)
 	    {
-		if (pChild->viewable && !TreatAsTransparent(pChild))
+		if (pChild->viewable)
 		    REGION_APPEND( pScreen, &childUnion, &pChild->borderSize);
 	    }
 	}
@@ -483,7 +443,7 @@ miComputeClips (
 		 * from the current universe, thus denying its space to any
 		 * other sibling.
 		 */
-		if (overlap && !TreatAsTransparent (pChild))
+		if (overlap)
 		    REGION_SUBTRACT( pScreen, universe, universe,
 					  &pChild->borderSize);
 	    }
@@ -545,11 +505,10 @@ miComputeClips (
 }
 
 static void
-miTreeObscured(
-    WindowPtr pParent )
+miTreeObscured(WindowPtr pParent)
 {
-    WindowPtr 	pChild;
-    int    	oldVis;
+    WindowPtr pChild;
+    int    oldVis;
 
     pChild = pParent;
     while (1)
@@ -605,11 +564,11 @@ miTreeObscured(
  */
 /*ARGSUSED*/
 int
-miValidateTree (pParent, pChild, kind)
-    WindowPtr	  	pParent;    /* Parent to validate */
-    WindowPtr	  	pChild;     /* First child of pParent that was
+miValidateTree(
+    WindowPtr	  	pParent,    /* Parent to validate */
+    WindowPtr	  	pChild,     /* First child of pParent that was
 				     * affected */
-    VTKind    	  	kind;       /* What kind of configuration caused call */
+    VTKind    	  	kind)       /* What kind of configuration caused call */
 {
     RegionRec	  	totalClip;  /* Total clipping region available to
 				     * the marked children. pParent's clipList
@@ -655,7 +614,7 @@ miValidateTree (pParent, pChild, kind)
 	
 	for (pWin = pParent->firstChild; pWin != pChild; pWin = pWin->nextSib)
 	{
-	    if (pWin->viewable && !TreatAsTransparent (pWin))
+	    if (pWin->viewable)
 		REGION_SUBTRACT (pScreen, &totalClip, &totalClip, &pWin->borderSize);
 	}
 	for (pWin = pChild; pWin; pWin = pWin->nextSib)
@@ -675,12 +634,7 @@ miValidateTree (pParent, pChild, kind)
 	    {
 		if (pWin->valdata)
 		{
-		    RegionPtr	pBorderClip = &pWin->borderClip;
-#ifdef COMPOSITE
-		    if (pWin->redirectDraw != RedirectDrawNone && miGetRedirectBorderClipProc)
-			pBorderClip = (*miGetRedirectBorderClipProc)(pWin);
-#endif
-		    REGION_APPEND( pScreen, &totalClip, pBorderClip );
+		    REGION_APPEND( pScreen, &totalClip, &pWin->borderClip);
 		    if (pWin->viewable)
 			viewvals++;
 		}
@@ -694,12 +648,7 @@ miValidateTree (pParent, pChild, kind)
 	    {
 		if (pWin->valdata)
 		{
-		    RegionPtr	pBorderClip = &pWin->borderClip;
-#ifdef COMPOSITE
-		    if (pWin->redirectDraw != RedirectDrawNone && miGetRedirectBorderClipProc)
-			pBorderClip = (*miGetRedirectBorderClipProc)(pWin);
-#endif
-		    REGION_APPEND( pScreen, &totalClip, pBorderClip );
+		    REGION_APPEND( pScreen, &totalClip, &pWin->borderClip);
 		    if (pWin->viewable)
 			viewvals++;
 		}
@@ -735,7 +684,7 @@ miValidateTree (pParent, pChild, kind)
 	    if (forward)
 	    {
 		for (pWin = pChild; pWin; pWin = pWin->nextSib)
-		    if (pWin->valdata && pWin->viewable && !TreatAsTransparent (pWin))
+		    if (pWin->valdata && pWin->viewable)
 			REGION_APPEND( pScreen, &childUnion,
 						   &pWin->borderSize);
 	    }
@@ -744,7 +693,7 @@ miValidateTree (pParent, pChild, kind)
 		pWin = pParent->lastChild;
 		while (1)
 		{
-		    if (pWin->valdata && pWin->viewable && !TreatAsTransparent (pWin))
+		    if (pWin->valdata && pWin->viewable)
 			REGION_APPEND( pScreen, &childUnion,
 						   &pWin->borderSize);
 		    if (pWin == pChild)
@@ -768,7 +717,7 @@ miValidateTree (pParent, pChild, kind)
 					&totalClip,
  					&pWin->borderSize);
 		miComputeClips (pWin, pScreen, &childClip, kind, &exposed);
-		if (overlap && !TreatAsTransparent (pWin))
+		if (overlap)
 		{
 		    REGION_SUBTRACT( pScreen, &totalClip,
 				       	   &totalClip,

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/common/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/common/Imakefile,v 1.4 2004/10/19 04:27:49 dawes Exp $
 
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
@@ -75,12 +75,11 @@ XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/common/Imakefile,v 1.5tsi Exp $
 #include "Imakefile.inc"
 
       DEFINES = $(ALLOC_DEFINES) $(COMMON_DRI_DEFINES) $(MESA_ASM_DEFINES)
-     INCLUDES = $(COMMON_MESA_INCLUDES) $(COMMON_DRI_INCLUDES) $(EXPATINCLUDES)
+     INCLUDES = $(COMMON_X_INCLUDES) $(COMMON_MESA_INCLUDES) \
+		$(COMMON_DRI_INCLUDES) $(EXPATINCLUDES)
 
          SRCS = $(COMMONSRCS)
          OBJS = $(COMMONOBJS)
-
-  DEPEND_DEFINES = DependDefines -DGET_PROGRAM_NAME
  
 #include <Library.tmpl>
 

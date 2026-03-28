@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - Dbe Acceleration.
  *
  * Copyright (C) 2000 David S. Miller (davem@redhat.com)
@@ -21,12 +28,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_dbe.c,v 1.3 2005/10/14 15:16:46 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_dbe.c,v 1.2 2003/02/11 03:19:02 dawes Exp $ */
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "windowstr.h"
@@ -887,7 +894,7 @@ FFBDbeInit(ScreenPtr pScreen, DbeScreenPrivPtr pDbeScreenPriv)
 	pDbeScreenPriv->WinPrivDelete         = FFBDbeWinPrivDelete;
 
 	/* The FFB implementation doesn't need buffer validation. */
-	pDbeScreenPriv->ValidateBuffer	  = (void (*)(WindowPtr, XID, Bool))NoopDDA;
+	pDbeScreenPriv->ValidateBuffer	  = (void (*)())NoopDDA;
 
 	return TRUE;
 }

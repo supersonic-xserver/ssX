@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vboard.c,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vboard.c,v 1.20 2004/04/03 22:26:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * includes
  */
@@ -157,7 +164,7 @@ verite_getmemorysize(ScrnInfoPtr pScreenInfo)
     verite_write_memory32(pRendition->board.vmem_base, 0, START);
     for (offset=ONEMEG; offset<16*ONEMEG; offset+=ONEMEG) {
 #ifdef DEBUG
-        ErrorF( "Testing %ld MB: ", (unsigned long)(offset/ONEMEG));
+        ErrorF( "Testing %d MB: ", offset/ONEMEG);
 #endif
         pattern=verite_read_memory32(pRendition->board.vmem_base, offset);
         if (START == pattern) {
@@ -215,8 +222,8 @@ verite_check_csucode(ScrnInfoPtr pScreenInfo)
   verite_out8(iob+MEMENDIAN, MEMENDIAN_NO);
 
 #ifdef DEBUG
-  ErrorF("Checking presence of csucode @ 0x%lx + 0x800\n",
-	 (unsigned long)pRendition->board.vmem_base);
+  ErrorF("Checking presence of csucode @ 0x%x + 0x800\n",
+	 pRendition->board.vmem_base);
 
   if (0x800 != pRendition->board.csucode_base)
     ErrorF("pRendition->board.csucode_base == 0x%x\n",
@@ -235,9 +242,9 @@ verite_check_csucode(ScrnInfoPtr pScreenInfo)
       mismatches++;
     }
 #ifdef DEBUG
-  ErrorF("Encountered %d out of %ld possible mismatches\n",
+  ErrorF("Encountered %d out of %d possible mismatches\n",
 	 mismatches,
-	 (unsigned long)(sizeof(csrisc)/sizeof(vu32)));
+	 sizeof(csrisc)/sizeof(vu32));
 #endif
 
   verite_out8(iob+MEMENDIAN, memend);

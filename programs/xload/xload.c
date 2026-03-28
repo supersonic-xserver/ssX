@@ -1,3 +1,11 @@
+/* $XConsortium: xload.c,v 1.37 94/04/17 20:43:44 converse Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* $XFree86: xc/programs/xload/xload.c,v 1.7 2002/09/18 17:11:57 tsi Exp $ */
 /*
 

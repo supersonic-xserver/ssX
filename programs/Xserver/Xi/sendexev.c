@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/Xserver/Xi/sendexev.c,v 3.4tsi Exp $ */
+/* $Xorg: sendexev.c,v 1.4 2001/02/09 02:04:34 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -44,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/sendexev.c,v 3.3 2001/12/14 19:58:58 dawes Exp $ */
 
 /***********************************************************************
  *
@@ -54,12 +70,12 @@ SOFTWARE.
 #define EXTENSION_EVENT_BASE  64
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
 #include "windowstr.h"			/* Window      	     */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "extnsionst.h"
 #include "extinit.h"			/* LookupDeviceIntRec */
 #include "exevents.h"
@@ -80,8 +96,9 @@ int
 SProcXSendExtensionEvent(client)
     register ClientPtr client;
     {
-    char n;
-    int i;
+    register char n;
+    register long *p;
+    register int i;
     xEvent eventT;
     xEvent *eventP;
     EventSwapPtr proc;
@@ -91,23 +108,22 @@ SProcXSendExtensionEvent(client)
     REQUEST_AT_LEAST_SIZE(xSendExtensionEventReq);
     swapl(&stuff->destination, n);
     swaps(&stuff->count, n);
-    if (stuff->length !=
-	((sizeof(xSendExtensionEventReq) >> 2) + stuff->count +
-	 (stuff->num_events * (sizeof(xEvent) >> 2))))
-	return BadLength;
-
     eventP = (xEvent *) &stuff[1];
     for (i=0; i<stuff->num_events; i++,eventP++)
         {
 	proc = EventSwapVector[eventP->u.u.type & 0177];
- 	if (proc == NotImplemented) /* no swapping proc; invalid event type? */
+ 	if (proc == NotImplemented)   /* no swapping proc; invalid event type? */
 	    return (BadValue);
 	(*proc)(eventP, &eventT);
 	*eventP = eventT;
 	}
 
-    SwapLongs((CARD32 *)((xEvent *)(&stuff[1]) + stuff->num_events),
-	      stuff->count);
+    p = (long *) (((xEvent *) &stuff[1]) + stuff->num_events);
+    for (i=0; i<stuff->count; i++)
+        {
+        swapl(p, n);
+	p++;
+        }
     return(ProcXSendExtensionEvent(client));
     }
 

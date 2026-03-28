@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  Copyright (c) 1994 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -45,7 +52,7 @@
 #include <xkbsrv.h>
 
 #include <X11/extensions/XKBgeom.h>
-#include <X11/extensions/XKBfile.h>
+#include "xkbfile_compat.h"
 
 #define	VMOD_HIDE_VALUE	0
 #define	VMOD_SHOW_VALUE	1

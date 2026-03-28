@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/usb-other.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/usb-other.c,v 1.1 2004/06/30 20:21:44 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002 Red Hat Inc., Durham, North Carolina.
  *
@@ -138,7 +145,7 @@ void othUSBGetInfo(DevicePtr pDev, DMXLocalInitInfoPtr info)
                 } else
                     info->numAbsAxes     = priv->numAbs;
                 for (j = 0; j < info->numAbsAxes; j++) {
-                    ioctl(priv->fd, EVIOCGABS(j), absolute);
+                    ioctl(priv->fd, EVIOCGABS(j), abs);
                     info->minval[1+j]    = absolute[1];
                     info->maxval[1+j]    = absolute[2];
                     info->res[1+j]       = absolute[3];

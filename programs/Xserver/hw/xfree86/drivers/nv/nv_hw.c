@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  /***************************************************************************\
 |*                                                                           *|
 |*       Copyright 1993-2003 NVIDIA, Corporation.  All rights reserved.      *|
@@ -36,7 +43,7 @@
 |*     those rights set forth herein.                                        *|
 |*                                                                           *|
  \***************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_hw.c,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_hw.c,v 1.18 2005/09/28 17:43:27 mvojkovi Exp $ */
 
 #include "nv_local.h"
 #include "compiler.h"
@@ -140,23 +147,16 @@ static void nvGetClocks(NVPtr pNv, unsigned int *MClk, unsigned int *NVClk)
 
     if(pNv->Architecture >= NV_ARCH_40) {
        pll = pNv->PMC[0x4020/4];
-       P = (pll >> 16) & 0x07;
+       P = (pll >> 16) & 0x03;
        pll = pNv->PMC[0x4024/4];
        M = pll & 0xFF;
        N = (pll >> 8) & 0xFF;
-       if(((pNv->Chipset & 0xfff0) == 0x0290) ||
-          ((pNv->Chipset & 0xfff0) == 0x0390))
-       {
-          MB = 1;
-          NB = 1;
-       } else {
-          MB = (pll >> 16) & 0xFF;
-          NB = (pll >> 24) & 0xFF;
-       }
+       MB = (pll >> 16) & 0xFF;
+       NB = (pll >> 24) & 0xFF;
        *MClk = ((N * NB * pNv->CrystalFreqKHz) / (M * MB)) >> P;
 
        pll = pNv->PMC[0x4000/4];
-       P = (pll >> 16) & 0x07;  
+       P = (pll >> 16) & 0x03;  
        pll = pNv->PMC[0x4004/4];
        M = pll & 0xFF;
        N = (pll >> 8) & 0xFF;
@@ -840,7 +840,7 @@ void NVCalcStateExt (
     int		   flags 
 )
 {
-    int pixelDepth, VClk = 0;
+    int pixelDepth, VClk;
     /*
      * Save mode parameters.
      */
@@ -878,12 +878,6 @@ void NVCalcStateExt (
         case NV_ARCH_20:
         case NV_ARCH_30:
         default:
-            if(((pNv->Chipset & 0xfff0) == 0x0240) ||
-               ((pNv->Chipset & 0xfff0) == 0x03D0))
-            {
-                state->arbitration0 = 128; 
-                state->arbitration1 = 0x0480; 
-            } else
             if(((pNv->Chipset & 0xffff) == 0x01A0) ||
                ((pNv->Chipset & 0xffff) == 0x01f0))
             {
@@ -955,9 +949,7 @@ void NVLoadStateExt (
 
         if(((pNv->Chipset & 0xfff0) == 0x0090) ||
            ((pNv->Chipset & 0xfff0) == 0x01D0) ||
-           ((pNv->Chipset & 0xfff0) == 0x0290) ||
-           ((pNv->Chipset & 0xfff0) == 0x0390) ||
-           ((pNv->Chipset & 0xfff0) == 0x03D0))
+           ((pNv->Chipset & 0xfff0) == 0x0290))
         {
            regions = 15;
         }
@@ -1210,8 +1202,6 @@ void NVLoadStateExt (
                  break;
               case 0x0160:
               case 0x01D0:
-              case 0x0240:
-              case 0x03D0:
                  pNv->PMC[0x1700/4] = pNv->PFB[0x020C/4];
                  pNv->PMC[0x1704/4] = 0;
                  pNv->PMC[0x1708/4] = 0;
@@ -1225,13 +1215,13 @@ void NVLoadStateExt (
                  pNv->PGRAPH[0x082C/4] = 0x00000108;
                  break;
               case 0x0220:
+              case 0x0230:
                  pNv->PGRAPH[0x0860/4] = 0;
                  pNv->PGRAPH[0x0864/4] = 0;
                  pNv->PRAMDAC[0x0608/4] |= 0x00100000;
                  break;
               case 0x0090:
               case 0x0290:
-              case 0x0390:
                  pNv->PRAMDAC[0x0608/4] |= 0x00100000;
                  pNv->PGRAPH[0x0828/4] = 0x07830610;
                  pNv->PGRAPH[0x082C/4] = 0x0000016A;
@@ -1289,9 +1279,7 @@ void NVLoadStateExt (
            } else {
               if(((pNv->Chipset & 0xfff0) == 0x0090) ||
                  ((pNv->Chipset & 0xfff0) == 0x01D0) ||
-                 ((pNv->Chipset & 0xfff0) == 0x0290) ||
-                 ((pNv->Chipset & 0xfff0) == 0x0390) ||
-                 ((pNv->Chipset & 0xfff0) == 0x03D0))
+                 ((pNv->Chipset & 0xfff0) == 0x0290))
               {
                  for(i = 0; i < 60; i++) {
                    pNv->PGRAPH[(0x0D00/4) + i] = pNv->PFB[(0x0600/4) + i];
@@ -1301,8 +1289,7 @@ void NVLoadStateExt (
                  for(i = 0; i < 48; i++) {
                    pNv->PGRAPH[(0x0900/4) + i] = pNv->PFB[(0x0600/4) + i];
                    if(((pNv->Chipset & 0xfff0) != 0x0160) &&
-                      ((pNv->Chipset & 0xfff0) != 0x0220) &&
-                      ((pNv->Chipset & 0xfff0) != 0x0240))
+                      ((pNv->Chipset & 0xfff0) != 0x0220))
                    {
                       pNv->PGRAPH[(0x6900/4) + i] = pNv->PFB[(0x0600/4) + i];
                    }
@@ -1324,8 +1311,7 @@ void NVLoadStateExt (
               } else {
                  if(((pNv->Chipset & 0xfff0) == 0x0090) ||
                     ((pNv->Chipset & 0xfff0) == 0x01D0) ||
-                    ((pNv->Chipset & 0xfff0) == 0x0290) ||
-                    ((pNv->Chipset & 0xfff0) == 0x0390)) 
+                    ((pNv->Chipset & 0xfff0) == 0x0290)) 
                  {
                     pNv->PGRAPH[0x0DF0/4] = pNv->PFB[0x0200/4];
                     pNv->PGRAPH[0x0DF4/4] = pNv->PFB[0x0204/4];

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  tttags.h                                                               */
 /*                                                                         */
 /*    Tags for TrueType tables (specification only).                       */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -19,14 +26,19 @@
 #ifndef __TTAGS_H__
 #define __TTAGS_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
-#endif
 
-#include FT_BUILD_H
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
+#endif
+
+
 FT_BEGIN_HEADER
+
 
 #define TTAG_cmap  FT_MAKE_TAG( 'c', 'm', 'a', 'p' )
 #define TTAG_cvt   FT_MAKE_TAG( 'c', 'v', 't', ' ' )
@@ -65,6 +77,7 @@ FT_BEGIN_HEADER
 #define TTAG_VDMX  FT_MAKE_TAG( 'V', 'D', 'M', 'X' )
 #define TTAG_vhea  FT_MAKE_TAG( 'v', 'h', 'e', 'a' )
 #define TTAG_vmtx  FT_MAKE_TAG( 'v', 'm', 't', 'x' )
+
 
 FT_END_HEADER
 

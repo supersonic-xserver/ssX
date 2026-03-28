@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * This code is largely copied from fbglyph.c.
  *
  * Copyright © 1998 Keith Packard
@@ -22,10 +29,10 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/accel/rlGlyph.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/accel/rlGlyph.c,v 1.1 2003/10/24 00:33:15 torrey Exp $ */
 
 #include "fb.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "rlAccel.h"
 

@@ -1,19 +1,24 @@
 #!/bin/sh
 #
-# $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/build-bindist,v 1.7tsi Exp $
+# $XFree86: xc/programs/Xserver/hw/xfree86/etc/bindist/build-bindist,v 1.7 2003/12/05 15:04:07 dawes Exp $
 #
 
 Usage()
 {
-  echo "`basename $0` [-t type] [prefix] from-dir to-dir"
+  echo "`basename $0` [-l] [-t type] [prefix] from-dir to-dir"
   exit 1
 }
 
 args=
+createlist=NO
 type=list
 
 while [ $# != 0 ]; do
   case $1 in
+  -l)
+    createlist=YES
+    shift
+    ;;
   -t)
     shift
     type=$1
@@ -46,16 +51,6 @@ esac
 FROMDIR=$1
 TODIR=$2
 
-if [ "$(echo $FROMDIR | cut -b 1)" != "/" ]; then
-  echo $FROMDIR is not an absolute path
-  exit 2
-fi
-
-if [ "$(echo $TODIR | cut -b 1)" != "/" ]; then
-  echo $TODIR is not an absolute path
-  exit 2
-fi
-
 if [ ! -d $FROMDIR ]; then
   echo No such dir $FROMDIR
   exit 2
@@ -74,9 +69,38 @@ BINDIR=bindist
 EXTRASFILE=extras
 TAR="gnu-tar"
 TAROPTS="-c -v -z"
+TARLOPTS="-t -v -z -i"
+CKSUM=md5
+SUMFILE=SUMS.md5
+LISTFILE=FILES
+
+GenList()
+{
+  (cd $TODIR/$BINDIR
+    rm -f $SUMFILE $LISTFILE
+    for i in *.tgz; do
+      echo $i
+      $CKSUM $i >> $SUMFILE
+      echo $i >> $LISTFILE
+      echo "------------" >> $LISTFILE
+      $TAR $TARLOPTS -f $i >> $LISTFILE
+      echo "" >> $LISTFILE
+    done
+    if [ -f $TODIR/$EXTRASFILE ]; then
+      for i in `cat $TODIR/$EXTRASFILE`; do
+	$CKSUM `basename $i` >> $SUMFILE
+      done
+    fi
+  )
+}
 
 if [ ! -d $TODIR/$BINDIR ]; then
   mkdir $TODIR/$BINDIR
+fi
+
+if [ $createlist = YES ]; then
+  GenList
+  exit 0;
 fi
 
 # Make sure all directories in $FROMDIR have permissions 755
@@ -121,5 +145,7 @@ for d in $SUBDIRS; do
     fi
   )
 done
+
+# GenList
 
 exit 0

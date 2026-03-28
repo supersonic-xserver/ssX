@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimodule.c,v 1.25tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimodule.c,v 1.18 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1997 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1997 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -53,7 +60,6 @@ const char *R128Symbols[] =
     "R128FreeScreen",
     "R128ValidMode",
     "R128Options",
-    "R128Module",
     NULL
 };
 
@@ -69,7 +75,6 @@ const char *RADEONSymbols[] =
     "RADEONValidMode",
     "RADEONOptions",
     "RADEONHandleMessage",
-    "RADEONModule",
     NULL
 };
 
@@ -95,10 +100,10 @@ static XF86ModuleVersionInfo ATIVersionRec =
 static pointer
 ATISetup
 (
-    ModuleDescPtr Module,
-    pointer       Options,
-    int           *ErrorMajor,
-    int           *ErrorMinor
+    pointer Module,
+    pointer Options,
+    int     *ErrorMajor,
+    int     *ErrorMinor
 )
 {
     static Bool Inited = FALSE;
@@ -108,7 +113,7 @@ ATISetup
         Inited = TRUE;
         xf86AddDriver(&ATI, Module, 0);
 
-        xf86LoaderModRefSymLists(Module,
+        xf86LoaderRefSymLists(
             ATISymbols,
             R128Symbols,
             RADEONSymbols,
@@ -123,34 +128,6 @@ XF86ModuleData atiModuleData =
 {
     &ATIVersionRec,
     ATISetup,
-    NULL
-};
-
-const char *atiExportedSymbols[] = {
-    "ATI",
-    "ATIAdapterNames",
-    "ATIBusNames",
-    "ATIChipID",
-    "ATIChipNames",
-    "ATIChipsetNames",
-    "ATIEndian",
-    "ATIEndianCopy",
-    "ATIEndianSwap24",
-    "ATIEndianSwap32",
-    "ATIFoundryNames",
-    "ATIMapApertures",
-    "ATIMemoryTypeNames_264xT",
-    "ATIMemoryTypeNames_88800CX",
-    "ATIMemoryTypeNames_Mach",
-    "ATIPublicOptionSize",
-    "ATIPublicOptions",
-    "ATISetVGAIOBase",
-    "ATIUnmapApertures",
-    "R128Chipsets",
-    "RADEONChipsets",
-    "atiModuleData",
-    "gR128EntityIndex",
-    "gRADEONEntityIndex",
     NULL
 };
 

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/di/options.c,v 1.11tsi Exp $ */
+/* $Xorg: options.c,v 1.4 2001/02/09 02:05:31 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1998  The Open Group
@@ -46,18 +53,19 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/lbxproxy/di/options.c,v 1.11 2004/04/26 00:23:37 tsi Exp $ */
 
 #include <stdio.h>
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
-#include <X11/extensions/XLbx.h>
-#include <X11/extensions/lbxopts.h>
+#include "XLbx.h"
+#include "lbxopts.h"
 #include "proxyopts.h"
-#include <X11/extensions/lbximage.h>
+#include "lbximage.h"
 #include "util.h"
 #include "colormap.h"
 #ifndef NO_ZLIB
-#include <X11/extensions/lbxzlib.h>
+#include "lbxzlib.h"
 #endif /* NO_ZLIB */
 #include "wire.h"
 #include "utils.h"

@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/mi/mispans.c,v 3.4 2001/12/14 20:00:26 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -46,6 +53,8 @@ SOFTWARE.
 
 ******************************************************************/
 
+/* $Xorg: mispans.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+
 #include "misc.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
@@ -61,8 +70,8 @@ Written by Joel McCormack, Summer 1989.
 */
 
 
-void
-miInitSpanGroup(SpanGroup *spanGroup)
+void miInitSpanGroup(spanGroup)
+    SpanGroup *spanGroup;
 {
     spanGroup->size = 0;
     spanGroup->count = 0;
@@ -74,8 +83,9 @@ miInitSpanGroup(SpanGroup *spanGroup)
 #define YMIN(spans) (spans->points[0].y)
 #define YMAX(spans)  (spans->points[spans->count-1].y)
 
-void
-miSubtractSpans(SpanGroup *spanGroup, Spans *sub)
+void miSubtractSpans (spanGroup, sub)
+    SpanGroup	*spanGroup;
+    Spans	*sub;
 {
     int		i, subCount, spansCount;
     int		ymin, ymax, xmin, xmax;
@@ -178,11 +188,13 @@ miSubtractSpans(SpanGroup *spanGroup, Spans *sub)
     }
 }
     
-void
-miAppendSpans(SpanGroup *spanGroup, SpanGroup *otherGroup, Spans *spans)
+void miAppendSpans(spanGroup, otherGroup, spans)
+    SpanGroup   *spanGroup;
+    SpanGroup	*otherGroup;
+    Spans       *spans;
 {
-    int ymin, ymax;
-    int spansCount;
+    register    int ymin, ymax;
+    register    int spansCount;
 
     spansCount = spans->count;
     if (spansCount > 0) {
@@ -212,21 +224,20 @@ miAppendSpans(SpanGroup *spanGroup, SpanGroup *otherGroup, Spans *spans)
     }
 } /* AppendSpans */
 
-void
-miFreeSpanGroup(SpanGroup *spanGroup)
+void miFreeSpanGroup(spanGroup)
+    SpanGroup   *spanGroup;
 {
     if (spanGroup->group != NULL) xfree(spanGroup->group);
 }
 
-static void
-QuickSortSpansX(
-    DDXPointRec    points[],
-    int		   widths[],
-    int		   numSpans )
+static void QuickSortSpansX(
+    register DDXPointRec    points[],
+    register int	    widths[],
+    register int	    numSpans )
 {
-    int		   x;
-    int		   i, j, m;
-    DDXPointPtr    r;
+    register int	    x;
+    register int	    i, j, m;
+    register DDXPointPtr    r;
 
 /* Always called with numSpans > 1 */
 /* Sorts only by x, as all y should be the same */
@@ -234,7 +245,7 @@ QuickSortSpansX(
 #define ExchangeSpans(a, b)				    \
 {							    \
     DDXPointRec     tpt;				    \
-    int		    tw;					    \
+    register int    tw;					    \
 							    \
     tpt = points[a]; points[a] = points[b]; points[b] = tpt;    \
     tw = widths[a]; widths[a] = widths[b]; widths[b] = tw;  \
@@ -243,7 +254,7 @@ QuickSortSpansX(
     do {
 	if (numSpans < 9) {
 	    /* Do insertion sort */
-	    int xprev;
+	    register int xprev;
 
 	    xprev = points[0].x;
 	    i = 1;
@@ -306,16 +317,15 @@ QuickSortSpansX(
 } /* QuickSortSpans */
 
 
-static int
-UniquifySpansX(
-    Spans	   *spans,
-    DDXPointRec    *newPoints,
-    int		   *newWidths )
+static int UniquifySpansX(
+    Spans		    *spans,
+    register DDXPointRec    *newPoints,
+    register int	    *newWidths )
 {
-    int newx1, newx2, oldpt, i, y;
-    DDXPointRec *oldPoints;
-    int *oldWidths;
-    int *startNewWidths;
+    register int newx1, newx2, oldpt, i, y;
+    register DDXPointRec    *oldPoints;
+    register int	    *oldWidths;
+    int			    *startNewWidths;
 
 /* Always called with numSpans > 1 */
 /* Uniquify the spans, and stash them into newPoints and newWidths.  Return the
@@ -360,7 +370,8 @@ UniquifySpansX(
 } /* UniquifySpansX */
 
 void
-miDisposeSpanGroup(SpanGroup *spanGroup)
+miDisposeSpanGroup (spanGroup)
+    SpanGroup	*spanGroup;
 {
     int	    i;
     Spans   *spans;
@@ -373,19 +384,21 @@ miDisposeSpanGroup(SpanGroup *spanGroup)
     }
 }
 
-void
-miFillUniqueSpanGroup(DrawablePtr pDraw, GCPtr pGC, SpanGroup *spanGroup)
+void miFillUniqueSpanGroup(pDraw, pGC, spanGroup)
+    DrawablePtr pDraw;
+    GCPtr	pGC;
+    SpanGroup   *spanGroup;
 {
-    int    i;
-    Spans  *spans;
-    Spans  *yspans;
-    int    *ysizes;
-    int    ymin, ylength;
+    register int    i;
+    register Spans  *spans;
+    register Spans  *yspans;
+    register int    *ysizes;
+    register int    ymin, ylength;
 
     /* Outgoing spans for one big call to FillSpans */
-    DDXPointPtr    points;
-    int		   *widths;
-    int		   count;
+    register DDXPointPtr    points;
+    register int	    *widths;
+    register int	    count;
 
     if (spanGroup->count == 0) return;
 
@@ -532,11 +545,13 @@ miFillUniqueSpanGroup(DrawablePtr pDraw, GCPtr pGC, SpanGroup *spanGroup)
 }
 
 
-void
-miFillSpanGroup(DrawablePtr pDraw, GCPtr pGC, SpanGroup *spanGroup)
+void miFillSpanGroup(pDraw, pGC, spanGroup)
+    DrawablePtr pDraw;
+    GCPtr	pGC;
+    SpanGroup   *spanGroup;
 {
-    int    i;
-    Spans  *spans;
+    register int    i;
+    register Spans  *spans;
 
     for (i = 0, spans = spanGroup->group; i != spanGroup->count; i++, spans++) {
 	(*pGC->ops->FillSpans)

@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/input/palmax/xf86Palmax.c,v 1.3 2004/04/26 22:26:11 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "misc.h"
 #include "xf86.h"
@@ -788,16 +802,13 @@ InputDriverRec PALMAX = {
 };
 
 #ifdef XFree86LOADER
-static MODULESETUPPROTO(Plug);
-
-static pointer Plug(ModuleDescPtr module, pointer options, int *errmaj,int *errmin)
+static pointer Plug(pointer module, pointer options, int *errmaj,int *errmin)
 {
 	xf86LoaderReqSymLists(reqSymbols, NULL);
 	xf86AddInputDriver(&PALMAX, module, 0);
 	return module;
 }
 
-static MODULETEARDOWNPROTO(Unplug);
 static void Unplug(pointer p)
 {
 }

@@ -1,0 +1,55 @@
+/Imakefile/1.1.1.3/Fri Mar  5 14:27:10 2004//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.2/Fri Feb 28 13:19:29 2003//Tnetbsd-5-2-3-RELEASE
+/TODO/1.1.1.1/Fri Feb 28 13:19:29 2003//Tnetbsd-5-2-3-RELEASE
+/bytecode.c/1.1.1.3/Fri Mar 18 13:09:20 2005//Tnetbsd-5-2-3-RELEASE
+/bytecode.h/1.1.1.2/Fri Mar  5 14:27:10 2004//Tnetbsd-5-2-3-RELEASE
+/compile.c/1.1.1.2/Fri Mar  5 14:27:10 2004//Tnetbsd-5-2-3-RELEASE
+/core.c/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/core.h/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/debugger.c/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/debugger.h/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/env.c/1.1.1.1/Fri Feb 28 13:19:29 2003//Tnetbsd-5-2-3-RELEASE
+/format.c/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/format.h/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/hash.c/1.1.1.2/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/hash.h/1.1.1.2/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/helper.c/1.1.1.4/Fri Mar 18 13:09:21 2005//Tnetbsd-5-2-3-RELEASE
+/helper.h/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/internal.h/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/io.c/1.1.1.2/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/io.h/1.1.1.2/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/lisp.c/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/lisp.cf/1.1.1.2/Fri Feb 28 13:19:29 2003//Tnetbsd-5-2-3-RELEASE
+/lisp.h/1.1.1.2/Fri Feb 28 13:19:29 2003//Tnetbsd-5-2-3-RELEASE
+/lisp.rules/1.1.1.2/Fri Feb 28 13:19:29 2003//Tnetbsd-5-2-3-RELEASE
+/lsp.c/1.1.1.3/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/math.c/1.1.1.2/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/math.h/1.1.1.2/Fri Mar  5 14:27:11 2004//Tnetbsd-5-2-3-RELEASE
+/mathimp.c/1.1.1.3/Fri Mar 18 13:09:22 2005//Tnetbsd-5-2-3-RELEASE
+/package.c/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/package.h/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/pathname.c/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/pathname.h/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/private.h/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/read.c/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/read.h/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/regex.c/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/regex.h/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/require.c/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/require.h/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/stream.c/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/stream.h/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/string.c/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/string.h/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/struct.c/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/struct.h/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/time.c/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/time.h/1.1.1.3/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/write.c/1.1.1.3/Fri Mar 18 13:09:23 2005//Tnetbsd-5-2-3-RELEASE
+/write.h/1.1.1.2/Fri Mar  5 14:27:12 2004//Tnetbsd-5-2-3-RELEASE
+/xedit.c/1.1.1.2/Fri Mar  5 14:27:13 2004//Tnetbsd-5-2-3-RELEASE
+/xedit.h/1.1.1.2/Fri Mar  5 14:27:13 2004//Tnetbsd-5-2-3-RELEASE
+D/modules////
+D/mp////
+D/re////
+D/test////

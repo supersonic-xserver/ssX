@@ -1,4 +1,11 @@
-/* $XFree86: xc/include/extensions/XShm.h,v 1.13tsi Exp $ */
+/* $XFree86: xc/include/extensions/XShm.h,v 1.12 2003/11/17 22:20:03 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -26,6 +33,8 @@ in this Software without prior written authorization from The Open Group.
 ********************************************************/
 
 /* THIS IS NOT AN X CONSORTIUM STANDARD OR AN X PROJECT TEAM SPECIFICATION */
+
+/* $Xorg: XShm.h,v 1.4 2001/02/09 02:03:24 xorgcvs Exp $ */
 
 #ifndef _XSHM_H_
 #define _XSHM_H_
@@ -151,9 +160,6 @@ _XFUNCPROTOEND
 #include "gc.h"
 
 extern void ShmRegisterFbFuncs(
-    ScreenPtr /* pScreen */
-);
-extern void ShmRegisterMiFuncs(
     ScreenPtr /* pScreen */
 );
 

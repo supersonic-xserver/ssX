@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /**************************************************************************
 
@@ -72,7 +79,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_driver.c,v 1.126tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_driver.c,v 1.113 2005/02/18 02:55:08 dawes Exp $ */
 
 /*
  * Reformatted with GNU indent (2.2.8), using the following options:
@@ -121,7 +128,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "fb.h"
 #include "regionstr.h"
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "vbe.h"
 
 #include "i810.h"
@@ -137,8 +144,8 @@ static void I810Identify(int flags);
 static Bool I810Probe(DriverPtr drv, int flags);
 #ifndef I830_ONLY
 static Bool I810PreInit(ScrnInfoPtr pScrn, int flags);
-static Bool I810ScreenInit(int Index, ScreenPtr pScreen,
-			   const int argc, const char **argv);
+static Bool I810ScreenInit(int Index, ScreenPtr pScreen, int argc,
+			   char **argv);
 static Bool I810EnterVT(int scrnIndex, int flags);
 static void I810LeaveVT(int scrnIndex, int flags);
 static Bool I810CloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -176,10 +183,7 @@ static SymTabRec I810Chipsets[] = {
    {PCI_CHIP_I855_GM,		"852GM/855GM"},
    {PCI_CHIP_I865_G,		"865G"},
    {PCI_CHIP_I915_G,		"915G"},
-   {PCI_CHIP_E7221_G,		"E7221 (i915)"},
    {PCI_CHIP_I915_GM,		"915GM"},
-   {PCI_CHIP_I945_G,		"945G"},
-   {PCI_CHIP_I945_GM,		"945GM"},
    {-1,				NULL}
 };
 
@@ -195,10 +199,7 @@ static PciChipsets I810PciChipsets[] = {
    {PCI_CHIP_I855_GM,		PCI_CHIP_I855_GM,	RES_SHARED_VGA},
    {PCI_CHIP_I865_G,		PCI_CHIP_I865_G,	RES_SHARED_VGA},
    {PCI_CHIP_I915_G,		PCI_CHIP_I915_G,	RES_SHARED_VGA},
-   {PCI_CHIP_E7221_G,		PCI_CHIP_E7221_G,	RES_SHARED_VGA},
    {PCI_CHIP_I915_GM,		PCI_CHIP_I915_GM,	RES_SHARED_VGA},
-   {PCI_CHIP_I945_G,		PCI_CHIP_I945_G,	RES_SHARED_VGA},
-   {PCI_CHIP_I945_GM,		PCI_CHIP_I945_GM,	RES_SHARED_VGA},
    {-1,				-1, RES_UNDEFINED }
 };
 
@@ -259,17 +260,19 @@ const char *I810fbSymbols[] = {
 const char *I810vbeSymbols[] = {
    "VBEFreeModeInfo",
    "VBEFreeVBEInfo",
-   "VBEGetDisplayStart",
    "VBEGetModeInfo",
+   "VBEGetModePool",
    "VBEGetVBEInfo",
    "VBEGetVBEMode",
    "VBEInit",
+   "VBEPrintModes",
    "VBESaveRestore",
    "VBESetDisplayStart",
    "VBESetGetDACPaletteFormat",
    "VBESetGetLogicalScanlineLength",
    "VBESetGetPaletteData",
    "VBESetModeNames",
+   "VBESetModeParameters",
    "VBESetVBEMode",
    "VBEValidateModes",
    "vbeDoEDID",
@@ -293,7 +296,6 @@ const char *I810ddcSymbols[] = {
 
 const char *I810int10Symbols[] = {
    "xf86ExecX86int10",
-   "xf86FreeInt10",
    "xf86InitInt10",
    "xf86Int10AllocPages",
    "xf86int10Addr",
@@ -356,21 +358,24 @@ const char *I810driSymbols[] = {
    "DRICreatePCIBusID",
    NULL
 };
-#endif
 
-const char *I810shadowFBSymbols[] = {
+#ifdef XF86DRI
+
+static const char *driShadowFBSymbols[] = {
     "ShadowFBInit",
     NULL
 };
 
-#ifdef XF86DRI
 const char *I810shadowSymbols[] = {
     "shadowInit",
     "shadowSetup",
     "shadowAdd",
     NULL
 };
+
 #endif
+
+#endif /* I830_ONLY */
 
 #ifndef I810_DEBUG
 int I810_DEBUG = (0
@@ -417,7 +422,7 @@ static XF86ModuleVersionInfo i810VersRec = {
 XF86ModuleData i810ModuleData = { &i810VersRec, i810Setup, 0 };
 
 static pointer
-i810Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+i810Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
    static Bool setupDone = 0;
 
@@ -431,16 +436,16 @@ i810Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
        * Tell the loader about symbols from other modules that this module
        * might refer to.
        */
-      LoaderModRefSymLists(module, I810vgahwSymbols,
-			   I810fbSymbols, I810xaaSymbols, I810ramdacSymbols,
+      LoaderRefSymLists(I810vgahwSymbols,
+			I810fbSymbols, I810xaaSymbols, I810ramdacSymbols,
 #ifdef XF86DRI
-			   I810drmSymbols,
-			   I810driSymbols,
-			   I810shadowSymbols,
+			I810drmSymbols,
+			I810driSymbols,
+			I810shadowSymbols,
+			driShadowFBSymbols,
 #endif
-			   I810shadowFBSymbols,
-			   I810vbeSymbols, vbeOptionalSymbols,
-			   I810ddcSymbols, I810int10Symbols, NULL);
+			I810vbeSymbols, vbeOptionalSymbols,
+			I810ddcSymbols, I810int10Symbols, NULL);
 
       /*
        * The return value must be non-NULL on success even though there
@@ -611,10 +616,7 @@ I810Probe(DriverPtr drv, int flags)
 	    case PCI_CHIP_I830_M:
 	    case PCI_CHIP_I855_GM:
 	    case PCI_CHIP_I915_G:
-	    case PCI_CHIP_E7221_G:
 	    case PCI_CHIP_I915_GM:
-	    case PCI_CHIP_I945_G:
-	    case PCI_CHIP_I945_GM:
     	       xf86SetEntitySharable(usedChips[i]);
 
     	       /* Allocate an entity private if necessary */		
@@ -670,14 +672,11 @@ static void
 I810ProbeDDC(ScrnInfoPtr pScrn, int index)
 {
    vbeInfoPtr pVbe;
-   ModuleDescPtr pMod;
 
-   if ((pMod = xf86LoadVBEModule(pScrn))) {
-      xf86LoaderModReqSymLists(pMod, I810vbeSymbols, NULL);
+   if (xf86LoadSubModule(pScrn, "vbe")) {
       pVbe = VBEInit(NULL, index);
       ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
       vbeFree(pVbe);
-      xf86UnloadSubModule(pMod);
    }
 }
 
@@ -687,26 +686,18 @@ I810DoDDC(ScrnInfoPtr pScrn, int index)
    vbeInfoPtr pVbe;
    xf86MonPtr MonInfo = NULL;
    I810Ptr pI810 = I810PTR(pScrn);
-   ModuleDescPtr pMod, pDDCMod;
 
    /* Honour Option "noDDC" */
    if (xf86ReturnOptValBool(pI810->Options, OPTION_NO_DDC, FALSE)) {
       return MonInfo;
    }
 
-   if ((pMod = xf86LoadVBEModule(pScrn))) {
-      xf86LoaderModReqSymLists(pMod, I810vbeSymbols, NULL);
-      if ((pVbe = VBEInit(NULL, index))) {
-	 if ((pDDCMod = xf86LoadSubModule(pScrn, "ddc"))) {
-	    xf86LoaderModReqSymLists(pDDCMod, I810ddcSymbols, NULL);
-	    MonInfo = vbeDoEDID(pVbe, pDDCMod);
-	    xf86PrintEDID(MonInfo);
-	    xf86SetDDCproperties(pScrn, MonInfo);
-	    xf86UnloadSubModule(pDDCMod);
-	 }
-	 vbeFree(pVbe);
-      }
-      xf86UnloadSubModule(pMod);
+   if (xf86LoadSubModule(pScrn, "vbe") && (pVbe = VBEInit(NULL, index))) {
+      xf86LoaderReqSymLists(I810vbeSymbols, NULL);
+      MonInfo = vbeDoEDID(pVbe, NULL);
+      xf86PrintEDID(MonInfo);
+      xf86SetDDCproperties(pScrn, MonInfo);
+      vbeFree(pVbe);
    } else {
       xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		 "this driver cannot do DDC without VBE\n");
@@ -734,7 +725,6 @@ I810PreInit(ScrnInfoPtr pScrn, int flags)
    rgb defaultWeight = { 0, 0, 0 };
    int mem;
    Bool enable;
-   ModuleDescPtr pMod;
 
    if (pScrn->numEntities != 1)
       return FALSE;
@@ -759,10 +749,10 @@ I810PreInit(ScrnInfoPtr pScrn, int flags)
    }
 
    /* The vgahw module should be loaded here when needed */
-   if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+   if (!xf86LoadSubModule(pScrn, "vgahw"))
       return FALSE;
 
-   xf86LoaderModReqSymLists(pMod, I810vgahwSymbols, NULL);
+   xf86LoaderReqSymLists(I810vgahwSymbols, NULL);
 
    /* Allocate a vgaHWRec */
    if (!vgaHWGetHWRec(pScrn))
@@ -1087,29 +1077,29 @@ I810PreInit(ScrnInfoPtr pScrn, int flags)
 
    xf86SetDpi(pScrn, 0, 0);
 
-   if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+   if (!xf86LoadSubModule(pScrn, "fb")) {
       I810FreeRec(pScrn);
       return FALSE;
    }
-   xf86LoaderModReqSymLists(pMod, I810fbSymbols, NULL);
+   xf86LoaderReqSymLists(I810fbSymbols, NULL);
 
    if (xf86ReturnOptValBool(pI810->Options, OPTION_NOACCEL, FALSE))
       pI810->noAccel = TRUE;
 
    if (!pI810->noAccel) {
-      if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+      if (!xf86LoadSubModule(pScrn, "xaa")) {
 	 I810FreeRec(pScrn);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, I810xaaSymbols, NULL);
+      xf86LoaderReqSymLists(I810xaaSymbols, NULL);
    }
 
    if (!xf86ReturnOptValBool(pI810->Options, OPTION_SW_CURSOR, FALSE)) {
-      if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+      if (!xf86LoadSubModule(pScrn, "ramdac")) {
 	 I810FreeRec(pScrn);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, I810ramdacSymbols, NULL);
+      xf86LoaderReqSymLists(I810ramdacSymbols, NULL);
    }
 
    if (xf86GetOptValInteger
@@ -1145,13 +1135,13 @@ I810PreInit(ScrnInfoPtr pScrn, int flags)
      pI810->allowPageFlip = enable;
      if (pI810->allowPageFlip == enable)
      {
-       if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+       if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 	 pI810->allowPageFlip = 0;
 	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
 		    "Couldn't load shadowfb module:\n");
        }
        else {
-	 xf86LoaderModReqSymLists(pMod, I810shadowFBSymbols, NULL);
+	 xf86LoaderReqSymLists(driShadowFBSymbols, NULL);
        }
      }
      
@@ -1184,8 +1174,8 @@ I810PreInit(ScrnInfoPtr pScrn, int flags)
 #ifdef XF86DRI
    /* Load the dri module if requested. */
    if (xf86ReturnOptValBool(pI810->Options, OPTION_DRI, FALSE)) {
-      if ((pMod = xf86LoadSubModule(pScrn, "dri"))) {
-	 xf86LoaderModReqSymLists(pMod, I810driSymbols, I810drmSymbols, NULL);
+      if (xf86LoadSubModule(pScrn, "dri")) {
+	 xf86LoaderReqSymLists(I810driSymbols, I810drmSymbols, NULL);
       }
    }
 #endif
@@ -2129,8 +2119,7 @@ I810AllocateFront(ScrnInfoPtr pScrn)
 }
 
 static Bool
-I810ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	       const int argc, const char **argv)
+I810ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
    ScrnInfoPtr pScrn;
    vgaHWPtr hwp;
@@ -2166,8 +2155,8 @@ I810ScreenInit(int scrnIndex, ScreenPtr pScreen,
 
 #ifdef XF86DRI
    /*
-    * Setup DRI after visuals have been established, but before fbScreenInit
-    * is called.   fbScreenInit will eventually call into the drivers
+    * Setup DRI after visuals have been established, but before cfbScreenInit
+    * is called.   cfbScreenInit will eventually call into the drivers
     * InitGLXVisuals call back.
     */
    /*
@@ -2309,15 +2298,17 @@ I810ScreenInit(int scrnIndex, ScreenPtr pScreen,
 
 #ifdef XF86DRI
    if (pI810->directRenderingEnabled) {
-      /* Now that mi, fb, drm and others have done their thing,
+      /* Now that mi, cfb, drm and others have done their thing,
        * complete the DRI setup.
        */
       pI810->directRenderingEnabled = I810DRIFinishScreenInit(pScreen);
    }
+#ifdef XvMCExtension
    if ((pI810->directRenderingEnabled) && (pI810->numSurfaces)) {
       /* Initialize the hardware motion compensation code */
       I810InitMC(pScreen);
    }
+#endif
 #endif
 
    if (pI810->directRenderingEnabled) {

@@ -1,5 +1,12 @@
-/* $XFree86$ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XConsortium: saver.h,v 1.5 94/04/17 20:59:33 rws Exp $
  *
 Copyright (c) 1992  X Consortium
 

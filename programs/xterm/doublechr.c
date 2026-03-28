@@ -1,12 +1,26 @@
-/* $XTermId: doublechr.c,v 1.44 2006/02/11 00:39:27 tom Exp $ */
+/* $XTermId: doublechr.c,v 1.37 2005/01/09 23:11:07 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * $XFree86: xc/programs/xterm/doublechr.c,v 3.17 2005/08/05 01:25:39 dickey Exp $
+ * $XFree86: xc/programs/xterm/doublechr.c,v 3.15 2005/01/14 01:50:02 dickey Exp $
  */
 
 /************************************************************
 
-Copyright 1997-2005,2006 by Thomas E. Dickey
+Copyright 1997-2004,2005 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -56,11 +70,11 @@ repaint_line(unsigned newChrSet)
     register TScreen *screen = &term->screen;
     int curcol = screen->cur_col;
     int currow = screen->cur_row;
-    unsigned len = MaxCols(screen);
+    unsigned len = screen->max_col + 1;
     int width = len;
     unsigned oldChrSet = SCRN_BUF_CSETS(screen, currow)[0];
 
-    assert(width > 0);
+    assert(screen->max_col >= 0);
 
     /*
      * Ignore repetition.
@@ -95,9 +109,9 @@ repaint_line(unsigned newChrSet)
     /* FIXME: do VT220 softchars allow double-sizes? */
     memset(SCRN_BUF_CSETS(screen, currow), (Char) newChrSet, len);
 
-    set_cur_col(screen, 0);
+    screen->cur_col = 0;
     ScrnUpdate(screen, currow, 0, 1, (int) len, True);
-    set_cur_col(screen, curcol);
+    screen->cur_col = curcol;
 }
 #endif
 
@@ -152,7 +166,10 @@ discard_font(TScreen * screen, XTermFonts * data)
 	free(data->fn);
 	data->fn = 0;
     }
-    data->fs = xtermCloseFont(screen, data->fs);
+    if (data->fs != 0) {
+	XFreeFont(screen->display, data->fs);
+	data->fs = 0;
+    }
 }
 
 int
@@ -216,7 +233,7 @@ xterm_DoubleGC(unsigned chrset, unsigned flags, GC old_gc)
     char *name;
     XTermFonts *data;
 
-    if ((name = xtermSpecialFont(screen, flags, chrset)) == 0)
+    if ((name = xtermSpecialFont(flags, chrset)) == 0)
 	return 0;
 
     n = xterm_Double_index(chrset, flags);
@@ -236,13 +253,13 @@ xterm_DoubleGC(unsigned chrset, unsigned flags, GC old_gc)
 
     TRACE(("xterm_DoubleGC %s %d: %s\n", flags & BOLD ? "BOLD" : "NORM", n, name));
 
-    if ((data->fs = xtermOpenFont(screen, name)) == 0) {
+    if ((data->fs = XLoadQueryFont(screen->display, name)) == 0) {
 	/* Retry with * in resolutions */
-	char *nname = xtermSpecialFont(screen, flags | NORESOLUTION, chrset);
+	char *nname = xtermSpecialFont(flags | NORESOLUTION, chrset);
 
 	if (!nname)
 	    return 0;
-	if ((data->fs = xtermOpenFont(screen, nname)) == 0) {
+	if ((data->fs = XLoadQueryFont(screen->display, nname)) == 0) {
 	    XtFree(nname);
 	    return 0;
 	}

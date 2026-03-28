@@ -1,42 +1,29 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx.h,v 3.3 2002/11/25 14:05:04 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef LNX_H_
-
-#ifdef __ia64__
-
-#include "compiler.h"
-#include <sys/io.h>
-
-#elif !defined(__powerpc__) && \
-      !defined(__mc68000__) && \
-      !defined(__sparc__) && \
-      !defined(__mips__)
-
-/*
- * Due to conflicts with "compiler.h", don't rely on <sys/io.h> to declare
- * these.
- */
-extern int ioperm(unsigned long __from, unsigned long __num, int __turn_on);
-extern int iopl(int __level);
-
-#endif
-
 # ifdef __alpha__
 extern unsigned long _bus_base __P ((void)) __attribute__ ((const));
 extern unsigned long _bus_base_sparse __P ((void)) __attribute__ ((const));
+extern int iopl __P ((int __level));
 
 /* new pciconfig_iobase syscall added in 2.2.15 and 2.3.99 */
 #  include <linux/unistd.h>
 #  include <asm/pci.h>
 extern long (*_iobase)(unsigned, int, int, int);
-
-extern unsigned char _inb (unsigned long port);
-extern unsigned short _inw (unsigned long port);
-extern unsigned int   _inl (unsigned long port);
-extern void _outb (unsigned char b,unsigned long port);
-extern void _outw (unsigned short w,unsigned long port);
-extern void _outl (unsigned int l,unsigned long port);
-
 
 /*
  * _iobase deals with the case the __NR_pciconfig_iobase is either undefined

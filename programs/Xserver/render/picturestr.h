@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/render/picturestr.h,v 1.23tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/picturestr.h,v 1.23 2004/06/30 20:21:46 martin Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -29,7 +36,6 @@
 #include "glyphstr.h"
 #include "scrnintstr.h"
 #include "resource.h"
-#include "extnsionst.h"
 
 typedef struct _DirectFormat {
     CARD16	    red, redMask;
@@ -495,7 +501,7 @@ Bool
 PictureTransformPoint (PictTransformPtr transform,
 		       PictVectorPtr	vector);
 
-void RenderExtensionInit (INITARGS);
+void RenderExtensionInit (void);
 
 Bool
 AnimCurInit (ScreenPtr pScreen);

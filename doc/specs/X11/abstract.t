@@ -1,4 +1,4 @@
-.\" $XFree86: xc/doc/specs/X11/abstract.t,v 1.2 2003/07/09 15:27:26 tsi Exp $
+.\" $XFree86: xc/doc/specs/X11/abstract.t,v 1.3 2003/12/11 21:24:37 herrb Exp $
 .EH ''''
 .OH ''''
 .EF ''''

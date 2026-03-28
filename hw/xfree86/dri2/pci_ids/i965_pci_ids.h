@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 CHIPSET(0x29A2, i965,    "Intel(R) 965G")
 CHIPSET(0x2992, i965,    "Intel(R) 965Q")
 CHIPSET(0x2982, i965,    "Intel(R) 965G")

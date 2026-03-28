@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86RandR.c,v 1.16tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86RandR.c,v 1.8 2003/11/10 16:42:13 tsi Exp $
  *
  * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -22,7 +29,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "mibank.h"
 #include "globals.h"
@@ -37,10 +44,9 @@ typedef struct _xf86RandRInfo {
     CloseScreenProcPtr		    CloseScreen;
     int				    virtualX;
     int				    virtualY;
-    Rotation			    rotation;
 } XF86RandRInfoRec, *XF86RandRInfoPtr;
     
-static int	    xf86RandRIndex = -1;
+static int	    xf86RandRIndex;
 static int	    xf86RandRGeneration;
 
 #define XF86RANDRINFO(p)    ((XF86RandRInfoPtr) (p)->devPrivates[xf86RandRIndex].ptr)
@@ -131,8 +137,6 @@ xf86RandRSetMode (ScreenPtr	    pScreen,
     {
 	scrp->virtualX = pScreen->width = oldWidth;
 	scrp->virtualY = pScreen->height = oldHeight;
-        if (pRoot)
-	    xf86EnableDisableFBAccess (pScreen->myNum, TRUE);
 	return FALSE;
     }
     /*
@@ -161,7 +165,6 @@ xf86RandRSetConfig (ScreenPtr		pScreen,
     DisplayModePtr	    mode;
     int			    px, py;
     Bool		    useVirtual = FALSE;
-    Rotation                oldRotation = randrp->rotation;
 
     miPointerPosition (&px, &py);
     for (mode = scrp->modes; ; mode = mode->next)
@@ -182,25 +185,15 @@ xf86RandRSetConfig (ScreenPtr		pScreen,
 	    return FALSE;
 	}
     }
-
-    randrp->rotation = rotation;
-
-    if (!xf86RandRSetMode (pScreen, mode, useVirtual)) {
-        randrp->rotation = oldRotation;
+    if (!xf86RandRSetMode (pScreen, mode, useVirtual))
 	return FALSE;
-    }
-
     /*
      * Move the cursor back where it belongs; SwitchMode repositions it
      */
     if (pScreen == miPointerCurrentScreen ())
     {
-        px = (px >= pScreen->width ? (pScreen->width - 1) : px);
-        py = (py >= pScreen->height ? (pScreen->height - 1) : py);
-
-        xf86SetViewport(pScreen, px, py);
-
-        (*pScreen->SetCursorPosition) (pScreen, px, py, FALSE);
+	if (px < pSize->width && py < pSize->height)
+	    (*pScreen->SetCursorPosition) (pScreen, px, py, FALSE);
     }
     return TRUE;
 }
@@ -250,15 +243,6 @@ xf86RandRCloseScreen (int index, ScreenPtr pScreen)
     return (*pScreen->CloseScreen) (index, pScreen);
 }
 
-Rotation
-xf86GetRotation(ScreenPtr pScreen)
-{
-    if (xf86RandRIndex == -1)
-	return RR_Rotate_0;
-
-    return XF86RANDRINFO(pScreen)->rotation;
-}
-
 Bool
 xf86RandRInit (ScreenPtr    pScreen)
 {
@@ -298,8 +282,6 @@ xf86RandRInit (ScreenPtr    pScreen)
     
     randrp->CloseScreen = pScreen->CloseScreen;
     pScreen->CloseScreen = xf86RandRCloseScreen;
-
-    randrp->rotation = RR_Rotate_0;
 
     pScreen->devPrivates[xf86RandRIndex].ptr = randrp;
     return TRUE;

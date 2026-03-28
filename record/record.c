@@ -1,3 +1,10 @@
+/* $XFree86: xc/programs/Xserver/record/record.c,v 1.16 2008/10/15 20:59:13 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 
@@ -33,19 +40,18 @@ and Jim Haggerty of Metheus.
 */
 
 #define NEED_EVENTS
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include "dixstruct.h"
 #include "extnsionst.h"
 #define _XRECORD_SERVER_
 #include <X11/extensions/recordstr.h>
 #include "set.h"
-#include "swaprep.h"
 
+#ifndef XFree86LOADER
 #include <stdio.h>
 #include <assert.h>
+#else
+#include "xf86_ansic.h"
+#endif
 
 #ifdef PANORAMIX
 #include "globals.h"
@@ -53,6 +59,8 @@ and Jim Haggerty of Metheus.
 #include "panoramiXsrv.h"
 #include "cursor.h"
 #endif
+#include "swaprep.h"
+#include "recordproc.h"
 
 static RESTYPE RTContext;   /* internal resource type for Record contexts */
 static int RecordErrorBase; /* first Record error number */
@@ -332,11 +340,11 @@ RecordAProtocolElement(RecordContextPtr pContext, ClientPtr pClient,
 
 	    if (recordingClientSwapped)
 	    {
-		swaps(&pRep->sequenceNumber, n);
-		swapl(&pRep->length, n);
-		swapl(&pRep->idBase, n);
-		swapl(&pRep->serverTime, n);
-		swapl(&pRep->recordedSequenceNumber, n);
+		swaps(&pRep->sequenceNumber);
+		swapl(&pRep->length);
+		swapl(&pRep->idBase);
+		swapl(&pRep->serverTime);
+		swapl(&pRep->recordedSequenceNumber);
 	    }
 	    pContext->numBufBytes = SIZEOF(xRecordEnableContextReply);
 	}
@@ -354,7 +362,7 @@ RecordAProtocolElement(RecordContextPtr pContext, ClientPtr pClient,
 	    else
 		elemHeaderData[numElemHeaders] = GetTimeInMillis();
 	    if (recordingClientSwapped)
-		swapl(&elemHeaderData[numElemHeaders], n);
+		swapl(&elemHeaderData[numElemHeaders]);
 	    numElemHeaders++;
 	}
 
@@ -364,16 +372,16 @@ RecordAProtocolElement(RecordContextPtr pContext, ClientPtr pClient,
 	{
 	    elemHeaderData[numElemHeaders] = pClient->sequence;
 	    if (recordingClientSwapped)
-		swapl(&elemHeaderData[numElemHeaders], n);
+		swapl(&elemHeaderData[numElemHeaders]);
 	    numElemHeaders++;
 	}
 
 	/* adjust reply length */
 
 	replylen = pRep->length;
-	if (recordingClientSwapped) swapl(&replylen, n);
+	if (recordingClientSwapped) swapl(&replylen);
 	replylen += numElemHeaders + (datalen >> 2) + (futurelen >> 2);
-	if (recordingClientSwapped) swapl(&replylen, n);
+	if (recordingClientSwapped) swapl(&replylen);
 	pRep->length = replylen;
     } /* end if not continued reply */
 
@@ -482,7 +490,7 @@ RecordABigRequest(RecordContextPtr pContext, ClientPtr client, xReq *stuff)
     /* reinsert the extended length field that was squished out */
     bigLength = client->req_len + (sizeof(bigLength) >> 2);
     if (client->swapped)
-	swapl(&bigLength, n);
+	swapl(&bigLength);
     RecordAProtocolElement(pContext, client, XRecordFromClient,
 		(pointer)&bigLength, sizeof(bigLength), /* continuation */ -1);
     bytesLeft -= sizeof(bigLength);
@@ -594,7 +602,8 @@ RecordARequest(ClientPtr client)
  *	 the word skip in ddx.tbl.ms (the porting layer document).
  */
 static void
-RecordASkippedRequest(CallbackListPtr *pcbl, pointer nulldata, pointer calldata)
+RecordASkippedRequest(CallbackListPtr *pcbl, pointer nulldata,
+		      pointer calldata)
 {
     SkippedRequestInfoRec *psi = (SkippedRequestInfoRec *)calldata;
     RecordContextPtr pContext;
@@ -763,7 +772,8 @@ RecordAReply(CallbackListPtr *pcbl, pointer nulldata, pointer calldata)
  *	it for this client.
  */
 static void
-RecordADeliveredEventOrError(CallbackListPtr *pcbl, pointer nulldata, pointer calldata)
+RecordADeliveredEventOrError(CallbackListPtr *pcbl, pointer nulldata,
+			     pointer calldata)
 {
     EventInfoRec *pei = (EventInfoRec *)calldata;
     RecordContextPtr pContext;
@@ -782,13 +792,13 @@ RecordADeliveredEventOrError(CallbackListPtr *pcbl, pointer nulldata, pointer ca
 	    xEvent *pev = pei->events;
 	    for (ev = 0; ev < pei->count; ev++, pev++)
 	    {
-		int recordit = 0;
-		if (pRCAP->pErrorSet)
+		int recordit;
+		if (pev->u.u.type == X_Error)
 		{
 		    recordit = RecordIsMemberOfSet(pRCAP->pErrorSet,
 						((xError *)(pev))->errorCode);
 		}
-		else if (pRCAP->pDeliveredEventSet)
+		else
 		{
 		    recordit = RecordIsMemberOfSet(pRCAP->pDeliveredEventSet,
 						   pev->u.u.type & 0177);
@@ -1317,7 +1327,8 @@ RecordSanityCheckClientSpecifiers(XID *clientspecs, int nspecs, XID errorspec)
  *	pClientspecs may be modified in place.
  */
 static XID *
-RecordCanonicalizeClientSpecifiers(XID *pClientspecs, int *pNumClientspecs, XID excludespec)
+RecordCanonicalizeClientSpecifiers(XID *pClientspecs, int *pNumClientspecs,
+				   XID excludespec)
 {
     int i;
     int numClients = *pNumClientspecs;
@@ -1414,7 +1425,8 @@ RecordPadAlign(int size, int align)
  * Side Effects: none.
  */
 static int
-RecordSanityCheckRegisterClients(RecordContextPtr pContext, ClientPtr client, xRecordRegisterClientsReq *stuff)
+RecordSanityCheckRegisterClients(RecordContextPtr pContext, ClientPtr client,
+				 xRecordRegisterClientsReq *stuff)
 {
     int err;
     xRecordRange *pRange;
@@ -1671,7 +1683,8 @@ RecordConvertRangesToIntervals(
  *	to record the new clients and protocol.
  */
 static int
-RecordRegisterClients(RecordContextPtr pContext, ClientPtr client, xRecordRegisterClientsReq *stuff)
+RecordRegisterClients(RecordContextPtr pContext, ClientPtr client,
+		      xRecordRegisterClientsReq *stuff)
 {
     int err;
     int i;
@@ -1958,9 +1971,9 @@ ProcRecordQueryVersion(ClientPtr client)
     rep.minorVersion  	= RECORD_MINOR_VERSION;
     if(client->swapped)
     {
-    	swaps(&rep.sequenceNumber, n);
-	swaps(&rep.majorVersion, n);
-	swaps(&rep.minorVersion, n);
+    	swaps(&rep.sequenceNumber);
+	swaps(&rep.majorVersion);
+	swaps(&rep.minorVersion);
     }
     (void)WriteToClient(client, sizeof(xRecordQueryVersionReply),
 			(char *)&rep);
@@ -2266,10 +2279,10 @@ RecordSwapRanges(xRecordRange *pRanges, int nRanges)
     register char n;
     for (i = 0; i < nRanges; i++, pRanges++)
     {
-	swaps(&pRanges->extRequestsMinorFirst, n);
-	swaps(&pRanges->extRequestsMinorLast, n);
-	swaps(&pRanges->extRepliesMinorFirst, n);
-	swaps(&pRanges->extRepliesMinorLast, n);
+	swaps(&pRanges->extRequestsMinorFirst);
+	swaps(&pRanges->extRequestsMinorLast);
+	swaps(&pRanges->extRepliesMinorFirst);
+	swaps(&pRanges->extRepliesMinorLast);
     }
 } /* RecordSwapRanges */
 
@@ -2379,9 +2392,9 @@ ProcRecordGetContext(ClientPtr client)
     rep.elementHeader = pContext->elemHeaders;
     if(client->swapped)
     {
-    	swaps(&rep.sequenceNumber, n);
-    	swapl(&rep.length, n);
-    	swapl(&rep.nClients, n);
+    	swaps(&rep.sequenceNumber);
+    	swapl(&rep.length);
+    	swapl(&rep.nClients);
     }
     (void)WriteToClient(client, sizeof(xRecordGetContextReply),
 			(char *)&rep);
@@ -2396,13 +2409,13 @@ ProcRecordGetContext(ClientPtr client)
 	rci.nRanges = pri->nRanges;
 	if (client->swapped)
 	{
-	    swapl(&rci.nRanges, n);
+	    swapl(&rci.nRanges);
 	    RecordSwapRanges(pri->pRanges, pri->nRanges);
 	}
 	for (i = 0; i < pRCAP->numClients; i++)
 	{
 	    rci.clientResource = pRCAP->pClientIDs[i];
-	    if (client->swapped) swapl(&rci.clientResource, n);
+	    if (client->swapped) swapl(&rci.clientResource);
 	    WriteToClient(client, sizeof(xRecordClientInfo), (char *)&rci);
 	    WriteToClient(client, sizeof(xRecordRange) * pri->nRanges,
 			  (char *)pri->pRanges);
@@ -2648,10 +2661,10 @@ SProcRecordQueryVersion(ClientPtr client)
     REQUEST(xRecordQueryVersionReq);
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xRecordQueryVersionReq);
-    swaps(&stuff->majorVersion, n);
-    swaps(&stuff->minorVersion,n);
+    swaps(&stuff->majorVersion);
+    swaps(&stuff->minorVersion);
     return ProcRecordQueryVersion(client);
 } /* SProcRecordQueryVersion */
 
@@ -2663,18 +2676,20 @@ SwapCreateRegister(xRecordRegisterClientsReq *stuff)
     int i;
     XID *pClientID;
 
-    swapl(&stuff->context, n);
-    swapl(&stuff->nClients, n);
-    swapl(&stuff->nRanges, n);
+    swapl(&stuff->context);
+    swapl(&stuff->nClients);
+    swapl(&stuff->nRanges);
     pClientID = (XID *)&stuff[1];
-    if (stuff->nClients > stuff->length - (sz_xRecordRegisterClientsReq >> 2))
+    if (stuff->nClients >
+	(stuff->length - (sz_xRecordRegisterClientsReq >> 2)))
 	return BadLength;
     for (i = 0; i < stuff->nClients; i++, pClientID++)
     {
-	swapl(pClientID, n);
+	swapl(pClientID);
     }
-    if (stuff->nRanges > stuff->length - (sz_xRecordRegisterClientsReq >> 2)
-	- stuff->nClients)
+    if (stuff->nRanges >
+	(stuff->length - stuff->nClients -
+	 (sz_xRecordRegisterClientsReq >> 2)))
 	return BadLength;
     RecordSwapRanges((xRecordRange *)pClientID, stuff->nRanges);
     return Success;
@@ -2688,7 +2703,7 @@ SProcRecordCreateContext(ClientPtr client)
     int			status;
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_AT_LEAST_SIZE(xRecordCreateContextReq);
     if ((status = SwapCreateRegister((pointer)stuff)) != Success)
 	return status;
@@ -2703,7 +2718,7 @@ SProcRecordRegisterClients(ClientPtr client)
     int			status;
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_AT_LEAST_SIZE(xRecordRegisterClientsReq);
     if ((status = SwapCreateRegister((pointer)stuff)) != Success)
 	return status;
@@ -2717,10 +2732,10 @@ SProcRecordUnregisterClients(ClientPtr client)
     REQUEST(xRecordUnregisterClientsReq);
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_AT_LEAST_SIZE(xRecordUnregisterClientsReq);
-    swapl(&stuff->context, n);
-    swapl(&stuff->nClients, n);
+    swapl(&stuff->context);
+    swapl(&stuff->nClients);
     SwapRestL(stuff);
     return ProcRecordUnregisterClients(client);
 } /* SProcRecordUnregisterClients */
@@ -2732,9 +2747,9 @@ SProcRecordGetContext(ClientPtr client)
     REQUEST(xRecordGetContextReq);
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xRecordGetContextReq);
-    swapl(&stuff->context, n);
+    swapl(&stuff->context);
     return ProcRecordGetContext(client);
 } /* SProcRecordGetContext */
 
@@ -2744,9 +2759,9 @@ SProcRecordEnableContext(ClientPtr client)
     REQUEST(xRecordEnableContextReq);
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xRecordEnableContextReq);
-    swapl(&stuff->context, n);
+    swapl(&stuff->context);
     return ProcRecordEnableContext(client);
 } /* SProcRecordEnableContext */
 
@@ -2757,9 +2772,9 @@ SProcRecordDisableContext(ClientPtr client)
     REQUEST(xRecordDisableContextReq);
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xRecordDisableContextReq);
-    swapl(&stuff->context, n);
+    swapl(&stuff->context);
     return ProcRecordDisableContext(client);
 } /* SProcRecordDisableContext */
 
@@ -2770,9 +2785,9 @@ SProcRecordFreeContext(ClientPtr client)
     REQUEST(xRecordFreeContextReq);
     register char 	n;
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xRecordFreeContextReq);
-    swapl(&stuff->context, n);
+    swapl(&stuff->context);
     return ProcRecordFreeContext(client);
 } /* SProcRecordFreeContext */
 
@@ -2825,11 +2840,11 @@ RecordConnectionSetupInfo(RecordContextPtr pContext, NewClientInfoRec *pci)
 
     if (pci->client->swapped)
     {
-	char *pConnSetup = (char *)ALLOCATE_LOCAL(prefixsize + restsize);
+	char * pConnSetup = (char *)ALLOCATE_LOCAL(prefixsize + restsize);
 	if (!pConnSetup)
 	    return;
-	SwapConnSetupPrefix(pci->prefix, pConnSetup);
-	SwapConnSetupInfo(pci->setup, pConnSetup + prefixsize);
+	SwapConnSetupPrefix(pci->prefix, (xConnSetupPrefix *)pConnSetup);
+	SwapConnSetupInfo((char *)pci->setup, pConnSetup + prefixsize);
 	RecordAProtocolElement(pContext, pci->client, XRecordClientStarted,
 			       (pointer)pConnSetup, prefixsize + restsize, 0);
 	DEALLOCATE_LOCAL(pConnSetup);
@@ -2871,7 +2886,8 @@ RecordConnectionSetupInfo(RecordContextPtr pContext, NewClientInfoRec *pci)
  */
 
 static void
-RecordAClientStateChange(CallbackListPtr *pcbl, pointer nulldata, pointer calldata)
+RecordAClientStateChange(CallbackListPtr *pcbl, pointer nulldata,
+			 pointer calldata)
 {
     NewClientInfoRec *pci = (NewClientInfoRec *)calldata;
     int i;
@@ -2950,7 +2966,7 @@ RecordCloseDown(ExtensionEntry *extEntry)
  *	Enables the RECORD extension if possible.
  */
 void 
-RecordExtensionInit(void)
+RecordExtensionInit(INITARGS)
 {
     ExtensionEntry *extentry;
 

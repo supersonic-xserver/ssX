@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +32,7 @@
  * XFree86 Project.
  */
 
-/* $XFree86: xc/lib/Xaw/Converters.c,v 3.14 1999/06/20 08:40:59 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Converters.c,v 3.15 2004/10/23 15:29:25 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/IntrinsicP.h>

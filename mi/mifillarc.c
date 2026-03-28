@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mifillarc.c,v 3.10 2005/10/14 15:17:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -26,11 +34,6 @@ Author:  Bob Scheifler, MIT X Consortium
 
 ********************************************************/
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <math.h>
 #include <X11/X.h>
 #include <X11/Xprotostr.h>
@@ -52,10 +55,8 @@ Author:  Bob Scheifler, MIT X Consortium
 #define Dsin(d)	sin((double)d*(M_PI/11520.0))
 #define Dcos(d)	cos((double)d*(M_PI/11520.0))
 
-_X_EXPORT void
-miFillArcSetup(arc, info)
-    xArc *arc;
-    miFillArcRec *info;
+void
+miFillArcSetup(xArc *arc, miFillArcRec *info)
 {
     info->y = arc->height >> 1;
     info->dy = arc->height & 1;
@@ -107,7 +108,7 @@ miFillArcSetup(arc, info)
     }
 }
 
-static void
+void
 miFillArcDSetup(xArc *arc, miFillArcDRec *info)
 {
     /* h^2 * (2x - 2xorg)^2 = w^2 * h^2 - w^2 * (2y - 2yorg)^2 */
@@ -186,9 +187,9 @@ miGetArcEdge(
     }
 }
 
-static void
-miEllipseAngleToSlope (int angle, int width, int height, int *dxp, int *dyp,
-		       double *d_dxp, double *d_dyp)
+void
+miEllipseAngleToSlope(int angle, int width, int height,
+		      int *dxp, int *dyp, double *d_dxp, double *d_dyp)
 {
     int	    dx, dy;
     double  d_dx, d_dy, scale;
@@ -306,11 +307,8 @@ miGetPieEdge(
     miGetArcEdge(arc, edge, k, top, left);
 }
 
-_X_EXPORT void
-miFillArcSliceSetup(arc, slice, pGC)
-    xArc *arc;
-    miArcSliceRec *slice;
-    GCPtr pGC;
+void
+miFillArcSliceSetup(xArc *arc, miArcSliceRec *slice, GCPtr pGC)
 {
     int angle1, angle2;
 
@@ -775,12 +773,8 @@ miFillArcSliceD(
  * Since we don't have to worry about overlapping segments, we can just
  * fill each arc as it comes.
  */
-_X_EXPORT void
-miPolyFillArc(pDraw, pGC, narcs, parcs)
-    DrawablePtr	pDraw;
-    GCPtr	pGC;
-    int		narcs;
-    xArc	*parcs;
+void
+miPolyFillArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
 {
     int i;
     xArc *arc;

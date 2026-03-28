@@ -1,5 +1,16 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx1_driver.c,v 1.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx1_driver.c,v 1.11 2003/11/03 05:11:20 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: nsc_gx1_driver.c $
+ * $Revision: 1.2 $
+ * $Author: christos $
+ *
  * File Contents: This is the main module configures the interfacing 
  *                with the X server. The individual modules will be 
  *                loaded based upon the options selected from the 
@@ -144,7 +155,11 @@
  * Alan Hourihane <alanh@fairlite.demon.co.uk>
  */
 
+#ifndef DEBUGX
+#define DEBUGX(x)
+#endif
 #define GEODE_TRACE 0
+#define CFB 0
 #define HWVGA 0
 
 /* Includes that are used by all drivers */
@@ -164,7 +179,22 @@
 #include "xf86cmap.h"
 
 /* Frame buffer stuff */
+#if CFB
+/*
+ * If using cfb, cfb.h is required.  Select the others for the bpp values
+ * the driver supports.
+ */
+#define PSZ 8				/* needed for cfb.h */
+#include "cfb.h"
+#undef PSZ
+#include "cfb16.h"
+#include "cfb24.h"
+#include "cfb32.h"
+
+#else
 #include "fb.h"
+
+#endif
 
 #include "shadowfb.h"
 
@@ -178,13 +208,15 @@
 #include "vbe.h"
 
 /* Check for some extensions */
+#ifdef XFreeXDGA
 #define _XF86_DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
+#endif /* XFreeXDGA */
 
 #include "globals.h"
 #include "opaque.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 /* Our private include file (this also includes the durango headers) */
 #include "nsc.h"
@@ -242,7 +274,7 @@ MemOffset GeodeMemOffset[] = {
 static int MemIndex = 0;
 
 static Bool GX1PreInit(ScrnInfoPtr, int);
-static Bool GX1ScreenInit(int, ScreenPtr, const int, const char **);
+static Bool GX1ScreenInit(int, ScreenPtr, int, char **);
 static Bool GX1EnterVT(int, int);
 static void GX1LeaveVT(int, int);
 static void GX1FreeScreen(int, int);
@@ -285,7 +317,11 @@ extern const char *nscVgahwSymbols[];
 extern const char *nscVbeSymbols[];
 extern const char *nscInt10Symbols[];
 
+#if CFB
+extern const char *nscCfbSymbols[];
+#else
 extern const char *nscFbSymbols[];
+#endif
 extern const char *nscXaaSymbols[];
 extern const char *nscRamdacSymbols[];
 extern const char *nscShadowSymbols[];
@@ -417,14 +453,11 @@ static void
 GX1ProbeDDC(ScrnInfoPtr pScrn, int index)
 {
    vbeInfoPtr pVbe;
-   ModuleDescPtr pMod;
 
-   if ((pMod = xf86LoadVBEModule(pScrn))) {
-      xf86LoaderModReqSymLists(pMod, nscVbeSymbols, NULL);
+   if (xf86LoadSubModule(pScrn, "vbe")) {
       pVbe = VBEInit(NULL, index);
       ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
       vbeFree(pVbe);
-      xf86UnloadSubModule(pMod);
    }
 }
 
@@ -450,7 +483,11 @@ GX1PreInit(ScrnInfoPtr pScreenInfo, int flags)
    MessageType from;
    int i = 0;
    GeodePtr pGeode;
-   ModuleDescPtr pMod;
+#if CFB
+   char *mod = NULL;
+
+   char *reqSymbol = NULL;
+#endif
 
 #if defined(STB_X)
    GAL_ADAPTERINFO sAdapterInfo;
@@ -485,11 +522,11 @@ GX1PreInit(ScrnInfoPtr pScreenInfo, int flags)
 
 #if !defined(STB_X)
    /* If the vgahw module would be needed it would be loaded here */
-   if (!(pMod = xf86LoadSubModule(pScreenInfo, "vgahw"))) {
+   if (!xf86LoadSubModule(pScreenInfo, "vgahw")) {
       return FALSE;
    }
 
-   xf86LoaderModReqSymLists(pMod, nscVgahwSymbols, NULL);
+   xf86LoaderReqSymLists(nscVgahwSymbols, NULL);
 #endif /* STB_X */
    GeodeDebug(("GX1PreInit(1)!\n"));
 
@@ -992,35 +1029,61 @@ GX1PreInit(ScrnInfoPtr pScreenInfo, int flags)
    xf86SetDpi(pScreenInfo, 0, 0);
    GeodeDebug(("GX1PreInit(14)!\n"));
 
-   if (!(pMod = xf86LoadSubModule(pScreenInfo, "fb"))) {
+#if CFB
+   /* Load bpp-specific modules */
+   mod = NULL;
+
+   /* Load bpp-specific modules */
+   switch (pScreenInfo->bitsPerPixel) {
+   case 8:
+      mod = "cfb";
+      reqSymbol = "cfbScreenInit";
+      break;
+   case 16:
+      mod = "cfb16";
+      reqSymbol = "cfb16ScreenInit";
+      break;
+   default:
+      return FALSE;
+   }
+   if (mod && xf86LoadSubModule(pScreenInfo, mod) == NULL) {
       GX1FreeRec(pScreenInfo);
       return FALSE;
    }
-   xf86LoaderModReqSymLists(pMod, nscFbSymbols, NULL);
+
+   xf86LoaderReqSymbols(reqSymbol, NULL);
+#else
+   if (xf86LoadSubModule(pScreenInfo, "fb") == NULL) {
+      GX1FreeRec(pScreenInfo);
+      return FALSE;
+   }
+
+   xf86LoaderReqSymLists(nscFbSymbols, NULL);
+#endif
    GeodeDebug(("GX1PreInit(15)!\n"));
    if (pGeode->NoAccel == FALSE) {
-      if (!(pMod = xf86LoadSubModule(pScreenInfo, "xaa"))) {
+      if (!xf86LoadSubModule(pScreenInfo, "xaa")) {
 	 GX1FreeRec(pScreenInfo);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, nscXaaSymbols, NULL);
+      xf86LoaderReqSymLists(nscXaaSymbols, NULL);
    }
    GeodeDebug(("GX1PreInit(16)!\n"));
    if (pGeode->HWCursor == TRUE) {
-      if (!(pMod = xf86LoadSubModule(pScreenInfo, "ramdac"))) {
+      if (!xf86LoadSubModule(pScreenInfo, "ramdac")) {
 	 GX1FreeRec(pScreenInfo);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, nscRamdacSymbols, NULL);
+      xf86LoaderReqSymLists(nscRamdacSymbols, NULL);
    }
    GeodeDebug(("GX1PreInit(17)!\n"));
    /* Load shadowfb if needed */
    if (pGeode->ShadowFB) {
-      if (!(pMod = xf86LoadSubModule(pScreenInfo, "shadowfb"))) {
+      if (!xf86LoadSubModule(pScreenInfo, "shadowfb")) {
 	 GX1FreeRec(pScreenInfo);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, nscShadowSymbols, NULL);
+      xf86LoaderReqSymLists(nscShadowSymbols, NULL);
    }
    GeodeDebug(("GX2PreInit(18)!\n"));
    if (xf86RegisterResources(pGeode->pEnt->index, NULL, ResExclusive)) {
@@ -1756,8 +1819,7 @@ GX1DPMSSet(ScrnInfoPtr pScreenInfo, int mode, int flags)
 *----------------------------------------------------------------------------
 */
 static Bool
-GX1ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	      const int argc, const char **argv)
+GX1ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
    ScrnInfoPtr pScreenInfo = xf86Screens[pScreen->myNum];
    GeodePtr pGeode;
@@ -1966,12 +2028,26 @@ GX1ScreenInit(int scrnIndex, ScreenPtr pScreen,
 
    /* Initialise the framebuffer */
    switch (pScreenInfo->bitsPerPixel) {
+#if CFB
+   case 8:
+      Inited = cfbScreenInit(pScreen, FBStart, width, height,
+			     pScreenInfo->xDpi, pScreenInfo->yDpi,
+			     displayWidth);
+      break;
+   case 16:
+      Inited = cfb16ScreenInit(pScreen, FBStart, width, height,
+			       pScreenInfo->xDpi, pScreenInfo->yDpi,
+			       displayWidth);
+      break;
+
+#else
    case 8:
    case 16:
       Inited = fbScreenInit(pScreen, FBStart, width, height,
 			    pScreenInfo->xDpi, pScreenInfo->yDpi,
 			    displayWidth, pScreenInfo->bitsPerPixel);
       break;
+#endif
    default:
       xf86DrvMsg(scrnIndex, X_ERROR,
 		 "Internal error: invalid bpp (%d) in ScreenInit\n",
@@ -2004,8 +2080,11 @@ GX1ScreenInit(int scrnIndex, ScreenPtr pScreen,
 	 }
       }
    }
+#if CFB
+#else
    /* must be after RGB ordering fixed */
    fbPictureInit(pScreen, 0, 0);
+#endif
 
    GeodeDebug(("GX1ScreenInit(6)!\n"));
    if (!pGeode->NoAccel) {

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX Hardware Device Driver for Intel i810
  * Copyright (C) 1999 Keith Whitwell
  *
@@ -58,6 +65,6 @@ extern void i810InitVB( GLcontext *ctx );
 extern void i810FreeVB( GLcontext *ctx );
 
 extern void i810_print_vertex( GLcontext *ctx, const i810Vertex *v );
-extern void i810PrintSetupFlags(const char *msg, GLuint flags );
+extern void i810PrintSetupFlags(char *msg, GLuint flags );
 
 #endif

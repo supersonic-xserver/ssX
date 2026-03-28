@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/XTrap/xtrapdiswp.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/XTrap/xtrapdiswp.c,v 1.1 2001/11/02 23:29:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991, 1992 by 
 
@@ -24,53 +31,6 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 *****************************************************************************/
 /*
- * Copyright (c) 2005 by The XFree86 Project, Inc.
- * All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject
- * to the following conditions:
- *
- *   1.  Redistributions of source code must retain the above copyright
- *       notice, this list of conditions, and the following disclaimer.
- *
- *   2.  Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer
- *       in the documentation and/or other materials provided with the
- *       distribution, and in the same place and form as other copyright,
- *       license and disclaimer information.
- *
- *   3.  The end-user documentation included with the redistribution,
- *       if any, must include the following acknowledgment: "This product
- *       includes software developed by The XFree86 Project, Inc
- *       (http://www.xfree86.org/) and its contributors", in the same
- *       place and form as other third-party acknowledgments.  Alternately,
- *       this acknowledgment may appear in the software itself, in the
- *       same form and location as other such third-party acknowledgments.
- *
- *   4.  Except as contained in this notice, the name of The XFree86
- *       Project, Inc shall not be used in advertising or otherwise to
- *       promote the sale, use or other dealings in this Software without
- *       prior written authorization from The XFree86 Project, Inc.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
  *  ABSTRACT:
  *
  *      This module is the device independent module responsible for all
@@ -91,7 +51,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *	Robert Chesler - added client arg for X11R6 port in many spots
  *
  */
-
+
 #include <X11/X.h>
 #define NEED_REPLIES
 #define NEED_EVENTS
@@ -107,101 +67,83 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 # include "extnsionst.h"        /* Server ExtensionEntry definitions */
 #endif
 # include "swapreq.h"        /* Server SwapColorItem definition */
-#include "xtrapddmi.h"
-#include "xtrapproto.h"
+#include <X11/extensions/xtrapddmi.h>
+#include <X11/extensions/xtrapproto.h>
 
 /* In-coming XTrap requests needing to be swapped to native format */
 
-int
-sXETrapReset(xXTrapReq *request, ClientPtr client)
+int sXETrapReset(xXTrapReq *request, ClientPtr client)
 {
-    char n;
+    register char n;
     swaps(&(request->length),n);
     return(XETrapReset(request,client));
 }
 
-int
-sXETrapGetAvailable(xXTrapReq *r, ClientPtr client)
+int sXETrapGetAvailable(xXTrapGetReq *request, ClientPtr client)
 {
-    char n;
-    xXTrapGetReq *request = (xXTrapGetReq *)r;
-
+    register char n;
     swaps(&(request->length),n);
     swaps(&(request->protocol),n);
-    return(XETrapGetAvailable(r, client));
+    return(XETrapGetAvailable(request,client));
 }
 
-int
-sXETrapConfig(xXTrapReq *r, ClientPtr client)
+int sXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
 {
-    char n;
-    xXTrapConfigReq *request = (xXTrapConfigReq *)r;
-
+    register char n;
     swaps(&(request->length),n);
     swaps(&(request->config_max_pkt_size),n);
-    return(XETrapConfig(r,client));
+    return(XETrapConfig(request,client));
 }
 
-int
-sXETrapStartTrap(xXTrapReq *request, ClientPtr client)
+int sXETrapStartTrap(xXTrapReq *request, ClientPtr client)
 {
-    char n;
+    register char n;
     swaps(&(request->length),n);
     return(XETrapStartTrap(request,client));
 }
 
-int
-sXETrapStopTrap(xXTrapReq *request, ClientPtr client)
+int sXETrapStopTrap(xXTrapReq *request, ClientPtr client)
 {
-    char n;
+    register char n;
     swaps(&(request->length),n);
     return(XETrapStopTrap(request,client));
 }
 
-int
-sXETrapGetCurrent(xXTrapReq *request, ClientPtr client)
+int sXETrapGetCurrent(xXTrapReq *request, ClientPtr client)
 {
-    char n;
+    register char n;
     swaps(&(request->length),n);
     return(XETrapGetCurrent(request,client));
 }
 
-int
-sXETrapGetStatistics(xXTrapReq *request, ClientPtr client)
+int sXETrapGetStatistics(xXTrapReq *request, ClientPtr client)
 {
-    char n;
+    register char n;
     swaps(&(request->length),n);
-    return(XETrapGetStatistics(request, client));
+    return(XETrapGetStatistics(request,client));
 }
 
 #ifndef _XINPUT
-int
-sXETrapSimulateXEvent(xXTrapReq *r, ClientPtr client)
+int sXETrapSimulateXEvent(xXTrapInputReq *request, ClientPtr client)
 {
-    char n;
-    xXTrapInputReq *request = (xXTrapInputReq *)r;
-
+    register char n;
     swaps(&(request->input.x),n);
     swaps(&(request->input.y),n);
-    return(XETrapSimulateXEvent(r, client));
+    return(XETrapSimulateXEvent(request,client));
 }
 #endif
 
-int
-sXETrapGetVersion(xXTrapReq *r, ClientPtr client)
+int sXETrapGetVersion(xXTrapGetReq *request, ClientPtr client)
 {
-    char n;
-    xXTrapGetReq *request = (xXTrapGetReq *)r;
-
+    register char n;
     swaps(&(request->length),n);
     swaps(&(request->protocol),n);
-    return(XETrapGetVersion(r, client));
+    return(XETrapGetVersion(request,client));
 }
 
-int
-sXETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
+int sXETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
 {
-    char n;
+    register char n;
     swaps(&(request->length),n);
     return(XETrapGetLastInpTime(request,client));
 }
@@ -209,11 +151,10 @@ sXETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
 
 /* Out-going XTrap replies needing to be swapped *from* native format */
 
-void
-sReplyXETrapGetAvail(ClientPtr client, int size, char *reply)
+void sReplyXETrapGetAvail(ClientPtr client, int size, char *reply)
 {
     xXTrapGetAvailReply *rep = (xXTrapGetAvailReply *)reply;
-    char n;
+    register char n;
     swaps(&(rep->hdr.sequenceNumber),n);
     swapl(&(rep->hdr.length),n);
     swapl(&(rep->data.pf_ident),n);
@@ -228,12 +169,10 @@ sReplyXETrapGetAvail(ClientPtr client, int size, char *reply)
     (void)WriteToClient(client,size,reply);
     return;
 }
-
-void
-sReplyXETrapGetVers(ClientPtr client, int size, char *reply)
+void sReplyXETrapGetVers(ClientPtr client, int size, char *reply)
 {
     xXTrapGetVersReply *rep = (xXTrapGetVersReply *)reply;
-    char n;
+    register char n;
     swaps(&(rep->hdr.sequenceNumber),n);
     swapl(&(rep->hdr.length),n);
     swaps(&(rep->data.xtrap_release),n);
@@ -242,37 +181,31 @@ sReplyXETrapGetVers(ClientPtr client, int size, char *reply)
     (void)WriteToClient(client,size,reply);
     return;
 }
-
-void
-sReplyXETrapGetLITim(ClientPtr client, int size, char *reply)
+void sReplyXETrapGetLITim(ClientPtr client, int size, char *reply)
 {
     xXTrapGetLITimReply *rep = (xXTrapGetLITimReply *)reply;
-    char n;
+    register char n;
     swaps(&(rep->hdr.sequenceNumber),n);
     swapl(&(rep->hdr.length),n);
     swapl(&(rep->data_last_time),n);
     (void)WriteToClient(client,size,reply);
     return;
 }
-
-void
-sReplyXETrapGetCur(ClientPtr client, int size, char *reply)
+void sReplyXETrapGetCur(ClientPtr client, int size, char *reply)
 {
     xXTrapGetCurReply *rep = (xXTrapGetCurReply *)reply;
-    char n;
+    register char n;
     swaps(&(rep->hdr.sequenceNumber),n);
     swapl(&(rep->hdr.length),n);
     swaps(&(rep->data_config_max_pkt_size),n);
     (void)WriteToClient(client,size,reply);
     return;
 }
-
-void
-sReplyXETrapGetStats(ClientPtr client, int size, char *reply)
+void sReplyXETrapGetStats(ClientPtr client, int size, char *reply)
 {
     xXTrapGetStatsReply *rep = (xXTrapGetStatsReply *)reply;
-    char n;
-    int i;
+    register char n;
+    register int i;
     long *p;
 
     swaps(&(rep->sequenceNumber),n);
@@ -291,10 +224,9 @@ sReplyXETrapGetStats(ClientPtr client, int size, char *reply)
 
 /* Out-going XTrap I/O header needing to be swapped *from* native format */
 
-void
-sXETrapHeader(XETrapHeader *hdr)
+void sXETrapHeader(XETrapHeader *hdr)
 {
-    char n;
+    register char n;
 
     swapl(&(hdr->count), n);
     swapl(&(hdr->timestamp), n);
@@ -309,10 +241,9 @@ sXETrapHeader(XETrapHeader *hdr)
 
 /* The following is used for all requests that have
    no fields to be swapped (except "length") */
-void
-XETSwSimpleReq(xResourceReq *data, ClientPtr client)
+void XETSwSimpleReq(register xReq *data)
 {
-    char n;
+    register char n;
     swaps(&(data->length), n);
 }
 
@@ -320,20 +251,17 @@ XETSwSimpleReq(xResourceReq *data, ClientPtr client)
    only a single 32-bit field to be swapped, coming
    right after the "length" field */
 
-void
-XETSwResourceReq(xResourceReq *data, ClientPtr client)
+void XETSwResourceReq(register xResourceReq *data)
 {
-    char n;
+    register char n;
 
     swaps(&(data->length), n);
     swapl(&(data->id), n);
 }
 
-void
-XETSwCreateWindow(xResourceReq *d, ClientPtr client)
+void XETSwCreateWindow(register xCreateWindowReq *data,ClientPtr client)
 {
-    char n;
-    xCreateWindowReq *data = (xCreateWindowReq *)d;
+    register char n;
 
     swapl(&(data->wid), n);
     swapl(&(data->parent), n);
@@ -349,11 +277,10 @@ XETSwCreateWindow(xResourceReq *d, ClientPtr client)
     swaps(&(data->length), n);
 }
 
-void
-XETSwChangeWindowAttributes(xResourceReq *d, ClientPtr client)
+void XETSwChangeWindowAttributes(register xChangeWindowAttributesReq *data,
+ClientPtr client)
 {
-    char n;
-    xChangeWindowAttributesReq *data = (xChangeWindowAttributesReq *)d;
+    register char n;
 
     swapl(&(data->window), n);
     swapl(&(data->valueMask), n);
@@ -361,12 +288,9 @@ XETSwChangeWindowAttributes(xResourceReq *d, ClientPtr client)
     swaps(&(data->length), n);
 }
 
-void
-XETSwReparentWindow(xResourceReq *d, ClientPtr client)
+void XETSwReparentWindow(register xReparentWindowReq *data)
 {
-    char n;
-    xReparentWindowReq *data = (xReparentWindowReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swapl(&(data->parent), n);
@@ -374,12 +298,9 @@ XETSwReparentWindow(xResourceReq *d, ClientPtr client)
     swaps(&(data->y), n);
 }
 
-void
-XETSwConfigureWindow(xResourceReq *d, ClientPtr client)
+void XETSwConfigureWindow(xConfigureWindowReq *data, ClientPtr client)
 {
-    char n;
-    xConfigureWindowReq *data = (xConfigureWindowReq *)d;
-
+    register char n;
     swapl(&(data->window), n);
     swaps(&(data->mask), n);
     SwapRestL(data);
@@ -387,22 +308,16 @@ XETSwConfigureWindow(xResourceReq *d, ClientPtr client)
 }
 
 
-void
-XETSwInternAtom(xResourceReq *d, ClientPtr client)
+void XETSwInternAtom(register xInternAtomReq *data)
 {
-    char n;
-    xInternAtomReq *data = (xInternAtomReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwChangeProperty(xResourceReq *d, ClientPtr client)
+void XETSwChangeProperty(register xChangePropertyReq *data)
 {
-    char n;
-    xChangePropertyReq *data = (xChangePropertyReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swapl(&(data->property), n);
@@ -419,23 +334,17 @@ XETSwChangeProperty(xResourceReq *d, ClientPtr client)
     swapl(&(data->nUnits), n);
 }
 
-void
-XETSwDeleteProperty(xResourceReq *d, ClientPtr client)
+void XETSwDeleteProperty(register xDeletePropertyReq *data)
 {
-    char n;
-    xDeletePropertyReq *data = (xDeletePropertyReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swapl(&(data->property), n);
               
 }
-void
-XETSwGetProperty(xResourceReq *d, ClientPtr client)
+void XETSwGetProperty(register xGetPropertyReq *data)
 {
-    char n;
-    xGetPropertyReq *data = (xGetPropertyReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swapl(&(data->property), n);
@@ -444,24 +353,18 @@ XETSwGetProperty(xResourceReq *d, ClientPtr client)
     swapl(&(data->longLength), n);
 }
 
-void
-XETSwSetSelectionOwner(xResourceReq *d, ClientPtr client)
+void XETSwSetSelectionOwner(register xSetSelectionOwnerReq *data)
 {
-    char n;
-    xSetSelectionOwnerReq *data = (xSetSelectionOwnerReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swapl(&(data->selection), n);
     swapl(&(data->time), n);
 }
 
-void
-XETSwConvertSelection(xResourceReq *d, ClientPtr client)
+void XETSwConvertSelection(register xConvertSelectionReq *data)
 {
-    char n;
-    xConvertSelectionReq *data = (xConvertSelectionReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->requestor), n);
     swapl(&(data->selection), n);
@@ -470,31 +373,25 @@ XETSwConvertSelection(xResourceReq *d, ClientPtr client)
     swapl(&(data->time), n);
 }
 
-void
-XETSwSendEvent(xResourceReq *d, ClientPtr client)
+void XETSwSendEvent(register xSendEventReq *data)
 {
-    char n;
-    xSendEventReq *data = (xSendEventReq *)d;
-
+    register char n;
     xEvent eventT;
-    EventSwapPtr proc;
+    void (*proc)();
     swapl(&(data->destination), n);
     swapl(&(data->eventMask), n);
 
     /* Swap event */
     proc = EventSwapVector[data->event.u.u.type & 0177];
-    if (!proc || proc == NotImplemented)   
+    if (!proc || (int (*)()) proc == (int (*)()) NotImplemented)   
         (*proc)(&(data->event), &eventT);
     data->event = eventT;
     swaps(&(data->length), n);
 }
 
-void
-XETSwGrabPointer(xResourceReq *d, ClientPtr client)
+void XETSwGrabPointer(register xGrabPointerReq *data)
 {
-    char n;
-    xGrabPointerReq *data = (xGrabPointerReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->grabWindow), n);
     swaps(&(data->eventMask), n);
@@ -503,12 +400,9 @@ XETSwGrabPointer(xResourceReq *d, ClientPtr client)
     swapl(&(data->time), n);
 }
 
-void
-XETSwGrabButton(xResourceReq *d, ClientPtr client)
+void XETSwGrabButton(register xGrabButtonReq *data)
 {
-    char n;
-    xGrabButtonReq *data = (xGrabButtonReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->grabWindow), n);
     swaps(&(data->eventMask), n);
@@ -517,80 +411,59 @@ XETSwGrabButton(xResourceReq *d, ClientPtr client)
     swaps(&(data->modifiers), n);
 }
 
-void
-XETSwUngrabButton(xResourceReq *d, ClientPtr client)
+void XETSwUngrabButton(register xUngrabButtonReq *data)
 {
-    char n;
-    xUngrabButtonReq *data = (xUngrabButtonReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->grabWindow), n);
     swaps(&(data->modifiers), n);
 }
 
-void
-XETSwChangeActivePointerGrab(xResourceReq *d, ClientPtr client)
+void XETSwChangeActivePointerGrab(register xChangeActivePointerGrabReq *data)
 {
-    char n;
-    xChangeActivePointerGrabReq *data = (xChangeActivePointerGrabReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cursor), n);
     swapl(&(data->time), n);
     swaps(&(data->eventMask), n);
 }
 
-void
-XETSwGrabKeyboard(xResourceReq *d, ClientPtr client)
+void XETSwGrabKeyboard(register xGrabKeyboardReq *data)
 {
-    char n;
-    xGrabKeyboardReq *data = (xGrabKeyboardReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->grabWindow), n);
     swapl(&(data->time), n);
 }
 
-void
-XETSwGrabKey(xResourceReq *d, ClientPtr client)
+void XETSwGrabKey(register xGrabKeyReq *data)
 {
-    char n;
-    xGrabKeyReq *data = (xGrabKeyReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->grabWindow), n);
     swaps(&(data->modifiers), n);
 }
 
-void
-XETSwUngrabKey(xResourceReq *d, ClientPtr client)
+void XETSwUngrabKey(register xUngrabKeyReq *data)
 {
-    char n;
-    xUngrabKeyReq *data = (xUngrabKeyReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->grabWindow), n);
     swaps(&(data->modifiers), n);
 }
 
-void
-XETSwGetMotionEvents(xResourceReq *d, ClientPtr client)
+void XETSwGetMotionEvents(register xGetMotionEventsReq *data)
 {
-    char n;
-    xGetMotionEventsReq *data = (xGetMotionEventsReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swapl(&(data->start), n);
     swapl(&(data->stop), n);
 }
 
-void
-XETSwTranslateCoords(xResourceReq *d, ClientPtr client)
+void XETSwTranslateCoords(register xTranslateCoordsReq *data)
 {
-    char n;
-    xTranslateCoordsReq *data = (xTranslateCoordsReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->srcWid), n);
     swapl(&(data->dstWid), n);
@@ -598,12 +471,9 @@ XETSwTranslateCoords(xResourceReq *d, ClientPtr client)
     swaps(&(data->srcY), n);
 }
 
-void
-XETSwWarpPointer(xResourceReq *d, ClientPtr client)
+void XETSwWarpPointer(register xWarpPointerReq *data)
 {
-    char n;
-    xWarpPointerReq *data = (xWarpPointerReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->srcWid), n);
     swapl(&(data->dstWid), n);
@@ -615,65 +485,48 @@ XETSwWarpPointer(xResourceReq *d, ClientPtr client)
     swaps(&(data->dstY), n);
 }
 
-void
-XETSwSetInputFocus(xResourceReq *d, ClientPtr client)
+void XETSwSetInputFocus(register xSetInputFocusReq *data)
 {
-    char n;
-    xSetInputFocusReq *data = (xSetInputFocusReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->focus), n);
     swapl(&(data->time), n);
 }
 
-void
-XETSwOpenFont(xResourceReq *d, ClientPtr client)
+void XETSwOpenFont(register xOpenFontReq *data)
 {
-    char n;
-    xOpenFontReq *data = (xOpenFontReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->fid), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwListFonts(xResourceReq *d, ClientPtr client)
+void XETSwListFonts(register xListFontsReq *data)
 {
-    char n;
-    xListFontsReq *data = (xListFontsReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->maxNames), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwListFontsWithInfo(xResourceReq *d, ClientPtr client)
+void XETSwListFontsWithInfo(register xListFontsWithInfoReq *data)
 {
-    char n;
-    xListFontsWithInfoReq *data = (xListFontsWithInfoReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->maxNames), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwSetFontPath(xResourceReq *d, ClientPtr client)
+void XETSwSetFontPath(register xSetFontPathReq *data)
 {
-    char n;
-    xSetFontPathReq *data = (xSetFontPathReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->nFonts), n);
 }
 
-void
-XETSwCreatePixmap(xResourceReq *d, ClientPtr client)
+void XETSwCreatePixmap(register xCreatePixmapReq *data)
 {
-    char n;
-    xCreatePixmapReq *data = (xCreatePixmapReq *)d;
+    register char n;
 
     swaps(&(data->length), n);
     swapl(&(data->pid), n);
@@ -682,12 +535,9 @@ XETSwCreatePixmap(xResourceReq *d, ClientPtr client)
     swaps(&(data->height), n);
 }
 
-void
-XETSwCreateGC(xResourceReq *d, ClientPtr client)
+void XETSwCreateGC(register xCreateGCReq *data, ClientPtr client)
 {
-    char n;
-    xCreateGCReq *data = (xCreateGCReq *)d;
-
+    register char n;
     swapl(&(data->gc), n);
     swapl(&(data->drawable), n);
     swapl(&(data->mask), n);
@@ -695,48 +545,37 @@ XETSwCreateGC(xResourceReq *d, ClientPtr client)
     swaps(&(data->length), n);
 }
 
-void
-XETSwChangeGC(xResourceReq *d, ClientPtr client)
+void XETSwChangeGC(register xChangeGCReq *data, ClientPtr client)
 {
-    char n;
-    xChangeGCReq *data = (xChangeGCReq *)d;
-
+    register char n;
     swapl(&(data->gc), n);
     swapl(&(data->mask), n);
     SwapRestL(data);
     swaps(&(data->length), n);
 }
 
-void
-XETSwCopyGC(xResourceReq *d, ClientPtr client)
+void XETSwCopyGC(register xCopyGCReq *data)
 {
-    char n;
-    xCopyGCReq *data = (xCopyGCReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->srcGC), n);
     swapl(&(data->dstGC), n);
     swapl(&(data->mask), n);
 }
 
-void
-XETSwSetDashes(xResourceReq *d, ClientPtr client)
+void XETSwSetDashes(register xSetDashesReq *data)
 {
-    char n;
-    xSetDashesReq *data = (xSetDashesReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->gc), n);
     swaps(&(data->dashOffset), n);
     swaps(&(data->nDashes), n);
 }
 
-void
-XETSwSetClipRectangles(xResourceReq *d, ClientPtr client)
+void XETSwSetClipRectangles(register xSetClipRectanglesReq *data, ClientPtr
+client)
 {
-    char n;
-    xSetClipRectanglesReq *data = (xSetClipRectanglesReq *)d;
-
+    register char n;
     swapl(&(data->gc), n);
     swaps(&(data->xOrigin), n);
     swaps(&(data->yOrigin), n);
@@ -744,12 +583,9 @@ XETSwSetClipRectangles(xResourceReq *d, ClientPtr client)
     swaps(&(data->length), n);
 }
 
-void
-XETSwClearToBackground(xResourceReq *d, ClientPtr client)
+void XETSwClearToBackground(register xClearAreaReq *data)
 {
-    char n;
-    xClearAreaReq *data = (xClearAreaReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->window), n);
     swaps(&(data->x), n);
@@ -758,12 +594,9 @@ XETSwClearToBackground(xResourceReq *d, ClientPtr client)
     swaps(&(data->height), n);
 }
 
-void
-XETSwCopyArea(xResourceReq *d, ClientPtr client)
+void XETSwCopyArea(register xCopyAreaReq *data)
 {
-    char n;
-    xCopyAreaReq *data = (xCopyAreaReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->srcDrawable), n);
     swapl(&(data->dstDrawable), n);
@@ -776,12 +609,9 @@ XETSwCopyArea(xResourceReq *d, ClientPtr client)
     swaps(&(data->height), n);
 }
 
-void
-XETSwCopyPlane(xResourceReq *d, ClientPtr client)
+void XETSwCopyPlane(register xCopyPlaneReq *data)
 {
-    char n;
-    xCopyPlaneReq *data = (xCopyPlaneReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->srcDrawable), n);
     swapl(&(data->dstDrawable), n);
@@ -797,11 +627,9 @@ XETSwCopyPlane(xResourceReq *d, ClientPtr client)
 
 /* The following routine is used for all Poly drawing requests
    (except FillPoly, which uses a different request format) */
-void
-XETSwPoly(xResourceReq *d, ClientPtr client)
+void XETSwPoly(register xPolyPointReq *data, ClientPtr client)
 {
-    char n;
-    xPolyPointReq *data = (xPolyPointReq *)d;
+    register char n;
 
     swapl(&(data->drawable), n);
     swapl(&(data->gc), n);
@@ -812,11 +640,9 @@ XETSwPoly(xResourceReq *d, ClientPtr client)
       * is longer than xPolyPointReq, and we don't want to swap
       * the difference as shorts! 
       */
-void
-XETSwFillPoly(xResourceReq *d, ClientPtr client)
+void XETSwFillPoly(register xFillPolyReq *data, ClientPtr client)
 {
-    char n;
-    xFillPolyReq *data = (xFillPolyReq *)d;
+    register char n;
 
     swapl(&(data->drawable), n);
     swapl(&(data->gc), n);
@@ -824,12 +650,9 @@ XETSwFillPoly(xResourceReq *d, ClientPtr client)
     swaps(&(data->length), n);
 }
 
-void
-XETSwPutImage(xResourceReq *d, ClientPtr client)
+void XETSwPutImage(register xPutImageReq *data)
 {
-    char n;
-    xPutImageReq *data = (xPutImageReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->drawable), n);
     swapl(&(data->gc), n);
@@ -840,12 +663,9 @@ XETSwPutImage(xResourceReq *d, ClientPtr client)
     /* Image should already be swapped */
 }
 
-void
-XETSwGetImage(xResourceReq *d, ClientPtr client)
+void XETSwGetImage(register xGetImageReq *data)
 {
-    char n;
-    xGetImageReq *data = (xGetImageReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->drawable), n);
     swaps(&(data->x), n);
@@ -857,12 +677,9 @@ XETSwGetImage(xResourceReq *d, ClientPtr client)
 
 /* ProcPolyText used for both PolyText8 and PolyText16 */
 
-void
-XETSwPolyText(xResourceReq *d, ClientPtr client)
+void XETSwPolyText(register xPolyTextReq *data)
 {
-    char n;
-    xPolyTextReq *data = (xPolyTextReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->drawable), n);
     swapl(&(data->gc), n);
@@ -872,12 +689,9 @@ XETSwPolyText(xResourceReq *d, ClientPtr client)
 
 /* ProcImageText used for both ImageText8 and ImageText16 */
 
-void
-XETSwImageText(xResourceReq *d, ClientPtr client)
+void XETSwImageText(register xImageTextReq *data)
 {
-    char n;
-    xImageTextReq *data = (xImageTextReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->drawable), n);
     swapl(&(data->gc), n);
@@ -885,12 +699,9 @@ XETSwImageText(xResourceReq *d, ClientPtr client)
     swaps(&(data->y), n);
 }
 
-void
-XETSwCreateColormap(xResourceReq *d, ClientPtr client)
+void XETSwCreateColormap(register xCreateColormapReq *data)
 {
-    char n;
-    xCreateColormapReq *data = (xCreateColormapReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->mid), n);
     swapl(&(data->window), n);
@@ -898,24 +709,18 @@ XETSwCreateColormap(xResourceReq *d, ClientPtr client)
 }
 
 
-void
-XETSwCopyColormapAndFree(xResourceReq *d, ClientPtr client)
+void XETSwCopyColormapAndFree(register xCopyColormapAndFreeReq *data)
 {
-    char n;
-    xCopyColormapAndFreeReq *data = (xCopyColormapAndFreeReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->mid), n);
     swapl(&(data->srcCmap), n);
 
 }
 
-void
-XETSwAllocColor(xResourceReq *d, ClientPtr client)
+void XETSwAllocColor                (register xAllocColorReq *data)
 {
-    char n;
-    xAllocColorReq *data = (xAllocColorReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cmap), n);
     swaps(&(data->red), n);
@@ -923,35 +728,27 @@ XETSwAllocColor(xResourceReq *d, ClientPtr client)
     swaps(&(data->blue), n);
 }
 
-void
-XETSwAllocNamedColor(xResourceReq *d, ClientPtr client)
+void XETSwAllocNamedColor           (register xAllocNamedColorReq *data)
 {
-    char n;
-    xAllocNamedColorReq *data = (xAllocNamedColorReq *)d;
+    register char n;
 
     swaps(&(data->length), n);
     swapl(&(data->cmap), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwAllocColorCells(xResourceReq *d, ClientPtr client)
+void XETSwAllocColorCells           (register xAllocColorCellsReq *data)
 {
-    char n;
-    xAllocColorCellsReq *data = (xAllocColorCellsReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cmap), n);
     swaps(&(data->colors), n);
     swaps(&(data->planes), n);
 }
 
-void
-XETSwAllocColorPlanes(xResourceReq *d, ClientPtr client)
+void XETSwAllocColorPlanes(register xAllocColorPlanesReq *data)
 {
-    char n;
-    xAllocColorPlanesReq *data = (xAllocColorPlanesReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cmap), n);
     swaps(&(data->colors), n);
@@ -960,12 +757,10 @@ XETSwAllocColorPlanes(xResourceReq *d, ClientPtr client)
     swaps(&(data->blue), n);
 }
 
-void
-XETSwFreeColors(xResourceReq *d, ClientPtr client)
+void XETSwFreeColors          (register xFreeColorsReq *data, ClientPtr
+client)
 {
-    char n;
-    xFreeColorsReq *data = (xFreeColorsReq *)d;
-
+    register char n;
     swapl(&(data->cmap), n);
     swapl(&(data->planeMask), n);
     SwapRestL(data);
@@ -973,13 +768,12 @@ XETSwFreeColors(xResourceReq *d, ClientPtr client)
 
 }
 
-void
-XETSwStoreColors(xResourceReq *d, ClientPtr client)
+void XETSwStoreColors               (register xStoreColorsReq *data,ClientPtr
+client)
 {
-    char n;
+    register char n;
     unsigned long count;
     xColorItem     *pItem;
-    xStoreColorsReq *data = (xStoreColorsReq *)d;
 
     swapl(&(data->cmap), n);
     pItem = (xColorItem *) &(data[1]);
@@ -988,46 +782,34 @@ XETSwStoreColors(xResourceReq *d, ClientPtr client)
     swaps(&(data->length), n);
 }
 
-void
-XETSwStoreNamedColor(xResourceReq *d, ClientPtr client)
+void XETSwStoreNamedColor           (register xStoreNamedColorReq *data)
 {
-    char n;
-    xStoreNamedColorReq *data = (xStoreNamedColorReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cmap), n);
     swapl(&(data->pixel), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwQueryColors(xResourceReq *d, ClientPtr client)
+void XETSwQueryColors(register xQueryColorsReq *data, ClientPtr client)
 {
-    char n;
-    xQueryColorsReq *data = (xQueryColorsReq *)d;
-
+    register char n;
     swapl(&(data->cmap), n);
     SwapRestL(data);
     swaps(&(data->length), n);
 } 
 
-void
-XETSwLookupColor(xResourceReq *d, ClientPtr client)
+void XETSwLookupColor(register xLookupColorReq *data)
 {
-    char n;
-    xLookupColorReq *data = (xLookupColorReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cmap), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwCreateCursor(xResourceReq *d, ClientPtr client)
+void XETSwCreateCursor(register xCreateCursorReq *data)
 {
-    char n;
-    xCreateCursorReq *data = (xCreateCursorReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cid), n);
     swapl(&(data->source), n);
@@ -1042,12 +824,9 @@ XETSwCreateCursor(xResourceReq *d, ClientPtr client)
     swaps(&(data->y), n);
 }
 
-void
-XETSwCreateGlyphCursor(xResourceReq *d, ClientPtr client)
+void XETSwCreateGlyphCursor(register xCreateGlyphCursorReq *data)
 {
-    char n;
-    xCreateGlyphCursorReq *data = (xCreateGlyphCursorReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cid), n);
     swapl(&(data->source), n);
@@ -1063,12 +842,9 @@ XETSwCreateGlyphCursor(xResourceReq *d, ClientPtr client)
 }
 
 
-void
-XETSwRecolorCursor(xResourceReq *d, ClientPtr client)
+void XETSwRecolorCursor(register xRecolorCursorReq *data)
 {
-    char n;
-    xRecolorCursorReq *data = (xRecolorCursorReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->cursor), n);
     swaps(&(data->foreRed), n);
@@ -1079,12 +855,9 @@ XETSwRecolorCursor(xResourceReq *d, ClientPtr client)
     swaps(&(data->backBlue), n);
 }
 
-void
-XETSwQueryBestSize(xResourceReq *d, ClientPtr client)
+void XETSwQueryBestSize   (register xQueryBestSizeReq *data)
 {
-    char n;
-    xQueryBestSizeReq *data = (xQueryBestSizeReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swapl(&(data->drawable), n);
     swaps(&(data->width), n);
@@ -1092,23 +865,18 @@ XETSwQueryBestSize(xResourceReq *d, ClientPtr client)
 
 }
 
-void
-XETSwQueryExtension(xResourceReq *d, ClientPtr client)
+void XETSwQueryExtension (register xQueryExtensionReq *data)
 {
-    char n;
-    xQueryExtensionReq *data = (xQueryExtensionReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->nbytes), n);
 }
 
-void
-XETSwChangeKeyboardMapping(xResourceReq *d, ClientPtr client)
+void XETSwChangeKeyboardMapping   (register xChangeKeyboardMappingReq *data)
 {
-    char n;
-    long *p;
-    int i, count;
-    xChangeKeyboardMappingReq *data = (xChangeKeyboardMappingReq *)d;
+    register char n;
+    register long *p;
+    register int i, count;
 
     swaps(&(data->length), n);
     p = (long *)&(data[1]);
@@ -1121,23 +889,18 @@ XETSwChangeKeyboardMapping(xResourceReq *d, ClientPtr client)
 }
 
 
-void
-XETSwChangeKeyboardControl(xResourceReq *d, ClientPtr client)
+void XETSwChangeKeyboardControl   (register xChangeKeyboardControlReq *data,
+    ClientPtr client)
 {
-    char n;
-    xChangeKeyboardControlReq *data = (xChangeKeyboardControlReq *)d;
-
+    register char n;
     swapl(&(data->mask), n);
     SwapRestL(data);
     swaps(&(data->length), n);
 }
 
-void
-XETSwChangePointerControl(xResourceReq *d, ClientPtr client)
+void XETSwChangePointerControl   (register xChangePointerControlReq *data)
 {
-    char n;
-    xChangePointerControlReq *data = (xChangePointerControlReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->accelNum), n);
     swaps(&(data->accelDenum), n);
@@ -1145,33 +908,25 @@ XETSwChangePointerControl(xResourceReq *d, ClientPtr client)
 }
 
 
-void
-XETSwSetScreenSaver(xResourceReq *d, ClientPtr client)
+void XETSwSetScreenSaver            (register xSetScreenSaverReq *data)
 {
-    char n;
-    xSetScreenSaverReq *data = (xSetScreenSaverReq *)d;
-
+    register char n;
     swaps(&(data->length), n);
     swaps(&(data->timeout), n);
     swaps(&(data->interval), n);
 }
 
-void
-XETSwChangeHosts(xResourceReq *d, ClientPtr client)
+void XETSwChangeHosts(register xChangeHostsReq *data)
 {
-    char n;
-    xChangeHostsReq *data = (xChangeHostsReq *)d;
+    register char n;
 
     swaps(&(data->length), n);
     swaps(&(data->hostLength), n);
 
 }
-void
-XETSwRotateProperties(xResourceReq *d, ClientPtr client)
+void XETSwRotateProperties(register xRotatePropertiesReq *data, ClientPtr client)
 {
-    char n;
-    xRotatePropertiesReq *data = (xRotatePropertiesReq *)d;
-
+    register char n;
     swapl(&(data->window), n);
     swaps(&(data->nAtoms), n);
     swaps(&(data->nPositions), n);
@@ -1180,22 +935,7 @@ XETSwRotateProperties(xResourceReq *d, ClientPtr client)
 }
 
 /*ARGSUSED*/
-void
-XETSwNoOperation(xResourceReq *d, ClientPtr client)
-{
-    /* noop -- don't do anything */
-}
-
-/*ARGSUSED*/
-void
-XETSwNotImplemented(xResourceReq *d, ClientPtr client)
-{
-    /* noop -- don't do anything */
-}
-
-/*ARGSUSED*/
-void
-XETSwProcBadRequest(xResourceReq *d, ClientPtr client)
+void XETSwNoOperation(xReq *data)
 {
     /* noop -- don't do anything */
 }
@@ -1203,9 +943,9 @@ XETSwProcBadRequest(xResourceReq *d, ClientPtr client)
 /* Byte swap a list of longs */
 #if defined vms && !defined MITR5
 #ifndef LINKED_IN
-void SwapLongs ( long *list, register unsigned long count)
+void SwapLongs ( register long *list, register unsigned long count)
 {
-    char n;
+    register char n;
 
     while (count >= 8) {
         swapl(list+0, n);
@@ -1229,9 +969,9 @@ void SwapLongs ( long *list, register unsigned long count)
 
 /* Byte swap a list of shorts */
 
-void SwapShorts (short *list, register unsigned long count)
+void SwapShorts (register short *list, register unsigned long count)
 {
-    char n;
+    register char n;
 
     while (count >= 16) {
         swaps(list+0, n);
@@ -1263,7 +1003,7 @@ void SwapShorts (short *list, register unsigned long count)
 
 SwapColorItem(xColorItem *pItem)
 {
-    char n;
+    register char n;
     swapl(&pItem->pixel, n);
     swaps(&pItem->red, n);
     swaps(&pItem->green, n);

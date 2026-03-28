@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/ps/PsPrint.c,v 1.12tsi Exp $ */
+/* $Xorg: PsPrint.c,v 1.7 2001/03/14 18:28:18 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -73,6 +80,7 @@ in this Software without prior written authorization from The Open Group.
 **    *********************************************************
 ** 
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/ps/PsPrint.c,v 1.11 2001/12/21 21:02:06 dawes Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -84,7 +92,7 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/Xprotostr.h>
 
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #undef NEED_EVENTS
 
 #include "Ps.h"
@@ -241,16 +249,13 @@ PsEndJob(
     FILE *file;
 
     file = fopen(priv->jobFileName, "r");
-    if (!file)
+    if (!file || (fstat(fileno(file), &buffer) < 0))
 	r = BadAlloc;
-    else if (fstat(fileno(file), &buffer) < 0) {
-	fclose(file);
-	r = BadAlloc;
-    } else {
+    else
 	r = XpSendDocumentData(priv->getDocClient, file, buffer.st_size,
 			       priv->getDocBufSize);
+    if (file)
 	fclose(file);
-    }
 
     (void) XpFinishDocData(priv->getDocClient);
 

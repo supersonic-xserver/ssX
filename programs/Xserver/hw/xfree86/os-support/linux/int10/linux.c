@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/linux.c,v 1.34tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/linux.c,v 1.33 2004/02/25 12:53:15 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * linux specific part of the int10 module
  * Copyright 1999 Egbert Eich
@@ -130,9 +137,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 		    close(fd);
 		    goto error0;
 		}
-		if (sysMem != (void *)(SYS_BIOS))
-		    xf86DrvMsgVerb(screen, X_NOTICE, 0,
-			"Possible sysMem mmap() error (%p)\n", sysMem);
 	    }
 	    if (!vidMem) {
 #ifdef DEBUG
@@ -146,9 +150,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 		    close(fd);
 		    goto error0;
 		}
-		if (vidMem != (void *)(V_RAM))
-		    xf86DrvMsgVerb(screen, X_NOTICE, 0,
-			"Possible vidMem mmap() error (%p)\n", vidMem);
 	    }
 	    close(fd);
 	} else {
@@ -195,9 +196,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 		goto error1;
 	    }
 	    close (fd);
-	    if (vMem != (void *)(V_BIOS))
-		xf86DrvMsgVerb(screen, X_NOTICE, 0,
-		    "Possible V_BIOS (1) mmap() error (%p)\n", vMem);
 	} else
 	    goto error1;
     }
@@ -440,9 +438,6 @@ MapCurrentInt10(xf86Int10InfoPtr pInt)
 	xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot shmat() low memory\n");
 	return FALSE;
     }
-    if (addr != (void *)0)
-	xf86DrvMsgVerb(pInt->scrnIndex, X_NOTICE, 0,
-	    "Possible lowMem shmat() error (%p)\n", addr);
     
     if (((linuxInt10Priv*)pInt->private)->highMem >= 0) {
 	addr = shmat(((linuxInt10Priv*)pInt->private)->highMem,
@@ -452,22 +447,16 @@ MapCurrentInt10(xf86Int10InfoPtr pInt)
 		       "Cannot shmat() high memory\n");
 	    return FALSE;
 	}
-	if (addr != (void *)(HIGH_MEM))
-	    xf86DrvMsgVerb(pInt->scrnIndex, X_NOTICE, 0,
-		"Possible highMem shmat() error (%p)\n", addr);
     } else {
 	if ((fd = open(DEV_MEM, O_RDWR, 0)) >= 0) {
-	    if ((addr = mmap((void *)(V_BIOS), SYS_BIOS - V_BIOS,
+	    if (mmap((void *)(V_BIOS), SYS_BIOS - V_BIOS,
 			     PROT_READ | PROT_WRITE | PROT_EXEC,
-			     MAP_SHARED | MAP_FIXED, fd, V_BIOS))
+			     MAP_SHARED | MAP_FIXED, fd, V_BIOS)
 		== MAP_FAILED) {
 		xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot map V_BIOS\n");
 		close (fd);
 		return FALSE;
 	    }
-	    if (addr != (void *)(V_BIOS))
-		xf86DrvMsgVerb(pInt->scrnIndex, X_NOTICE, 0,
-		    "Possible V_BIOS (2) mmap() error (%p)\n", addr);
 	} else {
 	    xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot open %s\n",DEV_MEM);
 	    return FALSE;
@@ -610,35 +599,19 @@ vm86_tst(void)
     int __res;
 
 #ifdef __PIC__
-    /*
-     * When compiling with -fPIC, we can't use asm constraint "b" because
-     * %ebx is already taken by gcc.
-     */
-    __asm__ __volatile__
-    (
-	"pushl %%ebx\n\t"
-	"push %%gs\n\t"
-	"movl %2,%%ebx\n\t"
-	"movl %1,%%eax\n\t"
-	"int $0x80\n\t"
-	"pop %%gs\n\t"
-	"popl %%ebx"
-	: "=a" (__res)
-	: "n" ((int)113),
-	  "r" (NULL)
-	: "memory"
-    );
+    /* When compiling with -fPIC, we can't use asm constraint "b" because
+       %ebx is already taken by gcc. */
+    __asm__ __volatile__("pushl %%ebx\n\t"
+			 "movl %2,%%ebx\n\t"
+			 "movl %1,%%eax\n\t"
+			 "int $0x80\n\t"
+			 "popl %%ebx"
+			 :"=a" (__res)
+			 :"n" ((int)113), "r" (NULL));
 #else
-    __asm__ __volatile__
-    (
-	"push %%gs\n\t"
-	"int $0x80\n\t"
-	"pop %%gs"
-	: "=a" (__res)
-	: "a" ((int)113),
-	  "b" (NULL)
-	: "memory"
-    );
+    __asm__ __volatile__("int $0x80\n\t"
+			 :"=a" (__res):"a" ((int)113),
+			 "b" ((struct vm86_struct *)NULL));
 #endif
 
     if (__res < 0 && __res == -ENOSYS) 

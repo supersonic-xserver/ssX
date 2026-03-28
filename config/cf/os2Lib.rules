@@ -78,7 +78,7 @@ Concat(libname,os2.def): Concat(libname,-def.cpp)			@@\
 									@@\
 Concat3(libname,rev,.dll):  solist Concat(libname,os2.def)		@@\
 	RemoveFile($@)							@@\
-	$(SHLD) -o $(DLLNAME) solist $(REQUIREDLIBS) $(SHADDLIBS) $(LDLIBS) Concat(libname,o_os2.def)	@@\
+	$(SHLD) -o $(DLLNAME) solist $(REQUIREDLIBS) $(SHADDLIBS) Concat(libname,o_os2.def)	@@\
 	touch $@							@@\
 	BuildDllSupportLibs3(libname,rev)				@@\
 	LinkBuildLibrary5(libname,rev,.dll)				@@\

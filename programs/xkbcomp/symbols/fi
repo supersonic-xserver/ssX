@@ -1,4 +1,7 @@
+// $Xorg: fi,v 1.3 2000/08/17 19:54:42 cpqbld Exp $
+
 // $XFree86: xc/programs/xkbcomp/symbols/fi,v 3.10 2003/01/26 02:48:28 dawes Exp $
+
 
 partial alphanumeric_keys 
  xkb_symbols "basic" {

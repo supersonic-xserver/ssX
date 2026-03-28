@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1997  Metro Link Incorporated
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,7 +31,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xisb.c,v 1.5 2000/11/06 19:24:07 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xisb.c,v 1.6 2003/03/25 04:18:21 dawes Exp $ */
 
 /*
 	X Input Serial Buffer routines for use in any XInput driver that accesses

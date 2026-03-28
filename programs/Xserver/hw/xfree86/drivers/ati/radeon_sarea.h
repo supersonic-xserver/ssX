@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_sarea.h,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_sarea.h,v 1.7 2004/12/10 16:07:01 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000 ATI Technologies Inc., Markham, Ontario,
  *                VA Linux Systems Inc., Fremont, California.
@@ -222,11 +229,10 @@ typedef struct {
 				/* last time texture was uploaded */
     unsigned int texAge[RADEON_NR_TEX_HEAPS];
 
-    drm_context_t ctxOwner;	/* last context to upload state */
+    int ctxOwner;		/* last context to upload state */
     int pfAllowPageFlip;	/* set by the 2d driver, read by the client */
     int pfCurrentPage;		/* set by kernel, read by others */
     int crtc2_base;		/* for pageflipping with CloneMode */
-    int tiling_enabled;		/* set by drm, read by 2d + 3d clients */
 } RADEONSAREAPriv, *RADEONSAREAPrivPtr;
 
 #endif

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -27,7 +34,7 @@
  *
  * Authors:	Harold L Hunt II
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/wincutpaste.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/wincutpaste.c,v 1.3 2003/07/29 21:25:17 dawes Exp $ */
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -43,11 +50,11 @@
 #endif /* MAP_FILE */
 #endif /* HAS_MMAP */
 
-#include <X11/X.h>
-#include <X11/Xos.h>
+#include "X.h"
+#include "Xos.h"
 #include "regionstr.h"
 #include "miscstruct.h"
-#include <X11/keysym.h>
+#include "keysym.h"
 #include <X11/Xlib.h>
 
 #undef MINSHORT
@@ -102,11 +109,11 @@ winInitializeClipboard ()
 
 #if 0
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include <X.h>
+#include <Xproto.h>
 #include "selection.h"
 #include "input.h"
-#include <X11/Xatom.h>
+#include <Xatom.h>
 
 extern WindowPtr *WindowTable; /* Why isn't this in a header file? */
 extern Selection *CurrentSelections;

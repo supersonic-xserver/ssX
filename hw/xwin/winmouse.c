@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -30,29 +37,11 @@
  *		Peter Busch
  *		Harold L Hunt II
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winmouse.c,v 1.4 2001/10/29 21:10:24 alanh Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include "win.h"
 
-#if defined(XFree86Server) && defined(XINPUT)
-#include "inputstr.h"
-
-/* Peek the internal button mapping */
-static CARD8 const *g_winMouseButtonMap = NULL;
-#endif
-
-
-/*
- * Local prototypes
- */
-
-static void
-winMouseCtrl (DeviceIntPtr pDevice, PtrCtrl *pCtrl);
-
-
-static void
+void
 winMouseCtrl (DeviceIntPtr pDevice, PtrCtrl *pCtrl)
 {
 }
@@ -66,49 +55,23 @@ winMouseCtrl (DeviceIntPtr pDevice, PtrCtrl *pCtrl)
 int
 winMouseProc (DeviceIntPtr pDeviceInt, int iState)
 {
-  int 			lngMouseButtons, i;
-  int			lngWheelEvents = 2;
-  CARD8			*map;
+  CARD8			map[6];
   DevicePtr		pDevice = (DevicePtr) pDeviceInt;
 
   switch (iState)
     {
     case DEVICE_INIT:
-      /* Get number of mouse buttons */
-      lngMouseButtons = GetSystemMetrics(SM_CMOUSEBUTTONS);
-
-      /* Mapping of windows events to X events:
-       * LEFT:1 MIDDLE:2 RIGHT:3
-       * SCROLL_UP:4 SCROLL_DOWN:5
-       * XBUTTON 1:6 XBUTTON 2:7 ...
-       *
-       * To map scroll wheel correctly we need at least the 3 normal buttons
-       */
-      if (lngMouseButtons < 3)
-        lngMouseButtons = 3;
-      winMsg(X_PROBED, "%d mouse buttons found\n", lngMouseButtons);
-
-      /* allocate memory: 
-       * number of buttons + 2x mouse wheel event + 1 extra (offset for map) 
-       */
-      map = malloc(sizeof(CARD8) * (lngMouseButtons + lngWheelEvents + 1));
-    
-      /* initalize button map */ 
-      map[0] = 0;
-      for (i=1; i <= lngMouseButtons + lngWheelEvents; i++)
-      	map[i] = i;
+      map[1] = 1;
+      map[2] = 2;
+      map[3] = 3;
+      map[4] = 4;
+      map[5] = 5;
       InitPointerDeviceStruct (pDevice,
 			       map,
-			       lngMouseButtons + lngWheelEvents,
-			       GetMotionHistory,
+			       5, /* Buttons 4 and 5 are mouse wheel events */
+			       miPointerGetMotionEvents,
 			       winMouseCtrl,
-			       GetMotionHistorySize(),
-			       2);
-      free(map);
-
-#if defined(XFree86Server) && defined(XINPUT)
-      g_winMouseButtonMap = pDeviceInt->button->map;
-#endif
+			       miPointerGetMotionBufferSize ());
       break;
 
     case DEVICE_ON:
@@ -116,9 +79,6 @@ winMouseProc (DeviceIntPtr pDeviceInt, int iState)
       break;
 
     case DEVICE_CLOSE:
-#if defined(XFree86Server) && defined(XINPUT)
-      g_winMouseButtonMap = NULL;
-#endif
     case DEVICE_OFF:
       pDevice->on = FALSE;
       break;
@@ -132,7 +92,7 @@ int
 winMouseWheel (ScreenPtr pScreen, int iDeltaZ)
 {
   winScreenPriv(pScreen);
-  int button; /* Button4 or Button5 */
+  xEvent		xCurrentEvent;
 
   /* Button4 = WheelUp */
   /* Button5 = WheelDown */
@@ -183,11 +143,11 @@ winMouseWheel (ScreenPtr pScreen, int iDeltaZ)
   /* Set the button to indicate up or down wheel delta */
   if (iDeltaZ > 0)
     {
-      button = Button4;
+      xCurrentEvent.u.u.detail = Button4;
     }
   else
     {
-      button = Button5;
+      xCurrentEvent.u.u.detail = Button5;
     }
 
   /*
@@ -204,10 +164,16 @@ winMouseWheel (ScreenPtr pScreen, int iDeltaZ)
   while (iDeltaZ--)
     {
       /* Push the wheel button */
-      winMouseButtonsSendEvent (ButtonPress, button);
+      xCurrentEvent.u.u.type = ButtonPress;
+      xCurrentEvent.u.keyButtonPointer.time
+	= g_c32LastInputEventTime = GetTickCount ();
+      mieqEnqueue (&xCurrentEvent);
 
       /* Release the wheel button */
-      winMouseButtonsSendEvent (ButtonRelease, button);
+      xCurrentEvent.u.u.type = ButtonRelease;
+      xCurrentEvent.u.keyButtonPointer.time
+	= g_c32LastInputEventTime = GetTickCount ();
+      mieqEnqueue (&xCurrentEvent);
     }
 
   return 0;
@@ -225,11 +191,6 @@ winMouseButtonsSendEvent (int iEventType, int iButton)
 
   /* Load an xEvent and enqueue the event */
   xCurrentEvent.u.u.type = iEventType;
-#if defined(XFree86Server) && defined(XINPUT)
-  if (g_winMouseButtonMap)
-    xCurrentEvent.u.u.detail = g_winMouseButtonMap[iButton];
-  else
-#endif
   xCurrentEvent.u.u.detail = iButton;
   xCurrentEvent.u.keyButtonPointer.time
     = g_c32LastInputEventTime = GetTickCount ();

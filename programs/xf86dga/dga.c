@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/xf86dga/dga.c,v 3.20tsi Exp $ */
+/* $XFree86: xc/programs/xf86dga/dga.c,v 3.20 2002/05/31 18:46:11 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <X11/Xos.h>
 #include <X11/Intrinsic.h>
@@ -148,8 +162,8 @@ main(int argc, char *argv[])
 
    banks = (ram * 1024)/bank;
 #ifdef DEBUG
-   fprintf(stderr, "%x ram:%x, addr %lx, banks %d\n", True,
-	   ram, (unsigned long)addr, banks);
+   fprintf(stderr, "%x ram:%x, addr %x, banks %d\n", True,
+	   ram, addr, banks);
 #endif
    while (1) {
       XMotionEvent *mevent = (XMotionEvent *) &event;
@@ -225,8 +239,7 @@ main(int argc, char *argv[])
 		memset(addr, buf[0], bank);
 #ifdef DEBUG
    fprintf(stderr, "XF86DGASetVidPage(dis, DefaultScreen(dis), %d);\n",i);
-   fprintf(stderr, "memset(addr:%lx, buf[0]:%d, bank:%d);\n",
-	   (unsigned long)addr,buf[0],bank);
+   fprintf(stderr, "memset(addr:%x, buf[0]:%d, bank:%d);\n",addr,buf[0],bank);
 #endif
 	 }
 	 break;

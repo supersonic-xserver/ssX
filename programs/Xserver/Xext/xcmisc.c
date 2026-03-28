@@ -1,3 +1,11 @@
+/* $Xorg: xcmisc.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -25,19 +33,25 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/xcmisc.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xcmisc.c,v 3.8 2003/11/17 22:20:27 dawes Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include "swaprep.h"
-#include <X11/extensions/xcmiscstr.h>
+#include "xcmiscstr.h"
 #include "modinit.h"
+
+#if HAVE_STDINT_H
+#include <stdint.h>
+#elif !defined(UINT32_MAX)
+#define UINT32_MAX 0xffffffffU
+#endif
 
 #if 0
 static unsigned char XCMiscCode;
@@ -77,15 +91,17 @@ XCMiscExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-XCMiscResetProc(ExtensionEntry *extEntry)
+XCMiscResetProc (extEntry)
+    ExtensionEntry	*extEntry;
 {
 }
 
 static int
-ProcXCMiscGetVersion(ClientPtr client)
+ProcXCMiscGetVersion(client)
+    register ClientPtr client;
 {
     xXCMiscGetVersionReply rep;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH(xXCMiscGetVersionReq);
     rep.type = X_Reply;
@@ -103,10 +119,11 @@ ProcXCMiscGetVersion(ClientPtr client)
 }
 
 static int
-ProcXCMiscGetXIDRange(ClientPtr client)
+ProcXCMiscGetXIDRange(client)
+    register ClientPtr client;
 {
     xXCMiscGetXIDRangeReply rep;
-    int n;
+    register int n;
     XID min_id, max_id;
 
     REQUEST_SIZE_MATCH(xXCMiscGetXIDRangeReq);
@@ -126,23 +143,25 @@ ProcXCMiscGetXIDRange(ClientPtr client)
 }
 
 static int
-ProcXCMiscGetXIDList(ClientPtr client)
+ProcXCMiscGetXIDList(client)
+    register ClientPtr client;
 {
     REQUEST(xXCMiscGetXIDListReq);
     xXCMiscGetXIDListReply rep;
-    int n;
+    register int n;
     XID *pids;
     unsigned int count;
 
     REQUEST_SIZE_MATCH(xXCMiscGetXIDListReq);
 
-    if (stuff->count > ((CARD32)(-1) / sizeof(XID) / 2))
+    if (stuff->count > UINT32_MAX / sizeof(XID))
 	return BadAlloc;
 
     pids = (XID *)Xalloc(stuff->count * sizeof(XID));
     if (!pids)
+    {
 	return BadAlloc;
-
+    }
     count = GetXIDList(client, stuff->count, pids);
     rep.type = X_Reply;
     rep.sequenceNumber = client->sequence;
@@ -154,7 +173,8 @@ ProcXCMiscGetXIDList(ClientPtr client)
 	swapl(&rep.count, n);
     }
     WriteToClient(client, sizeof(xXCMiscGetXIDListReply), (char *)&rep);
-    if (count) {
+    if (count)
+    {
     	client->pSwapReplyFunc = (ReplySwapPtr) Swap32Write;
 	WriteSwappedDataToClient(client, count * sizeof(XID), pids);
     }
@@ -163,7 +183,8 @@ ProcXCMiscGetXIDList(ClientPtr client)
 }
 
 static int
-ProcXCMiscDispatch(ClientPtr client)
+ProcXCMiscDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -180,9 +201,10 @@ ProcXCMiscDispatch(ClientPtr client)
 }
 
 static int
-SProcXCMiscGetVersion(ClientPtr client)
+SProcXCMiscGetVersion(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xXCMiscGetVersionReq);
 
     swaps(&stuff->length, n);
@@ -193,9 +215,10 @@ SProcXCMiscGetVersion(ClientPtr client)
 }
 
 static int
-SProcXCMiscGetXIDRange(ClientPtr client)
+SProcXCMiscGetXIDRange(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xReq);
 
     swaps(&stuff->length, n);
@@ -203,9 +226,10 @@ SProcXCMiscGetXIDRange(ClientPtr client)
 }
 
 static int
-SProcXCMiscGetXIDList(ClientPtr client)
+SProcXCMiscGetXIDList(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xXCMiscGetXIDListReq);
 
     swaps(&stuff->length, n);
@@ -214,7 +238,8 @@ SProcXCMiscGetXIDList(ClientPtr client)
 }
 
 static int
-SProcXCMiscDispatch (ClientPtr client)
+SProcXCMiscDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)

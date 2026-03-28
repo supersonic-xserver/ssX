@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/emulRepAre.c,v 1.3 1999/06/06 08:48:54 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,6 +28,7 @@
  * SOFTWARE.
  *
 */
+/* $XConsortium: emulRepAre.c /main/5 1996/02/21 17:56:16 kaleb $ */
 
 /* ppc Replicate Area -- A Divide & Conquer Algorithm
  * a "ppc" Helper Function For Stipples And Tiling
@@ -29,10 +37,12 @@
 
 #include "xf4bpp.h"
 
-void
-xf4bppReplicateArea(WindowPtr pWin, int x, int y, int planeMask,
-		    int goalWidth, int goalHeight,
-		    int currentHoriz, int currentVert)
+void xf4bppReplicateArea( pWin, x, y, planeMask, goalWidth, goalHeight,
+			currentHoriz, currentVert)
+WindowPtr pWin; /* GJA */
+register int x, y, planeMask ;
+int goalWidth, goalHeight ;
+int currentHoriz, currentVert ;
 {
 	for ( ;
 	      currentHoriz <= ( goalWidth >> 1 ) ;

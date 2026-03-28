@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86int10module.c,v 1.2 2002/09/16 18:06:09 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *                   XFree86 int10 module
  *   execute BIOS int 10h calls in x86 real mode environment
@@ -42,7 +49,7 @@ static XF86ModuleVersionInfo NAME(VersRec) =
 XF86ModuleData NAME(ModuleData) = { &NAME(VersRec), NAME(Setup), NULL };
 
 static pointer
-NAME(Setup)(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+NAME(Setup)(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
     

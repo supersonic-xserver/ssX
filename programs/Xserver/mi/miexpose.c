@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/miexpose.c,v 3.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/miexpose.c,v 3.10 2003/11/10 18:22:49 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,10 +53,12 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include <X11/X.h>
+/* $Xorg: miexpose.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
+
+#include "X.h"
 #define NEED_EVENTS
-#include <X11/Xproto.h>
-#include <X11/Xprotostr.h>
+#include "Xproto.h"
+#include "Xprotostr.h"
 
 #include "misc.h"
 #include "regionstr.h"
@@ -61,9 +70,14 @@ SOFTWARE.
 
 #include "dixstruct.h"
 #include "mi.h"
-#include <X11/Xmd.h>
+#include "Xmd.h"
 
 #include "globals.h"
+
+#ifdef PANORAMIX
+#include "panoramiX.h"
+#include "panoramiXsrv.h"
+#endif
 
 /*
     machine-independent graphics exposure code.  any device that uses
@@ -92,11 +106,17 @@ exposing is done by the backing store's GraphicsExpose function, of course.
 */
 
 RegionPtr
-miHandleExposures(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
-		  GCPtr pGC, int srcx, int srcy, int width, int height,
-		  int dstx, int dsty, unsigned long plane)
+miHandleExposures(pSrcDrawable, pDstDrawable,
+		  pGC, srcx, srcy, width, height, dstx, dsty, plane)
+    register DrawablePtr	pSrcDrawable;
+    register DrawablePtr	pDstDrawable;
+    GCPtr 			pGC;
+    int 			srcx, srcy;
+    int 			width, height;
+    int 			dstx, dsty;
+    unsigned long		plane;
 {
-    ScreenPtr pscr;
+    register ScreenPtr pscr;
     RegionPtr prgnSrcClip;	/* drawable-relative source clip */
     RegionRec rgnSrcRec;
     RegionPtr prgnDstClip;	/* drawable-relative dest clip */
@@ -110,7 +130,7 @@ miHandleExposures(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
 				   the window background
 				*/
     WindowPtr pSrcWin;
-    BoxRec expBox = {0, };
+    BoxRec expBox;
     Bool extents;
 
     /* This prevents warning about pscr not being used. */
@@ -335,15 +355,19 @@ miHandleExposures(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
 /* send GraphicsExpose events, or a NoExpose event, based on the region */
 
 void
-miSendGraphicsExpose(ClientPtr client, RegionPtr pRgn, XID drawable,
-		     int major, int minor)
+miSendGraphicsExpose (client, pRgn, drawable, major, minor)
+    ClientPtr	client;
+    RegionPtr	pRgn;
+    XID		drawable;
+    int	major;
+    int	minor;
 {
     if (pRgn && !REGION_NIL(pRgn))
     {
         xEvent *pEvent;
-	xEvent *pe;
-	BoxPtr pBox;
-	int i;
+	register xEvent *pe;
+	register BoxPtr pBox;
+	register int i;
 	int numRects;
 
 	numRects = REGION_NUM_RECTS(pRgn);
@@ -382,12 +406,15 @@ miSendGraphicsExpose(ClientPtr client, RegionPtr pRgn, XID drawable,
 
 
 void
-miSendExposures(WindowPtr pWin, RegionPtr pRgn, int dx, int dy)
+miSendExposures(pWin, pRgn, dx, dy)
+    WindowPtr pWin;
+    RegionPtr pRgn;
+    register int dx, dy;
 {
-    BoxPtr pBox;
+    register BoxPtr pBox;
     int numRects;
-    xEvent *pEvent, *pe;
-    int i;
+    register xEvent *pEvent, *pe;
+    register int i;
 
     pBox = REGION_RECTS(pRgn);
     numRects = REGION_NUM_RECTS(pRgn);
@@ -405,13 +432,46 @@ miSendExposures(WindowPtr pWin, RegionPtr pRgn, int dx, int dy)
 	pe->u.expose.count = i;
     }
 
+#ifdef PANORAMIX
+    if(!noPanoramiXExtension) {
+	int scrnum = pWin->drawable.pScreen->myNum;
+	int x = 0, y = 0;
+	XID realWin = 0;
+
+	if(!pWin->parent) {
+	    x = panoramiXdataPtr[scrnum].x;
+	    y = panoramiXdataPtr[scrnum].y;
+	    pWin = WindowTable[0];
+	    realWin = pWin->drawable.id;
+	} else if (scrnum) {
+	    PanoramiXRes *win;
+	    win = PanoramiXFindIDByScrnum(XRT_WINDOW, 
+			pWin->drawable.id, scrnum);
+	    if(!win) {
+		DEALLOCATE_LOCAL(pEvent);
+		return;
+	    }
+	    realWin = win->info[0].id;
+	    pWin = LookupIDByType(realWin, RT_WINDOW);
+	}
+	if(x || y || scrnum)
+	  for (i = 0; i < numRects; i++) {
+	      pEvent[i].u.expose.window = realWin;
+	      pEvent[i].u.expose.x += x;
+	      pEvent[i].u.expose.y += y;
+	  }
+    }
+#endif
+
     DeliverEvents(pWin, pEvent, numRects, NullWindow);
 
     DEALLOCATE_LOCAL(pEvent);
 }
 
 void 
-miWindowExposures(WindowPtr pWin, RegionPtr prgn, RegionPtr other_exposed)
+miWindowExposures(pWin, prgn, other_exposed)
+    WindowPtr pWin;
+    register RegionPtr prgn, other_exposed;
 {
     RegionPtr   exposures = prgn;
     if (pWin->backStorage && prgn)
@@ -546,7 +606,10 @@ tossGC (
 
 
 void
-miPaintWindow(WindowPtr pWin, RegionPtr prgn, int what)
+miPaintWindow(pWin, prgn, what)
+register WindowPtr pWin;
+RegionPtr prgn;
+int what;
 {
     int	status;
 
@@ -566,19 +629,19 @@ miPaintWindow(WindowPtr pWin, RegionPtr prgn, int what)
     ChangeGCVal gcval[7];
     ChangeGCVal newValues [COUNT_BITS];
 
-    BITS32 gcmask = 0, index, mask;
+    BITS32 gcmask, index, mask;
     RegionRec prgnWin;
-    DDXPointRec oldCorner = {0, 0};
+    DDXPointRec oldCorner;
     BoxRec box;
     WindowPtr	pBgWin;
     GCPtr pGC;
-    int i;
-    BoxPtr pbox;
-    ScreenPtr pScreen = pWin->drawable.pScreen;
-    xRectangle *prect;
+    register int i;
+    register BoxPtr pbox;
+    register ScreenPtr pScreen = pWin->drawable.pScreen;
+    register xRectangle *prect;
     int numRects;
 
-    REGION_NULL(pWin->drawable.pScreen, &prgnWin);
+    gcmask = 0;
 
     if (what == PW_BACKGROUND)
     {
@@ -797,7 +860,9 @@ miPaintWindow(WindowPtr pWin, RegionPtr prgn, int what)
  * the GC.  Useful when we have a scratch drawable and need to initialize 
  * it. */
 void
-miClearDrawable(DrawablePtr pDraw, GCPtr pGC)
+miClearDrawable(pDraw, pGC)
+    DrawablePtr	pDraw;
+    GCPtr	pGC;
 {
     XID fg = pGC->fgPixel;
     XID bg = pGC->bgPixel;

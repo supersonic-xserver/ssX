@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/Xserver/Xi/extinit.c,v 3.8tsi Exp $ */
+/* $Xorg: extinit.c,v 1.4 2001/02/09 02:04:34 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -44,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/extinit.c,v 3.7 2003/11/17 22:20:29 dawes Exp $ */
 
 /********************************************************************
  *
@@ -55,13 +71,13 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "inputstr.h"
 #include "gcstruct.h"   		/* pointer for extnsionst.h*/
 #include "extnsionst.h"			/* extension entry   */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 
 #include "dixevents.h"
 #include "exevents.h"
@@ -213,7 +229,7 @@ static	XExtensionVersion	thisversion =
  */
 
 void
-XInputExtensionInit(INITARGS)
+XInputExtensionInit()
 {
     ExtensionEntry *extEntry;
 

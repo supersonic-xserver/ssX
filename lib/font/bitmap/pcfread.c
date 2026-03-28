@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/bitmap/pcfread.c,v 1.25tsi Exp $ */
+/* $Xorg: pcfread.c,v 1.5 2001/02/09 02:04:02 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1990, 1998  The Open Group
@@ -26,6 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/lib/font/bitmap/pcfread.c,v 1.22 2003/11/18 01:17:04 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium
@@ -40,6 +48,7 @@ from The Open Group.
 #endif
 
 #include <stdarg.h>
+#include <stdint.h>
 
 void
 pcfError(const char* message, ...)
@@ -128,7 +137,7 @@ pcfReadTOC(FontFilePtr file, int *countp)
 	return (PCFTablePtr) NULL;
     count = pcfGetLSB32(file);
     if (IS_EOF(file)) return (PCFTablePtr) NULL;
-    if ((count < 0) || (count > (0x7fffffff / sizeof(PCFTableRec)))) {
+    if (count < 0 || count > INT32_MAX / sizeof(PCFTableRec)) {
 	pcfError("pcfReadTOC(): invalid file format\n");
 	return NULL;
     }
@@ -251,7 +260,7 @@ pcfGetProperties(FontInfoPtr pFontInfo, FontFilePtr file,
     if (!PCF_FORMAT_MATCH(format, PCF_DEFAULT_FORMAT))
 	goto Bail;
     nprops = pcfGetINT32(file, format);
-    if ((nprops <= 0) || (nprops > (0x7fffffff / sizeof(FontPropRec)))) {
+    if (nprops <= 0 || nprops > INT32_MAX / sizeof(FontPropRec)) {
 	pcfError("pcfGetProperties(): invalid nprops value (%d)\n", nprops);
 	goto Bail;
     }
@@ -433,7 +442,7 @@ pcfReadFont(FontPtr pFont, FontFilePtr file,
     else
 	nmetrics = pcfGetINT16(file, format);
     if (IS_EOF(file)) goto Bail;
-    if ((nmetrics < 0) || (nmetrics > (0x7fffffff / sizeof(CharInfoRec)))) {
+    if (nmetrics < 0 || nmetrics > INT32_MAX / sizeof(CharInfoRec)) {
 	pcfError("pcfReadFont(): invalid file format\n");
 	goto Bail;
     }
@@ -462,7 +471,7 @@ pcfReadFont(FontPtr pFont, FontFilePtr file,
     nbitmaps = pcfGetINT32(file, format);
     if (nbitmaps != nmetrics || IS_EOF(file))
 	goto Bail;
-    /* nmetrics is already ok, so nbitmap also is */
+    /* nmetrics is alreadt ok, so nbitmap also is */
     offsets = (CARD32 *) xalloc(nbitmaps * sizeof(CARD32));
     if (!offsets) {
       pcfError("pcfReadFont(): Couldn't allocate offsets (%d*%d)\n", nbitmaps, sizeof(CARD32));
@@ -476,7 +485,7 @@ pcfReadFont(FontPtr pFont, FontFilePtr file,
     for (i = 0; i < GLYPHPADOPTIONS; i++) {
 	bitmapSizes[i] = pcfGetINT32(file, format);
 	if (IS_EOF(file)) goto Bail;
-	if ((INT32)bitmapSizes[i] < 0) goto Bail;
+	if (bitmapSizes[i] < 0) goto Bail;
     }
     
     sizebitmaps = bitmapSizes[PCF_GLYPH_PAD_INDEX(format)];
@@ -582,9 +591,9 @@ pcfReadFont(FontPtr pFont, FontFilePtr file,
     pFont->info.lastRow = pcfGetINT16(file, format);
     pFont->info.defaultCh = pcfGetINT16(file, format);
     if (IS_EOF(file)) goto Bail;
-    if ((pFont->info.firstCol > pFont->info.lastCol) ||
-	(pFont->info.firstRow > pFont->info.lastRow) ||
-	((pFont->info.lastCol - pFont->info.firstCol) > 255)) goto Bail;
+    if (pFont->info.firstCol > pFont->info.lastCol ||
+       pFont->info.firstRow > pFont->info.lastRow ||
+       pFont->info.lastCol-pFont->info.firstCol > 255) goto Bail;
 
     nencoding = (pFont->info.lastCol - pFont->info.firstCol + 1) *
 	(pFont->info.lastRow - pFont->info.firstRow + 1);
@@ -723,9 +732,9 @@ pcfReadFontInfo(FontInfoPtr pFontInfo, FontFilePtr file)
     pFontInfo->lastRow = pcfGetINT16(file, format);
     pFontInfo->defaultCh = pcfGetINT16(file, format);
     if (IS_EOF(file)) goto Bail;
-    if ((pFontInfo->firstCol > pFontInfo->lastCol) ||
-	(pFontInfo->firstRow > pFontInfo->lastRow) ||
-	((pFontInfo->lastCol - pFontInfo->firstCol) > 255)) goto Bail;
+    if (pFontInfo->firstCol > pFontInfo->lastCol ||
+       pFontInfo->firstRow > pFontInfo->lastRow ||
+       pFontInfo->lastCol-pFontInfo->firstCol > 255) goto Bail;
 
     nencoding = (pFontInfo->lastCol - pFontInfo->firstCol + 1) *
 	(pFontInfo->lastRow - pFontInfo->firstRow + 1);
@@ -832,7 +841,7 @@ pmfReadFont(FontPtr pFont, FontFilePtr file,
     else
 	nmetrics = pcfGetINT16(file, format);
     if (IS_EOF(file)) goto Bail;
-    if ((nmetrics < 0) || (nmetrics > (0x7fffffff / sizeof(CharInfoRec)))) {
+    if (nmetrics < 0 || nmetrics > INT32_MAX / sizeof(CharInfoRec)) {
 	pcfError("pmfReadFont(): invalid file format\n");
 	goto Bail;
     }

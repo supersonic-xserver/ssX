@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  pfrcmap.c                                                              */
 /*                                                                         */
@@ -71,7 +78,7 @@
       gchar = cmap->chars + mid;
 
       if ( gchar->char_code == char_code )
-        return mid;
+        return mid + 1;
 
       if ( gchar->char_code < char_code )
         min = mid + 1;
@@ -107,7 +114,10 @@
         {
           result = mid;
           if ( result != 0 )
+          {
+            result++;
             goto Exit;
+          }
 
           char_code++;
           goto Restart;
@@ -127,7 +137,10 @@
         gchar  = cmap->chars + min;
         result = min;
         if ( result != 0 )
+        {
+          result++;
           char_code = gchar->char_code;
+        }
       }
     }
 

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +32,7 @@
  * XFree86 Project.
  */
 
-/* $XFree86: xc/lib/Xaw/Private.h,v 3.9 1999/05/16 10:12:48 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Private.h,v 3.10 1999/06/06 08:48:07 dawes Exp $ */
 
 #ifndef _XawPrivate_h
 #define _XawPrivate_h

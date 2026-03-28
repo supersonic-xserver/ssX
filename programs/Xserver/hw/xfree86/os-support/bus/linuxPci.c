@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/linuxPci.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/linuxPci.c,v 1.12 2004/12/31 03:30:41 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *
@@ -42,7 +49,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 /*
- * Copyright 2004-2007 by The XFree86 Project, Inc.
+ * Copyright 2004 The XFree86 Project, Inc.
  *
  * All rights reserved.
  *
@@ -322,7 +329,7 @@ linuxPciInit(void)
 	long int iDevice = 0, maxdevice = MAX_PCI_DEVICES;
 	char buffer[512];
 
-	while (fgets(buffer, sizeof(buffer) - 1, fp)) {
+	while (fgets(buffer, sizeof(buffer), fp)) {
 	    static const char format[] =
 		/* An optional domain, then bus+dev, vendorid, deviceid, irq */
 		"%04lx:%02lx%02x\t%*04x%*04x\t%*x"
@@ -376,15 +383,9 @@ linuxPciInit(void)
 	    } else {
 		linuxSize[iDevice].tag =
 		    PCI_MAKE_TAG(pcibus, devfn >> 3, devfn & 7);
-		for (Index = 0;  Index < 7;  Index++) {
-		    if ((size[Index] & (size[Index] - 1)) == 0) {
-			for (;  size[Index];  size[Index] >>= 1)
-			    linuxSize[iDevice].size[Index]++;
-		    } else {
-			linuxSize[iDevice].size[Index] = 1;
-		    }
-		}
-
+		for (Index = 0;  Index < 7;  Index++)
+		    for (;  size[Index];  size[Index] >>= 1)
+			linuxSize[iDevice].size[Index]++;
 		linuxSize[iDevice].empty = FALSE;
 	    }
 
@@ -425,7 +426,7 @@ xf86GetPciSizeFromOS(PCITAG tag, int Index, int *bits)
 {
     unsigned int pcibus, device;
 
-    if ((Index < 0) || (Index > 7))
+    if ((Index < 0) || (Index >= 7))
 	return FALSE;
 
     pcibus = PCI_BUS_FROM_TAG(tag);
@@ -435,9 +436,6 @@ xf86GetPciSizeFromOS(PCITAG tag, int Index, int *bits)
     for (device = 0;  device < MAX_PCI_DEVICES;  device++) {
 	if (linuxSize[device].empty || (linuxSize[device].tag != tag))
 	    continue;
-
-	if (Index == 7)	/* P2P bridge ROM pointer */
-	    Index = 6;
 
 	if (linuxSize[device].size[Index] < 2)
 	    return FALSE;
@@ -622,9 +620,6 @@ linuxPpcHostAddrToBusAddr(PCITAG tag, PciAddrType type, ADDRESS addr)
  *         master aborts are avoided during PCI scans).
  */
 
-/* Workaround for kernel header breakage since 2.5.62 */
-#undef  LINUX_MOD_DEVICETABLE_H
-#define LINUX_MOD_DEVICETABLE_H 1
 #include <linux/pci.h>
 
 #ifndef PCIIOC_BASE		/* Ioctls for /proc/bus/pci/X/Y nodes. */

@@ -1,4 +1,5 @@
 XCOMM!/bin/sh -f
+XCOMM $Xorg: elistgen.sun,v 1.3 2000/08/17 19:41:52 cpqbld Exp $
 XCOMM
 XCOMM ########################################################################
 XCOMM Construct shared-library scoping mapfile for Solaris based on standardized

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xnest/XNWindow.h,v 1.6 2008/01/04 17:50:12 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -27,6 +35,7 @@ typedef struct {
 #ifdef SHAPE
   RegionPtr bounding_shape;
   RegionPtr clip_shape;
+  RegionPtr input_shape;
 #endif /* SHAPE */
 } xnestPrivWin;
 
@@ -71,7 +80,6 @@ void xnestClipNotify(WindowPtr pWin, int dx, int dy);
 void xnestWindowExposures(WindowPtr pWin, RegionPtr pRgn,
 			  RegionPtr other_exposed);
 #ifdef SHAPE
-void xnestSetShape(WindowPtr pWin);
 void xnestShapeWindow(WindowPtr pWin);
 #endif /* SHAPE */
 

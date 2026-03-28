@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1996 by Steven Lang <tiger@tyger.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -30,7 +37,7 @@
  * Probably buggy as hell, no idea what the initialisation strings are,
  * no idea how to ack it. If the tablet stops responding power cycle it.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/digitaledge/DigitalEdge.c,v 1.12 2005/10/14 15:16:55 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/digitaledge/DigitalEdge.c,v 1.11 2004/10/23 15:29:30 dawes Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -47,7 +54,7 @@
 #include "xf86_OSproc.h"
 #include "xf86Xinput.h"
 #include "exevents.h"		/* Needed for InitValuator/Proximity stuff */
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "mipointer.h"
 
 #include "xf86Module.h"
@@ -968,8 +975,6 @@ InputDriverRec DIGITALEDGE = {
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULETEARDOWNPROTO(xf86SumUnplug);
-
 static void
 xf86SumUnplug(pointer	p)
 {
@@ -980,10 +985,8 @@ xf86SumUnplug(pointer	p)
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULESETUPPROTO(xf86SumPlug);
-
 static pointer
-xf86SumPlug(ModuleDescPtr	module,
+xf86SumPlug(pointer	module,
 	    pointer	options,
 	    int		*errmaj,
 	    int		*errmin)

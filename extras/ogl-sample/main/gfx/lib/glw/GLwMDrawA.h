@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
 ** Software License B, Version 1.1 (the "License"), the contents of this
@@ -39,7 +46,7 @@
 ** tree and for generating both Motif(TM) 1.2 and 2.x versions of the widgets
 ** in the same library.
 */
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwMDrawA.h,v 1.2 2000/11/02 20:39:07 dawes Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glw/GLwMDrawA.h,v 1.3 2001/05/02 13:37:45 dawes Exp $ */
 
 #ifndef __GLX_MOTIF
 #define __GLX_MOTIF 1

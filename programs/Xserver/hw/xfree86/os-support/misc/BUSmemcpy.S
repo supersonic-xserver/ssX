@@ -26,6 +26,7 @@ Austin, Tx 78765
 (glenn@cs.utexas.edu)
 8/9/93
 ******************************************************************************/
+/* $XConsortium: BUSmemcpy.s /main/4 1996/02/21 17:39:34 kaleb $ */
 
 /*
  * Modified to use long-alignment of video memory rather than word-alignment

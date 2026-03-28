@@ -1,3 +1,19 @@
+/* $Xorg: Error.c,v 1.5 2001/02/09 02:03:54 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -247,7 +263,9 @@ static void DefaultMsg (
 	    (void) fprintf (stderr, "%s%s",
 			    error ? XTERROR_PREFIX : XTWARNING_PREFIX,
 			    error ? "Error: " : "Warning: ");
-	    (void) fprintf (stderr, "%s", buffer);
+	    (void) fprintf (stderr, buffer,
+			    par[0], par[1], par[2], par[3], par[4],
+			    par[5], par[6], par[7], par[8], par[9]);
 	    (void) fprintf (stderr, "%c", '\n');
 	    if (i != *num_params)
 		(*fn) ( "Some arguments in previous message were lost" );

@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_stubs.c,v 3.5 2003/11/06 03:25:46 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (c) Copyright 1996 by Holger Veit
  *			<Holger.Veit@gmd.de>
@@ -26,6 +33,7 @@
  * in this Software without prior written authorization from Holger Veit.
  *
  */
+/* $XConsortium: os2_stubs.c /main/3 1996/10/27 11:48:58 kaleb $ */
 
 #define I_NEED_OS2_H
 #include "X11/X.h"

@@ -1,4 +1,11 @@
 /* zlib.h -- interface of the 'zlib' general purpose compression library
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   version 1.1.4, March 11th, 2002
 
   Copyright (C) 1995-2002 Jean-loup Gailly and Mark Adler

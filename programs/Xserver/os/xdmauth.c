@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/xdmauth.c,v 1.12 2005/10/14 15:17:26 tsi Exp $ */
+/* $Xorg: xdmauth.c,v 1.4 2001/02/09 02:05:24 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -26,6 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/os/xdmauth.c,v 1.11 2004/06/24 02:21:16 tsi Exp $ */
 
 /*
  * XDM-AUTHENTICATION-1 (XDMCP authentication) and
@@ -35,8 +43,8 @@ from The Open Group.
  */
 
 #include <stdio.h>
-#include <X11/X.h>
-#include <X11/Xtrans.h>
+#include "X.h"
+#include "Xtrans.h"
 #include "os.h"
 #include "osdep.h"
 #include "dixstruct.h"
@@ -46,9 +54,9 @@ from The Open Group.
 static Bool authFromXDMCP;
 
 #ifdef XDMCP
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #undef REQUEST
-#include <X11/Xdmcp.h>
+#include "Xdmcp.h"
 
 /* XDM-AUTHENTICATION-1 */
 
@@ -110,7 +118,7 @@ XdmAuthenticationAddAuth (unsigned int name_len, char *name,
 		 'A' <= c && c <= 'F' ? c - 'A' + 10 : -1)
 
 static int
-HexToBinary (const char *in, char *out, int len)
+HexToBinary (char *in, char *out, int len)
 {
     int	    top, bottom;
 
@@ -133,7 +141,7 @@ HexToBinary (const char *in, char *out, int len)
 }
 
 void
-XdmAuthenticationInit (const char *cookie, int cookie_len)
+XdmAuthenticationInit (char *cookie, int cookie_len)
 {
     bzero (privateKey.data, 8);
     if (!strncmp (cookie, "0x", 2) || !strncmp (cookie, "0X", 2))

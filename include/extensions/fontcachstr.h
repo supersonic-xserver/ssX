@@ -1,4 +1,11 @@
 /*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998-1999 Shunsuke Akiyama <akiyama@jp.FreeBSD.org>.
  * All rights reserved.
  * Copyright (c) 1998-1999 X-TrueType Server Project, All rights
@@ -25,6 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ *	Id: fontcachstr.h,v 1.7 1999/01/31 14:58:40 akiyama Exp $
  */
 /* $XFree86: xc/include/extensions/fontcachstr.h,v 1.3 2001/08/01 00:44:35 tsi Exp $ */
 

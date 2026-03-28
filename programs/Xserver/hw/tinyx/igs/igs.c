@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igs.c,v 1.1tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igs.c,v 1.1 2004/06/02 22:43:01 dawes Exp $
  *
  * Copyright © 1999 SuSE, Inc.
  *
@@ -23,7 +30,7 @@
  * Author:  Keith Packard, SuSE, Inc.
  */
 /*
- * Copyright (c) 2004-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -209,10 +216,9 @@ igsScreenInit (KdScreenInfo *screen)
     {
 	igss->cursor_offset = memory - 1024;
 #if BITMAP_BIT_ORDER == MSBFirst
-	igss->cursor_base =
-	    (CARD8 *) KdMapDevice (screen->card->attr.address[0] +
-				   igss->cursor_offset,
-				   1024);
+	igss->cursor_base = (CARD8 *) KdMapDevice (card->attr.address[0] +
+						   igss->cursor_offset,
+						   1024);
 #else
 	igss->cursor_base = igsc->frameBuffer + igss->cursor_offset;
 #endif

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,7 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/trident/tridentdraw.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/trident/tridentdraw.c,v 1.2 2004/08/04 16:33:35 tsi Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -70,13 +77,13 @@
 #include "trident.h"
 #include "tridentdraw.h"
 
-#include	<X11/Xmd.h>
+#include	"Xmd.h"
 #include	"gcstruct.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"regionstr.h"
 #include	"mistruct.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"fb.h"
 #include	"migc.h"
@@ -141,18 +148,18 @@ tridentPrepareSolid (DrawablePtr    pDrawable,
     }
 }
 
-static void
+void
 tridentSolid (int x1, int y1, int x2, int y2)
 {
     _tridentRect (cop, x1, y1, x2 - 1, y2 - 1, cmd);
 }
 
-static void
+void
 tridentDoneSolid (void)
 {
 }
 
-static Bool
+Bool
 tridentPrepareCopy (DrawablePtr	pSrcDrawable,
 		    DrawablePtr	pDstDrawable,
 		    int		dx,
@@ -178,7 +185,7 @@ tridentPrepareCopy (DrawablePtr	pSrcDrawable,
 	return FALSE;
 }
 
-static void
+void
 tridentCopy (int srcX,
 	     int srcY,
 	     int dstX,
@@ -204,12 +211,12 @@ tridentCopy (int srcX,
     cop->command = cmd;
 }
 
-static void
+void
 tridentDoneCopy (void)
 {
 }
 
-static void
+void
 tridentComposite (CARD8      op,
 		  PicturePtr pSrc,
 		  PicturePtr pMask,

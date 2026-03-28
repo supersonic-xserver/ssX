@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/resource.h,v 1.14 2006/02/19 15:51:31 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -111,11 +119,8 @@ typedef unsigned long RESTYPE;
 #define CLIENT_ID(id) ((int)(CLIENT_BITS(id) >> CLIENTOFFSET))
 #define SERVER_BIT		(Mask)0x40000000	/* use illegal bit */
 
-#ifdef INVALID
-#undef INVALID	/* needed on HP/UX */
-#endif
-
 /* Invalid resource id */
+#undef  INVALID
 #define INVALID	(0)
 
 #define BAD_RESOURCE 0xe0000000
@@ -212,7 +217,8 @@ extern pointer LookupClientResourceComplex(
     FindComplexResType func,
     pointer cdata);
 
-/* These are the access modes that can be passed in the last parameter
+/*
+ * These are the access modes that can be passed in the last parameter
  * to SecurityLookupIDByType/Class.  The Security extension doesn't
  * currently make much use of these; they're mainly provided as an
  * example of what you might need for discretionary access control.
@@ -220,11 +226,10 @@ extern pointer LookupClientResourceComplex(
  * simultaneously.
  */
 
-#define DixUnknownAccess	0	/* don't know intentions */
-#define DixReadAccess		(1<<0)	/* inspecting the object */
-#define DixWriteAccess		(1<<1)	/* changing the object */
-#define DixReadWriteAccess	(DixReadAccess|DixWriteAccess)
-#define DixDestroyAccess	(1<<2)	/* destroying the object */
+#define SecurityUnknownAccess	0	/* don't know intentions */
+#define SecurityReadAccess	(1<<0)	/* inspecting the object */
+#define SecurityWriteAccess	(1<<1)	/* changing the object */
+#define SecurityDestroyAccess	(1<<2)	/* destroying the object */
 
 extern pointer SecurityLookupIDByType(
     ClientPtr /*client*/,
@@ -237,7 +242,6 @@ extern pointer SecurityLookupIDByClass(
     XID /*id*/,
     RESTYPE /*classes*/,
     Mask /*access_mode*/);
-
 
 extern void GetXIDRange(
     int /*client*/,
@@ -253,10 +257,9 @@ extern unsigned int GetXIDList(
 extern RESTYPE lastResourceType;
 extern RESTYPE TypeMask;
 
-#ifdef XResExtension
+#ifdef RES
 extern Atom *ResourceNames;
 void RegisterResourceName(RESTYPE type, char* name);
 #endif
 
 #endif /* RESOURCE_H */
-

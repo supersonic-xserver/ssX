@@ -1,6 +1,6 @@
 XCOMM!/bin/sh
 XCOMM
-XCOMM $XFree86$
+XCOMM $Xorg: mergelib.cpp,v 1.4 2001/02/09 02:03:17 xorgcvs Exp $
 XCOMM 
 XCOMM Copyright (c) 1989, 1998 The Open Group
 XCOMM 

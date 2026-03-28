@@ -3,7 +3,7 @@
 #
 
 
-# Copyright 1996-2000 by
+# Copyright 1996-2000, 2001, 2003 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -34,7 +34,7 @@
 # details on host platform detection and library builds.
 
 
-.PHONY: setup distclean
+.PHONY: all setup distclean modules
 
 # The `space' variable is used to avoid trailing spaces in defining the
 # `T' variable later.
@@ -52,7 +52,7 @@ endif
 # configuration rules file to use.
 #
 # Note that the configuration file is put in the current directory, which is
-# not necessarily $(TOP).
+# not necessarily $(TOP_DIR).
 
 # If `config.mk' is not present, set `check_platform'.
 #
@@ -71,6 +71,8 @@ endif
 #
 ifdef check_platform
 
+  # This is the first rule `make' sees.
+  #
   all: setup
 
   ifdef USE_MODULES
@@ -79,10 +81,10 @@ ifdef check_platform
     #modules: make_module_list setup
   endif
 
-  include $(TOP)/builds/detect.mk
+  include $(TOP_DIR)/builds/detect.mk
 
   ifdef USE_MODULES
-    include $(TOP)/builds/modules.mk
+    include $(TOP_DIR)/builds/modules.mk
 
     ifeq ($(wildcard $(MODULE_LIST)),)
       setup: make_module_list
@@ -92,14 +94,26 @@ ifdef check_platform
   # This rule makes sense for Unix only to remove files created by a run
   # of the configure script which hasn't been successful (so that no
   # `config.mk' has been created).  It uses the built-in $(RM) command of
-  # GNU make.
+  # GNU make.  Similarly, `nul' is created if e.g. `make setup win32' has
+  # been erroneously used.
   #
-  distclean:
+  # note: This test is duplicated in "builds/toplevel.mk".
+  #
+  is_unix := $(strip $(wildcard /sbin/init) \
+                     $(wildcard /usr/sbin/init) \
+                     $(wildcard /hurd/auth))
+  ifneq ($(is_unix),)
+
+    distclean:
 	  $(RM) builds/unix/config.cache
 	  $(RM) builds/unix/config.log
 	  $(RM) builds/unix/config.status
 	  $(RM) builds/unix/unix-def.mk
 	  $(RM) builds/unix/unix-cc.mk
+	  $(RM) builds/unix/freetype2.pc
+	  $(RM) nul
+
+  endif # test is_unix
 
   # IMPORTANT:
   #
@@ -120,5 +134,6 @@ else
   include $(CONFIG_MK)
 
 endif # test check_platform
+
 
 # EOF

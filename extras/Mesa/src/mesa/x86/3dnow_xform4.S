@@ -1,3 +1,4 @@
+/* $Id: 3dnow_xform4.S,v 1.1.1.1 2005/03/18 13:06:59 tron Exp $ */
 /* $XFree86: xc/extras/Mesa/src/mesa/x86/3dnow_xform4.S,v 1.3 2004/12/10 15:30:13 alanh Exp $ */
 
 /*

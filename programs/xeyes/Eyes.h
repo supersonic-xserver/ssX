@@ -1,6 +1,13 @@
 /*
- * $XFree86$
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
+
+
+* $XConsortium: Eyes.h,v 1.7 90/12/01 13:04:51 rws Exp $
+*/
 
 #ifndef _XtEyes_h
 #define _XtEyes_h

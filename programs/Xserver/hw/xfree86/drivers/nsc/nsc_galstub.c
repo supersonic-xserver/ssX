@@ -1,5 +1,16 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_galstub.c,v 1.2 2003/01/14 09:34:31 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: nsc_galstub.c $
+ * $Revision: 1.1.1.1 $
+ * $Author: tron $
+ *
  * File Contents: This file contains the file inclusions of the GAL
  *
  * Project:       Geode Xfree Frame buffer device driver.

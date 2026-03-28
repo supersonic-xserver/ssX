@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/GL/glx/glxext.c,v 1.11tsi Exp $
+/* $XFree86: xc/programs/Xserver/GL/glx/glxext.c,v 1.11 2004/12/10 16:06:59 alanh Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** The contents of this file are subject to the GLX Public License Version 1.0
 ** (the "License"). You may not use this file except in compliance with the
 ** License. You may obtain a copy of the License at Silicon Graphics, Inc.,
@@ -216,7 +223,7 @@ GLboolean __glXErrorOccured(void)
 /*
 ** Initialize the GLX extension.
 */
-void GlxExtensionInit(INITARGS)
+void GlxExtensionInit(void)
 {
     ExtensionEntry *extEntry;
     int i;

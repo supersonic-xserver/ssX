@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 VA Linux Systems, Inc.
  * All Rights Reserved.
  *
@@ -24,7 +31,7 @@
  * Authors:
  *    Keith Whitwell <keith@tungstengraphics.com>
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/mga/mgadd.c,v 1.14 2002/10/30 12:51:35 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mgadd.c,v 1.1.1.2 2004/06/10 14:22:55 alanh Exp $ */
 
 
 #include "mtypes.h"
@@ -48,7 +55,7 @@
  ***************************************/
 
 
-static const GLubyte *mgaDDGetString( GLcontext *ctx, GLenum name )
+static const GLubyte *mgaGetString( GLcontext *ctx, GLenum name )
 {
    mgaContextPtr mmesa = MGA_CONTEXT( ctx );
    static char buffer[128];
@@ -73,7 +80,6 @@ static const GLubyte *mgaDDGetString( GLcontext *ctx, GLenum name )
 }
 
 
-
 static void mgaBufferSize(GLframebuffer *buffer, GLuint *width, GLuint *height)
 {
    GET_CURRENT_CONTEXT(ctx);
@@ -89,9 +95,10 @@ static void mgaBufferSize(GLframebuffer *buffer, GLuint *width, GLuint *height)
    UNLOCK_HARDWARE( mmesa );
 }
 
-void mgaDDInitDriverFuncs( GLcontext *ctx )
+
+void mgaInitDriverFuncs( struct dd_function_table *functions )
 {
-   ctx->Driver.GetBufferSize = mgaBufferSize;
-   ctx->Driver.ResizeBuffers = _swrast_alloc_buffers;
-   ctx->Driver.GetString = mgaDDGetString;
+   functions->GetBufferSize = mgaBufferSize;
+   functions->ResizeBuffers = _swrast_alloc_buffers;
+   functions->GetString = mgaGetString;
 }

@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/usl.cf,v 3.23 2001/01/17 16:38:50 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/usl.cf,v 3.24 2004/06/02 22:42:53 dawes Exp $
 
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.

@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: stip68kgnu.h,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -24,14 +32,14 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
-/* $XFree86: xc/programs/Xserver/cfb/stip68kgnu.h,v 3.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/stip68kgnu.h,v 3.4 2001/12/14 19:59:25 dawes Exp $ */
 
 /*
  * Stipple stack macro for 68k GCC
  */
 
 #define STIPPLE(addr,stipple,value,width,count,shift) \
-    __asm__ __volatile__ ( \
+    __asm volatile ( \
        "lea	5f,%/a1\n\
 	moveq	#28,%/d2\n\
 	addl	%2,%/d2\n\

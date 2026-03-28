@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/x86emu/Imakefile,v 1.7tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/x86emu/Imakefile,v 1.6 2004/11/10 04:28:38 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -50,12 +50,12 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/x86emu/Ima
 
 #include <Server.tmpl>
 
-SRCS1 = xf86x86emu.c helper_exec.c xf86int10.c
-OBJS1 = xf86x86emu.o helper_exec.o xf86int10.o
+SRCS1 = xf86x86emu.c helper_exec.c xf86int10.c 
+OBJS1 = xf86x86emu.o helper_exec.o xf86int10.o 
 
-#if defined(DoLoadableServer) && defined(Int10SubLibs)
+#if  defined(DoLoadableServer) && defined(Int10SubLibs)
 SUBMODSRCS = xf86x86emumodule.c
-SUBMODOBJS = xf86x86emumodule.o
+SUBMODOBJS = xf86x86emumodule.o 
 #endif
 
 SRCS2 = $(SUBMODSRCS) $(SRCS1)
@@ -66,16 +66,28 @@ LinkSourceFile(xf86int10.c,$(XF86SRC)/int10)
 LinkSourceFile(xf86x86emu.c,$(XF86SRC)/int10)
 LinkFile(xf86x86emumodule.c,$(XF86SRC)/int10/xf86int10module.c)
 
-#if defined(i386Architecture) ||defined (AMD64Architecture)
+
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86SRC)/int10 \
+           -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(X86EMUINCLUDES)
+
+DEFINES = $(X86EMUDEFINES) $(EXTRADEFINES)
+
+#if defined(i386Architecture) || defined (AMD64Architecture)
 EXTRADEFINES=-D_PC
 #endif
+
+SpecialObjectRule(xf86x86emumodule.o, xf86x86emumodule.c, -DMOD_NAME=x86emu)
+SpecialObjectRule(helper_exec.o, helper_exec.c, -D_X86EMU)
+SpecialObjectRule(xf86int10.o, xf86int10.c, -D_X86EMU -DSHOW_ALL_DEVICES)
+SpecialObjectRule(linux.o, linux.c, -D_X86EMU)
 
 X86TOPDIR = $(TOP)/extras/x86emu
 X86SRCDIR = $(X86TOPDIR)/src/x86emu
 X86EMUINCLUDES = $(X86TOPDIR)/include -I$(X86SRCDIR)
 X86EMUDEFINES = -D__DRIVER__ -DFORCE_POST -D_CEXPORT= -DNO_LONG_LONG
 
-#if !defined(X86EMU_LIBPATH)
+#if !defined(X86EMU_LIBPATH) 
 X86EMUSRCS = debug.c decode.c fpu.c ops.c ops2.c prim_ops.c sys.c
 X86EMUOBJS = debug.o decode.o fpu.o ops.o ops2.o prim_ops.o sys.o
 
@@ -89,24 +101,14 @@ LinkSourceFile(sys.c,$(X86SRCDIR))
 #else
 BuildObjectFromLibraryWithPath(X86EMU_LIBPATH,x86emu,x86emu)
 X86EMUOBJS = x86emu.o
-#endif
+#endif 
 
 SRCS = $(SRCS2) $(X86EMUSRCS)
 OBJS = $(OBJS2) $(X86EMUOBJS)
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86SRC)/int10 -I$(XF86OSSRC) \
-           -I$(SERVERSRC)/include -I$(X86EMUINCLUDES)
-
-DEFINES = $(X86EMUDEFINES) $(EXTRADEFINES)
-
-SpecialObjectRule(xf86x86emumodule.o, xf86x86emumodule.c, -DMOD_NAME=x86emu)
-SpecialObjectRule(helper_exec.o, helper_exec.c, -D_X86EMU)
-SpecialObjectRule(xf86int10.o, xf86int10.c, -D_X86EMU -DSHOW_ALL_DEVICES)
-SpecialObjectRule(linux.o, linux.c, -D_X86EMU)
-
 ModuleObjectRule()
 
-#if defined(DoLoadableServer) && defined(Int10SubLibs)
+#if  defined(DoLoadableServer) && defined(Int10SubLibs)
 LibraryModuleTarget(x86emu, $(OBJS),linux)
 
 InstallLibraryModule(x86emu,$(MODULEDIR),linux)
@@ -122,3 +124,4 @@ SubdirLibraryRule($(OBJS))
 #endif
 
 DependTarget()
+

@@ -1,8 +1,17 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * midispcur.c
  *
  * machine independent cursor display routines
  */
+
+/* $Xorg: midispcur.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
 
 /*
 
@@ -28,10 +37,10 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
-/* $XFree86: xc/programs/Xserver/mi/midispcur.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/midispcur.c,v 1.10 2003/03/06 05:52:58 mvojkovi Exp $ */
 
 #define NEED_EVENTS
-# include   <X11/X.h>
+# include   "X.h"
 # include   "misc.h"
 # include   "input.h"
 # include   "cursorstr.h"
@@ -106,7 +115,9 @@ static miSpriteCursorFuncRec miDCFuncs = {
 };
 
 Bool
-miDCInitialize(ScreenPtr pScreen, miPointerScreenFuncPtr screenFuncs)
+miDCInitialize (pScreen, screenFuncs)
+    ScreenPtr		    pScreen;
+    miPointerScreenFuncPtr  screenFuncs;
 {
     miDCScreenPtr   pScreenPriv;
 
@@ -157,7 +168,9 @@ miDCInitialize(ScreenPtr pScreen, miPointerScreenFuncPtr screenFuncs)
 #define tossPict(pict)	(pict ? FreePicture (pict, 0) : 0)
 
 static Bool
-miDCCloseScreen(int index, ScreenPtr pScreen)
+miDCCloseScreen (index, pScreen)
+    int		index;
+    ScreenPtr	pScreen;
 {
     miDCScreenPtr   pScreenPriv;
 
@@ -181,7 +194,9 @@ miDCCloseScreen(int index, ScreenPtr pScreen)
 }
 
 static Bool
-miDCRealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
+miDCRealizeCursor (pScreen, pCursor)
+    ScreenPtr	pScreen;
+    CursorPtr	pCursor;
 {
     if (pCursor->bits->refcnt <= 1)
 	pCursor->bits->devPriv[pScreen->myNum] = (pointer)NULL;
@@ -192,7 +207,7 @@ miDCRealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
 #define EnsurePicture(picture,draw,win) (picture || miDCMakePicture(&picture,draw,win))
 
 static VisualPtr
-miDCGetWindowVisual(WindowPtr pWin)
+miDCGetWindowVisual (WindowPtr pWin)
 {
     ScreenPtr	    pScreen = pWin->drawable.pScreen;
     VisualID	    vid = wVisual (pWin);
@@ -205,7 +220,7 @@ miDCGetWindowVisual(WindowPtr pWin)
 }
 
 static PicturePtr
-miDCMakePicture(PicturePtr *ppPicture, DrawablePtr pDraw, WindowPtr pWin)
+miDCMakePicture (PicturePtr *ppPicture, DrawablePtr pDraw, WindowPtr pWin)
 {
     ScreenPtr	    pScreen = pDraw->pScreen;
     VisualPtr	    pVisual;
@@ -342,7 +357,9 @@ miDCRealize (
 }
 
 static Bool
-miDCUnrealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
+miDCUnrealizeCursor (pScreen, pCursor)
+    ScreenPtr	pScreen;
+    CursorPtr	pCursor;
 {
     miDCCursorPtr   pPriv;
 
@@ -444,8 +461,11 @@ miDCMakeGC(
 
 
 static Bool
-miDCPutUpCursor(ScreenPtr pScreen, CursorPtr pCursor, int x, int y,
-		unsigned long source, unsigned long mask)
+miDCPutUpCursor (pScreen, pCursor, x, y, source, mask)
+    ScreenPtr	    pScreen;
+    CursorPtr	    pCursor;
+    int		    x, y;
+    unsigned long   source, mask;
 {
     miDCScreenPtr   pScreenPriv;
     miDCCursorPtr   pPriv;
@@ -494,7 +514,9 @@ miDCPutUpCursor(ScreenPtr pScreen, CursorPtr pCursor, int x, int y,
 }
 
 static Bool
-miDCSaveUnderCursor(ScreenPtr pScreen, int x, int y, int w, int h)
+miDCSaveUnderCursor (pScreen, x, y, w, h)
+    ScreenPtr	pScreen;
+    int		x, y, w, h;
 {
     miDCScreenPtr   pScreenPriv;
     PixmapPtr	    pSave;
@@ -524,7 +546,9 @@ miDCSaveUnderCursor(ScreenPtr pScreen, int x, int y, int w, int h)
 }
 
 static Bool
-miDCRestoreUnderCursor(ScreenPtr pScreen, int x, int y, int w, int h)
+miDCRestoreUnderCursor (pScreen, x, y, w, h)
+    ScreenPtr	pScreen;
+    int		x, y, w, h;
 {
     miDCScreenPtr   pScreenPriv;
     PixmapPtr	    pSave;
@@ -547,7 +571,9 @@ miDCRestoreUnderCursor(ScreenPtr pScreen, int x, int y, int w, int h)
 }
 
 static Bool
-miDCChangeSave(ScreenPtr pScreen, int x, int y, int w, int h, int dx, int dy)
+miDCChangeSave (pScreen, x, y, w, h, dx, dy)
+    ScreenPtr	    pScreen;
+    int		    x, y, w, h, dx, dy;
 {
     miDCScreenPtr   pScreenPriv;
     PixmapPtr	    pSave;
@@ -677,9 +703,11 @@ miDCChangeSave(ScreenPtr pScreen, int x, int y, int w, int h, int dx, int dy)
 }
 
 static Bool
-miDCMoveCursor(ScreenPtr pScreen, CursorPtr pCursor,
-	       int x, int y, int w, int h, int dx, int dy,
-	       unsigned long source, unsigned long mask)
+miDCMoveCursor (pScreen, pCursor, x, y, w, h, dx, dy, source, mask)
+    ScreenPtr	    pScreen;
+    CursorPtr	    pCursor;
+    int		    x, y, w, h, dx, dy;
+    unsigned long   source, mask;
 {
     miDCCursorPtr   pPriv;
     miDCScreenPtr   pScreenPriv;

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbplygblt.c,v 3.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbplygblt.c,v 3.3 2003/10/29 22:15:19 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,12 +54,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbimggblt.c,v 5.17 94/04/17 20:28:25 dpw Exp $ */
 
-#include		<X11/X.h>
-#include		<X11/Xmd.h>
-#include		<X11/Xproto.h>
+#include		"X.h"
+#include		"Xmd.h"
+#include		"Xproto.h"
 #include		"afb.h"
-#include		<X11/fonts/fontstruct.h>
+#include		"fontstruct.h"
 #include		"dixfontstr.h"
 #include		"gcstruct.h"
 #include		"windowstr.h"
@@ -83,50 +91,55 @@ one wouldn't.  the code below deals with this.)
 */
 
 void
-afbPolyGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
-		unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+afbPolyGlyphBlt (pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+	DrawablePtr pDrawable;
+	GC				*pGC;
+	int		x, y;
+	unsigned int nglyph;
+	CharInfoPtr *ppci;			/* array of character info */
+	pointer		pglyphBase;		/* start of array of glyphs */
 {
-	ExtentInfoRec info;	/* used by QueryGlyphExtents() */
-	BoxRec bbox;		/* string's bounding box */
+	ExtentInfoRec info;			/* used by QueryGlyphExtents() */
+	BoxRec bbox;					/* string's bounding box */
 
 	CharInfoPtr pci;
-	int xorg, yorg;		/* origin of drawable in bitmap */
-	int widthDst;		/* width of dst in longwords */
+	int xorg, yorg;				/* origin of drawable in bitmap */
+	int widthDst;					/* width of dst in longwords */
 
-				/* these keep track of the character origin */
+										/* these keep track of the character origin */
 	PixelType *pdstBase;
-				/* points to longword with character origin */
-	int xchar;		/* xorigin of char (mod 32) */
+										/* points to longword with character origin */
+	int xchar;						/* xorigin of char (mod 32) */
 
-				/* these are used for placing the glyph */
-	int xoff;		/* x offset of left edge of glyph (mod 32) */
-	PixelType *pdst;	/* pointer to current longword in dst */
+										/* these are used for placing the glyph */
+	register int xoff;			/* x offset of left edge of glyph (mod 32) */
+	register PixelType *pdst;	/* pointer to current longword in dst */
 
-	int d;
+	register int d;
 	int depthDst;
 	int sizeDst;
 	int hSave;
-	int w;			/* width of glyph in bits */
-	int h;			/* height of glyph */
-	int widthGlyph;		/* width of glyph, in bytes */
+	int w;							/* width of glyph in bits */
+	int h;							/* height of glyph */
+	int widthGlyph;				/* width of glyph, in bytes */
 	unsigned char *rrops;
-	unsigned char *pglyph;
-				/* pointer to current row of glyph */
+	register unsigned char *pglyph;
+										/* pointer to current row of glyph */
 	unsigned char *pglyphSave;
 
-				/* used for putting down glyph */
-	PixelType tmpSrc;
-				/* for getting bits from glyph */
-	PixelType startmask;
-	PixelType endmask;
+										/* used for putting down glyph */
+	register PixelType tmpSrc;
+										/* for getting bits from glyph */
+	register PixelType startmask;
+	register PixelType endmask;
 
-	int nFirst;		/* bits of glyph in current longword */
+	register int nFirst;			/* bits of glyph in current longword */
 	PixelType *pdstSave;
 
 	xorg = pDrawable->x;
 	yorg = pDrawable->y;
-	afbGetPixelWidthSizeDepthAndPointer(pDrawable, widthDst, sizeDst,
-					    depthDst, pdstBase);
+	afbGetPixelWidthSizeDepthAndPointer(pDrawable, widthDst, sizeDst, depthDst,
+													 pdstBase);
 
 	QueryGlyphExtents(pGC->font, ppci, (unsigned long)nglyph, &info);
 

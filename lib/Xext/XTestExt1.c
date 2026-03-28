@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *	File:  xtestext1lib.c
  *
  *	This file contains the Xlib parts of the input synthesis extension
@@ -50,7 +57,7 @@ Telephone and Telegraph Company or of the Regents of the
 University of California.
 
 */
-/* $XFree86: xc/lib/Xext/XTestExt1.c,v 1.4 2001/12/14 19:55:01 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/XTestExt1.c,v 1.5 2005/01/27 02:28:59 dawes Exp $ */
 
 /******************************************************************************
  * include files

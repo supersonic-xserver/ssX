@@ -36,6 +36,8 @@
 /*
  * mapdescv.c++
  *
+ * $Date: 2004/03/05 14:26:36 $ $Revision: 1.1.1.2 $
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/mapdescv.cc,v 1.1.1.2 2004/03/05 14:26:36 tron Exp $
  */
 
 #include "glimports.h"

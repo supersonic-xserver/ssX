@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxinputinit.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxinputinit.c,v 1.4 2005/01/27 03:03:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002-2003 Red Hat Inc., Durham, North Carolina.
  *
@@ -70,8 +77,8 @@
 #include "windowstr.h"
 
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "exevents.h"
 #define EXTENSION_PROC_ARGS void *
 #include "extinit.h"

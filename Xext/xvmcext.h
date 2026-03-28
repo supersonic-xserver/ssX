@@ -1,3 +1,18 @@
+/* $XFree86: xc/programs/Xserver/Xext/xvmcext.h,v 1.4 2007/01/04 02:48:11 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _XVMC_H
 #define _XVMC_H
@@ -101,15 +116,10 @@ typedef struct {
   XvMCDestroySubpictureProcPtr      DestroySubpicture;
 } XvMCAdaptorRec, *XvMCAdaptorPtr;
 
-void XvMCExtensionInit(void);
+void XvMCExtensionInit(INITARGS);
 
 int XvMCScreenInit(ScreenPtr pScreen, int num, XvMCAdaptorPtr adapt);
 
 XvImagePtr XvMCFindXvImage(XvPortPtr pPort, CARD32 id);
-
-int xf86XvMCRegisterDRInfo(ScreenPtr pScreen, char *name,
-			   char *busID, int major, int minor, 
-			   int patchLevel);
-
 
 #endif /* _XVMC_H */

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftsmooth.h                                                             */
 /*                                                                         */
 /*    Anti-aliasing renderer interface (specification).                    */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,15 +23,15 @@
 /***************************************************************************/
 
 
-#ifndef FTSMOOTH_H
-#define FTSMOOTH_H
-
-#include <freetype/ftrender.h>
+#ifndef __FTSMOOTH_H__
+#define __FTSMOOTH_H__
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#include <ft2build.h>
+#include FT_RENDER_H
+
+
+FT_BEGIN_HEADER
 
 
 #ifndef FT_CONFIG_OPTION_NO_STD_RASTER
@@ -33,14 +40,17 @@
 
 #ifndef FT_CONFIG_OPTION_NO_SMOOTH_RASTER
   FT_EXPORT_VAR( const FT_Renderer_Class )  ft_smooth_renderer_class;
+
+  FT_EXPORT_VAR( const FT_Renderer_Class )  ft_smooth_lcd_renderer_class;
+
+  FT_EXPORT_VAR( const FT_Renderer_Class )  ft_smooth_lcd_v_renderer_class;
 #endif
 
-#ifdef __cplusplus
-  }
-#endif
 
 
-#endif /* FTSMOOTH_H */
+FT_END_HEADER
+
+#endif /* __FTSMOOTH_H__ */
 
 
 /* END */

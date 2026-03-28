@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+** $XConsortium: tests.c,v 1.20 91/06/08 18:57:07 rws Exp $
 ** $XFree86: xc/programs/xgc/tests.c,v 1.12 2003/10/24 20:38:18 tsi Exp $
 **
 */

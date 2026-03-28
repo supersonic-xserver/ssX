@@ -1,4 +1,4 @@
-XCOMM $XFree86$
+XCOMM $XConsortium: Imakefile,v 1.17 93/08/17 21:20:11 rws Exp $
 
 SYS_LIBRARIES = MathLibrary
         DEPLIBS = $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)

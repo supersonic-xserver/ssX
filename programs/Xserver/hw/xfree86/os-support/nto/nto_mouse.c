@@ -1,10 +1,17 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Written by Frank Liu Oct 10, 2001
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_mouse.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_mouse.c,v 1.3 2005/02/03 03:32:54 dawes Exp $ */
 
 
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Xinput.h"
 #include "xf86OSmouse.h"

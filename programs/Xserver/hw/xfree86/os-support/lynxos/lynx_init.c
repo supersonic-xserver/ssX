@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1993 by Thomas Mueller
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -22,10 +29,10 @@
  */
 
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/lynxos/lynx_init.c,v 3.4 2005/10/14 15:17:04 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/lynxos/lynx_init.c,v 3.3 1998/08/29 05:43:58 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 
 #include "compiler.h"
 
@@ -165,7 +172,7 @@ xf86CloseConsole()
 }
 
 int
-xf86ProcessArgument(int argc, const char *argv[], int i)
+xf86ProcessArgument(int argc, char *argv[], int i)
 {
 	if ((argv[i][0] == 'v') && (argv[i][1] == 't'))
 	{

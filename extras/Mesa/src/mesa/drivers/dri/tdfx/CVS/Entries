@@ -1,0 +1,33 @@
+/BUGS/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/Makefile/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/dri_glide.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_context.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_context.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_dd.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_dd.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_glide.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_lock.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_lock.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_pixels.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_pixels.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_render.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_render.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_screen.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_screen.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_span.c/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_span.h/1.1.1.1/Fri Mar 18 13:06:35 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_state.c/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_state.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_tex.c/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_tex.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_texman.c/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_texman.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_texstate.c/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_texstate.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_tris.c/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_tris.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_vb.c/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_vb.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+/tdfx_vbtmp.h/1.1.1.1/Fri Mar 18 13:06:36 2005//Tnetbsd-5-2-3-RELEASE
+D/X86////
+D/server////

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.3
  * 
@@ -21,7 +28,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/extras/Mesa/src/mesa/sparc/sparc.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/sparc/sparc.c,v 1.6 2004/12/10 17:47:24 alanh Exp $ */
 
 /*
  * Sparc assembly code by David S. Miller
@@ -35,12 +42,6 @@
 #include "context.h"
 #include "math/m_xform.h"
 #include "tnl/t_context.h"
-
-#if defined(__OpenBSD__) || defined(__NetBSD__)
-# include <sys/types.h>
-# include <sys/mman.h>
-# include <unistd.h>
-#endif
 
 #ifdef DEBUG
 #include "math/m_debug.h"
@@ -168,48 +169,21 @@ void _mesa_init_sparc_glapi_relocs(void)
 	end_ptr = &_mesa_sparc_glapi_end;
 	disp_addr = (unsigned long) &_glapi_Dispatch;
 
-#if defined(__OpenBSD__) || defined(__NetBSD__)
-	{	/* Re-protect to allow instruction execution */
-		unsigned long mask = getpagesize() - 1;
-		unsigned long base = (unsigned long)insn_ptr & ~mask;
-		unsigned long size = (((unsigned long)end_ptr + mask) &
-				       ~mask) - base;
-
-		mprotect((void *)base, size,
-			 PROT_READ | PROT_WRITE | PROT_EXEC);
-	}
-#endif
-
 	while (insn_ptr < end_ptr) {
-
-#define all_ones ((unsigned long)(-1L))
-
-#if defined(__sparc_v9__) && \
-    (!defined(__linux__) || defined(__linux_sparc_64__))
-
-		insn_ptr[0] &= ~(all_ones >> (32 + 10));
+#if defined(__LP64__)
 		insn_ptr[0] |= (disp_addr >> (32 + 10));
-		insn_ptr[1] &= ~((all_ones & 0xffffffff) >> 10);
 		insn_ptr[1] |= ((disp_addr & 0xffffffff) >> 10);
 		__glapi_sparc_icache_flush(&insn_ptr[0]);
-		insn_ptr[2] &= ~((all_ones >> 32) & ((1 << 10) - 1));
 		insn_ptr[2] |= ((disp_addr >> 32) & ((1 << 10) - 1));
-		insn_ptr[3] &= ~(all_ones & ((1 << 10) - 1));
 		insn_ptr[3] |= (disp_addr & ((1 << 10) - 1));
 		__glapi_sparc_icache_flush(&insn_ptr[2]);
 		insn_ptr += 11;
-
 #else
-
-		insn_ptr[0] &= ~(all_ones >> 10);
 		insn_ptr[0] |= (disp_addr >> 10);
-		insn_ptr[1] &= ~(all_ones & ((1 << 10) - 1));
 		insn_ptr[1] |= (disp_addr & ((1 << 10) - 1));
 		__glapi_sparc_icache_flush(&insn_ptr[0]);
 		insn_ptr += 5;
-
 #endif
-
 	}
 #endif /* USE_SPARC_ASM */
 }

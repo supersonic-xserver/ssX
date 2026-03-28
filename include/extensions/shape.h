@@ -1,4 +1,11 @@
-/* $XFree86: xc/include/extensions/shape.h,v 1.5tsi Exp $ */
+/* $XFree86: xc/include/extensions/shape.h,v 1.4 2003/11/17 22:20:03 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -25,6 +32,8 @@ in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
 
+/* $Xorg: shape.h,v 1.4 2001/02/09 02:03:24 xorgcvs Exp $ */
+
 #ifndef _SHAPE_H_
 #define _SHAPE_H_
 
@@ -48,7 +57,6 @@ in this Software without prior written authorization from The Open Group.
 
 #define ShapeBounding			0
 #define ShapeClip			1
-#define ShapeInput			2
 
 #define ShapeNotifyMask			(1L << 0)
 #define ShapeNotify			0

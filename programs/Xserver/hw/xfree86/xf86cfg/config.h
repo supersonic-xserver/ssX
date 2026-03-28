@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -219,8 +226,6 @@ void ExpertConfigureStart(void);
 void ExpertConfigureEnd(void);
 void ExpertCloseAction(Widget, XEvent*, String*, Cardinal*);
 void ExpertCallback(Widget, XtPointer, XtPointer);
-int getArgc(void);
-const char *getArgv(int i);
 
 /*
  * Initialization

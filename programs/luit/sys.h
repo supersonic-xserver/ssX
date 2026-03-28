@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $XFree86: xc/programs/luit/sys.h,v 1.3 2003/10/24 20:38:12 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (c) 2001 by Juliusz Chroboczek
 

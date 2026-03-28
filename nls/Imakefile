@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/nls/Imakefile,v 1.14tsi Exp $
+XCOMM $XFree86: xc/nls/Imakefile,v 1.15 2005/01/27 16:01:37 tsi Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.

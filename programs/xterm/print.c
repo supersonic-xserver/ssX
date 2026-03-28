@@ -1,12 +1,26 @@
-/* $XTermId: print.c,v 1.69 2006/06/16 22:40:13 tom Exp $ */
+/* $XTermId: print.c,v 1.59 2005/01/10 01:02:42 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * $XFree86: xc/programs/xterm/print.c,v 1.23 2006/02/13 01:14:59 dickey Exp $
+ * $XFree86: xc/programs/xterm/print.c,v 1.21 2005/01/14 01:50:03 dickey Exp $
  */
 
 /************************************************************
 
-Copyright 1997-2005,2006 by Thomas E. Dickey
+Copyright 1997-2004,2005 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -61,8 +75,8 @@ authorization.
 #define VMS_TEMP_PRINT_FILE "sys$scratch:xterm_print.txt"
 #endif
 
-static void charToPrinter(unsigned chr);
-static void printLine(int row, unsigned chr);
+static void charToPrinter(int chr);
+static void printLine(int row, int chr);
 static void send_CharSet(int row);
 static void send_SGR(unsigned attr, unsigned fg, unsigned bg);
 static void stringToPrinter(char *str);
@@ -119,15 +133,14 @@ printCursorLine(void)
  * characters that xterm would allow as a selection (which may include blanks).
  */
 static void
-printLine(int row, unsigned chr)
+printLine(int row, int chr)
 {
     TScreen *screen = &term->screen;
-    int inx = ROW2INX(screen, row);
-    Char *c = SCRN_BUF_CHARS(screen, inx);
-    Char *a = SCRN_BUF_ATTRS(screen, inx);
+    Char *c = SCRN_BUF_CHARS(screen, row);
+    Char *a = SCRN_BUF_ATTRS(screen, row);
     Char attr = 0;
     unsigned ch;
-    int last = MaxCols(screen);
+    int last = screen->max_col + 1;
     int col;
 #if OPT_ISO_COLORS && OPT_PRINT_COLORS
 #if OPT_EXT_COLORS
@@ -144,19 +157,19 @@ printLine(int row, unsigned chr)
     int cs = CSET_IN;
     int last_cs = CSET_IN;
 
-    TRACE(("printLine(row=%d/%d, top=%d:%d, chr=%d):%s\n",
-	   row, ROW2INX(screen, row), screen->topline, screen->max_row, chr,
+    TRACE(("printLine(row=%d, top=%d:%d, chr=%d):%s\n",
+	   row, screen->topline, screen->max_row, chr,
 	   visibleChars(PAIRED_CHARS(c,
 				     screen->utf8_mode
-				     ? SCRN_BUF_WIDEC(screen, inx)
+				     ? SCRN_BUF_WIDEC(screen, row)
 				     : 0), (unsigned) last)));
 
     if_OPT_EXT_COLORS(screen, {
-	fbf = SCRN_BUF_FGRND(screen, inx);
-	fbb = SCRN_BUF_BGRND(screen, inx);
+	fbf = SCRN_BUF_FGRND(screen, row);
+	fbb = SCRN_BUF_BGRND(screen, row);
     });
     if_OPT_ISO_TRADITIONAL_COLORS(screen, {
-	fb = SCRN_BUF_COLOR(screen, inx);
+	fb = SCRN_BUF_COLOR(screen, row);
     });
     while (last > 0) {
 	if ((a[last - 1] & CHARDRAWN) == 0)
@@ -172,7 +185,7 @@ printLine(int row, unsigned chr)
 	for (col = 0; col < last; col++) {
 	    ch = c[col];
 	    if_OPT_WIDE_CHARS(screen, {
-		ch = XTERM_CELL(row, col);
+		ch = getXtermCell(screen, row, col);
 	    });
 #if OPT_PRINT_COLORS
 	    if (screen->colorMode) {
@@ -210,9 +223,9 @@ printLine(int row, unsigned chr)
 		cs = (ch >= ' ' && ch != 0x7f) ? CSET_IN : CSET_OUT;
 	    if (last_cs != cs) {
 		if (screen->print_attributes) {
-		    charToPrinter((unsigned)((cs == CSET_OUT)
+		    charToPrinter((cs == CSET_OUT)
 				  ? SHIFT_OUT
-				  : SHIFT_IN));
+				  : SHIFT_IN);
 		}
 		last_cs = cs;
 	    }
@@ -222,15 +235,9 @@ printLine(int row, unsigned chr)
 	     * corresponding charset information is not encoded
 	     * into the CSETS array.
 	     */
-	    charToPrinter(((cs == CSET_OUT)
+	    charToPrinter((int) ((cs == CSET_OUT)
 				 ? (ch == 0x7f ? 0x5f : (ch + 0x5f))
 				 : ch));
-	    if_OPT_WIDE_CHARS(screen, {
-		if ((ch = XTERM_CELL_C1(row, col)) != 0)
-		    charToPrinter(ch);
-		if ((ch = XTERM_CELL_C2(row, col)) != 0)
-		    charToPrinter(ch);
-	    });
 	}
 	if (screen->print_attributes) {
 	    send_SGR(0, NO_COLOR, NO_COLOR);
@@ -246,25 +253,21 @@ printLine(int row, unsigned chr)
 void
 xtermPrintScreen(Bool use_DECPEX)
 {
-    if (XtIsRealized((Widget) term)) {
-	TScreen *screen = &term->screen;
-	Bool extent = (use_DECPEX && screen->printer_extent);
-	int top = extent ? 0 : screen->top_marg;
-	int bot = extent ? screen->max_row : screen->bot_marg;
-	int was_open = initialized;
+    TScreen *screen = &term->screen;
+    Bool extent = (use_DECPEX && screen->printer_extent);
+    int top = extent ? 0 : screen->top_marg;
+    int bot = extent ? screen->max_row : screen->bot_marg;
+    int was_open = initialized;
 
-	TRACE(("xtermPrintScreen, rows %d..%d\n", top, bot));
+    TRACE(("xtermPrintScreen, rows %d..%d\n", top, bot));
 
-	while (top <= bot)
-	    printLine(top++, '\n');
-	if (screen->printer_formfeed)
-	    charToPrinter('\f');
+    while (top <= bot)
+	printLine(top++, '\n');
+    if (screen->printer_formfeed)
+	charToPrinter('\f');
 
-	if (!was_open || screen->printer_autoclose) {
-	    closePrinter();
-	}
-    } else {
-	Bell(XkbBI_MinorError, 0);
+    if (!was_open || screen->printer_autoclose) {
+	closePrinter();
     }
 }
 
@@ -356,7 +359,7 @@ send_SGR(unsigned attr, unsigned fg, unsigned bg)
  * This implementation only knows how to write to a pipe.
  */
 static void
-charToPrinter(unsigned chr)
+charToPrinter(int chr)
 {
     TScreen *screen = &term->screen;
 
@@ -395,9 +398,8 @@ charToPrinter(unsigned chr)
 		close(fileno(stderr));
 	    }
 
-	    /* don't want privileges! */
-	    if (xtermResetIds(screen) < 0)
-		exit(1);
+	    setgid(screen->gid);	/* don't want privileges! */
+	    setuid(screen->uid);
 
 	    Printer = popen(screen->printer_command, "w");
 	    input = fdopen(my_pipe[0], "r");
@@ -421,11 +423,11 @@ charToPrinter(unsigned chr)
 #if OPT_WIDE_CHARS
 	if (chr > 127) {
 	    Char temp[10];
-	    *convertToUTF8(temp, chr) = 0;
+	    *convertToUTF8(temp, (unsigned) chr) = 0;
 	    fputs((char *) temp, Printer);
 	} else
 #endif
-	    fputc((int) chr, Printer);
+	    fputc(chr, Printer);
 	if (isForm(chr))
 	    fflush(Printer);
     }
@@ -435,7 +437,7 @@ static void
 stringToPrinter(char *str)
 {
     while (*str)
-	charToPrinter(CharOf(*str++));
+	charToPrinter(*str++);
 }
 
 /*
@@ -490,13 +492,13 @@ xtermMediaControl(int param, int private_seq)
  * or VT) that moved the cursor off the previous line.
  */
 void
-xtermAutoPrint(unsigned chr)
+xtermAutoPrint(int chr)
 {
     TScreen *screen = &term->screen;
 
     if (screen->printer_controlmode == 1) {
 	TRACE(("AutoPrint %d\n", chr));
-	printLine(screen->cursorp.row, chr);
+	printLine(screen->cursor_row, chr);
 	if (Printer != 0)
 	    fflush(Printer);
     }

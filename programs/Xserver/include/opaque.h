@@ -1,3 +1,11 @@
+/* $Xorg: opaque.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/include/opaque.h,v 1.15 2006/01/09 15:00:33 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/opaque.h,v 1.14 2003/09/09 03:20:41 dawes Exp $ */
 
 #ifndef OPAQUE_H
 #define OPAQUE_H
@@ -34,8 +42,8 @@ from The Open Group.
 
 #include "globals.h"
 
-extern const char *defaultTextFont;
-extern const char *defaultCursorFont;
+extern char *defaultTextFont;
+extern char *defaultCursorFont;
 extern int MaxClients;
 extern char isItTimeToYield;
 extern char dispatchException;
@@ -51,8 +59,8 @@ extern int ScreenSaverAllowExposures;
 extern int defaultScreenSaverBlanking;
 extern int defaultScreenSaverAllowExposures;
 extern int argcGlobal;
-extern const char **argvGlobal;
-extern const char *display;
+extern char **argvGlobal;
+extern char *display;
 
 extern int defaultBackingStore;
 extern Bool disableBackingStore;

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/freetype2/freetype/internal/Imakefile,v 1.6 2003/05/29 03:05:09 dawes Exp $
+XCOMM $XFree86: xc/lib/freetype2/freetype/internal/Imakefile,v 1.7 2004/04/26 16:15:56 dawes Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags

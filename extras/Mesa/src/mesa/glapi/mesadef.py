@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# $Id: mesadef.py,v 1.1.1.1 2005/03/18 13:06:42 tron Exp $
+
 # Mesa 3-D graphics library
 # Version:  4.1
 # 

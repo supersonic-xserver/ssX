@@ -1,0 +1,20 @@
+/Imakefile/1.1.1.5/Fri Mar  5 14:23:53 2004//Tnetbsd-5-2-3-RELEASE
+/lexer.l/1.1.1.6/Fri Mar 18 13:03:23 2005//Tnetbsd-5-2-3-RELEASE
+/main.c/1.1.1.4/Sat Jan 19 14:53:54 2002//Tnetbsd-5-2-3-RELEASE
+/psw.c/1.1.1.3/Sat Jun  9 14:53:06 2001//Tnetbsd-5-2-3-RELEASE
+/psw.h/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/pswdict.c/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/pswdict.h/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/pswfile.c/1.2/Sat Mar 19 19:11:21 2005//Tnetbsd-5-2-3-RELEASE
+/pswparser.y/1.1.1.3/Sat Jun  9 14:53:06 2001//Tnetbsd-5-2-3-RELEASE
+/pswpriv.h/1.1.1.4/Sat Jan 19 14:53:55 2002//Tnetbsd-5-2-3-RELEASE
+/pswrap.man/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/pswsemantics.c/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/pswsemantics.h/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/pswstring.c/1.1.1.3/Sat Jun  9 14:53:06 2001//Tnetbsd-5-2-3-RELEASE
+/pswtypes.h/1.1.1.2/Sat Jan 19 14:53:55 2002//Tnetbsd-5-2-3-RELEASE
+/pswversion.h/1.1.1.3/Sat Jun  9 14:53:06 2001//Tnetbsd-5-2-3-RELEASE
+/sysname_gen.c/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/systemnames.c/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+/yyerror.c/1.1.1.1/Mon Jan  1 12:43:52 2001//Tnetbsd-5-2-3-RELEASE
+D

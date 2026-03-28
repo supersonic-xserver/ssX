@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/Imakefile,v 1.45tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/Imakefile,v 1.43 2005/03/01 03:48:52 dawes Exp $
 XCOMM
 XCOMM This is an Imakefile for the GLINT driver.  
 XCOMM
@@ -75,15 +75,21 @@ OBJS = glint_driver.o pm2_dac.o pm2ramdac.o pm2_accel.o pm_dac.o IBMramdac.o \
        glint_shadow.o $(DRIOBJ) sx_accel.o glint_dga.o
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/Xext \
-	   -I$(SERVERSRC)/mi -I$(SERVERSRC)/fb -I$(XF86SRC)/xaa \
-	   -I$(XF86SRC)/ramdac -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-	   -I$(XF86SRC)/rac -I$(XF86SRC)/int10 -I$(XF86SRC)/xf8_32bpp \
-	   -I$(SERVERSRC)/include -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-	   $(DRIINCLUDES) -I$(XF86SRC)/shadowfb -I$(XF86SRC)/fbdevhw \
-	   -I$(XF86SRC)/vbe -I$(SERVERSRC)/render
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/Xext \
+           -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
+           -I$(SERVERSRC)/cfb -I$(SERVERSRC)/fb -I$(XF86SRC)/xaa \
+           -I$(XF86SRC)/vgahw -I$(XF86SRC)/ramdac \
+	   -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
+	   -I$(XF86SRC)/rac -I$(XF86SRC)/int10 \
+	   -I$(XF86SRC)/xf24_32bpp -I$(FONTINCSRC) \
+	   -I$(XF86SRC)/xf8_32bpp -I$(XF86SRC)/xf1bpp \
+           -I$(XF86SRC)/xf4bpp -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	   -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c -I$(EXTINCSRC) $(DRIINCLUDES) \
+	   -I$(XF86SRC)/shadowfb -I$(XF86SRC)/fbdevhw \
+	   -I$(XF86SRC)/vbe \
+	   -I$(SERVERSRC)/render
 #endif
 
 DEFINES = $(DRIDEFINES) -DPPC_MMIO_IS_BE -DSPARC_MMIO_IS_BE

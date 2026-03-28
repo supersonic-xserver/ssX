@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  psaux.c                                                                */
 /*                                                                         */
 /*    FreeType auxiliary PostScript driver component (body only).          */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,19 +25,11 @@
 
 #define FT_MAKE_OPTION_SINGLE_OBJECT
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "psobjs.c"
 #include "psauxmod.c"
 #include "t1decode.c"
-
-#else
-
-#include <psaux/psobjs.c>
-#include <psaux/psauxmod.c>
-#include <psaux/t1decode.c>
-
-#endif
+#include "t1cmap.c"
 
 
 /* END */

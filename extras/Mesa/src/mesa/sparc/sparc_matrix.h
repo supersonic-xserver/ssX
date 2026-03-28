@@ -1,11 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SPARC assembly matrix code.
  */
 
 #ifndef _SPARC_MATRIX_H
 #define _SPARC_MATRIX_H
 
-#if defined(__sparc_v9__) && !defined(__linux__)
+#if (defined(__sparc_v9__) && (!defined(__linux__) || defined(__linux_sparc_64__)))
 #define LDPTR		ldx
 #define MAT_M		0x00
 #define MAT_INV		0x08

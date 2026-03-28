@@ -380,7 +380,7 @@ clean::									@@\
 
 
 #define Shared64LibObjCompile(options) LibObjCompile(Shared64Dir,Shared64CArchFlags Shared64CDebugFlags Shared64LibraryDef Shared64PositionIndependentCFlags options)
-#define Shared64LibObjAsm(options) LibObjAsm(Shared64Dir,-D__sparc_v9__ options,Shared64AsmOptions)
+#define Shared64LibObjAsm(options) LibObjAsm(Shared64Dir,options,Shared64AsmOptions)
 #define Shared64LibObjCplusplusCompile(options) LibObjCompile(Shared64Dir,Shared64CplusplusArchFlags Shared64CplusplusDebugFlags Shared64LibraryDef Shared64PositionIndependentCFlags options)
 
 #define ExtraSubdir Shared64Dir

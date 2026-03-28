@@ -1,10 +1,17 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * External interface for the server's AppleWM support
  */
 /**************************************************************************
 
 Copyright (c) 2002 Apple Computer, Inc. All Rights Reserved.
-Copyright (c) 2003-2004 Torrey T. Lyons. All Rights Reserved.
+Copyright (c) 2003 Torrey T. Lyons. All Rights Reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -27,7 +34,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/applewmExt.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/applewmExt.h,v 1.3 2003/11/17 22:20:35 dawes Exp $ */
 
 #ifndef _APPLEWMEXT_H_
 #define _APPLEWMEXT_H_
@@ -44,7 +51,8 @@ typedef int (*FrameHitTestProc)(int class, int x, int y,
                                 const BoxRec *inner, int *ret);
 typedef int (*FrameDrawProc)(WindowPtr pWin, int class, unsigned int attr,
                              const BoxRec *outer, const BoxRec *inner,
-                             unsigned int title_len, const char *title_bytes);
+                             unsigned int title_len,
+                             const unsigned char *title_bytes);
 
 /*
  * AppleWM implementation function list
@@ -58,15 +66,13 @@ typedef struct _AppleWMProcs {
     FrameDrawProc FrameDraw;
 } AppleWMProcsRec, *AppleWMProcsPtr;
 
+extern AppleWMProcsPtr appleWMProcs;
+
 void AppleWMExtensionInit(
     AppleWMProcsPtr procsPtr
 );
 
 void AppleWMSetScreenOrigin(
-    WindowPtr pWin
-);
-
-Bool AppleWMDoReorderWindow(
     WindowPtr pWin
 );
 

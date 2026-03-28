@@ -1,5 +1,12 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,14 +26,13 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/fb/fbarc.c,v 1.9 2006/01/09 14:59:46 dawes Exp $ */
 
 #include "fb.h"
 #include "mizerarc.h"
-#include <limits.h>
+#ifdef IN_MODULE
+#include "xf86_ansic.h"
+#endif
 
 typedef void	(*FbArc) (FbBits    *dst, 
 			  FbStride  dstStride, 
@@ -95,7 +101,7 @@ fbPolyArc (DrawablePtr	pDrawable,
 		    box.x2 = x2;
 		    y2 = box.y1 + (int)parcs->height + 1;
 		    box.y2 = y2;
-		    if ( (x2 <= SHRT_MAX) && (y2 <= SHRT_MAX) &&
+		    if ( (x2 <= MAXSHORT) && (y2 <= MAXSHORT) &&
 			(RECT_IN_REGION(pDrawable->pScreen, cclip, &box) == rgnIN) )
 			(*arc) (dst, dstStride, dstBpp, 
 				parcs, pDrawable->x + dstXoff, pDrawable->y + dstYoff, 
@@ -107,7 +113,6 @@ fbPolyArc (DrawablePtr	pDrawable,
 		    miPolyArc(pDrawable, pGC, 1, parcs);
 		parcs++;
 	    }
-	    fbFinishAccess (pDrawable);
 	}
 	else
 #endif

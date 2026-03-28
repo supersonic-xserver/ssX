@@ -1,6 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  6.0
+ * Version:  6.2.1
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -29,9 +36,9 @@
 
 /* Mesa version */
 #define MESA_MAJOR 6
-#define MESA_MINOR 0
-#define MESA_PATCH 0
-#define MESA_VERSION_STRING "6.0"
+#define MESA_MINOR 2
+#define MESA_PATCH 1
+#define MESA_VERSION_STRING "6.2.1"
 
 /* To make version comparison easy */
 #define MESA_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))

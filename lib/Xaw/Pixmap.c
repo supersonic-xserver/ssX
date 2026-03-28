@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +32,7 @@
  * XFree86 Project.
  */
 
-/* $XFree86: xc/lib/Xaw/Pixmap.c,v 3.17 2002/05/18 02:05:39 paulo Exp $ */
+/* $XFree86: xc/lib/Xaw/Pixmap.c,v 3.18 2003/03/25 04:18:10 dawes Exp $ */
 
 #include <string.h>
 #include <stdio.h>

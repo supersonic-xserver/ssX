@@ -50,7 +50,7 @@
 #
 # Author: David Dawes <dawes@xfree86.org>
 #
-# $XFree86: xc/config/util/cleanlinks.sh,v 1.3 2004/02/13 23:58:28 dawes Exp $
+# $XFree86: xc/config/util/cleanlinks.sh,v 1.4 2004/10/19 16:49:11 dawes Exp $
 
 echo Removing dangling symbolic links ...
 find . -type l -print |

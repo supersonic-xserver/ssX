@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/usb-private.h,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/usb-private.h,v 1.1 2004/06/30 20:21:44 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002 Red Hat Inc., Durham, North Carolina.
  *
@@ -43,7 +50,7 @@
 
 #include "dmxinputinit.h"
 #include "inputstr.h"
-#include <X11/Xos.h>
+#include "Xos.h"
 #include <errno.h>
 #include <linux/input.h>
 #include "usb-common.h"

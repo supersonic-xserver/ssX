@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/EVI.c,v 3.13tsi Exp $ */
+/* $Xorg: EVI.c,v 1.3 2000/08/17 19:47:55 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1997 by Silicon Graphics Computer Systems, Inc.
 Permission to use, copy, modify, and distribute this
@@ -21,19 +28,18 @@ DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
 OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xext/EVI.c,v 3.11 2003/10/28 23:08:43 tsi Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include "dix.h"
 #define _XEVI_SERVER_
-#include <X11/extensions/XEVIstr.h>
+#include "XEVIstr.h"
 #include "EVIstruct.h"
 #include "modinit.h"
-#include "scrnintstr.h"
 
-#ifdef EVI
 #if 0
 static unsigned char XEVIReqCode = 0;
 #endif
@@ -86,18 +92,10 @@ ProcEVIGetVisualInfo(ClientPtr client)
 {
     REQUEST(xEVIGetVisualInfoReq);
     xEVIGetVisualInfoReply rep;
-    int i, n, n_conflict, n_info, sz_info, sz_conflict;
+    int n, n_conflict, n_info, sz_info, sz_conflict;
     VisualID32 *conflict;
-    CARD32 total_visuals = 0;
     xExtendedVisualInfo *eviInfo;
     int status;
-
-    /* Prevent REQUEST_FIXED_SIZE overflows */
-    for (i = 0;  i < screenInfo.numScreens;  i++)
-	total_visuals += screenInfo.screens[i]->numVisuals;
-    if (stuff->n_visual > total_visuals)
-	return BadValue;
-
     REQUEST_FIXED_SIZE(xEVIGetVisualInfoReq, stuff->n_visual * sz_VisualID32);
     status = eviPriv->getVisualInfo((VisualID32 *)&stuff[1], (int)stuff->n_visual,
 		&eviInfo, &n_info, &conflict, &n_conflict);
@@ -205,4 +203,3 @@ EVIExtensionInit(INITARGS)
 	eviPriv = eviDDXInit();
     }
 }
-#endif

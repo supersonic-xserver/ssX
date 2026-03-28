@@ -36,6 +36,8 @@
 /*
  * slicer.c++
  *
+ * $Date: 2004/03/05 14:26:37 $ $Revision: 1.1.1.3 $
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/slicer.cc,v 1.1.1.3 2004/03/05 14:26:37 tron Exp $
  */
 
 #include <stdlib.h>

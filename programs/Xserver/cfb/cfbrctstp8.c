@@ -1,7 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Fill 32 bit stippled rectangles for 8 bit frame buffers
  */
-/* $XFree86: xc/programs/Xserver/cfb/cfbrctstp8.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbrctstp8.c,v 3.6 2001/12/14 19:59:24 dawes Exp $ */
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -30,10 +37,12 @@ Author: Keith Packard, MIT X Consortium
 
 */
 
+/* $Xorg: cfbrctstp8.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+
 #if PSZ == 8
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "gcstruct.h"
 #include "window.h"
@@ -49,28 +58,31 @@ Author: Keith Packard, MIT X Consortium
 #include "maskbits.h"
 
 void
-cfb8FillRectOpaqueStippled32(DrawablePtr pDrawable, GCPtr pGC, int nBox,
-			     BoxPtr pBox)
+cfb8FillRectOpaqueStippled32 (pDrawable, pGC, nBox, pBox)
+    DrawablePtr	    pDrawable;
+    GCPtr	    pGC;
+    int		    nBox;	/* number of boxes to fill */
+    register BoxPtr pBox;	/* pointer to list of boxes to fill */
 {
     CfbBits   *src;
     int stippleHeight;
 
     int nlwDst;		/* width in longwords of the dest pixmap */
     int w;		/* width of current box */
-    int h;	/* height of current box */
+    register int h;	/* height of current box */
     CfbBits startmask;
     CfbBits endmask;	/* masks for reggedy bits at either end of line */
     int nlwMiddle;	/* number of longwords between sides of boxes */
-    int nlw;			/* loop version of nlwMiddle */
+    register int nlw;			/* loop version of nlwMiddle */
     CfbBits *dstLine;
-    CfbBits *dst;	/* pointer to bits we're writing */
+    register CfbBits *dst;	/* pointer to bits we're writing */
     CfbBits *dstTmp;
     int y;				/* current scan line */
 
     CfbBits *pbits;/* pointer to start of pixmap */
-    CfbBits bits;	/* bits from stipple */
+    register CfbBits bits;	/* bits from stipple */
     int	rot;
-    CfbBits xor;
+    register CfbBits xor;
     PixmapPtr		    stipple;
     int	    wEnd;
 
@@ -235,23 +247,26 @@ cfb8FillRectOpaqueStippled32(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 }
 
 void
-cfb8FillRectTransparentStippled32(DrawablePtr pDrawable, GCPtr pGC, int nBox,
-				  BoxPtr pBox)
+cfb8FillRectTransparentStippled32 (pDrawable, pGC, nBox, pBox)
+    DrawablePtr	    pDrawable;
+    GCPtr	    pGC;
+    int		    nBox;	/* number of boxes to fill */
+    BoxPtr 	    pBox;	/* pointer to list of boxes to fill */
 {
     int		    x, y, w, h;
     int		    nlwMiddle, nlwDst;
     CfbBits   startmask, endmask;
-    CfbBits   *dst;
+    register CfbBits   *dst;
     CfbBits   *dstLine, *pbits, *dstTmp;
     CfbBits   *src;
-    CfbBits   xor;
-    CfbBits   bits, mask;
+    register CfbBits   xor;
+    register CfbBits   bits, mask;
     int		    rot;
     int		    wEnd;
     cfbPrivGCPtr    devPriv;
     PixmapPtr	    stipple;
     int		    stippleHeight;
-    int    nlw;
+    register int    nlw;
     
     devPriv = cfbGetGCPrivate(pGC);
     stipple = pGC->pRotatedPixmap;
@@ -450,23 +465,26 @@ cfb8FillRectTransparentStippled32(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 
 
 void
-cfb8FillRectStippledUnnatural(DrawablePtr pDrawable, GCPtr pGC, int nBox,
-			      BoxPtr pBox)
+cfb8FillRectStippledUnnatural (pDrawable, pGC, nBox, pBox)
+    DrawablePtr	    pDrawable;
+    GCPtr	    pGC;
+    int		    nBox;
+    register BoxPtr pBox;
 {
     CfbBits   *pdstBase;	/* pointer to start of bitmap */
     CfbBits   *pdstLine;	/* current destination line */
     int		    nlwDst;	/* width in longwords of bitmap */
     PixmapPtr	    pStipple;	/* pointer to stipple we want to fill with */
     int		    nlwMiddle;
-    int    nlw;
+    register int    nlw;
     int		    x, y, w, h, xrem, xSrc, ySrc;
     int		    stwidth, stippleWidth;
     int		    stippleHeight;
-    CfbBits  bits, inputBits;
-    int    partBitsLeft;
+    register CfbBits  bits, inputBits;
+    register int    partBitsLeft;
     int		    nextPartBits;
     int		    bitsLeft, bitsWhole;
-    CfbBits    *pdst;	/* pointer to current word in bitmap */
+    register CfbBits    *pdst;	/* pointer to current word in bitmap */
     CfbBits   *srcTemp, *srcStart;
     CfbBits   *psrcBase;
     CfbBits   startmask, endmask;

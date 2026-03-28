@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/bsdLib.rules,v 3.36tsi Exp $
+XCOMM $XFree86: xc/config/cf/bsdLib.rules,v 3.36 2004/06/01 00:16:53 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -360,7 +360,7 @@ install::								@@\
 #define SharedLibraryTarget(libname,rev,solist,down,up)			@@\
 AllTarget(Concat($(LIBPREFIX),libname.so.rev))				@@\
 									@@\
-Concat($(LIBPREFIX),libname.so.rev):  solist $(EXTRALIBRARYDEPS)	@@\
+Concat($(LIBPREFIX),libname.so.rev):  solist				@@\
 	$(RM) $@~							@@\
 	@SetSonameRev(rev); \						@@\
 	SONAME=Concat($(LIBPREFIX),libname.so.$$S); \			@@\
@@ -389,7 +389,7 @@ clean::									@@\
 #define SharedLibtoolLibraryTarget(libname,rev,solist,down,up)		@@\
 AllTarget(Concat($(LIBPREFIX),libname.so))				@@\
 									@@\
-Concat($(LIBPREFIX),libname.so):  solist $(EXTRALIBRARYDEPS)		@@\
+Concat($(LIBPREFIX),libname.so):  solist				@@\
 	$(RM) $@~							@@\
 	@set +e; SetRevisions(rev); \					@@\
 	SONAME=$@.$$REV; \						@@\
@@ -423,7 +423,7 @@ clean::									@@\
 #define SharedDepLibraryTarget(libname,rev,deplist,solist,down,up)	@@\
 AllTarget(Concat($(LIBPREFIX),libname.so.rev))				@@\
 									@@\
-Concat($(LIBPREFIX),libname.so.rev):  deplist $(EXTRALIBRARYDEPS)	@@\
+Concat($(LIBPREFIX),libname.so.rev):  deplist				@@\
 	$(RM) $@~							@@\
 	@SetSonameRev(rev); \						@@\
 	SONAME=Concat($(LIBPREFIX),libname.so.$$S); \			@@\

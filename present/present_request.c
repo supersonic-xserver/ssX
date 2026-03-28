@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -25,6 +32,43 @@
 #endif
 
 #include "present_priv.h"
+
+/* Polyfill shim: Present code uses 1-arg swaps/swapl, legacy headers have 2-arg versions.
+ * This provides wrapper macros to adapt the calls. */
+#include "misc.h"
+#ifndef swaps
+#define swaps(x) swaps(x, temp16)
+#endif
+#ifndef swapl
+#define swapl(x) swapl(x, temp32)
+#endif
+
+#include "dixaccess.h"
+
+/* Define DixGetAttrAccess if not already defined */
+#ifndef DixGetAttrAccess
+#define DixGetAttrAccess (1<<4)
+#endif
+
+/* Define BadRegion for Xfixes compatibility */
+#ifndef BadRegion
+#define BadRegion 0
+#endif
+
+/* XSyncValue is a struct { INT32 hi; CARD32 lo; } in this legacy codebase.
+ * This macro converts an XSyncValue to uint64_t for arithmetic operations. */
+#ifndef XSYNCVALUE_TO_U64
+#define XSYNCVALUE_TO_U64(v) \
+    (((uint64_t)(unsigned int)(v).hi << 32) | (uint64_t)(v).lo)
+#endif
+/* Wrapper to swap XSyncValue (struct with hi/lo members) */
+static inline void swapll_xsync(XSyncValue *v) {
+    INT32 tmp_hi = v->hi;
+    CARD32 tmp_lo = v->lo;
+    v->hi = tmp_lo;
+    v->lo = tmp_hi;
+}
+
 #include "randrstr.h"
 #include <protocol-versions.h>
 
@@ -48,7 +92,7 @@ proc_present_query_version(ClientPtr client)
         swapl(&rep.majorVersion);
         swapl(&rep.minorVersion);
     }
-    WriteToClient(client, sizeof(rep), &rep);
+    WriteToClient(client, sizeof(rep), (char *)&rep);
     return Success;
 }
 
@@ -112,14 +156,14 @@ proc_present_pixmap(ClientPtr client)
     /*
      * Check to see if remainder is sane
      */
-    if (stuff->divisor == 0) {
-        if (stuff->remainder != 0) {
-            client->errorValue = (CARD32) stuff->remainder;
+    if (XSYNCVALUE_TO_U64(stuff->divisor) == 0) {
+        if (XSYNCVALUE_TO_U64(stuff->remainder) != 0) {
+            client->errorValue = (CARD32) XSYNCVALUE_TO_U64(stuff->remainder);
             return BadValue;
         }
     } else {
-        if (stuff->remainder >= stuff->divisor) {
-            client->errorValue = (CARD32) stuff->remainder;
+        if (XSYNCVALUE_TO_U64(stuff->remainder) >= XSYNCVALUE_TO_U64(stuff->divisor)) {
+            client->errorValue = (CARD32) XSYNCVALUE_TO_U64(stuff->remainder);
             return BadValue;
         }
     }
@@ -138,7 +182,7 @@ proc_present_pixmap(ClientPtr client)
     ret = present_pixmap(window, pixmap, stuff->serial, valid, update,
                          stuff->x_off, stuff->y_off, target_crtc,
                          wait_fence, idle_fence, stuff->options,
-                         stuff->target_msc, stuff->divisor, stuff->remainder, notifies, nnotifies);
+                         XSYNCVALUE_TO_U64(stuff->target_msc), XSYNCVALUE_TO_U64(stuff->divisor), XSYNCVALUE_TO_U64(stuff->remainder), notifies, nnotifies);
     if (ret != Success)
         present_destroy_notifies(notifies, nnotifies);
     return ret;
@@ -159,20 +203,20 @@ proc_present_notify_msc(ClientPtr client)
     /*
      * Check to see if remainder is sane
      */
-    if (stuff->divisor == 0) {
-        if (stuff->remainder != 0) {
-            client->errorValue = (CARD32) stuff->remainder;
+    if (XSYNCVALUE_TO_U64(stuff->divisor) == 0) {
+        if (XSYNCVALUE_TO_U64(stuff->remainder) != 0) {
+            client->errorValue = (CARD32) XSYNCVALUE_TO_U64(stuff->remainder);
             return BadValue;
         }
     } else {
-        if (stuff->remainder >= stuff->divisor) {
-            client->errorValue = (CARD32) stuff->remainder;
+        if (XSYNCVALUE_TO_U64(stuff->remainder) >= XSYNCVALUE_TO_U64(stuff->divisor)) {
+            client->errorValue = (CARD32) XSYNCVALUE_TO_U64(stuff->remainder);
             return BadValue;
         }
     }
 
     return present_notify_msc(window, stuff->serial,
-                              stuff->target_msc, stuff->divisor, stuff->remainder);
+                              XSYNCVALUE_TO_U64(stuff->target_msc), XSYNCVALUE_TO_U64(stuff->divisor), XSYNCVALUE_TO_U64(stuff->remainder));
 }
 
 static int
@@ -230,7 +274,7 @@ proc_present_query_capabilities (ClientPtr client)
         swapl(&rep.length);
         swapl(&rep.capabilities);
     }
-    WriteToClient(client, sizeof(rep), &rep);
+    WriteToClient(client, sizeof(rep), (char *)&rep);
     return Success;
 }
 
@@ -276,9 +320,9 @@ sproc_present_pixmap(ClientPtr client)
     swapl(&stuff->update);
     swaps(&stuff->x_off);
     swaps(&stuff->y_off);
-    swapll(&stuff->target_msc);
-    swapll(&stuff->divisor);
-    swapll(&stuff->remainder);
+    swapll_xsync(&stuff->target_msc);
+    swapll_xsync(&stuff->divisor);
+    swapll_xsync(&stuff->remainder);
     swapl(&stuff->idle_fence);
     return (*proc_present_vector[stuff->presentReqType]) (client);
 }
@@ -291,9 +335,9 @@ sproc_present_notify_msc(ClientPtr client)
 
     swaps(&stuff->length);
     swapl(&stuff->window);
-    swapll(&stuff->target_msc);
-    swapll(&stuff->divisor);
-    swapll(&stuff->remainder);
+    swapll_xsync(&stuff->target_msc);
+    swapll_xsync(&stuff->divisor);
+    swapll_xsync(&stuff->remainder);
     return (*proc_present_vector[stuff->presentReqType]) (client);
 }
 

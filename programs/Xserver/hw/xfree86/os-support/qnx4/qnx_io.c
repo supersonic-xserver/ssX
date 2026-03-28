@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (c) Copyright 1998 by Sebastien Marineau
  *			<sebastien@qnx.com>
  *
@@ -24,7 +31,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Sebastien Marineau.
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_io.c,v 1.3tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_io.c,v 1.3 2003/02/17 15:11:59 dawes Exp $
  */
 
 /* This module contains the qnx-specific functions to access the keyboard
@@ -39,7 +46,7 @@
 #include <sys/qioctl.h>
 #include <errno.h>
 
-#include <X11/X.h>
+#include <X.h>
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"

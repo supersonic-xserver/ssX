@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/main.c,v 3.56 2008/10/31 19:10:29 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,39 +54,28 @@ SOFTWARE.
 ******************************************************************/
 
 /* The panoramix components contained the following notice */
-/*****************************************************************
-
-Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-DIGITAL EQUIPMENT CORPORATION BE LIABLE FOR ANY CLAIM, DAMAGES, INCLUDING,
-BUT NOT LIMITED TO CONSEQUENTIAL OR INCIDENTAL DAMAGES, OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of Digital Equipment Corporation
-shall not be used in advertising or otherwise to promote the sale, use or other
-dealings in this Software without prior written authorization from Digital
-Equipment Corporation.
-
-******************************************************************/
+/****************************************************************
+*                                                               *
+*    Copyright (c) Digital Equipment Corporation, 1991, 1997    *
+*                                                               *
+*   All Rights Reserved.  Unpublished rights  reserved  under   *
+*   the copyright laws of the United States.                    *
+*                                                               *
+*   The software contained on this media  is  proprietary  to   *
+*   and  embodies  the  confidential  technology  of  Digital   *
+*   Equipment Corporation.  Possession, use,  duplication  or   *
+*   dissemination of the software and media is authorized only  *
+*   pursuant to a valid written license from Digital Equipment  *
+*   Corporation.                                                *
+*                                                               *
+*   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  *
+*   by the U.S. Government is subject to restrictions  as  set  *
+*   forth in Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  *
+*   or  in  FAR 52.227-19, as applicable.                       *
+*                                                               *
+*****************************************************************/
 
 #define NEED_EVENTS
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xos.h>   /* for unistd.h  */
 #include <X11/Xproto.h>
@@ -96,18 +93,14 @@ Equipment Corporation.
 #include <X11/fonts/font.h>
 #include "opaque.h"
 #include "servermd.h"
-#include "hotplug.h"
 #include "site.h"
 #include "dixfont.h"
 #include "extnsionst.h"
-#ifdef XPRINT
-#include "DiPrint.h"
-#endif
-#ifdef PANORAMIX
-#include "panoramiXsrv.h"
-#else
 #include "dixevents.h"		/* InitEvents() */
 #include "dispatch.h"		/* InitProcVectors() */
+
+#ifdef PANORAMIX
+#include "panoramiXsrv.h"
 #endif
 
 #ifdef DPMSExtension
@@ -116,9 +109,13 @@ Equipment Corporation.
 #include "dpmsproc.h"
 #endif
 
-extern int InitClientPrivates(ClientPtr client);
+#ifdef XPRINT
+#include "DiPrint.h"
+#endif
 
-extern void Dispatch(void);
+extern void Dispatch(
+    void
+);
 
 char *ConnectionInfo;
 xConnSetupPrefix connSetupPrefix;
@@ -136,13 +133,13 @@ Bool CreateConnectionBlock(void);
 
 static void FreeScreen(ScreenPtr);
 
-_X_EXPORT PaddingInfo PixmapWidthPaddingInfo[33];
+PaddingInfo PixmapWidthPaddingInfo[33];
 
 int connBlockScreenStart;
 
 static int restart = 0;
 
-_X_EXPORT void
+void
 NotImplemented(xEvent *from, xEvent *to)
 {
     FatalError("Not implemented");
@@ -151,13 +148,9 @@ NotImplemented(xEvent *from, xEvent *to)
 /*
  * Dummy entry for ReplySwapVector[]
  */
-
+/*ARGSUSED*/
 void
-ReplyNotSwappd(
-	ClientPtr pClient ,
-	int size ,
-	void * pbuf
-	)
+ReplyNotSwappd(ClientPtr pClient, int size, void *pbuf)
 {
     FatalError("Not implemented");
 }
@@ -242,19 +235,13 @@ static int indexForScanlinePad[ 65 ] = {
 #endif
 
 int
-main(int argc, char *argv[], char *envp[])
+main(int argc, const char *argv[], char *envp[])
 {
     int		i, j, k, error;
     char	*xauthfile;
     HWEventQueueType	alwaysCheckForInput[2];
 
     display = "0";
-
-    InitGlobals();
-    InitRegions();
-#ifdef XPRINT
-    PrinterInitGlobals();
-#endif
 
     /* Quartz support on Mac OS X requires that the Cocoa event loop be in
      * the main thread. This allows the X server main to be called again
@@ -270,6 +257,9 @@ main(int argc, char *argv[], char *envp[])
     else
 	restart = 1;
 
+    /* Setup the allocator so that xalloc/xfree can be used early. */
+    OsInitAllocator();
+
     CheckUserParameters(argc, argv, envp);
 
     CheckUserAuthorization();
@@ -284,7 +274,7 @@ main(int argc, char *argv[], char *envp[])
      * handlers, thus have no direct calling path back to main and thus
      * can't be passed argc, argv as parameters */
     argcGlobal = argc;
-    argvGlobal = argv;
+    argvGlobal = (char **)argv;
     /* prep X authority file from environment; this can be overriden by a
      * command line option */
     xauthfile = getenv("XAUTHORITY");
@@ -309,8 +299,7 @@ main(int argc, char *argv[], char *envp[])
 #endif
 	InitBlockAndWakeupHandlers();
 	/* Perform any operating system dependent initializations you'd like */
-	OsInit();
-        config_init();
+	OsInit();		
 	if(serverGeneration == 1)
 	{
 	    CreateWellKnownSockets();
@@ -355,27 +344,26 @@ main(int argc, char *argv[], char *envp[])
 	InitAtoms();
 	InitEvents();
 	InitGlyphCaching();
-	ResetExtensionPrivates();
 	ResetClientPrivates();
 	ResetScreenPrivates();
 	ResetWindowPrivates();
 	ResetGCPrivates();
+#ifdef PIXPRIV
 	ResetPixmapPrivates();
+#endif
 	ResetColormapPrivates();
 	ResetFontPrivateIndex();
-	ResetDevicePrivateIndex();
 	InitCallbackManager();
 	InitVisualWrap();
-	InitOutput(&screenInfo, argc, argv);
-#ifdef XPRINT
-	PrinterInitOutput(&screenInfo, argc, argv);
-#endif
-
+	InitOutput(&screenInfo, argc, (char **)argv);
 	if (screenInfo.numScreens < 1)
 	    FatalError("no screens found");
 	if (screenInfo.numVideoScreens < 0)
 	    screenInfo.numVideoScreens = screenInfo.numScreens;
-	InitExtensions(argc, argv);
+#ifdef XPRINT
+	PrinterInitOutput(&screenInfo, argc, argv);
+#endif
+	InitExtensions(argc, (char **)argv);
 	if (!InitClientPrivates(serverClient))
 	    FatalError("failed to allocate serverClient devprivates");
 	for (i = 0; i < screenInfo.numScreens; i++)
@@ -393,7 +381,6 @@ main(int argc, char *argv[], char *envp[])
 	    if (!CreateRootWindow(pScreen))
 		FatalError("failed to create root window");
 	}
-        InitCoreDevices();
 	InitInput(argc, argv);
 	if (InitAndStartDevices() != Success)
 	    FatalError("failed to initialize core devices");
@@ -401,21 +388,16 @@ main(int argc, char *argv[], char *envp[])
 	InitFonts();
 	if (loadableFonts) {
 	    SetFontPath(0, 0, (unsigned char *)defaultFontPath, &error);
-	}
-        else {
+	} else {
 	    if (SetDefaultFontPath(defaultFontPath) != Success)
 		ErrorF("failed to set default font path '%s'",
 			defaultFontPath);
 	}
-	if (!SetDefaultFont(defaultTextFont)) {
+	if (!SetDefaultFont(defaultTextFont))
 	    FatalError("could not open default font '%s'", defaultTextFont);
-	}
-
-	if (!(rootCursor = CreateRootCursor(NULL, 0))) {
+	if (!(rootCursor = CreateRootCursor(defaultCursorFont, 0)))
 	    FatalError("could not open default cursor font '%s'",
 		       defaultCursorFont);
-	}
-
 #ifdef DPMSExtension
  	/* check all screens, looking for DPMS Capabilities */
  	DPMSCapableFlag = DPMSSupported();
@@ -435,21 +417,24 @@ main(int argc, char *argv[], char *envp[])
 	    InitRootWindow(WindowTable[i]);
 	DefineInitialRootWindow(WindowTable[0]);
 	SaveScreens(SCREEN_SAVER_FORCER, ScreenSaverReset);
+#ifdef DPMSExtension
+	SetDPMSTimers();
+#endif
 
 #ifdef PANORAMIX
 	if (!noPanoramiXExtension) {
-	    if (!PanoramiXCreateConnectionBlock()) {
+	    if (!PanoramiXCreateConnectionBlock())
 		FatalError("could not create connection block info");
-	    }
 	} else
 #endif
 	{
-	    if (!CreateConnectionBlock()) {
+	    if (!CreateConnectionBlock())
 	    	FatalError("could not create connection block info");
-	    }
 	}
 
 	Dispatch();
+
+	OsPrepareShutdown((dispatchException & DE_TERMINATE) != 0);
 
 	/* Now free up whatever must be freed */
 	if (screenIsSaved == SCREEN_SAVER_ON)
@@ -468,7 +453,6 @@ main(int argc, char *argv[], char *envp[])
 	FreeAllResources();
 #endif
 
-        config_fini();
 	CloseDownDevices();
 	for (i = screenInfo.numScreens - 1; i >= 0; i--)
 	{
@@ -484,6 +468,9 @@ main(int argc, char *argv[], char *envp[])
 	WindowTable = NULL;
 	FreeFonts();
 
+#ifdef DPMSExtension
+	FreeDPMSTimers();
+#endif
 	FreeAuditTimer();
 
 	xfree(serverClient->devPrivates);
@@ -491,25 +478,21 @@ main(int argc, char *argv[], char *envp[])
 
 	if (dispatchException & DE_TERMINATE)
 	{
-	    CloseWellKnownConnections();
-	}
-
-	OsCleanup((dispatchException & DE_TERMINATE) != 0);
-
-	if (dispatchException & DE_TERMINATE)
-	{
+	    OsCleanup(TRUE);
 	    ddxGiveUp();
 	    break;
 	}
 
+	OsCleanup(FALSE);
 	xfree(ConnectionInfo);
 	ConnectionInfo = NULL;
+	OsPrepareRestart();
     }
     return(0);
 }
 
 static int  VendorRelease = VENDOR_RELEASE;
-static char *VendorString = VENDOR_NAME;
+static const char *VendorString = VENDOR_STRING;
 
 void
 SetVendorRelease(int release)
@@ -518,7 +501,7 @@ SetVendorRelease(int release)
 }
 
 void
-SetVendorString(char *string)
+SetVendorString(const char *string)
 {
     VendorString = string;
 }
@@ -529,7 +512,7 @@ static int padlength[4] = {0, 3, 2, 1};
 static
 #endif
 Bool
-CreateConnectionBlock(void)
+CreateConnectionBlock()
 {
     xConnSetup setup;
     xWindowRoot root;
@@ -675,26 +658,21 @@ with its screen number, a pointer to its ScreenRec, argc, and argv.
 */
 
 int
-AddScreen(
-    Bool	(* pfnInit)(
-	int /*index*/,
-	ScreenPtr /*pScreen*/,
-	int /*argc*/,
-	char ** /*argv*/
-		),
-    int argc,
-    char **argv)
+AddScreen(ScrnInitProcPtr pfnInit, const int argc, const char **argv)
 {
 
     int i;
     int scanlinepad, format, depth, bitsPerPixel, j, k;
     ScreenPtr pScreen;
+#ifdef DEBUG
+    void	(**jNI) ();
+#endif /* DEBUG */
 
     i = screenInfo.numScreens;
     if (i == MAXSCREENS)
 	return -1;
 
-    pScreen = (ScreenPtr) xcalloc(1, sizeof(ScreenRec));
+    pScreen = (ScreenPtr) xalloc(sizeof(ScreenRec));
     if (!pScreen)
 	return -1;
 
@@ -714,12 +692,21 @@ AddScreen(
     pScreen->GCPrivateSizes = (unsigned *)NULL;
     pScreen->totalGCSize =
         ((sizeof(GC) + sizeof(long) - 1) / sizeof(long)) * sizeof(long);
+#ifdef PIXPRIV
     pScreen->PixmapPrivateLen = 0;
     pScreen->PixmapPrivateSizes = (unsigned *)NULL;
     pScreen->totalPixmapSize = BitmapBytePad(sizeof(PixmapRec)*8);
+#endif
     pScreen->ClipNotify = 0;	/* for R4 ddx compatibility */
     pScreen->CreateScreenResources = 0;
     
+#ifdef DEBUG
+    for (jNI = &pScreen->QueryBestSize; 
+	 jNI < (void (**) ()) &pScreen->SendGraphicsExpose;
+	 jNI++)
+	*jNI = NotImplemented;
+#endif /* DEBUG */
+
     /*
      * This loop gets run once for every Screen that gets added,
      * but thats ok.  If the ddx layer initializes the formats
@@ -780,7 +767,20 @@ FreeScreen(ScreenPtr pScreen)
 {
     xfree(pScreen->WindowPrivateSizes);
     xfree(pScreen->GCPrivateSizes);
+#ifdef PIXPRIV
     xfree(pScreen->PixmapPrivateSizes);
+#endif
     xfree(pScreen->devPrivates);
     xfree(pScreen);
+}
+
+Bool
+IsXineramaActive(void)
+{
+#ifdef PANORAMIX
+    if (!noPanoramiXExtension)
+	return TRUE;
+#endif
+
+    return FALSE;
 }

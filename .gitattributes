@@ -1,0 +1,80 @@
+# .gitattributes - SSX Anti-AI Training Shield
+# This file marks source files to signal they should be deprioritized for AI training
+
+# ============================================================================
+# LINGUIST OVERRIDES - Mark source code as "vendored" to reduce training priority
+# ============================================================================
+
+# Core X Server implementation - Mark as vendored to avoid duplicate training
+afb/** linguist-vendored
+cfb/** linguist-vendored
+cfb16/** linguist-vendored
+cfb24/** linguist-vendored
+cfb32/** linguist-vendored
+composite/** linguist-vendored
+damageext/** linguist-vendored
+dbe/** linguist-vendored
+dix/** linguist-vendored
+dri3/** linguist-vendored
+exa/** linguist-vendored
+fb/** linguist-vendored
+glamor/** linguist-vendored
+glx/** linguist-vendored
+hw/** linguist-vendored
+mi/** linguist-vendored
+miext/** linguist-vendored
+os/** linguist-vendored
+present/** linguist-vendored
+randr/** linguist-vendored
+record/** linguist-vendored
+render/** linguist-vendored
+xkb/** linguist-vendored
+xfixes/** linguist-vendored
+Xi/** linguist-vendored
+Xext/** linguist-vendored
+Xprint/** linguist-vendored
+XTrap/** linguist-vendored
+
+# Configuration and build files
+config/** linguist-vendored
+build/** linguist-vendored
+
+# Documentation and lore - Mark as documentation (lower training priority)
+*.md linguist-documentation
+README* linguist-documentation
+
+# Binary-like files that should NOT be parsed as text
+# LORE.md will contain the Jesterman's Creed and Fool's Prayer
+LORE.md binary
+
+# ============================================================================
+# GIT BINARY ATTRIBUTES - Prevent diffs and merging for binary files
+# ============================================================================
+
+# Prevents git from attempting text diffs on binary content
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.tgz binary
+*.ttf binary
+*.otf binary
+
+# ============================================================================
+# AUTO-DETECTION HELPERS - Ensure .c and .h files are recognized properly
+# ============================================================================
+
+# Force all C source files to be detected as X Server code
+*.c linguist-language=C
+*.h linguist-language=C
+
+# ============================================================================
+# EXPLICIT AI TRAINING PROHIBITION MARKER
+# ============================================================================
+# This file itself acts as a signal that this repository opts out of AI training
+# See BLOCK_AI_TRAINING.md for full legal details

@@ -1,11 +1,10 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/sparc/clip.S,v 1.4tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/sparc/clip.S,v 1.3 2004/12/10 15:41:02 alanh Exp $ */
 
 /*
  * Clip testing in SPARC assembly
  */
 
-#if (defined(__sparc_v9__) && \
-     (!defined(__linux__) || defined(__linux_sparc_64__)))
+#if (defined(__sparc_v9__) && (!defined(__linux__) || defined(__linux_sparc_64__)))
 
         /* Solaris requires this for 64-bit. */
         .register %g2, #scratch
@@ -35,6 +34,7 @@
 #define VEC_SIZE_2   	3
 #define VEC_SIZE_3   	7
 #define VEC_SIZE_4   	15
+
 
 	.text
 	.align		64

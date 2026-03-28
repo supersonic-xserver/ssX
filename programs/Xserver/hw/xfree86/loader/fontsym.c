@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/fontsym.c,v 1.17 2005/10/14 15:16:59 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/fontsym.c,v 1.16 2004/09/15 15:01:26 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1998-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -46,10 +53,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <X11/fonts/font.h>
+#include "font.h"
 #include "sym.h"
 #include "fntfilst.h"
-#include <X11/fonts/fontenc.h>
+#include "fontenc.h"
 #ifdef FONTENC_COMPATIBILITY
 #include "fontencc.h"
 #endif
@@ -125,5 +132,5 @@ LOOKUP fontLookupTab[] = {
     SYMFUNC(FontCacheGetBitmap)
 #endif
 
-    LOOKUP_TERMINATOR
+    {0, 0}
 };

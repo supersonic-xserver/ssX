@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_OSlib.h,v 3.101 2006/01/09 15:00:19 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990, 1991 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1992 by David Dawes <dawes@XFree86.org>
@@ -96,12 +104,12 @@ typedef signed long xf86ssize_t;
 #include <stddef.h>
 
 /**************************************************************************/
-/* SYSV386 (SVR3, SVR4), including Solaris                                */
+/* SYSV386 (SVR3, SVR4) - including Solaris                               */
 /**************************************************************************/
 #if (defined(SYSV) || defined(SVR4)) && \
     !defined(DGUX) && !defined(sgi) && \
     (defined(sun) || defined(i386))
-# ifdef SCO325
+# ifdef __SCO__
 #  ifndef _SVID3
 #   define _SVID3
 #  endif
@@ -127,9 +135,13 @@ typedef signed long xf86ssize_t;
 
 # include <errno.h>
 
-# if defined(_NEED_SYSI86)
-#  if !(defined (sun) && defined (SVR4))
-#    include <sys/immu.h>
+# if defined(PowerMAX_OS)
+#  define HAS_USL_VTS
+#  include <sys/immu.h>
+#  include <sys/sysmacros.h>
+# elif defined(_NEED_SYSI86)
+#  include <sys/immu.h>
+#  if !(defined(sun) && defined(SVR4))
 #    include <sys/region.h>
 #  endif
 #  include <sys/proc.h>
@@ -139,16 +151,14 @@ typedef signed long xf86ssize_t;
 #   include <sys/seg.h>
 #  endif /* SVR4 && !sun */
 /* V86SC_IOPL was moved to <sys/sysi86.h> on Solaris 7 and later */
-#  if defined(sun) && defined (SVR4)		/* Solaris? */
-#   if defined(i386) || defined(__x86)		/* on x86 or x64? */
-#    if !defined(V86SC_IOPL)			/* Solaris 7 or later? */
-#     include <sys/v86.h>			/* Nope */
-#    endif
+#  if defined(sun) && defined(SVR4) 			/* Solaris? */
+#   if !defined(V86SC_IOPL) && !defined(__sparc__)	/* Solaris 7? */
+#    include <sys/v86.h>				/* Nope */
 #   endif /* V86SC_IOPL */
 #  else 
 #   include <sys/v86.h>					/* Not solaris */
 #  endif /* sun && i386 && SVR4 */
-#  if defined(sun) && (defined (i386) || defined(__x86))  && defined (SVR4)
+#  if defined(sun) && defined(SVR4) && !defined(__sparc__)
 #    include <sys/psw.h>
 #  endif
 # endif /* _NEED_SYSI86 */
@@ -168,7 +178,7 @@ typedef signed long xf86ssize_t;
 # if !defined(sun)
 #  include <sys/emap.h>
 # endif
-# if defined(SCO325)
+# if defined(__SCO__)
 #  include <sys/vtkd.h>
 #  include <sys/console.h>
 #  include <sys/scankbd.h>
@@ -182,11 +192,16 @@ typedef signed long xf86ssize_t;
 #  include <sys/vt.h>
 # elif defined(sun)
 #  include <sys/fbio.h>
-#  include <sys/kbd.h> 
+#  include <sys/kbd.h>
 #  include <sys/kbio.h>
+#  ifndef __sparc__
+#   include <sys/kd.h>
+#  endif
 
-/* undefine symbols from <sys/kbd.h> we don't need that conflict with enum
-   definitions in parser/xf86tokens.h */
+/*
+ * Undefine symbols from <sys/kbd.h> we don't need that conflict with enum
+ * definitions in parser/xf86tokens.h.
+ */
 #  undef STRING
 #  undef LEFTALT
 #  undef RIGHTALT
@@ -195,7 +210,7 @@ typedef signed long xf86ssize_t;
 #  define LED_NUM LED_NUM_LOCK
 #  define LED_SCR LED_SCROLL_LOCK
 #  define LED_COMP LED_COMPOSE
-# endif /* sun */
+# endif /* __SCO__ */
 
 # if !defined(VT_ACKACQ)
 #  define VT_ACKACQ 2
@@ -206,12 +221,14 @@ typedef signed long xf86ssize_t;
 #  define POSIX_TTY
 # endif /* __SCO__ */
 
-# if defined(SVR4) || defined(SCO325)
+# if defined(SVR4) || defined(__SCO__)
 #  include <sys/mman.h>
-#  if !(defined(sun) && defined (SVR4))
+#  if !(defined(sun) && defined(SVR4))
 #    define DEV_MEM "/dev/pmem"
+#  elif defined(PowerMAX_OS)
+#    define DEV_MEM "/dev/iomem"
 #  endif
-#  ifdef SCO325
+#  ifdef __SCO__
 #   undef DEV_MEM
 #   define DEV_MEM "/dev/mem"
 #  endif
@@ -224,7 +241,7 @@ typedef signed long xf86ssize_t;
 #  define POSIX_TTY
 # endif
 
-# if defined(sun) && defined (i386) && defined (SVR4) && !defined(__SOL8__)
+# if defined(sun) && defined(SVR4) && !defined(__SOL8__)
 #  define USE_VT_SYSREQ
 #  define VT_SYSREQ_DEFAULT TRUE
 # endif
@@ -233,6 +250,13 @@ typedef signed long xf86ssize_t;
 #  define i386 /* not defined in ANSI C mode */
 # endif /* ATT && !i386 */
 
+# if (defined(ATT) || defined(SVR4)) && !defined(sun) && !defined(__SCO__)
+#  ifndef XQUEUE
+#   define XQUEUE
+#  endif
+#  include <sys/xque.h>
+# endif /* ATT || SVR4 */
+
 # ifdef SYSV
 #  if !defined(ISC) || defined(ISC202) || defined(ISC22)
 #   define NEED_STRERROR
@@ -240,7 +264,6 @@ typedef signed long xf86ssize_t;
 # endif
 
 #endif /* (SYSV || SVR4) && !DGUX */
-
 
 
 /**************************************************************************/
@@ -309,24 +332,12 @@ typedef signed long xf86ssize_t;
 #endif /* DGUX && SVR4 */
 
 /**************************************************************************/
-/* Linux or Glibc-based system                                            */
+/* Linux                                                                  */
 /**************************************************************************/
-#if defined(__linux__) || defined(__GLIBC__)
+#if defined(linux)
 # include <sys/ioctl.h>
 # include <signal.h>
-# include <stdlib.h>
-# include <sys/types.h>
-# include <assert.h>
-
-#ifdef __GNU__ /* GNU/Hurd */
-# define USE_OSMOUSE
-#endif
-
-# ifdef __linux__
-#  include <termio.h>
-# else /* __GLIBC__ */
-#  include <termios.h>
-# endif
+# include <termio.h>
 # ifdef __sparc__
 #  include <sys/param.h>
 # endif
@@ -335,21 +346,20 @@ typedef signed long xf86ssize_t;
 
 # include <sys/stat.h>
 
+# define HAS_USL_VTS
 # include <sys/mman.h>
-# ifdef __linux__
-#  define HAS_USL_VTS
-#  include <sys/kd.h>
-#  include <sys/vt.h>
-#  define LDGMAP GIO_SCRNMAP
-#  define LDSMAP PIO_SCRNMAP
-#  define LDNMAP LDSMAP
-#  define CLEARDTR_SUPPORT
-#  define USE_VT_SYSREQ
-# endif
+# include <sys/kd.h>
+# include <sys/vt.h>
+# define LDGMAP GIO_SCRNMAP
+# define LDSMAP PIO_SCRNMAP
+# define LDNMAP LDSMAP
+
+# define CLEARDTR_SUPPORT
+# define USE_VT_SYSREQ
 
 # define POSIX_TTY
 
-#endif /* __linux__ || __GLIBC__ */
+#endif /* linux */
 
 /**************************************************************************/
 /* LynxOS AT                                                              */
@@ -409,30 +419,6 @@ extern int errno;
 
 # include <errno.h>
 
-# include <sys/types.h>
-# include <sys/mman.h>
-# include <sys/stat.h>
-
-# if defined(__bsdi__)
-#  include <sys/param.h>
-# if (_BSDI_VERSION < 199510)
-#  include <i386/isa/vgaioctl.h>
-# endif
-# endif /* __bsdi__ */
-
-#endif /* CSRG_BASED */
-
-/**************************************************************************/
-/* Kernel of *BSD                                                         */
-/**************************************************************************/
-#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
- defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
-
-# include <sys/param.h>
-# if defined(__FreeBSD_version) && !defined(__FreeBSD_kernel_version)
-#  define __FreeBSD_kernel_version __FreeBSD_version
-# endif
-
 # if !defined(LINKKIT)
   /* Don't need this stuff for the Link Kit */
 #  if defined(__bsdi__)
@@ -454,8 +440,9 @@ extern int errno;
 #    if defined(__NetBSD__) || defined(__OpenBSD__)
 #     include <machine/console.h>
 #    else
-#     if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__)
-#        if defined(__DragonFly__)  || (__FreeBSD_kernel_version >= 410000)
+#     if defined(__FreeBSD__)
+#        include <osreldate.h>
+#        if __FreeBSD_version >= 410000
 #          include <sys/consio.h>
 #          include <sys/kbio.h>
 #        else
@@ -469,7 +456,7 @@ extern int errno;
 #   if defined(PCVT_SUPPORT)
 #    if !defined(SYSCONS_SUPPORT)
       /* no syscons, so include pcvt specific header file */
-#     if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+#     if defined(__FreeBSD__)
 #      include <machine/pcvt_ioctl.h>
 #     else
 #      if defined(__NetBSD__) || defined(__OpenBSD__)
@@ -479,7 +466,7 @@ extern int errno;
 #      else
 #       include <sys/pcvt_ioctl.h>
 #      endif /* __NetBSD__ */
-#     endif /* __FreeBSD_kernel__ || __OpenBSD__ */
+#     endif /* __FreeBSD__ || __OpenBSD__ */
 #    else /* pcvt and syscons: hard-code the ID magic */
 #     define VGAPCVTID _IOWR('V',113, struct pcvtid)
       struct pcvtid {
@@ -492,8 +479,9 @@ extern int errno;
 #    include <dev/wscons/wsconsio.h>
 #    include <dev/wscons/wsdisplay_usl_io.h>
 #   endif /* WSCONS_SUPPORT */
-#   if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__)
-#    if defined(__FreeBSD_kernel_version) && (__FreeBSD_kernel_version >= 500013)
+#   if defined(__FreeBSD__)
+#    include <osreldate.h>
+#    if __FreeBSD_version >= 500013
 #     include <sys/mouse.h>
 #    else
 #     undef MOUSE_GETINFO
@@ -532,6 +520,17 @@ extern int errno;
 #  endif /* __bsdi__ */
 # endif /* !LINKKIT */
 
+# include <sys/types.h>
+# include <sys/mman.h>
+# include <sys/stat.h>
+
+# if defined(__bsdi__)
+#  include <sys/param.h>
+# if (_BSDI_VERSION < 199510)
+#  include <i386/isa/vgaioctl.h>
+# endif
+# endif /* __bsdi__ */
+
 #if defined(USE_I386_IOPL) || defined(USE_AMD64_IOPL)
 #include <machine/sysarch.h>
 #endif
@@ -542,8 +541,45 @@ extern int errno;
 #  define USE_VT_SYSREQ
 # endif
 
+#endif /* CSRG_BASED */
+
+/**************************************************************************/
+/* OS/2                                                                   */
+/**************************************************************************/
+/* currently OS/2 with a modified EMX/GCC compiler only */
+#if defined(__UNIXOS2__) 
+# include <signal.h>
+# include <errno.h>
+# include <sys/stat.h>
+
+/* I would have liked to have this included here always, but
+ * it causes clashes for BYTE and BOOL with Xmd.h, which is too dangerous. 
+ * So I'll include it in place where I know it does no harm.
+ */
+#if defined(I_NEED_OS2_H)
+# undef BOOL
+# undef BYTE
+# include <os2.h>
 #endif
-/* __FreeBSD_kernel__ || __NetBSD__ || __OpenBSD__ || __bsdi__ */
+
+  /* keyboard types */
+# define KB_84                   1
+# define KB_101                  2
+/* could detect more keyboards */
+# define KB_OTHER                3
+
+  /* LEDs */
+#  define LED_CAP 0x40
+#  define LED_NUM 0x20
+#  define LED_SCR 0x10
+
+  /* mouse driver */
+# define OSMOUSE_ONLY
+# define MOUSE_PROTOCOL_IN_KERNEL
+
+extern char* __XOS2RedirRoot(char*);
+
+#endif
 
 /**************************************************************************/
 /* QNX4                                                                   */
@@ -615,6 +651,25 @@ extern int errno;
 #endif
 
 /**************************************************************************/
+/* GNU/Hurd								  */
+/**************************************************************************/
+#if defined(__GNU__)
+
+#include <stdlib.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <sys/stat.h>
+#include <assert.h>
+
+#define POSIX_TTY
+#define USE_OSMOUSE
+
+#endif /* __GNU__ */
+
+/**************************************************************************/
 /* IRIX                                                                   */
 /**************************************************************************/
 #if defined(sgi)
@@ -622,6 +677,7 @@ extern int errno;
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <termios.h>
 
 #endif
 

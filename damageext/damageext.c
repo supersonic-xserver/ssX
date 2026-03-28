@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -25,6 +32,7 @@
 #endif
 
 #include "damageextint.h"
+#include "dixaccess.h"
 
 static unsigned char	DamageReqCode;
 static int		DamageEventBase;
@@ -162,10 +170,10 @@ ProcDamageQueryVersion(ClientPtr client)
     pDamageClient->major_version = rep.majorVersion;
     pDamageClient->minor_version = rep.minorVersion;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-    	swapl(&rep.length, n);
-	swapl(&rep.majorVersion, n);
-	swapl(&rep.minorVersion, n);
+    	swaps(&rep.sequenceNumber);
+    	swapl(&rep.length);
+	swapl(&rep.majorVersion);
+	swapl(&rep.minorVersion);
     }
     WriteToClient(client, sizeof(xDamageQueryVersionReply), (char *)&rep);
     return(client->noClientException);
@@ -299,6 +307,9 @@ ProcDamageAdd (ClientPtr client)
     if (rc != Success)
 	return rc;
 
+    /* Get screen pointer from drawable */
+    ScreenPtr pScreen = pDrawable->pScreen;
+
     /* The region is relative to the drawable origin, so translate it out to
      * screen coordinates like damage expects.
      */
@@ -344,65 +355,60 @@ ProcDamageDispatch (ClientPtr client)
 static int
 SProcDamageQueryVersion(ClientPtr client)
 {
-    register int n;
     REQUEST(xDamageQueryVersionReq);
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xDamageQueryVersionReq);
-    swapl(&stuff->majorVersion, n);
-    swapl(&stuff->minorVersion, n);
+    swapl(&stuff->majorVersion);
+    swapl(&stuff->minorVersion);
     return (*ProcDamageVector[stuff->damageReqType]) (client);
 }
 
 static int
 SProcDamageCreate (ClientPtr client)
 {
-    register int n;
     REQUEST(xDamageCreateReq);
     
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xDamageCreateReq);
-    swapl (&stuff->damage, n);
-    swapl (&stuff->drawable, n);
+    swapl(&stuff->damage);
+    swapl(&stuff->drawable);
     return (*ProcDamageVector[stuff->damageReqType]) (client);
 }
 
 static int
 SProcDamageDestroy (ClientPtr client)
 {
-    register int n;
     REQUEST(xDamageDestroyReq);
     
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xDamageDestroyReq);
-    swapl (&stuff->damage, n);
+    swapl(&stuff->damage);
     return (*ProcDamageVector[stuff->damageReqType]) (client);
 }
 
 static int
 SProcDamageSubtract (ClientPtr client)
 {
-    register int n;
     REQUEST(xDamageSubtractReq);
     
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xDamageSubtractReq);
-    swapl (&stuff->damage, n);
-    swapl (&stuff->repair, n);
-    swapl (&stuff->parts, n);
+    swapl(&stuff->damage);
+    swapl(&stuff->repair);
+    swapl(&stuff->parts);
     return (*ProcDamageVector[stuff->damageReqType]) (client);
 }
 
 static int
 SProcDamageAdd (ClientPtr client)
 {
-    register int n;
     REQUEST(xDamageAddReq);
 
-    swaps (&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xDamageSubtractReq);
-    swapl (&stuff->drawable, n);
-    swapl (&stuff->region, n);
+    swapl(&stuff->drawable);
+    swapl(&stuff->region);
     return (*ProcDamageVector[stuff->damageReqType]) (client);
 }
 

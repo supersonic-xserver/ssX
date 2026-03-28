@@ -1,25 +1,17 @@
-XCOMM $XFree86: xc/programs/Xserver/miext/rootless/Imakefile,v 1.6tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/miext/rootless/Imakefile,v 1.4 2004/03/18 07:07:11 dawes Exp $
 
 #include <Server.tmpl>
 
-#if defined(DarwinArchitecture) || (defined(XnonServer) && XnonServer)
-# ifndef RootlessSafeAlpha
-#  define RootlessSafeAlpha YES
-# endif
-# ifndef RootlessAcceleration
-#  define RootlessAcceleration YES
-# endif
+#ifdef DarwinArchitecture
+#define RootlessSafeAlpha YES
+#define RootlessAcceleration YES
 #else
-# ifndef RootlessSafeAlpha
-#  define RootlessSafeAlpha NO
-# endif
-# ifndef RootlessAcceleration
-#  define RootlessAcceleration NO
-# endif
+#define RootlessSafeAlpha NO
+#define RootlessAcceleration NO
 #endif
 
 #if RootlessSafeAlpha || RootlessAcceleration
-# define IHaveSubdirs
+#define IHaveSubdirs
 #endif
 
 #if RootlessSafeAlpha
@@ -28,7 +20,6 @@ ALPHADIRS = safeAlpha
 
 #if RootlessAcceleration
 ACCELDIRS = accel
-ACCELINCS = -I$(ACCELDIRS)
 #endif
 
 SRCS =  rootlessCommon.c \
@@ -43,17 +34,18 @@ OBJS =  rootlessCommon.o \
         rootlessGC.o \
         rootlessValTree.o
 
-INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
-           -I$(SERVERSRC)/render $(ACCELINCS)
+INCLUDES = -I. -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+           -I$(XINCLUDESRC) -I$(FONTINCSRC) -I$(SERVERSRC)/render \
+           -I$(EXTINCSRC) -I$(ACCELDIRS)
 
 NormalLibraryObjectRule()
 LibraryModuleTarget(rootless,$(OBJS),.)
 
 DependTarget()
 
-#ifdef IHaveSubdirs
 SUBDIRS = $(ALPHADIRS) $(ACCELDIRS)
 
+#if RootlessSafeAlpha || RootlessAcceleration
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
 #endif

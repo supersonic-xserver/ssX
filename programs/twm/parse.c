@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/twm/parse.c,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/twm/parse.c,v 1.18 2004/06/08 01:17:02 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*****************************************************************************/
 /*
 
@@ -52,6 +59,9 @@ in this Software without prior written authorization from The Open Group.
 
 
 /***********************************************************************
+ *
+ * $Xorg: parse.c,v 1.5 2001/02/09 02:05:37 xorgcvs Exp $
+ *
  * parse the .twmrc file
  *
  * 17-Nov-87 Thomas E. LaStrange       File created
@@ -67,7 +77,7 @@ in this Software without prior written authorization from The Open Group.
 #include "util.h"
 #include "gram.h"
 #include "parse.h"
-#include <X11/Xatom.h>
+#include <X11/Xatom.h> 
 #include <X11/extensions/sync.h>
 
 #ifndef SYSTEM_INIT_FILE
@@ -106,8 +116,10 @@ int (*twmInputFunc)(void);
  ***********************************************************************
  */
 
-static int
-doparse (int (*ifunc)(void), char *srctypename, char *srcname)
+static int doparse (ifunc, srctypename, srcname)
+    int (*ifunc)(void);
+    char *srctypename;
+    char *srcname;
 {
     mods = 0;
     ptr = 0;
@@ -163,8 +175,8 @@ doparse (int (*ifunc)(void), char *srctypename, char *srcname)
 }
 
 
-int
-ParseTwmrc (char *filename)
+int ParseTwmrc (filename)
+    char *filename;
 {
     int i;
     char *home = NULL;
@@ -188,8 +200,8 @@ ParseTwmrc (char *filename)
 		if (home) {
 		    homelen = strlen (home);
 		    cp = tmpfilename;
-		    (void) sprintf (tmpfilename, "%s/.twmrc.%d",
-				    home, Scr->screen);
+		    (void) snprintf (tmpfilename, sizeof(tmpfilename),
+		        "%s/.twmrc.%d", home, Scr->screen);
 		    break;
 		}
 	    }
@@ -230,8 +242,8 @@ ParseTwmrc (char *filename)
     }
 }
 
-int
-ParseStringList (char **sl)
+int ParseStringList (sl)
+    char **sl;
 {
     stringListSource = sl;
     currentString = *sl;
@@ -250,8 +262,7 @@ ParseStringList (char **sl)
  ***********************************************************************
  */
 
-static int
-twmFileInput(void)
+static int twmFileInput()
 {
     if (overflowlen) return (int) overflowbuff[--overflowlen];
 
@@ -266,8 +277,7 @@ twmFileInput(void)
     return ((int)buff[ptr++]);
 }
 
-static int
-twmStringListInput(void)
+static int twmStringListInput()
 {
     if (overflowlen) return (int) overflowbuff[--overflowlen];
 
@@ -296,8 +306,8 @@ twmStringListInput(void)
  ***********************************************************************
  */
 
-void
-twmUnput (int c)
+void twmUnput (c)
+    int c;
 {
     if (overflowlen < sizeof overflowbuff) {
 	overflowbuff[overflowlen++] = (unsigned char) c;
@@ -321,7 +331,8 @@ twmUnput (int c)
  */
 
 void
-TwmOutput(int c)
+TwmOutput(c)
+    int c;
 {
     putchar(c);
 }
@@ -330,7 +341,7 @@ TwmOutput(int c)
 /**********************************************************************
  *
  *  Parsing table and routines
- *
+ * 
  ***********************************************************************/
 
 typedef struct _TwmKeyword {
@@ -418,7 +429,7 @@ typedef struct _TwmKeyword {
  * in lowercase and only contain the letters a-z).  It is fed to a binary
  * search to parse keywords.
  */
-static TwmKeyword keytable[] = {
+static TwmKeyword keytable[] = { 
     { "all",			ALL, 0 },
     { "autoraise",		AUTO_RAISE, 0 },
     { "autorelativeresize",	KEYWORD, kw0_AutoRelativeResize },
@@ -449,7 +460,6 @@ static TwmKeyword keytable[] = {
     { "f.backiconmgr",		FKEYWORD, F_BACKICONMGR },
     { "f.beep",			FKEYWORD, F_BEEP },
     { "f.bottomzoom",		FKEYWORD, F_BOTTOMZOOM },
-    { "f.changelabel",		FKEYWORD, F_CHANGELABEL },
     { "f.circledown",		FKEYWORD, F_CIRCLEDOWN },
     { "f.circleup",		FKEYWORD, F_CIRCLEUP },
     { "f.colormap",		FSKEYWORD, F_COLORMAP },
@@ -498,7 +508,6 @@ static TwmKeyword keytable[] = {
     { "f.startwm",		FSKEYWORD, F_STARTWM },
     { "f.title",		FKEYWORD, F_TITLE },
     { "f.topzoom",		FKEYWORD, F_TOPZOOM },
-    { "f.totalzoom",		FKEYWORD, F_TOTALZOOM },
     { "f.twmrc",		FKEYWORD, F_RESTART },
     { "f.unfocus",		FKEYWORD, F_UNFOCUS },
     { "f.upiconmgr",		FKEYWORD, F_UPICONMGR },
@@ -627,25 +636,26 @@ static TwmKeyword keytable[] = {
 
 static int numkeywords = (sizeof(keytable)/sizeof(keytable[0]));
 
-int
-parse_keyword (char *s, int *nump)
+int parse_keyword (s, nump)
+    char *s;
+    int *nump;
 {
-    int lower = 0, upper = numkeywords - 1;
+    register int lower = 0, upper = numkeywords - 1;
 
     XmuCopyISOLatin1Lowered (s, s);
     while (lower <= upper) {
-	int middle = (lower + upper) / 2;
+        int middle = (lower + upper) / 2;
 	TwmKeyword *p = &keytable[middle];
-	int res = strcmp (p->name, s);
+        int res = strcmp (p->name, s);
 
-	if (res < 0) {
-	    lower = middle + 1;
-	} else if (res == 0) {
+        if (res < 0) {
+            lower = middle + 1;
+        } else if (res == 0) {
 	    *nump = p->subnum;
-	    return p->value;
-	} else {
-	    upper = middle - 1;
-	}
+            return p->value;
+        } else {
+            upper = middle - 1;
+        }
     }
     return ERRORTOKEN;
 }
@@ -656,8 +666,8 @@ parse_keyword (char *s, int *nump)
  * action routines called by grammar
  */
 
-int
-do_single_keyword (int keyword)
+int do_single_keyword (keyword)
+    int keyword;
 {
     switch (keyword) {
       case kw0_NoDefaults:
@@ -765,12 +775,13 @@ do_single_keyword (int keyword)
 }
 
 
-int
-do_string_keyword (int keyword, char *s)
+int do_string_keyword (keyword, s)
+    int keyword;
+    char *s;
 {
     switch (keyword) {
       case kws_UsePPosition:
-	{
+	{ 
 	    int ppos = ParseUsePPosition (s);
 	    if (ppos < 0) {
 		twmrc_error_prefix();
@@ -812,7 +823,7 @@ do_string_keyword (int keyword, char *s)
 
       case kws_MaxWindowSize:
 	JunkMask = XParseGeometry (s, &JunkX, &JunkY, &JunkWidth, &JunkHeight);
-	if ((JunkMask & (WidthValue | HeightValue)) !=
+	if ((JunkMask & (WidthValue | HeightValue)) != 
 	    (WidthValue | HeightValue)) {
 	    twmrc_error_prefix();
 	    fprintf (stderr, "bad MaxWindowSize \"%s\"\n", s);
@@ -832,8 +843,9 @@ do_string_keyword (int keyword, char *s)
 }
 
 
-int
-do_number_keyword (int keyword, int num)
+int do_number_keyword (keyword, num)
+    int keyword;
+    int num;
 {
     switch (keyword) {
       case kwn_ConstrainedMoveTime:
@@ -892,8 +904,10 @@ do_number_keyword (int keyword, int num)
     return 0;
 }
 
-name_list **
-do_colorlist_keyword (int keyword, int colormode, char *s)
+name_list **do_colorlist_keyword (keyword, colormode, s)
+    int keyword;
+    int colormode;
+    char *s;
 {
     switch (keyword) {
       case kwcl_BorderColor:
@@ -943,8 +957,10 @@ do_colorlist_keyword (int keyword, int colormode, char *s)
     return NULL;
 }
 
-int
-do_color_keyword (int keyword, int colormode, char *s)
+int do_color_keyword (keyword, colormode, s)
+    int keyword;
+    int colormode;
+    char *s;
 {
     switch (keyword) {
       case kwc_DefaultForeground:
@@ -995,33 +1011,36 @@ do_color_keyword (int keyword, int colormode, char *s)
  * put_pixel_on_root() Save a pixel value in twm root window color property.
  */
 void
-put_pixel_on_root(Pixel pixel)
-{
+put_pixel_on_root(pixel)                                 
+    Pixel pixel;                                         
+{                                                        
   int           i, addPixel = 1;
-  Atom          pixelAtom, retAtom;
+  Atom          pixelAtom, retAtom;	                 
   int           retFormat;
-  unsigned long nPixels, retAfter;
+  unsigned long nPixels, retAfter;                     
   Pixel        *retProp;
-  pixelAtom = XInternAtom(dpy, "_MIT_PRIORITY_COLORS", TRUE);
-  XGetWindowProperty(dpy, Scr->Root, pixelAtom, 0, 8192,
-		     FALSE, XA_CARDINAL, &retAtom,
-		     &retFormat, &nPixels, &retAfter,
+  pixelAtom = XInternAtom(dpy, "_MIT_PRIORITY_COLORS", TRUE);        
+  XGetWindowProperty(dpy, Scr->Root, pixelAtom, 0, 8192, 
+		     FALSE, XA_CARDINAL, &retAtom,       
+		     &retFormat, &nPixels, &retAfter,    
 		     (unsigned char **)&retProp);
 
-  for (i=0; i< nPixels; i++)
-      if (pixel == retProp[i]) addPixel = 0;
-
-  if (addPixel)
+  for (i=0; i< nPixels; i++)                             
+      if (pixel == retProp[i]) addPixel = 0;             
+                                                         
+  if (addPixel)                                          
       XChangeProperty (dpy, Scr->Root, _XA_MIT_PRIORITY_COLORS,
-		       XA_CARDINAL, 32, PropModeAppend,
-		       (unsigned char *)&pixel, 1);
-}
+		       XA_CARDINAL, 32, PropModeAppend,  
+		       (unsigned char *)&pixel, 1);                       
+}                                                        
 
 /*
  * do_string_savecolor() save a color from a string in the twmrc file.
  */
 void
-do_string_savecolor(int colormode, char *s)
+do_string_savecolor(colormode, s)
+     int colormode;
+     char *s;
 {
   Pixel p;
   GetColor(colormode, &p, s);
@@ -1031,24 +1050,24 @@ do_string_savecolor(int colormode, char *s)
 /*
  * do_var_savecolor() save a color from a var in the twmrc file.
  */
-typedef struct _cnode {
-    int i;
-    struct _cnode *next;
-} Cnode, *Cptr;
+typedef struct _cnode {int i; struct _cnode *next;} Cnode, *Cptr;
 Cptr chead = NULL;
 
 void
-do_var_savecolor(int key)
+do_var_savecolor(key)
+int key;
 {
   Cptr cptrav, cpnew;
   if (!chead) {
     chead = (Cptr)malloc(sizeof(Cnode));
+    memset(chead, 0, sizeof(Cnode));
     chead->i = key; chead->next = NULL;
   }
   else {
     cptrav = chead;
     while (cptrav->next != NULL) { cptrav = cptrav->next; }
     cpnew = (Cptr)malloc(sizeof(Cnode));
+    memset(cpnew, 0, sizeof(Cnode));
     cpnew->i = key; cpnew->next = NULL; cptrav->next = cpnew;
   }
 }
@@ -1057,8 +1076,8 @@ do_var_savecolor(int key)
  * assign_var_savecolor() traverse the var save color list placeing the pixels
  *                        in the root window property.
  */
-void
-assign_var_savecolor(void)
+void 
+assign_var_savecolor()
 {
   Cptr cp = chead;
   while (cp != NULL) {
@@ -1105,8 +1124,9 @@ assign_var_savecolor(void)
   }
 }
 
-static int
-ParseUsePPosition (char *s)
+static int 
+ParseUsePPosition (s)
+    register char *s;
 {
     XmuCopyISOLatin1Lowered (s, s);
 
@@ -1124,8 +1144,12 @@ ParseUsePPosition (char *s)
 
 
 void
-do_squeeze_entry (name_list **list, char *name, int justify, int num,
-		  int denom)
+do_squeeze_entry (list, name, justify, num, denom)
+    name_list **list;			/* squeeze or dont-squeeze list */
+    char *name;				/* window name */
+    int justify;			/* left, center, right */
+    int num;				/* signed num */
+    int denom;				/* 0 or indicates fraction denom */
 {
     int absnum = (num < 0 ? -num : num);
 
@@ -1158,6 +1182,7 @@ do_squeeze_entry (name_list **list, char *name, int justify, int num,
 		     (unsigned long)sizeof(SqueezeInfo));
 	    return;
 	}
+	memset(sinfo, 0, sizeof(SqueezeInfo));
 	sinfo->justify = justify;
 	sinfo->num = num;
 	sinfo->denom = denom;

@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib_io.c,v 1.13tsi Exp $ */
+/* $Xorg: lbx_zlib_io.c,v 1.3 2000/08/17 19:46:41 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1993 Network Computing Devices
  *
@@ -21,6 +36,7 @@
  *
  * Author:  Dale Tonogai, Network Computing Devices
  */
+/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib_io.c,v 1.13 2004/04/03 22:26:21 dawes Exp $ */
 
 #ifdef WIN32
 #define _WILLWINSOCK_
@@ -31,7 +47,7 @@
 #if !defined(WIN32) && !defined(Lynx)
 #include <sys/param.h>
 #endif
-#include <X11/extensions/lbxbufstr.h>
+#include "lbxbufstr.h"
 #include "lbx_zlib.h"
 #include "os.h"
 

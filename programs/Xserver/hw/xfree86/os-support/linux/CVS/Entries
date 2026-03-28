@@ -1,0 +1,20 @@
+/Imakefile/1.1.1.6/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/agpgart.h/1.1.1.3/Sat Jun  9 15:08:24 2001//Tnetbsd-5-2-3-RELEASE
+/lnx.h/1.1.1.4/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/lnxResource.c/1.1.1.6/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+/lnx_KbdMap.c/1.1.1.1/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/lnx_agp.c/1.5/Fri Mar  5 16:33:06 2004//Tnetbsd-5-2-3-RELEASE
+/lnx_apm.c/1.1.1.5/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/lnx_axp.c/1.1.1.4/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/lnx_ev56.c/1.1.1.4/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/lnx_init.c/1.1.1.5/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+/lnx_io.c/1.1.1.7/Fri Mar 18 13:12:36 2005//Tnetbsd-5-2-3-RELEASE
+/lnx_jstk.c/1.1.1.3/Sat Jun  9 15:08:25 2001//Tnetbsd-5-2-3-RELEASE
+/lnx_kbd.c/1.1.1.3/Fri Mar 18 13:12:36 2005//Tnetbsd-5-2-3-RELEASE
+/lnx_kbd.h/1.1.1.1/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/lnx_kmod.c/1.1.1.3/Sat Jan 19 15:12:20 2002//Tnetbsd-5-2-3-RELEASE
+/lnx_mouse.c/1.1.1.5/Fri Mar 18 13:12:36 2005//Tnetbsd-5-2-3-RELEASE
+/lnx_pci.c/1.1.1.6/Fri Mar 18 13:12:36 2005//Tnetbsd-5-2-3-RELEASE
+/lnx_video.c/1.1.1.6/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+D/drm////
+D/int10////

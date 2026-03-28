@@ -1,3 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhw.h,v 1.12 2003/10/30 17:37:16 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _FBDEVHW_H_
 #define _FBDEVHW_H_
@@ -47,14 +62,5 @@ void  fbdevHWLeaveVT(int scrnIndex, int flags);
 void  fbdevHWDPMSSet(ScrnInfoPtr pScrn, int mode, int flags);
 
 Bool  fbdevHWSaveScreen(ScreenPtr pScreen, int mode);
-
-xf86SwitchModeProc	*fbdevHWSwitchModeWeak(void);
-xf86AdjustFrameProc	*fbdevHWAdjustFrameWeak(void);
-xf86EnterVTProc		*fbdevHWEnterVTWeak(void);
-xf86LeaveVTProc		*fbdevHWLeaveVTWeak(void);
-xf86ValidModeProc	*fbdevHWValidModeWeak(void);
-xf86DPMSSetProc		*fbdevHWDPMSSetWeak(void);
-xf86LoadPaletteProc	*fbdevHWLoadPaletteWeak(void);
-SaveScreenProcPtr	fbdevHWSaveScreenWeak(void);
 
 #endif

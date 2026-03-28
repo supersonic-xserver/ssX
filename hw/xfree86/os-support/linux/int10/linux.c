@@ -1,13 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/linux.c,v 1.36 2008/10/15 20:56:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * linux specific part of the int10 module
- * Copyright 1999, 2000, 2001, 2002, 2003, 2004 Egbert Eich
+ * Copyright 1999 Egbert Eich
  */
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include "xf86.h"
 #include "xf86_OSproc.h"
+#include "xf86_ansic.h"
 #include "xf86Pci.h"
 #include "compiler.h"
 #define _INT10_PRIVATE
@@ -17,16 +22,14 @@
 #else
 #define DEV_MEM "/dev/mem"
 #endif
+#ifndef XFree86LOADER
+#include <sys/mman.h>
+#ifndef MAP_FAILED
+#define MAP_FAILED ((void *)-1)
+#endif
+#endif
 #define ALLOC_ENTRIES(x) ((V_RAM / x) - 1)
 #define SHMERRORPTR (pointer)(-1)
-
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <unistd.h>
-#include <string.h>
 
 static int counter = 0;
 static unsigned long int10Generation = 0;
@@ -72,9 +75,16 @@ static Int10LinuxSubModuleState int10LinuxLoadSubModule(ScrnInfoPtr pScrn);
 #endif /* DoSubModules */
 
 xf86Int10InfoPtr
+xf86InitInt10(int entityIndex)
+{
+    return xf86ExtendedInitInt10(entityIndex, 0);
+}
+
+xf86Int10InfoPtr
 xf86ExtendedInitInt10(int entityIndex, int Flags)
 {
     xf86Int10InfoPtr pInt = NULL;
+    CARD8 *bios_base;
     int screen;
     int fd;
     static void* vidMem = NULL;
@@ -88,8 +98,8 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     int pagesize; 
     memType cs;
     legacyVGARec vga;
+    xf86int10BiosLocation bios;
     Bool videoBiosMapped = FALSE;
-    pciVideoPtr pvp;
     
     if (int10Generation != serverGeneration) {
 	counter = 0;
@@ -127,6 +137,9 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 		    close(fd);
 		    goto error0;
 		}
+		if (sysMem != (void *)(SYS_BIOS))
+		    xf86DrvMsgVerb(screen, X_NOTICE, 0,
+			"Possible sysMem mmap() error (%p)\n", sysMem);
 	    }
 	    if (!vidMem) {
 #ifdef DEBUG
@@ -140,6 +153,9 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 		    close(fd);
 		    goto error0;
 		}
+		if (vidMem != (void *)(V_RAM))
+		    xf86DrvMsgVerb(screen, X_NOTICE, 0,
+			"Possible vidMem mmap() error (%p)\n", vidMem);
 	    }
 	    close(fd);
 	} else {
@@ -151,8 +167,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     pInt = (xf86Int10InfoPtr)xnfcalloc(1, sizeof(xf86Int10InfoRec));
     pInt->scrnIndex = screen;
     pInt->entityIndex = entityIndex;
-    pvp = xf86GetPciInfoForEntity(entityIndex);
-    if (pvp) pInt->Tag = pciTag(pvp->bus, pvp->device, pvp->func);
     if (!xf86Int10ExecSetup(pInt))
 	goto error0;
     pInt->mem = &linuxMem;
@@ -171,9 +185,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	    if (errno == ENOSYS)
 		xf86DrvMsg(screen, X_ERROR, "shmget error\n Please reconfigure"
 			   " your kernel to include System V IPC support\n");
-	    else
-		xf86DrvMsg(screen, X_ERROR,
-			   "shmget(highmem) error: %s\n",strerror(errno));
 	    goto error1;
 	}
     } else {
@@ -191,6 +202,9 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 		goto error1;
 	    }
 	    close (fd);
+	    if (vMem != (void *)(V_BIOS))
+		xf86DrvMsgVerb(screen, X_NOTICE, 0,
+		    "Possible V_BIOS (1) mmap() error (%p)\n", vMem);
 	} else
 	    goto error1;
     }
@@ -200,27 +214,16 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     ErrorF("Mapping 640kB area\n");
 #endif
     if ((low_mem = shmget(counter++, V_RAM,
-			  IPC_CREAT | SHM_R | SHM_W)) == -1) {
-	xf86DrvMsg(screen, X_ERROR,
-		   "shmget(lowmem) error: %s\n",strerror(errno));
+			      IPC_CREAT | SHM_R | SHM_W)) == -1)
 	goto error2;
-    }
 
     ((linuxInt10Priv*)pInt->private)->lowMem = low_mem;
     base = shmat(low_mem, 0, 0);
-    if (base == SHMERRORPTR) {
-	xf86DrvMsg(screen, X_ERROR,
-		   "shmat(low_mem) error: %s\n",strerror(errno));
-	goto error3;
-    }
+    if (base == SHMERRORPTR) goto error4;
     ((linuxInt10Priv *)pInt->private)->base = base;
     if (high_mem > -1) {
 	base_high = shmat(high_mem, 0, 0);
-	if (base_high == SHMERRORPTR) {
-	    xf86DrvMsg(screen, X_ERROR,
-		       "shmat(high_mem) error: %s\n",strerror(errno));
-	    goto error3;
-	}
+	if (base_high == SHMERRORPTR) goto error4;
 	((linuxInt10Priv*)pInt->private)->base_high = base_high;
     } else
 	((linuxInt10Priv*)pInt->private)->base_high = NULL;
@@ -258,11 +261,52 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	ErrorF("done\n");
 #endif
     }
+    
+    xf86int10ParseBiosLocation(options,&bios);
 
-    if (xf86IsEntityPrimary(entityIndex) && !(initPrimary(options))) {
-	if (!xf86int10GetBiosSegment(pInt, NULL))
-	    goto error3;
+    if (xf86IsEntityPrimary(entityIndex) 
+	&& !(initPrimary(options))) {
+	if (bios.bus == BUS_ISA && bios.location.legacy) {
+	    xf86DrvMsg(screen, X_CONFIG,
+		       "Overriding BIOS location: 0x%x\n",
+		       bios.location.legacy);
+	    cs = bios.location.legacy >> 4;
+	    bios_base = (unsigned char *)(cs << 4);
+	    if (!int10_check_bios(screen, cs, bios_base)) {
+		xf86DrvMsg(screen, X_ERROR,
+			   "No V_BIOS at specified address 0x%lx\n",cs << 4);
+		goto error3;
+	    }
+	} else {
+	    if (bios.bus == BUS_PCI) {
+		xf86DrvMsg(screen, X_WARNING,
+			   "Option BiosLocation for primary device ignored: "
+			   "It points to PCI.\n");
+		xf86DrvMsg(screen, X_WARNING,
+			   "You must set Option InitPrimary also\n");
+	    }
 
+	    cs = ((CARD16*)0)[(0x10<<1) + 1];
+
+	    bios_base = (unsigned char *)(cs << 4);
+
+	    if (!int10_check_bios(screen, cs, bios_base)) {
+		cs = ((CARD16*)0)[(0x42 << 1) + 1];
+		bios_base = (unsigned char *)(cs << 4);
+		if (!int10_check_bios(screen, cs, bios_base)) {
+		    cs = V_BIOS >> 4;
+		    bios_base = (unsigned char *)(cs << 4);
+		    if (!int10_check_bios(screen, cs, bios_base)) {
+			xf86DrvMsg(screen, X_ERROR, "No V_BIOS found\n");
+			goto error3;
+		    }
+		}
+	    }
+	}
+
+	xf86DrvMsg(screen, X_INFO, "Primary V_BIOS segment is: 0x%lx\n", cs);
+
+	pInt->BIOSseg = cs;
 	set_return_trap(pInt);
 #ifdef _PC	
 	pInt->Flags = Flags & (SET_BIOS_SCRATCH | RESTORE_BIOS_SCRATCH);
@@ -271,12 +315,41 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
   	xf86Int10SaveRestoreBIOSVars(pInt, TRUE);
 #endif
     } else {
-	const BusType location_type = xf86int10GetBiosLocationType(pInt);
+        EntityInfoPtr pEnt = xf86GetEntityInfo(pInt->entityIndex);
+	BusType location_type;
+
+	if (bios.bus != BUS_NONE) {
+	    switch (location_type = bios.bus) {
+	    case BUS_PCI:
+		xf86DrvMsg(screen,X_CONFIG,"Overriding bios location: "
+			   "PCI:%i:%i%i\n",bios.location.pci.bus,
+			   bios.location.pci.dev,bios.location.pci.func);
+		break;
+	    case BUS_ISA:
+		if (bios.location.legacy)
+		    xf86DrvMsg(screen,X_CONFIG,"Overriding bios location: "
+			       "Legacy:0x%x\n",bios.location.legacy);
+		else
+		    xf86DrvMsg(screen,X_CONFIG,"Overriding bios location: "
+			       "Legacy\n");
+		break;
+	    default:
+		break;
+	    }
+	} else
+	    location_type = pEnt->location.type;
 
 	switch (location_type) {
-	case BUS_PCI: {
-	    const int pci_entity = pInt->entityIndex;
+	case BUS_PCI:
+	{
+	    int pci_entity;
 	    
+	    if (bios.bus == BUS_PCI)
+		pci_entity = xf86GetPciEntity(bios.location.pci.bus,
+					      bios.location.pci.dev,
+					      bios.location.pci.func);
+	    else 
+		pci_entity = pInt->entityIndex;
 	    if (!mapPciRom(pci_entity, (unsigned char *)(V_BIOS))) {
 	        xf86DrvMsg(screen, X_ERROR, "Cannot read V_BIOS\n");
 		goto error3;
@@ -285,13 +358,38 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	    break;
 	}
 	case BUS_ISA:
-	    if (!xf86int10GetBiosSegment(pInt, NULL))
-		goto error3;
+	    if (bios.bus == BUS_ISA && bios.location.legacy) {
+		cs = bios.location.legacy >> 4;
+		bios_base = (unsigned char *)(cs << 4);
+		if (!int10_check_bios(screen, cs, bios_base)) {
+		    xf86DrvMsg(screen,X_ERROR,"No V_BIOS found "
+			       "on override address %p\n",bios_base);
+		    goto error3;
+		}
+	    } else {
+		cs = ((CARD16*)0)[(0x10<<1)+1];
+		bios_base = (unsigned char *)(cs << 4);
+		
+		if (!int10_check_bios(screen, cs, bios_base)) {
+		    cs = ((CARD16*)0)[(0x42<<1)+1];
+		    bios_base = (unsigned char *)(cs << 4);
+		    if (!int10_check_bios(screen, cs, bios_base)) {
+			cs = V_BIOS >> 4;
+			bios_base = (unsigned char *)(cs << 4);
+			if (!int10_check_bios(screen, cs, bios_base)) {
+			    xf86DrvMsg(screen,X_ERROR,"No V_BIOS found\n");
+			    goto error3;
+			}
+		    }
+		}
+	    }
+	    xf86DrvMsg(screen,X_INFO,"Primary V_BIOS segment is: 0x%lx\n",cs);
+	    pInt->BIOSseg = cs;
 	    break;
 	default:
 	    goto error3;
 	}
-
+	xfree(pEnt);
 	pInt->num = 0xe6;
 	reset_int_vect(pInt);
 	set_return_trap(pInt);
@@ -306,6 +404,8 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     xfree(options);
     return pInt;
 
+error4:
+    xf86DrvMsg(screen, X_ERROR, "shmat() call returned errno %d\n", errno);
 error3:
     if (base_high)
 	shmdt(base_high);
@@ -345,10 +445,11 @@ MapCurrentInt10(xf86Int10InfoPtr pInt)
     addr = shmat(((linuxInt10Priv*)pInt->private)->lowMem, (char*)1, SHM_RND);
     if (addr == SHMERRORPTR) {
 	xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot shmat() low memory\n");
-	xf86DrvMsg(pInt->scrnIndex, X_ERROR,
-		   "shmat(low_mem) error: %s\n",strerror(errno));
 	return FALSE;
     }
+    if (addr != (void *)0)
+	xf86DrvMsgVerb(pInt->scrnIndex, X_NOTICE, 0,
+	    "Possible lowMem shmat() error (%p)\n", addr);
     
     if (((linuxInt10Priv*)pInt->private)->highMem >= 0) {
 	addr = shmat(((linuxInt10Priv*)pInt->private)->highMem,
@@ -356,20 +457,24 @@ MapCurrentInt10(xf86Int10InfoPtr pInt)
 	if (addr == SHMERRORPTR) {
 	    xf86DrvMsg(pInt->scrnIndex, X_ERROR,
 		       "Cannot shmat() high memory\n");
-	    xf86DrvMsg(pInt->scrnIndex, X_ERROR,
-		       "shmget error: %s\n",strerror(errno));
 	    return FALSE;
 	}
+	if (addr != (void *)(HIGH_MEM))
+	    xf86DrvMsgVerb(pInt->scrnIndex, X_NOTICE, 0,
+		"Possible highMem shmat() error (%p)\n", addr);
     } else {
 	if ((fd = open(DEV_MEM, O_RDWR, 0)) >= 0) {
-	    if (mmap((void *)(V_BIOS), SYS_BIOS - V_BIOS,
+	    if ((addr = mmap((void *)(V_BIOS), SYS_BIOS - V_BIOS,
 			     PROT_READ | PROT_WRITE | PROT_EXEC,
-			     MAP_SHARED | MAP_FIXED, fd, V_BIOS)
+			     MAP_SHARED | MAP_FIXED, fd, V_BIOS))
 		== MAP_FAILED) {
 		xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot map V_BIOS\n");
 		close (fd);
 		return FALSE;
 	    }
+	    if (addr != (void *)(V_BIOS))
+		xf86DrvMsgVerb(pInt->scrnIndex, X_NOTICE, 0,
+		    "Possible V_BIOS (2) mmap() error (%p)\n", addr);
 	} else {
 	    xf86DrvMsg(pInt->scrnIndex, X_ERROR, "Cannot open %s\n",DEV_MEM);
 	    return FALSE;
@@ -511,20 +616,36 @@ vm86_tst(void)
 {
     int __res;
 
-#ifdef __PIC__
-    /* When compiling with -fPIC, we can't use asm constraint "b" because
-       %ebx is already taken by gcc. */
-    __asm__ __volatile__("pushl %%ebx\n\t"
-			 "movl %2,%%ebx\n\t"
-			 "movl %1,%%eax\n\t"
-			 "int $0x80\n\t"
-			 "popl %%ebx"
-			 :"=a" (__res)
-			 :"n" ((int)113), "r" (NULL));
+#if defined(__PIC__) && !defined(__amd64__) && !defined(__x86_64__)
+    /*
+     * When compiling with -fPIC on i386, we can't use asm constraint "b"
+     * because %ebx is already taken by gcc to hold the GOT address.
+     */
+    __asm__ __volatile__
+    (
+	"pushl %%ebx\n\t"
+	"push %%gs\n\t"
+	"movl %2,%%ebx\n\t"
+	"movl %1,%%eax\n\t"
+	"int $0x80\n\t"
+	"pop %%gs\n\t"
+	"popl %%ebx"
+	: "=a" (__res)
+	: "n" ((int)113),
+	  "r" (NULL)
+	: "memory"
+    );
 #else
-    __asm__ __volatile__("int $0x80\n\t"
-			 :"=a" (__res):"a" ((int)113),
-			 "b" ((struct vm86_struct *)NULL));
+    __asm__ __volatile__
+    (
+	"push %%gs\n\t"
+	"int $0x80\n\t"
+	"pop %%gs"
+	: "=a" (__res)
+	: "a" ((int)113),
+	  "b" (NULL)
+	: "memory"
+    );
 #endif
 
     if (__res < 0 && __res == -ENOSYS) 

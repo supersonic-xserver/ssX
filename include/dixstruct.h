@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/dixstruct.h,v 3.21 2005/03/28 02:51:08 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -23,15 +31,12 @@ SOFTWARE.
 
 #ifndef DIXSTRUCT_H
 #define DIXSTRUCT_H
-#define SMART_MIN_PRIORITY -20
-#define SMART_MAX_PRIORITY 20
 
 #include "dix.h"
 #include "resource.h"
 #include "cursor.h"
 #include "gc.h"
 #include "pixmap.h"
-#include "list.h"
 #include <X11/Xmd.h>
 
 /*
@@ -69,88 +74,73 @@ typedef enum {ClientStateInitial,
 	      ClientStateCheckingSecurity,
 	      ClientStateCheckedSecurity} ClientState;
 
-#ifdef XFIXES
-typedef struct _saveSet {
-    struct _Window  *windowPtr;
-    Bool	    toRoot;
-    Bool	    remap;
-} SaveSetElt;
-#define SaveSetWindow(ss)   ((ss).windowPtr)
-#define SaveSetToRoot(ss)   ((ss).toRoot)
-#define SaveSetRemap(ss)    ((ss).remap)
-#define SaveSetAssignWindow(ss,w)   ((ss).windowPtr = (w))
-#define SaveSetAssignToRoot(ss,tr)  ((ss).toRoot = (tr))
-#define SaveSetAssignRemap(ss,rm)  ((ss).remap = (rm))
-#else
-typedef struct _Window *SaveSetElt;
-#define SaveSetWindow(ss)   (ss)
-#define SaveSetToRoot(ss)   FALSE
-#define SaveSetRemap(ss)    TRUE
-#define SaveSetAssignWindow(ss,w)   ((ss) = (w))
-#define SaveSetAssignToRoot(ss,tr)
-#define SaveSetAssignRemap(ss,rm)
-#endif
-
 typedef struct _Client {
     int         index;
     Mask        clientAsMask;
     pointer     requestBuffer;
-    pointer     osPrivate;    /* for OS layer, including scheduler */
+    pointer     osPrivate;	/* for OS layer, including scheduler */
     Bool        swapped;
     ReplySwapPtr pSwapReplyFunc;
     XID         errorValue;
     int         sequence;
     int         closeDownMode;
     int         clientGone;
-    int         noClientException; 
+    int         noClientException;	/* this client died or needs to be
+					 * killed */
     DrawablePtr lastDrawable;
     Drawable    lastDrawableID;
     GCPtr       lastGC;
     GContext    lastGCID;
-    SaveSetElt  *saveSet;
+    pointer    *saveSet;
     int         numSaved;
     pointer     screenPrivate[MAXSCREENS];
-    int         (**requestVector) (ClientPtr /* pClient */);
-    CARD32      req_len;      
-    Bool        big_requests; 
-    int         priority;
+    int         (**requestVector) (
+		ClientPtr /* pClient */);
+    CARD32	req_len;		/* length of current request */
+    Bool	big_requests;		/* supports large requests */
+    int		priority;
     ClientState clientState;
-    DevUnion    *devPrivates;
-
-    /* ADDED: Required for modern dispatch.c */
-    unsigned char majorOp; 
-
+    DevUnion	*devPrivates;
 #ifdef XKB
-    unsigned short  xkbClientFlags;
-    unsigned short  mapNotifyMask;
-    unsigned short  newKeyboardNotifyMask;
-    unsigned short  vMajor,vMinor;
-    KeyCode         minKC,maxKC;
+    unsigned short	xkbClientFlags;
+    unsigned short	mapNotifyMask;
+    unsigned short	newKeyboardNotifyMask;
+    unsigned short	vMajor,vMinor;
+    KeyCode		minKC,maxKC;
 #endif
 
 #ifdef DEBUG
     unsigned char requestLog[MAX_REQUEST_LOG];
-    int           requestLogIndex;
+    int         requestLogIndex;
 #endif
-
+#ifdef LBX
+    int		(*readRequest)(ClientPtr /*client*/);
+#endif
     unsigned long replyBytesRemaining;
-
-#ifdef XAPPGROUP
-    struct _AppGroupRec* appgroup;
+#ifdef XCSECURITY
+    XID		authId;
+    unsigned int trustLevel;
+    pointer (* CheckAccess)(
+	    ClientPtr /*pClient*/,
+	    XID /*id*/,
+	    RESTYPE /*classes*/,
+	    Mask /*access_mode*/,
+	    pointer /*resourceval*/);
 #endif
-
-    struct _FontResolution * (*fontResFunc) (
-        ClientPtr   /* pClient */,
-        int * /* num */);
-
-    /* Removed #ifdef SMART_SCHEDULE to ensure compilation */
-    int     smart_priority;
+#ifdef XAPPGROUP
+    struct _AppGroupRec*	appgroup;
+#endif
+    struct _FontResolution * (*fontResFunc) (    /* no need for font.h */
+		ClientPtr	/* pClient */,
+		int *		/* num */);
+#ifdef SMART_SCHEDULE
+    int	    smart_priority;
     long    smart_start_tick;
     long    smart_stop_tick;
     long    smart_check_tick;
+#endif
+}           ClientRec;
 
-    struct xorg_list ready;     /* for dispatch scheduling */
-} ClientRec;
 #ifdef SMART_SCHEDULE
 /*
  * Scheduling interface
@@ -176,10 +166,7 @@ extern Bool SmartScheduleInit(void);
 
 typedef struct _WorkQueue {
     struct _WorkQueue *next;
-    Bool        (*function) (
-		ClientPtr	/* pClient */,
-		pointer		/* closure */
-);
+    WorkQueueProcPtr function;
     ClientPtr   client;
     pointer     closure;
 }           WorkQueueRec;
@@ -215,6 +202,10 @@ extern int (* InitialVector[3]) (ClientPtr /*client*/);
 extern int (* ProcVector[256]) (ClientPtr /*client*/);
 
 extern int (* SwappedProcVector[256]) (ClientPtr /*client*/);
+
+#ifdef K5AUTH
+extern int (*k5_Vector[256])(ClientPtr /*client*/);
+#endif
 
 extern ReplySwapPtr ReplySwapVector[256];
 

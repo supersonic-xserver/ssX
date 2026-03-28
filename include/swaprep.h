@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/swaprep.h,v 3.1 2003/04/27 21:31:05 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -91,6 +99,9 @@ extern void SQueryPointerReply(
     int /* size */,
     xQueryPointerReply * /* pRep */);
 
+extern void SwapTimecoord(
+    xTimecoord * /* pCoord */);
+
 extern void SwapTimeCoordWrite(
     ClientPtr /* pClient */,
     int /* size */,
@@ -115,6 +126,17 @@ extern void SQueryKeymapReply(
     ClientPtr /* pClient */,
     int /* size */,
     xQueryKeymapReply * /* pRep */);
+
+#ifdef LBX
+extern void SwapCharInfo(
+    xCharInfo * /* pInfo */);
+#endif
+
+#ifdef LBX
+extern void SwapFont(
+    xQueryFontReply * /* pr */,
+    Bool /* hasGlyphs */);
+#endif
 
 extern void SQueryFontReply(
     ClientPtr /* pClient */,
@@ -170,6 +192,9 @@ extern void SAllocColorPlanesReply(
     ClientPtr /* pClient */,
     int /* size */,
     xAllocColorPlanesReply * /* pRep */);
+
+extern void SwapRGB(
+    xrgb * /* prgb */);
 
 extern void SQColorsExtend(
     ClientPtr /* pClient */,
@@ -248,6 +273,18 @@ extern void WriteSConnectionInfo(
     ClientPtr /* pClient */,
     unsigned long /* size */,
     char * /* pInfo */);
+
+extern void SwapConnSetup(
+    xConnSetup * /* pConnSetup */,
+    xConnSetup * /* pConnSetupT */);
+
+extern void SwapWinRoot(
+    xWindowRoot * /* pRoot */,
+    xWindowRoot * /* pRootT */);
+
+extern void SwapVisual(
+    xVisualType * /* pVis */,
+    xVisualType * /* pVisT */);
 
 extern void SwapConnSetupPrefix(
     xConnSetupPrefix * /* pcspFrom */,

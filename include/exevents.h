@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/exevents.h,v 3.2 2003/04/27 21:31:04 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -29,12 +37,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #ifndef EXEVENTS_H
 #define EXEVENTS_H
-
-#include <X11/extensions/XIproto.h>
-#include "input.h"
-#include "client.h"
-#include "window.h"
-#include "dixaccess.h"
 
 extern void RegisterOtherDevice (
 	DeviceIntPtr           /* device */);
@@ -135,7 +137,6 @@ extern int SetModifierMapping(
 	KeyClassPtr *          /* k */);
 
 extern void SendDeviceMappingNotify(
-        ClientPtr              /* client, */,
 	CARD8                  /* request, */,
 	KeyCode                /* firstKeyCode */,
 	CARD8                  /* count */,
@@ -155,6 +156,10 @@ extern void DeleteWindowFromAnyExtEvents(
 	WindowPtr              /* pWin */,
 	Bool                   /* freeResources */);
 
+extern void DeleteDeviceFromAnyExtEvents(
+	WindowPtr              /* pWin */,
+	DeviceIntPtr           /* dev */);
+
 extern int MaybeSendDeviceMotionNotifyHint (
 	deviceKeyButtonPointer * /* pEvents */,
 	Mask                   /* mask */);
@@ -167,6 +172,11 @@ extern void CheckDeviceGrabAndHintWindow (
 	ClientPtr              /* client */,
 	Mask                   /* deliveryMask */);
 
+extern Mask DeviceEventMaskForClient(
+	DeviceIntPtr           /* dev */,
+	WindowPtr              /* pWin */,
+	ClientPtr              /* client */);
+
 extern void MaybeStopDeviceHint(
 	DeviceIntPtr           /* dev */,
 	ClientPtr              /* client */);
@@ -176,11 +186,5 @@ extern int DeviceEventSuppressForWindow(
 	ClientPtr              /* client */,
 	Mask                   /* mask */,
 	int                    /* maskndx */);
-
-void SendEventToAllWindows(
-        DeviceIntPtr           /* dev */,
-        Mask                   /* mask */,
-        xEvent *               /* ev */,
-        int                    /* count */);
 
 #endif /* EXEVENTS_H */

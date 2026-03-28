@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xnest/Window.c,v 3.10 2008/01/04 17:50:12 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,10 +19,6 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -451,13 +455,6 @@ xnestWindowExposures(WindowPtr pWin, RegionPtr pRgn, RegionPtr other_exposed)
 }
 
 #ifdef SHAPE
-void
-xnestSetShape(WindowPtr pWin)
-{
-  xnestShapeWindow(pWin);
-  miSetShape(pWin);
-}
-
 static Bool
 xnestRegionEqual(RegionPtr pReg1, RegionPtr pReg2)
 {
@@ -550,6 +547,37 @@ xnestShapeWindow(WindowPtr pWin)
       
       XShapeCombineMask(xnestDisplay, xnestWindow(pWin),
 			ShapeClip, 0, 0, None, ShapeSet);
+    }
+  }
+  
+  if (!xnestRegionEqual(xnestWindowPriv(pWin)->input_shape,
+			wInputShape(pWin))) {
+    
+    if (wInputShape(pWin)) {
+      REGION_COPY(pWin->drawable.pScreen, 
+			xnestWindowPriv(pWin)->input_shape, wInputShape(pWin));
+      
+      reg = XCreateRegion();
+      pBox = REGION_RECTS(xnestWindowPriv(pWin)->input_shape);
+      for (i = 0; 
+	   i < REGION_NUM_RECTS(xnestWindowPriv(pWin)->input_shape);
+	   i++) {
+        rect.x = pBox[i].x1;
+        rect.y = pBox[i].y1;
+        rect.width = pBox[i].x2 - pBox[i].x1;
+        rect.height = pBox[i].y2 - pBox[i].y1;
+        XUnionRectWithRegion(&rect, reg, reg);
+      }
+      XShapeCombineRegion(xnestDisplay, xnestWindow(pWin),
+			  ShapeInput, 0, 0, reg, ShapeSet);
+      XDestroyRegion(reg);
+    }
+    else {
+      REGION_EMPTY(pWin->drawable.pScreen, 
+				     xnestWindowPriv(pWin)->input_shape);
+      
+      XShapeCombineMask(xnestDisplay, xnestWindow(pWin),
+			ShapeInput, 0, 0, None, ShapeSet);
     }
   }
 }

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/XIstubs.h,v 3.2 2003/04/27 21:31:04 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -25,6 +33,18 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #ifndef XI_STUBS_H
 #define XI_STUBS_H 1
+
+int
+ChangeKeyboardDevice (
+	DeviceIntPtr           /* old_dev */,
+	DeviceIntPtr           /* new_dev */);
+
+int
+ChangePointerDevice (
+	DeviceIntPtr           /* old_dev */,
+	DeviceIntPtr           /* new_dev */,
+	unsigned char          /* x */,
+	unsigned char          /* y */);
 
 void
 CloseInputDevice (

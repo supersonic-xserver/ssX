@@ -401,3 +401,6 @@ typedef void (*RootlessCopyWindowProc)
     (RootlessFrameID wid, int dstNrects, const BoxRec *dstRects,
      int dx, int dy);
 
+
+
+$XFree86: xc/programs/Xserver/miext/rootless/README.txt,v 1.2 2005/03/29 04:00:31 tsi Exp $

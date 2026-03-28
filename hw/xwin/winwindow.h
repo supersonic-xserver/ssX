@@ -1,6 +1,11 @@
-#if !defined(_WINWINDOW_H_)
-#define _WINWINDOW_H_
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +34,11 @@
  *
  * Authors:	Kensuke Matsuzaki
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winwindow.h,v 1.4 2003/10/08 11:13:03 eich Exp $ */
+
+
+#ifndef _WINWINDOW_H_
+#define _WINWINDOW_H_
 
 #ifndef NO
 #define NO			0
@@ -38,27 +48,19 @@
 #endif
 
 /* Constant strings */
-#ifndef PROJECT_NAME
-#  define PROJECT_NAME		"Cygwin/X"
-#endif
-#define WINDOW_CLASS		"cygwin/x"
-#define WINDOW_TITLE		PROJECT_NAME " - %s:%d"
-#define WINDOW_TITLE_XDMCP	PROJECT_NAME " - %s"
+#define WINDOW_CLASS		"cygwin/xfree86"
+#define WINDOW_TITLE		"Cygwin/XFree86 - %s:%d"
+#define WINDOW_TITLE_XDMCP	"Cygwin/XFree86 - %s"
 #define WIN_SCR_PROP		"cyg_screen_prop rl"
-#define WINDOW_CLASS_X		"cygwin/x X rl"
-#define WINDOW_TITLE_X		PROJECT_NAME " X"
+#define WINDOW_CLASS_X		"cygwin/xfree86 X rl"
+#define WINDOW_TITLE_X		"Cygwin/XFree86 X"
 #define WIN_WINDOW_PROP		"cyg_window_prop_rl"
-#ifdef HAS_DEVWINDOWS
-# define WIN_MSG_QUEUE_FNAME	"/dev/windows"
-#endif
+#define WIN_MSG_QUEUE_FNAME	"/dev/windows"
+#define WIN_LOG_FNAME		"/tmp/XWin.log"
 #define WIN_WID_PROP		"cyg_wid_prop_rl"
 #define WIN_NEEDMANAGE_PROP	"cyg_override_redirect_prop_rl"
-#ifndef CYGMULTIWINDOW_DEBUG
+#define WIN_HWND_CACHE          "cyg_privmap_rl"
 #define CYGMULTIWINDOW_DEBUG    NO
-#endif
-#ifndef CYGWINDOWING_DEBUG
-#define CYGWINDOWING_DEBUG	NO
-#endif
 
 typedef struct _winPrivScreenRec *winPrivScreenPtr;
 
@@ -73,19 +75,15 @@ typedef struct
   HRGN			hRgn;
   HWND			hWnd;
   winPrivScreenPtr	pScreenPriv;
+  int			iX;
+  int			iY;
+  int			iWidth;
+  int			iHeight;
   Bool			fXKilled;
-
-  /* Privates used by primary fb DirectDraw server */
-  LPDDSURFACEDESC	pddsdPrimary;
-
-  /* Privates used by shadow fb DirectDraw Nonlocking server */
-  LPDIRECTDRAWSURFACE4	pddsPrimary4;
-
-  /* Privates used by both shadow fb DirectDraw servers */
-  LPDIRECTDRAWCLIPPER	pddcPrimary;
+  Bool                  fNeedRestore;
+  POINT                 ptRestore;
 } winPrivWinRec, *winPrivWinPtr;
 
-#ifdef XWIN_MULTIWINDOW
 typedef struct _winWMMessageRec{
   DWORD			dwID;
   DWORD			msg;
@@ -97,7 +95,7 @@ typedef struct _winWMMessageRec{
 
 
 /*
- * winmultiwindowwm.c
+ * winrootlesswm.c
  */
 
 #define		WM_WM_MOVE		(WM_USER + 1)
@@ -108,11 +106,14 @@ typedef struct _winWMMessageRec{
 #define		WM_WM_UNMAP		(WM_USER + 6)
 #define		WM_WM_KILL		(WM_USER + 7)
 #define		WM_WM_ACTIVATE		(WM_USER + 8)
-#define		WM_WM_NAME_EVENT	(WM_USER + 9)
-#define		WM_WM_HINTS_EVENT	(WM_USER + 10)
+#define	        WM_WM_NAME_EVENT	(WM_USER + 9)
+#define	        WM_WM_HINTS_EVENT	(WM_USER + 10)
 #define		WM_WM_CHANGE_STATE	(WM_USER + 11)
-#define		WM_MANAGE		(WM_USER + 100)
-#define		WM_UNMANAGE		(WM_USER + 102)
+
+
+/*
+ * winmultiwindowwm.c
+ */
 
 void
 winSendMessageToWM (void *pWMInfo, winWMMessagePtr msg);
@@ -122,12 +123,10 @@ winInitWM (void **ppWMInfo,
 	   pthread_t *ptWMProc,
 	   pthread_t *ptXMsgProc,
 	   pthread_mutex_t *ppmServerStarted,
-	   int dwScreen,
-	   HWND hwndScreen,
-	   BOOL allowOtherWM);
+	   int dwScreen);
 
 void
-winDeinitMultiWindowWM (void);
+winDeinitMultiWindowWM ();
 
 void
 winMinimizeWindow (Window id);
@@ -140,11 +139,4 @@ winMinimizeWindow (Window id);
 void
 winUpdateIcon (Window id);
 
-void 
-winInitGlobalIcons (void);
-
-void 
-winDestroyIcon(HICON hIcon);
-
-#endif /* XWIN_MULTIWINDOW */
 #endif

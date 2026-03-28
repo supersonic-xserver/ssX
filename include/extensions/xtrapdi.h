@@ -1,4 +1,11 @@
 /* $XFree86: xc/include/extensions/xtrapdi.h,v 1.1 2001/11/02 23:29:26 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __XTRAPDI__
 #define __XTRAPDI__
 
@@ -82,6 +89,9 @@ SOFTWARE.
 # define True  1L
 # define False 0L
 #endif
+
+typedef int  (*int_function)();
+typedef void (*void_function)();
 
 /* This is used as flags to indicate desired request traps
  * Note:  This has been padded to a CARD32 to keep structure aligned

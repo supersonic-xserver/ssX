@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * dpsclient.c -- Implementation of the Display PostScript Client Library.
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/dpsclient.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/lib/dps/dpsclient.c,v 1.3 2000/09/26 15:56:59 tsi Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -353,10 +360,7 @@ static void NumFormatFromTokenType(
     case DPS_LO_NATIVE:
       *numFormat = dps_native;
       break;
-    default:
-      DPSCantHappen();
-      *numFormat = dps_native;
-      break;
+    default: DPSCantHappen();
     }
 }
  
@@ -423,12 +427,10 @@ boolean DPSKnownSpace(DPSSpace space)
 
 void DPSclientPrintProc (
   DPSContext ctxt,
-  char	     *buffer,
-  unsigned   nchar)
+  char	     *buf,
+  unsigned    nch)
 {
-  volatile DPSPrivContext cc = (DPSPrivContext) ctxt;
-  char * volatile buf = buffer;
-  volatile unsigned nch = nchar;
+  DPSPrivContext cc = (DPSPrivContext) ctxt;
 
 #define DPS_SEQ_MIN 2
 
@@ -447,8 +449,8 @@ void DPSclientPrintProc (
       }
     }
   while (nch > 0) {
-    char * volatile oldBuf = NIL;
-    volatile unsigned oldNch = 0;
+    char *oldBuf = NIL;
+    unsigned oldNch = 0;
     unsigned n;
     if (cc->objBuf) { /* we're buffering */
       unsigned long int m;
@@ -2056,15 +2058,13 @@ static void textDestroyContext(DPSContext ctxt)
 }
 
 static void textInnerWritePostScript(
-  DPSContext ctxt, char * buffer, unsigned int nchar)
+  DPSContext ctxt, char *buf, unsigned int nch)
 {
   DPSPrivContext cc = (DPSPrivContext)ctxt;
-  char * volatile buf = buffer;
-  volatile unsigned int nch = nchar;
   while (nch > 0) {
-    char * volatile oldBuf = NIL;
-    volatile integer oldNch = 0;
-    volatile unsigned n;
+    char *oldBuf = NIL;
+    integer oldNch = 0;
+    unsigned n;
     if (cc->outBuf) { /* we're buffering */
       unsigned m;
       integer bst;
@@ -2136,7 +2136,7 @@ static void textInnerWritePostScript(
 
     if (nch != 0) {
       /* here with the next binary object sequence or encoded token */
-      volatile unsigned m = 0;
+      unsigned m = 0;
       integer bst;
       if (!IsBinaryToken(buf[0]) && nch < DPS_SEQ_MIN) {
 	/* gotta buffer it */

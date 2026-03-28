@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1992-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -28,7 +35,7 @@
  *	    Massimiliano Ghilardi, max@Linuz.sns.it, some fixes to the
  *				   clockchip programming code.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident_driver.c,v 1.201tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident_driver.c,v 1.193 2005/02/18 02:55:10 dawes Exp $ */
 
 #include "xf1bpp.h"
 #include "xf4bpp.h"
@@ -58,11 +65,11 @@
 #include "trident_regs.h"
 
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #include "xf86xv.h"
 
@@ -70,8 +77,8 @@ static const OptionInfoRec * TRIDENTAvailableOptions(int chipid, int busid);
 static void	TRIDENTIdentify(int flags);
 static Bool	TRIDENTProbe(DriverPtr drv, int flags);
 static Bool	TRIDENTPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	TRIDENTScreenInit(int Index, ScreenPtr pScreen,
-				  const int argc, const char **argv);
+static Bool	TRIDENTScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	TRIDENTEnterVT(int scrnIndex, int flags);
 static void	TRIDENTLeaveVT(int scrnIndex, int flags);
 static Bool	TRIDENTCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -167,7 +174,6 @@ static SymTabRec TRIDENTChipsets[] = {
     { BLADEXP,			"bladeXP" },
     { CYBERBLADEXPAI1,		"cyberbladeXPAi1" },
     { CYBERBLADEXP4,		"cyberbladeXP4" },
-    { XP5,			"XP5" },
     { -1,				NULL }
 };
 
@@ -211,7 +217,6 @@ static PciChipsets TRIDENTPciChipsets[] = {
     { BLADEXP,		PCI_CHIP_9910,	RES_SHARED_VGA },
     { CYBERBLADEXPAI1,	PCI_CHIP_8820,	RES_SHARED_VGA },
     { CYBERBLADEXP4,	PCI_CHIP_2100,	RES_SHARED_VGA },
-    { XP5,		PCI_CHIP_2200,	RES_SHARED_VGA },
     { -1,		-1,		RES_UNDEFINED }
 };
     
@@ -311,7 +316,6 @@ static int ClockLimit[] = {
 	230000,
 	230000,
 	230000,
-	230000,
 };
 
 static int ClockLimit16bpp[] = {
@@ -340,7 +344,6 @@ static int ClockLimit16bpp[] = {
 	170000,
 	170000,
 	170000,
-	230000,
 	230000,
 	230000,
 	230000,
@@ -399,7 +402,6 @@ static int ClockLimit24bpp[] = {
 	115000,
 	115000,
 	115000,
-	115000,
 };
 
 static int ClockLimit32bpp[] = {
@@ -424,7 +426,6 @@ static int ClockLimit32bpp[] = {
 	70000,
 	70000,
 	70000,
-	115000,
 	115000,
 	115000,
 	115000,
@@ -583,16 +584,16 @@ static XF86ModuleVersionInfo tridentVersRec =
 XF86ModuleData tridentModuleData = { &tridentVersRec, tridentSetup, NULL };
 
 pointer
-tridentSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+tridentSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
     if (!setupDone) {
 	setupDone = TRUE;
 	xf86AddDriver(&TRIDENT, module, 0);
-	LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, i2cSymbols,
-			     vbeSymbols, miscfbSymbols, ramdacSymbols,
-			     int10Symbols, xaaSymbols, shadowSymbols, NULL);
+	LoaderRefSymLists(vgahwSymbols, fbSymbols, i2cSymbols, vbeSymbols,
+			  miscfbSymbols, ramdacSymbols, int10Symbols,
+			  xaaSymbols, shadowSymbols, NULL);
 	return (pointer)TRUE;
     } 
 
@@ -1054,14 +1055,10 @@ static void
 TRIDENTProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
 	pVbe = VBEInit(NULL,index);
 	ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 
@@ -1085,7 +1082,6 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
     const char *Sym = "";
     Bool ddcLoaded = FALSE;
     char *s;
-    ModuleDescPtr pMod;
 
     /* Allocate the TRIDENTRec driverPrivate */
     if (!TRIDENTGetRec(pScrn)) {
@@ -1176,10 +1172,10 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	pix24bpp = xf86GetBppFromDepth(pScrn, 24);
 
     /* The vgahw module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     /*
      * Allocate a vgaHWRec
@@ -1195,10 +1191,10 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
     xf86SetOperatingState(resVga, pTrident->pEnt->index, ResUnusedOpr);
 
     /* The ramdac module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "ramdac")))
+    if (!xf86LoadSubModule(pScrn, "ramdac"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    xf86LoaderReqSymLists(ramdacSymbols, NULL);
 
     /*
      * This must happen after pScrn->display has been set because
@@ -1541,21 +1537,29 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
      * when MMIO is turned on!
      */
 
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
+    if (xf86LoadSubModule(pScrn, "vbe")) {
 	xf86MonPtr pMon;
 	vbeInfoPtr pVbe;
 
-        xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
-	pVbe =  VBEInit(NULL, pTrident->pEnt->index);
+        xf86LoaderReqSymLists(vbeSymbols, NULL);
+	pVbe =  VBEInit(NULL,pTrident->pEnt->index);
 	pMon = vbeDoEDID(pVbe, NULL);
+#ifdef VBE_INFO
+	{
+	    VbeInfoBlock* vbeInfoBlockPtr;
+	    if ((vbeInfoBlockPtr = VBEGetVBEInfo(pVbe))) {
+		pTrident->vbeModes = VBEBuildVbeModeList(pVbe,vbeInfoBlockPtr);
+		VBEFreeVBEInfo(vbeInfoBlockPtr);
+	    }
+	}
+#endif
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
 	if (pMon) {
-	    if (!(pMod = xf86LoadSubModule(pScrn, "ddc"))) {
+	    if (!xf86LoadSubModule(pScrn, "ddc")) {
 		TRIDENTFreeRec(pScrn);
 		return FALSE;
 	    } else {
-		xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+		xf86LoaderReqSymLists(ddcSymbols, NULL);
 		xf86SetDDCproperties(pScrn,xf86PrintEDID(pMon));
 		ddcLoaded = TRUE;
 	    }
@@ -2032,17 +2036,6 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	    chipset = "CyberBladeXP4";
 	    pTrident->NewClockCode = TRUE;
 	    pTrident->frequency = NTSC;
-	case XP5:
-    	    pTrident->ddc1Read = Tridentddc1Read;
-	    ramtype = "SGRAM";
-            pTrident->HasSGRAM = TRUE;
-	    pTrident->IsCyber = TRUE;
-	    pTrident->shadowNew = TRUE;
-	    pTrident->NoAccel = TRUE; /* for now */
-	    Support24bpp = TRUE;
-	    chipset = "XP5";
-	    pTrident->NewClockCode = TRUE;
-	    pTrident->frequency = NTSC;
 	    break;
     }
 
@@ -2089,27 +2082,6 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	pScrn->videoRam = pTrident->pEnt->device->videoRam;
 	from = X_CONFIG;
     } else {
-      if (pTrident->Chipset == XP5) {
-	OUTB(vgaIOBase + 4, 0x60);
-	videoram = INB(vgaIOBase + 5);
-	switch (videoram & 0x7) {
- 	case 0x00:
-	    pScrn->videoRam = 131072;
-	    break;
-	case 0x01:
-	    pScrn->videoRam = 65536;
-	    break;
-	case 0x02:
-	    pScrn->videoRam = 32768;
-	    break;
-	case 0x03:
-	    pScrn->videoRam = 16384;
-	    break;
-	case 0x04:
-	    pScrn->videoRam = 8192;
-	    break;
-	}
-      } else
       if (pTrident->Chipset == CYBER9525DVD) {
 	pScrn->videoRam = 2560;
       } else
@@ -2423,7 +2395,7 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	break;
     }
 
-    if (mod && !(pMod = xf86LoadSubModule(pScrn, mod))) {
+    if (mod && xf86LoadSubModule(pScrn, mod) == NULL) {
 	if (IsPciCard && UseMMIO) {
     	    TRIDENTDisableMMIO(pScrn);
  	    TRIDENTUnmapMem(pScrn);
@@ -2434,13 +2406,13 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 
     if (mod) {
 	if (Sym) {
-	    xf86LoaderModReqSymbols(pMod, Sym, NULL);
+	    xf86LoaderReqSymbols(Sym, NULL);
 	} else {
-	    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	    xf86LoaderReqSymLists(fbSymbols, NULL);
 	}
     }
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "i2c"))) {
+    if (!xf86LoadSubModule(pScrn, "i2c")) {
 	if (IsPciCard && UseMMIO) {
     	    TRIDENTDisableMMIO(pScrn);
  	    TRIDENTUnmapMem(pScrn);
@@ -2449,20 +2421,20 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, i2cSymbols, NULL);
+    xf86LoaderReqSymLists(i2cSymbols, NULL);
 
     /* Load shadow if needed */
     if (pTrident->ShadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadow"))) {
+	if (!xf86LoadSubModule(pScrn, "shadow")) {
 	    TRIDENTFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
 
     /* Load XAA if needed */
     if (!pTrident->NoAccel) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    if (IsPciCard && UseMMIO) {
     	    	TRIDENTDisableMMIO(pScrn);
  	    	TRIDENTUnmapMem(pScrn);
@@ -2471,7 +2443,7 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	    return FALSE;
 	}
 
-        xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+        xf86LoaderReqSymLists(xaaSymbols, NULL);
 
         switch (pScrn->displayWidth * pScrn->bitsPerPixel / 8) {
 	    case 512:
@@ -2494,7 +2466,7 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
     /* This gives us DDC1 - we should be able to get DDC2B using i2c */
 
     if (! ddcLoaded)
-	if (!(pMod = xf86LoadSubModule(pScrn, "ddc"))) {
+	if (!xf86LoadSubModule(pScrn, "ddc")) {
 	    if (IsPciCard && UseMMIO) {
 		TRIDENTDisableMMIO(pScrn);
 		TRIDENTUnmapMem(pScrn);
@@ -2503,7 +2475,7 @@ TRIDENTPreInit(ScrnInfoPtr pScrn, int flags)
 	    return FALSE;
 	}
     
-    xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+    xf86LoaderReqSymLists(ddcSymbols, NULL);
 
     if (IsPciCard && UseMMIO) {
         TRIDENTDisableMMIO(pScrn);
@@ -2641,7 +2613,7 @@ TRIDENTModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
     TRIDENTRegPtr tridentReg;
 
-    if (!xf86IsPc98()) WAITFORVSYNC;
+    WAITFORVSYNC;
 
     TridentFindClock(pScrn,mode->Clock);
 
@@ -2667,7 +2639,6 @@ TRIDENTModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	case BLADEXP:
 	case CYBERBLADEXPAI1:
 	case CYBERBLADEXP4:
-	case XP5:
 	    /* Get ready for MUX mode */
 	    if (pTrident->MUX && 
 		pScrn->bitsPerPixel == 8 && 
@@ -2779,8 +2750,7 @@ TRIDENTRestore(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 static Bool
-TRIDENTScreenInit(int scrnIndex, ScreenPtr pScreen,
-		  const int argc, const char **argv)
+TRIDENTScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     /* The vgaHW references will disappear one day */
     ScrnInfoPtr pScrn;
@@ -2790,7 +2760,6 @@ TRIDENTScreenInit(int scrnIndex, ScreenPtr pScreen,
     VisualPtr visual;
     unsigned char *FBStart;
     int width, height, displayWidth;
-    ModuleDescPtr pMod;
 
     /* 
      * First get the ScrnInfoRec
@@ -2807,10 +2776,20 @@ TRIDENTScreenInit(int scrnIndex, ScreenPtr pScreen,
     if (!TRIDENTMapMem(pScrn))
 	return FALSE;
 
-    if (!xf86IsPc98() && (pMod = xf86LoadSubModule(pScrn, "int10"))) {
-	xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
-	xf86DrvMsg(pScrn->scrnIndex,X_INFO,"Initializing int10\n");
-	pTrident->Int10 = xf86InitInt10(pTrident->pEnt->index);
+    if (!xf86IsPc98()) {
+#ifdef VBE_INFO
+	if (pTrident->vbeModes) {
+	    pTrident->pVbe = VBEInit(NULL,pTrident->pEnt->index);
+	    pTrident->Int10 = pTrident->pVbe->pInt10;
+	} else
+#endif
+	{
+	    if (xf86LoadSubModule(pScrn, "int10")) {
+		xf86LoaderReqSymLists(int10Symbols, NULL);
+		xf86DrvMsg(pScrn->scrnIndex,X_INFO,"Initializing int10\n");
+		pTrident->Int10 = xf86InitInt10(pTrident->pEnt->index);
+	    }
+	}
     }
     
     hwp = VGAHWPTR(pScrn);
@@ -2849,7 +2828,7 @@ TRIDENTScreenInit(int scrnIndex, ScreenPtr pScreen,
      * function.  If not, the visuals will need to be setup before calling
      * a fb ScreenInit() function and fixed up after.
      *
-     * For most PC hardware at depths >= 8, the defaults that fb uses
+     * For most PC hardware at depths >= 8, the defaults that cfb uses
      * are not appropriate.  In this driver, we fixup the visuals after.
      */
 
@@ -3667,6 +3646,26 @@ tridentSetModeBIOS(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
     TRIDENTPtr pTrident = TRIDENTPTR(pScrn);
 
+
+#ifdef VBE_INFO
+    if (pTrident->vbeModes) {
+	vbeSaveRestoreRec vbesr;
+	vbesr.stateMode = VBECalcVbeModeIndex(pTrident->vbeModes,
+					     mode, pScrn->bitsPerPixel);
+	vbesr.pstate = NULL;
+	if (vbesr.stateMode) {
+	    if (IsPciCard && UseMMIO) 
+		TRIDENTDisableMMIO(pScrn);
+	    VBEVesaSaveRestore(pTrident->pVbe,&vbesr,MODE_RESTORE);
+	    if (IsPciCard && UseMMIO) 
+		TRIDENTEnableMMIO(pScrn);
+	    return;
+	} else
+	    xf86DrvMsg(pScrn->scrnIndex,X_WARNING,"No BIOS Mode matches "
+		       "%ix%I@%ibpp\n",mode->HDisplay,mode->VDisplay,
+		       pScrn->bitsPerPixel);
+    } 
+#endif
     /* This function is only for LCD screens, and also when we have
      * int10 available */
 

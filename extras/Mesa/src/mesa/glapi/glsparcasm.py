@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $XFree86$
 
 # Mesa 3-D graphics library
 # Version:  5.1
@@ -37,19 +36,13 @@ import apiparser;
 
 
 def PrintHead():
-	print '/* $%s$ */' % 'XFree86'
 	print '/* DO NOT EDIT - This file generated automatically with glsparcasm.py script */'
-	print ''
 	print '#include "glapioffsets.h"'
 	print ''
 	print '/* The _glapi_Dispatch symbol addresses get relocated into the'
 	print ' * sethi/or instruction sequences below at library init time.'
 	print ' */'
 	print ''
-	print '#if defined(__sparc_v9__)'
-	print '\t.register %g2, #scratch'
-	print '\t.register %g3, #scratch'
-	print '#endif'
 	print ''
 	print '.text'
 	print '.align 32'
@@ -112,27 +105,23 @@ def EmitFunction(name, returnType, argTypeList, argNameList, alias, offset):
 	records.append((name, dispatchName, offset))
 
 	# print the assembly code
-	# note that for clarity this has been changed to supply _glapi_Dispatch
-	# instead of zeroes, but _mesa_init_sparc_glapi_relocs() will replace
-	# the relocations regardless
 	print ''
 	print '.globl gl%s' % (name)
 	print '.type gl%s,#function' % (name)
 	print 'gl%s:' % (name)
-	print '#if (defined(__sparc_v9__) && \\'
-	print '    (!defined(__linux__) || defined(__linux_sparc_64__)))'
-	print '\tsethi\t%uhi(_glapi_Dispatch), %g2'
-	print '\tsethi\t%hi(_glapi_Dispatch), %g1'
-	print '\tor\t%g2, %ulo(_glapi_Dispatch), %g2'
-	print '\tor\t%g1, %lo(_glapi_Dispatch), %g1'
+	print '#if (defined(__sparc_v9__) && (!defined(__linux__) || defined(__linux_sparc_64__)))'
+	print '\tsethi\t%hi(0x00000000), %g2'
+	print '\tsethi\t%hi(0x00000000), %g1'
+	print '\tor\t%g2, %lo(0x00000000), %g2'
+	print '\tor\t%g1, %lo(0x00000000), %g1'
 	print '\tsllx\t%g2, 32, %g2'
 	print '\tldx\t[%g1 + %g2], %g1'
 	print "\tsethi\t%%hi(8 * _gloffset_%s), %%g2" % (dispatchName)
 	print "\tor\t%%g2, %%lo(8 * _gloffset_%s), %%g2" % (dispatchName)
 	print '\tldx\t[%g1 + %g2], %g3'
 	print '#else'
-	print '\tsethi\t%hi(_glapi_Dispatch), %g1'
-	print '\tld\t[%g1 + %lo(_glapi_Dispatch)], %g1'
+	print '\tsethi\t%hi(0x00000000), %g1'
+	print '\tld\t[%g1 + %lo(0x00000000)], %g1'
 	print "\tld\t[%%g1 + (4 * _gloffset_%s)], %%g3" % (dispatchName)
 	print '#endif'
 	print '\tjmpl\t%g3, %g0'

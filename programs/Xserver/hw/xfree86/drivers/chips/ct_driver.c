@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/ct_driver.c,v 1.140tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/ct_driver.c,v 1.135 2004/11/26 13:44:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1993 by Jon Block <block@frc.com>
@@ -108,6 +122,7 @@
 #include "fb.h"
 #include "cfb8_16.h"
 
+
 /* Needed for the 1 and 4 bpp framebuffers */
 #include "xf1bpp.h"
 #include "xf4bpp.h"
@@ -135,8 +150,8 @@ static const OptionInfoRec *	CHIPSAvailableOptions(int chipid, int busid);
 static void     CHIPSIdentify(int flags);
 static Bool     CHIPSProbe(DriverPtr drv, int flags);
 static Bool     CHIPSPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool     CHIPSScreenInit(int Index, ScreenPtr pScreen,
-                                const int argc, const char **argv);
+static Bool     CHIPSScreenInit(int Index, ScreenPtr pScreen, int argc,
+                                  char **argv);
 static Bool     CHIPSEnterVT(int scrnIndex, int flags);
 static void     CHIPSLeaveVT(int scrnIndex, int flags);
 static Bool     CHIPSCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -654,8 +669,8 @@ static const OptionInfoRec ChipsHiQVOptions[] = {
  * List of symbols from other modules that this module references.  This
  * list is used to tell the loader that it is OK for symbols here to be
  * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderModReqSymbols() or
- * xf86LoaderModReqSymLists().  The purpose is this is to avoid warnings about
+ * told that they are essential via a call to xf86LoaderReqSymbols() or
+ * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
  * unresolved symbols that are not required.
  */
 
@@ -762,7 +777,7 @@ static XF86ModuleVersionInfo chipsVersRec =
 XF86ModuleData chipsModuleData = { &chipsVersRec, chipsSetup, NULL };
 
 static pointer
-chipsSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+chipsSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -779,9 +794,9 @@ chipsSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, vgahwSymbols, miscfbSymbols, fbSymbols,
-			     xaaSymbols, ramdacSymbols, ddcSymbols,
-			     i2cSymbols, shadowSymbols, vbeSymbols, NULL);
+	LoaderRefSymLists(vgahwSymbols, miscfbSymbols, fbSymbols, xaaSymbols,
+			  ramdacSymbols, ddcSymbols, i2cSymbols,
+			  shadowSymbols, vbeSymbols, NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -818,17 +833,9 @@ CHIPSGetRec(ScrnInfoPtr pScrn)
 static void
 CHIPSFreeRec(ScrnInfoPtr pScrn)
 {
-    CHIPSPtr    cPtr = CHIPSPTR(pScrn);
-
-    if (!cPtr)
+    if (pScrn->driverPrivate == NULL)
 	return;
-
-    cPtr = CHIPSPTR(pScrn);
-    if (cPtr->pVbe) {
-	vbeFree(cPtr->pVbe);
-	cPtr->pVbe = NULL;
-    }
-    xfree(cPtr);
+    xfree(pScrn->driverPrivate);
     pScrn->driverPrivate = NULL;
 }
 
@@ -1072,14 +1079,13 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
     CHIPSPtr cPtr;
     Bool res = FALSE;
     CHIPSEntPtr cPtrEnt = NULL;
-    ModuleDescPtr pMod;
 
     if (flags & PROBE_DETECT) return FALSE;
 
     /* The vgahw module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     /* Allocate the ChipsRec driverPrivate */
     if (!CHIPSGetRec(pScrn)) {
@@ -1118,9 +1124,9 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
     }
     /* INT10 */
 #if 0
-    if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
+    if (xf86LoadSubModule(pScrn, "int10")) {
  	xf86Int10InfoPtr pInt;
-	xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+	xf86LoaderReqSymLists(int10Symbols, NULL);
 #if 1
 	xf86DrvMsg(pScrn->scrnIndex,X_INFO,"initializing int10\n");
 	pInt = xf86InitInt10(cPtr->pEnt->index);
@@ -1129,8 +1135,8 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
     }
 #endif
 
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
+	xf86LoaderReqSymLists(vbeSymbols, NULL);
 	cPtr->pVbe =  VBEInit(NULL,cPtr->pEnt->index);
     }
     
@@ -1211,7 +1217,8 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
 	chipsUnmapMem(pScrn);
 
     if (!res) {
-	CHIPSFreeRec(pScrn);
+	vbeFree(cPtr->pVbe);
+	cPtr->pVbe = NULL;
 	return FALSE;
     }
     
@@ -1250,6 +1257,8 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
 			  LOOKUP_BEST_REFRESH);
 
     if (i == -1) {
+	vbeFree(cPtr->pVbe);
+	cPtr->pVbe = NULL;
 	CHIPSFreeRec(pScrn);
 	return FALSE;
     }
@@ -1264,6 +1273,8 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
 
     if (i == 0 || pScrn->modes == NULL) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "No valid modes found\n");
+	vbeFree(cPtr->pVbe);
+	cPtr->pVbe = NULL;
 	CHIPSFreeRec(pScrn);
 	return FALSE;
     }
@@ -1290,59 +1301,73 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
     /* Load bpp-specific modules */
     switch (pScrn->bitsPerPixel) {
     case 1:
-	if (!(pMod = xf86LoadSubModule(pScrn, "xf1bpp"))) {
+	if (xf86LoadSubModule(pScrn, "xf1bpp") == NULL) {
+	    vbeFree(cPtr->pVbe);
+	    cPtr->pVbe = NULL;
 	    CHIPSFreeRec(pScrn);
 	    return FALSE;
 	}	
-	xf86LoaderModReqSymbols(pMod, "xf1bppScreenInit", NULL);
+	xf86LoaderReqSymbols("xf1bppScreenInit", NULL);
 	break;
     case 4:
-	if (!(pMod = xf86LoadSubModule(pScrn, "xf4bpp"))) {
+	if (xf86LoadSubModule(pScrn, "xf4bpp") == NULL) {
+	    vbeFree(cPtr->pVbe);
+	    cPtr->pVbe = NULL;
 	    CHIPSFreeRec(pScrn);
 	    return FALSE;
-	}
-	xf86LoaderModReqSymbols(pMod, "xf4bppScreenInit", NULL);
+	}	
+	xf86LoaderReqSymbols("xf4bppScreenInit", NULL);
 	break;
     case 16:
 	if (cPtr->Flags & ChipsOverlay8plus16) {
-	    if (!(pMod = xf86LoadSubModule(pScrn, "xf8_16bpp"))) {
+	    if (xf86LoadSubModule(pScrn, "xf8_16bpp") == NULL) {
+		vbeFree(cPtr->pVbe);
+		cPtr->pVbe = NULL;
 	        CHIPSFreeRec(pScrn);
 		return FALSE;
 	    }	
-	    xf86LoaderModReqSymbols(pMod, "cfb8_16bppScreenInit", NULL);
+	    xf86LoaderReqSymbols("cfb8_16bppScreenInit", NULL);
 	    break;
 	}
     default:
-	if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+	if (xf86LoadSubModule(pScrn, "fb") == NULL) {
+	    vbeFree(cPtr->pVbe);
+	    cPtr->pVbe = NULL;
 	    CHIPSFreeRec(pScrn);
 	    return FALSE;
 	}	
-	xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	xf86LoaderReqSymLists(fbSymbols, NULL);
 	break;
     }
     
     if (cPtr->Flags & ChipsAccelSupport) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
+	    vbeFree(cPtr->pVbe);
+	    cPtr->pVbe = NULL;
 	    CHIPSFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     if (cPtr->Flags & ChipsShadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	if (!xf86LoadSubModule(pScrn, "shadowfb")) {
+	    vbeFree(cPtr->pVbe);
+	    cPtr->pVbe = NULL;
 	    CHIPSFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
     
     if (cPtr->Accel.UseHWCursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+	if (!xf86LoadSubModule(pScrn, "ramdac")) {
+	    vbeFree(cPtr->pVbe);
+	    cPtr->pVbe = NULL;
 	    CHIPSFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
 
     if (cPtr->Flags & ChipsLinearSupport) 
@@ -1350,6 +1375,8 @@ CHIPSPreInit(ScrnInfoPtr pScrn, int flags)
 
     if (cPtr->MMIOBaseVGA)
  	xf86SetOperatingState(resVgaIo, cPtr->pEnt->index, ResDisableOpr);
+    vbeFree(cPtr->pVbe);
+    cPtr->pVbe = NULL;
     return TRUE;
 }
 
@@ -1364,7 +1391,7 @@ chipsPreInitHiQV(ScrnInfoPtr pScrn, int flags)
     double real;
     int val, indx;
     const char *s;
-    ModuleDescPtr pDDCModule = NULL, pMod;
+    pointer pVbeModule = NULL;
 
     vgaHWPtr hwp;
     CHIPSPtr cPtr = CHIPSPTR(pScrn);
@@ -1871,23 +1898,23 @@ chipsPreInitHiQV(ScrnInfoPtr pScrn, int flags)
      * Do DDC here: if VESA BIOS detects an external monitor it
      * might switch. SetPanelType() will detect this.
      */
-    if ((pDDCModule = xf86LoadSubModule(pScrn, "ddc"))) {
+    if ((pVbeModule = xf86LoadSubModule(pScrn, "ddc"))) {
 	Bool ddc_done = FALSE;
 	xf86MonPtr pMon;
 	
-	xf86LoaderModReqSymLists(pDDCModule, ddcSymbols, NULL);
+	xf86LoaderReqSymLists(ddcSymbols, NULL);
 
 	if (cPtr->pVbe) {
 	    if ((pMon 
-		 = xf86PrintEDID(vbeDoEDID(cPtr->pVbe, pDDCModule))) != NULL) {
+		 = xf86PrintEDID(vbeDoEDID(cPtr->pVbe, pVbeModule))) != NULL) {
 		ddc_done = TRUE;
 		xf86SetDDCproperties(pScrn,pMon);
 	    }
 	}
 
 	if (!ddc_done)
-	    if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
-		xf86LoaderModReqSymLists(pMod, i2cSymbols,NULL);
+	    if (xf86LoadSubModule(pScrn, "i2c")) {
+		xf86LoaderReqSymLists(i2cSymbols,NULL);
 	    
 		if (chips_i2cInit(pScrn)) {
 		    if ((pMon = xf86PrintEDID(xf86DoEDID_DDC2(pScrn->scrnIndex,
@@ -2405,7 +2432,6 @@ chipsPreInitWingine(ScrnInfoPtr pScrn, int flags)
     Bool useLinear = FALSE;
     char *s;
     resRange linearRes[] = { {ResExcMemBlock|ResBios|ResBus,0,0},_END };
-    ModuleDescPtr pMod;
 
     /* Set pScrn->monitor */
     pScrn->monitor = pScrn->confScreen->monitor;
@@ -2719,7 +2745,7 @@ chipsPreInitWingine(ScrnInfoPtr pScrn, int flags)
 	}
 	linearRes[0].type = ResExcIoSparse | ResBios | ResBus;
 	linearRes[0].rBase = cPtr->Regs32[0];
-	linearRes[0].rMask = (int)0xFFFF83FC;
+	linearRes[0].rMask = 0x83FC;
 	if (xf86RegisterResources(cPtr->pEnt->index,linearRes,ResNone)) {
 	    if (cPtr->Flags & ChipsAccelSupport) {
 		cPtr->Flags &= ~ChipsAccelSupport;
@@ -2846,10 +2872,10 @@ chipsPreInitWingine(ScrnInfoPtr pScrn, int flags)
 		(float)(cPtr->MaxClock / 1000.));
     }
     
-    if ((pMod = xf86LoadSubModule(pScrn, "ddc"))) {
-	xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "ddc")) {
+	xf86LoaderReqSymLists(ddcSymbols, NULL);
 	if (cPtr->pVbe)
-	    xf86SetDDCproperties(pScrn,xf86PrintEDID(vbeDoEDID(cPtr->pVbe, pMod)));
+	    xf86SetDDCproperties(pScrn,xf86PrintEDID(vbeDoEDID(cPtr->pVbe, NULL)));
     }
     return TRUE;
 }
@@ -2867,7 +2893,6 @@ chipsPreInit655xx(ScrnInfoPtr pScrn, int flags)
     Bool useLinear = FALSE;
     char *s;
     resRange linearRes[] = { {ResExcMemBlock|ResBios|ResBus,0,0},_END };
-    ModuleDescPtr pMod;
     
     /* Set pScrn->monitor */
     pScrn->monitor = pScrn->confScreen->monitor;
@@ -3396,7 +3421,7 @@ chipsPreInit655xx(ScrnInfoPtr pScrn, int flags)
 	}
 	linearRes[0].type = ResExcIoSparse | ResBios | ResBus;
 	linearRes[0].rBase = cPtr->Regs32[0];
-	linearRes[0].rMask = (int)0xFFFF83FC;
+	linearRes[0].rMask = 0x83FC;
 	if (xf86RegisterResources(cPtr->pEnt->index,linearRes,ResNone)) {
 	    if (cPtr->Flags & ChipsAccelSupport) {
 		cPtr->Flags &= ~ChipsAccelSupport;
@@ -3620,10 +3645,10 @@ chipsPreInit655xx(ScrnInfoPtr pScrn, int flags)
 	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 		       "Memory clock option not supported for this chipset\n");
     
-    if ((pMod = xf86LoadSubModule(pScrn, "ddc"))) {
-	xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "ddc")) {
+	xf86LoaderReqSymLists(ddcSymbols, NULL);
 	if (cPtr->pVbe)
-	    xf86SetDDCproperties(pScrn,xf86PrintEDID(vbeDoEDID(cPtr->pVbe, pMod)));
+	    xf86SetDDCproperties(pScrn,xf86PrintEDID(vbeDoEDID(cPtr->pVbe, NULL)));
     }
     return TRUE;
 }
@@ -3806,8 +3831,7 @@ chipsLoadPalette16(ScrnInfoPtr pScrn, int numColors, int *indices,
 
 /* Mandatory */
 static Bool
-CHIPSScreenInit(int scrnIndex, ScreenPtr pScreen,
-		const int argc, const char **argv)
+CHIPSScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
     vgaHWPtr hwp;
@@ -3921,7 +3945,7 @@ CHIPSScreenInit(int scrnIndex, ScreenPtr pScreen,
      * function.  If not, the visuals will need to be setup before calling
      * a fb ScreenInit() function and fixed up after.
      *
-     * For most PC hardware at depths >= 8, the defaults that fb uses
+     * For most PC hardware at depths >= 8, the defaults that cfb uses
      * are not appropriate.  In this driver, we fixup the visuals after.
      */
 

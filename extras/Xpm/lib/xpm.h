@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1989-95 GROUPE BULL
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -284,9 +291,7 @@ typedef struct {
  * functions declarations
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+_XFUNCPROTOBEGIN
 
 /* FOR_MSW, all ..Pixmap.. are excluded, only the ..XImage.. are used */
 /* Same for Amiga! */
@@ -440,10 +445,7 @@ extern "C" {
 
     FUNC(XpmFree, void, (void *ptr));
 
-#ifdef __cplusplus
-} /* for C++ V2.0 */
-#endif
-
+_XFUNCPROTOEND
 
 /* backward compatibility */
 

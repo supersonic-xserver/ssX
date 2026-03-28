@@ -1,7 +1,21 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86.h,v 3.192 2006/03/17 02:25:02 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86.h,v 3.185 2005/02/26 18:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -109,9 +123,6 @@
 #else
 #include "xf86_ansic.h"
 #endif
-#ifdef RANDR
-#include <X11/extensions/randr.h>
-#endif
 
 #include "propertyst.h"
 
@@ -175,11 +186,7 @@ Bool xf86ComparePciBusString(const char *busID, int bus, int device, int func);
 void xf86FormatPciBusNumber(int busnum, char *buffer);
 pciVideoPtr *xf86GetPciVideoInfo(void);
 pciConfigPtr *xf86GetPciConfigInfo(void);
-void xf86SetPciVideo(pciVideoPtr pvp, resType rt);
-Bool xf86CheckPciVideo(pciVideoPtr pvp, Bool *pActivate);
-Bool xf86CheckPciSparseIO(int domain, IOADDRESS Base, int count,
-			  memType mask, Bool *pUnRouted);
-Bool xf86DomainHasBIOSSegments(int domain);
+void xf86SetPciVideo(pciVideoPtr, resType);
 void xf86PrintResList(int verb, resPtr list);
 resPtr xf86AddRangesToList(resPtr list, resRange *pRange, int entityIndex);
 int xf86ClaimIsaSlot(DriverPtr drvp, int chipset, GDevPtr dev, Bool active);
@@ -423,8 +430,7 @@ pointer xf86AddInputHandler(int fd, InputHandlerProc proc, pointer data);
 int xf86RemoveInputHandler(pointer handler);
 void xf86DisableInputHandler(pointer handler);
 void xf86EnableInputHandler(pointer handler);
-void xf86InterceptSignals(volatile int *signo);
-void xf86ShowStackTrace(void);
+void xf86InterceptSignals(int *signo);
 Bool xf86EnableVTSwitch(Bool new);
 Bool xf86CommonSpecialKey(int key, Bool down, int modifiers);
 void xf86ProcessActionEvent(ActionEvent action, void *arg);
@@ -441,8 +447,8 @@ void xf86ProcessActionEvent(ActionEvent action, void *arg);
 # define _printf_attribute(a,b) /**/
 #endif
 
-void xf86AddDriver(DriverPtr driver, ModuleDescPtr module, int flags);
-void xf86DeleteDriver(int drvIndex);
+void xf86AddDriver(DriverPtr driver, pointer module, int flags);
+void xf86DeleteDriver(int drvIndex, Bool deferUnload);
 ScrnInfoPtr xf86AllocateScreen(DriverPtr drv, int flags);
 void xf86DeleteScreen(int scrnIndex, int flags);
 int xf86AllocateScrnInfoPrivateIndex(void);
@@ -510,28 +516,16 @@ Bool xf86GetAllowMouseOpenFail(void);
 Bool xf86IsPc98(void);
 void xf86DisableRandR(void);
 CARD32 xf86GetVersion(void);
-CARD32 xf86GetModuleVersion(ModuleDescPtr module);
-ModuleDescPtr xf86GetSubModuleByName(ModuleDescPtr mod, const char *name);
-void xf86SetParentModuleRequirements(ModuleDescPtr module, XF86ModReqInfo *req);
-ModuleDescPtr xf86LoadDrvSubModule(DriverPtr drv, const char *name);
-ModuleDescPtr xf86LoadDrvSubModuleWithRequirements(DriverPtr drv,
-						   const char *name,
-						   XF86ModReqInfo *req);
-ModuleDescPtr xf86LoadSubModule(ScrnInfoPtr pScrn, const char *name);
-ModuleDescPtr xf86LoadSubModuleWithRequirements(ScrnInfoPtr pScrn,
-						const char *name,
-						XF86ModReqInfo *req);
-ModuleDescPtr xf86LoadOneModule(char *name, pointer optlist);
-void xf86UnloadSubModule(ModuleDescPtr mod);
+CARD32 xf86GetModuleVersion(pointer module);
+pointer xf86LoadDrvSubModule(DriverPtr drv, const char *name);
+pointer xf86LoadSubModule(ScrnInfoPtr pScrn, const char *name);
+pointer xf86LoadOneModule(char *name, pointer optlist);
+void xf86UnloadSubModule(pointer mod);
 Bool xf86LoaderCheckSymbol(const char *name);
 void xf86LoaderReqSymLists(const char **, ...);
 void xf86LoaderReqSymbols(const char *, ...);
 void xf86LoaderRefSymLists(const char **, ...);
 void xf86LoaderRefSymbols(const char *, ...);
-int xf86LoaderModReqSymLists(ModuleDescPtr module, const char **, ...);
-int xf86LoaderModReqSymbols(ModuleDescPtr module, const char *, ...);
-void xf86LoaderModRefSymLists(ModuleDescPtr module, const char **, ...);
-void xf86LoaderModRefSymbols(ModuleDescPtr module, const char *, ...);
 void xf86SetBackingStore(ScreenPtr pScreen);
 void xf86SetSilkenMouse(ScreenPtr pScreen);
 int xf86NewSerialNumber(WindowPtr p, pointer unused);
@@ -586,7 +580,7 @@ Bool xf86GetNextMonitor(const ScrnInfoRec *pScrn, MonPtr *pMonitor,
 			DispPtr *pDisplay);
 
 #ifdef XFree86LOADER
-void xf86AddModuleInfo(ModuleInfoPtr info, ModuleDescPtr module);
+void xf86AddModuleInfo(ModuleInfoPtr info, pointer module);
 void xf86DeleteModuleInfo(int idx);
 #endif
 
@@ -667,7 +661,6 @@ void xf86CollectOptions(ScrnInfoPtr pScrn, pointer extraOpts);
 #ifdef RANDR
 Bool xf86RandRInit (ScreenPtr    pScreen);
 void xf86RandRSetInitialMode (ScreenPtr pScreen);
-Rotation xf86GetRotation(ScreenPtr pScreen);
 #endif
 
 /* xf86VidModeExtentionInit.c */

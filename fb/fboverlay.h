@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fboverlay.h,v 1.5 2002/09/19 13:22:00 tsi Exp $
  *
- * Copyright Â© 2000 SuSE, Inc.
+ * Copyright © 2000 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -26,8 +34,7 @@
 #define _FBOVERLAY_H_
 
 extern int	fbOverlayGeneration;
-extern int	fbOverlayScreenPrivateIndex; /* XXX should be static */
-extern int	fbOverlayGetScreenPrivateIndex(void);
+extern int	fbOverlayScreenPrivateIndex;
 
 #ifndef FB_OVERLAY_MAX
 #define FB_OVERLAY_MAX	2
@@ -58,8 +65,8 @@ typedef struct _fbOverlayScrPriv {
 } FbOverlayScrPrivRec, *FbOverlayScrPrivPtr;
 
 #define fbOverlayGetScrPriv(s) \
-    ((fbOverlayGetScreenPrivateIndex() != -1) ? \
-     (s)->devPrivates[fbOverlayGetScreenPrivateIndex()].ptr : NULL)
+    ((fbOverlayScreenPrivateIndex != -1) ? \
+     (s)->devPrivates[fbOverlayScreenPrivateIndex].ptr : NULL)
 Bool
 fbOverlayCreateWindow(WindowPtr pWin);
 

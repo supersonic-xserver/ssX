@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_reg.h,v 1.18tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_reg.h,v 1.18 2004/12/10 16:07:01 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1999, 2000 ATI Technologies Inc., Markham, Ontario,
  *                      Precision Insight, Inc., Cedar Park, Texas, and
@@ -68,7 +75,7 @@
     do {                           \
 	CARD32 tmp = INREG(addr);  \
 	tmp &= (mask);             \
-	tmp |= ((val) & ~(mask));  \
+	tmp |= (val);              \
 	OUTREG(addr, tmp);         \
     } while (0)
 
@@ -76,7 +83,7 @@
 
 #define OUTPLL(addr, val)                                                 \
     do {                                                                  \
-	OUTREG8(R128_CLOCK_CNTL_INDEX, ((addr) & 0x3f) | R128_PLL_WR_EN); \
+	OUTREG8(R128_CLOCK_CNTL_INDEX, ((addr) & 0x1f) | R128_PLL_WR_EN); \
 	OUTREG(R128_CLOCK_CNTL_DATA, val);                                \
     } while (0)
 
@@ -84,7 +91,7 @@
     do {                                                                  \
 	CARD32 tmp = INPLL(pScrn, addr);                                  \
 	tmp &= (mask);                                                    \
-	tmp |= ((val) & ~(mask));                                         \
+	tmp |= (val);                                                     \
 	OUTPLL(addr, tmp);                                                \
     } while (0)
 
@@ -151,6 +158,9 @@
 #define R128_AMCGPIO_EN_REG               0x01a8
 #define R128_AMCGPIO_MASK                 0x0194
 #define R128_AMCGPIO_Y_REG                0x01a4
+#define R128_ATTRDR                       0x03c1 /* VGA */
+#define R128_ATTRDW                       0x03c0 /* VGA */
+#define R128_ATTRX                        0x03c0 /* VGA */
 #define R128_AUX_SC_CNTL                  0x1660
 #       define R128_AUX1_SC_EN            (1 << 0)
 #       define R128_AUX1_SC_MODE_OR       (0 << 1)
@@ -186,9 +196,6 @@
 #       define R128_BIOS_DISPLAY_FP       (1 << 0)
 #       define R128_BIOS_DISPLAY_CRT      (2 << 0)
 #       define R128_BIOS_DISPLAY_FP_CRT   (3 << 0)
-/* R128_DUALHEAD is just a flag for the driver;
-   it doesn't actually correspond to any bits  */
-#	define R128_DUALHEAD		  4
 #define R128_BIOS_6_SCRATCH               0x0028
 #define R128_BIOS_7_SCRATCH               0x002c
 #define R128_BIOS_ROM                     0x0f30 /* PCI */
@@ -284,7 +291,6 @@
 #define R128_CLOCK_CNTL_INDEX             0x0008
 #       define R128_PLL_WR_EN             (1 << 7)
 #       define R128_PLL_DIV_SEL           (3 << 8)
-#       define R128_PLL2_DIV_SEL_MASK     ~(3 << 8)
 #define R128_CLR_CMP_CLR_3D               0x1a24
 #define R128_CLR_CMP_CLR_DST              0x15c8
 #define R128_CLR_CMP_CLR_SRC              0x15c4
@@ -375,77 +381,45 @@
 #define R128_CRTC2_CRNT_FRAME             0x0314
 #define R128_CRTC2_DEBUG                  0x031c
 #define R128_CRTC2_GEN_CNTL               0x03f8
-#       define R128_CRTC2_DBL_SCAN_EN      (1 <<  0)
-#       define R128_CRTC2_CUR_EN           (1 << 16)
-#       define R128_CRTC2_ICON_EN          (1 << 20)
-#       define R128_CRTC2_DISP_DIS         (1 << 23)
-#       define R128_CRTC2_EN               (1 << 25)
-#       define R128_CRTC2_DISP_REQ_EN_B    (1 << 26)
 #define R128_CRTC2_GUI_TRIG_VLINE         0x0318
 #define R128_CRTC2_H_SYNC_STRT_WID        0x0304
-#       define R128_CRTC2_H_SYNC_STRT_PIX        (0x07  <<  0)
-#       define R128_CRTC2_H_SYNC_STRT_CHAR       (0x1ff <<  3)
-#       define R128_CRTC2_H_SYNC_STRT_CHAR_SHIFT 3
-#       define R128_CRTC2_H_SYNC_WID             (0x3f  << 16)
-#       define R128_CRTC2_H_SYNC_WID_SHIFT       16
-#       define R128_CRTC2_H_SYNC_POL             (1     << 23)
 #define R128_CRTC2_H_TOTAL_DISP           0x0300
-#       define R128_CRTC2_H_TOTAL          (0x01ff << 0)
-#       define R128_CRTC2_H_TOTAL_SHIFT    0
-#       define R128_CRTC2_H_DISP           (0x00ff << 16)
-#       define R128_CRTC2_H_DISP_SHIFT     16
 #define R128_CRTC2_OFFSET                 0x0324
 #define R128_CRTC2_OFFSET_CNTL            0x0328
-#	define R128_CRTC2_TILE_EN         (1 << 15)
 #define R128_CRTC2_PITCH                  0x032c
 #define R128_CRTC2_STATUS                 0x03fc
 #define R128_CRTC2_V_SYNC_STRT_WID        0x030c
-#       define R128_CRTC2_V_SYNC_STRT       (0x7ff <<  0)
-#       define R128_CRTC2_V_SYNC_STRT_SHIFT 0
-#       define R128_CRTC2_V_SYNC_WID        (0x1f  << 16)
-#       define R128_CRTC2_V_SYNC_WID_SHIFT  16
-#       define R128_CRTC2_V_SYNC_POL        (1     << 23)
 #define R128_CRTC2_V_TOTAL_DISP           0x0308
-#       define R128_CRTC2_V_TOTAL          (0x07ff << 0)
-#       define R128_CRTC2_V_TOTAL_SHIFT    0
-#       define R128_CRTC2_V_DISP           (0x07ff << 16)
-#       define R128_CRTC2_V_DISP_SHIFT     16
 #define R128_CRTC2_VLINE_CRNT_VLINE       0x0310
+#define R128_CRTC8_DATA                   0x03d5 /* VGA, 0x3b5 */
+#define R128_CRTC8_IDX                    0x03d4 /* VGA, 0x3b4 */
 #define R128_CUR_CLR0                     0x026c
 #define R128_CUR_CLR1                     0x0270
 #define R128_CUR_HORZ_VERT_OFF            0x0268
 #define R128_CUR_HORZ_VERT_POSN           0x0264
 #define R128_CUR_OFFSET                   0x0260
 #       define R128_CUR_LOCK              (1 << 31)
-#define R128_CUR2_CLR0                    0x036c
-#define R128_CUR2_CLR1                    0x0370
-#define R128_CUR2_HORZ_VERT_OFF           0x0368
-#define R128_CUR2_HORZ_VERT_POSN          0x0364
-#define R128_CUR2_OFFSET                  0x0360
-#       define R128_CUR2_LOCK             (1 << 31)
 
 #define R128_DAC_CNTL                     0x0058
 #       define R128_DAC_RANGE_CNTL        (3 <<  0)
 #       define R128_DAC_BLANKING          (1 <<  2)
 #       define R128_DAC_CRT_SEL_CRTC2     (1 <<  4)
 #       define R128_DAC_PALETTE_ACC_CTL   (1 <<  5)
-#	define R128_DAC_PALETTE2_SNOOP_EN (1 <<  6)
 #       define R128_DAC_8BIT_EN           (1 <<  8)
 #       define R128_DAC_VGA_ADR_EN        (1 << 13)
 #       define R128_DAC_MASK_ALL          (0xff << 24)
 #define R128_DAC_CRC_SIG                  0x02cc
+#define R128_DAC_DATA                     0x03c9 /* VGA */
+#define R128_DAC_MASK                     0x03c6 /* VGA */
+#define R128_DAC_R_INDEX                  0x03c7 /* VGA */
+#define R128_DAC_W_INDEX                  0x03c8 /* VGA */
 #define R128_DDA_CONFIG                   0x02e0
 #define R128_DDA_ON_OFF                   0x02e4
-#define R128_DDA2_CONFIG                  0x03e0
-#define R128_DDA2_ON_OFF                  0x03e4
 #define R128_DEFAULT_OFFSET               0x16e0
 #define R128_DEFAULT_PITCH                0x16e4
 #define R128_DEFAULT_SC_BOTTOM_RIGHT      0x16e8
 #       define R128_DEFAULT_SC_RIGHT_MAX  (0x1fff <<  0)
 #       define R128_DEFAULT_SC_BOTTOM_MAX (0x1fff << 16)
-#define R128_DEFAULT2_OFFSET               0x16f8
-#define R128_DEFAULT2_PITCH                0x16fc
-#define R128_DEFAULT2_SC_BOTTOM_RIGHT      0x16dc
 #define R128_DESTINATION_3D_CLR_CMP_VAL   0x1820
 #define R128_DESTINATION_3D_CLR_CMP_MSK   0x1824
 #define R128_DEVICE_ID                    0x0f02 /* PCI */
@@ -646,6 +620,13 @@
 #       define R128_SOFT_RESET_PCLK         (1 <<  9)
 #       define R128_SOFT_RESET_DISPENG_XCLK (1 << 11)
 #       define R128_SOFT_RESET_MEMCTLR_XCLK (1 << 12)
+#define R128_GENENB                       0x03c3 /* VGA */
+#define R128_GENFC_RD                     0x03ca /* VGA */
+#define R128_GENFC_WT                     0x03da /* VGA, 0x03ba */
+#define R128_GENMO_RD                     0x03cc /* VGA */
+#define R128_GENMO_WT                     0x03c2 /* VGA */
+#define R128_GENS0                        0x03c2 /* VGA */
+#define R128_GENS1                        0x03da /* VGA, 0x03ba */
 #define R128_GPIO_MONID                   0x0068
 #       define R128_GPIO_MONID_A_0        (1 <<  0)
 #       define R128_GPIO_MONID_A_1        (1 <<  1)
@@ -664,6 +645,8 @@
 #       define R128_GPIO_MONID_MASK_2     (1 << 26)
 #       define R128_GPIO_MONID_MASK_3     (1 << 27)
 #define R128_GPIO_MONIDB                  0x006c
+#define R128_GRPH8_DATA                   0x03cf /* VGA */
+#define R128_GRPH8_IDX                    0x03ce /* VGA */
 #define R128_GUI_DEBUG0                   0x16a0
 #define R128_GUI_DEBUG1                   0x16a4
 #define R128_GUI_DEBUG2                   0x16a8
@@ -694,7 +677,6 @@
 #define R128_HOST_DATA_LAST               0x17e0
 #define R128_HOST_PATH_CNTL               0x0130
 #define R128_HTOTAL_CNTL                  0x0009 /* PLL */
-#define R128_HTOTAL2_CNTL                 0x002e /* PLL */
 #define R128_HW_DEBUG                     0x0128
 #define R128_HW_DEBUG2                    0x011c
 
@@ -900,19 +882,6 @@
 #       define R128_PPLL_REF_DIV_MASK     0x03ff
 #       define R128_PPLL_ATOMIC_UPDATE_R  (1 << 15) /* same as _W */
 #       define R128_PPLL_ATOMIC_UPDATE_W  (1 << 15) /* same as _R */
-#define R128_P2PLL_CNTL                    0x002a /* P2PLL */
-#       define R128_P2PLL_RESET               (1 <<  0)
-#       define R128_P2PLL_SLEEP               (1 <<  1)
-#       define R128_P2PLL_ATOMIC_UPDATE_EN    (1 << 16)
-#       define R128_P2PLL_VGA_ATOMIC_UPDATE_EN (1 << 17)
-#       define R128_P2PLL_ATOMIC_UPDATE_VSYNC  (1 << 18)
-#define R128_P2PLL_DIV_0                   0x002c
-#       define R128_P2PLL_FB0_DIV_MASK     0x07ff
-#       define R128_P2PLL_POST0_DIV_MASK   0x00070000
-#define R128_P2PLL_REF_DIV                 0x002B /* PLL */
-#       define R128_P2PLL_REF_DIV_MASK     0x03ff
-#       define R128_P2PLL_ATOMIC_UPDATE_R  (1 << 15) /* same as _W */
-#       define R128_P2PLL_ATOMIC_UPDATE_W  (1 << 15) /* same as _R */
 #define R128_PWR_MNGMT_CNTL_STATUS        0x0f60 /* PCI */
 #define R128_REG_BASE                     0x0f18 /* PCI */
 #define R128_REGPROG_INF                  0x0f09 /* PCI */
@@ -926,6 +895,8 @@
 #define R128_SC_TOP                       0x1648
 #define R128_SC_TOP_LEFT                  0x16ec
 #define R128_SC_TOP_LEFT_C                0x1c88
+#define R128_SEQ8_DATA                    0x03c5 /* VGA */
+#define R128_SEQ8_IDX                     0x03c4 /* VGA */
 #define R128_SNAPSHOT_F_COUNT             0x0244
 #define R128_SNAPSHOT_VH_COUNTS           0x0240
 #define R128_SNAPSHOT_VIF_COUNT           0x024c
@@ -971,14 +942,7 @@
 #define R128_TRAIL_X_SUB                  0x1620
 
 #define R128_VCLK_ECP_CNTL                0x0008 /* PLL */
-#       define R128_VCLK_SRC_SEL_MASK     0x03
-#       define R128_VCLK_SRC_SEL_CPUCLK   0x00
-#       define R128_VCLK_SRC_SEL_PPLLCLK  0x03
 #       define R128_ECP_DIV_MASK          (3 << 8)
-#define R128_V2CLK_VCLKTV_CNTL            0x002d /* PLL */
-#       define R128_V2CLK_SRC_SEL_MASK    0x03
-#       define R128_V2CLK_SRC_SEL_CPUCLK  0x00
-#       define R128_V2CLK_SRC_SEL_P2PLLCLK 0x03
 #define R128_VENDOR_ID                    0x0f00 /* PCI */
 #define R128_VGA_DDA_CONFIG               0x02e8
 #define R128_VGA_DDA_ON_OFF               0x02ec

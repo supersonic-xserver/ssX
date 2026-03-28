@@ -1,18 +1,15 @@
-/**
- * \file m_matrix.c
- * Matrix operations.
- *
- * \note
- * -# 4x4 transformation matrices are stored in memory in column major order.
- * -# Points/vertices are to be thought of as column vectors.
- * -# Transformation of a point p by a matrix M is: p' = M * p
+/*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-/*
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.2
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -30,6 +27,17 @@
  * BRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+
+/**
+ * \file m_matrix.c
+ * Matrix operations.
+ *
+ * \note
+ * -# 4x4 transformation matrices are stored in memory in column major order.
+ * -# Points/vertices are to be thought of as column vectors.
+ * -# Transformation of a point p by a matrix M is: p' = M * p
  */
 
 
@@ -951,22 +959,28 @@ _math_matrix_ortho( GLmatrix *mat,
 		    GLfloat bottom, GLfloat top,
 		    GLfloat nearval, GLfloat farval )
 {
-   GLfloat x, y, z;
-   GLfloat tx, ty, tz;
    GLfloat m[16];
 
-   x = 2.0F / (right-left);
-   y = 2.0F / (top-bottom);
-   z = -2.0F / (farval-nearval);
-   tx = -(right+left) / (right-left);
-   ty = -(top+bottom) / (top-bottom);
-   tz = -(farval+nearval) / (farval-nearval);
-
 #define M(row,col)  m[col*4+row]
-   M(0,0) = x;     M(0,1) = 0.0F;  M(0,2) = 0.0F;  M(0,3) = tx;
-   M(1,0) = 0.0F;  M(1,1) = y;     M(1,2) = 0.0F;  M(1,3) = ty;
-   M(2,0) = 0.0F;  M(2,1) = 0.0F;  M(2,2) = z;     M(2,3) = tz;
-   M(3,0) = 0.0F;  M(3,1) = 0.0F;  M(3,2) = 0.0F;  M(3,3) = 1.0F;
+   M(0,0) = 2.0F / (right-left);
+   M(0,1) = 0.0F;
+   M(0,2) = 0.0F;
+   M(0,3) = -(right+left) / (right-left);
+
+   M(1,0) = 0.0F;
+   M(1,1) = 2.0F / (top-bottom);
+   M(1,2) = 0.0F;
+   M(1,3) = -(top+bottom) / (top-bottom);
+
+   M(2,0) = 0.0F;
+   M(2,1) = 0.0F;
+   M(2,2) = -2.0F / (farval-nearval);
+   M(2,3) = -(farval+nearval) / (farval-nearval);
+
+   M(3,0) = 0.0F;
+   M(3,1) = 0.0F;
+   M(3,2) = 0.0F;
+   M(3,3) = 1.0F;
 #undef M
 
    matrix_multf( mat, m, (MAT_FLAG_GENERAL_SCALE|MAT_FLAG_TRANSLATION));
@@ -1136,7 +1150,7 @@ static void analyse_from_scratch( GLmatrix *mat )
       mat->type = MATRIX_2D_NO_ROT;
 
       if ((mask & MASK_NO_2D_SCALE) != MASK_NO_2D_SCALE)
-	 mat->flags = MAT_FLAG_GENERAL_SCALE;
+	 mat->flags |= MAT_FLAG_GENERAL_SCALE;
    }
    else if ((mask & MASK_2D) == (GLuint) MASK_2D) {
       GLfloat mm = DOT2(m, m);

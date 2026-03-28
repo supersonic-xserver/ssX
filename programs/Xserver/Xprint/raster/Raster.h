@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/raster/Raster.h,v 1.5 2005/10/14 15:16:16 tsi Exp $ */
+/* $Xorg: Raster.h,v 1.3 2000/08/17 19:48:12 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -30,6 +37,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/raster/Raster.h,v 1.4 2001/12/21 21:02:06 dawes Exp $ */
 
 /*******************************************************************
 **
@@ -58,7 +66,7 @@ typedef char *XPointer;
 #define True 1
 #define False 0
 #include "misc.h"
-#include <X11/Xfuncproto.h>
+#include <Xfuncproto.h>
 #include <X11/Xresource.h>
 #include "attributes.h"
 
@@ -109,6 +117,6 @@ typedef struct {
 extern XpValidatePoolsRec RasterValidatePoolsRec;
 
 extern Bool InitializeRasterDriver(int ndx, ScreenPtr pScreen, int argc,
-				   const char **argv);
+				   char **argv);
 
 #endif  /* _RASTER_H_ */

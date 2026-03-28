@@ -1,0 +1,68 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/Imakefile,v 1.5 2006/02/24 15:31:29 tsi Exp $
+
+#define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
+
+#if defined(XF86Server) && XF86Server
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+XFREE86DIR = xfree86
+#endif
+
+#if (defined(XsunServer) && XsunServer) || \
+    (defined(Xsun24Server) && Xsun24Server) || \
+    (defined(XsunMonoServer) && XsunMonoServer)
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+SUNDIR = sun
+#endif
+
+#if (defined(XsunLynxServer) && XsunLynxServer) || \
+    (defined(XsunLynxMonoServer) && XsunLynxMonoServer)
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+LYNXDIR = sunLynx
+#endif
+
+#if defined(TinyXServer) && TinyXServer
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+TINYDIR = tinyx
+#endif
+
+#if defined(XnestServer) && XnestServer
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+XNESTDIR = xnest
+#endif
+
+#if defined(XVirtualFramebufferServer) && XVirtualFramebufferServer
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+XVFBDIR = vfb
+#endif
+
+#if defined(XdmxServer) && XdmxServer
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+XDMXDIR = dmx
+#endif
+
+#if defined(XWinServer) && XWinServer
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+WINDIR = xwin
+#endif
+
+#if defined(XDarwinServer) && XDarwinServer
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+DARWINDIR = darwin
+#endif
+
+#ifdef IHaveSubdirs
+SUBDIRS= $(XFREE86DIR) $(SUNDIR) $(LYNXDIR) $(TINYDIR) $(XNESTDIR) $(XVFBDIR) \
+	 $(XDMXDIR) $(WINDIR) $(DARWINDIR)
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif

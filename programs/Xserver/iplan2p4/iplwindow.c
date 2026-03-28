@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/iplan2p4/iplwindow.c,v 3.2 2005/10/14 15:17:19 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/iplwindow.c,v 3.1 2003/11/10 18:22:45 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: iplwindow.c,v 5.22 94/04/17 20:29:07 dpw Exp $ */
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -50,7 +58,7 @@ SOFTWARE.
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
 #include "ipl.h"

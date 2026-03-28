@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.c,v 1.19 2006/02/19 15:51:17 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.c,v 1.17 2003/07/16 01:38:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *
@@ -29,7 +43,7 @@
 #include "xf86Module.h"
 #include "xf86Opt.h"
 
-#include <X11/Xproto.h>
+#include "Xproto.h"
 
 #include "modinit.h"
 
@@ -181,8 +195,6 @@ ExtensionModule extensionModules[] = {
 	XvRegister,
 	NULL
     },
-#endif
-#ifdef XVMC
     {
         XvMCExtensionInit,
         XvMCName,
@@ -229,7 +241,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData extmodModuleData = { &VersRec, extmodSetup, NULL };
 
 static pointer
-extmodSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+extmodSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     int i;
 

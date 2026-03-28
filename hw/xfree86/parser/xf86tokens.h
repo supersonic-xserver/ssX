@@ -1,17 +1,25 @@
-/*
- *
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/xf86tokens.h,v 1.21 2004/02/13 23:58:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* 
+ * 
  * Copyright (c) 1997  Metro Link Incorporated
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
+ * copy of this software and associated documentation files (the "Software"), 
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
@@ -19,61 +27,80 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
+ * 
  * Except as contained in this notice, the name of the Metro Link shall not be
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Metro Link.
- *
+ * 
  */
 /*
  * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #ifndef _xf86_tokens_h
 #define _xf86_tokens_h
 
-/*
+/* Undefine symbols that some OSs might define */
+#undef IOBASE
+
+/* 
  * Each token should have a unique value regardless of the section
  * it is used in.
  */
 
 typedef enum {
     /* errno-style tokens */
-    OBSOLETE_TOKEN = -5,
-    EOF_TOKEN = -4,
-    LOCK_TOKEN = -3,
-    ERROR_TOKEN = -2,
+    EOF_TOKEN		= -4,
+    LOCK_TOKEN		= -3,
+    ERROR_TOKEN		= -2,
 
     /* value type tokens */
-    NUMBER = 1,
-    XF86_TOKEN_STRING,
+    NUMBER		= 1,
+    STRING,
 
     /* Tokens that can appear in many sections */
     SECTION,
@@ -84,17 +111,23 @@ typedef enum {
     VENDOR,
     DASH,
     COMMA,
-    MATCHSEAT,
     OPTION,
     COMMENT,
 
+    /* Frequency units */
+    HRZ,
+    KHZ,
+    MHZ,
+
     /* File tokens */
     FONTPATH,
+    RGBPATH,
     MODULEPATH,
+    INPUTDEVICES,
     LOGFILEPATH,
-    XKBDIR,
 
     /* Server Flag tokens.  These are deprecated in favour of generic Options */
+    NOTRAPSIGNALS,
     DONTZAP,
     DONTZOOM,
     DISABLEVIDMODE,
@@ -118,6 +151,9 @@ typedef enum {
     GAMMA,
     USEMODES,
 
+    /* Modes tokens */
+    /* no new ones */
+
     /* Mode tokens */
     DOTCLOCK,
     HTIMINGS,
@@ -131,13 +167,12 @@ typedef enum {
     /* Screen tokens */
     OBSDRIVER,
     MDEVICE,
-    GDEVICE,
     MONITOR,
     SCREENNO,
     DEFAULTDEPTH,
     DEFAULTBPP,
     DEFAULTFBBPP,
-
+    
     /* VideoAdaptor tokens */
     VIDEOADAPTOR,
 
@@ -154,19 +189,19 @@ typedef enum {
     TT_HSKEW,
     TT_BCAST,
     TT_VSCAN,
+    TT_CUSTOM,
 
     /* Module tokens */
     LOAD,
     LOAD_DRIVER,
-    DISABLE,
-
+    
     /* Device tokens */
     DRIVER,
     CHIPSET,
     CLOCKS,
     VIDEORAM,
     BOARD,
-    XF86_TOKEN_IOBASE,
+    IOBASE,
     RAMDAC,
     DACSPEED,
     BIOSBASE,
@@ -176,7 +211,42 @@ typedef enum {
     CHIPREV,
     CARD,
     BUSID,
+    TEXTCLOCKFRQ,
     IRQ,
+
+    /* Keyboard tokens */
+    AUTOREPEAT,
+    XLEDS,
+    KPROTOCOL,
+    XKBKEYMAP,
+    XKBCOMPAT,
+    XKBTYPES,
+    XKBKEYCODES,
+    XKBGEOMETRY,
+    XKBSYMBOLS,
+    XKBDISABLE,
+    PANIX106,
+    XKBRULES,
+    XKBMODEL,
+    XKBLAYOUT,
+    XKBVARIANT,
+    XKBOPTIONS,
+    /* The next two have become ServerFlags options */
+    VTINIT,
+    VTSYSREQ,
+    /* Obsolete keyboard tokens */
+    SERVERNUM,
+    LEFTALT,
+    RIGHTALT,
+    SCROLLLOCK_TOK,
+    RIGHTCTL,
+    /* arguments for the above obsolete tokens */
+    CONF_KM_META,
+    CONF_KM_COMPOSE,
+    CONF_KM_MODESHIFT,
+    CONF_KM_MODELOCK,
+    CONF_KM_SCROLLLOCK,
+    CONF_KM_CONTROL,
 
     /* Pointer tokens */
     EMULATE3,
@@ -208,7 +278,7 @@ typedef enum {
     DEPTH,
     BPP,
     WEIGHT,
-
+    
     /* Layout Tokens */
     SCREEN,
     INACTIVE,
@@ -227,37 +297,7 @@ typedef enum {
 
     /* DRI Tokens */
     GROUP,
-
-    /* InputClass Tokens */
-    MATCH_PRODUCT,
-    MATCH_VENDOR,
-    MATCH_DEVICE_PATH,
-    MATCH_OS,
-    MATCH_PNPID,
-    MATCH_USBID,
-    MATCH_DRIVER,
-    MATCH_TAG,
-    MATCH_LAYOUT,
-    MATCH_IS_KEYBOARD,
-    MATCH_IS_POINTER,
-    MATCH_IS_JOYSTICK,
-    MATCH_IS_TABLET,
-    MATCH_IS_TABLET_PAD,
-    MATCH_IS_TOUCHPAD,
-    MATCH_IS_TOUCHSCREEN,
-
-    NOMATCH_PRODUCT,
-    NOMATCH_VENDOR,
-    NOMATCH_DEVICE_PATH,
-    NOMATCH_OS,
-    NOMATCH_PNPID,
-    NOMATCH_USBID,
-    NOMATCH_DRIVER,
-    NOMATCH_TAG,
-    NOMATCH_LAYOUT,
-
-    /* OutputClass Tokens */
-    MODULE,
+    BUFFERS
 } ParserTokens;
 
-#endif                          /* _xf86_tokens_h */
+#endif /* _xf86_tokens_h */

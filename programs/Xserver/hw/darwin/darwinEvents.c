@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Darwin event queue and event handling
  */
 /*
-Copyright (c) 2002-2004 Torrey T. Lyons. All Rights Reserved.
+Copyright (c) 2002 Torrey T. Lyons. All Rights Reserved.
 Copyright 2004 Kaleb S. KEITHLEY. All Rights Reserved.
 
 This file is based on mieq.c by Keith Packard,
@@ -29,12 +36,12 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/darwinEvents.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/darwinEvents.c,v 1.6 2004/03/31 22:29:09 torrey Exp $ */
 
 #define NEED_EVENTS
-#include   <X11/X.h>
-#include   <X11/Xmd.h>
-#include   <X11/Xproto.h>
+#include   "X.h"
+#include   "Xmd.h"
+#include   "Xproto.h"
 #include   "misc.h"
 #include   "windowstr.h"
 #include   "pixmapstr.h"
@@ -44,7 +51,6 @@ in this Software without prior written authorization from The Open Group.
 #include   "mipointer.h"
 
 #include "darwin.h"
-#include "darwinKeyboard.h"
 
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -323,23 +329,6 @@ void ProcessInputEvents(void)
             switch (xe.u.u.type)
             {
             case KeyPress:
-                if (old_flags == 0
-                    && darwinSyncKeymap && darwinKeymapFile == NULL)
-                {
-                    /* See if keymap has changed. */
-
-                    static unsigned int last_seed;
-                    unsigned int this_seed;
-
-                    this_seed = DarwinModeSystemKeymapSeed();
-                    if (this_seed != last_seed)
-                    {
-                        last_seed = this_seed;
-                        DarwinKeyboardReload(darwinKeyboard);
-                    }
-                }
-                /* fall through */
-
             case KeyRelease:
                 xe.u.u.detail += MIN_KEYCODE;
                 (*darwinEventQueue.pKbd->processInputProc)

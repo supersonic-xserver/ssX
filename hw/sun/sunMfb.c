@@ -1,7 +1,11 @@
-
-/* $Xorg: sunMfb.c,v 1.4 2001/02/09 02:04:44 xorgcvs Exp $ */
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1990, 1993, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -24,7 +28,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunMfb.c,v 3.4 2001/12/14 19:59:43 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunMfb.c,v 3.6 2007/01/02 01:24:12 tsi Exp $ */
 
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
@@ -37,11 +41,11 @@ fee is hereby granted, provided that the above copyright no-
 tice  appear  in all copies and that both that copyright no-
 tice and this permission notice appear in  supporting  docu-
 mentation,  and  that the names of Sun or The Open Group
-not be used in advertising or publicity pertaining to
-distribution  of  the software  without specific prior
-written permission. Sun and The Open Group make no
-representations about the suitability of this software for
-any purpose. It is provided "as is" without any express or
+not be used in advertising or publicity pertaining to 
+distribution  of  the software  without specific prior 
+written permission. Sun and The Open Group make no 
+representations about the suitability of this software for 
+any purpose. It is provided "as is" without any express or 
 implied warranty.
 
 SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
@@ -72,32 +76,28 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* Modified from  sunCG4C.c for X11R3 by Tom Jarmolowski	*/
 /****************************************************************/
 
-/*
+/* 
  * Copyright 1991, 1992, 1993 Kaleb S. Keithley
  *
  * Permission to use, copy, modify, and distribute this
  * software and its documentation for any purpose and without
  * fee is hereby granted, provided that the above copyright
- * notice appear in all copies.  Kaleb S. Keithley makes no
- * representations about the suitability of this software for
- * any purpose.  It is provided "as is" without express or
+ * notice appear in all copies.  Kaleb S. Keithley makes no 
+ * representations about the suitability of this software for 
+ * any purpose.  It is provided "as is" without express or 
  * implied warranty.
  */
 
 #include "sun.h"
-#include "fb.h"
+#include "mfb.h"
 
-Bool
-sunBW2Init
-(
-    ScreenPtr	    pScreen,  	/* The Screen to initialize */
-    int		    argc,    	/* The number of the Server's arguments. */
-    char	    **argv   	/* The arguments themselves. Don't change! */
-)
+Bool sunBW2Init (screen, pScreen, argc, argv)
+    int		    screen;    	/* what screen am I going to be */
+    ScreenPtr	    pScreen;  	/* The Screen to initialize */
+    int		    argc;    	/* The number of the Server's arguments. */
+    const char	    **argv;   	/* The arguments themselves. Don't change! */
 {
-    int	screen = pScreen->myNum;
-
-    sunFbs[screen].EnterLeave = (void (*)(ScreenPtr, int))NoopDDA;
+    sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     if (sunFlipPixels) {
 	pScreen->whitePixel = 1;
 	pScreen->blackPixel = 0;
@@ -106,7 +106,7 @@ sunBW2Init
 	pScreen->blackPixel = 1;
     }
     return sunInitCommon (screen, pScreen, (off_t) 0,
-	fbScreenInit, NULL,
-	fbCreateDefColormap, sunSaveScreen, 0);
+	mfbScreenInit, NULL,
+	mfbCreateDefColormap, sunSaveScreen, 0);
 }
 

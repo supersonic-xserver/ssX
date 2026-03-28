@@ -1,3 +1,4 @@
+// $XConsortium: pl2 /main/3 1996/08/31 12:20:05 kaleb $
 // $XFree86: xc/programs/xkbcomp/symbols/pl2,v 3.4 1999/08/30 02:34:28 dawes Exp
 // $
 partial default alphanumeric_keys 

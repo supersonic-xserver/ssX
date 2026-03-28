@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mipolypnt.c,v 1.5 2005/10/14 15:17:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,9 +52,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include <X11/X.h>
 #include <X11/Xprotostr.h>
@@ -55,13 +60,9 @@ SOFTWARE.
 #include "windowstr.h"
 #include "mi.h"
 
-_X_EXPORT void
-miPolyPoint(pDrawable, pGC, mode, npt, pptInit)
-    DrawablePtr 	pDrawable;
-    GCPtr 		pGC;
-    int 		mode;		/* Origin or Previous */
-    int 		npt;
-    xPoint 		*pptInit;
+void
+miPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
+	    xPoint *pptInit)
 {
 
     int 		xorg;
@@ -70,7 +71,7 @@ miPolyPoint(pDrawable, pGC, mode, npt, pptInit)
     XID			fsOld, fsNew;
     int			*pwidthInit, *pwidth;
     int			i;
-    xPoint 		*ppt;
+    xPoint 	*ppt;
 
     /* make pointlist origin relative */
     if (mode == CoordModePrevious)

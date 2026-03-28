@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DoScanPci.c,v 1.19 2006/03/02 03:00:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DoScanPci.c,v 1.17 2005/01/26 05:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1999-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -53,8 +60,8 @@
 
 #include <ctype.h>
 #include <stdlib.h>
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "os.h"
 #ifdef XFree86LOADER
 #include "loaderProcs.h"
@@ -65,7 +72,7 @@
 #include "xf86ScanPci.h"
 
 
-void DoScanPci(int argc, const char **argv, int i)
+void DoScanPci(int argc, char **argv, int i)
 {
   int j,skip,globalVerbose,scanpciVerbose;
   ScanPciSetupProcPtr PciSetup;
@@ -122,7 +129,7 @@ void DoScanPci(int argc, const char **argv, int i)
     LoaderErrorMsg(NULL, "scanpci", errmaj, errmin);
     exit(1);
   }
-  if (LoaderCheckUnresolved(0)) {
+  if (LoaderCheckUnresolved(LD_RESOLV_IFDONE)) {
       /* For now, just a warning */
       xf86Msg(X_WARNING, "Some symbols could not be resolved!\n");
   }

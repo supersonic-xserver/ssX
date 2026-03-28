@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r128/r128_context.c,v 1.8 2002/10/30 12:51:38 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_context.c,v 1.1.1.3 2004/12/10 15:05:53 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1999, 2000 ATI Technologies Inc. and Precision Insight, Inc.,
@@ -47,6 +54,8 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "tnl/tnl.h"
 #include "tnl/t_pipeline.h"
 
+#include "drivers/common/driverfuncs.h"
+
 #include "r128_context.h"
 #include "r128_ioctl.h"
 #include "r128_dd.h"
@@ -54,7 +63,6 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r128_span.h"
 #include "r128_tex.h"
 #include "r128_tris.h"
-#include "r128_vb.h"
 
 #include "vblank.h"
 #include "utils.h"
@@ -72,8 +80,10 @@ static const char * const card_extensions[] =
    "GL_ARB_texture_compression",
    "GL_ARB_texture_env_add",
    "GL_ARB_texture_mirrored_repeat",
+   "GL_EXT_blend_subtract",
    "GL_EXT_texture_edge_clamp",
    "GL_MESA_ycbcr_texture",
+   "GL_NV_blend_square",
    "GL_SGIS_generate_mipmap",
    NULL
 };
@@ -97,6 +107,7 @@ GLboolean r128CreateContext( const __GLcontextModes *glVisual,
 {
    GLcontext *ctx, *shareCtx;
    __DRIscreenPrivate *sPriv = driContextPriv->driScreenPriv;
+   struct dd_function_table functions;
    r128ContextPtr rmesa;
    r128ScreenPtr r128scrn;
    int i;
@@ -106,12 +117,21 @@ GLboolean r128CreateContext( const __GLcontextModes *glVisual,
    if ( !rmesa )
       return GL_FALSE;
 
+   /* Init default driver functions then plug in our Radeon-specific functions
+    * (the texture functions are especially important)
+    */
+   _mesa_init_driver_functions( &functions );
+   r128InitDriverFuncs( &functions );
+   r128InitIoctlFuncs( &functions );
+   r128InitTextureFuncs( &functions );
+
    /* Allocate the Mesa context */
    if (sharedContextPrivate)
       shareCtx = ((r128ContextPtr) sharedContextPrivate)->glCtx;
    else 
       shareCtx = NULL;
-   rmesa->glCtx = _mesa_create_context(glVisual, shareCtx, (void *) rmesa, GL_TRUE);
+   rmesa->glCtx = _mesa_create_context(glVisual, shareCtx,
+                                       &functions, (void *) rmesa);
    if (!rmesa->glCtx) {
       FREE(rmesa);
       return GL_FALSE;
@@ -132,7 +152,7 @@ GLboolean r128CreateContext( const __GLcontextModes *glVisual,
    driParseConfigFiles (&rmesa->optionCache, &r128scrn->optionCache,
                         r128scrn->driScreen->myNum, "r128");
 
-   rmesa->sarea = (R128SAREAPrivPtr)((char *)sPriv->pSAREA +
+   rmesa->sarea = (drm_r128_sarea_t *)((char *)sPriv->pSAREA +
 				     r128scrn->sarea_priv_offset);
 
    rmesa->CurrentTexObj[0] = NULL;
@@ -147,9 +167,9 @@ GLboolean r128CreateContext( const __GLcontextModes *glVisual,
 	    r128scrn->texSize[i],
 	    12,
 	    R128_NR_TEX_REGIONS,
-	    rmesa->sarea->texList[i],
-	    & rmesa->sarea->texAge[i],
-	    & rmesa->swapped,
+	    (drmTextureRegionPtr)rmesa->sarea->tex_list[i],
+	    &rmesa->sarea->tex_age[i],
+	    &rmesa->swapped,
 	    sizeof( r128TexObj ),
 	    (destroy_texture_object_t *) r128DestroyTexObj );
 
@@ -166,6 +186,7 @@ GLboolean r128CreateContext( const __GLcontextModes *glVisual,
    rmesa->RenderIndex = -1;		/* Impossible value */
    rmesa->vert_buf = NULL;
    rmesa->num_verts = 0;
+   rmesa->tnl_state = ~0;
 
    /* Set the maximum texture size small enough that we can guarentee that
     * all texture units can bind a maximal texture and have them both in
@@ -218,22 +239,20 @@ GLboolean r128CreateContext( const __GLcontextModes *glVisual,
 /*     _tnl_destroy_pipeline( ctx ); */
 /*     _tnl_install_pipeline( ctx, r128_pipeline ); */
 
-   /* Configure swrast to match hardware characteristics:
+   /* Configure swrast and T&L to match hardware characteristics:
     */
    _swrast_allow_pixel_fog( ctx, GL_FALSE );
    _swrast_allow_vertex_fog( ctx, GL_TRUE );
+   _tnl_allow_pixel_fog( ctx, GL_FALSE );
+   _tnl_allow_vertex_fog( ctx, GL_TRUE );
 
    driInitExtensions( ctx, card_extensions, GL_TRUE );
    if (sPriv->drmMinor >= 4)
       _mesa_enable_extension( ctx, "GL_MESA_ycbcr_texture" );
 
-   r128InitVB( ctx );
    r128InitTriFuncs( ctx );
-   r128DDInitDriverFuncs( ctx );
-   r128DDInitIoctlFuncs( ctx );
    r128DDInitStateFuncs( ctx );
    r128DDInitSpanFuncs( ctx );
-   r128DDInitTextureFuncs( ctx );
    r128DDInitState( rmesa );
 
    rmesa->vblank_flags = (rmesa->r128Screen->irq != 0)
@@ -266,8 +285,6 @@ void r128DestroyContext( __DRIcontextPrivate *driContextPriv  )
       _tnl_DestroyContext( rmesa->glCtx );
       _ac_DestroyContext( rmesa->glCtx );
       _swrast_DestroyContext( rmesa->glCtx );
-
-      r128FreeVB( rmesa->glCtx );
 
       /* free the Mesa context */
       rmesa->glCtx->DriverCtx = NULL;

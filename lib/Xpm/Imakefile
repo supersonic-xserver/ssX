@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Xpm/Imakefile,v 1.5 2004/09/15 16:00:37 herrb Exp $
+XCOMM $XFree86: xc/lib/Xpm/Imakefile,v 1.6 2004/11/18 21:30:49 herrb Exp $
 
 /* This is a simplified version of the standard Xpm Imakefile */
 
@@ -68,14 +68,14 @@ HEADERS = xpm.h
 	 CrBufFrP.c CrIFrBuf.c CrPFrDat.c RdFToP.c WrFFrP.c \
 	 CrDatFrI.c CrIFrDat.c RdFToDat.c WrFFrDat.c \
 	 Attrib.c CrIFrP.c CrPFrI.c Image.c Info.c RdFToBuf.c WrFFrBuf.c \
-	 s_popen.c $(SNPRINTFSRCS)
+	 $(SNPRINTFSRCS)
 
   OBJS = data.o create.o misc.o rgb.o scan.o parse.o hashtab.o \
 	 CrBufFrI.o CrDatFrP.o CrPFrBuf.o RdFToI.o WrFFrI.o \
 	 CrBufFrP.o CrIFrBuf.o CrPFrDat.o RdFToP.o WrFFrP.o \
 	 CrDatFrI.o CrIFrDat.o RdFToDat.o WrFFrDat.o \
 	 Attrib.o CrIFrP.o CrPFrI.o Image.o Info.o RdFToBuf.o WrFFrBuf.o \
-	 s_popen.o $(SNPRINTFOBJS)
+	 $(SNPRINTFOBJS)
 
          XPMDIR = $(TOP)/extras/Xpm
       XPMLIBDIR = $(TOP)/extras/Xpm/lib
@@ -114,7 +114,6 @@ LinkSourceFile(Info.c,$(XPMLIBDIR))
 LinkSourceFile(RdFToBuf.c,$(XPMLIBDIR))
 LinkSourceFile(WrFFrBuf.c,$(XPMLIBDIR))
 LinkSourceFile(xpm.h,$(XPMLIBDIR))
-LinkSourceFile(s_popen.c,$(XPMLIBDIR))
 
 #if !HasSnprintf
 LinkSourceFile(snprintf.c,$(LIBSRC)/misc)

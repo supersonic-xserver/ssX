@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmzerarc.c,v 3.2 2005/10/14 15:17:17 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmzerarc.c,v 3.1 1998/03/20 21:08:04 hohndel Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright (c) 1989  X Consortium
@@ -26,6 +33,8 @@ in this Software without prior written authorization from the X Consortium.
 
 ********************************************************/
 
+/* $XConsortium: ilbmzerarc.c,v 5.19 94/04/17 20:28:37 dpw Exp $ */
+
 /* Derived from:
  * "Algorithm for drawing ellipses or hyperbolae with a digital plotter"
  * by M. L. V. Pitteway
@@ -35,8 +44,8 @@ in this Software without prior written authorization from the X Consortium.
 /* Modified jun 95 by Geert Uytterhoeven (Geert.Uytterhoeven@cs.kuleuven.ac.be)
    to use interleaved bitplanes instead of normal bitplanes */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "miscstruct.h"
 #include "gcstruct.h"
 #include "pixmapstr.h"

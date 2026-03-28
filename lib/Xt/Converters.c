@@ -1,3 +1,19 @@
+/* $Xorg: Converters.c,v 1.5 2001/02/09 02:03:54 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -30,7 +46,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Converters.c,v 3.18tsi Exp $ */
+/* $XFree86: xc/lib/Xt/Converters.c,v 3.16 2004/05/05 00:07:02 dickey Exp $ */
 
 /*
 
@@ -256,8 +272,6 @@ static Boolean IsInteger(
     Boolean isPositive = False;
     int val = 0;
     char ch;
-
-    *value = 0;
     /* skip leading whitespace */
 #ifndef __UNIXOS2__
     while ((ch = *string) == ' ' || ch == '\t') string++;
@@ -806,7 +820,7 @@ Boolean XtCvtStringToFloat(
     XrmValuePtr	toVal,
     XtPointer	*closure_ret)
 {
-    int ret, nom, denom;
+    int ret;
     float f, nan;
 
 #ifndef ISC /* On ISC this generates a core dump :-( at least with gs */
@@ -821,20 +835,13 @@ Boolean XtCvtStringToFloat(
                  "String to Float conversion needs no extra arguments",
                  (String *) NULL, (Cardinal *)NULL);
 
-    /* try fractional notation: nominator/denomimator, e.g. 1/2 */
-    ret = sscanf (fromVal->addr, "%d/%d", &nom, &denom);
-    if (ret < 2 || denom == 0) {
-	/* try decimal notation: 3.141 */
-	ret = sscanf (fromVal->addr, "%g", &f);
-	if (ret == 0) {
-	    if (toVal->addr != NULL && toVal->size == sizeof nan)
-		*(float*)toVal->addr = nan;
-	    XtDisplayStringConversionWarning (dpy, (char*) fromVal->addr,
-					      XtRFloat);
-	    return False;
-	}
-    } else
-	f = (float) nom / (float) denom;
+    ret = sscanf (fromVal->addr, "%g", &f);
+    if (ret == 0) {
+	if (toVal->addr != NULL && toVal->size == sizeof nan)
+	    *(float*)toVal->addr = nan;
+	XtDisplayStringConversionWarning (dpy, (char*) fromVal->addr, XtRFloat);
+	return False;
+    }
     donestr(float, f, XtRFloat);
 }
 

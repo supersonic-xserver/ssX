@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/dixevents.h,v 3.5 2003/04/27 21:31:04 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -101,9 +109,5 @@ extern int ProcGrabButton(ClientPtr /* client */);
 extern int ProcUngrabButton(ClientPtr /* client */);
 
 extern int ProcRecolorCursor(ClientPtr /* client */);
-
-#ifdef PANORAMIX
-extern void PostSyntheticMotion(int x, int y, int screen, unsigned long time);
-#endif
 
 #endif /* DIXEVENTS_H */

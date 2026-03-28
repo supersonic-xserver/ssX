@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Platform specific rootless configuration
  */
 /*
@@ -26,10 +33,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessConfig.h,v 1.3 2005/10/12 19:54:27 tsi Exp $ */
 
 #ifndef _ROOTLESSCONFIG_H
 #define _ROOTLESSCONFIG_H
@@ -43,25 +47,11 @@
 # define ROOTLESS_RESIZE_GRAVITY TRUE
 # undef  ROOTLESS_TRACK_DAMAGE
 
+#endif /* __DARWIN__ */
+
 /* Bit mask for alpha channel with a particular number of bits per
    pixel. Note that we only care for 32bpp data. Mac OS X uses planar
    alpha for 16bpp. */
-# define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
-
-#endif /* __DARWIN__ */
-
-#if defined(__CYGWIN__) || defined(WIN32)
-
-# define ROOTLESS_ACCEL YES
-# define ROOTLESS_GLOBAL_COORDS TRUE
-# define ROOTLESS_PROTECT_ALPHA NO
-# define ROOTLESS_REDISPLAY_DELAY 10
-# undef  ROOTLESS_RESIZE_GRAVITY
-# undef  ROOTLESS_TRACK_DAMAGE
-/*# define ROOTLESSDEBUG*/
-
-# define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
-
-#endif /* __CYGWIN__ */
+#define RootlessAlphaMask(bpp) ((bpp) == 32 ? 0xFF000000 : 0)
 
 #endif /* _ROOTLESSCONFIG_H */

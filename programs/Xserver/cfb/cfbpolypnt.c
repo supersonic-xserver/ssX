@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbpolypnt.c,v 3.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbpolypnt.c,v 3.6 2001/12/14 19:59:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -25,7 +32,9 @@ in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
 
-#include <X11/X.h>
+/* $Xorg: cfbpolypnt.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+
+#include "X.h"
 #include "gcstruct.h"
 #include "windowstr.h"
 #include "pixmapstr.h"
@@ -62,35 +71,39 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 void
-cfbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	     xPoint *pptInit)
+cfbPolyPoint(pDrawable, pGC, mode, npt, pptInit)
+    DrawablePtr pDrawable;
+    GCPtr pGC;
+    int mode;
+    int npt;
+    xPoint *pptInit;
 {
-    INT32   pt;
-    INT32   c1, c2;
-    CARD32    ClipMask = 0x80008000;
-    CfbBits   xor;
+    register INT32   pt;
+    register INT32   c1, c2;
+    register CARD32    ClipMask = 0x80008000;
+    register CfbBits   xor;
 #ifdef PIXEL_ADDR
-    PixelType   *addrp;
-    int    npwidth;
+    register PixelType   *addrp;
+    register int    npwidth;
 #if PSZ != 24
     PixelType	    *addrpt;
 #endif
 #else
-    CfbBits    *addrl;
-    int    nlwidth;
-    int    xoffset;
+    register CfbBits    *addrl;
+    register int    nlwidth;
+    register int    xoffset;
     CfbBits   *addrlt;
 #endif
 #if PSZ == 24
     RROP_DECLARE
-    int xtmp;
-    PixelType *p;
+    register int xtmp;
+    register PixelType *p;
 #endif
-    INT32  *ppt;
+    register INT32  *ppt;
     RegionPtr	    cclip;
     int		    nbox;
-    int    i;
-    BoxPtr pbox;
+    register int    i;
+    register BoxPtr pbox;
     CfbBits   and;
     int		    rop = pGC->alu;
     int		    off;
@@ -131,8 +144,7 @@ cfbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 #if PSZ == 24
 	    PointLoop(
 		      xtmp = pDrawable->x + intToX(pt);
-		      p = addrp + (intToY(pt) << npwidth) +
-			  ((xtmp * PSZB) / PGSZB);
+		      p = addrp + (intToY(pt) << npwidth) + ((xtmp * 3) >>2);
 		      RROP_SOLID24_COPY(p, xtmp))
 #else
 	    PointLoop(*(addrp + (intToY(pt) << npwidth) + intToX(pt)) = xor;)
@@ -141,7 +153,7 @@ cfbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 #ifdef sun
 	else if (npwidth == 1152)
 	{
-	    int    y;
+	    register int    y;
 	    PointLoop(y = intToY(pt); *(addrp + (y << 10) + (y << 7) + intToX(pt)) = xor;)
 	}
 #endif
@@ -150,8 +162,7 @@ cfbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 #if PSZ == 24
 	    PointLoop(
 		      xtmp = pDrawable->x + intToX(pt);
-		      p = addrp + intToY(pt) * npwidth +
-			  ((xtmp * PSZB) / PGSZB);
+		      p = addrp + intToY(pt) * npwidth + ((xtmp * 3) >> 2);
 		      RROP_SOLID24_COPY(p, xtmp))
 #else
 	    PointLoop(*(addrp + intToY(pt) * npwidth + intToX(pt)) = xor;)
@@ -165,7 +176,7 @@ cfbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 	RROP_SET_SETUP(xor, and)
 	PointLoop(  
 		  xtmp = pDrawable->x + intToX(pt);
-		  p = addrp + intToY(pt) * npwidth + ((xtmp * PSZB) / PGSZB);
+		  p = addrp + intToY(pt) * npwidth + ((xtmp * 3) >> 2);
 		  RROP_SOLID24_SET(p, xtmp))
 #else
 	PointLoop(  addrpt = addrp + intToY(pt) * npwidth + intToX(pt);

@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86$
+XCOMM platform:  $Xorg: pegasus.cf,v 1.3 2000/08/17 19:41:48 cpqbld Exp $
 
 #ifndef OSName
 #define OSName             UTek 4.0

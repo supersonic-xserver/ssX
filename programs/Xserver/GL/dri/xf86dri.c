@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/GL/dri/xf86dri.c,v 1.15tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/dri/xf86dri.c,v 1.14 2004/12/10 16:06:59 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -42,8 +49,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
@@ -86,8 +93,10 @@ static void XF86DRIResetProc(ExtensionEntry* extEntry);
 
 static unsigned char DRIReqCode = 0;
 
+extern void XFree86DRIExtensionInit(void);
+
 void
-XFree86DRIExtensionInit(INITARGS)
+XFree86DRIExtensionInit(void)
 {
     ExtensionEntry* extEntry;
 

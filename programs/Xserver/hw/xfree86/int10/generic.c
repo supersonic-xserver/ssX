@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/generic.c,v 1.32tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/generic.c,v 1.29 2003/09/24 02:43:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *                   XFree86 int10 module
  *   execute BIOS int 10h calls in x86 real mode environment
@@ -11,7 +18,6 @@
 #define _INT10_PRIVATE
 #include "xf86int10.h"
 #include "int10Defines.h"
-#include "xf86PciInfo.h"
 
 #define ALLOC_ENTRIES(x) ((V_RAM / x) - 1)
 
@@ -51,7 +57,7 @@ int10MemRec genericMem = {
 static void MapVRam(xf86Int10InfoPtr pInt);
 static void UnmapVRam(xf86Int10InfoPtr pInt);
 #ifdef _PC
-#define GET_HIGH_BASE(x) (((V_BIOS + (x) + getpagesize() - 1)/getpagesize()) \
+#define GET_HIGH_BASE(x) (((V_BIOS + size + getpagesize() - 1)/getpagesize()) \
                              * getpagesize())
 #endif
 
@@ -77,7 +83,7 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     
 #ifdef _PC
     int size;
-    unsigned int cs;
+    CARD32 cs;
 #endif
 
     screen = (xf86FindScreenForEntity(entityIndex))->scrnIndex;
@@ -100,15 +106,7 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
     base = INTPriv(pInt)->base = xnfalloc(SYS_BIOS);
 
     pvp = xf86GetPciInfoForEntity(entityIndex);
-    if (pvp) {
-	pInt->Tag = ((pciConfigPtr)(pvp->thisCard))->tag;
-
-	/* Kludge to allow for VMWare's unaligned accesses */
-	/* Do NOT make this x86-specific... */
-	if ((pvp->vendor == PCI_VENDOR_VMWARE) &&
-	    (pvp->chipType == PCI_CHIP_VMWARE0405))
-	    pInt->vmwarePort = pvp->ioBase[0] + 1;
-    }
+    if (pvp) pInt->Tag = ((pciConfigPtr)(pvp->thisCard))->tag;
 
     /*
      * we need to map video RAM MMIO as some chipsets map mmio
@@ -132,12 +130,13 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
      * 64kB at a time.
      */
     (void)memset((char *)base + V_BIOS, 0, SYS_BIOS - V_BIOS);
-    if (xf86DomainHasBIOSSegments(xf86GetPciDomain(pInt->Tag)))
-	for (cs = V_BIOS;  cs < SYS_BIOS;  cs += V_BIOS_SIZE)
-	    if (xf86ReadBIOS(cs, 0, (unsigned char *)base + cs, V_BIOS_SIZE) <
+#if 0
+    for (cs = V_BIOS;  cs < SYS_BIOS;  cs += V_BIOS_SIZE)
+	if (xf86ReadBIOS(cs, 0, (unsigned char *)base + cs, V_BIOS_SIZE) <
 		V_BIOS_SIZE)
-		xf86DrvMsg(screen, X_WARNING,
-			   "Unable to retrieve all of segment 0x%06X.\n", cs);
+	    xf86DrvMsg(screen, X_WARNING,
+		       "Unable to retrieve all of segment 0x%06X.\n", cs);
+#endif
     INTPriv(pInt)->highMemory = V_BIOS;
     
     xf86int10ParseBiosLocation(options,&bios);
@@ -233,8 +232,6 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	    }
 	} else
 	    location_type = pEnt->location.type;
-
-	xfree(pEnt);
 	
 	switch (location_type) {
 	case BUS_PCI:
@@ -253,12 +250,13 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	    break;
 	case BUS_ISA:
 	    vbiosMem = (unsigned char *)sysMem + bios_location;
-	    if (xf86DomainHasBIOSSegments(xf86GetPciDomain(pInt->Tag)))
-		if (xf86ReadBIOS(bios_location, 0, vbiosMem, V_BIOS_SIZE) <
-		    V_BIOS_SIZE)
-		    xf86DrvMsg(screen, X_WARNING,
-			       "Unable to retrieve all of segment 0x%x.\n",
-			       bios_location);
+#if 0
+	    (void)memset(vbiosMem, 0, V_BIOS_SIZE);
+	    if (xf86ReadBIOS(bios_location, 0, vbiosMem, V_BIOS_SIZE)
+		< V_BIOS_SIZE)
+		xf86DrvMsg(screen, X_WARNING,
+		    "Unable to retrieve all of segment 0x%x.\n",bios_location);
+#endif
 	    if (!int10_check_bios(screen, bios_location >> 4, vbiosMem)) {
 	        xf86DrvMsg(screen,X_ERROR,"Cannot read V_BIOS (4)\n");
 		goto error1;
@@ -266,6 +264,7 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
 	default:
 	    goto error1;
 	}
+	xfree(pEnt);
 	pInt->BIOSseg = V_BIOS >> 4;
 	pInt->num = 0xe6;
 	LockLegacyVGA(pInt, &vga);
@@ -288,19 +287,17 @@ xf86ExtendedInitInt10(int entityIndex, int Flags)
      */
     vbiosMem = (char *)base + V_BIOS;
     (void)memset(vbiosMem, 0, 2 * V_BIOS_SIZE);
-    if (xf86DomainHasBIOSSegments(xf86GetPciDomain(pInt->Tag))) {
-	if (xf86ReadDomainMemory(pInt->Tag, V_BIOS, V_BIOS_SIZE, vbiosMem) <
-	    V_BIOS_SIZE)
-	    xf86DrvMsg(screen, X_WARNING,
-		"Unable to retrieve all of segment 0x0C0000.\n");
-	else if ((((unsigned char *)vbiosMem)[0] == 0x55) &&
-		 (((unsigned char *)vbiosMem)[1] == 0xAA) &&
-		 (((unsigned char *)vbiosMem)[2] > 0x80))
-	if (xf86ReadDomainMemory(pInt->Tag, V_BIOS + V_BIOS_SIZE, V_BIOS_SIZE,
+    if (xf86ReadDomainMemory(pInt->Tag, V_BIOS, V_BIOS_SIZE, vbiosMem) <
+	V_BIOS_SIZE)
+	xf86DrvMsg(screen, X_WARNING,
+	    "Unable to retrieve all of segment 0x0C0000.\n");
+    else if ((((unsigned char *)vbiosMem)[0] == 0x55) &&
+	     (((unsigned char *)vbiosMem)[1] == 0xAA) &&
+	     (((unsigned char *)vbiosMem)[2] > 0x80))
+    if (xf86ReadDomainMemory(pInt->Tag, V_BIOS + V_BIOS_SIZE, V_BIOS_SIZE,
 	    (unsigned char *)vbiosMem + V_BIOS_SIZE) < V_BIOS_SIZE)
-	    xf86DrvMsg(screen, X_WARNING,
-		"Unable to retrieve all of segment 0x0D0000.\n");
-    }
+	xf86DrvMsg(screen, X_WARNING,
+	    "Unable to retrieve all of segment 0x0D0000.\n");
 
     /*
      * If this adapter is the primary, use its post-init BIOS (if we can find
@@ -508,24 +505,30 @@ read_b(xf86Int10InfoPtr pInt, int addr)
 static CARD16
 read_w(xf86Int10InfoPtr pInt, int addr)
 {
+#if !defined(__arm__)
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
-    if (!(addr & 1))
+    if (OFF(addr + 1) > 0)
 	return V_ADDR_RW(addr);
 #endif
+#else
     return V_ADDR_RB(addr) | (V_ADDR_RB(addr + 1) << 8);
+#endif
 }
 
 static CARD32
 read_l(xf86Int10InfoPtr pInt, int addr)
 {
+#if !defined(__arm__)
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
-    if (!(addr & 3))
+    if (OFF(addr + 3) > 2)
 	return V_ADDR_RL(addr);
 #endif
+#else
     return V_ADDR_RB(addr) |
 	   (V_ADDR_RB(addr + 1) << 8) |
 	   (V_ADDR_RB(addr + 2) << 16) |
 	   (V_ADDR_RB(addr + 3) << 24);
+#endif
 }
 
 static void
@@ -537,31 +540,31 @@ write_b(xf86Int10InfoPtr pInt, int addr, CARD8 val)
 static void
 write_w(xf86Int10InfoPtr pInt, int addr, CARD16 val)
 {
+#if !defined(__arm__)
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
-    if (!(addr & 1)) {
-	V_ADDR_WW(addr, val);
-    } else
+    if (OFF(addr + 1) > 0)
+      { V_ADDR_WW(addr, val); }
 #endif
-    {
-	V_ADDR_WB(addr, val);
-	V_ADDR_WB(addr + 1, val >> 8);
-    }
+#else
+    V_ADDR_WB(addr, val);
+    V_ADDR_WB(addr + 1, val >> 8);
+#endif
 }
 
 static void
 write_l(xf86Int10InfoPtr pInt, int addr, CARD32 val)
 {
+#if !defined(__arm__)
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
-    if (!(addr & 3)) {
-	V_ADDR_WL(addr, val);
-    } else
+    if (OFF(addr + 3) > 2)
+      { V_ADDR_WL(addr, val); }
 #endif
-    {
-	V_ADDR_WB(addr, val);
-	V_ADDR_WB(addr + 1, val >> 8);
-	V_ADDR_WB(addr + 2, val >> 16);
-	V_ADDR_WB(addr + 3, val >> 24);
-    }
+#else
+    V_ADDR_WB(addr, val);
+    V_ADDR_WB(addr + 1, val >> 8);
+    V_ADDR_WB(addr + 2, val >> 16);
+    V_ADDR_WB(addr + 3, val >> 24);
+#endif
 }
 
 pointer

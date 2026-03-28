@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -170,7 +177,7 @@ RRScanOldConfig (ScreenPtr pScreen, Rotation rotations)
     /* notice current mode */
     if (newMode)
 	RRCrtcNotify (crtc, newMode, 0, 0, pScrPriv->rotation,
-		      1, &output);
+		      NULL, 1, &output);
 }
 #endif
 
@@ -178,7 +185,7 @@ RRScanOldConfig (ScreenPtr pScreen, Rotation rotations)
  * Poll the driver for changed information
  */
 Bool
-RRGetInfo (ScreenPtr pScreen)
+RRGetInfo (ScreenPtr pScreen, Bool force_query)
 {
     rrScrPriv (pScreen);
     Rotation	    rotations;

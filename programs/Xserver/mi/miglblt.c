@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/miglblt.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/miglblt.c,v 1.6 2001/12/14 20:00:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,11 +53,13 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+/* $Xorg: miglblt.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"misc.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
@@ -78,22 +87,27 @@ with the sample server.
 */
 
 void
-miPolyGlyphBlt(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
-	       unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+miPolyGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	 x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer      pglyphBase;	/* start of array of glyphs */
 {
     int width, height;
     PixmapPtr pPixmap;
     int nbyLine;			/* bytes per line of padded pixmap */
     FontPtr pfont;
     GCPtr pGCtmp;
-    int i;
-    int j;
+    register int i;
+    register int j;
     unsigned char *pbits;		/* buffer for PutImage */
-    unsigned char *pb;		/* temp pointer into buffer */
-    CharInfoPtr pci;		/* currect char info */
-    unsigned char *pglyph;	/* pointer bits in glyph */
+    register unsigned char *pb;		/* temp pointer into buffer */
+    register CharInfoPtr pci;		/* currect char info */
+    register unsigned char *pglyph;	/* pointer bits in glyph */
     int gWidth, gHeight;		/* width and height of glyph */
-    int nbyGlyphWidth;		/* bytes per scanline of glyph */
+    register int nbyGlyphWidth;		/* bytes per scanline of glyph */
     int nbyPadGlyph;			/* server padded line of glyph */
 
     XID gcvals[3];
@@ -186,8 +200,13 @@ miPolyGlyphBlt(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
 
 
 void
-miImageGlyphBlt(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
-		unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+miImageGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	 x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer      pglyphBase;	/* start of array of glyphs */
 {
     ExtentInfoRec info;		/* used by QueryGlyphExtents() */
     XID gcvals[3];

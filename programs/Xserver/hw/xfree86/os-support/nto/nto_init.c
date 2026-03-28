@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (c) Copyright 1998 by Sebastien Marineau
  *			<sebastien@qnx.com>
  *
@@ -24,7 +31,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Sebastien Marineau.
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_init.c,v 1.4 2005/10/14 15:17:05 tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_init.c,v 1.3 2001/11/16 16:47:56 dawes Exp $
  */
 
 /* This module contains the NTO-specific functions used at server init.
@@ -36,7 +43,7 @@
 #include <sys/mman.h>
 #include <sys/dcmd_chr.h>
 
-#include <X11/X.h>
+#include <X.h>
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
@@ -53,7 +60,7 @@ xf86UseMsg()
 int
 xf86ProcessArgument(argc, argv, i)
 int argc;
-const char **argv;
+char **argv;
 int i;
 {
 

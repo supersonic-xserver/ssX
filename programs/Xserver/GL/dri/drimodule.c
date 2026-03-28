@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1999 Precision Insight, Inc., Cedar Park, Texas.
 All Rights Reserved.
@@ -24,7 +38,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/GL/dri/drimodule.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/dri/drimodule.c,v 1.7 2005/03/01 03:48:50 dawes Exp $ */
 
 /*
  * Authors:
@@ -93,7 +107,7 @@ static const char *drmSymbols[] = {
 XF86ModuleData driModuleData = { &VersRec, driSetup, NULL };
 
 static pointer
-driSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+driSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     pointer drm = NULL;
 
@@ -102,7 +116,8 @@ driSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
     if (!drm) {
 	if (errmaj) *errmaj = LDR_NOSUBENT;
     } else {
-	LoaderModReqSymLists(drm, drmSymbols, NULL);
+	LoaderReqSymLists(drmSymbols, NULL);
+	LoaderRefSymbols("noPanoramiXExtension", NULL);
 	LoadExtension(&XF86DRIExt, FALSE);
     }
     /* Need a non-NULL return value to indicate success. */

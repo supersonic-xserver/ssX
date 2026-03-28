@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaWideLine.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaWideLine.c,v 1.11 2003/07/16 01:38:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 
@@ -15,8 +29,7 @@ Original mi code written by Keith Packard.
 */
 
 #ifndef XFree86LOADER
-#if defined(_XOPEN_SOURCE) || defined(__QNXNTO__) || \
-    (defined(sun) && defined(__SVR4))
+#if defined(_XOPEN_SOURCE) || defined(__QNXNTO__)
 #include <math.h>
 #else
 #define _XOPEN_SOURCE	/* to get prototype for hypot on some systems */
@@ -30,7 +43,7 @@ Original mi code written by Keith Packard.
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "windowstr.h"
 #include "gcstruct.h"
 #include "regionstr.h"
@@ -824,6 +837,20 @@ XAAPolylinesWideSolid (
 	return;
     }
 
+    if (mode == CoordModePrevious) {
+	pPts->x += xorg;
+	pPts->y += yorg;
+    } else if(xorg | yorg) {
+	register int n = npt;
+	register DDXPointPtr pts = pPts;
+
+	while(n--) {
+	   pts->x += xorg;
+	   pts->y += yorg;
+	   pts++;
+	}
+    }
+
     x2 = pPts->x;
     y2 = pPts->y;
     if (npt > 1) {
@@ -861,8 +888,6 @@ XAAPolylinesWideSolid (
               infoRec->ClipBox->x2 - 1, infoRec->ClipBox->y2 - 1);		
     }
 
-    x2 += xorg;
-    y2 += yorg;
     while (--npt) {
 	x1 = x2;
 	y1 = y2;
@@ -872,9 +897,6 @@ XAAPolylinesWideSolid (
 	if (mode == CoordModePrevious) {
 	    x2 += x1;
 	    y2 += y1;
-	} else {
-	    x2 += xorg;
-	    y2 += yorg;
 	}
 	if ((x1 != x2) || (y1 != y2)) {
 	    somethingDrawn = TRUE;

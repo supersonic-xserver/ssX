@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmgc.c,v 3.2 2005/10/14 15:17:16 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmgc.c,v 3.1 1998/03/20 21:08:02 hohndel Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,16 +53,17 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ilbmgc.c,v 5.35 94/04/17 20:28:23 dpw Exp $ */
 
 /* Modified jun 95 by Geert Uytterhoeven (Geert.Uytterhoeven@cs.kuleuven.ac.be)
    to use interleaved bitplanes instead of normal bitplanes */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "ilbm.h"
 #include "dixfontstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "gcstruct.h"
 #include "windowstr.h"
 #include "pixmapstr.h"

@@ -1,5 +1,12 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_acl.c,v 1.25tsi Exp $ */
+
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_acl.c,v 1.25 2000/12/14 16:33:10 eich Exp $ */
 
 
 
@@ -149,8 +156,7 @@ tseng_init_acl(ScrnInfoPtr pScrn)
 	/*      MMIO_IN32(pTseng->MMioBase, 0x08<<0) = 200000; *//* TEST */
     }
 #ifdef DEBUG    
-    ErrorF("MMioBase = 0x%lx, scratchMemBase = 0x%lx\n",
-	   (unsigned long)pTseng->MMioBase, (unsigned long)pTseng->scratchMemBase);
+    ErrorF("MMioBase = 0x%x, scratchMemBase = 0x%x\n", pTseng->MMioBase, pTseng->scratchMemBase);
 #endif
 
     /*

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/main.c,v 3.13tsi Exp $ */
+/* $Xorg: main.c,v 1.5 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Font server main routine
  */
@@ -46,12 +53,13 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/main.c,v 3.13 2004/04/03 10:50:05 herrb Exp $ */
 
 #include	<stdlib.h>
 #include	<sys/types.h>
 #include	<sys/stat.h>
-#include	<X11/fonts/FS.h>
-#include	<X11/fonts/FSproto.h>
+#include	"FS.h"
+#include	"FSproto.h"
 #include	"clientstr.h"
 #include	"fsresource.h"
 #include	"misc.h"

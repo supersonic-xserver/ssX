@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/zx1PCI.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/zx1PCI.c,v 1.11 2005/01/08 21:57:56 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 2002-2003 The XFree86 Project, Inc.
  * All rights reserved.
@@ -1012,8 +1019,7 @@ xf86PostScanZX1(void)
 		continue;
 
 	    case PCI_CLASS_DISPLAY:
-		if ((pPCI->pci_sub_class == PCI_SUBCLASS_DISPLAY_VGA) &&
-		    (pPCI->pci_prog_if == PCI_IF_DISPLAY_VGA))
+		if (pPCI->pci_sub_class == PCI_SUBCLASS_DISPLAY_VGA)
 		    break;
 		continue;
 

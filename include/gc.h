@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/include/gc.h,v 1.7 2005/10/14 15:17:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -48,9 +56,9 @@ SOFTWARE.
 #ifndef GC_H
 #define GC_H 
 
-#include <X11/X.h>	/* for GContext, Mask */
+#include "X11/X.h"	/* for GContext, Mask */
 #include <X11/Xdefs.h>	/* for Bool */
-#include <X11/Xproto.h>
+#include "X11/Xproto.h"
 #include "screenint.h"	/* for ScreenPtr */
 #include "pixmap.h"	/* for DrawablePtr */
 
@@ -125,6 +133,11 @@ extern int CopyGC(
 extern int FreeGC(
     pointer /*pGC*/,
     XID /*gid*/);
+
+extern void SetGCMask(
+    GCPtr /*pGC*/,
+    Mask /*selectMask*/,
+    Mask /*newDataMask*/);
 
 extern GCPtr CreateScratchGC(
     ScreenPtr /*pScreen*/,

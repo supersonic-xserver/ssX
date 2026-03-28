@@ -1,4 +1,11 @@
-// $XFree86: xc/programs/Xserver/hw/darwin/utils/dumpkeymap.c,v 1.4tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+// $XFree86: xc/programs/Xserver/hw/darwin/utils/dumpkeymap.c,v 1.4 2003/04/13 14:52:51 herrb Exp $
 //=============================================================================
 //
 // Copyright (C) 1999,2000 by Eric Sunshine <sunshine@sunshineco.com>
@@ -144,7 +151,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #if !defined(DUMPKEYMAP_FILE_ONLY)
-#include <IOKit/hidsystem/event_status_driver.h>
+#include <drivers/event_status_driver.h>
 #endif
 
 #define PROG_NAME "dumpkeymap"

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/globals.c,v 1.15 2006/09/02 16:44:04 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -22,17 +30,18 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
+
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
                         All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -44,10 +53,6 @@ SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include "misc.h"
@@ -55,33 +60,31 @@ SOFTWARE.
 #include "scrnintstr.h"
 #include "input.h"
 #include "dixfont.h"
+#include "site.h"
 #include "dixstruct.h"
 #include "os.h"
 
 ScreenInfo screenInfo;
-
 KeybdCtrl defaultKeyboardControl = {
-    DEFAULT_KEYBOARD_CLICK,
-    DEFAULT_BELL,
-    DEFAULT_BELL_PITCH,
-    DEFAULT_BELL_DURATION,
-    DEFAULT_AUTOREPEAT,
-    DEFAULT_AUTOREPEATS,
-    DEFAULT_LEDS,
-    0
-};
+	DEFAULT_KEYBOARD_CLICK,
+	DEFAULT_BELL,
+	DEFAULT_BELL_PITCH,
+	DEFAULT_BELL_DURATION,
+	DEFAULT_AUTOREPEAT,
+	{ DEFAULT_AUTOREPEATS, DEFAULT_LEDS, 0 }};
 
 PtrCtrl defaultPointerControl = {
-    DEFAULT_PTR_NUMERATOR,
-    DEFAULT_PTR_DENOMINATOR,
-    DEFAULT_PTR_THRESHOLD,
-    0
-};
+	DEFAULT_PTR_NUMERATOR,
+	DEFAULT_PTR_DENOMINATOR,
+	DEFAULT_PTR_THRESHOLD,
+	0};
 
-ClientPtr clients[MAXCLIENTS];
-ClientPtr serverClient;
-int currentMaxClients;          /* current size of clients array */
+ClientPtr *clients;
+ClientPtr  serverClient;
+int  currentMaxClients;   /* current size of clients array */
 long maxBigRequestSize = MAX_BIG_REQUEST_SIZE;
+
+WindowPtr *WindowTable;
 
 unsigned long globalSerialNumber = 0;
 unsigned long serverGeneration = 0;
@@ -89,32 +92,61 @@ unsigned long serverGeneration = 0;
 /* these next four are initialized in main.c */
 CARD32 ScreenSaverTime;
 CARD32 ScreenSaverInterval;
-int ScreenSaverBlanking;
-int ScreenSaverAllowExposures;
+int  ScreenSaverBlanking;
+int  ScreenSaverAllowExposures;
 
-/* default time of 10 minutes */
-CARD32 defaultScreenSaverTime = (10 * (60 * 1000));
-CARD32 defaultScreenSaverInterval = (10 * (60 * 1000));
-int defaultScreenSaverBlanking = PreferBlanking;
-int defaultScreenSaverAllowExposures = AllowExposures;
+#ifdef DPMSExtension
+#define DEFAULT_STANDBY_TIME DEFAULT_SCREEN_SAVER_TIME * 2
+#define DEFAULT_SUSPEND_TIME DEFAULT_SCREEN_SAVER_TIME * 3
+#define DEFAULT_OFF_TIME DEFAULT_SCREEN_SAVER_TIME * 4
+CARD32 defaultDPMSStandbyTime = DEFAULT_STANDBY_TIME;
+CARD32 defaultDPMSSuspendTime = DEFAULT_SUSPEND_TIME;
+CARD32 defaultDPMSOffTime = DEFAULT_OFF_TIME;
+CARD16 DPMSPowerLevel = 0;
+Bool defaultDPMSEnabled = FALSE;
+Bool DPMSEnabledSwitch = FALSE;	  /* these denote the DPMS command line */
+Bool DPMSDisabledSwitch = FALSE;  /*                      switch states */
+Bool DPMSCapableFlag = FALSE;
+CARD32 DPMSStandbyTime;
+CARD32 DPMSSuspendTime;
+CARD32 DPMSOffTime;
+Bool DPMSEnabled;
+#endif
 
-#ifdef SCREENSAVER
-Bool screenSaverSuspended = FALSE;
+CARD32 defaultScreenSaverTime = DEFAULT_SCREEN_SAVER_TIME;
+CARD32 defaultScreenSaverInterval = DEFAULT_SCREEN_SAVER_INTERVAL;
+int  defaultScreenSaverBlanking = DEFAULT_SCREEN_SAVER_BLANKING;
+int  defaultScreenSaverAllowExposures = DEFAULT_SCREEN_SAVER_EXPOSURES;
+#ifndef NOLOGOHACK
+int  logoScreenSaver = DEFAULT_LOGO_SCREEN_SAVER;
 #endif
 
 const char *defaultFontPath = COMPILEDDEFAULTFONTPATH;
-FontPtr defaultFont;            /* not declared in dix.h to avoid including font.h in
-                                   every compilation of dix code */
+const char *defaultTextFont = COMPILEDDEFAULTFONT;
+const char *defaultCursorFont = COMPILEDCURSORFONT;
+const char *rgbPath = RGB_DB;
+const char *defaultDisplayClass = COMPILEDDISPLAYCLASS;
+FontPtr defaultFont;   /* not declared in dix.h to avoid including font.h in
+			every compilation of dix code */
+Bool loadableFonts = FALSE;
 CursorPtr rootCursor;
-Bool party_like_its_1989 = TRUE;
-Bool whiteRoot = FALSE;
+Bool blackRoot=FALSE;
+ClientPtr requestingClient;	/* XXX this should be obsolete now, remove? */
 
 TimeStamp currentTime;
+TimeStamp lastDeviceEventTime;
+
+Bool permitOldBugs = FALSE; /* turn off some error checking, to permit certain
+			     * old broken clients (like R2/R3 xterms) to work
+			     */
 
 int defaultColorVisualClass = -1;
 int monitorResolution = 0;
 
 const char *display;
-int displayfd = -1;
-Bool explicit_display = FALSE;
-char *ConnectionInfo;
+
+CARD32 TimeOutValue = DEFAULT_TIMEOUT * MILLI_PER_SECOND;
+int	argcGlobal;
+const char	**argvGlobal;
+
+DDXPointRec dixScreenOrigins[MAXSCREENS];

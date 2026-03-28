@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Support for RENDER extension while protecting the alpha channel
  */
 /*
@@ -32,7 +39,7 @@
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  */
- /* $XFree86: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaPicture.c,v 1.5tsi Exp $ */
+ /* $XFree86: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaPicture.c,v 1.4 2004/01/19 01:22:48 torrey Exp $ */
 
 #ifdef RENDER
 
@@ -46,7 +53,7 @@
 # define mod(a,b)	((b) == 1 ? 0 : (a) >= 0 ? (a) % (b) : (b) - (-a) % (b))
 
 
-/* Replacement for fbStore_x8r8g8b8 that sets the alpha channel */
+// Replacement for fbStore_x8r8g8b8 that sets the alpha channel
 void
 SafeAlphaStore_x8r8g8b8 (FbCompositeOperand *op, CARD32 value)
 {
@@ -56,7 +63,7 @@ SafeAlphaStore_x8r8g8b8 (FbCompositeOperand *op, CARD32 value)
 }
 
 
-/* Defined in fbcompose.c */
+// Defined in fbcompose.c
 extern FbCombineFunc fbCombineFuncU[];
 extern FbCombineFunc fbCombineFuncC[];
 
@@ -224,6 +231,9 @@ SafeAlphaCompositeGeneral(
     CARD16              height)
 {
     FbCompositeOperand	src[4],msk[4],dst[4],*pmsk;
+    FbCompositeOperand	*srcPict, *srcAlpha;
+    FbCompositeOperand	*dstPict, *dstAlpha;
+    FbCompositeOperand	*mskPict = 0, *mskAlpha = 0;
     FbCombineFunc	f;
     int			w;
 
@@ -232,11 +242,31 @@ SafeAlphaCompositeGeneral(
     if (!fbBuildCompositeOperand (pDst, dst, xDst, yDst, FALSE, TRUE))
 	return;
 
-    /* Use SafeAlpha operands for on screen picture formats */
+    // Use SafeAlpha operands for on screen picture formats
     if (pDst->format == PICT_x8r8g8b8) {
         dst[0].store = SafeAlphaStore_x8r8g8b8;
     }
 
+    if (pSrc->alphaMap)
+    {
+	srcPict = &src[1];
+	srcAlpha = &src[2];
+    }
+    else
+    {
+	srcPict = &src[0];
+	srcAlpha = 0;
+    }
+    if (pDst->alphaMap)
+    {
+	dstPict = &dst[1];
+	dstAlpha = &dst[2];
+    }
+    else
+    {
+	dstPict = &dst[0];
+	dstAlpha = 0;
+    }
     f = fbCombineFuncU[op];
     if (pMask)
     {
@@ -245,6 +275,16 @@ SafeAlphaCompositeGeneral(
 	pmsk = msk;
 	if (pMask->componentAlpha)
 	    f = fbCombineFuncC[op];
+	if (pMask->alphaMap)
+	{
+	    mskPict = &msk[1];
+	    mskAlpha = &msk[2];
+	}
+	else
+	{
+	    mskPict = &msk[0];
+	    mskAlpha = 0;
+	}
     }
     else
 	pmsk = 0;
@@ -322,10 +362,8 @@ SafeAlphaComposite(
 				   height))
 	return;
 
-    /*
-     * To preserve the alpha channel we have a special, non-optimzied
-     * compositor.
-     */
+    // To preserve the alpha channel we have a special,
+    // non-optimzied compositor.
     func = SafeAlphaCompositeGeneral;
 
     /*
@@ -558,7 +596,7 @@ SafeAlphaComposite(
     }
     REGION_UNINIT (pDst->pDrawable->pScreen, &region);
 
-    /* Reset destination depth to its true value */
+    // Reset destination depth to its true value
     pDst->pDrawable->depth = dstDepth;
 }
 

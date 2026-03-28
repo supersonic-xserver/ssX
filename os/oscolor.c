@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/os/oscolor.c,v 3.15 2005/10/14 15:17:26 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,243 +52,227 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#define USE_RGB_BUILTIN 1
-
-#if USE_RGB_BUILTIN
-
-#include <X11/keysym.h>
-#include "os.h"
-
-static unsigned char
-OsToLower (unsigned char a)
-{
-    if ((a >= XK_A) && (a <= XK_Z))
-	return a + (XK_a - XK_A);
-    else if ((a >= XK_Agrave) && (a <= XK_Odiaeresis))
-	return a + (XK_agrave - XK_Agrave);
-    else if ((a >= XK_Ooblique) && (a <= XK_Thorn))
-	return a + (XK_oslash - XK_Ooblique);
-    else
-	return a;
-}
-
-static int
-OsStrCaseCmp (const unsigned char *s1, const unsigned char *s2, int l2)
-{
-    unsigned char   c1, c2;
-
-    for (;;)
-    {
-	c1 = OsToLower (*s1++);
-	if (l2 == 0)
-	    c2 = '\0';
-	else
-	    c2 = OsToLower (*s2++);
-	if (!c1 || !c2)
-	    break;
-	if (c1 != c2)
-	    break;
-	l2--;
-    }
-    return c2 - c1;
-}
-
-typedef struct _builtinColor {
-    unsigned char	red;
-    unsigned char	green;
-    unsigned char	blue;
-    unsigned short	name;
-} BuiltinColor;
-
-#include "oscolor.h"
-
-#define NUM_BUILTIN_COLORS  (sizeof (BuiltinColors) / sizeof (BuiltinColors[0]))
-
-Bool
-OsInitColors(void)
-{
-    return TRUE;
-}
-
-Bool
-OsLookupColor(int		screen, 
-	      char		*s_name,
-	      unsigned int	len, 
-	      unsigned short	*pred,
-	      unsigned short	*pgreen,
-	      unsigned short	*pblue)
-{
-    const BuiltinColor	*c;
-    unsigned char	*name = (unsigned char *) s_name;
-    int			low, mid, high;
-    int			r;
-
-    low = 0;
-    high = NUM_BUILTIN_COLORS - 1;
-    while (high >= low)
-    {
-	mid = (low + high) / 2;
-	c = &BuiltinColors[mid];
-	r = OsStrCaseCmp (&BuiltinColorNames[c->name], name, len);
-	if (r == 0)
-	{
-	    *pred = c->red * 0x101;
-	    *pgreen = c->green * 0x101;
-	    *pblue = c->blue * 0x101;
-	    return TRUE;
-	}
-	if (r < 0)
-	    high = mid - 1;
-	else
-	    low = mid + 1;
-    }
-    return FALSE;
-}
-
-#else
-
 /*
- * This file builds the server's internal database mapping color names to
- * RGB tuples by reading in an rgb.txt file.  This is still slightly foolish,
- * rgb.txt hasn't changed in years, we should really include a precompiled
- * version into the server.
+ * Copyright © 1995-2005 by The XFree86 Project, Inc.
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #include <stdio.h>
 #include "os.h"
 #include "opaque.h"
+#include "oscolor.h"
+#include "dix.h"
+#define XK_LATIN1
+#include <X11/keysymdef.h>
 
-#define HASHSIZE 63
-
-typedef struct _dbEntry * dbEntryPtr;
-typedef struct _dbEntry {
-  dbEntryPtr     link;
-  unsigned short red;
-  unsigned short green;
-  unsigned short blue;
-  char           name[1];	/* some compilers complain if [0] */
-} dbEntry;
-
-extern void CopyISOLatin1Lowered(
-    unsigned char * /*dest*/,
-    unsigned char * /*source*/,
-    int /*length*/);
-
+static dbEntryPtr *colorTab = NULL;
 static dbEntryPtr hashTab[HASHSIZE];
+
+/*
+ * Make a normalised copy of the colour name.  Case is lowered, and space,
+ * '-' and '_' characters are removed.  Colours are matched by comparing
+ * their normalised names.
+ */
+
+static void
+stringCopy(char *dest, char *source, int length)
+{
+    int i;
+
+    for (i = 0; i < length; i++) {
+	unsigned char c = (unsigned char)*source++;
+
+	if ((c >= XK_A) && (c <= XK_Z))
+	    *dest++ = (char)c + (XK_a - XK_A);
+	else if ((c >= XK_Agrave) && (c <= XK_Odiaeresis))
+	    *dest++ = (char)c + (XK_agrave - XK_Agrave);
+	else if ((c >= XK_Ooblique) && (c <= XK_Thorn))
+	    *dest++ = (char)c + (XK_oslash - XK_Ooblique);
+	else if ((c != XK_space) && (c != XK_minus) && (c != XK_underscore))
+	    *dest++ = (char)c;
+    }
+
+    *dest = '\0';
+}
 
 static dbEntryPtr
 lookup(char *name, int len, Bool create)
 {
-  unsigned int h = 0, g;
-  dbEntryPtr   entry, *prev = NULL;
-  char         *str = name;
+    unsigned int h = 0, g;
+    dbEntryPtr entry, *prev = NULL;
+    char *str = name;
 
-  if (!(name = (char*)ALLOCATE_LOCAL(len +1))) return NULL;
-  CopyISOLatin1Lowered((unsigned char *)name, (unsigned char *)str, len);
-  name[len] = '\0';
+    if (!colorTab)
+	return NULL;
 
-  for(str = name; *str; str++) {
-    h = (h << 4) + *str;
-    if ((g = h) & 0xf0000000) h ^= (g >> 24);
-    h &= g;
-  }
-  h %= HASHSIZE;
+    if (!(name = ALLOCATE_LOCAL(len + 1)))
+	return NULL;
+    stringCopy(name, str, len);
+    name[len] = '\0';
 
-  if ( (entry = hashTab[h]) )
-    {
-      for( ; entry; prev = (dbEntryPtr*)entry, entry = entry->link )
-	if (! strcmp(name, entry->name) ) break;
+    for (str = name; *str; str++) {
+	h = (h << 4) + *str;
+	if ((g = h) & 0xf0000000)
+	    h ^= (g >> 24);
+	h &= g;
     }
-  else
-    prev = &(hashTab[h]);
+    h %= HASHSIZE;
 
-  if (!entry && create && (entry = (dbEntryPtr)xalloc(sizeof(dbEntry) +len)))
-    {
-      *prev = entry;
-      entry->link = NULL;
-      strcpy( entry->name, name );
+    if ((entry = colorTab[h])) {
+	for (; entry; prev = &entry->link, entry = entry->link) {
+	    if (!strcmp(name, entry->name))
+		break;
+	}
+    } else
+	prev = &(colorTab[h]);
+
+    if (!entry && create && (entry = xalloc(sizeof(dbEntry)))) {
+	*prev = entry;
+	entry->link = NULL;
+	entry->name = xstrdup(name);
     }
 
-  DEALLOCATE_LOCAL(name);
+    DEALLOCATE_LOCAL(name);
 
-  return entry;
+    return entry;
 }
+
+#ifndef __UNIXOS2__
+#define RGB_SCANF_FMT "%d %d %d %[^\n]\n"
+#else
+#define RGB_SCANF_FMT "%d %d %d %[^\n\r]\n"
+#endif
+#define RGB_SCALE_FACTOR (65535 / 255)
 
 Bool
 OsInitColors(void)
 {
-  FILE       *rgb;
-  char       *path;
-  char       line[BUFSIZ];
-  char       name[BUFSIZ];
-  int        red, green, blue, lineno = 0;
-  dbEntryPtr entry;
+    FILE *rgb;
+    char *path;
+    const char *fullpath;
+    char line[BUFSIZ];
+    char name[BUFSIZ];
+    int red, green, blue, lineno = 0;
+    dbEntryPtr entry;
 
-  static Bool was_here = FALSE;
+    if (serverGeneration != 1)
+	return TRUE;
 
-  if (!was_here)
-    {
-      path = (char*)ALLOCATE_LOCAL(strlen(rgbPath) +5);
-      strcpy(path, rgbPath);
-      strcat(path, ".txt");
-      if (!(rgb = fopen(path, "r")))
-        {
-	   ErrorF( "Couldn't open RGB_DB '%s'\n", rgbPath );
-	   DEALLOCATE_LOCAL(path);
-	   return FALSE;
-	}
+#ifndef __UNIXOS2__
+    fullpath = rgbPath;
+#else
+    fullpath = __XOS2RedirRoot(rgbPath);
+#endif
+    xasprintf(&path, "%s.txt", fullpath);
+    if (!path)
+	return FALSE;
 
-      while(fgets(line, sizeof(line), rgb))
-	{
-	  lineno++;
-	  if (sscanf(line,"%d %d %d %[^\n]\n", &red, &green, &blue, name) == 4)
-	    {
-	      if (red >= 0   && red <= 0xff &&
-		  green >= 0 && green <= 0xff &&
-		  blue >= 0  && blue <= 0xff)
-		{
-		  if ((entry = lookup(name, strlen(name), TRUE)))
-		    {
-		      entry->red   = (red * 65535)   / 255;
-		      entry->green = (green * 65535) / 255;
-		      entry->blue  = (blue  * 65535) / 255;
-		    }
-		}
-	      else
-		ErrorF("Value out of range: %s:%d\n", path, lineno);
-	    }
-	  else if (*line && *line != '#' && *line != '!')
-	    ErrorF("Syntax Error: %s:%d\n", path, lineno);
-	}
-      
-      fclose(rgb);
-      DEALLOCATE_LOCAL(path);
-
-      was_here = TRUE;
+    if (!(rgb = fopen(path, "r"))) {
+#ifdef BUILTIN_RGB
+	LogMessageVerb(X_WARNING, 0,
+			"Could not open RGB file \"%s\"; "
+			"will use built-in copy.\n", path);
+	xfree(path);
+	colorTab = builtinRGBhashTab;
+	return TRUE;
+#else
+	LogMessage(X_ERROR, "Could not open RGB_DB '%s'.\n", path);
+	xfree(path);
+	return FALSE;
+#endif
     }
-  return TRUE;
+
+    colorTab = hashTab;
+    while (fgets(line, sizeof(line), rgb)) {
+	lineno++;
+	if (sscanf(line, RGB_SCANF_FMT, &red, &green, &blue, name) == 4) {
+	    if (red >= 0   && red <= 0xff &&
+		green >= 0 && green <= 0xff &&
+		blue >= 0  && blue <= 0xff) {
+		if ((entry = lookup(name, strlen(name), TRUE))) {
+		    entry->red = red * RGB_SCALE_FACTOR;
+		    entry->green = green * RGB_SCALE_FACTOR;
+		    entry->blue = blue * RGB_SCALE_FACTOR;
+		}
+	    } else {
+		LogMessageVerb(X_WARNING, 0,
+			       "OsInitColors: %s:%d: Bad rgb value: "
+			       "(%d:%d:%d).\n",
+			       path, lineno, red, green, blue);
+	    }
+	} else if (*line && *line != '#' && *line != '!') {
+	    LogMessageVerb(X_WARNING, 0,
+			   "OsInitColors: %s:%d: Syntax error:\n",
+			   path, lineno);
+	    LogMessageVerb(X_WARNING, 0, "\t\"%.*s\"\n",
+			   (int)strlen(line) - 1, line);
+	}
+    }
+
+    fclose(rgb);
+    xfree(path);
+
+    return TRUE;
 }
+
+
 
 Bool
 OsLookupColor(int screen, char *name, unsigned int len, 
     unsigned short *pred, unsigned short *pgreen, unsigned short *pblue)
 {
-  dbEntryPtr entry;
+    dbEntryPtr entry;
 
-  if ((entry = lookup(name, len, FALSE)))
-    {
-      *pred   = entry->red;
-      *pgreen = entry->green;
-      *pblue  = entry->blue;
-      return TRUE;
+    if ((entry = lookup(name, len, FALSE))) {
+	*pred   = entry->red;
+	*pgreen = entry->green;
+	*pblue  = entry->blue;
+	return TRUE;
     }
 
-  return FALSE;
+    return FALSE;
 }
 
-#endif /* USE_RGB_BUILTIN */

@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1992, 1998  The Open Group
 
@@ -25,12 +39,9 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/Xext/bigreq.c,v 3.11 2005/10/14 15:16:11 tsi Exp $ */
 
 #define NEED_EVENTS
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "misc.h"
@@ -39,7 +50,7 @@ from The Open Group.
 #include "extnsionst.h"
 #include <X11/extensions/bigreqstr.h>
 #include "opaque.h"
-#include "modinit.h"
+/* modinit.h not present in static build - symbols provided by extnsionst.h */
 
 #if 0
 static unsigned char XBigReqCode;
@@ -72,18 +83,16 @@ BigReqExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-BigReqResetProc (extEntry)
-    ExtensionEntry	*extEntry;
+BigReqResetProc(ExtensionEntry *extEntry)
 {
 }
 
 static int
-ProcBigReqDispatch (client)
-    register ClientPtr	client;
+ProcBigReqDispatch(ClientPtr client)
 {
     REQUEST(xBigReqEnableReq);
     xBigReqEnableReply rep;
-    register int n;
+    int n;
 
     if (client->swapped) {
 	swaps(&stuff->length, n);

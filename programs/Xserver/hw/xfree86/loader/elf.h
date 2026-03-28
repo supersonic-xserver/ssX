@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elf.h,v 1.18tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elf.h,v 1.17 2003/10/15 16:29:02 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 typedef unsigned int Elf32_Addr;
 typedef unsigned short Elf32_Half;
@@ -44,7 +58,6 @@ typedef long Elf64_Sxword;
 #define EM_486   	6	/* Perhaps disused */
 #define EM_860   	7
 #define EM_MIPS		8
-#define EM_S370		9
 #define EM_MIPS_RS4_BE 10
 #define EM_PARISC      15
 #define EM_SPARC32PLUS 18
@@ -85,8 +98,6 @@ typedef long Elf64_Sxword;
 #define STB_LOCAL  0
 #define STB_GLOBAL 1
 #define STB_WEAK   2
-#define STB_LOPROC 13
-#define STB_HIPROC 15
 
 #define STT_NOTYPE  0
 #define STT_OBJECT  1
@@ -163,7 +174,7 @@ extern Elf32_Dyn _DYNAMIC[];
 #define R_X86_64_GNU_VTINHERIT         250
 #define R_X86_64_GNU_VTENTRY           251
 
-/* SPARC Relocation Types */
+/* sparc Relocation Types */
 #define	R_SPARC_NONE		0
 #define	R_SPARC_8		1
 #define	R_SPARC_16		2
@@ -276,9 +287,8 @@ extern Elf32_Dyn _DYNAMIC[];
 #define R_ALPHA_GLOB_DAT	25	/* Create GOT entry */
 #define R_ALPHA_JMP_SLOT	26	/* Create PLT entry */
 #define R_ALPHA_RELATIVE	27	/* Adjust by program base */
-#define R_ALPHA_BRSGP		28	/* Calc displacement for BRS */
 
-/* IA-64 Relocation Types */
+/* IA-64 relocations.  */
 #define R_IA64_NONE		0x00	/* none */
 #define R_IA64_IMM14		0x21	/* symbol + addend, add imm14 */
 #define R_IA64_IMM22		0x22	/* symbol + addend, add imm22 */
@@ -459,7 +469,7 @@ extern Elf32_Dyn _DYNAMIC[];
 #define R_PPC_SECTOFF_HA	36
 #endif
 
-/* ARM Relocation Types */
+/* ARM relocs.  */
 #define R_ARM_NONE		0	/* No reloc */
 #define R_ARM_PC24		1	/* PC relative 26 bit branch */
 #define R_ARM_ABS32		2	/* Direct 32 bit  */
@@ -496,52 +506,6 @@ extern Elf32_Dyn _DYNAMIC[];
 #define R_ARM_RABS22		253
 #define R_ARM_RPC24		254
 #define R_ARM_RBASE		255
-
-/* MIPS Relocation Types */
-#define R_MIPS_NONE		0
-#define R_MIPS_16		1
-#define R_MIPS_32		2
-#define R_MIPS_ADD		R_MIPS_32
-#define R_MIPS_REL		3
-#define R_MIPS_REL32		R_MIPS_REL
-#define R_MIPS_26		4
-#define R_MIPS_HI16		5
-#define R_MIPS_LO16		6
-#define R_MIPS_GPREL		7
-#define R_MIPS_GPREL16		R_MIPS_GPREL
-#define R_MIPS_LITERAL		8
-#define R_MIPS_GOT		9
-#define R_MIPS_GOT16		R_MIPS_GOT
-#define R_MIPS_PC16		10
-#define R_MIPS_CALL		11
-#define R_MIPS_CALL16		R_MIPS_CALL
-#define R_MIPS_GPREL32		12
-
-#define R_MIPS_SHIFT5		16
-#define R_MIPS_SHIFT6		17
-#define R_MIPS_64		18
-#define R_MIPS_GOT_DISP		19
-#define R_MIPS_GOT_PAGE		20
-#define R_MIPS_GOT_OFST		21
-#define R_MIPS_GOT_HI16		22
-#define R_MIPS_GOT_LO16		23
-#define R_MIPS_SUB		24
-#define R_MIPS_INSERT_A		25
-#define R_MIPS_INSERT_B		26
-#define R_MIPS_DELETE		27
-#define R_MIPS_HIGHER		28
-#define R_MIPS_HIGHEST		29
-#define R_MIPS_CALL_HI16	30
-#define R_MIPS_CALL_LO16	31
-#define R_MIPS_SCN_DISP		32
-#define R_MIPS_REL16		33
-#define R_MIPS_ADD_IMMEDIATE	34
-#define R_MIPS_PJUMP		35
-#define R_MIPS_RELGOT		36
-#define R_MIPS_JALR		37
-
-#define R_MIPS_LOVENDOR		100
-#define R_MIPS_HIVENDOR		127
 
 typedef struct elf32_rel {
     Elf32_Addr r_offset;

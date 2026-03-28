@@ -1,3 +1,11 @@
+/* $Xorg: Args.h,v 1.3 2000/08/17 19:53:27 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,12 +19,12 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Args.h,v 1.3 2005/07/20 00:32:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Args.h,v 1.2 2003/11/16 05:05:20 dawes Exp $ */
 
 #ifndef XNESTARGC_H
 #define XNESTARGS_H
 
-extern const char *xnestDisplayName;           
+extern char *xnestDisplayName;           
 extern Bool xnestSynchronize;
 extern Bool xnestFullGeneration;
 extern int xnestDefaultClass;                   
@@ -31,10 +39,9 @@ extern unsigned int xnestHeight;
 extern int xnestUserGeometry;
 extern int xnestBorderWidth;    
 extern Bool xnestUserBorderWidth;
-extern const char *xnestWindowName;           
+extern char *xnestWindowName;           
 extern int xnestNumScreens;
 extern Bool xnestDoDirectColormaps;
 extern Window xnestParentWindow;
-extern Bool xnestInputEnabled;
 
 #endif /* XNESTARGS_H */

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies). All
  * rights reserved.
  * Copyright (c) 1993, 2010, Oracle and/or its affiliates. All rights reserved.
@@ -73,6 +80,35 @@
 #include <limits.h>
 #endif
 
+/*
+ * Legacy mode stubs for 2009 DIX compatibility
+ * The modern client credential tracking is not available in the legacy ClientRec
+ */
+
+/* In legacy mode, stub out LocalClientCredRec to prevent member access errors */
+#ifndef LocalClientCredRec
+typedef struct _LocalClientCredRecStub {
+    int fieldsSet;
+    pid_t pid;
+} LocalClientCredRecStub;
+#define LocalClientCredRec LocalClientCredRecStub
+#define LCC_PID_SET 1
+#endif
+
+#ifdef SSX_LEGACY_MODE
+/* Stub function for GetLocalClientCreds - returns error indicating credentials unavailable
+ * This is needed because the legacy 2009 DIX does not provide this function */
+static inline int GetLocalClientCreds(void *client, void **lcc) { 
+    if (lcc) *lcc = NULL;
+    return -1; 
+}
+
+/* Stub function for FreeLocalClientCreds - no-op in legacy mode */
+static inline void FreeLocalClientCreds(void *lcc) {
+    (void)lcc;  /* Nothing to free in legacy mode */
+}
+#endif
+
 /**
  * Try to determine a PID for a client from its connection
  * information. This should be called only once when new client has
@@ -97,11 +133,16 @@ DetermineClientPid(struct _Client * client)
     if (client == serverClient)
         return getpid();
 
-    if (GetLocalClientCreds(client, &lcc) != -1) {
+#ifndef SSX_LEGACY_MODE
+    if (GetLocalClientCreds(client, (void **)&lcc) != -1) {
         if (lcc->fieldsSet & LCC_PID_SET)
             pid = lcc->pid;
         FreeLocalClientCreds(lcc);
     }
+#else
+    /* Legacy mode: cannot determine PID from credentials */
+    /* lcc remains NULL, pid stays -1 */
+#endif
 
     return pid;
 }
@@ -267,7 +308,10 @@ DetermineClientCmd(pid_t pid, const char **cmdname, const char **cmdargs)
 void
 ReserveClientIds(struct _Client *client)
 {
-#ifdef CLIENTIDS
+#ifdef SSX_LEGACY_MODE
+    /* clientIds tracking not available in legacy mode */
+    (void)client;
+#else
     if (client == NullClient)
         return;
 
@@ -287,7 +331,7 @@ ReserveClientIds(struct _Client *client)
            (unsigned long) client->clientAsMask,
            client->clientIds->cmdname ? client->clientIds->cmdname : "NULL",
            client->clientIds->cmdargs ? client->clientIds->cmdargs : "NULL");
-#endif                          /* CLIENTIDS */
+#endif
 }
 
 /**
@@ -299,7 +343,10 @@ ReserveClientIds(struct _Client *client)
 void
 ReleaseClientIds(struct _Client *client)
 {
-#ifdef CLIENTIDS
+#ifdef SSX_LEGACY_MODE
+    /* clientIds tracking not available in legacy mode */
+    (void)client;
+#else
     if (client == NullClient)
         return;
 
@@ -317,7 +364,7 @@ ReleaseClientIds(struct _Client *client)
     free((void *) client->clientIds->cmdargs);  /* const char * */
     free(client->clientIds);
     client->clientIds = NULL;
-#endif                          /* CLIENTIDS */
+#endif
 }
 
 /**
@@ -332,6 +379,7 @@ ReleaseClientIds(struct _Client *client)
  *
  * @see DetermineClientPid
  */
+#ifndef SSX_LEGACY_MODE
 pid_t
 GetClientPid(struct _Client *client)
 {
@@ -343,6 +391,16 @@ GetClientPid(struct _Client *client)
 
     return client->clientIds->pid;
 }
+#else
+/* Stub for legacy mode - clientIds not available in 2009 DIX */
+pid_t
+GetClientPid(struct _Client *client)
+{
+    if (client == NullClient)
+        return -1;
+    return -1;  /* Cannot determine PID in legacy mode */
+}
+#endif
 
 /**
  * Get cached command name string of a client.
@@ -358,6 +416,7 @@ GetClientPid(struct _Client *client)
  *
  * @see DetermineClientCmd
  */
+#ifndef SSX_LEGACY_MODE
 const char *
 GetClientCmdName(struct _Client *client)
 {
@@ -369,6 +428,16 @@ GetClientCmdName(struct _Client *client)
 
     return client->clientIds->cmdname;
 }
+#else
+/* Stub for legacy mode - clientIds not available in 2009 DIX */
+const char *
+GetClientCmdName(struct _Client *client)
+{
+    if (client == NullClient)
+        return NULL;
+    return NULL;  /* Cannot determine command name in legacy mode */
+}
+#endif
 
 /**
  * Get cached command arguments string of a client.
@@ -384,6 +453,7 @@ GetClientCmdName(struct _Client *client)
  *
  * @see DetermineClientCmd
  */
+#ifndef SSX_LEGACY_MODE
 const char *
 GetClientCmdArgs(struct _Client *client)
 {
@@ -395,3 +465,13 @@ GetClientCmdArgs(struct _Client *client)
 
     return client->clientIds->cmdargs;
 }
+#else
+/* Stub for legacy mode - clientIds not available in 2009 DIX */
+const char *
+GetClientCmdArgs(struct _Client *client)
+{
+    if (client == NullClient)
+        return NULL;
+    return NULL;  /* Cannot determine command args in legacy mode */
+}
+#endif

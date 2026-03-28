@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_dri.c,v 1.34tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_dri.c,v 1.34 2004/12/10 16:07:02 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 2000 VA Linux Systems Inc., Fremont, California.
@@ -35,8 +49,16 @@
 
 #include "xf86PciInfo.h"
 #include "xf86Pci.h"
+#define PSZ 8
+#include "cfb.h"
+#undef PSZ
+#include "cfb16.h"
+#include "cfb32.h"
 
 #include "miline.h"
+
+
+
 
 #include "mga_bios.h"
 #include "mga_reg.h"
@@ -49,6 +71,10 @@
 #define _XF86DRI_SERVER_
 #include "GL/glxtokens.h"
 #include "sarea.h"
+
+
+
+
 
 #include "GL/glxtokens.h"
 

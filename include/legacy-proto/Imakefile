@@ -1,0 +1,75 @@
+XCOMM $XFree86: xc/include/Imakefile,v 3.32 2007/09/23 20:46:16 tsi Exp $
+#define IHaveSubdirs
+#define PassCDebugFlags /**/
+
+#if BuildGlxExt || BuildGLXLibrary
+GLXDIR = GL
+#endif
+
+#if BuildDPSLibrary
+DPSDIR = DPS
+#endif
+
+SUBDIRS = bitmaps extensions fonts $(GLXDIR) $(DPSDIR)
+
+HEADERS = DECkeysym.h \
+	HPkeysym.h \
+	Sunkeysym.h \
+	X.h \
+	XF86keysym.h \
+	XWDFile.h \
+	Xalloca.h \
+	Xarch.h \
+	Xatom.h \
+	Xdefs.h \
+	Xfuncproto.h \
+	Xfuncs.h \
+	Xmd.h \
+	Xos.h \
+	Xos_r.h \
+	Xosdefs.h \
+	Xpoll.h \
+	Xproto.h \
+	Xprotostr.h \
+	Xthreads.h \
+	ap_keysym.h \
+	keysym.h \
+	keysymdef.h \
+	Xw32defs.h \
+	Xwinsock.h
+
+all::
+
+BuildIncludes($(HEADERS),X11,..)
+
+#if BuildLibraries
+InstallMultipleFlags($(HEADERS),$(INCDIR)/X11,$(INSTINCFLAGS))
+#endif
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+InstallDriverSDKNonExecFile(X.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(XF86keysym.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xalloca.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xarch.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xdefs.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xfuncproto.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xfuncs.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xmd.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xosdefs.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xproto.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(Xprotostr.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(keysym.h,$(DRIVERSDKINCLUDEDIR)/X11)
+InstallDriverSDKNonExecFile(keysymdef.h,$(DRIVERSDKINCLUDEDIR)/X11)
+
+#if BuildGlxExt || BuildGLXLibrary
+XCOMM For the Linux/OpenGL base standard
+#if LinkGLToUsrInclude && AlternateIncRoot
+install::
+	MakeDir($(DESTDIR)$(SYSTEMUSRINCDIR))
+	-$(RM) $(DESTDIR)$(SYSTEMUSRINCDIR)/GL
+	@if [ ! -d $(DESTDIR)$(SYSTEMUSRINCDIR)/GL ]; then \
+		set -x; $(LN) $(INCDIR)/GL $(DESTDIR)$(SYSTEMUSRINCDIR)/GL; \
+	fi
+#endif
+#endif

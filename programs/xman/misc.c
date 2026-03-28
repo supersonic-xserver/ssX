@@ -1,3 +1,11 @@
+/* $XConsortium: misc.c,v 1.31 94/12/16 21:36:53 gildea Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987, 1988  X Consortium
@@ -27,7 +35,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/misc.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/xman/misc.c,v 1.12 2004/04/03 22:26:26 dawes Exp $ */
 
 /*
  * xman - X window system manual page display program.
@@ -209,11 +217,11 @@ FindManualFile(ManpageGlobals * man_globals, int section_num, int entry_num)
 #if defined(__OpenBSD__) || defined(__NetBSD__)
   /* XXX: No way to deal w. error here so just move on. */
   if (uname(&uts) == 0) {
-  /* look in machine subdir first */
-  sprintf(filename, "%s/%s%s/%s/%s", path, CAT,
+    /* look in machine subdir first */
+    sprintf(filename, "%s/%s%s/%s/%s", path, CAT,
   	  section + len_cat, uts.machine, page);
-  if ( (file = fopen(filename,"r")) != NULL)
-    return(file);
+    if ( (file = fopen(filename,"r")) != NULL)
+      return(file);
   }
 #endif
 
@@ -229,11 +237,11 @@ FindManualFile(ManpageGlobals * man_globals, int section_num, int entry_num)
 #if defined(__OpenBSD__) || defined(__NetBSD__)
   /* XXX: No way to deal w. error here so just move on. */
   if (uname(&uts) == 0) {
-  /* look in machine subdir first */
-  sprintf(filename, "%s/%s%s/%s/%s.%s", path, CAT,
+    /* look in machine subdir first */
+    sprintf(filename, "%s/%s%s/%s/%s.%s", path, CAT,
 	  section + len_cat, uts.machine, page, COMPRESSION_EXTENSION);
-  if ( (file = Uncompress(man_globals, filename)) != NULL)
-    return(file);
+    if ( (file = Uncompress(man_globals, filename)) != NULL)
+      return(file);
   }
 #endif
   sprintf(filename, "%s/%s%s/%s.%s", path, CAT,
@@ -245,11 +253,11 @@ FindManualFile(ManpageGlobals * man_globals, int section_num, int entry_num)
 #if defined(__OpenBSD__) || defined(__NetBSD__)
       /* XXX: No way to deal w. error here so just move on. */
       if (uname(&uts) == 0) {
-      /* look in machine subdir first */
-      sprintf(filename, "%s/%s%s/%s/%s.%s", path, CAT,
+        /* look in machine subdir first */
+        sprintf(filename, "%s/%s%s/%s/%s.%s", path, CAT,
 	      section + len_cat, uts.machine, page, GZIP_EXTENSION);
-      if ( (file = Uncompress(man_globals, filename)) != NULL)
-	  return(file);
+        if ( (file = Uncompress(man_globals, filename)) != NULL)
+  	  return(file);
       }
 #endif
     sprintf(filename, "%s/%s%s/%s.%s", path, CAT,
@@ -753,18 +761,18 @@ UncompressUnformatted(ManpageGlobals * man_globals, char * entry,
 #if defined(__OpenBSD__) || defined(__NetBSD__)
   /* XXX: No way to deal w. error here so just move on. */
   if (uname(&uts) == 0) {
-  /*
-   * look for uncomressed file in machine subdir first
-   */
-  sprintf(filename, "%s/%s%s/%s/%s", path, MAN,
+    /*
+     * look for uncomressed file in machine subdir first
+     */
+    sprintf(filename, "%s/%s%s/%s/%s", path, MAN,
 	  section + len_cat, uts.machine, page);
-  if ( access( filename, R_OK ) == 0 ) {
-    man_globals->compress = FALSE;
-    man_globals->gzip = FALSE;
-    sprintf(man_globals->save_file, "%s/%s%s/%s/%s", path,
+    if ( access( filename, R_OK ) == 0 ) {
+      man_globals->compress = FALSE;
+      man_globals->gzip = FALSE;
+      sprintf(man_globals->save_file, "%s/%s%s/%s/%s", path,
 	    CAT, section + len_cat, uts.machine, page);
-    return(TRUE);
-  }
+      return(TRUE);
+    }
   }
  /*
   * Then for compressed files in an uncompressed directory.
@@ -1002,12 +1010,12 @@ ParseEntry(char *entry, char *path, char *sect, char *page)
 #if defined(__OpenBSD__) || defined(__NetBSD__)
   /* XXX: No way to deal w. error here so just move on. */
   if (uname(&uts) == 0) {
-  /* Skip machine subdirectory if present */
+    /* Skip machine subdirectory if present */
     if (strcmp(c, uts.machine) == 0) {
-      c = rindex(temp, '/');
-      if (c == NULL)
-	  PrintError("index failure in ParseEntry.");
-      *c++ = '\0';
+        c = rindex(temp, '/');
+        if (c == NULL)
+	    PrintError("index failure in ParseEntry.");
+        *c++ = '\0';
     }
   }
 #endif

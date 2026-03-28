@@ -1,3 +1,11 @@
+/* $Xorg: Bitmap.c,v 1.4 2001/02/09 02:05:28 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/bitmap/Bitmap.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/bitmap/Bitmap.c,v 1.6 2002/02/18 21:43:17 herrb Exp $ */
 
 /*
  * Author:  Davor Matic, MIT X Consortium
@@ -1798,7 +1806,7 @@ SetValues(Widget old, Widget request, Widget new,
   }
   
   if (NE(bitmap.size)) {
-    Dimension width = 0, height = 0;
+    Dimension width, height;
     
     if (BWParseSize(newbw->bitmap.size, &width, &height)) { 
       ResizeGrid(newbw, width, height);

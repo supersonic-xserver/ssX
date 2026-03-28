@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
   Copyright 1993, 1998  The Open Group
 
@@ -25,47 +39,12 @@
   from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xwin/InitInput.c,v 1.16 2007/01/23 18:03:12 tsi Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include "win.h"
-#ifdef XWIN_CLIPBOARD
-# include "../../Xext/xf86miscproc.h"
-#endif
-#include "dixstruct.h"
+#include "xf86miscproc.h"
 
-
-/*
- * Local function prototypes
- */
-
-#ifdef XWIN_CLIPBOARD
-DISPATCH_PROC(winProcEstablishConnection);
-DISPATCH_PROC(winProcQueryTree);
-DISPATCH_PROC(winProcSetSelectionOwner);
-#endif
-
-
-/*
- * Local global declarations
- */
-
-CARD32				g_c32LastInputEventTime = 0;
-
-
-/*
- * References to external symbols
- */
-
-#ifdef HAS_DEVWINDOWS
-extern int			g_fdMessageQueue;
-#endif
-extern Bool			g_fXdmcpEnabled;
-#ifdef XWIN_CLIPBOARD
-extern winDispatchProcPtr	winProcEstablishConnectionOrig;
-extern winDispatchProcPtr	winProcQueryTreeOrig;
-#endif
+CARD32		g_c32LastInputEventTime = 0;
 
 
 /* Called from dix/devices.c */
@@ -78,7 +57,7 @@ extern winDispatchProcPtr	winProcQueryTreeOrig;
  */
 
 Bool
-LegalModifier (unsigned int uiKey, DeviceIntPtr pDevice)
+LegalModifier (unsigned int uiKey, DevicePtr pDevice)
 {
   return TRUE;
 }
@@ -116,29 +95,12 @@ TimeSinceLastInputEvent ()
 
 /* See Porting Layer Definition - p. 17 */
 void
-InitInput (int argc, char *argv[])
+InitInput (const int argc, const char *argv[])
 {
   DeviceIntPtr		pMouse, pKeyboard;
 
 #if CYGDEBUG
-  winDebug ("InitInput\n");
-#endif
-
-#ifdef XWIN_CLIPBOARD
-  /*
-   * Wrap some functions at every generation of the server.
-   */
-  if (InitialVector[2] != winProcEstablishConnection)
-    {
-      winProcEstablishConnectionOrig = InitialVector[2];
-      InitialVector[2] = winProcEstablishConnection;
-    }
-  if (g_fXdmcpEnabled
-      && ProcVector[X_QueryTree] != winProcQueryTree)
-    {
-      winProcQueryTreeOrig = ProcVector[X_QueryTree];
-      ProcVector[X_QueryTree] = winProcQueryTree;
-    }
+  ErrorF ("InitInput\n");
 #endif
 
   pMouse = AddInputDevice (winMouseProc, TRUE);
@@ -153,7 +115,6 @@ InitInput (int argc, char *argv[])
   /* Initialize the mode key states */
   winInitializeModeKeyStates ();
 
-#ifdef HAS_DEVWINDOWS
   /* Only open the windows message queue device once */
   if (g_fdMessageQueue == WIN_FD_INVALID)
     {
@@ -169,9 +130,61 @@ InitInput (int argc, char *argv[])
       /* Add the message queue as a device to wait for in WaitForSomething */
       AddEnabledDevice (g_fdMessageQueue);
     }
+
+#if 0
+  {
+    MiscExtReturn ret;
+    pointer kbd;
+    
+#if 0
+    if ((kbd = MiscExtCreateStruct(MISC_KEYBOARD)) == (pointer) 0)
+      return BadAlloc;
+#else
+    kbd = MiscExtCreateStruct (MISC_KEYBOARD);
+#endif
+    
+    MiscExtSetKbdValue(kbd, MISC_KBD_TYPE,	        0);
+    MiscExtSetKbdValue(kbd, MISC_KBD_RATE,		0);
+    MiscExtSetKbdValue(kbd, MISC_KBD_DELAY,		0);
+    MiscExtSetKbdValue(kbd, MISC_KBD_SERVNUMLOCK,	0);
+    
+    switch ((ret = MiscExtApply (kbd, MISC_KEYBOARD)))
+      {
+      case MISC_RET_SUCCESS:      break;
+      case MISC_RET_BADVAL:
+      case MISC_RET_BADKBDTYPE:
+      default:
+	ErrorF ("Unexpected return from MiscExtApply(KEYBOARD) = %d\n", ret);
+      }
+  }
 #endif
 
 #if CYGDEBUG
-  winDebug ("InitInput - returning\n");
+  ErrorF ("InitInput - returning\n");
 #endif
 }
+
+
+#ifdef XTESTEXT1
+void
+XTestGenerateEvent (int dev_type, int keycode, int keystate,
+		    int mousex, int mousey)
+{
+  ErrorF ("XTestGenerateEvent\n");
+}
+
+
+void
+XTestGetPointerPos (short *fmousex, short *fmousey)
+{
+  ErrorF ("XTestGetPointerPos\n");
+}
+
+
+void
+XTestJumpPointer (int jx, int jy, int dev_type)
+{
+  ErrorF ("XTestJumpPointer\n");
+}
+#endif
+

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftraster.h                                                             */
 /*                                                                         */
 /*    The FreeType glyph rasterizer (specification).                       */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used        */
@@ -16,14 +23,16 @@
 /***************************************************************************/
 
 
-#ifndef FTRASTER_H
-#define FTRASTER_H
+#ifndef __FTRASTER_H__
+#define __FTRASTER_H__
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
 
-#include <freetype/ftimage.h>
+#include <ft2build.h>
+#include FT_CONFIG_CONFIG_H
+#include FT_IMAGE_H
+
+
+FT_BEGIN_HEADER
 
 
   /*************************************************************************/
@@ -33,18 +42,12 @@
   /*                                                                       */
 /* #define _STANDALONE_ */
 
-#ifndef FT_EXPORT_VAR
-#define FT_EXPORT_VAR( x )  extern x
-#endif
-
   FT_EXPORT_VAR( const FT_Raster_Funcs )  ft_standard_raster;
 
-#ifdef __cplusplus
-  }
-#endif
 
+FT_END_HEADER
 
-#endif /* FTRASTER_H */
+#endif /* __FTRASTER_H__ */
 
 
 /* END */

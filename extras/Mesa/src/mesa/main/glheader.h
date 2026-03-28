@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file glheader.h
  * Top-most include file.
  *
@@ -20,9 +27,9 @@
 
 /*
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.2
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -85,16 +92,18 @@
 #endif
 
 #if !defined(OPENSTEP) && (defined(__WIN32__) && !defined(__CYGWIN__)) && !defined(BUILD_FOR_SNAP)
-#  pragma warning( disable : 4068 ) /* unknown pragma */
-#  pragma warning( disable : 4710 ) /* function 'foo' not inlined */
-#  pragma warning( disable : 4711 ) /* function 'foo' selected for automatic inline expansion */
-#  pragma warning( disable : 4127 ) /* conditional expression is constant */
-#  if defined(MESA_MINWARN)
-#    pragma warning( disable : 4244 ) /* '=' : conversion from 'const double ' to 'float ', possible loss of data */
-#    pragma warning( disable : 4018 ) /* '<' : signed/unsigned mismatch */
-#    pragma warning( disable : 4305 ) /* '=' : truncation from 'const double ' to 'float ' */
-#    pragma warning( disable : 4550 ) /* 'function' undefined; assuming extern returning int */
-#    pragma warning( disable : 4761 ) /* integral size mismatch in argument; conversion supplied */
+#  if !defined(__GNUC__) /* mingw environment */
+#    pragma warning( disable : 4068 ) /* unknown pragma */
+#    pragma warning( disable : 4710 ) /* function 'foo' not inlined */
+#    pragma warning( disable : 4711 ) /* function 'foo' selected for automatic inline expansion */
+#    pragma warning( disable : 4127 ) /* conditional expression is constant */
+#    if defined(MESA_MINWARN)
+#      pragma warning( disable : 4244 ) /* '=' : conversion from 'const double ' to 'float ', possible loss of data */
+#      pragma warning( disable : 4018 ) /* '<' : signed/unsigned mismatch */
+#      pragma warning( disable : 4305 ) /* '=' : truncation from 'const double ' to 'float ' */
+#      pragma warning( disable : 4550 ) /* 'function' undefined; assuming extern returning int */
+#      pragma warning( disable : 4761 ) /* integral size mismatch in argument; conversion supplied */
+#    endif
 #  endif
 #  if defined(_MSC_VER) && defined(BUILD_GL32) /* tag specify we're building mesa as a DLL */
 #    define GLAPI __declspec(dllexport)
@@ -211,6 +220,46 @@ typedef struct tagPIXELFORMATDESCRIPTOR PIXELFORMATDESCRIPTOR, *PPIXELFORMATDESC
 #include <GL/internal/glcore.h>
 
 
+/* XXX temporary hack - remove when glext.h is updated */
+#ifndef GL_ARB_half_float_pixel
+#define GL_ARB_half_float_pixel 1
+#define GL_HALF_FLOAT_ARB 0x140B
+typedef GLushort GLhalfARB;
+#endif
+
+/* XXX temporary hack - remove when glext.h is updated */
+#ifndef GL_ARB_texture_float
+#define GL_ARB_texture_float 1
+#define GL_TEXTURE_RED_TYPE_ARB             0x9000
+#define GL_TEXTURE_GREEN_TYPE_ARB           0x9001
+#define GL_TEXTURE_BLUE_TYPE_ARB            0x9002
+#define GL_TEXTURE_ALPHA_TYPE_ARB           0x9003
+#define GL_TEXTURE_LUMINANCE_TYPE_ARB       0x9004
+#define GL_TEXTURE_INTENSITY_TYPE_ARB       0x9005
+#define GL_TEXTURE_DEPTH_TYPE_ARB           0x9006
+#define GL_UNSIGNED_NORMALIZED_ARB          0x9007
+#define GL_RGBA32F_ARB                      0x8814
+#define GL_RGB32F_ARB                       0x8815
+#define GL_ALPHA32F_ARB                     0x8816
+#define GL_INTENSITY32F_ARB                 0x8817
+#define GL_LUMINANCE32F_ARB                 0x8818
+#define GL_LUMINANCE_ALPHA32F_ARB           0x8819
+#define GL_RGBA16F_ARB                      0x881A
+#define GL_RGB16F_ARB                       0x881B
+#define GL_ALPHA16F_ARB                     0x881C
+#define GL_INTENSITY16F_ARB                 0x881D
+#define GL_LUMINANCE16F_ARB                 0x881E
+#define GL_LUMINANCE_ALPHA16F_ARB           0x881F
+#endif
+
+/* XXX temporary hack - remove when glext.h is updated */
+#ifndef GL_POINT_SPRITE_COORD_ORIGIN
+#define GL_POINT_SPRITE_COORD_ORIGIN        0x10000
+#define GL_LOWER_LEFT                       0x10001
+#define GL_UPPER_LEFT                       0x10002
+#endif
+
+
 
 /* Disable unreachable code warnings for Watcom C++ */
 #ifdef	__WATCOMC__
@@ -228,7 +277,7 @@ typedef struct tagPIXELFORMATDESCRIPTOR PIXELFORMATDESCRIPTOR, *PPIXELFORMATDESC
  * than GNU C
  */
 #ifndef _ASMAPI
-#if !defined( __GNUC__ ) && !defined( VMS ) && !defined( __INTEL_COMPILER )
+#if defined(WIN32) && !defined(BUILD_FOR_SNAP)/* was: !defined( __GNUC__ ) && !defined( VMS ) && !defined( __INTEL_COMPILER )*/
 #define _ASMAPI __cdecl
 #else
 #define _ASMAPI
@@ -282,6 +331,12 @@ typedef struct tagPIXELFORMATDESCRIPTOR PIXELFORMATDESCRIPTOR, *PPIXELFORMATDESC
 #else
 #  define ASSERT(X)
 #endif
+
+
+#if !defined __GNUC__ || __GNUC__ < 3
+# define __builtin_expect(x, y) x
+#endif
+
 
 
 /**

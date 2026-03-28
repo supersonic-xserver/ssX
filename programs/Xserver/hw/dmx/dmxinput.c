@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxinput.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxinput.c,v 1.1 2004/06/30 20:21:39 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001,2002 Red Hat Inc., Durham, North Carolina.
  *
@@ -57,7 +64,7 @@ Bool LegalModifier(unsigned int key, DevicePtr pDev)
 /** Called from dix/main.c on each server generation to initialize
  * inputs.  All the work is done in dmxInputInit.  \see
  * dmxInputInit() */
-void InitInput(const int argc, const char **argv)
+void InitInput(int argc, char **argv)
 {
     int          i;
     DMXInputInfo *dmxInput;

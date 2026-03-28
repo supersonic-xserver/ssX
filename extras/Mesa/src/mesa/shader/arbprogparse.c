@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/shader/arbprogparse.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/shader/arbprogparse.c,v 1.3 2004/12/17 16:38:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Mesa 3-D graphics library
  * Version:  6.1
@@ -843,7 +850,6 @@ parse_texcoord_num (GLcontext * ctx, GLubyte ** inst,
       _mesa_set_program_error (ctx, Program->Position,
                                "Invalid texture unit index");
       _mesa_error (ctx, GL_INVALID_OPERATION, "Invalid texture unit index");
-      *coord = 0;
       return 1;
    }
 

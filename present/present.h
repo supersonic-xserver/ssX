@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,11 +30,28 @@
 #ifndef _PRESENT_H_
 #define _PRESENT_H_
 
+#include <stdint.h>
 #include <X11/extensions/presentproto.h>
 #include "randrstr.h"
 #include "presentext.h"
 
-typedef struct present_vblank present_vblank_rec, *present_vblank_ptr;
+/* Note: RRCrtcPtr and present_vblank_ptr are defined in present_priv.h */
+/* Include present_priv.h after this header when needed */
+
+/* PresentFlipReason enum - added in xorg-server 1.20 for flip decision refactor */
+#ifndef PRESENT_FLIP_REASON_DEFINED
+#define PRESENT_FLIP_REASON_DEFINED
+typedef enum {
+    PRESENT_FLIP_REASON_UNKNOWN = 0,
+    PRESENT_FLIP_REASON_BUFFER_FORMAT,
+    PRESENT_FLIP_REASON_SOURCE_SIZE,
+    PRESENT_FLIP_REASON_DEST_X,
+    PRESENT_FLIP_REASON_DEST_Y,
+    PRESENT_FLIP_REASON_NO_FENCE,
+    PRESENT_FLIP_REASON_NOT_FLIPPING,
+    PRESENT_FLIP_REASON_SCREEN_PRIVATE
+} PresentFlipReason;
+#endif
 
 /* Return the current CRTC for 'window'.
  */
@@ -83,7 +107,12 @@ typedef Bool (*present_flip_ptr) (RRCrtcPtr crtc,
 typedef void (*present_unflip_ptr) (ScreenPtr screen,
                                     uint64_t event_id);
 
-#define PRESENT_SCREEN_INFO_VERSION        0
+#define PRESENT_SCREEN_INFO_VERSION        1
+
+/* Extended check_flip function pointer for xorg-server 1.20+ */
+typedef Bool (*present_check_flip2_ptr) (RRCrtcPtr crtc, WindowPtr window, 
+                                         PixmapPtr pixmap, Bool sync_flip,
+                                         PresentFlipReason *reason);
 
 typedef struct present_screen_info {
     uint32_t                            version;
@@ -97,6 +126,8 @@ typedef struct present_screen_info {
     present_check_flip_ptr              check_flip;
     present_flip_ptr                    flip;
     present_unflip_ptr                  unflip;
+    /* Version 1+ fields */
+    present_check_flip2_ptr             check_flip2;
 
 } present_screen_info_rec, *present_screen_info_ptr;
 

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Flags.c,v 1.28 2006/08/09 20:53:15 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -26,7 +34,55 @@
  * 
  */
 /*
- * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/*
+ * Copyright © 2003, 2004, 2005 David H. Dawes.
+ * Copyright © 2003, 2004, 2005 X-Oz Technologies.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -34,30 +90,42 @@
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
+ * 
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions, and the following disclaimer.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *  2. Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ * 
+ *  3. The end-user documentation included with the redistribution,
+ *     if any, must include the following acknowledgment: "This product
+ *     includes software developed by X-Oz Technologies
+ *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
+ *     appear in the software itself, if and wherever such third-party
+ *     acknowledgments normally appear.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *  4. Except as contained in this notice, the name of X-Oz
+ *     Technologies shall not be used in advertising or otherwise to
+ *     promote the sale, use or other dealings in this Software without
+ *     prior written authorization from X-Oz Technologies.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 
 /* View/edit this file with tab stops set to 4 */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include "xf86Parser.h"
 #include "xf86tokens.h"
@@ -69,6 +137,7 @@ extern LexRec val;
 static xf86ConfigSymTabRec ServerFlagsTab[] =
 {
 	{ENDSECTION, "endsection"},
+	{IDENTIFIER, "identifier"},
 	{NOTRAPSIGNALS, "notrapsignals"},
 	{DONTZAP, "dontzap"},
 	{DONTZOOM, "dontzoom"},
@@ -86,11 +155,12 @@ static xf86ConfigSymTabRec ServerFlagsTab[] =
 	{-1, ""},
 };
 
-#define CLEANUP xf86freeFlags
+#define CLEANUP xf86freeFlagsList
 
 XF86ConfFlagsPtr
 xf86parseFlagsSection (void)
 {
+	int has_ident = FALSE;
 	int token;
 	parsePrologue (XF86ConfFlagsPtr, XF86ConfFlagsRec)
 
@@ -104,9 +174,17 @@ xf86parseFlagsSection (void)
 		case COMMENT:
 			ptr->flg_comment = xf86addComment(ptr->flg_comment, val.str);
 			break;
+		case IDENTIFIER:
+			if (xf86getSubToken (&(ptr->flg_comment)) != STRING)
+				Error (QUOTE_MSG, "Identifier");
+			if (has_ident)
+				Error (MULTIPLE_MSG, "Identifier");
+			ptr->flg_identifier = xf86configStrdup(val.str);
+			has_ident = TRUE;
+			break;
 			/* 
-			 * these old keywords are turned into standard generic options.
-			 * we fall through here on purpose
+			 * These old keywords are turned into standard generic options.
+			 * We fall through here on purpose.
 			 */
 		case DEFAULTLAYOUT:
 			strvalue = TRUE;
@@ -132,25 +210,23 @@ xf86parseFlagsSection (void)
 					if (ServerFlagsTab[i].token == token)
 					{
 						char *valstr = NULL;
-						/* can't use strdup because it calls malloc */
-						tmp = xf86configStrdup (ServerFlagsTab[i].name);
+						tmp = ServerFlagsTab[i].name;
 						if (hasvalue)
 						{
 							tokentype = xf86getSubToken(&(ptr->flg_comment));
 							if (strvalue) {
 								if (tokentype != STRING)
 									Error (QUOTE_MSG, tmp);
-								valstr = val.str;
+								valstr = xf86configStrdup(val.str);
 							} else {
 								if (tokentype != NUMBER)
 									Error (NUMBER_MSG, tmp);
-								valstr = xf86confmalloc(16);
-								if (valstr)
-									sprintf(valstr, "%d", val.num);
+								xf86configAsprintf(&valstr, "%d", val.num);
 							}
 						}
 						ptr->flg_option_lst = xf86addNewOption
 							(ptr->flg_option_lst, tmp, valstr);
+						xf86conffree(valstr);
 					}
 					i++;
 				}
@@ -179,56 +255,71 @@ xf86parseFlagsSection (void)
 #undef CLEANUP
 
 void
-xf86printServerFlagsSection (FILE * f, XF86ConfFlagsPtr flags)
+xf86printServerFlagsSection (FILE * f, XF86ConfFlagsPtr ptr)
 {
-	XF86OptionPtr p;
-
-	if ((!flags) || (!flags->flg_option_lst))
+	if ((!ptr) || (!ptr->flg_option_lst))
 		return;
-	p = flags->flg_option_lst;
-	fprintf (f, "Section \"ServerFlags\"\n");
-	if (flags->flg_comment)
-		fprintf (f, "%s", flags->flg_comment);
-	xf86printOptionList(f, p, 1);
-	fprintf (f, "EndSection\n\n");
+	while (ptr) {
+		fprintf (f, "Section \"ServerFlags\"\n");
+		if (ptr->flg_comment)
+			fprintf (f, "%s", ptr->flg_comment);
+		if (ptr->flg_identifier)
+			fprintf (f, "\tIdentifier   \"%s\"\n", ptr->flg_identifier);
+		xf86printOptionList(f, ptr->flg_option_lst, 1);
+		fprintf (f, "EndSection\n\n");
+		ptr = ptr->list.next;
+	}
 }
 
 static XF86OptionPtr
-addNewOption2 (XF86OptionPtr head, char *name, char *val, int used)
+addNewOption2 (XF86OptionPtr head, const char *name, const char *val, int used)
 {
 	XF86OptionPtr new, old = NULL;
+	
 
-	/* Don't allow duplicates, free old strings */
-	if (head != NULL && (old = xf86findOption(head, name)) != NULL) {
-		new = old;
-		xf86conffree(new->opt_name);
-		xf86conffree(new->opt_val);
-	}
-	else
+	/* Don't allow duplicates */
+ 	if (head != NULL && (old = xf86findOption(head, name)) != NULL) {
+ 		new = old;
+		xf86conffree(old->opt_name);
+		TestFree(old->opt_val);
+		TestFree(old->opt_comment);
+ 	} else {
 		new = xf86confcalloc (1, sizeof (XF86OptionRec));
-	new->opt_name = name;
-	new->opt_val = val;
-	new->opt_used = used;
-
-	if (old)
-		return head;
-	return ((XF86OptionPtr) xf86addListItem ((glp) head, (glp) new));
+ 		new->list.next = NULL;
+ 	}
+ 	new->opt_name = xf86configStrdup(name);
+ 	new->opt_val = xf86configStrdup(val);
+ 	new->opt_used = used;
+	
+  	if (old == NULL)
+		return ((XF86OptionPtr) xf86addListItem ((glp) head, (glp) new));
+ 	else 
+ 		return head;
 }
 
+/*
+ * Duplicate name/value strings with config's alloc.  This is for internal
+ * and public use.
+ */
 XF86OptionPtr
-xf86addNewOption (XF86OptionPtr head, char *name, char *val)
+xf86addNewOption (XF86OptionPtr head, const char *name, const char *val)
 {
 	return addNewOption2(head, name, val, 0);
 }
 
 void
-xf86freeFlags (XF86ConfFlagsPtr flags)
+xf86freeFlagsList (XF86ConfFlagsPtr ptr)
 {
-	if (flags == NULL)
-		return;
-	xf86optionListFree (flags->flg_option_lst);
-	TestFree(flags->flg_comment);
-	xf86conffree (flags);
+	XF86ConfFlagsPtr prev;
+
+	while (ptr) {
+		xf86optionListFree (ptr->flg_option_lst);
+		TestFree(ptr->flg_comment);
+		TestFree(ptr->flg_identifier);
+		prev = ptr;
+		ptr = ptr->list.next;
+		xf86conffree (prev);
+	}
 }
 
 XF86OptionPtr
@@ -281,7 +372,7 @@ xf86optionValue(XF86OptionPtr opt)
 }
 
 XF86OptionPtr
-xf86newOption(char *name, char *value)
+xf86newOption(const char *name, const char *value)
 {
 	XF86OptionPtr opt;
 
@@ -291,8 +382,8 @@ xf86newOption(char *name, char *value)
 
 	opt->opt_used = 0;
 	opt->list.next = 0;
-	opt->opt_name = name;
-	opt->opt_val = value;
+	opt->opt_name = xf86configStrdup(name);
+	opt->opt_val = xf86configStrdup(value);
 
 	return opt;
 }
@@ -306,9 +397,9 @@ xf86nextOption(XF86OptionPtr list)
 }
 
 /*
- * this function searches the given option list for the named option and
- * returns a pointer to the option rec if found. If not found, it returns
- * NULL
+ * This function searches the given option list for the named option and
+ * returns a pointer to the option rec if found.  The last occurrence of the
+ * named option is returned.  If not found, it returns NULL.
  */
 
 XF86OptionPtr
@@ -430,22 +521,27 @@ xf86optionListMerge (XF86OptionPtr head, XF86OptionPtr tail)
 char *
 xf86uLongToString(unsigned long i)
 {
-	char *s;
-	int l;
+	char *s = NULL;
 
-	l = (int)(ceil(log10((double)i) + 2.5));
-	s = xf86confmalloc(l);
-	if (!s)
-		return NULL;
-	sprintf(s, "%lu", i);
+	xf86configAsprintf(&s, "%lu", i);
 	return s;
+}
+
+void
+xf86debugListOptions(XF86OptionPtr Options)
+{
+	while (Options) {
+		ErrorF("Option: %s Value: %s\n",Options->opt_name,Options->opt_val);
+		Options = Options->list.next;
+	}
 }
 
 XF86OptionPtr
 xf86parseOption(XF86OptionPtr head)
 {
-	XF86OptionPtr option, cnew, old;
-	char *name, *comment = NULL;
+	XF86OptionPtr option;
+	char *name, *value = NULL, *comment = NULL;
+	const char *comment2 = NULL;
 	int token;
 
 	if ((token = xf86getSubToken(&comment)) != STRING) {
@@ -455,39 +551,25 @@ xf86parseOption(XF86OptionPtr head)
 		return (head);
 	}
 
-	name = val.str;
+	name = xf86configStrdup(val.str);
 	if ((token = xf86getSubToken(&comment)) == STRING) {
-		option = xf86newOption(name, val.str);
-		option->opt_comment = comment;
+		value = xf86configStrdup(val.str);
 		if ((token = xf86getToken(NULL)) == COMMENT)
-			option->opt_comment = xf86addComment(option->opt_comment, val.str);
+			comment2 = val.str;
 		else
 			xf86unGetToken(token);
-	}
-	else {
-		option = xf86newOption(name, NULL);
-		option->opt_comment = comment;
-		if (token == COMMENT)
-			option->opt_comment = xf86addComment(option->opt_comment, val.str);
-		else
-			xf86unGetToken(token);
-	}
-
-	old = NULL;
-
-	/* Don't allow duplicates */
-	if (head != NULL && (old = xf86findOption(head, name)) != NULL) {
-		cnew = old;
-		xf86conffree(option->opt_name);
-		TestFree(option->opt_val);
-		TestFree(option->opt_comment);
-		xf86conffree(option);
-	}
+	} else if (token == COMMENT)
+		comment2 = val.str;
 	else
-		cnew = option;
-	
-	if (old == NULL)
-		return ((XF86OptionPtr)xf86addListItem((glp)head, (glp)cnew));
+		xf86unGetToken(token);
+
+	head = xf86addNewOption(head, name, value);
+	option = xf86findOption(head, name);
+	xf86conffree(name);
+	TestFree(value);
+	option->opt_comment = comment;
+	if (comment2)
+		option->opt_comment = xf86addComment(option->opt_comment, comment2);
 
 	return (head);
 }

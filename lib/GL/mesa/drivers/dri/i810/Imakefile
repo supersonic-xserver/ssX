@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/i810/Imakefile,v 1.8tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/i810/Imakefile,v 1.7 2004/12/20 22:52:38 alanh Exp $
 
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
@@ -84,7 +84,7 @@ XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/i810/Imakefile,v 1.8tsi Exp $
 
       DEFINES = $(ALLOC_DEFINES) $(DRI_DEFINES) $(MESA_ASM_DEFINES)
 
-     INCLUDES = $(MESA_INCLUDES) $(DRI_INCLUDES)
+     INCLUDES = $(X_INCLUDES) $(MESA_INCLUDES) $(DRI_INCLUDES)
 
       DRMOBJS = $(GLXLIBSRC)/dri/drm/xf86drm.o \
 		$(GLXLIBSRC)/dri/drm/xf86drmHash.o \
@@ -95,8 +95,7 @@ XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/i810/Imakefile,v 1.8tsi Exp $
          OBJS = $(DRMOBJS) $(COREMESAOBJS) \
 		$(MESA_ASM_OBJS) $(COMMONOBJS) $(I810OBJS) 
 
-REQUIREDLIBS = MathLibrary $(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) \
-	       $(XLIB) ExpatLibrary
+REQUIREDLIBS = MathLibrary $(LDPRELIB) $(GLXLIB) $(XONLYLIB) ExpatLibrary
 
 #include <Library.tmpl>
 
@@ -118,3 +117,4 @@ InstallLibrary($(SOPROF_LIBNAME),$(MODULEDIR)/dri)
 #endif
 
 DependTarget()
+

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xmag/CutPaste.h,v 1.1 1999/03/07 11:41:12 dawes Exp $ */
+/* $XFree86: xc/programs/xmag/CutPaste.h,v 1.2 2004/02/13 23:58:53 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 1999 The XFree86 Project, Inc.
  * All rights reserved.

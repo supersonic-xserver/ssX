@@ -1,0 +1,13 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/ipaq/Imakefile,v 1.2 2005/10/14 15:16:28 tsi Exp $
+
+#include "../TinyX.tmpl"
+
+SRCS = 	ipaq.c
+
+OBJS = 	ipaq.o
+
+INCLUDES = $(TINYXINCLUDES) -I$(TINYXSRC)/fbdev -I$(TINYXSRC)/pcmcia
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(ipaq,$(OBJS))
+DependTarget()

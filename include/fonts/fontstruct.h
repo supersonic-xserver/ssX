@@ -1,4 +1,11 @@
-/* $XFree86: xc/include/fonts/fontstruct.h,v 3.4tsi Exp $ */
+/* $Xorg: fontstruct.h,v 1.3 2000/08/18 04:05:44 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -21,12 +28,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/include/fonts/fontstruct.h,v 3.4 2001/01/17 17:53:26 dawes Exp $ */
 
 #ifndef FONTSTR_H
 #define FONTSTR_H
 
 #include <X11/Xproto.h>
-#include <X11/fonts/font.h>
+#include "font.h"
 #include <X11/Xfuncproto.h>
 #include <X11/Xdefs.h>
 
@@ -289,6 +297,6 @@ typedef struct _FPEFunctions {
 				(pi)->ink_maxbounds.characterWidth)
 #define FONT_MAX_WIDTH(pi)	(FONT_MAX_RIGHT(pi) - FONT_MIN_LEFT(pi))
 
-#include <X11/fonts/fontproto.h>
+#include "fontproto.h"
 
 #endif				/* FONTSTR_H */

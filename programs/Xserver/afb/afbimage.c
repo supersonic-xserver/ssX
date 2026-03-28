@@ -1,6 +1,20 @@
-/* $XFree86: xc/programs/Xserver/afb/afbimage.c,v 3.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbimage.c,v 3.3 2001/10/28 03:32:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#include <X11/X.h>
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include "X.h"
 #include "windowstr.h"
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -11,8 +25,13 @@
 #include "mfb.h"
 
 void
-afbPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y, int width,
-	    int height, int leftPad, int format, char *pImage)
+afbPutImage(pDraw, pGC, depth, x, y, width, height, leftPad, format, pImage)
+	DrawablePtr pDraw;
+	GCPtr pGC;
+	int depth, x, y, width, height;
+	int leftPad;
+	int format;
+	char *pImage;
 {
 	PixmapPtr pPixmap;
 
@@ -76,17 +95,17 @@ afbPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y, int width,
 		ScreenPtr pScreen = pDraw->pScreen;
 		int widthSrc;
 		int start_srcshift;
-		int b;
-		int dstshift;
-		int shift_step;
-		PixelType dst;
-		PixelType srcbits;
-		PixelType *pdst;
-		PixelType *psrc;
+		register int b;
+		register int dstshift;
+		register int shift_step;
+		register PixelType dst;
+		register PixelType srcbits;
+		register PixelType *pdst;
+		register PixelType *psrc;
 		int start_bit;
-		int nl;
-		int h;
-		int d;
+		register int nl;
+		register int h;
+		register int d;
 		int sizeDst;
 		PixelType *pdstBase;
 		int widthDst;
@@ -145,8 +164,12 @@ afbPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y, int width,
 }
 
 void
-afbGetImage(DrawablePtr pDrawable, int sx, int sy, int width, int height,
-	    unsigned int format, unsigned long planemask, char *pdstLine)
+afbGetImage(pDrawable, sx, sy, width, height, format, planemask, pdstLine)
+	DrawablePtr pDrawable;
+	int sx, sy, width, height;
+	unsigned int format;
+	unsigned long planemask;
+	char *pdstLine;
 {
 	BoxRec box;
 	DDXPointRec ptSrc;
@@ -196,20 +219,20 @@ afbGetImage(DrawablePtr pDrawable, int sx, int sy, int width, int height,
 		int sizeSrc;
 		int sizeDst;
 		int widthDst;
-		PixelType *psrc;
-		PixelType *pdst;
-		PixelType dst;
-		PixelType srcbits;
-		int d;
-		int b;
-		int dstshift;
-		int shift_step;
-		int start_endbit;
+		register PixelType *psrc;
+		register PixelType *pdst;
+		register PixelType dst;
+		register PixelType srcbits;
+		register int d;
+		register int b;
+		register int dstshift;
+		register int shift_step;
+		register int start_endbit;
 		int start_startbit;
-		int end_endbit = 0;
-		int start_dstshift;
-		int nl;
-		int h;
+		register int end_endbit = 0;
+		register int start_dstshift;
+		register int nl;
+		register int h;
 		int nlmiddle;
 
 		widthDst = PixmapWidthInPadUnits(width, pDrawable->depth);

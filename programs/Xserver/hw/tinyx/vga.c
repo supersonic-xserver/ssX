@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,7 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/vga.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/vga.c,v 1.3 2004/10/26 22:14:57 tsi Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -67,14 +74,24 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef __GNUC__
+#define inline __inline__
+#endif
 #include "vga.h"
 #include <stdio.h>
 
 #ifdef linux
-#include <sys/io.h>
+#ifdef __i386__
+#define extern static
+#include <asm/io.h>
+#undef extern
 
 #define _VgaInb(r)	inb(r)
 #define _VgaOutb(v,r)	outb(v,r)
+#else
+#define _VgaInb(r)	0
+#define _VgaOutb(v,r)	
+#endif
 
 #define _VgaByteAddr(a)	((VGAVOL8 *) (a))
 #define _VgaBytePort(a)	(a)

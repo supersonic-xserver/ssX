@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file enable.c
  * Enable/disable/query GL capabilities.
  */
@@ -26,7 +33,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/extras/Mesa/src/mesa/main/enable.c,v 1.3 2004/10/26 22:07:39 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/main/enable.c,v 1.4 2004/12/10 15:30:12 alanh Exp $ */
 
 #include "glheader.h"
 #include "context.h"

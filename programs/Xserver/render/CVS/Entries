@@ -1,0 +1,17 @@
+/Imakefile/1.1.1.7/Fri Mar 18 13:13:16 2005//Tnetbsd-5-2-3-RELEASE
+/animcur.c/1.1.1.2/Fri Mar  5 14:29:44 2004//Tnetbsd-5-2-3-RELEASE
+/filter.c/1.1.1.1/Fri Feb 28 13:20:27 2003//Tnetbsd-5-2-3-RELEASE
+/glyph.c/1.1.1.4/Fri Mar 18 13:13:16 2005//Tnetbsd-5-2-3-RELEASE
+/glyphstr.h/1.1.1.3/Fri Mar 18 13:13:16 2005//Tnetbsd-5-2-3-RELEASE
+/miglyph.c/1.1.1.3/Sat Jun  9 15:10:23 2001//Tnetbsd-5-2-3-RELEASE
+/miindex.c/1.4/Fri Feb 28 22:28:36 2003//Tnetbsd-5-2-3-RELEASE
+/mipict.c/1.1.1.6/Fri Mar  5 14:29:44 2004//Tnetbsd-5-2-3-RELEASE
+/mipict.h/1.1.1.4/Fri Feb 28 13:20:27 2003//Tnetbsd-5-2-3-RELEASE
+/mirect.c/1.1.1.4/Sat Jan 19 15:14:34 2002//Tnetbsd-5-2-3-RELEASE
+/mitrap.c/1.1.1.1/Fri Feb 28 13:20:27 2003//Tnetbsd-5-2-3-RELEASE
+/mitri.c/1.1.1.1/Fri Feb 28 13:20:27 2003//Tnetbsd-5-2-3-RELEASE
+/picture.c/1.1.1.6/Fri Mar 18 13:13:16 2005//Tnetbsd-5-2-3-RELEASE
+/picture.h/1.1.1.6/Fri Mar  5 14:29:44 2004//Tnetbsd-5-2-3-RELEASE
+/picturestr.h/1.1.1.6/Fri Mar 18 13:13:16 2005//Tnetbsd-5-2-3-RELEASE
+/render.c/1.3/Wed Jan 10 17:08:24 2007//Tnetbsd-5-2-3-RELEASE
+D/tiny////

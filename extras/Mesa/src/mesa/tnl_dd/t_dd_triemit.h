@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef DO_DEBUG_VERTS
 #define DO_DEBUG_VERTS 0
 #endif 
@@ -15,6 +22,13 @@ do {									\
 			      : "0" (vertsize),				\
 			        "D" ((long)vb),				\
 			        "S" ((long)v) );			\
+} while (0)
+#elif defined(HAVE_LE32_VERTS)
+#define COPY_DWORDS( j, vb, vertsize, v )				\
+do {									\
+   for ( j = 0 ; j < vertsize ; j++ )					\
+      vb[j] = CPU_TO_LE32(((GLuint *)v)[j]);				\
+   vb += vertsize;							\
 } while (0)
 #else
 #define COPY_DWORDS( j, vb, vertsize, v )				\

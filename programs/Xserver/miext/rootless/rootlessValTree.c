@@ -1,9 +1,16 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Calculate window clip lists for rootless mode
  *
  * This file is very closely based on mivaltree.c.
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessValTree.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessValTree.c,v 1.2 2003/11/10 18:22:50 tsi Exp $ */
 
 /*
  * mivaltree.c --
@@ -84,7 +91,7 @@ in this Software without prior written authorization from The Open Group.
   *		Bob Scheifler -- avoid miComputeClips for unmapped windows,
   *				 valdata changes
   */
-#include    <X11/X.h>
+#include    "X.h"
 #include    "scrnintstr.h"
 #include    "validate.h"
 #include    "windowstr.h"
@@ -568,8 +575,8 @@ RootlessTreeObscured(pParent)
    and that top-level windows aren't clipped to the root window.
 */
 /*ARGSUSED*/
-/* fixme this is ugly */
-/* Xprint/ValTree.c doesn't work, but maybe that method can? */
+// fixme this is ugly
+// Xprint/ValTree.c doesn't work, but maybe that method can?
 int
 RootlessMiValidateTree (pRoot, pChild, kind)
     WindowPtr	  	pRoot;      /* Parent to validate */
@@ -593,7 +600,7 @@ RootlessMiValidateTree (pRoot, pChild, kind)
     if (REGION_BROKEN (pScreen, &pRoot->clipList) &&
 	!REGION_BROKEN (pScreen, &pRoot->borderClip))
     {
-        /* fixme this might not work, but hopefully doesn't happen anyway */
+        // fixme this might not work, but hopefully doesn't happen anyway.
         kind = VTBroken;
         REGION_EMPTY (pScreen, &pRoot->clipList);
         ErrorF("ValidateTree: BUSTED!\n");

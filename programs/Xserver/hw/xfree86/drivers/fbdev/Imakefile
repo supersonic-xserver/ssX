@@ -1,7 +1,7 @@
 XCOMM
 XCOMM This is an Imakefile for the fbdev driver.  
 XCOMM
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/fbdev/Imakefile,v 1.14tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/fbdev/Imakefile,v 1.12 2004/06/01 00:17:00 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -56,16 +56,18 @@ SRCS = fbdev.c
 OBJS = fbdev.o
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
            -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
-           -I$(SERVERSRC)/afb -I$(SERVERSRC)/fb \
+           -I$(SERVERSRC)/afb \
+           -I$(SERVERSRC)/fb -I$(XF86SRC)/xaa \
            -I$(XF86SRC)/fbdevhw -I$(XF86SRC)/ramdac \
            -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-           -I$(XF86SRC)/rac -I$(SERVERSRC)/Xext \
-           -I$(SERVERSRC)/include -I$(SERVERSRC)/miext/shadow \
-           -I$(SERVERSRC)/render
+           -I$(XF86SRC)/rac \
+           -I$(SERVERSRC)/Xext -I$(XF86SRC)/xf24_32bpp\
+           -I$(FONTINCSRC) -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	   -I$(SERVERSRC)/miext/shadow -I$(EXTINCSRC) -I$(SERVERSRC)/render
 #endif
 
 DEFINES = FbdevDefines

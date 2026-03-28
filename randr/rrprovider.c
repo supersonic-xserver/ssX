@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2012 Red Hat Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,6 +30,7 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
 #include "swaprep.h"
 
 RESTYPE RRProviderType;
@@ -33,7 +41,9 @@ RESTYPE RRProviderType;
 void
 RRProviderInitErrorValue(void)
 {
+#ifndef SSX_LEGACY_MODE
     SetResourceTypeErrorValue(RRProviderType, RRErrorBase + BadRRProvider);
+#endif
 }
 
 #define ADD_PROVIDER(_pScreen) do {                                 \
@@ -72,10 +82,11 @@ ProcRRGetProviders (ClientPtr client)
 
     if (pScrPriv->provider)
         total_providers++;
-    xorg_list_for_each_entry(iter, &pScreen->output_slave_list, output_head) {
+    xorg_list_for_each_entry(iter, &pScreen->output_slave_list, output_slave_list) {
         pScrPriv = rrGetScrPriv(iter);
         total_providers += pScrPriv->provider ? 1 : 0;
     }
+#ifndef SSX_LEGACY_MODE
     xorg_list_for_each_entry(iter, &pScreen->offload_slave_list, offload_head) {
         pScrPriv = rrGetScrPriv(iter);
         total_providers += pScrPriv->provider ? 1 : 0;
@@ -84,6 +95,7 @@ ProcRRGetProviders (ClientPtr client)
         pScrPriv = rrGetScrPriv(iter);
         total_providers += pScrPriv->provider ? 1 : 0;
     }
+#endif
 
     pScrPriv = rrGetScrPriv(pScreen);
 
@@ -116,15 +128,17 @@ ProcRRGetProviders (ClientPtr client)
 
         providers = (RRProvider *)extra;
         ADD_PROVIDER(pScreen);
-        xorg_list_for_each_entry(iter, &pScreen->output_slave_list, output_head) {
+        xorg_list_for_each_entry(iter, &pScreen->output_slave_list, output_slave_list) {
             ADD_PROVIDER(iter);
         }
+#ifndef SSX_LEGACY_MODE
         xorg_list_for_each_entry(iter, &pScreen->offload_slave_list, offload_head) {
             ADD_PROVIDER(iter);
         }
         xorg_list_for_each_entry(iter, &pScreen->unattached_list, unattached_head) {
             ADD_PROVIDER(iter);
         }
+#endif
     }
 
     if (client->swapped) {
@@ -184,10 +198,12 @@ ProcRRGetProviderInfo (ClientPtr client)
         rep.nAssociatedProviders++;
     if (provider->output_source)
         rep.nAssociatedProviders++;
-    xorg_list_for_each_entry(provscreen, &pScreen->output_slave_list, output_head)
+    xorg_list_for_each_entry(provscreen, &pScreen->output_slave_list, output_slave_list)
         rep.nAssociatedProviders++;
+#ifndef SSX_LEGACY_MODE
     xorg_list_for_each_entry(provscreen, &pScreen->offload_slave_list, offload_head)
         rep.nAssociatedProviders++;
+#endif
 
     rep.length = (pScrPriv->numCrtcs + pScrPriv->numOutputs +
                   (rep.nAssociatedProviders * 2) + bytes_to_int32(rep.nameLength));
@@ -237,7 +253,7 @@ ProcRRGetProviderInfo (ClientPtr client)
             swapl(&prov_cap[i]);
         i++;
     }
-    xorg_list_for_each_entry(provscreen, &pScreen->output_slave_list, output_head) {
+    xorg_list_for_each_entry(provscreen, &pScreen->output_slave_list, output_slave_list) {
         pScrProvPriv = rrGetScrPriv(provscreen);
         providers[i] = pScrProvPriv->provider->id;
         if (client->swapped)
@@ -247,6 +263,7 @@ ProcRRGetProviderInfo (ClientPtr client)
             swapl(&prov_cap[i]);
         i++;
     }
+#ifndef SSX_LEGACY_MODE
     xorg_list_for_each_entry(provscreen, &pScreen->offload_slave_list, offload_head) {
         pScrProvPriv = rrGetScrPriv(provscreen);
         providers[i] = pScrProvPriv->provider->id;
@@ -257,6 +274,7 @@ ProcRRGetProviderInfo (ClientPtr client)
             swapl(&prov_cap[i]);
         i++;
     }
+#endif
 
 
     memcpy(name, provider->name, rep.nameLength);
@@ -325,8 +343,10 @@ ProcRRSetProviderOffloadSink(ClientPtr client)
     VERIFY_RR_PROVIDER(stuff->provider, provider, DixReadAccess);
     if (!(provider->capabilities & RR_Capability_SourceOffload))
         return BadValue;
+#ifndef SSX_LEGACY_MODE
     if (!provider->pScreen->isGPU)
         return BadValue;
+#endif
 
     if (stuff->sink_provider) {
         VERIFY_RR_PROVIDER(stuff->sink_provider, sink_provider, DixReadAccess);
@@ -409,7 +429,7 @@ RRProviderDestroyResource (void *value, XID pid)
 Bool
 RRProviderInit(void)
 {
-    RRProviderType = CreateNewResourceType(RRProviderDestroyResource, "Provider");
+    RRProviderType = CreateNewResourceType(RRProviderDestroyResource);
     if (!RRProviderType)
         return FALSE;
 

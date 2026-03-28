@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1988, 1998  The Open Group
 
@@ -25,6 +39,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/mi/miwideline.h,v 1.13 2006/01/09 15:00:38 dawes Exp $ */
 
 /* Author:  Keith Packard, MIT X Consortium */
 
@@ -153,6 +168,24 @@ typedef struct _LineFace {
     } \
 }
 
+extern void miFillPolyHelper(
+    DrawablePtr /*pDrawable*/,
+    GCPtr /*pGC*/,
+    unsigned long /*pixel*/,
+    SpanDataPtr /*spanData*/,
+    int /*y*/,
+    int /*overall_height*/,
+    PolyEdgePtr /*left*/,
+    PolyEdgePtr /*right*/,
+    int /*left_count*/,
+    int /*right_count*/
+);
+extern int miRoundJoinFace(
+    LineFacePtr /*face*/,
+    PolyEdgePtr /*edge*/,
+    Bool * /*leftEdge*/
+);
+
 extern void miRoundJoinClip(
     LineFacePtr /*pLeft*/,
     LineFacePtr /*pRight*/,
@@ -169,6 +202,30 @@ extern int miRoundCapClip(
     Bool /*isInt*/,
     PolyEdgePtr /*edge*/,
     Bool * /*leftEdge*/
+);
+
+extern void miLineProjectingCap(
+    DrawablePtr /*pDrawable*/,
+    GCPtr /*pGC*/,
+    unsigned long /*pixel*/,
+    SpanDataPtr /*spanData*/,
+    LineFacePtr /*face*/,
+    Bool /*isLeft*/,
+    double /*xorg*/,
+    double /*yorg*/,
+    Bool /*isInt*/
+);
+
+extern SpanDataPtr miSetupSpanData(
+    GCPtr /*pGC*/,
+    SpanDataPtr /*spanData*/,
+    int /*npt*/
+);
+
+extern void miCleanupSpanData(
+    DrawablePtr /*pDrawable*/,
+    GCPtr /*pGC*/,
+    SpanDataPtr /*spanData*/
 );
 
 extern int miPolyBuildEdge(double x0, double y0, double k, int dx, int dy,

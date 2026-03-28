@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1driver.h                                                             */
 /*                                                                         */
 /*    High-level Type 1 driver interface (specification).                  */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,24 +23,23 @@
 /***************************************************************************/
 
 
-#ifndef T1DRIVER_H
-#define T1DRIVER_H
-
-#include <freetype/internal/ftdriver.h>
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#ifndef __T1DRIVER_H__
+#define __T1DRIVER_H__
 
 
-  FT_EXPORT_VAR( const FT_Driver_Class )  t1_driver_class;
-
-#ifdef __cplusplus
-  }
-#endif
+#include <ft2build.h>
+#include FT_INTERNAL_DRIVER_H
 
 
-#endif /* T1DRIVER_H */
+FT_BEGIN_HEADER
+
+
+  FT_EXPORT_VAR( const FT_Driver_ClassRec )  t1_driver_class;
+
+
+FT_END_HEADER
+
+#endif /* __T1DRIVER_H__ */
 
 
 /* END */

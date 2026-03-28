@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999  The XFree86 Project
  *
  * Permission is hereby granted, free of charge, to any person obtaining a 
@@ -21,7 +28,7 @@
  * 
  * Written by David Bateman
  */
-/* $XFree86: xc/programs/xgamma/xgamma.c,v 1.3 1999/03/21 07:35:38 dawes Exp $ */
+/* $XFree86: xc/programs/xgamma/xgamma.c,v 1.4 1999/04/25 10:02:57 dawes Exp $ */
 
 #include <stdio.h>
 #include <errno.h>

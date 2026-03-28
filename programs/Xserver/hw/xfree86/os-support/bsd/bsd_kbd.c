@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kbd.c,v 1.9 2004/01/07 17:05:28 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 2002 by The XFree86 Project, Inc.
@@ -10,7 +24,7 @@
  */
 
 #define NEED_EVENTS
-#include <X11/X.h>
+#include "X.h"
 
 #include "compiler.h"
 
@@ -496,8 +510,8 @@ OpenKeyboard(InputInfoPtr pInfo)
                break;
 #endif
            default:
-               printWsType("Unknown", pInfo->name);
-               break;
+	       printWsType("Unknown", pInfo->name);
+	       break;
        }
     }
 #endif

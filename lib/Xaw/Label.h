@@ -1,3 +1,19 @@
+/* $Xorg: Label.h,v 1.4 2001/02/09 02:03:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Label.h,v 1.8 2006/01/09 14:59:01 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Label.h,v 1.7 2001/12/14 19:54:40 dawes Exp $ */
 
 #ifndef _XawLabel_h
 #define _XawLabel_h
@@ -66,6 +82,7 @@ SOFTWARE.
  cursor		     Cursor		Cursor		None
  cursorName	     Cursor		String		NULL
  destroyCallback     Callback		XtCallbackList	NULL
+ encoding	     Encoding		UnsignedChar	XawTextEncoding8bit
  font		     Font		XFontStruct*	XtDefaultFont
  foreground	     Foreground		Pixel		XtDefaultForeground
  height		     Height		Dimension	text height
@@ -86,11 +103,13 @@ SOFTWARE.
 
 */
 
-#define XawTextEncoding8bit    XtTextEncoding8bit
-#define XawTextEncodingChar2b  XtTextEncodingChar2b
+#define XawTextEncoding8bit	0
+#define XawTextEncodingChar2b	1
 
 #define XtNleftBitmap "leftBitmap"
 #define XtCLeftBitmap "LeftBitmap"
+#define XtNencoding "encoding"
+#define XtCEncoding "Encoding"
 
 #ifndef XtNfontSet
 #define XtNfontSet "fontSet"

@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_KbdMap.c,v 1.4 2006/02/20 00:14:37 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_KbdMap.c,v 1.1 2002/10/11 01:40:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Slightly modified xf86KbdLnx.c which is
@@ -6,8 +20,8 @@
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -18,18 +32,10 @@
 #include "xf86_OSlib.h"
 #include "xf86Xinput.h"
 #include "xf86OSKbd.h"
-#include <linux/keyboard.h>
-#undef KEY_F13
-#undef KEY_F14
-#undef KEY_F15
-#undef KEY_F16
-#undef KEY_F17
-#undef KEY_XFER
-#undef KEY_UNKNOWN
 #include "atKeynames.h"
 
 #include "xf86Keymap.h"
-#include <X11/DECkeysym.h>
+#include "DECkeysym.h"
 
 #include "lnx_kbd.h"
 
@@ -112,6 +118,8 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
   pKeySyms->minKeyCode = MIN_KEYCODE;
   pKeySyms->maxKeyCode = MAX_KEYCODE; 
 }
+
+#include <linux/keyboard.h>
 
 static KeySym linux_to_x[256] = {
 	NoSymbol,	NoSymbol,	NoSymbol,	NoSymbol,
@@ -287,7 +295,7 @@ readKernelMapping(InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
   }
   else {
     k = map+GLYPHS_PER_KEY;
-    maxkey = NUM_AT2LNX - 1;
+    maxkey = NUM_AT2LNX;
   }
 
   for (i = 0; i < maxkey; ++i)

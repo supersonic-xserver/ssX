@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993, 1998  The Open Group
 
@@ -26,10 +40,7 @@ from The Open Group.
 
 */
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/mi/migc.c,v 1.10 2005/03/28 02:51:10 dawes Exp $ */
 
 #include "scrnintstr.h"
 #include "gcstruct.h"
@@ -38,17 +49,14 @@ from The Open Group.
 #include "migc.h"
 
 /* ARGSUSED */
-_X_EXPORT void
-miChangeGC(pGC, mask)
-    GCPtr           pGC;
-    unsigned long   mask;
+void
+miChangeGC(GCPtr pGC, unsigned long mask)
 {
     return;
 }
 
-_X_EXPORT void
-miDestroyGC(pGC)
-    GCPtr           pGC;
+void
+miDestroyGC(GCPtr pGC)
 {
     if (pGC->pRotatedPixmap)
 	(*pGC->pScreen->DestroyPixmap) (pGC->pRotatedPixmap);
@@ -61,9 +69,8 @@ miDestroyGC(pGC)
  * create a private op array for a gc
  */
 
-_X_EXPORT GCOpsPtr
-miCreateGCOps(prototype)
-    GCOpsPtr        prototype;
+GCOpsPtr
+miCreateGCOps(GCOpsPtr prototype)
 {
     GCOpsPtr        ret;
 
@@ -77,18 +84,16 @@ miCreateGCOps(prototype)
     return ret;
 }
 
-_X_EXPORT void
-miDestroyGCOps(ops)
-    GCOpsPtr        ops;
+void
+miDestroyGCOps(GCOpsPtr ops)
 {
     if (ops->devPrivate.val)
 	xfree(ops);
 }
 
 
-_X_EXPORT void
-miDestroyClip(pGC)
-    GCPtr           pGC;
+void
+miDestroyClip(GCPtr pGC)
 {
     if (pGC->clientClipType == CT_NONE)
 	return;
@@ -108,12 +113,8 @@ miDestroyClip(pGC)
     pGC->clientClipType = CT_NONE;
 }
 
-_X_EXPORT void
-miChangeClip(pGC, type, pvalue, nrects)
-    GCPtr           pGC;
-    int             type;
-    pointer         pvalue;
-    int             nrects;
+void
+miChangeClip(GCPtr pGC, int type, pointer pvalue, int nrects)
 {
     (*pGC->funcs->DestroyClip) (pGC);
     if (type == CT_PIXMAP)
@@ -139,9 +140,8 @@ miChangeClip(pGC, type, pvalue, nrects)
     pGC->stateChanges |= GCClipMask;
 }
 
-_X_EXPORT void
-miCopyClip(pgcDst, pgcSrc)
-    GCPtr           pgcDst, pgcSrc;
+void
+miCopyClip(GCPtr pgcDst, GCPtr pgcSrc)
 {
     RegionPtr       prgnNew;
 
@@ -164,19 +164,14 @@ miCopyClip(pgcDst, pgcSrc)
 }
 
 /* ARGSUSED */
-_X_EXPORT void
-miCopyGC(pGCSrc, changes, pGCDst)
-    GCPtr           pGCSrc;
-    unsigned long   changes;
-    GCPtr           pGCDst;
+void
+miCopyGC(GCPtr pGCSrc, unsigned long changes, GCPtr pGCDst)
 {
     return;
 }
 
-_X_EXPORT void
-miComputeCompositeClip(pGC, pDrawable)
-    GCPtr           pGC;
-    DrawablePtr     pDrawable;
+void
+miComputeCompositeClip(GCPtr pGC, DrawablePtr pDrawable)
 {
     ScreenPtr       pScreen;
 

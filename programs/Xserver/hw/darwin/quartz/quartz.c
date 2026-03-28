@@ -1,4 +1,11 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Quartz-specific support for the Darwin X Server
  *
@@ -29,7 +36,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartz.c,v 1.17tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartz.c,v 1.16 2004/07/02 01:30:33 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "quartz.h"
@@ -37,7 +44,7 @@
 #include "quartzAudio.h"
 #include "pseudoramiX.h"
 #define _APPLEWM_SERVER_
-#include <X11/extensions/applewm.h>
+#include "applewm.h"
 #include "applewmExt.h"
 
 // X headers
@@ -118,7 +125,7 @@ Bool DarwinModeSetupScreen(
  */
 void DarwinModeInitOutput(
     int argc,
-    const char **argv )
+    char **argv )
 {
     static unsigned long generation = 0;
 
@@ -146,7 +153,7 @@ void DarwinModeInitOutput(
     // This should be in InitExtensions, but that causes link errors
     // for servers that don't link in pseudoramiX.c.
     if (!noPseudoramiXExtension) {
-        PseudoramiXExtensionInit();
+        PseudoramiXExtensionInit(argc, argv);
     }
 }
 
@@ -157,7 +164,7 @@ void DarwinModeInitOutput(
  */
 void DarwinModeInitInput(
     int argc,
-    const char **argv )
+    char **argv )
 {
     QuartzMessageMainThread(kQuartzServerStarted, NULL, 0);
 

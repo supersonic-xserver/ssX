@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
 Copyright 2003 Eric Anholt
@@ -24,7 +38,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/mesa/src/drv/sis/sis_ctx.c,v 1.3 2000/09/26 15:56:48 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_state.c,v 1.1.1.3 2004/12/10 15:05:42 alanh Exp $ */
 
 /*
  * Authors:
@@ -98,7 +112,9 @@ sisDDAlphaFunc( GLcontext * ctx, GLenum func, GLfloat ref )
 }
 
 static void
-sisDDBlendFunc( GLcontext *ctx, GLenum sfactor, GLenum dfactor )
+sisDDBlendFuncSeparate( GLcontext *ctx, 
+			GLenum sfactorRGB, GLenum dfactorRGB,
+			GLenum sfactorA,   GLenum dfactorA )
 {
    sisContextPtr smesa = SIS_CONTEXT(ctx);
 
@@ -109,7 +125,7 @@ sisDDBlendFunc( GLcontext *ctx, GLenum sfactor, GLenum dfactor )
    /* blending enable */
    current->hwDstSrcBlend = 0x10000;	/* Default destination alpha */
 
-   switch (dfactor)
+   switch (dfactorRGB)
    {
    case GL_ZERO:
       current->hwDstSrcBlend |= SiS_D_ZERO;
@@ -137,7 +153,7 @@ sisDDBlendFunc( GLcontext *ctx, GLenum sfactor, GLenum dfactor )
       break;
    }
 
-   switch (sfactor)
+   switch (sfactorRGB)
    {
    case GL_ZERO:
       current->hwDstSrcBlend |= SiS_S_ZERO;
@@ -439,9 +455,6 @@ sisDDLogicOpCode( GLcontext *ctx, GLenum opcode )
    __GLSiSHardware *prev = &smesa->prev;
    __GLSiSHardware *current = &smesa->current;
 
-   if (!ctx->Color.ColorLogicOpEnabled)
-      return;
-
    current->hwDstSet &= ~MASK_ROP2;
    switch (opcode)
    {
@@ -512,8 +525,8 @@ void sisDDDrawBuffer( GLcontext *ctx, GLenum mode )
     * _DrawDestMask is easier to cope with than <mode>.
     */
    switch ( ctx->Color._DrawDestMask ) {
-   case FRONT_LEFT_BIT:
-   case BACK_LEFT_BIT:
+   case DD_FRONT_LEFT_BIT:
+   case DD_BACK_LEFT_BIT:
       FALLBACK( smesa, SIS_FALLBACK_DRAW_BUFFER, GL_FALSE );
       break;
    default:
@@ -627,51 +640,6 @@ sisDDEnable( GLcontext * ctx, GLenum cap, GLboolean state )
     }
 }
 
-/* =============================================================
- * Pixel functions
- */
-
-static void
-sisDDDrawPixels( GLcontext *ctx,
-		 GLint x, GLint y, GLsizei width, GLsizei height,
-		 GLenum format, GLenum type,
-		 const struct gl_pixelstore_attrib *unpack,
-		 const GLvoid *pixels )
-{
-   sisContextPtr smesa = SIS_CONTEXT(ctx);
-
-   LOCK_HARDWARE();
-   _swrast_DrawPixels( ctx, x, y, width, height, format, type, unpack, pixels );
-   UNLOCK_HARDWARE();
-}
-
-static void
-sisDDReadPixels( GLcontext *ctx,
-		 GLint x, GLint y, GLsizei width, GLsizei height,
-		 GLenum format, GLenum type,
-		 const struct gl_pixelstore_attrib *pack,
-		 GLvoid *pixels )
-{
-   sisContextPtr smesa = SIS_CONTEXT(ctx);
-
-   LOCK_HARDWARE();
-   _swrast_ReadPixels( ctx, x, y, width, height, format, type, pack, 
-		       pixels);
-   UNLOCK_HARDWARE();
-}
-
-static void
-sisDDBitmap( GLcontext *ctx, GLint px, GLint py,
-	     GLsizei width, GLsizei height,
-	     const struct gl_pixelstore_attrib *unpack,
-	     const GLubyte *bitmap )
-{
-   sisContextPtr smesa = SIS_CONTEXT(ctx);
-
-   LOCK_HARDWARE();
-   _swrast_Bitmap( ctx, px, py, width, height, unpack, bitmap );
-   UNLOCK_HARDWARE();
-}
 
 /* =============================================================
  * State initialization, management
@@ -684,9 +652,6 @@ sisUpdateHWState( GLcontext *ctx )
    sisContextPtr smesa = SIS_CONTEXT(ctx);
    __GLSiSHardware *prev = &smesa->prev;
    __GLSiSHardware *current = &smesa->current;
-
-   if (smesa->NewGLState & _NEW_TEXTURE)
-      sisUpdateTextureState( ctx );
 
    /* enable setting 1 */
    if (current->hwCapEnable ^ prev->hwCapEnable) {
@@ -820,7 +785,7 @@ void sisDDInitState( sisContextPtr smesa )
 
    smesa->clearColorPattern = 0;
 
-   smesa->AGPParseSet = MASK_PsTexture1FromB;
+   smesa->AGPParseSet = MASK_PsTexture1FromB | MASK_PsBumpTextureFromC;
    smesa->dwPrimitiveSet = OP_3D_Texture1FromB | OP_3D_TextureBumpFromC;
 
    sisUpdateZStencilPattern( smesa, 1.0, 0 );
@@ -846,15 +811,13 @@ void sisDDInitStateFuncs( GLcontext *ctx )
    ctx->Driver.ClearStencil	 = sisDDClearStencil;
 
    ctx->Driver.AlphaFunc	 = sisDDAlphaFunc;
-   ctx->Driver.Bitmap		 = sisDDBitmap;
-   ctx->Driver.BlendFunc	 = sisDDBlendFunc;
+   ctx->Driver.BlendFuncSeparate = sisDDBlendFuncSeparate;
    ctx->Driver.ColorMask	 = sisDDColorMask;
    ctx->Driver.CullFace		 = sisDDCullFace;
    ctx->Driver.DepthMask	 = sisDDDepthMask;
    ctx->Driver.DepthFunc	 = sisDDDepthFunc;
    ctx->Driver.DepthRange	 = sisDDDepthRange;
    ctx->Driver.DrawBuffer	 = sisDDDrawBuffer;
-   ctx->Driver.DrawPixels	 = sisDDDrawPixels;
    ctx->Driver.Enable		 = sisDDEnable;
    ctx->Driver.FrontFace	 = sisDDFrontFace;
    ctx->Driver.Fogfv		 = sisDDFogfv;
@@ -864,16 +827,17 @@ void sisDDInitStateFuncs( GLcontext *ctx )
    ctx->Driver.PolygonMode	 = NULL;
    ctx->Driver.PolygonStipple	 = NULL;
    ctx->Driver.ReadBuffer	 = NULL;
-   ctx->Driver.ReadPixels	 = sisDDReadPixels;
    ctx->Driver.RenderMode	 = NULL;
    ctx->Driver.Scissor		 = sisDDScissor;
    ctx->Driver.ShadeModel	 = sisDDShadeModel;
    ctx->Driver.Viewport		 = sisDDViewport;
 
-  /* Pixel path fallbacks.
-   */
-  ctx->Driver.Accum		 = _swrast_Accum;
-  ctx->Driver.CopyPixels	 = _swrast_CopyPixels;
+   /* Pixel path fallbacks. */
+   ctx->Driver.Accum		 = _swrast_Accum;
+   ctx->Driver.Bitmap		 = _swrast_Bitmap;
+   ctx->Driver.CopyPixels	 = _swrast_CopyPixels;
+   ctx->Driver.DrawPixels	 = _swrast_DrawPixels;
+   ctx->Driver.ReadPixels	 = _swrast_ReadPixels;
 
   /* Swrast hooks for imaging extensions:
    */

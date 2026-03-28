@@ -1,8 +1,8 @@
 XCOMM ---------------------------------------------------------------------
 XCOMM Imake rules for building libraries, programs, scripts, and data files
-XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.154tsi Exp $
+XCOMM rules:  $XFree86: xc/config/cf/Imake.rules,v 3.142 2005/01/23 17:05:23 tsi Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -382,7 +382,7 @@ XCOMM special target for clearmake					@@\
 #endif /* RemoveFiles */
 
 #if RemoveObsoleteFiles
-#define RemoveOldFile(new,old,dir)					\
+#define RemoveOldFile(new,old,dir)					@@\
 	@if [ -f new ]; then set -x; \					@@\
 		RemoveFile($(DESTDIR)dir/old); \			@@\
 	fi
@@ -1139,12 +1139,7 @@ CplusplusProgramTargetHelper(program,SRCS10,OBJS10,DEPLIBS10,locallib,syslib)
 #ifndef ServerTargetWithFlags
 #define	ServerTargetWithFlags(server,subdirs,objects,libs,syslibs,flags) @@\
 AllTarget(ProgramTargetName(server))					@@\
-Concat(server,DEPS) = objects libs					@@\
-									@@\
-$(Concat(server,DEPS)):: subdirs					@@\
-	$(_NULLCMD_)							@@\
-									@@\
-ProgramTargetName(server): objects libs					@@\
+ProgramTargetName(server): subdirs objects libs				@@\
 	MoveToBakFile($@)						@@\
 	LinkRule($@,$(LDOPTIONS),objects,libs $(LDLIBS) syslibs) @@\
 									@@\
@@ -1308,9 +1303,6 @@ install::								@@\
 InstallTarget(install.ln,Concat(llib-l,libname.ln),$(INSTLIBFLAGS),dest)
 #endif /* InstallLintLibrary */
 
-#ifndef OsInstallManPageLongBase
-#define OsInstallManPageLongBase(file,destdir,dest,suffix) /**/
-#endif
 
 #if !CompressManPages
 /*
@@ -1326,14 +1318,9 @@ BuildInstallHtmlManPage(file,dest,$(MANSUFFIX))				@@\
 									@@\
 CppManTarget(file,$(EXTRAMANDEFS))					@@\
 									@@\
-InstallNamedTarget(install.man,file.$(MANNEWSUFFIX),$(INSTMANFLAGS),destdir,dest.$(MANSUFFIX)) @@\
-									@@\
-OsInstallManPageLongBase(file,destdir,dest,$(MANSUFFIX))
+InstallNamedTarget(install.man,file.$(MANNEWSUFFIX),$(INSTMANFLAGS),destdir,dest.$(MANSUFFIX))
 #endif /* InstallManPageLong */
 
-#ifndef OsInstallManPageAliasesBase
-#define OsInstallManPageAliasesBase(file,destdir,suffix,aliases) /**/
-#endif
 
 /*
  * InstallManPageAliases - generate rules to install manual page aliases.
@@ -1349,9 +1336,7 @@ install.man::								@@\
 	for i in aliases; do (set -x; \					@@\
 	$(INSTALL) $(INSTALLFLAGS) $(INSTMANFLAGS) $${TMP} $(DESTDIR)destdir/$$i.$(MANSUFFIX)); \ @@\
 	done; \								@@\
-	RemoveFile($${TMP}))						@@\
-									@@\
-OsInstallManPageAliasesBase(file,destdir,$(MANSUFFIX),aliases)
+	RemoveFile($${TMP}))
 #endif /* InstallManPageAliases */
 
 
@@ -1368,9 +1353,7 @@ CppManTarget(file, $(EXTRAMANDEFS))					@@\
 install.man::								@@\
 	MakeDir($(DESTDIR)destdir)					@@\
 	$(INSTALL) -c $(INSTMANFLAGS) file.$(MANNEWSUFFIX) \		@@\
-		$(DESTDIR)destdir/dest.suffix				@@\
-									@@\
-OsInstallManPageLongBase(file,destdir,dest,suffix)
+		$(DESTDIR)destdir/dest.suffix
 #endif /* InstallGenManPageLong */
 
 
@@ -1388,10 +1371,7 @@ install.man::								@@\
 	for i in aliases; do (set -x; \					@@\
 	$(INSTALL) $(INSTALLFLAGS) $(INSTMANFLAGS) $${TMP} $(DESTDIR)destdir/$$i.suffix); \ @@\
 	done; \								@@\
-	RemoveFile($${TMP}))						@@\
-									@@\
-OsInstallManPageAliasesBase(file,destdir,suffix,aliases)
-
+	RemoveFile($${TMP}))
 #endif /* InstallGenManPageAliases */
 
 #else /* CompressManPages */
@@ -1724,9 +1704,8 @@ InstallNamedTargetNoClobber(install,srcname,$(INSTBINFLAGS),dest,dstname)
  */
 #ifndef MakeNamedTargetSubdir
 #define MakeNamedTargetSubdir(dir,flags,subname)\
-		if [ -z "$$_fail" ]; then _fail="exit 1"; fi; \		@@\
-		(cd dir && $(MAKE) $(PASSMFLAGS) $(PARALLELMFLAGS) \	@@\
-			flags subname) || $$_fail
+		(cd dir && $(MAKE) $(MFLAGS) $(PARALLELMFLAGS) \	@@\
+			flags subname)
 #endif
 
 /*
@@ -1901,24 +1880,14 @@ InstallMultipleDestFlags(install,list,dest,flags)
 #endif /* InstallMultipleFlags */
 
 
-#ifndef OsInstallMultipleMan
-#define OsInstallMultipleMan(list,dest)	/**/
-#endif
-
 /*
  * InstallMultipleMan - generate rules to install a variety of manual pages
  * during the install.man step of the build.
  */
 #ifndef InstallMultipleMan
 #define InstallMultipleMan(list,dest)					@@\
-InstallMultipleDestFlags(install.man,list,dest,$(INSTMANFLAGS))		@@\
-									@@\
-OsInstallMultipleMan(list,dest)
+InstallMultipleDestFlags(install.man,list,dest,$(INSTMANFLAGS))
 #endif /* InstallMultipleMan */
-
-#ifndef OsInstallMultipleManSuffix
-#define OsInstallMultipleManSuffix(list,dest,suffix) /**/
-#endif
 
 /*
  * InstallMultipleManSuffix - generate rules to install multiple manual
@@ -1932,9 +1901,7 @@ install.man::								@@\
 	@MakeFlagsToShellFlags(i,set +e); \				@@\
 	for i in list; do \						@@\
 	  (set -x; $(INSTALL) $(INSTALLFLAGS) $(INSTMANFLAGS) $$i.suffix $(DESTDIR)dest/$$i.$(MANSUFFIX)); \	@@\
-	done								@@\
-									@@\
-OsInstallMultipleManSuffix(list,dest,suffix)
+	done
 #endif /* InstallMultipleManSuffix */
 
 
@@ -2006,7 +1973,7 @@ DependDependency()							@@\
 									@@\
 depend:: DependFileName							@@\
 									@@\
-DependFileName:: $(SRCS)						@@\
+DependFileName::							@@\
 	RemoveFile($@)							@@\
 	RunProgram(DEPEND,-f- $(DEPENDFLAGS) -- $(ALLDEFINES) $(DEPEND_DEFINES) -- $(SRCS)) > $@
 #else /* HasMakefileSafeInclude */
@@ -2028,7 +1995,7 @@ DependDependency()							@@\
 									@@\
 depend:: DependFileName							@@\
 									@@\
-DependFileName:: srcs1 srcs2 srcs3					@@\
+DependFileName::							@@\
 	RemoveFile($@)							@@\
 	RunProgram(DEPEND,-f- $(DEPENDFLAGS) -- $(ALLDEFINES) $(DEPEND_DEFINES) -- srcs1) > $@	@@\
 	RunProgram(DEPEND,-f- $(DEPENDFLAGS) -- $(ALLDEFINES) $(DEPEND_DEFINES) -- srcs2) >> $@	@@\
@@ -2265,7 +2232,7 @@ LintLibReferences(varname,libname,libsource)
  */
 #ifndef ObjectAsm
 #define ObjectAsm(options) RemoveFiles($@ $*.i)				@@\
-	$(CPP) CPPAsmOptions AsmDefines $(ALLDEFINES) options $*.S | \	@@\
+	$(CPP) CPPAsmOptions AsmDefines $(DEFINES) $(INCLUDES) options $*.S | \	@@\
 		grep -v '^\#' > $*.i					@@\
 	$(AS) $(ASMOPTS) -o $*.o $*.i					@@\
 	RemoveFile($*.i)
@@ -2329,7 +2296,7 @@ LintLibReferences(varname,libname,libsource)
  * LibObjCompile - compile fragment for unshared/profiled/debugged objects
  */
 #ifndef LibObjCompile
-#if HasGcc || HasGcc2 || HasGcc3 || HasGcc4
+#if HasGcc || HasGcc2
 #define LibObjCompile(dir,options) RemoveFiles($@ dir/$@)		@@\
 	ClearmakeOSName \
 	$(CC) -c $(CCOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES) \
@@ -2347,15 +2314,15 @@ LintLibReferences(varname,libname,libsource)
  * LibObjAsm - assemble fragment for unshared/profiled/debugged objects
  */
 #ifndef LibObjAsm
-#define LibObjAsm(dir,options,asmopt) RemoveFiles(dir/$@ dir/$*.i)	@@\
-	$(CPP) CPPAsmOptions AsmDefines $(ALLDEFINES) options $*.S | \	@@\
-		grep -v '^\#' > dir/$*.i				@@\
-	$(AS) asmopt -o dir/$@ dir/$*.i					@@\
-	RemoveFile(dir/$*.i)
+#define LibObjAsm(dir,options,asmopt) RemoveFiles($@ dir/$@ $*.i)	@@\
+	$(CPP) CPPAsmOptions AsmDefines $(DEFINES) $(INCLUDES) options $*.S | \	@@\
+		grep -v '^\#' > $*.i					@@\
+	$(AS) asmopt -o dir/$@ $*.i					@@\
+	RemoveFile($*.i)
 #endif
 
 #ifndef LibObjCplusplusCompile
-#if HasGcc || HasGcc2 || HasGcc3 || HasGcc4
+#if HasGcc || HasGcc2
 #define LibObjCplusplusCompile(dir,options) RemoveFiles($@ dir/$@)	@@\
 	ClearmakeOSName \
 	$(CXX) -c $(CXXOPTIONS) $(THREADS_CXXFLAGS) $(CXXDEFINES) \
@@ -2376,10 +2343,6 @@ LintLibReferences(varname,libname,libsource)
 #define DebuggedLibObjCompile(options) LibObjCompile(debugger,DebuggableCDebugFlags options)
 #endif
 
-#ifndef DebuggedLibObjAsm
-#define DebuggedLibObjAsm(options) LibObjAsm(debugger,DebuggableCDebugFlags options,$(ASMOPTS))
-#endif
-
 #ifndef DebuggedLibObjCplusplusCompile
 #define DebuggedLibObjCplusplusCompile(options) LibObjCplusplusCompile(debugger,DebuggableCplusplusDebugFlags options)
 #endif
@@ -2389,10 +2352,6 @@ LintLibReferences(varname,libname,libsource)
  */
 #ifndef ProfiledLibObjCompile
 #define ProfiledLibObjCompile(options) LibObjCompile(profiled,ProfiledCDebugFlags options)
-#endif
-
-#ifndef ProfiledLibObjAsm
-#define ProfiledLibObjAsm(options) LibObjAsm(profiled,ProfiledCDebugFlags options,$(ASMOPTS))
 #endif
 
 #ifndef ProfiledLibObjCplusplusCompile
@@ -2406,8 +2365,10 @@ LintLibReferences(varname,libname,libsource)
 #define UnsharedLibObjCompile(options) LibObjCompile(unshared,$(CDEBUGFLAGS) $(CLIBDEBUGFLAGS) options)
 #endif
 
+#if 0
 #ifndef UnsharedLibObjAsm
-#define UnsharedLibObjAsm(options) LibObjAsm(unshared,$(CDEBUGFLAGS) $(CLIBDEBUGFLAGS) options,$(ASMOPTS))
+#define UnsharedLibObjAsm(options) LibObjAsm(unshared,$(CDEBUGFLAGS) $(CLIBDEBUGFLAGS) options,NullParameter)
+#endif
 #endif
 
 #ifndef UnsharedLibObjCplusplusCompile
@@ -2497,7 +2458,7 @@ clean::									@@\
 
 #ifndef CPPOnlyAsm
 #define CPPOnlyAsm(basename,options) RemoveFile(basename.i)		@@\
-	$(CPP) CPPAsmOptions AsmDefines $(ALLDEFINES) options basename.S | \	@@\
+	$(CPP) CPPAsmOptions AsmDefines $(DEFINES) $(INCLUDES) options basename.S | \	@@\
 		grep -v '^\#' > basename.i
 #endif
 
@@ -3074,7 +3035,7 @@ name::									@@\
 	for i in dirs ;\						@@\
 	do \								@@\
 		echo verb "in $(CURRENT_DIR)/$$i..."; \			@@\
-		(cd $$i && LANG=lang $(MAKE) $(PASSMFLAGS) flags subname);\ @@\
+		(cd $$i && LANG=lang $(MAKE) $(MFLAGS) flags subname);\ @@\
 	done
 #endif
 
@@ -3104,7 +3065,7 @@ LangNamedMakeSubdirs(lang,all,dirs)
 #ifndef NamedTargetSubdirs
 #define NamedTargetSubdirs(name,dirs,verb,flags,subname)		@@\
 name::									@@\
-	@MakeFlagsToShellFlags(ik,set +e; _fail=:); \			@@\
+	@MakeFlagsToShellFlags(ik,set +e); \				@@\
 	for i in dirs ;\						@@\
 	do \								@@\
 		echo verb "in $(CURRENT_DIR)/$$i..."; \			@@\
@@ -3157,7 +3118,7 @@ FRC:
 #define ForceSubdirs(dirs)						@@\
 dirs:	.EXEC								@@\
 	@cd $@ ; echo "making all in $(CURRENT_DIR)/$@..."; \		@@\
-	$(MAKE) $(PASSMFLAGS) PassCDebugFlags all			@@\
+	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
 									@@\
 .EXEC:
 #endif
@@ -3336,10 +3297,10 @@ target::								@@\
 				$(MV) $$i/Makefile $$i/Makefile.bak; \	@@\
 			fi; \						@@\
 		fi; \							@@\
-		$(MAKE) $(PASSMFLAGS) $(MAKE_OPTS) ONESUBDIR=$$i ONECURDIR=$$curdir IMAKETOP=$$imaketop IMAKEPREFIX=$$imakeprefix $$i/Makefile; \	@@\
+		$(MAKE) $(MFLAGS) $(MAKE_OPTS) ONESUBDIR=$$i ONECURDIR=$$curdir IMAKETOP=$$imaketop IMAKEPREFIX=$$imakeprefix $$i/Makefile; \	@@\
 		if [ -d $$i ] ; then \					@@\
 			cd $$i; \					@@\
-			$(MAKE) $(PASSMFLAGS) Makefiles; \		@@\
+			$(MAKE) $(MFLAGS) Makefiles; \			@@\
 			cd $$newtop; \					@@\
 		else \							@@\
 			exit 1; \					@@\
@@ -3375,7 +3336,6 @@ MakeMakeSubdirs(dirs,Makefiles)
 #ifndef CppSedMagic
 #define CppSedMagic sed -e '/^#  *[0-9][0-9]*  *.*$$/d' \
 			-e '/^#line  *[0-9][0-9]*  *.*$$/d' \
-			-e '/^#[ 	]*pragma[ 	]/d' \
 			-e '/^[ 	]*XCOMM$$/s/XCOMM/#/' \
 			-e '/^[ 	]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/#/' \
 			-e '/^[ 	]*XHASH/s/XHASH/#/' \
@@ -3448,7 +3408,7 @@ depend:: dst
 dst::  src deplist							@@\
 	RemoveFile($@)							@@\
 	ClearmakeOSName \
-	$(RAWCPP) CppNoLineInfoOption defs <src | CppSedMagic >$@	@@\
+	sed -e 's/\\$$/\\ /' src | $(RAWCPP) CppNoLineInfoOption defs | CppSedMagic >$@	@@\
 									@@\
 clean::									@@\
 	RemoveFiles(dst)

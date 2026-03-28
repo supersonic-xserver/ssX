@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1989-95 GROUPE BULL
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +29,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from GROUPE BULL.
  */
-/* $XFree86: xc/extras/Xpm/sxpm/sxpm.c,v 1.3 2001/10/28 03:32:13 tsi Exp $ */
+/* $XFree86: xc/extras/Xpm/sxpm/sxpm.c,v 1.2 2001/08/01 00:44:34 tsi Exp $ */
 
 /*****************************************************************************\
 * sxpm.c:                                                                     *
@@ -99,11 +106,16 @@ static char *plaid[] = {
 #define xrdb XtDatabase(dpy)
 static Colormap colormap;
 
-static void Usage(void);
-static void ErrorMessage(int ErrorStatus, char *tag);
-static void Punt(int i);
-static void VersionInfo(void);
-static void kinput(Widget widget, char *tag, XEvent *xe, Boolean *b);
+void Usage();
+void ErrorMessage();
+void Punt();
+void VersionInfo();
+
+#ifdef __STDC__
+void kinput(Widget widget, char *tag, XEvent *xe, Boolean *b);
+#else
+void kinput();
+#endif
 
 #define IWIDTH      50
 #define IHEIGHT     50
@@ -123,7 +135,9 @@ static XrmOptionDescRec options[] = {
 };
 
 int
-main(int argc, char **argv)
+main(argc, argv)
+    int argc;
+    char **argv;
 {
     int ErrorStatus;
     unsigned int verbose = 0;		/* performs verbose output */
@@ -549,8 +563,8 @@ main(int argc, char **argv)
     return 0;
 }
 
-static void
-Usage(void)
+void
+Usage()
 {
     fprintf(stderr, "\nUsage:  %s [options...]\n", command[0]);
     fprintf(stderr, "Where options are:\n\
@@ -585,8 +599,10 @@ if no input is specified sxpm reads from standard input.\n\
 }
 
 
-static void
-ErrorMessage(int ErrorStatus, char *tag)
+void
+ErrorMessage(ErrorStatus, tag)
+    int ErrorStatus;
+    char *tag;
 {
     char *error = NULL;
     char *warning = NULL;
@@ -620,8 +636,9 @@ ErrorMessage(int ErrorStatus, char *tag)
     }
 }
 
-static void
-Punt(int i)
+void
+Punt(i)
+    int i;
 {
     if (icon.pixmap) {
 	XFreePixmap(dpy, icon.pixmap);
@@ -648,8 +665,12 @@ Punt(int i)
     exit(i);
 }
 
-static void
-kinput(Widget widget, char *tag, XEvent *xe, Boolean *b)
+void
+kinput(widget, tag, xe, b)
+    Widget widget;
+    char *tag;
+    XEvent *xe;
+    Boolean *b;
 {
     char c = '\0';
 
@@ -662,17 +683,20 @@ kinput(Widget widget, char *tag, XEvent *xe, Boolean *b)
  * small function to extract various version numbers from the given global
  * number (following the rule described in xpm.h).
  */
-static void
-GetNumbers(int num, int *format_return, int *libmajor_return,
-	   char *libminor_return)
+void
+GetNumbers(num, format_return, libmajor_return, libminor_return)
+    int num;
+    int *format_return;
+    int *libmajor_return;
+    char *libminor_return;
 {
     *format_return = num / 10000;
     *libmajor_return = (num % 10000) / 100;
     *libminor_return = 'a' + (num % 10000) % 100 - 1;
 }
 
-static void
-VersionInfo(void)
+void
+VersionInfo()
 {
     int format, libmajor;
     char libminor;

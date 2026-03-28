@@ -1,5 +1,14 @@
 /*
- * Copyright Â© 2002 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/filter.c,v 1.1 2002/09/26 02:56:52 keithp Exp $
+ *
+ * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,10 +29,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include "misc.h"
 #include "scrnintstr.h"
 #include "os.h"
@@ -42,10 +47,6 @@
 static char **filterNames;
 static int  nfilterNames;
 
-/*
- * standard but not required filters don't have constant indices
- */
-
 int
 PictureGetFilterId (char *filter, int len, Bool makeit)
 {
@@ -56,14 +57,15 @@ PictureGetFilterId (char *filter, int len, Bool makeit)
     if (len < 0)
 	len = strlen (filter);
     for (i = 0; i < nfilterNames; i++)
-	if (!CompareISOLatin1Lowered ((unsigned char *) filterNames[i], -1, (unsigned char *) filter, len))
+	if (len == strlen (filterNames[i]) && 
+	    !strncmp (filterNames[i], filter, len))
 	    return i;
     if (!makeit)
 	return -1;
-    name = xalloc (len + 1);
+    name = xalloc (strlen (filter) + 1);
     if (!name)
 	return -1;
-    memcpy (name, filter, len);
+    strncpy (name, filter, len);
     name[len] = '\0';
     if (filterNames)
 	names = xrealloc (filterNames, (nfilterNames + 1) * sizeof (char *));
@@ -84,20 +86,17 @@ static Bool
 PictureSetDefaultIds (void)
 {
     /* careful here -- this list must match the #define values */
-
+    
     if (PictureGetFilterId (FilterNearest, -1, TRUE) != PictFilterNearest)
 	return FALSE;
     if (PictureGetFilterId (FilterBilinear, -1, TRUE) != PictFilterBilinear)
 	return FALSE;
-
+    
     if (PictureGetFilterId (FilterFast, -1, TRUE) != PictFilterFast)
 	return FALSE;
     if (PictureGetFilterId (FilterGood, -1, TRUE) != PictFilterGood)
 	return FALSE;
     if (PictureGetFilterId (FilterBest, -1, TRUE) != PictFilterBest)
-	return FALSE;
-
-    if (PictureGetFilterId (FilterConvolution, -1, TRUE) != PictFilterConvolution)
 	return FALSE;
     return TRUE;
 }
@@ -123,10 +122,8 @@ PictureFreeFilterIds (void)
     filterNames = 0;
 }
 
-_X_EXPORT int
-PictureAddFilter (ScreenPtr			    pScreen,
-		  char				    *filter,
-		  PictFilterValidateParamsProcPtr   ValidateParams)
+int
+PictureAddFilter (ScreenPtr pScreen, char *filter, xFixed *params, int nparams)
 {
     PictureScreenPtr    ps = GetPictureScreen(pScreen);
     int			id = PictureGetFilterId (filter, -1,  TRUE);
@@ -150,12 +147,13 @@ PictureAddFilter (ScreenPtr			    pScreen,
     ps->filters = filters;
     i = ps->nfilters++;
     ps->filters[i].name = PictureGetFilterName (id);
+    ps->filters[i].params = params;
+    ps->filters[i].nparams = nparams;
     ps->filters[i].id = id;
-    ps->filters[i].ValidateParams = ValidateParams;
     return id;
 }
 
-_X_EXPORT Bool
+Bool
 PictureSetFilterAlias (ScreenPtr pScreen, char *filter, char *alias)
 {
     PictureScreenPtr    ps = GetPictureScreen(pScreen);
@@ -174,7 +172,7 @@ PictureSetFilterAlias (ScreenPtr pScreen, char *filter, char *alias)
 
 	if (ps->filterAliases)
 	    aliases = xrealloc (ps->filterAliases,
-				(ps->nfilterAliases + 1) *
+				(ps->nfilterAliases + 1) * 
 				sizeof (PictFilterAliasRec));
 	else
 	    aliases = xalloc (sizeof (PictFilterAliasRec));
@@ -212,35 +210,15 @@ PictureFindFilter (ScreenPtr pScreen, char *name, int len)
     return 0;
 }
 
-static Bool
-convolutionFilterValidateParams (PicturePtr pPicture,
-                                 int	   filter,
-                                 xFixed	   *params,
-                                 int	   nparams)
-{
-    if (nparams < 3)
-        return FALSE;
-
-    if (xFixedFrac (params[0]) || xFixedFrac (params[1]))
-        return FALSE;
-
-    nparams -= 2;
-    if ((xFixedToInt (params[0]) * xFixedToInt (params[1])) > nparams)
-        return FALSE;
-
-    return TRUE;
-}
-
-
 Bool
 PictureSetDefaultFilters (ScreenPtr pScreen)
 {
     if (!filterNames)
 	if (!PictureSetDefaultIds ())
 	    return FALSE;
-    if (PictureAddFilter (pScreen, FilterNearest, 0) < 0)
+    if (PictureAddFilter (pScreen, FilterNearest, 0, 0) < 0)
 	return FALSE;
-    if (PictureAddFilter (pScreen, FilterBilinear, 0) < 0)
+    if (PictureAddFilter (pScreen, FilterBilinear, 0, 0) < 0)
 	return FALSE;
 
     if (!PictureSetFilterAlias (pScreen, FilterNearest, FilterFast))
@@ -249,10 +227,6 @@ PictureSetDefaultFilters (ScreenPtr pScreen)
 	return FALSE;
     if (!PictureSetFilterAlias (pScreen, FilterBilinear, FilterBest))
 	return FALSE;
-
-    if (PictureAddFilter (pScreen, FilterConvolution, convolutionFilterValidateParams) < 0)
-        return FALSE;
-
     return TRUE;
 }
 
@@ -269,55 +243,28 @@ PictureResetFilters (ScreenPtr pScreen)
 int
 SetPictureFilter (PicturePtr pPicture, char *name, int len, xFixed *params, int nparams)
 {
-    PictFilterPtr	pFilter;
+    ScreenPtr		pScreen = pPicture->pDrawable->pScreen;
+    PictFilterPtr	pFilter = PictureFindFilter (pScreen, name, len);
     xFixed		*new_params;
-    int			i, s, result;
-
-    pFilter = PictureFindFilter (screenInfo.screens[0], name, len);
-
-    if (pPicture->pDrawable == NULL) {
-	/* For source pictures, the picture isn't tied to a screen.  So, ensure
-	 * that all screens can handle a filter we set for the picture.
-	 */
-	for (s = 0; s < screenInfo.numScreens; s++) {
-	    if (PictureFindFilter (screenInfo.screens[s], name, len)->id !=
-		pFilter->id)
-	    {
-		return BadMatch;
-	    }
-	}
-    }
+    int			i;
 
     if (!pFilter)
 	return BadName;
-    if (pFilter->ValidateParams)
-    {
-	if (!(*pFilter->ValidateParams) (pPicture, pFilter->id, params, nparams))
-	    return BadMatch;
-    }
-    else if (nparams)
+    if (nparams > pFilter->nparams)
 	return BadMatch;
-
-    if (nparams != pPicture->filter_nparams)
+    if (pFilter->nparams != pPicture->filter_nparams)
     {
-	new_params = xalloc (nparams * sizeof (xFixed));
+	new_params = xalloc (pFilter->nparams * sizeof (xFixed));
 	if (!new_params)
 	    return BadAlloc;
 	xfree (pPicture->filter_params);
 	pPicture->filter_params = new_params;
-	pPicture->filter_nparams = nparams;
+	pPicture->filter_nparams = pFilter->nparams;
     }
     for (i = 0; i < nparams; i++)
 	pPicture->filter_params[i] = params[i];
+    for (; i < pFilter->nparams; i++)
+	pPicture->filter_params[i] = pFilter->params[i];
     pPicture->filter = pFilter->id;
-
-    if (pPicture->pDrawable) {
-	ScreenPtr pScreen = pPicture->pDrawable->pScreen;
-	PictureScreenPtr ps = GetPictureScreen(pScreen);
-
-	result = (*ps->ChangePictureFilter) (pPicture, pPicture->filter,
-					     params, nparams);
-	return result;
-    }
     return Success;
 }

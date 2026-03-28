@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/mfb/Imakefile,v 3.20tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/mfb/Imakefile,v 3.19 2004/06/01 00:17:07 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -95,7 +95,7 @@ OBJS =   mfbgc.o mfbwindow.o mfbfont.o \
          mfbplywhite.o mfbplyblack.o mfbplyinv.o $(XFMODOBJ)
 
 INCLUDES = -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
-	   $(XF86INCL)
+	   -I$(XINCLUDESRC) -I$(FONTINCSRC) $(XF86INCL)
 LINTDEFS = -DMFBPOLYGLYPHBLT=mfbPolyGlyphBltWhite \
 	   -DMFBIMAGEGLYPHBLT=mfbImageGlyphBltWhite \
 	   -DEQWHOLEWORD=MFB_EQWHOLEWORD_WHITE -DOPEQ=MFB_OPEQ_WHITE
@@ -160,7 +160,6 @@ SpecialCObjectRule(mfbpixmap,$(ICONFIGFILES),$(_NOOP_))
 
 #ifdef IHaveModules
 InstallLibraryModule(mfb,$(MODULEDIR),.)
-InstallDriverSDKLibraryModule(mfb,$(DRIVERSDKMODULEDIR),.)
 #endif
 
 DependTarget()
@@ -170,9 +169,10 @@ MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
 #endif
 
-#if !defined(IHaveModules) || !BuildModuleInSubdir
+InstallDriverSDKLibraryModule(mfb,$(DRIVERSDKMODULEDIR),.)
+
 InstallDriverSDKNonExecFile(mfb.h,$(DRIVERSDKINCLUDEDIR))
-#endif
+
 
 #ifdef LinkDirectory
 LinkSourceFile(maskbits.c,LinkDirectory)

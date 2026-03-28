@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/dmx.cf,v 1.3tsi Exp $
+/* $XFree86: xc/config/cf/dmx.cf,v 1.1 2004/06/30 20:21:35 martin Exp $ */
  
 /*
  * This file contains DMX server specific defines
@@ -33,8 +33,34 @@ XCOMM $XFree86: xc/config/cf/dmx.cf,v 1.3tsi Exp $
     ((month)     *       100) + \
     ((day)       *         1)
 #undef  XVendorRelease
-#define XVendorRelease	DMX_VENDOR_RELEASE(1,3,2006,2,20)
+#define XVendorRelease	DMX_VENDOR_RELEASE(1,2,2004,6,30)
 
-#ifdef XdmxExcludedExtensions
-DMX_DEFINES = XdmxExcludedExtensions
-#endif
+EXTENSIONS_NOT_SUPPORTED = \
+	-UBEZIER \
+	-UPEXEXT \
+	-UMULTIBUFFER \
+	-UXV \
+	-UXIE \
+	-UDBE \
+	-UXF86VIDMODE \
+	-UXF86MISC \
+	-UXFreeXDGA \
+	-UXF86DRI \
+	-UMITSHM \
+	-UTOGCUP \
+	-UDPSEXT \
+	-UMITMISC \
+	-USCREENSAVER \
+	-URANDR
+
+EXT_TEMP_NOT_SUPPORTED = \
+	-UFONTCACHE
+
+DMX_DEFINES = \
+	$(EXTENSIONS_NOT_SUPPORTED) \
+	$(EXT_TEMP_NOT_SUPPORTED) \
+	-UXFree86LOADER
+
+XCOMM MITSHM -- works but doesn't quite do what people think it should
+XCOMM DPMSExtension -- compiled in but is non-functional
+XCOMM MITMISC provides legacy support for X11R1,2 applications.  Disable.

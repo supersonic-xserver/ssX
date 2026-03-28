@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/XTrap/xf86XTrapModule.c,v 1.3 2005/10/14 15:16:10 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/XTrap/xf86XTrapModule.c,v 1.1 2001/11/02 23:29:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*  This is the xf86 module code for the DEC_XTRAP extension.
  */
 
@@ -38,7 +45,7 @@ static XF86ModuleVersionInfo xtrapVersRec =
 XF86ModuleData xtrapModuleData = { &xtrapVersRec, xtrapSetup, NULL };
 
 static pointer
-xtrapSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin) {
+xtrapSetup(pointer module, pointer opts, int *errmaj, int *errmin) {
     LoadExtension(&xtrapExt, FALSE);
     /* Need a non-NULL return value to indicate success */
     return (pointer)1;

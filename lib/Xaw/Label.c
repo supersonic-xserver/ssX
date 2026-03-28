@@ -1,3 +1,19 @@
+/* $Xorg: Label.c,v 1.5 2001/02/09 02:03:43 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Label.c,v 1.15 2005/08/30 15:17:10 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Label.c,v 1.14 2003/08/04 10:32:20 eich Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -93,37 +109,6 @@ static void _Reposition(LabelWidget, unsigned int, unsigned int,
 static void set_bitmap_info(LabelWidget);
 static void SetTextWidthAndHeight(LabelWidget);
 
-#undef XawEncoding
-#ifndef OLDXAW
-#define XawEncoding(lw)		((lw)->simple.encoding)
-#else
-#define XawEncoding(lw)		((lw)->label.encoding)
-#endif
-
-#undef XawDrawString
-#define XawDrawString(lw, label, len)				\
-    ((XawEncoding(lw) == XtTextEncodingChar2b) ?		\
-        XDrawString16(XtDisplay(w), XtWindow(w), gc,		\
-                      w->label.label_x, y,			\
-                      (XChar2b*)label, len / 2) :		\
-        XDrawString(XtDisplay(w), XtWindow(w), gc,		\
-                    w->label.label_x, y, label, len))
-
-#undef XawTextWidth
-#define XawTextWidth(lw, label, len)			\
-    ((XawEncoding(lw) == XtTextEncodingChar2b) ?	\
-        XTextWidth16(fs, (XChar2b*)label, len / 2) :	\
-        XTextWidth(fs, label, len));
-
-#undef XawCharIndex
-#define XawCharIndex(lw, label, c) \
-    XtCharIndexEx(XawEncoding(lw), label, c)
-
-#undef XawStringLength
-#define XawStringLength(lw, label) \
-    XtStringLengthEx(XawEncoding(lw), label)
-
-
 /*
  * Initialization
  */
@@ -164,6 +149,15 @@ static XtResource resources[] = {
     offset(label.label),
     XtRString,
     NULL
+  },
+  {
+    XtNencoding,
+    XtCEncoding,
+    XtRUnsignedChar,
+    sizeof(unsigned char),
+    offset(label.encoding),
+    XtRImmediate,
+    (XtPointer)XawTextEncoding8bit
   },
   {
     XtNjustify,
@@ -324,7 +318,7 @@ _XawLabelWidth16(XFontStruct *fs, char *str, int n)
 	ptr->byte2 = *str++;
     }
 
-    return XTextWidth16(fs, buf2b, n);
+    return (XTextWidth16(fs, buf2b, n));
 }
 
 static void
@@ -342,8 +336,7 @@ _XawLabelDraw16(Display *dpy, Drawable d, GC gc, int x, int y,
 	ptr->byte1 = *str++;
 	ptr->byte2 = *str++;
     }
-
-    return XDrawString16(dpy, d, gc, x, y, buf2b, n);
+    XDrawString16(dpy, d, gc, x, y, buf2b, n);
 }
 
 #define XTextWidth16 _XawLabelWidth16
@@ -356,13 +349,13 @@ _XawLabelDraw16(Display *dpy, Drawable d, GC gc, int x, int y,
 static void
 SetTextWidthAndHeight(LabelWidget lw)
 {
-    unsigned int width, height, w;
-    char *nl, *label = lw->label.label;
+    XFontStruct	*fs = lw->label.font;
+    char *nl;
 
     if (lw->label.pixmap != None) {
-	unsigned int bw, depth;
 	Window root;
 	int x, y;
+	unsigned int width, height, bw, depth;
 
 	if (XGetGeometry(XtDisplay(lw), lw->label.pixmap, &root, &x, &y,
 		       &width, &height, &bw, &depth)) {
@@ -372,88 +365,89 @@ SetTextWidthAndHeight(LabelWidget lw)
 	    return;
 	}
     }
-
     if (lw->simple.international == True) {
 	XFontSet	fset = lw->label.fontset;
 	XFontSetExtents *ext = XExtentsOfFontSet(fset);
 
-	height = ext->max_ink_extent.height;
-	width = 0;
-
+	lw->label.label_height = ext->max_ink_extent.height;
 	if (lw->label.label == NULL) {
 	    lw->label.label_len = 0;
+	    lw->label.label_width = 0;
 	}
-	else if ((nl = XawCharIndex(lw, label, '\n')) != NULL) {
+	else if ((nl = index(lw->label.label, '\n')) != NULL) {
+	    char *label;
+
 	    lw->label.label_len = MULTI_LINE_LABEL;
+	    lw->label.label_width = 0;
+	    for (label = lw->label.label; nl != NULL; nl = index(label, '\n')) {
+		int width = XmbTextEscapement(fset, label, (int)(nl - label));
 
-	    for (; nl != NULL; nl = XawCharIndex(lw, label, '\n')) {
-		w = XmbTextEscapement(fset, label, (int)(nl - label));
-		width = XawMax(width, w);
-
-		MOVE_FORWARD(XawEncoding(lw), label, nl);
-
-		if (NOT_AT_EOL(XawEncoding(lw), label))
-		    height += ext->max_ink_extent.height;
+		if (width > (int)lw->label.label_width)
+		    lw->label.label_width = width;
+		label = nl + 1;
+		if (*label)
+		    lw->label.label_height += ext->max_ink_extent.height;
 	    }
+	    if (*label) {
+		int width = XmbTextEscapement(fset, label, strlen(label));
 
-	    if (NOT_AT_EOL(XawEncoding(lw), label)) {
-		w = XmbTextEscapement(fset, label, XawStringLength(lw, label));
-		width = XawMax(width, w);
+		if (width > (int)lw->label.label_width)
+		    lw->label.label_width = width;
 	    }
 	}
 	else {
-	    lw->label.label_len = XawStringLength(lw, label);
-
-	    width = XmbTextEscapement(fset, label, lw->label.label_len);
+	    lw->label.label_len = strlen(lw->label.label);
+	    lw->label.label_width =
+		XmbTextEscapement(fset, lw->label.label, lw->label.label_len);
 	}
     }
     else {
-	XFontStruct	*fs = lw->label.font;
-
-	height = fs->max_bounds.ascent + fs->max_bounds.descent;
-	width = 0;
-
+	lw->label.label_height = fs->max_bounds.ascent + fs->max_bounds.descent;
 	if (lw->label.label == NULL) {
 	    lw->label.label_len = 0;
+	    lw->label.label_width = 0;
 	}
-	else if ((nl = XawCharIndex(lw, label, '\n')) != NULL) {
+	else if ((nl = index(lw->label.label, '\n')) != NULL) {
+	    char *label;
+
 	    lw->label.label_len = MULTI_LINE_LABEL;
+	    lw->label.label_width = 0;
+	    for (label = lw->label.label; nl != NULL; nl = index(label, '\n')) {
+		int width;
 
-	    for (; nl != NULL; nl = XawCharIndex(lw, label, '\n')) {
-		if (XawEncoding(lw) == XtTextEncodingChar2b)
-		    w = XTextWidth16(fs, (TXT16*)label, (int)(nl - label) / 2);
+		if (lw->label.encoding)
+		    width = XTextWidth16(fs, (TXT16*)label, (int)(nl - label) / 2);
 		else
-		    w = XTextWidth(fs, label, (int)(nl - label));
-		width = XawMax(width, w);
-
-		MOVE_FORWARD(XawEncoding(lw), label, nl);
-
-		if (NOT_AT_EOL(XawEncoding(lw), label))
-		    height += fs->max_bounds.ascent + fs->max_bounds.descent;
+		    width = XTextWidth(fs, label, (int)(nl - label));
+		if (width > (int)lw->label.label_width)
+		    lw->label.label_width = width;
+		label = nl + 1;
+		if (*label)
+		    lw->label.label_height +=
+			fs->max_bounds.ascent + fs->max_bounds.descent;
 	    }
+	    if (*label) {
+		int width = XTextWidth(fs, label, strlen(label));
 
-	    if (NOT_AT_EOL(XawEncoding(lw), label)) {
-		if (XawEncoding(lw) == XtTextEncodingChar2b)
-		    w = XTextWidth16(fs, (TXT16*)label,
-				     XawStringLength(lw, label) / 2);
+		if (lw->label.encoding)
+		    width = XTextWidth16(fs, (TXT16*)label, strlen(label) / 2);
 		else
-		    w = XTextWidth(fs, label, XawStringLength(lw, label));
-		width = XawMax(width, w);
+		    width = XTextWidth(fs, label, strlen(label));
+		if (width > (int) lw->label.label_width)
+		    lw->label.label_width = width;
 	    }
 	}
 	else {
-	    lw->label.label_len = XawStringLength(lw, label);
-
-	    if (XawEncoding(lw) == XtTextEncodingChar2b)
-		width = XTextWidth16(fs, (TXT16*)label,
-				     (int)lw->label.label_len / 2);
+	    lw->label.label_len = strlen(lw->label.label);
+	    if (lw->label.encoding)
+		lw->label.label_width =
+		    XTextWidth16(fs, (TXT16*)lw->label.label,
+			   (int)lw->label.label_len / 2);
 	    else
-		width = XTextWidth(fs, label, (int)lw->label.label_len);
+		lw->label.label_width =
+	      XTextWidth(fs, lw->label.label, (int)lw->label.label_len);
 	}
     }
-
-    lw->label.label_height = height;
-    lw->label.label_width = width;
 }
 
 static void
@@ -467,7 +461,7 @@ GetNormalGC(LabelWidget lw)
     values.graphics_exposures = False;
 
     if (lw->simple.international == True)
-	/* Since Xmb/wcDrawString eats the font, I must use XtAllocateGC */
+    /* Since Xmb/wcDrawString eats the font, I must use XtAllocateGC */
 	lw->label.normal_GC = XtAllocateGC((Widget)lw, 0,
 					   GCForeground | GCBackground |
 					   GCGraphicsExposures,
@@ -501,12 +495,12 @@ GetGrayGC(LabelWidget lw)
 					 GCTile | GCFillStyle |
 					 GCGraphicsExposures,
 					 &values, GCFont, 0);
-    else
-	lw->label.gray_GC = XtGetGC((Widget)lw, 
-				    GCForeground | GCBackground |
-				    GCFont | GCTile | GCFillStyle |
-				    GCGraphicsExposures,
-				    &values);
+	else
+	    lw->label.gray_GC = XtGetGC((Widget)lw, 
+					GCForeground | GCBackground |
+					GCFont | GCTile | GCFillStyle |
+					GCGraphicsExposures,
+					&values);
 }
 
 static void
@@ -551,7 +545,7 @@ XawLabelInitialize(Widget request, Widget cnew,
     if (lw->label.label == NULL) 
 	lw->label.label = XtNewString(lw->core.name);
     else
-	lw->label.label = XtNewStringEx(XawEncoding(lw), lw->label.label);
+	lw->label.label = XtNewString(lw->label.label);
 
     GetNormalGC(lw);
     GetGrayGC(lw);
@@ -589,7 +583,7 @@ XawLabelRedisplay(Widget gw, XEvent *event, Region region)
 
     if (w->label.pixmap == None) {
 	int len = w->label.label_len;
-	char *nl, *label = w->label.label;
+	char *label = w->label.label;
 	Position y = w->label.label_y + w->label.font->max_bounds.ascent;
 	Position ksy = w->label.label_y;
 
@@ -606,37 +600,47 @@ XawLabelRedisplay(Widget gw, XEvent *event, Region region)
 	    ksy += XawAbs(ext->max_ink_extent.y);
 
 	    if (len == MULTI_LINE_LABEL) {
-		while ((nl = XawCharIndex(w, label, '\n')) != NULL) {
+		char *nl;
+
+		while ((nl = index(label, '\n')) != NULL) {
 		    XmbDrawString(XtDisplay(w), XtWindow(w), w->label.fontset,
 				  gc, w->label.label_x, ksy, label,
 				  (int)(nl - label));
-
 		    ksy += ext->max_ink_extent.height;
-
-		    MOVE_FORWARD(XawEncoding(w), label, nl);
+		    label = nl + 1;
 		}
-		len = XawStringLength(w, label);
+		len = strlen(label);
 	    }
-
 	    if (len)
 		XmbDrawString(XtDisplay(w), XtWindow(w), w->label.fontset, gc,
 			      w->label.label_x, ksy, label, len);
 	}
 	else {
 	    if (len == MULTI_LINE_LABEL) {
-		while ((nl = XawCharIndex(w, label, '\n')) != NULL) {
-		    XawDrawString(w, label, (nl - label));
+		char *nl;
 
+		while ((nl = index(label, '\n')) != NULL) {
+		    if (w->label.encoding)
+			XDrawString16(XtDisplay(gw), XtWindow(gw), gc,
+				      w->label.label_x, y,
+				      (TXT16*)label, (int)(nl - label) / 2);
+		    else
+			XDrawString(XtDisplay(gw), XtWindow(gw), gc,
+				    w->label.label_x, y, label, (int)(nl - label));
 		    y += w->label.font->max_bounds.ascent + 
 			 w->label.font->max_bounds.descent;
-
-		    MOVE_FORWARD(XawEncoding(w), label, nl);
+		    label = nl + 1;
 		}
-		len = XawStringLength(w, label);
+		len = strlen(label);
 	    }
-
-	    if (len)
-		XawDrawString(w, label, len);
+	    if (len) {
+		if (w->label.encoding)
+		    XDrawString16(XtDisplay(gw), XtWindow(gw), gc,
+				  w->label.label_x, y, (TXT16*)label, len / 2);
+		else
+		    XDrawString(XtDisplay(gw), XtWindow(gw), gc,
+				w->label.label_x, y, label, len);
+	    }
 	}
     }
     else if (w->label.label_len == 1)
@@ -729,7 +733,7 @@ XawLabelSetValues(Widget current, Widget request, Widget cnew,
     if (curlw->label.left_bitmap != newlw->label.left_bitmap)
 	was_resized = True;
 
-    if (XawEncoding(curlw) != XawEncoding(newlw))
+    if (curlw->label.encoding != newlw->label.encoding)
 	was_resized = True;
 
     if (curlw->label.fontset != newlw->label.fontset &&
@@ -741,8 +745,7 @@ XawLabelSetValues(Widget current, Widget request, Widget cnew,
 	    XtFree((char *)curlw->label.label);
 
 	if (newlw->label.label != newlw->core.name)
-	    newlw->label.label =
-		XtNewStringEx(XawEncoding(newlw), newlw->label.label);
+	    newlw->label.label = XtNewString(newlw->label.label);
 
 	was_resized = True;
     }

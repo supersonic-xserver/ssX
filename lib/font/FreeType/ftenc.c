@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1998-2003 by Juliusz Chroboczek
  
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,19 +26,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/lib/font/FreeType/ftenc.c,v 1.25tsi Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ftenc.c,v 1.25 2003/11/20 22:36:34 dawes Exp $ */
 
 #ifndef FONTMODULE
 #include <string.h>
 #else
-#include <X11/Xmd.h>
-#include <X11/Xdefs.h>
+#include "Xmd.h"
+#include "Xdefs.h"
 #include "xf86_ansic.h"
 #endif
 
 #include "fntfilst.h"
 #include "fontutil.h"
-#include <X11/fonts/FSproto.h>
+#include "FSproto.h"
 
 #include "fontmisc.h"
 #include "fontenc.h"

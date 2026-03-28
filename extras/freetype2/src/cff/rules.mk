@@ -3,7 +3,7 @@
 #
 
 
-# Copyright 1996-2000 by
+# Copyright 1996-2000, 2001, 2003 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -15,55 +15,58 @@
 
 # OpenType driver directory
 #
-T2_DIR  := $(SRC_)cff
-T2_DIR_ := $(T2_DIR)$(SEP)
+CFF_DIR := $(SRC_DIR)/cff
 
 
-T2_COMPILE := $(FT_COMPILE)
+CFF_COMPILE := $(FT_COMPILE) $I$(subst /,$(COMPILER_SEP),$(CFF_DIR))
 
 
-# T2 driver sources (i.e., C files)
+# CFF driver sources (i.e., C files)
 #
-T2_DRV_SRC := $(T2_DIR_)t2objs.c   \
-              $(T2_DIR_)t2load.c   \
-              $(T2_DIR_)t2gload.c  \
-              $(T2_DIR_)t2parse.c  \
-              $(T2_DIR_)t2driver.c
+CFF_DRV_SRC := $(CFF_DIR)/cffobjs.c  \
+               $(CFF_DIR)/cffload.c  \
+               $(CFF_DIR)/cffgload.c \
+               $(CFF_DIR)/cffparse.c \
+               $(CFF_DIR)/cffcmap.c  \
+               $(CFF_DIR)/cffdrivr.c
 
-# T2 driver headers
+# CFF driver headers
 #
-T2_DRV_H := $(T2_DRV_SRC:%.c=%.h) \
-            $(T2_DIR_)t2tokens.h
+CFF_DRV_H := $(CFF_DRV_SRC:%.c=%.h) \
+             $(CFF_DIR)/cfftoken.h  \
+             $(CFF_DIR)/cfftypes.h  \
+             $(CFF_DIR)/cfferrs.h
 
 
-# T2 driver object(s)
+# CFF driver object(s)
 #
-#   T2_DRV_OBJ_M is used during `multi' builds
-#   T2_DRV_OBJ_S is used during `single' builds
+#   CFF_DRV_OBJ_M is used during `multi' builds
+#   CFF_DRV_OBJ_S is used during `single' builds
 #
-T2_DRV_OBJ_M := $(T2_DRV_SRC:$(T2_DIR_)%.c=$(OBJ_)%.$O)
-T2_DRV_OBJ_S := $(OBJ_)cff.$O
+CFF_DRV_OBJ_M := $(CFF_DRV_SRC:$(CFF_DIR)/%.c=$(OBJ_DIR)/%.$O)
+CFF_DRV_OBJ_S := $(OBJ_DIR)/cff.$O
 
-# T2 driver source file for single build
+# CFF driver source file for single build
 #
-T2_DRV_SRC_S := $(T2_DIR_)cff.c
+CFF_DRV_SRC_S := $(CFF_DIR)/cff.c
 
 
-# T2 driver - single object
+# CFF driver - single object
 #
-$(T2_DRV_OBJ_S): $(T2_DRV_SRC_S) $(T2_DRV_SRC) $(FREETYPE_H) $(T2_DRV_H)
-	$(T2_COMPILE) $T$@ $(T2_DRV_SRC_S)
+$(CFF_DRV_OBJ_S): $(CFF_DRV_SRC_S) $(CFF_DRV_SRC) $(FREETYPE_H) $(CFF_DRV_H)
+	$(CFF_COMPILE) $T$(subst /,$(COMPILER_SEP),$@ $(CFF_DRV_SRC_S))
 
 
-# T2 driver - multiple objects
+# CFF driver - multiple objects
 #
-$(OBJ_)%.$O: $(T2_DIR_)%.c $(FREETYPE_H) $(T2_DRV_H)
-	$(T2_COMPILE) $T$@ $<
+$(OBJ_DIR)/%.$O: $(CFF_DIR)/%.c $(FREETYPE_H) $(CFF_DRV_H)
+	$(CFF_COMPILE) $T$(subst /,$(COMPILER_SEP),$@ $<)
 
 
 # update main driver object lists
 #
-DRV_OBJS_S += $(T2_DRV_OBJ_S)
-DRV_OBJS_M += $(T2_DRV_OBJ_M)
+DRV_OBJS_S += $(CFF_DRV_OBJ_S)
+DRV_OBJS_M += $(CFF_DRV_OBJ_M)
+
 
 # EOF

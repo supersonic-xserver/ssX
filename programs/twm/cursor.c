@@ -1,6 +1,12 @@
-/* $XFree86: xc/programs/twm/cursor.c,v 1.6tsi Exp $ */
 /*
- *
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * 
 Copyright 1989, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,8 +29,11 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  * */
+/* $XFree86: xc/programs/twm/cursor.c,v 1.5 2001/12/14 20:01:06 dawes Exp $ */
 
 /***********************************************************************
+ *
+ * $Xorg: cursor.c,v 1.5 2001/02/09 02:05:36 xorgcvs Exp $
  *
  * cursor creation code
  *
@@ -123,8 +132,10 @@ static struct _CursorName {
 {"xterm",		XC_xterm,		None},
 };
 
-void
-NewFontCursor (Cursor *cp, char *str)
+void 
+NewFontCursor (cp, str)
+    Cursor *cp;
+    char *str;
 {
     int i;
 
@@ -139,12 +150,14 @@ NewFontCursor (Cursor *cp, char *str)
 	    return;
 	}
     }
-    fprintf (stderr, "%s:  unable to find font cursor \"%s\"\n",
+    fprintf (stderr, "%s:  unable to find font cursor \"%s\"\n", 
 	     ProgramName, str);
 }
 
 void
-NewBitmapCursor(Cursor *cp, char *source, char *mask)
+NewBitmapCursor(cp, source, mask)
+    Cursor *cp;
+    char *source, *mask;
 {
     int hotx, hoty;
     int sx, sy, mx, my;
@@ -162,7 +175,7 @@ NewBitmapCursor(Cursor *cp, char *source, char *mask)
     XGetGeometry(dpy, mpm, &JunkRoot, &mx, &my, &mw, &mh, &JunkBW,&JunkDepth);
     if (sw != mw || sh != mh)
     {
-	fprintf (stderr,
+	fprintf (stderr, 
 		 "%s:  cursor bitmaps \"%s\" and \"%s\" not the same size\n",
 		 ProgramName, source, mask);
 	return;

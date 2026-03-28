@@ -1,5 +1,4 @@
-// $XFree86$
-
+// $XConsortium $
 xkb_types "Common"
 
 virtual_modifiers Alt;

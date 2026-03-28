@@ -1,4 +1,11 @@
-/* $XFree86: xc/include/extensions/Printstr.h,v 1.6tsi Exp $ */
+/* $Xorg: Printstr.h,v 1.3 2000/08/18 04:05:44 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -43,6 +50,7 @@
  **
  ******************************************************************************
  *****************************************************************************/
+/* $XFree86: xc/include/extensions/Printstr.h,v 1.6 2001/08/23 12:46:11 alanh Exp $ */
 
 
 #ifndef _XpPrintstr_H_
@@ -763,7 +771,7 @@ typedef struct _XpContext {
 	int imageRes;
 } XpContextRec, *XpContextPtr;
 
-#include <X11/fonts/fontstruct.h>	/* FontResolutionPtr */
+#include "fontstruct.h"	/* FontResolutionPtr */
 
 extern Bool XpAllocateContextPrivate(int, unsigned);
 extern FontResolutionPtr XpGetClientResolutions(ClientPtr, int *);

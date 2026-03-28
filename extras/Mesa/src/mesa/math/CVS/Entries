@@ -1,0 +1,23 @@
+/m_clip_tmp.h/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_copy_tmp.h/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_debug.h/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_debug_clip.c/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_debug_norm.c/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_debug_util.h/1.2/Sun Jul  2 19:17:56 2006//Tnetbsd-5-2-3-RELEASE
+/m_debug_xform.c/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_dotprod_tmp.h/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_eval.c/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_eval.h/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_matrix.c/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_matrix.h/1.1.1.1/Fri Mar 18 13:06:49 2005//Tnetbsd-5-2-3-RELEASE
+/m_norm_tmp.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_trans_tmp.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_translate.c/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_translate.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_vector.c/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_vector.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_xform.c/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_xform.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/m_xform_tmp.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+/mathmod.h/1.1.1.1/Fri Mar 18 13:06:50 2005//Tnetbsd-5-2-3-RELEASE
+D

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -31,15 +38,15 @@ DevPrivateKeyRec dri3_screen_private_key;
 
 static int dri3_screen_generation;
 
-static Bool
-dri3_close_screen(ScreenPtr screen)
+static int
+dri3_close_screen(int index, ScreenPtr screen)
 {
     dri3_screen_priv_ptr screen_priv = dri3_screen_priv(screen);
 
     unwrap(screen_priv, screen, CloseScreen);
 
     free(screen_priv);
-    return (*screen->CloseScreen) (screen);
+    return (*screen->CloseScreen) (index, screen);
 }
 
 Bool
@@ -47,7 +54,7 @@ dri3_screen_init(ScreenPtr screen, dri3_screen_info_ptr info)
 {
     dri3_screen_generation = serverGeneration;
 
-    if (!dixRegisterPrivateKey(&dri3_screen_private_key, PRIVATE_SCREEN, 0))
+    if (!dixRegisterPrivateKey(&dri3_screen_private_key, PRIVATE_SCREEN, sizeof(dri3_screen_priv_rec)))
         return FALSE;
 
     if (!dri3_screen_priv(screen)) {
@@ -59,7 +66,7 @@ dri3_screen_init(ScreenPtr screen, dri3_screen_info_ptr info)
 
         screen_priv->info = info;
 
-        dixSetPrivate(&screen->devPrivates, &dri3_screen_private_key, screen_priv);
+        dixSetPrivate((PrivateRec **)&screen->devPrivates, &dri3_screen_private_key, screen_priv);
     }
 
     return TRUE;

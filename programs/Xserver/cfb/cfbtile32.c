@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Fill 32 bit tiled rectangles.  Used by both PolyFillRect and PaintWindow.
  * no depth dependencies.
  */
-/* $XFree86: xc/programs/Xserver/cfb/cfbtile32.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbtile32.c,v 3.7 2003/10/29 22:44:53 tsi Exp $ */
 
 /*
 
@@ -29,8 +36,10 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+/* $Xorg: cfbtile32.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
+
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "gcstruct.h"
 #include "window.h"
@@ -51,24 +60,73 @@ in this Software without prior written authorization from The Open Group.
 #define SHARED_IDCACHE
 #endif
 
-#define STORE(p)    (*(p) = MROP_PREBUILT_SOLID(srcpix,*(p)))
-
 #if PSZ == 24
+#define STORE(p)    (*(p) = MROP_PREBUILT_SOLID(srcpix,*(p)))
+/*#define STORE24(p,index)    {\
+	    register int idx = ((index) & 3)<< 1; \
+	    *(p) = (((MROP_PREBUILT_SOLID(srcpix,*(p))<<cfb24Shift[idx])&cfbmask[idx])| \
+	            (*(p)&cfbrmask[idx])); \
+	    idx++; \
+	    (p)++; \
+	    *(p) = (((MROP_PREBUILT_SOLID(srcpix,*(p))>>cfb24Shift[idx])&cfbmask[idx])| \
+	            (*(p)&cfbrmask[idx])); \
+	    (p)--; \
+	}*/
+#define STORE24(p,index)    MROP_PREBUILT_SOLID24(srcpix, (p), index)
 
-#define STORE24(p,index) \
-	MROP_PREBUILT_SOLID24(srcpix, (p), index)
+#define STORE_MASK(p,mask)    (*(p) = MROP_PREBUILT_MASK(srcpix,*(p),(mask)))
+#define QSTORE(p)    ((*(p) = MROP_PREBUILT_SOLID(((srcpix<<24)|srcpix),*(p))), \
+                      (p)++,(*(p) = MROP_PREBUILT_SOLID(((srcpix<<16)|(srcpix>>8)),*(p))), \
+                      (p)++,(*(p) = MROP_PREBUILT_SOLID(((srcpix<<8)|(srcpix>>16)),*(p))))
 
-#define STORE_MASK(p,mask) \
-	(*(p) = MROP_PREBUILT_MASK(srcpix,*(p),(mask)))
-#define QSTORE(p) \
-	( \
-	 (*(p) = MROP_PREBUILT_SOLID(((srcpix<<24)|srcpix), *(p))), \
-	 (p)++, \
-	 (*(p) = MROP_PREBUILT_SOLID(((srcpix<<16)|(srcpix>>8)), *(p))), \
-	 (p)++, \
-	 (*(p) = MROP_PREBUILT_SOLID(((srcpix<<8)|(srcpix>>16)), *(p))) \
-	)
-
+#if (MROP == Mcopy) && defined(FAST_CONSTANT_OFFSET_MODE) && defined(SHARED_IDCACHE)
+# define Expand(left,right) {\
+    int part = nlwMiddle & ((PGSZB*2)-1); \
+    nlwMiddle *= 3; \
+    nlwMiddle >>= PWSH + 3; \
+    while (h--) { \
+	srcpix = psrc[srcy]; \
+	MROP_PREBUILD(srcpix); \
+	++srcy; \
+	if (srcy == tileHeight) \
+	    srcy = 0; \
+	left \
+	p += part; \
+	switch (part) { \
+	case 7: \
+	    STORE24(p - 7, xtmp - 7); \
+	case 6: \
+	    STORE24(p - 6, xtmp - 6); \
+	case 5: \
+	    STORE24(p - 5, xtmp - 5); \
+	case 4: \
+	    STORE24(p - 4, xtmp - 4); \
+	case 3: \
+	    STORE24(p - 3, xtmp - 3); \
+	case 2: \
+	    STORE24(p - 2, xtmp - 2); \
+	case 1: \
+	    STORE24(p - 1, xtmp - 1); \
+	} \
+	nlw = nlwMiddle; \
+	while (nlw) { \
+	    STORE24 (p + 0, xtmp + 0); \
+	    STORE24 (p + 1, xtmp + 1); \
+	    STORE24 (p + 2, xtmp + 2); \
+	    STORE24 (p + 3, xtmp + 3); \
+	    STORE24 (p + 4, xtmp + 4); \
+	    STORE24 (p + 5, xtmp + 5); \
+	    STORE24 (p + 6, xtmp + 6); \
+	    STORE24 (p + 7, xtmp + 7); \
+	    p += 8; \
+	    xtmp += 8; \
+	    nlw--; \
+	} \
+	right \
+	p += nlwExtra; \
+    } \
+}
+#else
 #define Expand(left,right) {\
     while (h--)	{ \
 	srcpix = psrc[srcy]; \
@@ -77,26 +135,24 @@ in this Software without prior written authorization from The Open Group.
 	if (srcy == tileHeight) \
 	    srcy = 0; \
 	left \
-	nlw = nlwMiddle; \
 	while (nlw--) \
 	{ \
 	    STORE24(p,xtmp); \
-	    if(xtmp & (PGSZB - 1)) p++; \
+	    if(xtmp&3) p++; \
 	    xtmp++; \
 	} \
 	right \
 	p += nlwExtra; \
     } \
 }
-
+#endif
 #else /*PSZ != 24*/
+#define STORE(p)    (*(p) = MROP_PREBUILT_SOLID(srcpix,*(p)))
 
-#if (MROP == Mcopy) && \
-    defined(FAST_CONSTANT_OFFSET_MODE) && \
-    defined(SHARED_IDCACHE)
+#if (MROP == Mcopy) && defined(FAST_CONSTANT_OFFSET_MODE) && defined(SHARED_IDCACHE)
 # define Expand(left,right) {\
     int part = nlwMiddle & ((PGSZB*2)-1); \
-    nlwMiddle >>= 3; \
+    nlwMiddle >>= 3 /*PWSH + 1*/; \
     while (h--) { \
 	srcpix = psrc[srcy]; \
 	MROP_PREBUILD(srcpix); \
@@ -158,26 +214,28 @@ in this Software without prior written authorization from The Open Group.
     } \
 }
 #endif
-
-#endif /* PSZ == 24 */
+#endif /*PSZ == 24*/
 
 void
-MROP_NAME(cfbFillRectTile32)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
-			     BoxPtr pBox)
+MROP_NAME(cfbFillRectTile32) (pDrawable, pGC, nBox, pBox)
+    DrawablePtr	    pDrawable;
+    GCPtr	    pGC;
+    int		    nBox;	/* number of boxes to fill */
+    BoxPtr 	    pBox;	/* pointer to list of boxes to fill */
 {
-    CfbBits srcpix;
+    register CfbBits srcpix;	
     CfbBits *psrc;		/* pointer to bits in tile, if needed */
     int tileHeight;	/* height of the tile */
 
     int nlwDst;		/* width in longwords of the dest pixmap */
     int w;		/* width of current box */
-    int h;	/* height of current box */
-    CfbBits startmask;
-    CfbBits endmask; /* masks for reggedy bits at either end of line */
+    register int h;	/* height of current box */
+    register CfbBits startmask;
+    register CfbBits endmask; /* masks for reggedy bits at either end of line */
     int nlwMiddle;	/* number of longwords between sides of boxes */
     int nlwExtra;	/* to get from right of box to left of next span */
-    int nlw = 0;	/* loop version of nlwMiddle */
-    CfbBits *p;	/* pointer to bits we're writing */
+    register int nlw = 0;	/* loop version of nlwMiddle */
+    register CfbBits *p;	/* pointer to bits we're writing */
     int y;		/* current scan line */
     int srcy;		/* current tile position */
 
@@ -212,17 +270,15 @@ MROP_NAME(cfbFillRectTile32)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 	y = pBox->y1;
 #if PSZ == 24
 	xtmp = pBox->x1;
-	p = pbits + (y * nlwDst) + ((pBox->x1 * PSZB) / PGSZB);
-/*	p = pbits + (y * nlwDst) + ((pBox->x1 / PGSZB) * PSZB); */
+	p = pbits + (y * nlwDst) + ((pBox->x1*3) >> 2);
+/*	p = pbits + (y * nlwDst) + ((pBox->x1>> 2)*3);*/
 #else
 	p = pbits + (y * nlwDst) + (pBox->x1 >> PWSH);
 #endif
 	srcy = y % tileHeight;
 
 #if PSZ == 24
-	if (w == 1 &&
-            ((pBox->x1 & (PGSZB - 1)) == 0 ||
-             (pBox->x1 & (PGSZB - 1)) == (PGSZB - 1)))
+	if (w == 1  &&  ((pBox->x1 & 3) == 0  ||  (pBox->x1 & 3) == 3))
 #else
 	if ( ((pBox->x1 & PIM) + w) <= PPW)
 #endif
@@ -273,13 +329,18 @@ MROP_NAME(cfbFillRectTile32)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 		}
 	    }
 	}
-	pBox++;
+        pBox++;
     }
 }
 
 void
-MROP_NAME(cfbTile32FS)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
-		       DDXPointPtr pptInit, int *pwidthInit, int fSorted)
+MROP_NAME(cfbTile32FS)(pDrawable, pGC, nInit, pptInit, pwidthInit, fSorted)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int		nInit;			/* number of spans to fill */
+    DDXPointPtr pptInit;		/* pointer to list of start points */
+    int		*pwidthInit;		/* pointer to list of n widths */
+    int 	fSorted;
 {
 				/* next three parameters are post-clip */
     int			n;	/* number of spans to fill */
@@ -287,13 +348,13 @@ MROP_NAME(cfbTile32FS)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
     int			*pwidth;/* pointer to list of n widths */
     CfbBits	*pbits;	/* pointer to start of bitmap */
     int			nlwDst;	/* width in longwords of bitmap */
-    CfbBits *p;	/* pointer to current longword in bitmap */
-    int	w;	/* current span width */
-    int	nlw;
-    int	x;
-    CfbBits startmask;
-    CfbBits endmask;
-    CfbBits  srcpix;
+    register CfbBits *p;	/* pointer to current longword in bitmap */
+    register int	w;	/* current span width */
+    register int	nlw;
+    register int	x;
+    register CfbBits startmask;
+    register CfbBits endmask;
+    register CfbBits  srcpix;
     int			y;
     int			*pwidthFree;/* copies of the pointers to free */
     DDXPointPtr		pptFree;
@@ -306,7 +367,7 @@ MROP_NAME(cfbTile32FS)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
     MROP_DECLARE_REG()
 #endif
     MROP_PREBUILT_DECLARE()
-#if PSZ == 24
+#if PSZ == 24      
     CfbBits	xtmp;
 #endif
 
@@ -341,120 +402,120 @@ MROP_NAME(cfbTile32FS)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
     if (!(tileHeight & (tileHeight-1)))
     {
 	tileHeight--;
-	while (n--)
-	{
+    	while (n--)
+    	{
 	    x = ppt->x;
 	    y = ppt->y;
 	    ++ppt;
 	    w = *pwidth++;
 #if PSZ == 24
-/*	    p = pbits + (y * nlwDst) + ((x * PSZB) / PGSZB); */
+/*	    p = pbits + (y * nlwDst) + ((x*3) >> 2);*/
 	    xtmp = x;
-	    p = pbits + (y * nlwDst) + ((x / PGSZB) * PSZB);
+	    p = pbits + (y * nlwDst) + ((x >> 2)*3);
 #else
 	    p = pbits + (y * nlwDst) + (x >> PWSH);
 #endif
 	    srcpix = psrc[y & tileHeight];
 	    MROP_PREBUILD(srcpix);
-
+    
 #if PSZ == 24
-	    if ((x & (PGSZB - 1)) + w < 5)
+	    if ((x & 3) + w < 5)
 #else
 	    if ((x & PIM) + w < PPW)
 #endif
 	    {
-		maskpartialbits(x, w, startmask);
-		*p = MROP_PREBUILT_MASK (srcpix, *p, startmask);
+	    	maskpartialbits(x, w, startmask);
+	    	*p = MROP_PREBUILT_MASK (srcpix, *p, startmask);
 	    }
 	    else
 	    {
-		maskbits(x, w, startmask, endmask, nlw);
-		if (startmask)
-		{
+	    	maskbits(x, w, startmask, endmask, nlw);
+	    	if (startmask)
+	    	{
 		    *p = MROP_PREBUILT_MASK(srcpix, *p, startmask);
 #if PSZ == 24
-		    if(xtmp & (PGSZB - 1)) p++;
+		    if(xtmp&3) p++;
 		    xtmp++;
 #else
 		    p++;
 #endif
-		}
-		while (nlw--)
-		{
+	    	}
+	    	while (nlw--)
+	    	{
 #if PSZ == 24
 		    STORE24(p,xtmp);
-		    if(xtmp & (PGSZB - 1)) p++;
+		    if(xtmp&3) p++;
 		    ++xtmp;
 #else
 		    STORE(p);
 		    ++p;
 #endif
-		}
-		if (endmask)
-		{
+	    	}
+	    	if (endmask)
+	    	{
 		    *p = MROP_PREBUILT_MASK(srcpix, *p, endmask);
-		}
+	    	}
 	    }
-	}
+    	}
     }
     else
 #endif
     {
-	while (n--)
-	{
+    	while (n--)
+    	{
 	    x = ppt->x;
 	    y = ppt->y;
 	    ++ppt;
 	    w = *pwidth++;
 #if PSZ == 24
-/*	    p = pbits + (y * nlwDst) + ((x * PSZB) / PGSZB); */
-	    p = pbits + (y * nlwDst) + ((x / PGSZB) * PSZB);
+/*	    p = pbits + (y * nlwDst) + ((x *3)>> 2);*/
+	    p = pbits + (y * nlwDst) + ((x >> 2)*3);
 	    xtmp = x;
 #else
 	    p = pbits + (y * nlwDst) + (x >> PWSH);
 #endif
 	    srcpix = psrc[y % tileHeight];
 	    MROP_PREBUILD(srcpix);
-
+    
 #if PSZ == 24
-	    if ((x & (PGSZB - 1)) + w < 5)
+	    if ((x & 3) + w < 5)
 #else
 	    if ((x & PIM) + w < PPW)
 #endif
 	    {
-		maskpartialbits(x, w, startmask);
-		*p = MROP_PREBUILT_MASK (srcpix, *p, startmask);
+	    	maskpartialbits(x, w, startmask);
+	    	*p = MROP_PREBUILT_MASK (srcpix, *p, startmask);
 	    }
 	    else
 	    {
-		maskbits(x, w, startmask, endmask, nlw);
-		if (startmask)
-		{
+	    	maskbits(x, w, startmask, endmask, nlw);
+	    	if (startmask)
+	    	{
 		    *p = MROP_PREBUILT_MASK(srcpix, *p, startmask);
 #if PSZ == 24
-		    if (xtmp & (PGSZB - 1)) p++;
+		    if(xtmp&3)p++;
 		    xtmp++;
 #else
 		    p++;
 #endif
-		}
-		while (nlw--)
-		{
+	    	}
+	    	while (nlw--)
+	    	{
 #if PSZ == 24
 		    STORE24(p,xtmp);
-		    if (xtmp & (PGSZB - 1)) p++;
+		    if(xtmp&3)p++;
 		    xtmp++;
 #else
 		    STORE(p);
 		    ++p;
 #endif
-		}
-		if (endmask)
-		{
+	    	}
+	    	if (endmask)
+	    	{
 		    *p = MROP_PREBUILT_MASK(srcpix, *p, endmask);
-		}
+	    	}
 	    }
-	}
+    	}
     }
     DEALLOCATE_LOCAL(pptFree);
     DEALLOCATE_LOCAL(pwidthFree);

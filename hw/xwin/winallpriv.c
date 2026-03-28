@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -28,11 +35,10 @@
  * Authors:	Keith Packard, MIT X Consortium
  *		Harold L Hunt II
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winallpriv.c,v 1.12 2002/10/31 23:04:39 alanh Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include "win.h"
+
 
 
 /* See Porting Layer Definition - p. 58 */
@@ -49,7 +55,7 @@ winAllocatePrivates (ScreenPtr pScreen)
   winPrivScreenPtr	pScreenPriv;
 
 #if CYGDEBUG
-  winDebug ("winAllocateScreenPrivates - g_ulServerGeneration: %d "
+  ErrorF ("winAllocateScreenPrivates - g_ulServerGeneration: %d "
 	  "serverGeneration: %d\n",
 	  g_ulServerGeneration, serverGeneration);
 #endif
@@ -118,10 +124,10 @@ winAllocatePrivates (ScreenPtr pScreen)
  */
 
 Bool
-winInitCmapPrivates (ColormapPtr pcmap, int index)
+winInitCmapPrivates (ColormapPtr pcmap)
 {
 #if CYGDEBUG
-  winDebug ("winInitCmapPrivates\n");
+  ErrorF ("winInitCmapPrivates\n");
 #endif
   
   /*
@@ -131,9 +137,7 @@ winInitCmapPrivates (ColormapPtr pcmap, int index)
    * anything.  Perhaps I am misunderstanding the purpose
    * of this function.
    */
-  /*  That's definitely true.
-   *  I therefore changed the API and added the index as argument.
-   */
+  
   return TRUE;
 }
 
@@ -149,7 +153,7 @@ winAllocateCmapPrivates (ColormapPtr pCmap)
   static unsigned long		s_ulPrivateGeneration = 0;
 
 #if CYGDEBUG
-  winDebug ("winAllocateCmapPrivates\n");
+  ErrorF ("winAllocateCmapPrivates\n");
 #endif
 
   /* Get a new privates index when the server generation changes */
@@ -177,7 +181,7 @@ winAllocateCmapPrivates (ColormapPtr pCmap)
   winSetCmapPriv (pCmap, pCmapPriv);
 
 #if CYGDEBUG
-  winDebug ("winAllocateCmapPrivates - Returning\n");
+  ErrorF ("winAllocateCmapPrivates - Returning\n");
 #endif
 
   return TRUE;

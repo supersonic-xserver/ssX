@@ -1,20 +1,35 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 // TetiSoft: To specify which modules you need,
 // insert the following in your source file and uncomment as needed:
 
 /*
-//#define FT_USE_AUTOHINT	// autohinter
-//#define FT_USE_RASTER		// monochrome rasterizer
-//#define FT_USE_SMOOTH		// anti-aliasing rasterizer
-//#define FT_USE_TT		// truetype font driver
-//#define FT_USE_T1		// type1 font driver
-//#define FT_USE_T1CID		// cid-keyed type1 font driver	// no cmap support, useless
-//#define FT_USE_CFF		// opentype font driver		// does not work with TektonPro
-//#define FT_USE_PCF		// pcf bitmap font driver	// all tested fonts 12*12 (size unknown)
-//#define FT_USE_WINFNT		// windows .fnt|.fon bitmap font driver
+//#define FT_USE_AUTOHINT       // autohinter
+//#define FT_USE_RASTER         // monochrome rasterizer
+//#define FT_USE_SMOOTH         // anti-aliasing rasterizer
+//#define FT_USE_TT             // truetype font driver
+//#define FT_USE_T1             // type1 font driver
+//#define FT_USE_T42            // type42 font driver
+//#define FT_USE_T1CID          // cid-keyed type1 font driver  // no cmap support
+//#define FT_USE_CFF            // opentype font driver
+//#define FT_USE_BDF            // bdf bitmap font driver
+//#define FT_USE_PCF            // pcf bitmap font driver
+//#define FT_USE_PFR            // pfr font driver
+//#define FT_USE_WINFNT         // windows .fnt|.fon bitmap font driver
 #include "FT:src/base/ftinit.c"
 */
 
-// TetiSoft: make sure that needed support modules are built in
+// TetiSoft: make sure that needed support modules are built in.
+// Dependencies can be found by searching for FT_Get_Module.
+
+#ifdef FT_USE_T42
+#define FT_USE_TT
+#endif
 
 #ifdef FT_USE_TT
 #define FT_USE_SFNT
@@ -22,14 +37,20 @@
 
 #ifdef FT_USE_CFF
 #define FT_USE_SFNT
+#define FT_USE_PSHINT
+#define FT_USE_PSNAMES
 #endif
 
 #ifdef FT_USE_T1
 #define FT_USE_PSAUX
+#define FT_USE_PSHINT
+#define FT_USE_PSNAMES
 #endif
 
 #ifdef FT_USE_T1CID
 #define FT_USE_PSAUX
+#define FT_USE_PSHINT
+#define FT_USE_PSNAMES
 #endif
 
 #ifdef FT_USE_PSAUX
@@ -46,6 +67,10 @@
 FT_USE_MODULE(autohint_module_class)
 #endif
 
+#ifdef FT_USE_PSHINT
+FT_USE_MODULE(pshinter_module_class)
+#endif
+
 #ifdef FT_USE_CFF
 FT_USE_MODULE(cff_driver_class)
 #endif
@@ -54,8 +79,16 @@ FT_USE_MODULE(cff_driver_class)
 FT_USE_MODULE(t1cid_driver_class)
 #endif
 
+#ifdef FT_USE_BDF
+FT_USE_MODULE(bdf_driver_class)
+#endif
+
 #ifdef FT_USE_PCF
 FT_USE_MODULE(pcf_driver_class)
+#endif
+
+#ifdef FT_USE_PFR
+FT_USE_MODULE(pfr_driver_class)
 #endif
 
 #ifdef FT_USE_PSAUX
@@ -76,6 +109,8 @@ FT_USE_MODULE(sfnt_module_class)
 
 #ifdef FT_USE_SMOOTH
 FT_USE_MODULE(ft_smooth_renderer_class)
+FT_USE_MODULE(ft_smooth_lcd_renderer_class)
+FT_USE_MODULE(ft_smooth_lcdv_renderer_class)
 #endif
 
 #ifdef FT_USE_TT
@@ -84,6 +119,10 @@ FT_USE_MODULE(tt_driver_class)
 
 #ifdef FT_USE_T1
 FT_USE_MODULE(t1_driver_class)
+#endif
+
+#ifdef FT_USE_T42
+FT_USE_MODULE(t42_driver_class)
 #endif
 
 #ifdef FT_USE_WINFNT

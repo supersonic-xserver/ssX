@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/Imakefile,v 1.9tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/Imakefile,v 1.9 2002/10/17 02:22:45 dawes Exp $
 #include <Server.tmpl>
 
 BIOS_MOD = bios_DGmmap
@@ -11,7 +11,8 @@ OBJS = dgux_init.o dgux_video.o IO_utils.o dgux_io.o $(BIOS_MOD).o VTsw_noop.o \
        dgux_kbd.o dgux_kbdEv.o dgux_tty.o std_mouse.o std_mseEv.o \
        stdResource.o stdPci.o sigiostubs.o pm_noop.o kmod_noop.o agp_noop.o
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
+           -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
 RESDEFINES = -DUSESTDRES
 

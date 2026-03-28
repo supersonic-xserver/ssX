@@ -1,3 +1,11 @@
+/* $Xorg: pr.c,v 1.4 2001/02/09 02:03:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1993, 1994, 1998 The Open Group
@@ -23,7 +31,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/makedepend/pr.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/config/makedepend/pr.c,v 1.5 2001/12/14 19:53:21 dawes Exp $ */
 
 #include "def.h"
 
@@ -36,13 +44,13 @@ extern boolean	printed;
 extern boolean	verbose;
 extern boolean	show_where_not;
 
-struct inclist *
-add_include(struct filepointer *filep, struct inclist *file,
+void
+add_include(struct filepointer *filep, struct inclist *file, 
 	    struct inclist *file_red, char *include, int type,
 	    boolean failOK)
 {
-	struct inclist		*newfile;
-	struct filepointer	*content;
+	register struct inclist	*newfile;
+	register struct filepointer	*content;
 
 	/*
 	 * First decide what the pathname of this include file really is.
@@ -50,7 +58,7 @@ add_include(struct filepointer *filep, struct inclist *file,
 	newfile = inc_path(file->i_file, include, type);
 	if (newfile == NULL) {
 		if (failOK)
-		    return NULL;
+		    return;
 		if (file != file_red)
 			warning("%s (reading %s, line %d): ",
 				file_red->i_file, file->i_file, filep->f_line);
@@ -71,7 +79,6 @@ add_include(struct filepointer *filep, struct inclist *file,
 			freefile(content);
 		}
 	}
-	return newfile;
 }
 
 static void
@@ -79,8 +86,8 @@ pr(struct inclist *ip, char *file, char *base)
 {
 	static char	*lastfile;
 	static int	current_len;
-	int		len, i;
-	char		buf[ BUFSIZ ];
+	register int	len, i;
+	char	buf[ BUFSIZ ];
 
 	printed = TRUE;
 	len = strlen(ip->i_file)+1;

@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/swrast/s_tritemp.h,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -721,18 +727,14 @@ static void NAME(GLcontext *ctx, const SWvertex *v0,
          GLfixed tLeft=0, dtOuter=0, dtInner;
 #endif
 #ifdef INTERP_TEX
-         GLfloat sLeft[MAX_TEXTURE_COORD_UNITS] = { 0.0 };
-         GLfloat tLeft[MAX_TEXTURE_COORD_UNITS] = { 0.0 };
-         GLfloat uLeft[MAX_TEXTURE_COORD_UNITS] = { 0.0 };
-         GLfloat vLeft[MAX_TEXTURE_COORD_UNITS] = { 0.0 };
-         GLfloat dsOuter[MAX_TEXTURE_COORD_UNITS] = { 0.0 },
-		 dsInner[MAX_TEXTURE_COORD_UNITS];
-         GLfloat dtOuter[MAX_TEXTURE_COORD_UNITS] = { 0.0 },
-		 dtInner[MAX_TEXTURE_COORD_UNITS];
-         GLfloat duOuter[MAX_TEXTURE_COORD_UNITS] = { 0.0 },
-		 duInner[MAX_TEXTURE_COORD_UNITS];
-         GLfloat dvOuter[MAX_TEXTURE_COORD_UNITS] = { 0.0 },
-		 dvInner[MAX_TEXTURE_COORD_UNITS];
+         GLfloat sLeft[MAX_TEXTURE_COORD_UNITS];
+         GLfloat tLeft[MAX_TEXTURE_COORD_UNITS];
+         GLfloat uLeft[MAX_TEXTURE_COORD_UNITS];
+         GLfloat vLeft[MAX_TEXTURE_COORD_UNITS];
+         GLfloat dsOuter[MAX_TEXTURE_COORD_UNITS], dsInner[MAX_TEXTURE_COORD_UNITS];
+         GLfloat dtOuter[MAX_TEXTURE_COORD_UNITS], dtInner[MAX_TEXTURE_COORD_UNITS];
+         GLfloat duOuter[MAX_TEXTURE_COORD_UNITS], duInner[MAX_TEXTURE_COORD_UNITS];
+         GLfloat dvOuter[MAX_TEXTURE_COORD_UNITS], dvInner[MAX_TEXTURE_COORD_UNITS];
 #endif
 
          for (subTriangle=0; subTriangle<=1; subTriangle++) {

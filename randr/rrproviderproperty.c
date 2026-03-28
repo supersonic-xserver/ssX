@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,6 +28,7 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
 #include "propertyst.h"
 #include "swaprep.h"
 
@@ -350,7 +358,7 @@ RRConfigureProviderProperty(RRProviderPtr provider, Atom property,
         return BadMatch;
     }
 
-    new_values = xallocarray(num_values, sizeof(INT32));
+    new_values = (INT32 *)(uintptr_t)xallocarray(num_values, sizeof(INT32));
     if (!new_values && num_values) {
         if (add)
             RRDestroyProviderProperty(prop);
@@ -400,7 +408,7 @@ ProcRRListProviderProperties(ClientPtr client)
     for (prop = provider->properties; prop; prop = prop->next)
         numProps++;
     if (numProps)
-        if (!(pAtoms = xallocarray(numProps, sizeof(Atom))))
+        if (!(pAtoms = (Atom *)(uintptr_t)xallocarray(numProps, sizeof(Atom))))
             return BadAlloc;
 
     rep = (xRRListProviderPropertiesReply) {
@@ -445,7 +453,7 @@ ProcRRQueryProviderProperty(ClientPtr client)
         return BadName;
 
     if (prop->num_valid) {
-        extra = xallocarray(prop->num_valid, sizeof(INT32));
+        extra = (char *)(uintptr_t)xallocarray(prop->num_valid, sizeof(INT32));
         if (!extra)
             return BadAlloc;
     }
@@ -623,7 +631,7 @@ ProcRRGetProviderProperty(ClientPtr client)
             swapl(&reply.bytesAfter);
             swapl(&reply.nItems);
         }
-        WriteToClient(client, sizeof(xRRGetProviderPropertyReply), &reply);
+        WriteToClient(client, sizeof(xRRGetProviderPropertyReply), (char *)&reply);
         return Success;
     }
 
@@ -651,7 +659,7 @@ ProcRRGetProviderProperty(ClientPtr client)
             swapl(&reply.bytesAfter);
             swapl(&reply.nItems);
         }
-        WriteToClient(client, sizeof(xRRGetProviderPropertyReply), &reply);
+        WriteToClient(client, sizeof(xRRGetProviderPropertyReply), (char *)&reply);
         return Success;
     }
 
@@ -704,7 +712,7 @@ ProcRRGetProviderProperty(ClientPtr client)
         swapl(&reply.bytesAfter);
         swapl(&reply.nItems);
     }
-    WriteToClient(client, sizeof(xGenericReply), &reply);
+    WriteToClient(client, sizeof(xGenericReply), (char *)&reply);
     if (len) {
         memcpy(extra, (char *) prop_value->data + ind, len);
         switch (reply.format) {

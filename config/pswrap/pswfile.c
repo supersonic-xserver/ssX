@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * pswfile.c
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -78,7 +85,7 @@ void InitOFile(void)
     printf("#include %s\n", FRIENDSFILE);
     printf("#include <string.h>\n");
     if (hfile)
-        printf("#include \"%s\"\n", hfile);
+	    printf("#include \"%s\"\n", hfile);
     outlineno += 3;  /* UPDATE this if you add more prolog */
     if (special_h) {
         printf("#include \"%s\"\n", special_h);

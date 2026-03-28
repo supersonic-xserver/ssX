@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -38,7 +45,7 @@ present_wait_fence_triggered(void *param)
     ScreenPtr               screen = vblank->screen;
     present_screen_priv_ptr screen_priv = present_screen_priv(screen);
 
-    screen_priv->re_execute(vblank);
+    screen_priv->re_execute(screen_priv, vblank);
 }
 
 Bool
@@ -51,7 +58,7 @@ present_execute_wait(present_vblank_ptr vblank, uint64_t crtc_msc)
     if (vblank->requeue) {
         vblank->requeue = FALSE;
         if (msc_is_after(vblank->target_msc, crtc_msc) &&
-            Success == screen_priv->queue_vblank(screen,
+            Success == screen_priv->queue_vblank(screen_priv, screen,
                                                  window,
                                                  vblank->crtc,
                                                  vblank->event_id,
@@ -77,7 +84,7 @@ present_execute_copy(present_vblank_ptr vblank, uint64_t crtc_msc)
 
     /* If present_flip failed, we may have to requeue for the target MSC */
     if (vblank->target_msc == crtc_msc + 1 &&
-        Success == screen_priv->queue_vblank(screen,
+        Success == screen_priv->queue_vblank(screen_priv, screen,
                                              window,
                                              vblank->crtc,
                                              vblank->event_id,
@@ -92,7 +99,7 @@ present_execute_copy(present_vblank_ptr vblank, uint64_t crtc_msc)
      * which is then freed, freeing the region
      */
     vblank->update = NULL;
-    screen_priv->flush(window);
+    screen_priv->flush(screen_priv, window);
 
     present_pixmap_idle(vblank->pixmap, vblank->window, vblank->serial, vblank->idle_fence);
 }

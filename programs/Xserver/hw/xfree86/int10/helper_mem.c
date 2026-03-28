@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/helper_mem.c,v 1.25 2002/09/16 18:06:08 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/helper_mem.c,v 1.26 2002/11/25 14:05:01 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *                   XFree86 int10 module
  *   execute BIOS int 10h calls in x86 real mode environment

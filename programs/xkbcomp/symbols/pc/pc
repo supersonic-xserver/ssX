@@ -1,6 +1,6 @@
 
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/pc,v 1.9 2003/06/09 19:59:46 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/pc,v 1.10 2003/08/22 13:31:11 pascal Exp $
 
 partial hidden alphanumeric_keys modifier_keys 
 xkb_symbols "basic" {

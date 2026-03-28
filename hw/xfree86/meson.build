@@ -49,9 +49,9 @@ srcs_xorg = [
 # that should be exported to Xorg modules, at the expense of all
 # symbols being included and public
 
+# Build xorg_link list conditionally - libglxvnd can be empty string in legacy mode
 xorg_link = [
     libxserver,
-    libglxvnd,
     xorg_common,
     xorg_loader,
     xorg_ddc,
@@ -65,6 +65,12 @@ xorg_link = [
     libxserver_main,
     libxserver_config,
 ]
+
+# glxvnd is either empty or a static library - only add if not empty
+if libglxvnd != ''
+    xorg_link += libglxvnd
+endif
+
 if build_dri1
     xorg_link += xorg_dri
 endif

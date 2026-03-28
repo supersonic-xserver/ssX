@@ -10,4 +10,5 @@ libxserver_xfixes = static_library('libxserver_xfixes',
     srcs_xfixes,
     include_directories: inc,
     dependencies: common_dep,
+    c_args: ['-DSSX_LEGACY_MODE'],
 )

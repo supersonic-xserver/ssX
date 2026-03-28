@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (C) Copyright IBM Corporation 2002, 2004
  * All Rights Reserved.
  *
@@ -27,7 +34,7 @@
  *
  * \author Ian Romanick <idr@us.ibm.com>
  */
-/* $XFree86: xc/lib/GL/glx/glxextensions.h,v 1.6 2004/12/10 16:06:56 alanh Exp $ */
+/* $XFree86: xc/lib/GL/glx/glxextensions.h,v 1.7 2004/12/10 17:47:24 alanh Exp $ */
 
 #ifndef GLX_GLXEXTENSIONS_H
 #define GLX_GLXEXTENSIONS_H

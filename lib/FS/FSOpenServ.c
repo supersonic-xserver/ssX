@@ -1,3 +1,19 @@
+/* $Xorg: FSOpenServ.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* @(#)FSOpenServ.c	4.1	91/05/02
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -68,8 +84,8 @@ static void OutOfMemory ( FSServer *svr, char *setup );
 
 FSServer   *_FSHeadOfServerList = NULL;
 
-void
-_FSFreeServerStructure(FSServer *svr)
+void _FSFreeServerStructure(svr)
+    FSServer   *svr;
 {
     if (svr->server_name)
 	FSfree(svr->server_name);
@@ -82,8 +98,10 @@ _FSFreeServerStructure(FSServer *svr)
     FSfree((char *) svr);
 }
 
-static void
-OutOfMemory(FSServer *svr, char *setup)
+static
+void OutOfMemory(svr, setup)
+    FSServer   *svr;
+    char       *setup;
 {
 
     _FSDisconnectServer(svr->trans_conn);
@@ -97,8 +115,9 @@ OutOfMemory(FSServer *svr, char *setup)
  * to it
  */
 
-FSServer *
-FSOpenServer(char *server)
+FSServer   *
+FSOpenServer(server)
+    char       *server;
 {
     FSServer   *svr;
     int         i;

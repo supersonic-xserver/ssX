@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vloaduc.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vloaduc.c,v 1.14 2003/11/06 18:38:04 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * includes
  */
@@ -15,7 +22,8 @@
  * defines 
  */
 
-#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+#ifdef X_LITTLE_ENDIAN
+
 /* maybe swap word */
 #define SW32(x) lswapl(x)
 #define SW16(x) lswaps(x)

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86Date.h,v 1.158 2008/03/23 12:03:01 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86Date.h,v 1.86 2005/03/17 01:11:53 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 2004-2007 by The XFree86 Project, Inc.
+ * Copyright (c) 2004, 2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -48,6 +55,6 @@
 
 #ifndef XF86_DATE
 
-#define XF86_DATE	"9 April 2008"
+#define XF86_DATE	"16 March 2005"
 
 #endif

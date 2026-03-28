@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Screen routines for full screen Quartz mode
  *
  * Copyright (c) 2002-2003 Torrey T. Lyons. All Rights Reserved.
@@ -25,7 +32,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/fullscreen/fullscreen.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/fullscreen/fullscreen.c,v 1.6 2004/07/15 18:53:25 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "darwin.h"
@@ -47,7 +54,8 @@ typedef struct {
     unsigned char      *shadowPtr;
 } FSScreenRec, *FSScreenPtr;
 
-#define FULLSCREEN_PRIV(pScreen) pScreen->devPrivates[fsScreenIndex].ptr
+#define FULLSCREEN_PRIV(pScreen) \
+    ((FSScreenPtr)pScreen->devPrivates[fsScreenIndex].ptr)
 
 static int                  fsScreenIndex;
 static CGDirectDisplayID   *quartzDisplayList = NULL;
@@ -57,7 +65,8 @@ static FSScreenPtr          quartzScreens[MAXSCREENS];
 static int                  darwinCmapPrivateIndex = -1;
 static unsigned long        darwinCmapGeneration = 0;
 
-#define CMAP_PRIV(pCmap) (pCmap)->devPrivates[darwinCmapPrivateIndex].ptr
+#define CMAP_PRIV(pCmap) \
+    ((CGDirectPaletteRef) (pCmap)->devPrivates[darwinCmapPrivateIndex].ptr)
 
 /*
  =============================================================================

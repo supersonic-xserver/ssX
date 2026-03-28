@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxpixmap.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxpixmap.c,v 1.1 2004/06/30 20:21:39 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -211,7 +218,6 @@ RegionPtr dmxBitmapToRegion(PixmapPtr pPixmap)
     pTmpReg = REGION_CREATE(pScreen, NullBox, 1);
     if(!pReg || !pTmpReg) return NullRegion;
 
-    Box.x1 = 0;
     for (y = 0; y < pPixmap->drawable.height; y++) {
 	Box.y1 = y;
 	Box.y2 = y + 1;

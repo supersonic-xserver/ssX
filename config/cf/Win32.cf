@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86$
+XCOMM platform:  $Xorg: Win32.cf,v 1.3 2000/08/17 19:41:46 cpqbld Exp $
 
 #ifndef OSName
 #define OSName DefaultOSName
@@ -120,6 +120,7 @@ XCOMM We're using the GNU file utilities
 #define XFileSearchPathBase Concat4($(LIBDIR)/;L/;T/;N;C,;S:$(LIBDIR)/;l/;T/;N;C,;S:$(LIBDIR)/;T/;N;C,;S:$(LIBDIR)/;L/;T/;N;S:$(LIBDIR)/;l/;T/;N;S:$(LIBDIR)/;T/;N;S)
 
 #define XawI18nDefines		-DHAS_WCHAR_H
+#define UseRgbTxt  YES
 #define HasCbrt NO
 #define HasFfs NO
 #define HasXdmAuth NO

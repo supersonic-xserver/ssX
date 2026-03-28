@@ -1,6 +1,6 @@
 .\" Use -ms and macros.t
 .\" edited for DP edits and code consistency w/ core protocol/xlib 4/2/96
-.\" $XFree86$
+.\" $Xorg: xtestlib.ms,v 1.3 2000/08/17 19:42:37 cpqbld Exp $
 .de lP
 .ne 8
 .LP

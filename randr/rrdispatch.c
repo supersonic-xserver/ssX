@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,8 +26,12 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
  * OF THIS SOFTWARE.
  */
-
 #include "randrstr.h"
+#include "dixstruct.h"
+#include "windowstr.h"
+#include "resource.h"
+#include "securitysrv.h"
+#include "dixaccess.h"
 
 #define SERVER_RANDR_MAJOR	1
 #define SERVER_RANDR_MINOR	2
@@ -55,10 +66,10 @@ ProcRRQueryVersion (ClientPtr client)
     rep.majorVersion = SERVER_RANDR_MAJOR;
     rep.minorVersion = SERVER_RANDR_MINOR;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-    	swapl(&rep.length, n);
-	swapl(&rep.majorVersion, n);
-	swapl(&rep.minorVersion, n);
+    	swaps(&rep.sequenceNumber);
+    	swapl(&rep.length);
+	swapl(&rep.majorVersion);
+	swapl(&rep.minorVersion);
     }
     WriteToClient(client, sizeof(xRRQueryVersionReply), (char *)&rep);
     return (client->noClientException);

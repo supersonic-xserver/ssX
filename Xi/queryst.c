@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/queryst.c,v 3.6 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1998, 1998  The Open Group
@@ -34,18 +42,14 @@ from The Open Group.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
-#include "windowstr.h"	/* window structure  */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
+#include "windowstr.h"			/* window structure  */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exevents.h"
 #include "exglobals.h"
 
@@ -58,14 +62,15 @@ from The Open Group.
  */
 
 int
-SProcXQueryDeviceState(ClientPtr client)
-{
-    char n;
+SProcXQueryDeviceState(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xQueryDeviceStateReq);
     swaps(&stuff->length, n);
-    return (ProcXQueryDeviceState(client));
-}
+    return(ProcXQueryDeviceState(client));
+    }
 
 /***********************************************************************
  *
@@ -74,22 +79,23 @@ SProcXQueryDeviceState(ClientPtr client)
  */
 
 int
-ProcXQueryDeviceState(ClientPtr client)
-{
-    char n;
-    int i;
-    int num_classes = 0;
-    int total_length = 0;
-    char *buf, *savbuf;
-    KeyClassPtr k;
-    xKeyState *tk;
-    ButtonClassPtr b;
-    xButtonState *tb;
-    ValuatorClassPtr v;
-    xValuatorState *tv;
-    xQueryDeviceStateReply rep;
-    DeviceIntPtr dev;
-    int *values;
+ProcXQueryDeviceState(client)
+    register ClientPtr client;
+    {
+    register char 		n;
+    int 			i;
+    int 			num_classes = 0;
+    int 			total_length = 0;
+    char			*buf, *savbuf;
+    KeyClassPtr 		k;
+    xKeyState			*tk;
+    ButtonClassPtr 		b;
+    xButtonState		*tb;
+    ValuatorClassPtr 		v;
+    xValuatorState		*tv;
+    xQueryDeviceStateReply	rep;
+    DeviceIntPtr		dev;
+    int				*values;
 
     REQUEST(xQueryDeviceStateReq);
     REQUEST_SIZE_MATCH(xQueryDeviceStateReq);
@@ -99,83 +105,96 @@ ProcXQueryDeviceState(ClientPtr client)
     rep.length = 0;
     rep.sequenceNumber = client->sequence;
 
-    dev = LookupDeviceIntRec(stuff->deviceid);
-    if (dev == NULL) {
-	SendErrorToClient(client, IReqCode, X_QueryDeviceState, 0, BadDevice);
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	SendErrorToClient(client, IReqCode, X_QueryDeviceState, 0, 
+		BadDevice);
 	return Success;
-    }
+	}
 
     v = dev->valuator;
     if (v != NULL && v->motionHintWindow != NULL)
 	MaybeStopDeviceHint(dev, client);
 
     k = dev->key;
-    if (k != NULL) {
-	total_length += sizeof(xKeyState);
+    if (k != NULL)
+	{
+	total_length += sizeof (xKeyState);
 	num_classes++;
-    }
+	}
 
     b = dev->button;
-    if (b != NULL) {
-	total_length += sizeof(xButtonState);
+    if (b != NULL)
+	{
+	total_length += sizeof (xButtonState);
 	num_classes++;
-    }
+	}
 
-    if (v != NULL) {
-	total_length += (sizeof(xValuatorState) + (v->numAxes * sizeof(int)));
+    if (v != NULL)
+	{
+	total_length += (sizeof(xValuatorState) + 
+			(v->numAxes * sizeof(int)));
 	num_classes++;
-    }
-    buf = (char *)xalloc(total_length);
-    if (!buf) {
-	SendErrorToClient(client, IReqCode, X_QueryDeviceState, 0, BadAlloc);
+	}
+    buf = (char *) xalloc (total_length);
+    if (!buf)
+	{
+	SendErrorToClient(client, IReqCode, X_QueryDeviceState, 0, 
+		BadAlloc);
 	return Success;
-    }
+	}
     savbuf = buf;
 
-    if (k != NULL) {
+    if (k != NULL)
+	{
 	tk = (xKeyState *) buf;
 	tk->class = KeyClass;
-	tk->length = sizeof(xKeyState);
+	tk->length = sizeof (xKeyState);
 	tk->num_keys = k->curKeySyms.maxKeyCode - k->curKeySyms.minKeyCode + 1;
-	for (i = 0; i < 32; i++)
+	for (i = 0; i<32; i++)
 	    tk->keys[i] = k->down[i];
-	buf += sizeof(xKeyState);
-    }
+	buf += sizeof (xKeyState);
+	}
 
-    if (b != NULL) {
+    if (b != NULL)
+	{
 	tb = (xButtonState *) buf;
 	tb->class = ButtonClass;
-	tb->length = sizeof(xButtonState);
+	tb->length = sizeof (xButtonState);
 	tb->num_buttons = b->numButtons;
-	for (i = 0; i < 32; i++)
+	for (i = 0; i<32; i++)
 	    tb->buttons[i] = b->down[i];
-	buf += sizeof(xButtonState);
-    }
+	buf += sizeof (xButtonState);
+	}
 
-    if (v != NULL) {
+    if (v != NULL)
+	{
 	tv = (xValuatorState *) buf;
 	tv->class = ValuatorClass;
-	tv->length = sizeof(xValuatorState);
+	tv->length = sizeof (xValuatorState);
 	tv->num_valuators = v->numAxes;
 	tv->mode = v->mode;
 	buf += sizeof(xValuatorState);
-	for (i = 0, values = v->axisVal; i < v->numAxes; i++) {
-	    *((int *)buf) = *values++;
-	    if (client->swapped) {
-		swapl((int *)buf, n);	/* macro - braces needed */
-	    }
+	for (i=0, values=v->axisVal; i<v->numAxes; i++)
+	    {
+	    *((int *) buf) = *values++;
+	    if (client->swapped)
+		{
+		swapl ((int *) buf, n);/* macro - braces needed */
+		}
 	    buf += sizeof(int);
+	    }
 	}
-    }
 
     rep.num_classes = num_classes;
     rep.length = (total_length + 3) >> 2;
-    WriteReplyToClient(client, sizeof(xQueryDeviceStateReply), &rep);
+    WriteReplyToClient (client, sizeof(xQueryDeviceStateReply), &rep);
     if (total_length > 0)
-	WriteToClient(client, total_length, savbuf);
-    xfree(savbuf);
+	WriteToClient (client, total_length, savbuf);
+    xfree (savbuf);
     return Success;
-}
+    }
 
 /***********************************************************************
  *
@@ -185,11 +204,14 @@ ProcXQueryDeviceState(ClientPtr client)
  */
 
 void
-SRepXQueryDeviceState(ClientPtr client, int size, xQueryDeviceStateReply * rep)
-{
-    char n;
+SRepXQueryDeviceState (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xQueryDeviceStateReply	*rep;
+    {
+    register char n;
 
     swaps(&rep->sequenceNumber, n);
     swapl(&rep->length, n);
     WriteToClient(client, size, (char *)rep);
-}
+    }

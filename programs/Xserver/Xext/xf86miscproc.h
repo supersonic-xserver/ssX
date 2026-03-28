@@ -1,11 +1,23 @@
-/* $XFree86: xc/programs/Xserver/Xext/xf86miscproc.h,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xf86miscproc.h,v 1.6 2003/04/03 16:15:47 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* Prototypes for Pointer/Keyboard functions that the DDX must provide */
 
 #ifndef _XF86MISCPROC_H_
 #define _XF86MISCPROC_H_
-
-#include "extnsionst.h"
 
 typedef enum {
     MISC_MSE_PROTO,
@@ -46,7 +58,7 @@ typedef enum {
 #define MISC_MSEFLAG_CLEARRTS	2
 #define MISC_MSEFLAG_REOPEN	128
 
-void XFree86MiscExtensionInit(INITARGS);
+void XFree86MiscExtensionInit(void);
 
 Bool MiscExtGetMouseSettings(pointer *mouse, char **devname);
 int  MiscExtGetMouseValue(pointer mouse, MiscExtMseValType valtype);

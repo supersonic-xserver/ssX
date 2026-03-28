@@ -1,5 +1,12 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbbstore.c,v 1.6tsi Exp $ */
-/*
+/* $XFree86: xc/programs/Xserver/cfb/cfbbstore.c,v 1.5 2001/01/17 22:36:34 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*-
  * cfbbstore.c --
  *	Functions required by the backing-store implementation in MI.
  *
@@ -15,16 +22,17 @@
  *
  *
  */
+/* $Xorg: cfbbstore.c,v 1.3 2000/08/17 19:48:13 cpqbld Exp $ */
 
 #include    "cfb.h"
-#include    <X11/X.h>
+#include    "X.h"
 #include    "mibstore.h"
 #include    "regionstr.h"
 #include    "scrnintstr.h"
 #include    "pixmapstr.h"
 #include    "windowstr.h"
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * cfbSaveAreas --
  *	Function called by miSaveAreas to actually fetch the areas to be
@@ -45,13 +53,17 @@
  *-----------------------------------------------------------------------
  */
 void
-cfbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
-	     WindowPtr pWin)
+cfbSaveAreas(pPixmap, prgnSave, xorg, yorg, pWin)
+    PixmapPtr	  	pPixmap;  	/* Backing pixmap */
+    RegionPtr	  	prgnSave; 	/* Region to save (pixmap-relative) */
+    int	    	  	xorg;	    	/* X origin of region */
+    int	    	  	yorg;	    	/* Y origin of region */
+    WindowPtr		pWin;
 {
-    DDXPointPtr		 pPt;
+    register DDXPointPtr pPt;
     DDXPointPtr		pPtsInit;
-    BoxPtr		pBox;
-    int			i;
+    register BoxPtr	pBox;
+    register int	i;
     ScreenPtr		pScreen = pPixmap->drawable.pScreen;
     PixmapPtr		pScrPix;
     
@@ -78,7 +90,7 @@ cfbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
     DEALLOCATE_LOCAL (pPtsInit);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * cfbRestoreAreas --
  *	Function called by miRestoreAreas to actually fetch the areas to be
@@ -99,13 +111,17 @@ cfbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
  *-----------------------------------------------------------------------
  */
 void
-cfbRestoreAreas(PixmapPtr pPixmap, RegionPtr prgnRestore, int xorg, int yorg,
-		WindowPtr pWin)
+cfbRestoreAreas(pPixmap, prgnRestore, xorg, yorg, pWin)
+    PixmapPtr	  	pPixmap;  	/* Backing pixmap */
+    RegionPtr	  	prgnRestore; 	/* Region to restore (screen-relative)*/
+    int	    	  	xorg;	    	/* X origin of window */
+    int	    	  	yorg;	    	/* Y origin of window */
+    WindowPtr		pWin;
 {
-    DDXPointPtr 	pPt;
+    register DDXPointPtr pPt;
     DDXPointPtr		pPtsInit;
-    BoxPtr		pBox;
-    int			i;
+    register BoxPtr	pBox;
+    register int	i;
     ScreenPtr		pScreen = pPixmap->drawable.pScreen;
     PixmapPtr		pScrPix;
     

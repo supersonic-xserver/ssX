@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftbase.c                                                               */
 /*                                                                         */
 /*    Single object library component (body only).                         */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,27 +23,23 @@
 /***************************************************************************/
 
 
-#ifdef FT_FLAT_COMPILE
+#include <ft2build.h>
 
-#include "ftcalc.c"
-#include "ftobjs.c"
+#define  FT_MAKE_OPTION_SINGLE_OBJECT
+
+#include "ftutil.c"
+#include "ftdbgmem.c"
 #include "ftstream.c"
-#include "ftlist.c"
+#include "ftcalc.c"
+#include "fttrigon.c"
 #include "ftoutln.c"
-#include "ftextend.c"
+#include "ftgloadr.c"
+#include "ftobjs.c"
 #include "ftnames.c"
+#include "ftrfork.c"
 
-#else /* FT_FLAT_COMPILE */
-
-#include <base/ftcalc.c>
-#include <base/ftobjs.c>
-#include <base/ftstream.c>
-#include <base/ftlist.c>
-#include <base/ftoutln.c>
-#include <base/ftextend.c>
-#include <base/ftnames.c>
-
-#endif /* FT_FLAT_COMPILE */
-
+#if defined( __APPLE__ ) && !defined ( DARWIN_NO_CARBON )
+#include "ftmac.c"
+#endif
 
 /* END */

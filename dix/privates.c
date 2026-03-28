@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993, 1998  The Open Group
 
@@ -25,10 +39,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/dix/privates.c,v 3.10 2005/10/14 15:16:22 tsi Exp $ */
 
 #include <X11/X.h>
 #include "scrnintstr.h"
@@ -41,71 +52,12 @@ from The Open Group.
 #include "colormapst.h"
 #include "servermd.h"
 #include "site.h"
-#include "inputstr.h"
-#include "extnsionst.h"
 
 /*
  *  See the Wrappers and devPrivates section in "Definition of the
  *  Porting Layer for the X v11 Sample Server" (doc/Server/ddx.tbl.ms)
  *  for information on how to use devPrivates.
  */
-
-/*
- *  extension private machinery
- */
-
-static int  extensionPrivateCount;
-int extensionPrivateLen;
-unsigned *extensionPrivateSizes;
-unsigned totalExtensionSize;
-
-void
-ResetExtensionPrivates(void)
-{
-    extensionPrivateCount = 0;
-    extensionPrivateLen = 0;
-    xfree(extensionPrivateSizes);
-    extensionPrivateSizes = (unsigned *)NULL;
-    totalExtensionSize =
-	((sizeof(ExtensionEntry) + sizeof(long) - 1) / sizeof(long)) * sizeof(long);
-}
-
-_X_EXPORT int
-AllocateExtensionPrivateIndex(void)
-{
-    return extensionPrivateCount++;
-}
-
-_X_EXPORT Bool
-AllocateExtensionPrivate(int index2, unsigned amount)
-{
-    unsigned oldamount;
-
-    /* Round up sizes for proper alignment */
-    amount = ((amount + (sizeof(long) - 1)) / sizeof(long)) * sizeof(long);
-
-    if (index2 >= extensionPrivateLen)
-    {
-	unsigned *nsizes;
-	nsizes = (unsigned *)xrealloc(extensionPrivateSizes,
-				      (index2 + 1) * sizeof(unsigned));
-	if (!nsizes)
-	    return FALSE;
-	while (extensionPrivateLen <= index2)
-	{
-	    nsizes[extensionPrivateLen++] = 0;
-	    totalExtensionSize += sizeof(DevUnion);
-	}
-	extensionPrivateSizes = nsizes;
-    }
-    oldamount = extensionPrivateSizes[index2];
-    if (amount > oldamount)
-    {
-	extensionPrivateSizes[index2] = amount;
-	totalExtensionSize += (amount - oldamount);
-    }
-    return TRUE;
-}
 
 /*
  *  client private machinery
@@ -117,7 +69,7 @@ unsigned *clientPrivateSizes;
 unsigned totalClientSize;
 
 void
-ResetClientPrivates(void)
+ResetClientPrivates()
 {
     clientPrivateCount = 0;
     clientPrivateLen = 0;
@@ -127,13 +79,13 @@ ResetClientPrivates(void)
 	((sizeof(ClientRec) + sizeof(long) - 1) / sizeof(long)) * sizeof(long);
 }
 
-_X_EXPORT int
-AllocateClientPrivateIndex(void)
+int
+AllocateClientPrivateIndex()
 {
     return clientPrivateCount++;
 }
 
-_X_EXPORT Bool
+Bool
 AllocateClientPrivate(int index2, unsigned amount)
 {
     unsigned oldamount;
@@ -171,7 +123,7 @@ AllocateClientPrivate(int index2, unsigned amount)
 int  screenPrivateCount;
 
 void
-ResetScreenPrivates(void)
+ResetScreenPrivates()
 {
     screenPrivateCount = 0;
 }
@@ -179,8 +131,8 @@ ResetScreenPrivates(void)
 /* this can be called after some screens have been created,
  * so we have to worry about resizing existing devPrivates
  */
-_X_EXPORT int
-AllocateScreenPrivateIndex(void)
+int
+AllocateScreenPrivateIndex()
 {
     int		idx;
     int		i;
@@ -213,18 +165,18 @@ AllocateScreenPrivateIndex(void)
 static int  windowPrivateCount;
 
 void
-ResetWindowPrivates(void)
+ResetWindowPrivates()
 {
     windowPrivateCount = 0;
 }
 
-_X_EXPORT int
-AllocateWindowPrivateIndex(void)
+int
+AllocateWindowPrivateIndex()
 {
     return windowPrivateCount++;
 }
 
-_X_EXPORT Bool
+Bool
 AllocateWindowPrivate(ScreenPtr pScreen, int index2, unsigned amount)
 {
     unsigned oldamount;
@@ -263,18 +215,18 @@ AllocateWindowPrivate(ScreenPtr pScreen, int index2, unsigned amount)
 static int  gcPrivateCount;
 
 void
-ResetGCPrivates(void)
+ResetGCPrivates()
 {
     gcPrivateCount = 0;
 }
 
-_X_EXPORT int
-AllocateGCPrivateIndex(void)
+int
+AllocateGCPrivateIndex()
 {
     return gcPrivateCount++;
 }
 
-_X_EXPORT Bool
+Bool
 AllocateGCPrivate(ScreenPtr pScreen, int index2, unsigned amount)
 {
     unsigned oldamount;
@@ -309,21 +261,22 @@ AllocateGCPrivate(ScreenPtr pScreen, int index2, unsigned amount)
 /*
  *  pixmap private machinery
  */
+#ifdef PIXPRIV
 static int  pixmapPrivateCount;
 
 void
-ResetPixmapPrivates(void)
+ResetPixmapPrivates()
 {
     pixmapPrivateCount = 0;
 }
 
-_X_EXPORT int
-AllocatePixmapPrivateIndex(void)
+int
+AllocatePixmapPrivateIndex()
 {
     return pixmapPrivateCount++;
 }
 
-_X_EXPORT Bool
+Bool
 AllocatePixmapPrivate(ScreenPtr pScreen, int index2, unsigned amount)
 {
     unsigned oldamount;
@@ -354,6 +307,7 @@ AllocatePixmapPrivate(ScreenPtr pScreen, int index2, unsigned amount)
     pScreen->totalPixmapSize = BitmapBytePad(pScreen->totalPixmapSize * 8);
     return TRUE;
 }
+#endif
 
 
 /*
@@ -363,14 +317,14 @@ AllocatePixmapPrivate(ScreenPtr pScreen, int index2, unsigned amount)
 int  colormapPrivateCount;
 
 void
-ResetColormapPrivates(void)
+ResetColormapPrivates()
 {
     colormapPrivateCount = 0;
 }
 
 
-_X_EXPORT int
-AllocateColormapPrivateIndex (InitCmapPrivFunc initPrivFunc)
+int
+AllocateColormapPrivateIndex(InitCmapPrivFunc initPrivFunc)
 {
     int		index;
     int		i;
@@ -400,13 +354,10 @@ AllocateColormapPrivateIndex (InitCmapPrivFunc initPrivFunc)
 	{
 	    privs = (DevUnion *) xrealloc (pColormap->devPrivates,
 		colormapPrivateCount * sizeof(DevUnion));
-	    if (!privs) {
-		colormapPrivateCount--;
-		return -1;
-	    }
-	    bzero(&privs[index], sizeof(DevUnion));
+    
 	    pColormap->devPrivates = privs;
-	    if (!(*initPrivFunc)(pColormap,index))
+    
+	    if (!privs || !(*initPrivFunc)(pColormap))
 	    {
 		colormapPrivateCount--;
 		return -1;
@@ -415,40 +366,4 @@ AllocateColormapPrivateIndex (InitCmapPrivFunc initPrivFunc)
     }
 
     return index;
-}
-
-/*
- *  device private machinery
- */
-
-static int devicePrivateIndex = 0;
-
-_X_EXPORT int
-AllocateDevicePrivateIndex(void)
-{
-    return devicePrivateIndex++;
-}
-
-_X_EXPORT Bool
-AllocateDevicePrivate(DeviceIntPtr device, int index)
-{
-    if (device->nPrivates < ++index) {
-	DevUnion *nprivs = (DevUnion *) xrealloc(device->devPrivates,
-						 index * sizeof(DevUnion));
-	if (!nprivs)
-	    return FALSE;
-	device->devPrivates = nprivs;
-	bzero(&nprivs[device->nPrivates], sizeof(DevUnion)
-	      * (index - device->nPrivates));
-	device->nPrivates = index;
-	return TRUE;
-    } else {
-	return TRUE;
-    }
-}
-
-void
-ResetDevicePrivateIndex(void)
-{
-    devicePrivateIndex = 0;
 }

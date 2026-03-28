@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/xf86sym.c,v 1.266tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/xf86sym.c,v 1.253 2005/02/26 18:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *
@@ -23,7 +37,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -105,8 +119,11 @@
 #include "xf86_ansic.h"
 #include "xisb.h"
 #include "vbe.h"
-#if defined(__sparc__)
+#ifndef __OpenBSD__
 #include "xf86sbusBus.h"
+#endif
+#ifdef USB_HID
+#include <usbhid.h>
 #endif
 #include "compiler.h"
 
@@ -149,11 +166,7 @@ extern void *__remq(long, long);
 extern void *__remqu(long, long);
 #endif
 
-#undef NO_HARD_QUAD
-#if defined(CSRG_BASED) && defined(__sparc__) && defined(__GNUC__) && \
-    ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 2)) && \
-    (defined(__arch64__) || defined(__sparcv9) || defined(__sparcv9__)))
-#define NO_HARD_QUAD
+#if defined(__sparc__) && defined(__FreeBSD__)
 extern float _Qp_qtos(unsigned int *);
 extern double _Qp_qtod(unsigned int *);
 extern unsigned long long _Qp_qtoux(unsigned int *);
@@ -235,6 +248,84 @@ extern unsigned long long __xtoull(long);
 #pragma weak __xtoull
 #endif
 
+#if defined(__arm__) && defined(__linux__)
+#include <sys/io.h>
+#endif
+
+#if defined(__arm__) && defined(__NetBSD__)
+extern unsigned int IOPortBase;
+
+/* pull in the softfloat functions */
+extern float __addsf3 (float, float);
+extern double __adddf3 (double, double);
+extern float __subsf3 (float, float);
+extern double __subdf3 (double, double);
+extern float __floatsisf (long);
+extern double __floatsidf (long);
+extern float __floatdisf (long long);
+extern double __floatdidf (long long);
+extern long __fixsfsi (float);
+extern long __fixdfsi (double);
+extern long long __fixsfdi (float);
+extern long long __fixdfdi (double);
+extern unsigned long __fixunssfsi (float);
+extern unsigned long __fixunsdfsi (double);
+extern double __extendsfdf2 (float);
+extern float __truncdfsf2 (double);
+extern int __ltsf2(float, float);
+extern int __lesf2(float, float);
+extern int __eqsf2(float, float);
+extern int __nesf2(float, float);
+extern int __gesf2(float, float);
+extern int __gtsf2(float, float);
+extern float __negsf2(float);
+extern int __ltdf2(double, double);
+extern int __ledf2(double, double);
+extern int __eqdf2(double, double);
+extern int __nedf2(double, double);
+extern int __gedf2(double, double);
+extern int __gtdf2(double, double);
+extern double __negdf2(double);
+
+#pragma weak IOPortBase
+#pragma weak __addsf3
+#pragma weak __adddf3
+#pragma weak __subsf3
+#pragma weak __subdf3
+#pragma weak __floatsisf
+#pragma weak __floatsidf
+#pragma weak __floatdisf
+#pragma weak __floatdidf
+#pragma weak __fixsfsi
+#pragma weak __fixdfsi
+#pragma weak __fixsfdi
+#pragma weak __fixdfdi
+#pragma weak __fixunssfsi
+#pragma weak __fixunsdfsi
+#pragma weak __extendsfdf2
+#pragma weak __truncdfsf2
+#pragma weak __ltsf2
+#pragma weak __lesf2
+#pragma weak __eqsf2
+#pragma weak __nesf2
+#pragma weak __gesf2
+#pragma weak __gtsf2
+#pragma weak __negsf2
+#pragma weak __ltdf2
+#pragma weak __ledf2
+#pragma weak __eqdf2
+#pragma weak __nedf2
+#pragma weak __gedf2
+#pragma weak __gtdf2
+#pragma weak __negdf2
+
+#endif
+
+#if defined(__NetBSD__)
+extern long __stack_chk_guard[];
+extern void __stack_chk_fail(void);
+#endif
+
 #if defined(__powerpc__) && (defined(Lynx) || defined(linux))
 void _restf14();
 void _restf17();
@@ -263,9 +354,8 @@ void _savef27();
 void _savef28();
 void _savef29();
 
-/*
- * Even if we compile without -DNO_INLINE we still provide
- * the usual port i/o functions for module use.
+/* even if we compile without -DNO_INLINE we still provide
+ * the usual port i/o functions for module use
  */
 
 extern volatile unsigned char *ioBase;
@@ -284,14 +374,6 @@ extern void stw_brx(unsigned short, volatile unsigned char *, int);
 extern unsigned long ldl_brx(volatile unsigned char *, int);
 extern unsigned short ldw_brx(volatile unsigned char *, int);
 #endif
-
-/*
- * For propolice/gcc stack protector.
- */
-extern long __guard[8];
-extern void __stack_smash_handler(char func[], int damaged);
-#pragma weak __guard
-#pragma weak __stack_smash_handler
 
 /* XFree86 things */
 
@@ -357,6 +439,24 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(XisbTrace)
     SYMFUNC(XisbBlockDuration)
 #endif
+#ifdef USB_HID
+    SYMFUNC(hid_get_report_desc)
+    SYMFUNC(hid_use_report_desc)
+    SYMFUNC(hid_dispose_report_desc)
+    SYMFUNC(hid_start_parse)
+    SYMFUNC(hid_end_parse)
+    SYMFUNC(hid_get_item)
+    SYMFUNC(hid_report_size)
+    SYMFUNC(hid_locate)
+    SYMFUNC(hid_usage_page)
+    SYMFUNC(hid_usage_in_page)
+    SYMFUNC(hid_parse_usage_page)
+    SYMFUNC(hid_parse_usage_in_page)
+    SYMFUNC(hid_init)
+    SYMFUNC(hid_get_data)
+    SYMFUNC(hid_set_data)
+#endif
+
 
     /* xf86Bus.c */
     SYMFUNC(xf86CheckPciSlot)
@@ -365,9 +465,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86GetPciEntity)
     SYMFUNC(xf86GetPciConfigInfo)
     SYMFUNC(xf86SetPciVideo)
-    SYMFUNC(xf86CheckPciVideo)
-    SYMFUNC(xf86CheckPciSparseIO)
-    SYMFUNC(xf86DomainHasBIOSSegments)
     SYMFUNC(xf86ClaimIsaSlot)
     SYMFUNC(xf86ClaimFbSlot)
     SYMFUNC(xf86ClaimNoSlot)
@@ -559,7 +656,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(DGACreateColormap)
     SYMFUNC(DGAOpenFramebuffer)
     SYMFUNC(DGACloseFramebuffer)
-    SYMFUNC(DGAShutdown)
 
     /* xf86DPMS.c */
     SYMFUNC(xf86DPMSInit)
@@ -573,7 +669,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86AddEnabledDevice)
     SYMFUNC(xf86RemoveEnabledDevice)
     SYMFUNC(xf86InterceptSignals)
-    SYMFUNC(xf86ShowStackTrace)
     SYMFUNC(xf86EnableVTSwitch)
 
     /* xf86Helper.c */
@@ -629,17 +724,12 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86CommonSpecialKey)
     SYMFUNC(xf86IsPc98)
     SYMFUNC(xf86DisableRandR)
-    SYMFUNC(xf86GetRotation)
     SYMFUNC(xf86GetVersion)
     SYMFUNC(xf86GetModuleVersion)
-    SYMFUNC(xf86GetSubModuleByName)
     SYMFUNC(xf86GetClocks)
     SYMFUNC(xf86SetPriority)
-    SYMFUNC(xf86SetParentModuleRequirements)
     SYMFUNC(xf86LoadDrvSubModule)
-    SYMFUNC(xf86LoadDrvSubModuleWithRequirements)
     SYMFUNC(xf86LoadSubModule)
-    SYMFUNC(xf86LoadSubModuleWithRequirements)
     SYMFUNC(xf86LoadOneModule)
     SYMFUNC(xf86UnloadSubModule)
     SYMFUNC(xf86LoaderCheckSymbol)
@@ -647,10 +737,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86LoaderRefSymbols)
     SYMFUNC(xf86LoaderReqSymLists)
     SYMFUNC(xf86LoaderReqSymbols)
-    SYMFUNC(xf86LoaderModRefSymLists)
-    SYMFUNC(xf86LoaderModRefSymbols)
-    SYMFUNC(xf86LoaderModReqSymLists)
-    SYMFUNC(xf86LoaderModReqSymbols)
     SYMFUNC(xf86SetBackingStore)
     SYMFUNC(xf86SetSilkenMouse)
     /* SYMFUNC(xf86NewSerialNumber) */
@@ -672,12 +758,8 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86AddModuleInfo)
     SYMFUNC(xf86DeleteModuleInfo)
 
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
     /* xf86sbusBus.c */
-    SYMFUNC(xf86ParseSbusBusString)
-    SYMFUNC(xf86CompareSbusBusString)
-    SYMFUNC(xf86CheckSbusSlot)
-    SYMFUNC(xf86ClaimSbusSlot)
     SYMFUNC(xf86MatchSbusInstances)
     SYMFUNC(xf86GetSbusInfoForEntity)
     SYMFUNC(xf86GetEntityForSbusInfo)
@@ -686,12 +768,7 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86UnmapSbusMem)
     SYMFUNC(xf86SbusHideOsHwCursor)
     SYMFUNC(xf86SbusSetOsHwCursorCmap)
-    SYMFUNC(xf86SbusSetOsHwCursorImage)
-    SYMFUNC(xf86SbusSetOsHwCursor)
-    SYMFUNC(xf86SbusSetOsHwCursorPosition)
-    SYMFUNC(xf86SbusSetOsHwCursorHotSpot)
     SYMFUNC(xf86SbusHandleColormaps)
-    SYMFUNC(xf86SbusSaveScreen)
     SYMFUNC(sparcPromInit)
     SYMFUNC(sparcPromClose)
     SYMFUNC(sparcPromGetProperty)
@@ -919,7 +996,6 @@ LOOKUP xfree86LookupTab[] = {
 
     /* Loader functions */
     SYMFUNC(LoaderDefaultFunc)
-    SYMFUNC(LoaderSetParentModuleRequirements)
     SYMFUNC(LoadSubModule)
     SYMFUNC(DuplicateModule)
     SYMFUNC(LoaderErrorMsg)
@@ -930,10 +1006,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(LoaderReqSymLists)
     SYMFUNC(LoaderRefSymbols)
     SYMFUNC(LoaderRefSymLists)
-    SYMFUNC(LoaderModReqSymbols)
-    SYMFUNC(LoaderModReqSymLists)
-    SYMFUNC(LoaderModRefSymbols)
-    SYMFUNC(LoaderModRefSymLists)
     SYMFUNC(UnloadSubModule)
     SYMFUNC(LoaderSymbol)
     SYMFUNC(LoaderListDirs)
@@ -1029,7 +1101,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86pow)
     SYMFUNC(xf86printf)
     SYMFUNC(xf86qsort)
-    SYMFUNC(xf86rand)
     SYMFUNC(xf86read)
     SYMFUNC(xf86realloc)
     SYMFUNC(xf86remove)
@@ -1185,7 +1256,7 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(outw)
     SYMFUNC(outl)
 #endif
-#if defined(__powerpc__) && !defined(__OpenBSD__)
+#if defined(__powerpc__) && !defined(__OpenBSD__) && !defined(__NetBSD__)
     SYMFUNC(inb)
     SYMFUNC(inw)
     SYMFUNC(inl)
@@ -1298,19 +1369,53 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(inl)
 #endif
 
-#if defined(NO_HARD_QUAD)
+#ifdef __FreeBSD__
+#if defined(__sparc__)
     SYMFUNC(_Qp_qtos)
     SYMFUNC(_Qp_qtod)
     SYMFUNC(_Qp_qtoux)
     SYMFUNC(_Qp_uitoq)
     SYMFUNC(_Qp_dtoq)
 #endif
+#endif
 
-    /*
-     * For propolice/gcc stack protector.
-     */
-    SYMFUNC(__stack_smash_handler)
-    SYMVAR(__guard)
+#if defined(__NetBSD__)
+    SYMVAR(__stack_chk_guard)
+    SYMFUNC(__stack_chk_fail)
+#if defined(__arm__)
+    SYMFUNC(IOPortBase)
+    SYMFUNC(__addsf3)
+    SYMFUNC(__adddf3)
+    SYMFUNC(__subsf3)
+    SYMFUNC(__subdf3)
+    SYMFUNC(__floatsisf)
+    SYMFUNC(__floatsidf)
+    SYMFUNC(__floatdisf)
+    SYMFUNC(__floatdidf)
+    SYMFUNC(__fixsfsi)
+    SYMFUNC(__fixdfsi)
+    SYMFUNC(__fixsfdi)
+    SYMFUNC(__fixdfdi)
+    SYMFUNC(__fixunssfsi)
+    SYMFUNC(__fixunsdfsi)
+    SYMFUNC(__extendsfdf2)
+    SYMFUNC(__truncdfsf2)
+    SYMFUNC(__ltsf2)
+    SYMFUNC(__lesf2)
+    SYMFUNC(__eqsf2)
+    SYMFUNC(__nesf2)
+    SYMFUNC(__gesf2)
+    SYMFUNC(__gtsf2)
+    SYMFUNC(__negsf2)
+    SYMFUNC(__ltdf2)
+    SYMFUNC(__ledf2)
+    SYMFUNC(__eqdf2)
+    SYMFUNC(__nedf2)
+    SYMFUNC(__gedf2)
+    SYMFUNC(__gtdf2)
+    SYMFUNC(__negdf2)
+#endif
+#endif
 
     /* Some variables. */
 
@@ -1363,5 +1468,5 @@ LOOKUP xfree86LookupTab[] = {
     /* Pci.c */
     SYMVAR(pciNumBuses)
 
-    LOOKUP_TERMINATOR
+    {0, 0}
 };

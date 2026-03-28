@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.h,v 1.10tsi Exp $ */
+/* $Xorg: lbx_zlib.h,v 1.4 2001/02/09 02:04:05 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996  The Open Group
@@ -49,9 +64,10 @@ from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
+/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.h,v 1.10 2001/12/14 19:57:00 dawes Exp $ */
 
 #include "zlib.h"
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 
 struct compress_private {
     z_stream	stream;

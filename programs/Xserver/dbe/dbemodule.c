@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/dbe/dbemodule.c,v 1.7 2000/01/25 18:37:37 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "xf86Module.h"
 
@@ -34,7 +48,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData dbeModuleData = { &VersRec, dbeSetup, NULL };
 
 static pointer
-dbeSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+dbeSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     LoadExtension(&dbeExt, FALSE);
 

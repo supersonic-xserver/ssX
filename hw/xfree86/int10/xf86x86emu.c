@@ -1,17 +1,23 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86x86emu.c,v 1.13 2002/09/16 18:06:09 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *                   XFree86 int10 module
  *   execute BIOS int 10h calls in x86 real mode environment
  *                 Copyright 1999 Egbert Eich
  */
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include <x86emu.h>
 #include "xf86.h"
+#include "xf86_ansic.h"
 #include "compiler.h"
 #include "xf86_OSproc.h"
 #include "xf86Pci.h"
+#include "xf86_libc.h"
 #define _INT10_PRIVATE
 #include "xf86int10.h"
 #include "int10Defines.h"

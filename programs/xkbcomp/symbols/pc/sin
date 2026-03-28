@@ -14,7 +14,7 @@
 // Alt-backslash represents the 'join' key, this requires
 // two codepoints, hence it also has to be manually constructed.
 //
-// $XFree86: xc/programs/xkbcomp/symbols/pc/sin,v 1.1 2004/11/18 21:26:18 dawes Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/sin,v 1.2 2004/12/03 02:18:39 dawes Exp $
 
 // Repaya = rayanna,AL,ZWJ
 // Rakaransaya = AL,ZWJ,rayanna

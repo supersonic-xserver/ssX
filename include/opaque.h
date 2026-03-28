@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -25,6 +39,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/include/opaque.h,v 1.16 2006/09/02 16:44:23 dawes Exp $ */
 
 #ifndef OPAQUE_H
 #define OPAQUE_H
@@ -33,11 +48,11 @@ from The Open Group.
 
 #include "globals.h"
 
-extern char *defaultTextFont;
-extern char *defaultCursorFont;
+extern const char *defaultTextFont;
+extern const char *defaultCursorFont;
 extern int MaxClients;
-extern volatile char isItTimeToYield;
-extern volatile char dispatchException;
+extern char isItTimeToYield;
+extern char dispatchException;
 
 /* bit values for dispatchException */
 #define DE_RESET     1
@@ -50,8 +65,8 @@ extern int ScreenSaverAllowExposures;
 extern int defaultScreenSaverBlanking;
 extern int defaultScreenSaverAllowExposures;
 extern int argcGlobal;
-extern char **argvGlobal;
-extern char *display;
+extern const char **argvGlobal;
+extern const char *display;
 
 extern int defaultBackingStore;
 extern Bool disableBackingStore;
@@ -70,10 +85,10 @@ extern int limitStackSpace;
 #ifdef RLIMIT_NOFILE
 extern int limitNoFile;
 #endif
+extern Bool permitOldBugs;
 extern Bool defeatAccessControl;
 extern long maxBigRequestSize;
 extern Bool blackRoot;
-extern Bool whiteRoot;
 
 extern Bool CoreDump;
 

@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_tcl.h,v 1.2 2002/12/16 16:18:55 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_tcl.h,v 1.1.1.2 2004/12/10 15:06:00 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -55,10 +62,12 @@ extern void r200TclFallback( GLcontext *ctx, GLuint bit, GLboolean mode );
 #define R200_TCL_FALLBACK_TEXGEN_0          0x10 /* texgen, unit 0 */
 #define R200_TCL_FALLBACK_TEXGEN_1          0x20 /* texgen, unit 1 */
 #define R200_TCL_FALLBACK_TEXGEN_2          0x40 /* texgen, unit 2 */
-#define R200_TCL_FALLBACK_TCL_DISABLE       0x80 /* user disable */
-#define R200_TCL_FALLBACK_BITMAP            0x100 /* draw bitmap with points */
-
-#define R200_MAX_TCL_VERTSIZE (4*4) /* using maos now... */
+#define R200_TCL_FALLBACK_TEXGEN_3          0x80 /* texgen, unit 3 */
+#define R200_TCL_FALLBACK_TEXGEN_4          0x100 /* texgen, unit 4 */
+#define R200_TCL_FALLBACK_TEXGEN_5          0x200 /* texgen, unit 5 */
+#define R200_TCL_FALLBACK_TCL_DISABLE       0x400 /* user disable */
+#define R200_TCL_FALLBACK_BITMAP            0x800 /* draw bitmap with points */
+#define R200_TCL_FALLBACK_VERTEX_PROGRAM    0x1000/* vertex program active */
 
 #define TCL_FALLBACK( ctx, bit, mode )	r200TclFallback( ctx, bit, mode )
 

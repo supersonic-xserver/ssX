@@ -1,3 +1,11 @@
+/* $XConsortium: XKBui.c /main/2 1995/12/07 21:18:19 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
  Copyright (c) 1996 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbui/XKBui.c,v 3.8tsi Exp $ */
+/* $XFree86: xc/lib/xkbui/XKBui.c,v 3.7 2003/11/17 22:20:25 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <stdio.h>
@@ -96,7 +104,7 @@ XkbDescPtr	xkb;
 	if (XAllocNamedColor(view->dpy,view->opts.cmap,spec,&sdef,&xdef)) {
 	    xkb->geom->colors[i].pixel= sdef.pixel;
 #ifdef DEBUG
-	    fprintf(stderr,"got pixel %ld for \"%s\"\n", sdef.pixel, spec);
+	    fprintf(stderr,"got pixel %d for \"%s\"\n",sdef.pixel,spec);
 #endif
 	    found= True;
 	}
@@ -108,7 +116,7 @@ XkbDescPtr	xkb;
 	    if (XAllocNamedColor(view->dpy,view->opts.cmap,buf,&sdef,&xdef)) {
 		xkb->geom->colors[i].pixel= sdef.pixel;
 #ifdef DEBUG
-		fprintf(stderr,"got pixel %ld for \"%s\"\n", sdef.pixel, spec);
+		fprintf(stderr,"got pixel %d for \"%s\"\n",sdef.pixel,spec);
 #endif
 		found= True;
 	    }

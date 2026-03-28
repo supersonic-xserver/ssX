@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * DviChar.h
  *
  * descriptions for mapping dvi names to
@@ -9,7 +16,7 @@
  * case insensitive, a dash seperating the
  * CharSetRegistry from the CharSetEncoding
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/xditview/DviChar.h,v 1.2 2001/08/01 00:45:03 tsi Exp $ */
 
 #ifndef _DVICHAR_H_
 #define _DVICHAR_H_

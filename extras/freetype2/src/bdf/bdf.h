@@ -1,6 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000 Computing Research Labs, New Mexico State University
- * Copyright 2001, 2002 Francesco Zappa Nardelli
+ * Copyright 2001, 2002, 2003 Francesco Zappa Nardelli
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -159,8 +166,8 @@ FT_BEGIN_HEADER
 
   typedef struct  _hashnode_
   {
-    char*  key;
-    void*  data;
+    const char*  key;
+    void*        data;
   
   } _hashnode, *hashnode;
 
@@ -283,7 +290,7 @@ FT_BEGIN_HEADER
 
   FT_LOCAL( bdf_property_t * )
   bdf_get_font_property( bdf_font_t*  font,
-                         char*        name );
+                         const char*  name );
 
 
 FT_END_HEADER

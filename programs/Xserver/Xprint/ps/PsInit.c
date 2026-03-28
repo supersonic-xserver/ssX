@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/ps/PsInit.c,v 1.16 2006/02/19 15:51:18 tsi Exp $ */
+/* $Xorg: PsInit.c,v 1.4 2001/02/09 02:04:36 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -73,6 +80,7 @@ in this Software without prior written authorization from The Open Group.
 **    *********************************************************
 **
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/ps/PsInit.c,v 1.14 2003/10/29 22:11:55 tsi Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -88,11 +96,6 @@ in this Software without prior written authorization from The Open Group.
 
 #include "windowstr.h"
 #include "DiPrint.h"
-
-#ifdef MITSHM
-#define _XSHM_SERVER_
-#include <X11/extensions/XShm.h>
-#endif
 
 static void AllocatePsPrivates(ScreenPtr pScreen);
 static int PsInitContext(XpContextPtr pCon);
@@ -110,7 +113,7 @@ InitializePsDriver(ndx, pScreen, argc, argv)
   int         ndx;
   ScreenPtr   pScreen;
   int         argc;
-  const char      **argv;
+  char      **argv;
 {
 #if 0
   PsScreenPrivPtr   pPriv;
@@ -225,10 +228,6 @@ InitializePsDriver(ndx, pScreen, argc, argv)
 	       (int) (pScreen->height / (pScreen->mmHeight / 25.40)),
 	       0, 8, nDepths,
                depths, visuals[1].vid, nVisuals, visuals);
-
-#ifdef MITSHM
-  ShmRegisterMiFuncs(pScreen);
-#endif
 
   if( cfbCreateDefColormap(pScreen)==FALSE ) return FALSE;
 

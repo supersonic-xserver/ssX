@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbbresd.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbbresd.c,v 1.5 2001/12/14 20:00:05 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mfbbresd.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
+#include "X.h"
 #include "misc.h"
 #include "mfb.h"
 #include "maskbits.h"
@@ -65,15 +72,30 @@ SOFTWARE.
     }
 
 void
-mfbBresD(int fgrop, int bgrop, int *pdashIndex, unsigned char *pDash,
-	 int numInDashList, int *pdashOffset, int isDoubleDash,
-	 PixelType *addrlbase, int nlwidth, int signdx, int signdy, int axis,
-	 int x1, int y1, int e, int e1, int e2, int len)
+mfbBresD(fgrop, bgrop,
+	 pdashIndex, pDash, numInDashList, pdashOffset, isDoubleDash,
+	 addrlbase, nlwidth,
+	 signdx, signdy, axis, x1, y1, e, e1, e2, len)
+int fgrop, bgrop;
+int *pdashIndex;	/* current dash */
+unsigned char *pDash;	/* dash list */
+int numInDashList;	/* total length of dash list */
+int *pdashOffset;	/* offset into current dash */
+int isDoubleDash;
+PixelType *addrlbase;	/* pointer to base of bitmap */
+int nlwidth;		/* width in longwords of bitmap */
+int signdx, signdy;	/* signs of directions */
+int axis;		/* major axis (Y_AXIS or X_AXIS) */
+int x1, y1;		/* initial point */
+register int e;		/* error accumulator */
+register int e1;	/* bresenham increments */
+int e2;
+int len;		/* length of line */
 {
-    int yinc;	/* increment to next scanline, in bytes */
-    PixelType *addrl;
-    int e3 = e2-e1;
-    MfbBits bit;
+    register int yinc;	/* increment to next scanline, in bytes */
+    register PixelType *addrl;
+    register int e3 = e2-e1;
+    register MfbBits bit;
     PixelType leftbit = mask[0]; /* leftmost bit to process in new word */
     PixelType rightbit = mask[PPW-1]; /* rightmost bit to process in new word */
     int dashIndex;

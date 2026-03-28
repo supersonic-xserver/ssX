@@ -1,3 +1,4 @@
+// $XConsortium: es /main/3 1996/08/31 12:19:38 kaleb $
 // $XFree86: xc/programs/xkbcomp/symbols/la,v 1.2 2002/06/04 22:50:58 dawes Exp $
 // Modified for a real Latin American Keyboard by Fabian Mandelbaum
 partial default alphanumeric_keys 

@@ -1,0 +1,25 @@
+XCOMM $XFree86: xc/programs/Xserver/Xprint/raster/Imakefile,v 1.9 2006/02/19 15:51:18 tsi Exp $
+
+#include <Server.tmpl>
+
+SRCS = Raster.c RasterAttVal.c
+OBJS = Raster.o RasterAttVal.o
+
+#ifndef XprtExcludedExtensions
+#define XprtExcludedExtensions /**/
+#endif
+
+   INCLUDES = -I.. -I../../cfb -I../../mfb -I../../mi -I../../include
+
+   LINTLIBS = ../../dix/llib-ldix.ln ../../os/llib-los.ln \
+	      ../../mfb/llib-lmfb.ln ../../mi/llib-lmi.ln \
+	      ../../cfb/llib-lcfb.ln
+
+    DEFINES = $(EXT_DEFINES) XprtExcludedExtensions
+
+NormalLibraryObjectRule()
+
+NormalLibraryTarget(raster,$(OBJS))
+NormalLintTarget($(SRCS))
+
+DependTarget()

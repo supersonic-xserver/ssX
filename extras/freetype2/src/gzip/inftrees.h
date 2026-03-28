@@ -1,4 +1,11 @@
 /* inftrees.h -- header to use inftrees.c
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
@@ -56,8 +63,8 @@ local  int inflate_trees_dynamic OF((
 local  int inflate_trees_fixed OF((
     uIntf *,                    /* literal desired/actual bit depth */
     uIntf *,                    /* distance desired/actual bit depth */
-    inflate_huft * FAR *,       /* literal/length tree result */
-    inflate_huft * FAR *,       /* distance tree result */
+    const inflate_huft * FAR *, /* literal/length tree result */
+    const inflate_huft * FAR *, /* distance tree result */
     z_streamp));                /* for memory allocation */
 
 #endif /* _INFTREES_H */

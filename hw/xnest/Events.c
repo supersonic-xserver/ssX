@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/hw/xnest/Events.c,v 1.4 2005/10/14 15:17:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,10 +19,6 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
 
 #include <X11/X.h>
 #define NEED_EVENTS
@@ -36,23 +40,17 @@ is" without express or implied warranty.
 #include "Screen.h"
 #include "XNWindow.h"
 #include "Events.h"
-#include "Keyboard.h"
-#include "Pointer.h"
-#include "mipointer.h"
 
 CARD32 lastEventTime = 0;
-
-extern xEvent *xnestEvents;
 
 void
 ProcessInputEvents()
 {
   mieqProcessInputEvents();
-  miPointerUpdate();
 }
 
 int
-TimeSinceLastInputEvent(void)
+TimeSinceLastInputEvent()
 {
     if (lastEventTime == 0)
         lastEventTime = GetTimeInMillis();
@@ -60,7 +58,7 @@ TimeSinceLastInputEvent(void)
 }
 
 void
-SetTimeSinceLastInputEvent(void)
+SetTimeSinceLastInputEvent()
 {
   lastEventTime = GetTimeInMillis();
 }
@@ -78,7 +76,7 @@ xnestNotExposurePredicate(Display *display, XEvent *event, char *args)
 }
 
 void
-xnestCollectExposures(void)
+xnestCollectExposures()
 {
   XEvent X;
   WindowPtr pWin;
@@ -102,62 +100,48 @@ xnestCollectExposures(void)
 }
 
 void
-xnestQueueKeyEvent(int type, unsigned int keycode)
-{
-  int i, n;
-
-  lastEventTime = GetTimeInMillis();
-  n = GetKeyboardEvents(xnestEvents, xnestKeyboardDevice, type, keycode);
-  for (i = 0; i < n; i++)
-    mieqEnqueue(xnestKeyboardDevice, xnestEvents + i);
-}
-
-void
-xnestCollectEvents(void)
+xnestCollectEvents()
 {
   XEvent X;
   xEvent x;
-  int i, n, valuators[2];
   ScreenPtr pScreen;
 
   while (XCheckIfEvent(xnestDisplay, &X, xnestNotExposurePredicate, NULL)) {
     switch (X.type) {
     case KeyPress:
-      xnestUpdateModifierState(X.xkey.state);
-      xnestQueueKeyEvent(KeyPress, X.xkey.keycode);
+      x.u.u.type = KeyPress;
+      x.u.u.detail = X.xkey.keycode;
+      x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
+      mieqEnqueue(&x);
       break;
       
     case KeyRelease:
-      xnestUpdateModifierState(X.xkey.state);
-      xnestQueueKeyEvent(KeyRelease, X.xkey.keycode);
+      x.u.u.type = KeyRelease;
+      x.u.u.detail = X.xkey.keycode;
+      x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
+      mieqEnqueue(&x);
       break;
       
     case ButtonPress:
-      xnestUpdateModifierState(X.xkey.state);
-      lastEventTime = GetTimeInMillis();
-      n = GetPointerEvents(xnestEvents, xnestPointerDevice, ButtonPress,
-                           X.xbutton.button, POINTER_RELATIVE, 0, 0, NULL);
-      for (i = 0; i < n; i++)
-        mieqEnqueue(xnestPointerDevice, xnestEvents + i);
+      x.u.u.type = ButtonPress;
+      x.u.u.detail = X.xbutton.button;
+      x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
+      mieqEnqueue(&x);
       break;
       
     case ButtonRelease:
-      xnestUpdateModifierState(X.xkey.state);
-      lastEventTime = GetTimeInMillis();
-      n = GetPointerEvents(xnestEvents, xnestPointerDevice, ButtonRelease,
-                           X.xbutton.button, POINTER_RELATIVE, 0, 0, NULL);
-      for (i = 0; i < n; i++)
-        mieqEnqueue(xnestPointerDevice, xnestEvents + i);
+      x.u.u.type = ButtonRelease;
+      x.u.u.detail = X.xbutton.button;
+      x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
+      mieqEnqueue(&x);
       break;
       
     case MotionNotify:
-      valuators[0] = X.xmotion.x;
-      valuators[1] = X.xmotion.y;
-      lastEventTime = GetTimeInMillis();
-      n = GetPointerEvents(xnestEvents, xnestPointerDevice, MotionNotify,
-                           0, POINTER_ABSOLUTE, 0, 2, valuators);
-      for (i = 0; i < n; i++)
-        mieqEnqueue(xnestPointerDevice, xnestEvents + i);
+      x.u.u.type = MotionNotify;
+      x.u.keyButtonPointer.rootX = X.xmotion.x;
+      x.u.keyButtonPointer.rootY = X.xmotion.y;
+      x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
+      mieqEnqueue(&x);
       break;
       
     case FocusIn:
@@ -184,13 +168,11 @@ xnestCollectEvents(void)
 	pScreen = xnestScreen(X.xcrossing.window);
 	if (pScreen) {
 	  NewCurrentScreen(pScreen, X.xcrossing.x, X.xcrossing.y);
-          valuators[0] = X.xcrossing.x;
-          valuators[1] = X.xcrossing.y;
-          lastEventTime = GetTimeInMillis();
-          n = GetPointerEvents(xnestEvents, xnestPointerDevice, MotionNotify,
-                               0, POINTER_ABSOLUTE, 0, 2, valuators);
-          for (i = 0; i < n; i++)
-            mieqEnqueue(xnestPointerDevice, xnestEvents + i);
+	  x.u.u.type = MotionNotify;
+	  x.u.keyButtonPointer.rootX = X.xcrossing.x;
+	  x.u.keyButtonPointer.rootY = X.xcrossing.y;
+	  x.u.keyButtonPointer.time = lastEventTime = GetTimeInMillis();
+	  mieqEnqueue(&x);
 	  xnestDirectInstallColormaps(pScreen);
 	}
       }
@@ -209,14 +191,6 @@ xnestCollectEvents(void)
       if (xnestParentWindow != (Window) 0 &&
 	  X.xdestroywindow.window == xnestParentWindow)
 	exit (0);
-      break;
-
-    case CirculateNotify:
-    case ConfigureNotify:
-    case GravityNotify:
-    case MapNotify:
-    case ReparentNotify:
-    case UnmapNotify:
       break;
       
     default:

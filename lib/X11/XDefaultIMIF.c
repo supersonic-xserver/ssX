@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1985, 1986, 1987, 1991, 1998  The Open Group
 
 Portions Copyright 2000 Sun Microsystems, Inc. All Rights Reserved.
@@ -41,7 +48,7 @@ interest in or to any trademark, service mark, logo or trade name of
 Sun Microsystems, Inc. or its licensors is granted.
 
 */
-/* $XFree86: xc/lib/X11/XDefaultIMIF.c,v 1.3 2003/04/13 19:22:18 dawes Exp $ */
+/* $XFree86: xc/lib/X11/XDefaultIMIF.c,v 1.4 2003/11/17 22:20:08 dawes Exp $ */
 
 #include <stdio.h>
 #define NEED_EVENTS

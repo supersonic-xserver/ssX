@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993 by Davor Matic
 
@@ -11,10 +25,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xnest/Screen.c,v 3.18 2007/01/23 18:03:12 tsi Exp $ */
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -49,7 +60,9 @@ Window xnestScreenSaverWindows[MAXSCREENS];
 extern void GlxWrapInitVisuals(miInitVisualsProcPtr *);
 #endif
 
-static int xnestScreenGeneration = -1;
+#ifdef PIXPRIV
+int xnestScreenGeneration = -1;
+#endif
 
 ScreenPtr
 xnestScreen(Window window)
@@ -124,16 +137,8 @@ static miPointerScreenFuncRec xnestPointerCursorFuncs =
     miPointerWarpCursor
 };
 
-static miPointerSpriteFuncRec xnestPointerSpriteFuncs = 
-{
-    xnestRealizeCursor,
-    xnestUnrealizeCursor,
-    xnestSetCursor,
-    xnestMoveCursor,
-};
-
 Bool
-xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
+xnestOpenScreen(int index, ScreenPtr pScreen, const int argc, const char *argv[])
 {
   VisualPtr visuals;
   DepthPtr depths;
@@ -152,6 +157,7 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
 			    sizeof(xnestPrivGC)))) 
     return False;
 
+#ifdef PIXPRIV
   if (xnestScreenGeneration != serverGeneration) {
       if ((xnestPixmapPrivateIndex = AllocatePixmapPrivateIndex()) < 0)
 	  return False;
@@ -161,6 +167,7 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
   if (!AllocatePixmapPrivate(pScreen,xnestPixmapPrivateIndex,
 			     sizeof (xnestPrivPixmap)))
       return False;
+#endif
   visuals = (VisualPtr)xalloc(xnestNumVisuals * sizeof(VisualRec));
   numVisuals = 0;
 
@@ -236,7 +243,7 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
 
     GlxWrapInitVisuals(&proc);
     /* GlxInitVisuals ignores the last three arguments. */
-    proc(&visuals, &depths, &numVisuals, &numDepths,
+    (*proc)(&visuals, &depths, &numVisuals, &numDepths,
 	 &rootDepth, &defaultVisual, 0, 0, 0);
   }
 #endif
@@ -255,7 +262,18 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
 	       defaultVisual, /* root visual */
 	       numVisuals, visuals);
 
-/*  miInitializeBackingStore(pScreen); */
+  miInitializeBackingStore(pScreen);
+
+  miDCInitialize(pScreen, &xnestPointerCursorFuncs);
+
+  pScreen->mmWidth = xnestWidth * DisplayWidthMM(xnestDisplay, 
+		       DefaultScreen(xnestDisplay)) / 
+			 DisplayWidth(xnestDisplay, 
+			   DefaultScreen(xnestDisplay));
+  pScreen->mmHeight = xnestHeight * DisplayHeightMM(xnestDisplay, 
+		        DefaultScreen(xnestDisplay)) /
+			  DisplayHeight(xnestDisplay, 
+			    DefaultScreen(xnestDisplay));
 
   pScreen->defColormap = (Colormap) FakeClientID(0);
   pScreen->minInstalledCmaps = MINCMAPS;
@@ -277,6 +295,7 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
 
   /* Random screen procedures */
 
+  pScreen->CloseScreen = xnestCloseScreen;
   pScreen->QueryBestSize = xnestQueryBestSize;
   pScreen->SaveScreen = xnestSaveScreen;
   pScreen->GetImage = xnestGetImage;
@@ -318,6 +337,16 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
   pScreen->RealizeFont = xnestRealizeFont;
   pScreen->UnrealizeFont = xnestUnrealizeFont;
 
+  /* Cursor Procedures */
+
+  pScreen->ConstrainCursor = xnestConstrainCursor;
+  pScreen->CursorLimits = xnestCursorLimits;
+  pScreen->DisplayCursor = xnestDisplayCursor;
+  pScreen->RealizeCursor = xnestRealizeCursor;
+  pScreen->UnrealizeCursor = xnestUnrealizeCursor;
+  pScreen->RecolorCursor = xnestRecolorCursor;
+  pScreen->SetCursorPosition = xnestSetCursorPosition;
+
   /* GC procedures */
   
   pScreen->CreateGC = xnestCreateGC;
@@ -340,29 +369,8 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
   pScreen->WakeupHandler = (ScreenWakeupHandlerProcPtr)NoopDDA;
   pScreen->blockData = NULL;
   pScreen->wakeupData = NULL;
-
-  miPointerInitialize (pScreen, &xnestPointerSpriteFuncs, 
-		       &xnestPointerCursorFuncs, True);
-
-  pScreen->mmWidth = xnestWidth * DisplayWidthMM(xnestDisplay, 
-		       DefaultScreen(xnestDisplay)) / 
-			 DisplayWidth(xnestDisplay, 
-			   DefaultScreen(xnestDisplay));
-  pScreen->mmHeight = xnestHeight * DisplayHeightMM(xnestDisplay, 
-		        DefaultScreen(xnestDisplay)) /
-			  DisplayHeight(xnestDisplay, 
-			    DefaultScreen(xnestDisplay));
-
-  /* overwrite miCloseScreen with our own */
-  pScreen->CloseScreen = xnestCloseScreen;
-
   if (!miScreenDevPrivateInit(pScreen, xnestWidth, NULL))
       return FALSE;
-
-#ifdef SHAPE
-  /* overwrite miSetShape with our own */
-  pScreen->SetShape = xnestSetShape;
-#endif /* SHAPE */
 
   /* devPrivates */
 
@@ -377,7 +385,8 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
     
     if (xnestParentWindow != 0) {
       xnestDefaultWindows[pScreen->myNum] = xnestParentWindow;
-      XSelectInput (xnestDisplay, xnestDefaultWindows[pScreen->myNum],
+	  if (xnestInputEnabled)
+        XSelectInput (xnestDisplay, xnestDefaultWindows[pScreen->myNum],
 		    xnestEventMask);
     } else
       xnestDefaultWindows[pScreen->myNum] = 
@@ -409,7 +418,7 @@ xnestOpenScreen(int index, ScreenPtr pScreen, int argc, char *argv[])
 			   xnestWindowName, 
 			   xnestWindowName, 
 			   xnestIconBitmap,
-			   argv, argc, &sizeHints);
+			   (char **)argv, argc, &sizeHints);
     
     XMapWindow(xnestDisplay, xnestDefaultWindows[pScreen->myNum]);
 

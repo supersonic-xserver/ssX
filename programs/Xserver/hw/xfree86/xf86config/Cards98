@@ -1,5 +1,8 @@
 # $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/Cards98,v 1.1 1999/07/11 10:50:41 dawes Exp $
 #
+#
+#
+# $XConsortium: Cards /main/27 1996/10/28 05:43:53 kaleb $
 # This is the database of card definitions used by xf86config.
 # Each definition should have a NAME entry, CHIPSET (descriptive) and
 # SERVER (one of EGC, GANBWAP, PEGC, NKVNEC, WABS, WABEP, WSNA, TGUI,

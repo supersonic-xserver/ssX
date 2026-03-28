@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/dix/property.c,v 3.15tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/property.c,v 3.14 2004/10/23 15:29:27 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,11 +52,12 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: property.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "windowstr.h"
 #include "propertyst.h"
 #include "dixstruct.h"
@@ -57,7 +65,7 @@ SOFTWARE.
 #include "swaprep.h"
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#include "security.h"
 #endif
 #ifdef LBX
 #include "lbxserve.h"
@@ -66,8 +74,7 @@ SOFTWARE.
 
 #if defined(LBX) || defined(LBX_COMPAT)
 #if 0 /* no header in X11 environment, not used in X11 environment */
-int
-fWriteToClient(ClientPtr client, int len, char *buf)
+int fWriteToClient(ClientPtr client, int len, char *buf)
 {
     return WriteToClient(client, len, buf);
 }
@@ -87,10 +94,11 @@ fWriteToClient(ClientPtr client, int len, char *buf)
 
 #ifdef notdef
 static void
-PrintPropertys(WindowPtr pWin)
+PrintPropertys(pWin)
+    WindowPtr pWin;
 {
     PropertyPtr pProp;
-    int j;
+    register int j;
 
     pProp = pWin->userProps;
     while (pProp)
@@ -106,12 +114,13 @@ PrintPropertys(WindowPtr pWin)
 #endif
 
 int
-ProcRotateProperties(ClientPtr client)
+ProcRotateProperties(client)
+    ClientPtr client;
 {
     int     i, j, delta;
     REQUEST(xRotatePropertiesReq);
     WindowPtr pWin;
-    Atom * atoms;
+    register    Atom * atoms;
     PropertyPtr * props;               /* array of pointer */
     PropertyPtr pProp;
     xEvent event;
@@ -198,7 +207,8 @@ found:
 }
 
 int 
-ProcChangeProperty(ClientPtr client)
+ProcChangeProperty(client)
+    ClientPtr client;
 {	      
     WindowPtr pWin;
     char format, mode;
@@ -271,8 +281,13 @@ ProcChangeProperty(ClientPtr client)
 }
 
 int
-ChangeWindowProperty(WindowPtr pWin, Atom property, Atom type, int format,
-		     int mode, unsigned long len, pointer value, Bool sendevent)
+ChangeWindowProperty(pWin, property, type, format, mode, len, value, sendevent)
+    WindowPtr	pWin;
+    Atom	property, type;
+    int		format, mode;
+    unsigned long len;
+    pointer	value;
+    Bool	sendevent;
 {
 #ifdef LBX
     return LbxChangeWindowProperty(NULL, pWin, property, type,
@@ -389,7 +404,9 @@ ChangeWindowProperty(WindowPtr pWin, Atom property, Atom type, int format,
 }
 
 int
-DeleteProperty(WindowPtr pWin, Atom propName)
+DeleteProperty(pWin, propName)
+    WindowPtr pWin;
+    Atom propName;
 {
     PropertyPtr pProp, prevProp;
     xEvent event;
@@ -432,7 +449,8 @@ DeleteProperty(WindowPtr pWin, Atom propName)
 }
 
 void
-DeleteAllWindowProperties(WindowPtr pWin)
+DeleteAllWindowProperties(pWin)
+    WindowPtr pWin;
 {
     PropertyPtr pProp, pNextProp;
     xEvent event;
@@ -458,8 +476,11 @@ DeleteAllWindowProperties(WindowPtr pWin)
 }
 
 static int
-NullPropertyReply(ClientPtr client, ATOM propertyType, int format,
-		  xGetPropertyReply *reply)
+NullPropertyReply(
+    ClientPtr client,
+    ATOM propertyType,
+    int format,
+    xGetPropertyReply *reply)
 {
     reply->nItems = 0;
     reply->length = 0;
@@ -481,7 +502,8 @@ NullPropertyReply(ClientPtr client, ATOM propertyType, int format,
  *****************/
 
 int
-ProcGetProperty(ClientPtr client)
+ProcGetProperty(client)
+    ClientPtr client;
 {
     PropertyPtr pProp, prevProp;
     unsigned long n, len, ind;
@@ -636,7 +658,8 @@ ProcGetProperty(ClientPtr client)
 }
 
 int
-ProcListProperties(ClientPtr client)
+ProcListProperties(client)
+    ClientPtr client;
 {
     Atom *pAtoms = NULL, *temppAtoms;
     xListPropertiesReply xlpr;
@@ -683,7 +706,8 @@ ProcListProperties(ClientPtr client)
 }
 
 int 
-ProcDeleteProperty(ClientPtr client)
+ProcDeleteProperty(client)
+    register ClientPtr client;
 {
     WindowPtr pWin;
     REQUEST(xDeletePropertyReq);

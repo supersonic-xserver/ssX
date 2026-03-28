@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/xedit/strcasecmp.c,v 1.1 1999/06/14 02:38:07 dawes Exp $ */
+/* $XFree86: xc/programs/xedit/strcasecmp.c,v 1.3 2002/02/10 02:50:05 paulo Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <ctype.h>
 #include <sys/types.h>

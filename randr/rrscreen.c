@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,6 +28,7 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
 
 extern char	*ConnectionInfo;
 
@@ -226,7 +234,7 @@ ProcRRGetScreenSizeRange (ClientPtr client)
     
     if (pScrPriv) 
     {
-	if (!RRGetInfo (pScreen))
+	if (!RRGetInfo (pScreen, TRUE))
 	    return BadAlloc;
 	rep.minWidth  = pScrPriv->minWidth;
 	rep.minHeight = pScrPriv->minHeight;
@@ -242,12 +250,12 @@ ProcRRGetScreenSizeRange (ClientPtr client)
     {
 	int n;
 	
-    	swaps(&rep.sequenceNumber, n);
-    	swapl(&rep.length, n);
-	swaps(&rep.minWidth, n);
-	swaps(&rep.minHeight, n);
-	swaps(&rep.maxWidth, n);
-	swaps(&rep.maxHeight, n);
+    	swaps(&rep.sequenceNumber);
+    	swapl(&rep.length);
+	swaps(&rep.minWidth);
+	swaps(&rep.minHeight);
+	swaps(&rep.maxWidth);
+	swaps(&rep.maxHeight);
     }
     WriteToClient(client, sizeof(xRRGetScreenSizeRangeReply), (char *)&rep);
     return (client->noClientException);
@@ -342,7 +350,7 @@ ProcRRGetScreenResources (ClientPtr client)
     rep.pad = 0;
     
     if (pScrPriv)
-	if (!RRGetInfo (pScreen))
+	if (!RRGetInfo (pScreen, TRUE))
 	    return BadAlloc;
 
     if (!pScrPriv)
@@ -408,14 +416,14 @@ ProcRRGetScreenResources (ClientPtr client)
 	{
 	    crtcs[i] = pScrPriv->crtcs[i]->id;
 	    if (client->swapped)
-		swapl (&crtcs[i], n);
+		swapl(&crtcs[i]);
 	}
 	
 	for (i = 0; i < pScrPriv->numOutputs; i++)
 	{
 	    outputs[i] = pScrPriv->outputs[i]->id;
 	    if (client->swapped)
-		swapl (&outputs[i], n);
+		swapl(&outputs[i]);
 	}
 	
 	for (i = 0; i < num_modes; i++)
@@ -424,19 +432,19 @@ ProcRRGetScreenResources (ClientPtr client)
 	    modeinfos[i] = mode->mode;
 	    if (client->swapped)
 	    {
-		swapl (&modeinfos[i].id, n);
-		swaps (&modeinfos[i].width, n);
-		swaps (&modeinfos[i].height, n);
-		swapl (&modeinfos[i].dotClock, n);
-		swaps (&modeinfos[i].hSyncStart, n);
-		swaps (&modeinfos[i].hSyncEnd, n);
-		swaps (&modeinfos[i].hTotal, n);
-		swaps (&modeinfos[i].hSkew, n);
-		swaps (&modeinfos[i].vSyncStart, n);
-		swaps (&modeinfos[i].vSyncEnd, n);
-		swaps (&modeinfos[i].vTotal, n);
-		swaps (&modeinfos[i].nameLength, n);
-		swapl (&modeinfos[i].modeFlags, n);
+		swapl(&modeinfos[i].id);
+		swaps(&modeinfos[i].width);
+		swaps(&modeinfos[i].height);
+		swapl(&modeinfos[i].dotClock);
+		swaps(&modeinfos[i].hSyncStart);
+		swaps(&modeinfos[i].hSyncEnd);
+		swaps(&modeinfos[i].hTotal);
+		swaps(&modeinfos[i].hSkew);
+		swaps(&modeinfos[i].vSyncStart);
+		swaps(&modeinfos[i].vSyncEnd);
+		swaps(&modeinfos[i].vTotal);
+		swaps(&modeinfos[i].nameLength);
+		swapl(&modeinfos[i].modeFlags);
 	    }
 	    memcpy (names, mode->name, 
 		    mode->mode.nameLength);
@@ -447,14 +455,14 @@ ProcRRGetScreenResources (ClientPtr client)
     }
     
     if (client->swapped) {
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.timestamp, n);
-	swapl(&rep.configTimestamp, n);
-	swaps(&rep.nCrtcs, n);
-	swaps(&rep.nOutputs, n);
-	swaps(&rep.nModes, n);
-	swaps(&rep.nbytesNames, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.timestamp);
+	swapl(&rep.configTimestamp);
+	swaps(&rep.nCrtcs);
+	swaps(&rep.nOutputs);
+	swaps(&rep.nModes);
+	swaps(&rep.nbytesNames);
     }
     WriteToClient(client, sizeof(xRRGetScreenResourcesReply), (char *)&rep);
     if (extraLen)
@@ -591,7 +599,7 @@ ProcRRGetScreenInfo (ClientPtr client)
     rep.pad = 0;
     
     if (pScrPriv)
-	if (!RRGetInfo (pScreen))
+	if (!RRGetInfo (pScreen, TRUE))
 	    return BadAlloc;
 
     output = RRFirstOutput (pScreen);
@@ -669,10 +677,10 @@ ProcRRGetScreenInfo (ClientPtr client)
 	    size->heightInMillimeters = pSize->mmHeight;
 	    if (client->swapped)
 	    {
-	        swaps (&size->widthInPixels, n);
-	        swaps (&size->heightInPixels, n);
-	        swaps (&size->widthInMillimeters, n);
-	        swaps (&size->heightInMillimeters, n);
+	        swaps(&size->widthInPixels);
+	        swaps(&size->heightInPixels);
+	        swaps(&size->widthInMillimeters);
+	        swaps(&size->heightInMillimeters);
 	    }
 	    size++;
 	    if (has_rate)
@@ -680,7 +688,7 @@ ProcRRGetScreenInfo (ClientPtr client)
 		*rates = pSize->nRates;
 		if (client->swapped)
 		{
-		    swaps (rates, n);
+		    swaps(rates);
 		}
 		rates++;
 		for (j = 0; j < pSize->nRates; j++)
@@ -688,7 +696,7 @@ ProcRRGetScreenInfo (ClientPtr client)
 		    *rates = pSize->pRates[j].rate;
 		    if (client->swapped)
 		    {
-			swaps (rates, n);
+			swaps(rates);
 		    }
 		    rates++;
 		}
@@ -704,14 +712,14 @@ ProcRRGetScreenInfo (ClientPtr client)
 	rep.length =  (extraLen + 3) >> 2;
     }
     if (client->swapped) {
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.timestamp, n);
-	swaps(&rep.rotation, n);
-	swaps(&rep.nSizes, n);
-	swaps(&rep.sizeID, n);
-	swaps(&rep.rate, n);
-	swaps(&rep.nrateEnts, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.timestamp);
+	swaps(&rep.rotation);
+	swaps(&rep.nSizes);
+	swaps(&rep.sizeID);
+	swaps(&rep.rate);
+	swaps(&rep.nrateEnts);
     }
     WriteToClient(client, sizeof(xRRGetScreenInfoReply), (char *)&rep);
     if (extraLen)
@@ -773,7 +781,7 @@ ProcRRSetScreenConfig (ClientPtr client)
 	rep.status = RRSetConfigFailed;
 	goto sendReply;
     }
-    if (!RRGetInfo (pScreen))
+    if (!RRGetInfo (pScreen, TRUE))
 	return BadAlloc;
     
     output = RRFirstOutput (pScreen);
@@ -945,11 +953,11 @@ sendReply:
 
     if (client->swapped) 
     {
-    	swaps(&rep.sequenceNumber, n);
-    	swapl(&rep.length, n);
-	swapl(&rep.newTimestamp, n);
-	swapl(&rep.newConfigTimestamp, n);
-	swapl(&rep.root, n);
+    	swaps(&rep.sequenceNumber);
+    	swapl(&rep.length);
+	swapl(&rep.newTimestamp);
+	swapl(&rep.newConfigTimestamp);
+	swapl(&rep.root);
     }
     WriteToClient(client, sizeof(xRRSetScreenConfigReply), (char *)&rep);
 

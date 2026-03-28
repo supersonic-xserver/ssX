@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftxf86.h                                                               */
 /*                                                                         */
 /*    Support functions for X11.                                           */
 /*                                                                         */
-/*  Copyright 2002 by                                                      */
+/*  Copyright 2002, 2003, 2004 by                                          */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -21,6 +28,13 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
+#endif
+
 
 FT_BEGIN_HEADER
 
@@ -43,7 +57,7 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    Font format string.  NULL in case of error.                        */
   /*                                                                       */
-  FT_EXPORT_DEF( const char* )
+  FT_EXPORT( const char* )
   FT_Get_X11_Font_Format( FT_Face  face );
 
  /* */

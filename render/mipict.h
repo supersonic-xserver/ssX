@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/mipict.h,v 1.13 2002/11/06 22:45:36 keithp Exp $
  *
- * Copyright Â© 2000 SuSE, Inc.
+ * Copyright © 2000 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -70,15 +78,6 @@ void
 miValidatePicture (PicturePtr pPicture,
 		   Mask       mask);
 
-int
-miChangePictureTransform (PicturePtr	pPicture,
-			  PictTransform *transform);
-
-int
-miChangePictureFilter (PicturePtr pPicture,
-		       int	  filter,
-		       xFixed     *params,
-		       int	  nparams);
 
 Bool
 miClipPicture (RegionPtr    pRegion,
@@ -88,12 +87,6 @@ miClipPicture (RegionPtr    pRegion,
 	       INT16	    xPict,
 	       INT16	    yPict);
 
-void
-miCompositeSourceValidate (PicturePtr	pPicture,
-			   INT16	x,
-			   INT16	y,
-			   CARD16	width,
-			   CARD16	height);
 Bool
 miComputeCompositeRegion (RegionPtr	pRegion,
 			  PicturePtr	pSrc,
@@ -110,14 +103,6 @@ miComputeCompositeRegion (RegionPtr	pRegion,
 
 Bool
 miPictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats);
-
-Bool
-miRealizeGlyph (ScreenPtr pScreen,
-		GlyphPtr  glyph);
-
-void
-miUnrealizeGlyph (ScreenPtr pScreen,
-		  GlyphPtr  glyph);
 
 void
 miGlyphExtents (int		nlist,
@@ -145,9 +130,6 @@ void
 miRenderPixelToColor (PictFormatPtr pPict,
 		      CARD32	    pixel,
 		      xRenderColor  *color);
-
-Bool
-miIsSolidAlpha (PicturePtr pSrc);
 
 void
 miCompositeRects (CARD8		op,

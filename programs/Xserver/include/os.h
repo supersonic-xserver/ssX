@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/os.h,v 3.70tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/include/os.h,v 3.63 2005/02/03 02:01:14 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -47,7 +54,7 @@ SOFTWARE.
 ******************************************************************/
 
 /*
- * Copyright (c) 1996-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1996-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -99,7 +106,7 @@ SOFTWARE.
 #include "misc.h"
 #define ALLOCATE_LOCAL_FALLBACK(_size) Xalloc((unsigned long)(_size))
 #define DEALLOCATE_LOCAL_FALLBACK(_ptr) Xfree((pointer)(_ptr))
-#include <X11/Xalloca.h>
+#include "Xalloca.h"
 #ifndef IN_MODULE
 #include <stdarg.h>
 #else
@@ -279,20 +286,13 @@ extern void SetDPMSTimers(void);
 extern void FreeDPMSTimers(void);
 #endif
 
-#ifdef __GNUC__
-#define NORET __attribute__((noreturn))
-#else
-#define NORET /**/
-#endif
-
 extern SIGVAL AutoResetServer(int /*sig*/);
-extern SIGVAL GiveUp(int /*sig*/);
-extern SIGVAL AbortServer(int /*sig*/) NORET;
 
+extern SIGVAL GiveUp(int /*sig*/);
 
 extern void UseMsg(void);
 
-extern void ProcessCommandLine(const int /*argc*/, const char* /*argv*/[]);
+extern void ProcessCommandLine(int /*argc*/, char* /*argv*/[]);
 
 extern int set_font_authorizations(
     char ** /* authorizations */, 
@@ -343,8 +343,6 @@ extern int OsLookupColor(
 extern void OsInit(void);
 
 extern void OsCleanup(Bool);
-extern void OsPrepareShutdown(Bool);
-extern void OsPrepareRestart(void);
 
 extern void OsVendorFatalError(void);
 
@@ -358,10 +356,10 @@ void OsBlockSignals (void);
 void OsReleaseSignals (void);
 
 #if !defined(WIN32) && !defined(__UNIXOS2__)
-extern int System(const char *);
-extern pointer Popen(const char *, const char *);
+extern int System(char *);
+extern pointer Popen(char *, char *);
 extern int Pclose(pointer);
-extern pointer Fopen(const char *, const char *);
+extern pointer Fopen(char *, char *);
 extern int Fclose(pointer);
 #else
 #define System(a) system(a)
@@ -371,7 +369,7 @@ extern int Fclose(pointer);
 #define Fclose(a) fclose(a)
 #endif
 
-extern void CheckUserParameters(const int argc, const char **argv, char **envp);
+extern void CheckUserParameters(int argc, char **argv, char **envp);
 extern void CheckUserAuthorization(void);
 
 extern int AddHost(
@@ -415,7 +413,7 @@ extern int GetAccessControl(void);
 
 extern void AddLocalHosts(void);
 
-extern void ResetHosts(const char *display);
+extern void ResetHosts(char *display);
 
 extern void EnableLocalHost(void);
 
@@ -427,7 +425,7 @@ extern void DefineSelf(int /*fd*/);
 
 extern void AugmentSelf(pointer /*from*/, int /*len*/);
 
-extern void InitAuthorization(const char * /*filename*/);
+extern void InitAuthorization(char * /*filename*/);
 
 /* extern int LoadAuthorization(void); */
 
@@ -481,7 +479,7 @@ extern XID GenerateAuthorization(
 extern void ExpandCommandLine(int * /*pargc*/, char *** /*pargv*/);
 #endif
 
-extern int ddxProcessArgument(int /*argc*/, const char * /*argv*/ [], int /*i*/);
+extern int ddxProcessArgument(int /*argc*/, char * /*argv*/ [], int /*i*/);
 
 extern void ddxUseMsg(void);
 
@@ -595,12 +593,6 @@ __attribute((noreturn))
 #endif
 ;
 
-#ifdef __GNUC__
-#define FatalAlloc()	FatalError("Out of Memory: %s() %s:%d", __FUNCTION__, __FILE__, __LINE__); 
-#else
-#define FatalAlloc()	FatalError("Out of Memory: %s:%d", __FILE__, __LINE__); 
-#endif
-
 extern void VErrorF(const char *f, va_list args);
 extern void ErrorF(const char *f, ...) _printf_attribute(1,2);
 extern void Error(char *str);
@@ -614,8 +606,8 @@ extern int snprintf(char *str, size_t size, const char *format, ...)
 extern int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 #endif
 #if defined(NEED_STRLCAT)
-#include "strlcat.h"
-#include "strlcpy.h"
+extern size_t strlcat(char *dst, const char *src, size_t size);
+extern size_t strlcpy(char *dst, const char *src, size_t size);
 #endif
 #endif
 
@@ -626,14 +618,6 @@ extern int Xasprintf(char **ret, const char *format, ...)
 #undef _printf_attribute
 #if defined(printf_is_xf86printf) && !defined(printf)
 #define printf xf86printf
-#endif
-
-extern int getArgc(void);
-extern const char **getArgvp(void);
-extern const char *getArgv(int i);
-
-#ifdef __DARWIN__
-extern void DarwinHandleGUI(int argc, const char *argv[], char *envp[]);
 #endif
 
 #endif /* OS_H */

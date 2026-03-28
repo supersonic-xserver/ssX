@@ -45,6 +45,7 @@ XCOMM WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 XCOMM OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 XCOMM EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 XCOMM
+XCOMM $XConsortium: XF86Conf.cpp /main/22 1996/10/23 11:43:51 kaleb $
 
 XCOMM **********************************************************************
 XCOMM This is a sample configuration file only, intended to illustrate

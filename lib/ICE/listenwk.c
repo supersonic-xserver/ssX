@@ -1,3 +1,19 @@
+/* $Xorg: listenwk.c,v 1.5 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -33,10 +49,16 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/Xtrans.h>
 #include <stdio.h>
 
+
 Status
-IceListenForWellKnownConnections(char *port, int *countRet,
-				 IceListenObj **listenObjsRet,
-				 int errorLength, char *errorStringRet)
+IceListenForWellKnownConnections (port, countRet, listenObjsRet, errorLength, errorStringRet)
+
+char		*port;
+int		*countRet;
+IceListenObj	**listenObjsRet;
+int		errorLength;
+char		*errorStringRet;
+
 {
     struct _IceListenObj	*listenObjs;
     char			*networkId;

@@ -152,4 +152,5 @@ EXPORTS
  XawTextSinkAddProperty
  XawTextLastPosition
 
+/* $Xorg: Xaw-def.cpp,v 1.3 2000/08/17 19:45:44 cpqbld Exp $ */
 /* $XFree86: xc/lib/Xaw/Xaw-def.cpp,v 1.4 2004/05/06 01:17:29 dawes Exp $ */

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_misc.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_misc.c,v 1.7 2004/12/31 16:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -46,8 +53,6 @@ static XF86ModuleVersionInfo R128VersionRec =
     {0, 0, 0, 0}
 };
 
-pointer R128Module = NULL;
-
 /*
  * R128Setup --
  *
@@ -56,7 +61,7 @@ pointer R128Module = NULL;
 static pointer
 R128Setup
 (
-    ModuleDescPtr Module,
+    pointer Module,
     pointer Options,
     int     *ErrorMajor,
     int     *ErrorMinor
@@ -70,7 +75,7 @@ R128Setup
         if (!xf86ServerIsOnlyDetecting() && !LoaderSymbol(ATI_NAME))
             xf86LoadOneModule(ATI_DRIVER_NAME, Options);
 
-        R128LoaderRefSymLists(Module);
+        R128LoaderRefSymLists();
 
         Inited = TRUE;
     }
@@ -83,20 +88,6 @@ XF86ModuleData r128ModuleData =
 {
     &R128VersionRec,
     R128Setup,
-    NULL
-};
-
-const char *r128ExportedSymbols[] = {
-    "R128PreInit",
-    "R128ScreenInit",
-    "R128SwitchMode",
-    "R128AdjustFrame",
-    "R128EnterVT",
-    "R128LeaveVT",
-    "R128FreeScreen",
-    "R128ValidMode",
-    "R128Options",
-    "R128Module",
     NULL
 };
 

@@ -11,7 +11,7 @@
 // below.
 //
 // The file is licensed under the terms of GPL version 2 or later.
-// $XFree86$
+// $XFree86: xc/programs/xkbcomp/symbols/pc/lv,v 1.4 2004/06/25 13:23:25 pascal Exp $
 
 partial default alphanumeric_keys modifier_keys
 xkb_symbols "basic" {

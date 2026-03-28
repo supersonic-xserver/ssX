@@ -1,3 +1,11 @@
+/* $Xorg: sunLyInit.c,v 1.3 2000/08/17 19:48:36 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * This is sunInit.c modified for LynxOS
  * Copyright 1996 by Thomas Mueller
@@ -21,7 +29,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyInit.c,v 3.13 2007/01/02 01:24:12 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sunLyInit.c,v 3.10 2004/06/02 22:43:00 dawes Exp $ */
 
 /*
  * Copyright 1987 by the Regents of the University of California
@@ -83,7 +91,7 @@ extern Bool sunBW2Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define BW2I sunBW2Init
 #if SUNMAXDEPTH == 1 /* { */
@@ -94,7 +102,7 @@ extern Bool sunCG3Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG3I sunCG3Init
 #ifdef FBTYPE_SUNFAST_COLOR /* { */
@@ -102,7 +110,7 @@ extern Bool sunCG6Init(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 #define CG6I sunCG6Init
 #else /* }{ */
@@ -357,7 +365,7 @@ void sunNonBlockConsoleOff(
 
 static char** GetDeviceList (argc, argv)
     int		argc;
-    const char	**argv;
+    char	**argv;
 {
     int		i;
     char	*envList = NULL;
@@ -366,7 +374,7 @@ static char** GetDeviceList (argc, argv)
 
     for (i = 1; i < argc; i++)
 	if (strcmp (argv[i], "-dev") == 0 && i+1 < argc) {
-	    cmdList = (char *)argv[i + 1];
+	    cmdList = argv[i + 1];
 	    break;
 	}
     if (!cmdList)
@@ -489,8 +497,8 @@ void OsVendorInit(
 
 void InitOutput(pScreenInfo, argc, argv)
     ScreenInfo 	  *pScreenInfo;
-    const int     argc;
-    const char    **argv;
+    int     	  argc;
+    char    	  **argv;
 {
     int     	i, scr;
     char	**devList;
@@ -546,8 +554,8 @@ void InitOutput(pScreenInfo, argc, argv)
  *-----------------------------------------------------------------------
  */
 void InitInput(argc, argv)
-    const int     argc;
-    const char    **argv;
+    int     	  argc;
+    char    	  **argv;
 {
     DevicePtr p, k;
     extern Bool mieqInit();
@@ -626,3 +634,28 @@ sunCfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width, bpp)
     return cfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width);
 }
 #endif  /* SUNMAXDEPTH */
+
+#ifdef DPMSExtension
+/**************************************************************
+ * DPMSSet(), DPMSGet(), DPMSSupported()
+ *
+ * stubs
+ *
+ ***************************************************************/
+
+void DPMSSet (level)
+    int level;
+{
+}
+
+int DPMSGet (level)
+    int* level;
+{
+    return -1;
+}
+
+Bool DPMSSupported ()
+{
+    return FALSE;
+}
+#endif

@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/Xserver/Xi/chgprop.c,v 3.4tsi Exp $ */
+/* $Xorg: chgprop.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -44,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/chgprop.c,v 3.3 2001/12/14 19:58:55 dawes Exp $ */
 
 /***********************************************************************
  *
@@ -53,12 +69,12 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
 #include "windowstr.h"
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "extnsionst.h"
 #include "extinit.h"			/* LookupDeviceIntRec */
 
@@ -78,16 +94,21 @@ int
 SProcXChangeDeviceDontPropagateList(client)
     register ClientPtr client;
     {
-    char n;
+    register char n;
+    register long *p;
+    register int i;
 
     REQUEST(xChangeDeviceDontPropagateListReq);
     swaps(&stuff->length, n);
     REQUEST_AT_LEAST_SIZE(xChangeDeviceDontPropagateListReq);
     swapl(&stuff->window, n);
     swaps(&stuff->count, n);
-    REQUEST_FIXED_SIZE(xChangeDeviceDontPropagateListReq,
-		       stuff->count * sizeof(CARD32));
-    SwapLongs((CARD32 *)(&stuff[1]), stuff->count);
+    p = (long *) &stuff[1];
+    for (i=0; i<stuff->count; i++)
+        {
+        swapl(p, n);
+	p++;
+        }
     return(ProcXChangeDeviceDontPropagateList(client));
     }
 

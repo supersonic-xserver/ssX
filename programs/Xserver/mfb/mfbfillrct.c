@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbfillrct.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbfillrct.c,v 1.6 2003/02/18 21:30:01 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -46,9 +53,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+/* $Xorg: mfbfillrct.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
+#include "X.h"
+#include "Xprotostr.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -70,13 +77,16 @@ helper function in the GC.
 #define NUM_STACK_RECTS	1024
 
 void
-mfbPolyFillRect(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
-		xRectangle *prectInit)
+mfbPolyFillRect(pDrawable, pGC, nrectFill, prectInit)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int		nrectFill; 	/* number of rectangles to fill */
+    xRectangle	*prectInit;  	/* Pointer to first rectangle to fill */
 {
     xRectangle	    *prect;
     RegionPtr	    prgnClip;
-    BoxPtr pbox;
-    BoxPtr pboxClipped;
+    register BoxPtr pbox;
+    register BoxPtr pboxClipped;
     BoxPtr	    pboxClippedBase;
     BoxPtr	    pextent;
     BoxRec	    stackRects[NUM_STACK_RECTS];

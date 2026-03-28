@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/lbxutil/lbx_zlib/reqstats.c,v 1.6tsi Exp $ */
+/* $Xorg: reqstats.c,v 1.4 2001/02/09 02:04:05 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996  The Open Group
@@ -26,6 +41,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/lib/lbxutil/lbx_zlib/reqstats.c,v 1.6 2001/12/14 19:57:01 dawes Exp $ */
 
 #include "reqstats.h"
 
@@ -34,7 +50,7 @@ from The Open Group.
 #include <X11/Xfuncs.h>
 #include <X11/Xproto.h>
 #define _XLBX_SERVER_
-#include <X11/extensions/XLbx.h>
+#include "XLbx.h"
 #include "lbx_zlib.h"
 #include <signal.h>
 #include <stdio.h>

@@ -1,4 +1,13 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/scan.c,v 1.34 2006/08/09 20:53:16 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
+ * 
  * Copyright (c) 1997  Metro Link Incorporated
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,38 +34,54 @@
  * 
  */
 /*
- * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 
 /* View/edit this file with tab stops set to 4 */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include <ctype.h>
 #include <stdio.h>
@@ -91,7 +116,7 @@
 
 #define CONFIG_BUF_LEN     1024
 
-static int StringToToken (char *, xf86ConfigSymTabRec *);
+static int StringToToken (const char *, xf86ConfigSymTabRec *);
 
 static FILE *configFile = NULL;
 static const char **builtinConfig = NULL;
@@ -105,13 +130,17 @@ static int pushToken = LOCK_TOKEN;
 static int eol_seen = 0;		/* private state to handle comments */
 LexRec val;
 
+#ifdef __UNIXOS2__
+extern char *__XOS2RedirRoot(char *path);
+#endif
+
 /* 
  * xf86strToUL --
  *
  *  A portable, but restricted, version of strtoul().  It only understands
  *  hex, octal, and decimal.  But it's good enough for our needs.
  */
-static unsigned int
+unsigned int
 xf86strToUL (char *str)
 {
 	int base = 10;
@@ -152,128 +181,9 @@ xf86strToUL (char *str)
 	return (tot);
 }
 
-/*
- * xf86getNextLine --
- *
- *  read from the configFile FILE stream until we encounter a new
- *  line; this is effectively just a big wrapper for fgets(3).
- *
- *  xf86getToken() assumes that we will read up to the next
- *  newline; we need to grow configBuf and configRBuf as needed to
- *  support that.
- */
-
-static char*
-xf86getNextLine(void)
-{
-	static int configBufLen = CONFIG_BUF_LEN;
-	char *tmpConfigBuf, *tmpConfigRBuf;
-	int c, i, pos = 0, eolFound = 0;
-	char *ret = NULL;
-
-	/*
-	 * reallocate the string if it was grown last time (i.e., is no
-	 * longer CONFIG_BUF_LEN); we malloc the new strings first, so
-	 * that if either of the mallocs fail, we can fall back on the
-	 * existing buffer allocations
-	 */
-
-	if (configBufLen != CONFIG_BUF_LEN) {
-
-		tmpConfigBuf = xf86confmalloc(CONFIG_BUF_LEN);
-		tmpConfigRBuf = xf86confmalloc(CONFIG_BUF_LEN);
-
-		if (!tmpConfigBuf || !tmpConfigRBuf) {
-
-			/*
-			 * at least one of the mallocs failed; keep the old buffers
-			 * and free any partial allocations
-			 */
-
-			xf86conffree(tmpConfigBuf);
-			xf86conffree(tmpConfigRBuf);
-
-		} else {
-
-			/*
-			 * malloc succeeded; free the old buffers and use the new
-			 * buffers
-			 */
-
-			configBufLen = CONFIG_BUF_LEN;
-
-			xf86conffree(configBuf);
-			xf86conffree(configRBuf);
-
-			configBuf = tmpConfigBuf;
-			configRBuf = tmpConfigRBuf;
-		}
-	}
-
-	/* read in another block of chars */
-
-	do {
-		ret = fgets(configBuf + pos, configBufLen - pos - 1, configFile);
-
-		if (!ret) break;
-
-		/* search for EOL in the new block of chars */
-
-		for (i = pos; i < (configBufLen - 1); i++) {
-			c = configBuf[i];
-
-			if (c == '\0') break;
-
-			if ((c == '\n') || (c == '\r')) {
-				eolFound = 1;
-				break;
-			}
-		}
-
-		/*
-		 * if we didn't find EOL, then grow the string and
-		 * read in more
-		 */
-
-		if (!eolFound) {
-
-			tmpConfigBuf = xf86confrealloc(configBuf, configBufLen + CONFIG_BUF_LEN);
-			tmpConfigRBuf = xf86confrealloc(configRBuf, configBufLen + CONFIG_BUF_LEN);
-
-			if (!tmpConfigBuf || !tmpConfigRBuf) {
-
-				/*
-				 * at least one of the reallocations failed; use the
-				 * new allocation that succeeded, but we have to
-				 * fallback to the previous configBufLen size and use
-				 * the string we have, even though we don't have an
-				 * EOL
-				 */
-
-				if (tmpConfigBuf) configBuf = tmpConfigBuf;
-				if (tmpConfigRBuf) configRBuf = tmpConfigRBuf;
-
-				break;
-
-			} else {
-
-				/* reallocation succeeded */
-
-				configBuf = tmpConfigBuf;
-				configRBuf = tmpConfigRBuf;
-				pos = i;
-				configBufLen += CONFIG_BUF_LEN;
-			}
-		}
-
-	} while (!eolFound);
-
-	return (ret);
-}
-
 /* 
  * xf86getToken --
- *      Read next Token from the config file. Handle the global variable
+ *      Read next Token form the config file. Handle the global variable
  *      pushToken.
  */
 int
@@ -307,7 +217,7 @@ again:
 		{
 			char *ret;
 			if (configFile)
-				ret = xf86getNextLine();
+				ret = fgets (configBuf, CONFIG_BUF_LEN - 1, configFile);
 			else {
 				if (builtinConfig[builtinIndex] == NULL)
 					ret = NULL;
@@ -411,8 +321,8 @@ again:
 			}
 			while ((c != '\"') && (c != '\n') && (c != '\r') && (c != '\0'));
 			configRBuf[i] = '\0';
-			val.str = xf86confmalloc (strlen (configRBuf) + 1);
-			strcpy (val.str, configRBuf);	/* private copy ! */
+			/* No private copy! */
+			val.str = configRBuf;
 			return (STRING);
 		}
 
@@ -518,6 +428,10 @@ xf86pathIsAbsolute(const char *path)
 {
 	if (path && path[0] == '/')
 		return 1;
+#ifdef __UNIXOS2__
+	if (path && (path[0] == '\\' || (path[1] == ':')))
+		return 1;
+#endif
 	return 0;
 }
 
@@ -553,27 +467,27 @@ xf86pathIsSafe(const char *path)
  *    %A    cmdline argument as an absolute path (must be absolute to match)
  *    %R    cmdline argument as a relative path
  *    %S    cmdline argument as a "safe" path (relative, and no ".." elements)
- *    %X    default config file name ("xorg.conf")
+ *    %X    default config file name ("XF86Config")
  *    %H    hostname
- *    %E    config file environment ($XORGCONFIG) as an absolute path
- *    %F    config file environment ($XORGCONFIG) as a relative path
- *    %G    config file environment ($XORGCONFIG) as a safe path
+ *    %E    config file environment ($XF86CONFIG) as an absolute path
+ *    %F    config file environment ($XF86CONFIG) as a relative path
+ *    %G    config file environment ($XF86CONFIG) as a safe path
  *    %D    $HOME
  *    %P    projroot
  *    %M    major version number
  *    %%    %
+ *    %&    UNIXOS2 only: prepend X11ROOT env var
  */
 
 #ifndef XCONFIGFILE
-#define XCONFIGFILE	"xorg.conf"
+#define XCONFIGFILE	"XF86Config"
 #endif
 #ifndef PROJECTROOT
 #define PROJECTROOT	"/usr/X11R6"
 #endif
 #ifndef XCONFENV
-#define XCONFENV	"XORGCONFIG"
+#define XCONFENV	"XF86CONFIG"
 #endif
-#define XFREE86CFGFILE "XF86Config"
 #ifndef XF86_VERSION_MAJOR
 #ifdef XVERSION
 #if XVERSION > 40000000
@@ -586,35 +500,41 @@ xf86pathIsSafe(const char *path)
 #endif
 #endif
 
-#define BAIL_OUT		do {									\
-							xf86conffree(result);				\
-							return NULL;						\
-						} while (0)
+#define BAIL_OUT		\
+    do {			\
+	xf86conffree(result);	\
+	return NULL;		\
+    } while (0)
 
-#define CHECK_LENGTH	do {									\
-							if (l > PATH_MAX) {					\
-								BAIL_OUT;						\
-							}									\
-						} while (0)
+#define CHECK_LENGTH		\
+    do {			\
+	if (l > PATH_MAX) {	\
+	    BAIL_OUT;		\
+	}			\
+    } while (0)
 
-#define APPEND_STR(s)	do {									\
-							if (strlen(s) + l > PATH_MAX) {		\
-								BAIL_OUT;						\
-							} else {							\
-								strcpy(result + l, s);			\
-								l += strlen(s);					\
-							}									\
-						} while (0)
+#define APPEND_STR(s)			\
+    do {				\
+	if (strlen(s) + l > PATH_MAX) {	\
+	    BAIL_OUT;			\
+	} else {			\
+	    strcpy(result + l, s);	\
+	    l += strlen(s);		\
+	}				\
+    } while (0)
 
 static char *
 DoSubstitution(const char *template, const char *cmdline, const char *projroot,
-				int *cmdlineUsed, int *envUsed, char *XConfigFile)
+				int *cmdlineUsed, int *envUsed)
 {
 	char *result;
 	int i, l;
 	static const char *env = NULL, *home = NULL;
 	static char *hostname = NULL;
 	static char majorvers[3] = "";
+#ifdef __UNIXOS2__
+	static char *x11root = NULL;
+#endif
 
 	if (!template)
 		return NULL;
@@ -657,7 +577,7 @@ DoSubstitution(const char *template, const char *cmdline, const char *projroot,
 					BAIL_OUT;
 				break;
 			case 'X':
-				APPEND_STR(XConfigFile);
+				APPEND_STR(XCONFIGFILE);
 				break;
 			case 'H':
 				if (!hostname) {
@@ -731,6 +651,16 @@ DoSubstitution(const char *template, const char *cmdline, const char *projroot,
 				result[l++] = '%';
 				CHECK_LENGTH;
 				break;
+#ifdef __UNIXOS2__
+			case '&':
+				if (!x11root)
+					x11root = getenv("X11ROOT");
+				if (x11root)
+					APPEND_STR(x11root);
+				else
+					BAIL_OUT;
+				break;
+#endif
 			default:
 				fprintf(stderr, "invalid escape %%%c found in path template\n",
 						template[i]);
@@ -801,8 +731,7 @@ xf86openConfigFile(const char *path, const char *cmdline, const char *projroot)
 	/* First, search for a config file. */
 	while (template && !configFile) {
 		if ((configPath = DoSubstitution(template, cmdline, projroot,
-						 &cmdlineUsed, NULL,
-						 XCONFIGFILE))) {
+										 &cmdlineUsed, NULL))) {
 			if ((configFile = fopen(configPath, "r")) != 0) {
 				if (cmdline && !cmdlineUsed) {
 					fclose(configFile);
@@ -816,31 +745,6 @@ xf86openConfigFile(const char *path, const char *cmdline, const char *projroot)
 		}
 		template = strtok(NULL, ",");
 	}
-	
-	/* Then search for fallback */
-	if (!configFile) {
-	    strcpy(pathcopy, path);
-	    template = strtok(pathcopy, ",");
-
-	    while (template && !configFile) {
-		if ((configPath = DoSubstitution(template, cmdline, projroot,
-						 &cmdlineUsed, NULL,
-						 XFREE86CFGFILE))) {
-		    if ((configFile = fopen(configPath, "r")) != 0) {
-			if (cmdline && !cmdlineUsed) {
-			    fclose(configFile);
-			    configFile = NULL;
-			}
-		    }
-		}
-		if (configPath && !configFile) {
-		    xf86conffree(configPath);
-		    configPath = NULL;
-		}
-		template = strtok(NULL, ",");
-	    }
-	}
-	
 	xf86conffree(pathcopy);
 	if (!configFile) {
 
@@ -876,16 +780,21 @@ xf86closeConfigFile (void)
 void
 xf86setBuiltinConfig(const char *config[])
 {
+	/* Reset counters, etc. */
+	pushToken = LOCK_TOKEN;
+	configPos = 0;
+	configLineNo = 0;
+	configFile = NULL;
+
 	builtinConfig = config;
 	configPath = xf86configStrdup("<builtin configuration>");
 	configBuf = xf86confmalloc (CONFIG_BUF_LEN);
 	configRBuf = xf86confmalloc (CONFIG_BUF_LEN);
 	configBuf[0] = '\0';		/* sanity ... */
-
 }
 
 void
-xf86parseError (char *format,...)
+xf86parseError (const char *format,...)
 {
 	va_list ap;
 
@@ -899,7 +808,21 @@ xf86parseError (char *format,...)
 }
 
 void
-xf86validationError (char *format,...)
+xf86parseWarning (const char *format,...)
+{
+	va_list ap;
+
+	ErrorF ("Parse warning on line %d of section %s in file %s\n\t",
+		 configLineNo, configSection, configPath);
+	va_start (ap, format);
+	VErrorF (format, ap);
+	va_end (ap);
+
+	ErrorF ("\n");
+}
+
+void
+xf86validationError (const char *format,...)
 {
 	va_list ap;
 
@@ -912,12 +835,11 @@ xf86validationError (char *format,...)
 }
 
 void
-xf86setSection (char *section)
+xf86setSection (const char *section)
 {
 	if (configSection)
 		xf86conffree(configSection);
-	configSection = xf86confmalloc(strlen (section) + 1);
-	strcpy (configSection, section);
+	configSection = xf86configStrdup(section);
 }
 
 /* 
@@ -931,7 +853,7 @@ xf86getStringToken (xf86ConfigSymTabRec * tab)
 }
 
 static int
-StringToToken (char *str, xf86ConfigSymTabRec * tab)
+StringToToken (const char *str, xf86ConfigSymTabRec * tab)
 {
 	int i;
 
@@ -983,9 +905,10 @@ xf86nameCompare (const char *s1, const char *s2)
 }
 
 char *
-xf86addComment(char *cur, char *add)
+xf86addComment(char *cur, const char *add)
 {
 	char *str;
+	const char *s;
 	int len, curlen, iscomment, hasnewline = 0, endnewline;
 
 	if (add == NULL || add[0] == '\0')
@@ -1000,14 +923,14 @@ xf86addComment(char *cur, char *add)
 	else
 		curlen = 0;
 
-	str = add;
+	s = add;
 	iscomment = 0;
-	while (*str) {
-	    if (*str != ' ' && *str != '\t')
+	while (*s) {
+	    if (*s != ' ' && *s != '\t')
 		break;
-	    ++str;
+	    ++s;
 	}
-	iscomment = (*str == '#');
+	iscomment = (*s == '#');
 
 	len = strlen(add);
 	endnewline = add[len - 1] == '\n';
@@ -1028,3 +951,61 @@ xf86addComment(char *cur, char *add)
 
 	return (cur);
 }
+
+char *
+xf86configStrdup (const char *s)
+{
+	char *tmp;
+	if (!s) return NULL;
+	tmp = xf86confmalloc (sizeof (char) * (strlen (s) + 1));
+	if (tmp)
+		strcpy (tmp, s);
+	return (tmp);
+}
+
+int
+xf86configAsprintf (char **ret, const char *format, ...)
+{
+	char *s;
+	va_list args;
+	int status;
+
+	if (!ret || !format)
+		return -1;
+
+#ifdef HAS_ASPRINTF
+	va_start(args, format);
+	status = vasprintf(&s, format, args);
+	va_end(args);
+	if (status != -1 && s) {
+		*ret = xf86configStrdup(s);
+		free(s);
+		if (!*ret)
+			status = -1;
+	} else
+		*ret = NULL;
+	return status;
+#else
+#define TMP_SIZE 4000
+	s = xf86confcalloc(1, TMP_SIZE);
+	if (!s) {
+		*ret = NULL;
+		return -1;
+	}
+	va_start(args, format);
+	status = vsnprintf(s, TMP_SIZE, format, args);
+	va_end(args);
+	if (status > TMP_SIZE - 1)
+		status = TMP_SIZE - 1;
+	if (status < TMP_SIZE - 1) {
+		*ret = xf86confrealloc(s, status + 1);
+		if (!*ret) {
+			xf86conffree(s);
+			status = -1;
+		}
+	} else
+		*ret = s;
+	return status;
+#endif
+}
+

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbgc.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbgc.c,v 1.10 2003/07/16 03:35:16 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,13 +52,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+/* $Xorg: mfbgc.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "mfb.h"
 #include "dixfontstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "gcstruct.h"
 #include "windowstr.h"
 #include "pixmapstr.h"
@@ -682,7 +689,8 @@ static struct commonOps mfbCommonOps[] = {
 #define numberCommonOps	(sizeof (mfbCommonOps) / sizeof (mfbCommonOps[0]))
 
 static GCOps *
-matchCommon(GCPtr pGC)
+matchCommon (
+    GCPtr   pGC)
 {
     int	i;
     struct commonOps	*cop;
@@ -718,7 +726,8 @@ matchCommon(GCPtr pGC)
 
 
 Bool
-mfbCreateGC(GCPtr pGC)
+mfbCreateGC(pGC)
+    register GCPtr pGC;
 {
     mfbPrivGC 	*pPriv;
 
@@ -748,22 +757,38 @@ mfbCreateGC(GCPtr pGC)
 
 /* some noop functions */
 static void
-mfbPolyGlyphBltNoop(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
-		    unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+mfbPolyGlyphBltNoop(
+    DrawablePtr pDrawable,
+    GCPtr pGC,
+    int x,
+    int y,
+    unsigned int nglyph,
+    CharInfoPtr * ppci,
+    pointer pglyphBase)
 {
     /* this is a no-op function */
 }
 
 static void
-mfbNoopFS(DrawablePtr pDrawable, GCPtr pGC, int nInit, DDXPointPtr pptInit,
-	  int *pwidthInit, int fSorted)
+mfbNoopFS(
+    DrawablePtr pDrawable,
+    GCPtr pGC,
+    int nInit,
+    DDXPointPtr pptInit,
+    int * pwidthInit,
+    int fSorted)
 {
     /* this is a no-op function */
 }
 
 static void
-mfbFillPolyNoop(DrawablePtr pDrawable, GCPtr pGC, int shape, int mode,
-		int count, DDXPointPtr ptsIn)
+mfbFillPolyNoop(
+    DrawablePtr pDrawable,
+    GCPtr pGC,
+    int shape,
+    int mode,
+    int count,
+    DDXPointPtr ptsIn)
 {
     /* this is a no-op function */
 }
@@ -781,9 +806,12 @@ mfbFillPolyNoop(DrawablePtr pDrawable, GCPtr pGC, int shape, int mode,
 
 /*ARGSUSED*/
 void
-mfbValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
+mfbValidateGC(pGC, changes, pDrawable)
+    register GCPtr 	pGC;
+    unsigned long	changes;
+    DrawablePtr 	pDrawable;
 {
-    mfbPrivGCPtr	devPriv;
+    register mfbPrivGCPtr	devPriv;
     int mask;			/* stateChanges */
     int index;			/* used for stepping through bitfields */
     int	xrot, yrot;		/* rotations for tile and stipple pattern */
@@ -1434,7 +1462,9 @@ int InverseAlu[16] = {
 };
 
 int
-mfbReduceRop(int alu, Pixel src)
+mfbReduceRop(alu, src)
+    register int alu;
+    register Pixel src;
 {
     int rop = 0;
     if ((src & 1) == 0)	/* src is black */

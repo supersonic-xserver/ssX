@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86MiscExt.c,v 1.18tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86MiscExt.c,v 1.18 2005/01/26 05:31:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1999-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -55,14 +62,14 @@
 #define I_NEED_OS2_H
 #endif
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 
 #ifdef XF86MISC
 #define _XF86MISC_SERVER_
-#include <X11/extensions/xf86misc.h>
+#include "xf86misc.h"
 #include "xf86miscproc.h"
 #endif
 
@@ -70,8 +77,8 @@
 #include "xf86_OSlib.h"
 
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "xf86Xinput.h"
 #else
 #include "inputstr.h"

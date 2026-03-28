@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2006, Oracle and/or its affiliates. All rights reserved.
  * Copyright 2010 Red Hat, Inc.
  *
@@ -57,6 +64,8 @@
 #include "xace.h"
 #include "list.h"
 #include "xibarriers.h"
+#include "dixaccess.h"
+#include "privates.h"
 
 static RESTYPE CursorClientType;
 static RESTYPE CursorHideCountType;
@@ -121,9 +130,20 @@ typedef struct _CursorScreen {
     CursorHideCountPtr pCursorHideCounts;
 } CursorScreenRec, *CursorScreenPtr;
 
-#define GetCursorScreen(s) ((CursorScreenPtr)dixLookupPrivate(&(s)->devPrivates, CursorScreenPrivateKey))
+#ifdef SSX_LEGACY_MODE
+/* Legacy mode: use screen private key directly */
+/* Legacy mode: use screen private key with DevUnion** compatibility */
+#define GetCursorScreen(s) ((CursorScreenPtr)_dixLookupPrivate((PrivateRec **)&(s)->devPrivates, CursorScreenPrivateKey))
+/* Legacy mode: use screen private key with DevUnion** compatibility */
+#define SetCursorScreen(s,p) dixSetPrivate((PrivateRec **)&(s)->devPrivates, CursorScreenPrivateKey, (pointer)(p))
+#else
+/* Legacy mode: use screen private key with DevUnion** compatibility */
+#define GetCursorScreen(s) ((CursorScreenPtr)_dixLookupPrivate((PrivateRec **)&(s)->devPrivates, CursorScreenPrivateKey))
 #define GetCursorScreenIfSet(s) GetCursorScreen(s)
-#define SetCursorScreen(s,p) dixSetPrivate(&(s)->devPrivates, CursorScreenPrivateKey, p)
+/* Legacy mode: use screen private key with DevUnion** compatibility */
+#define SetCursorScreen(s,p) dixSetPrivate((PrivateRec **)&(s)->devPrivates, CursorScreenPrivateKey, (pointer)(p))
+#endif
+
 #define Wrap(as,s,elt,func)	(((as)->elt = (s)->elt), (s)->elt = func)
 #define Unwrap(as,s,elt,backup)	(((backup) = (s)->elt), (s)->elt = (as)->elt)
 
@@ -131,29 +151,52 @@ typedef struct _CursorScreen {
 Bool CursorVisible = FALSE;
 Bool EnableCursor = TRUE;
 
+/*
+ * ssx_legacy: Get sprite cursor - use miPointer for legacy mode
+ * Returns the current cursor from the sprite
+ */
 static CursorPtr
 CursorForDevice(DeviceIntPtr pDev)
 {
+#ifndef SSX_LEGACY_MODE
     if (pDev && pDev->spriteInfo && pDev->spriteInfo->sprite) {
         if (pDev->spriteInfo->anim.pCursor)
             return pDev->spriteInfo->anim.pCursor;
         return pDev->spriteInfo->sprite->current;
     }
-
+#else
+    /* ssx_legacy: use miPointerGetSpriteCursor for static build */
+    {
+        ;
+        return GetSpriteCursor();
+    }
+#endif
     return NULL;
+}
+
+/*
+ * ssx_legacy: Get default pointer device
+ */
+static DeviceIntPtr
+GetPointerDevice(void)
+{
+#ifdef SSX_LEGACY_MODE
+    return inputInfo.pointer;
+#else
+    return PickPointer(serverClient);
+#endif
 }
 
 static CursorPtr
 CursorForClient(ClientPtr client)
 {
-    return CursorForDevice(PickPointer(client));
+    return CursorForDevice(GetPointerDevice());
 }
 
 static Bool
-CursorDisplayCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
+CursorDisplayCursor(ScreenPtr pScreen, CursorPtr pCursor)
 {
     CursorScreenPtr cs = GetCursorScreen(pScreen);
-    CursorPtr pOldCursor = CursorForDevice(pDev);
     Bool ret;
     DisplayCursorProcPtr backupProc;
 
@@ -162,13 +205,13 @@ CursorDisplayCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
     CursorVisible = CursorVisible && EnableCursor;
 
     if (cs->pCursorHideCounts != NULL || !CursorVisible) {
-        ret = (*pScreen->DisplayCursor) (pDev, pScreen, NullCursor);
+        ret = (*pScreen->DisplayCursor) (pScreen, NullCursor);
     }
     else {
-        ret = (*pScreen->DisplayCursor) (pDev, pScreen, pCursor);
+        ret = (*pScreen->DisplayCursor) (pScreen, pCursor);
     }
 
-    if (pCursor != pOldCursor) {
+    if (1) { // ssx_legacy: always trigger event
         CursorEventPtr e;
 
         UpdateCurrentTimeIf();
@@ -178,9 +221,7 @@ CursorDisplayCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
                     .type = XFixesEventBase + XFixesCursorNotify,
                     .subtype = XFixesDisplayCursorNotify,
                     .window = e->pWindow->drawable.id,
-                    .cursorSerial = pCursor ? pCursor->serialNumber : 0,
-                    .timestamp = currentTime.milliseconds,
-                    .name = pCursor ? pCursor->name : None
+                    .timestamp = currentTime.milliseconds
                 };
                 WriteEventsToClient(e->pClient, 1, (xEvent *) &ev);
             }
@@ -191,8 +232,9 @@ CursorDisplayCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
     return ret;
 }
 
+/* ssx_legacy: CloseScreen takes (int index, ScreenPtr pScreen) */
 static Bool
-CursorCloseScreen(ScreenPtr pScreen)
+CursorCloseScreen(int index, ScreenPtr pScreen)
 {
     CursorScreenPtr cs = GetCursorScreen(pScreen);
     Bool ret;
@@ -202,7 +244,8 @@ CursorCloseScreen(ScreenPtr pScreen)
     Unwrap(cs, pScreen, CloseScreen, close_proc);
     Unwrap(cs, pScreen, DisplayCursor, display_proc);
     deleteCursorHideCountsForScreen(pScreen);
-    ret = (*pScreen->CloseScreen) (pScreen);
+    /* ssx_legacy: CloseScreen takes (int index, ScreenPtr pScreen) */
+    ret = (*pScreen->CloseScreen) (pScreen->myNum, pScreen);
     free(cs);
     return ret;
 }
@@ -365,17 +408,13 @@ ProcXFixesGetCursorImage(ClientPtr client)
     xXFixesGetCursorImageReply *rep;
     CursorPtr pCursor;
     CARD32 *image;
-    int npixels, width, height, rc, x, y;
+    int npixels, width, height, x, y;
 
     REQUEST_SIZE_MATCH(xXFixesGetCursorImageReq);
     pCursor = CursorForClient(client);
     if (!pCursor)
         return BadCursor;
-    rc = XaceHook(XACE_RESOURCE_ACCESS, client, pCursor->id, RT_CURSOR,
-                  pCursor, RT_NONE, NULL, DixReadAccess);
-    if (rc != Success)
-        return rc;
-    GetSpritePosition(PickPointer(client), &x, &y);
+    GetSpritePosition(&x, &y);
     width = pCursor->bits->width;
     height = pCursor->bits->height;
     npixels = width * height;
@@ -393,7 +432,7 @@ ProcXFixesGetCursorImage(ClientPtr client)
     rep->y = y;
     rep->xhot = pCursor->bits->xhot;
     rep->yhot = pCursor->bits->yhot;
-    rep->cursorSerial = pCursor->serialNumber;
+    // ssx_legacy: rep->cursorSerial removed
 
     image = (CARD32 *) (rep + 1);
     CopyCursorToImage(pCursor, image);
@@ -406,11 +445,10 @@ ProcXFixesGetCursorImage(ClientPtr client)
         swaps(&rep->height);
         swaps(&rep->xhot);
         swaps(&rep->yhot);
-        swapl(&rep->cursorSerial);
+        // ssx_legacy: cursorSerial removed
         SwapLongs(image, npixels);
     }
-    WriteToClient(client,
-                  sizeof(xXFixesGetCursorImageReply) + (npixels << 2), rep);
+    WriteToClient(client, sizeof(xXFixesGetCursorImageReply) + (npixels << 2), (char *) rep);
     free(rep);
     return Success;
 }
@@ -439,7 +477,7 @@ ProcXFixesSetCursorName(ClientPtr client)
     if (atom == BAD_RESOURCE)
         return BadAlloc;
 
-    pCursor->name = atom;
+    // ssx_legacy: pCursor->name removed
     return Success;
 }
 
@@ -467,8 +505,8 @@ ProcXFixesGetCursorName(ClientPtr client)
 
     REQUEST_SIZE_MATCH(xXFixesGetCursorNameReq);
     VERIFY_CURSOR(pCursor, stuff->cursor, client, DixGetAttrAccess);
-    if (pCursor->name)
-        str = NameForAtom(pCursor->name);
+    if (0) // ssx_legacy: pCursor->name removed
+        ;
     else
         str = "";
     len = strlen(str);
@@ -477,7 +515,7 @@ ProcXFixesGetCursorName(ClientPtr client)
         .type = X_Reply,
         .sequenceNumber = client->sequence,
         .length = bytes_to_int32(len),
-        .atom = pCursor->name,
+        .atom = None, // ssx_legacy: pCursor->name removed
         .nbytes = len
     };
     if (client->swapped) {
@@ -513,22 +551,17 @@ ProcXFixesGetCursorImageAndName(ClientPtr client)
     int npixels;
     const char *name;
     int nbytes, nbytesRound;
-    int width, height;
-    int rc, x, y;
+    int width, height, x, y;
 
     REQUEST_SIZE_MATCH(xXFixesGetCursorImageAndNameReq);
     pCursor = CursorForClient(client);
     if (!pCursor)
         return BadCursor;
-    rc = XaceHook(XACE_RESOURCE_ACCESS, client, pCursor->id, RT_CURSOR,
-                  pCursor, RT_NONE, NULL, DixReadAccess | DixGetAttrAccess);
-    if (rc != Success)
-        return rc;
-    GetSpritePosition(PickPointer(client), &x, &y);
+    GetSpritePosition(&x, &y);
     width = pCursor->bits->width;
     height = pCursor->bits->height;
     npixels = width * height;
-    name = pCursor->name ? NameForAtom(pCursor->name) : "";
+    name = ""; // ssx_legacy: pCursor->name removed
     nbytes = strlen(name);
     nbytesRound = pad_to_int32(nbytes);
     rep = calloc(sizeof(xXFixesGetCursorImageAndNameReply) +
@@ -545,8 +578,8 @@ ProcXFixesGetCursorImageAndName(ClientPtr client)
     rep->y = y;
     rep->xhot = pCursor->bits->xhot;
     rep->yhot = pCursor->bits->yhot;
-    rep->cursorSerial = pCursor->serialNumber;
-    rep->cursorName = pCursor->name;
+    // ssx_legacy: rep->cursorSerial removed
+    rep->cursorName = None; // ssx_legacy: pCursor->name removed
     rep->nbytes = nbytes;
 
     image = (CARD32 *) (rep + 1);
@@ -561,13 +594,13 @@ ProcXFixesGetCursorImageAndName(ClientPtr client)
         swaps(&rep->height);
         swaps(&rep->xhot);
         swaps(&rep->yhot);
-        swapl(&rep->cursorSerial);
+        // ssx_legacy: cursorSerial removed
         swapl(&rep->cursorName);
         swaps(&rep->nbytes);
         SwapLongs(image, npixels);
     }
     WriteToClient(client, sizeof(xXFixesGetCursorImageAndNameReply) +
-                  (npixels << 2) + nbytesRound, rep);
+                  (npixels << 2) + nbytesRound, (char *) rep);
     free(rep);
     return Success;
 }
@@ -628,7 +661,8 @@ ReplaceCursorLookup(void *value, XID id, void *closure)
     }
     if (pCursor && pCursor != rcl->pNew) {
         if ((*rcl->testCursor) (pCursor, rcl->closure)) {
-            CursorPtr curs = RefCursor(rcl->pNew);
+            /* ssx_legacy: no RefCursor, just use the cursor directly */
+            CursorPtr curs = rcl->pNew;
             /* either redirect reference or update resource database */
             if (pCursorRef)
                 *pCursorRef = curs;
@@ -709,12 +743,16 @@ SProcXFixesChangeCursor(ClientPtr client)
     return (*ProcXFixesVector[stuff->xfixesReqType]) (client);
 }
 
+/*
+ * ssx_legacy: TestForCursorName - return FALSE since cursor names are not supported
+ */
 static Bool
 TestForCursorName(CursorPtr pCursor, void *closure)
 {
     Atom *pName = closure;
 
-    return pCursor->name == *pName;
+    // ssx_legacy: pCursor->name removed, always return FALSE
+    return FALSE;
 }
 
 int
@@ -876,8 +914,12 @@ ProcXFixesHideCursor(ClientPtr client)
      * This is the first time this client has hid the cursor
      * for this screen.
      */
+    #ifndef SSX_LEGACY_MODE
     ret = XaceHook(XACE_SCREEN_ACCESS, client, pWin->drawable.pScreen,
                    DixHideAccess);
+#else
+    ret = Success;
+#endif
     if (ret != Success)
         return ret;
 
@@ -886,9 +928,10 @@ ProcXFixesHideCursor(ClientPtr client)
     if (ret == Success) {
         DeviceIntPtr dev;
 
+        /* ssx_legacy: use GetPointerDevice instead of PickPointer */
         for (dev = inputInfo.devices; dev; dev = dev->next) {
-            if (IsMaster(dev) && IsPointerDevice(dev))
-                CursorDisplayCursor(dev, pWin->drawable.pScreen,
+            if (IsPointerDevice(dev))
+                CursorDisplayCursor(pWin->drawable.pScreen,
                                     CursorForDevice(dev));
         }
     }
@@ -934,8 +977,12 @@ ProcXFixesShowCursor(ClientPtr client)
         return BadMatch;
     }
 
+    #ifndef SSX_LEGACY_MODE
     rc = XaceHook(XACE_SCREEN_ACCESS, client, pWin->drawable.pScreen,
                   DixShowAccess);
+#else
+    rc = Success;
+#endif
     if (rc != Success)
         return rc;
 
@@ -983,8 +1030,8 @@ CursorFreeHideCount(void *data, XID id)
 
     deleteCursorHideCount(pChc, pChc->pScreen);
     for (dev = inputInfo.devices; dev; dev = dev->next) {
-        if (IsMaster(dev) && IsPointerDevice(dev))
-            CursorDisplayCursor(dev, pScreen, CursorForDevice(dev));
+        if (IsPointerDevice(dev))
+            CursorDisplayCursor(pScreen, CursorForDevice(dev));
     }
 
     return 1;
@@ -1071,7 +1118,8 @@ XFixesCursorInit(void)
 {
     int i;
 
-    if (party_like_its_1989)
+    /* ssx_legacy: party_like_its_1989 not available */
+    if (0)
         CursorVisible = EnableCursor;
     else
         CursorVisible = FALSE;
@@ -1091,12 +1139,9 @@ XFixesCursorInit(void)
         cs->pCursorHideCounts = NULL;
         SetCursorScreen(pScreen, cs);
     }
-    CursorClientType = CreateNewResourceType(CursorFreeClient,
-                                             "XFixesCursorClient");
-    CursorHideCountType = CreateNewResourceType(CursorFreeHideCount,
-                                                "XFixesCursorHideCount");
-    CursorWindowType = CreateNewResourceType(CursorFreeWindow,
-                                             "XFixesCursorWindow");
+    CursorClientType = CreateNewResourceType(CursorFreeClient);
+    CursorHideCountType = CreateNewResourceType(CursorFreeHideCount);
+    CursorWindowType = CreateNewResourceType(CursorFreeWindow);
 
     return CursorClientType && CursorHideCountType && CursorWindowType;
 }

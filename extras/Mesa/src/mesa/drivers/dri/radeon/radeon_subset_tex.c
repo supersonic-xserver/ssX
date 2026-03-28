@@ -1,4 +1,11 @@
 /**
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * \file radeon_subset_tex.c
  * \brief Texturing.
  *
@@ -32,7 +39,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $XFree86: xc/lib/GL/mesa/src/drv/radeon/radeon_tex.c,v 1.6 2002/09/16 18:05:20 eich Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_subset_tex.c,v 1.1.1.3 2004/12/10 15:06:21 alanh Exp $ */
 
 #include "glheader.h"
 #include "imports.h"
@@ -75,8 +82,7 @@ void radeonDestroyTexObj( radeonContextPtr rmesa, radeonTexObjPtr t )
    if ( rmesa ) {
       if ( t == rmesa->state.texture.unit[0].texobj ) {
          rmesa->state.texture.unit[0].texobj = NULL;
-	 remove_from_list( &rmesa->hw.tex[0] );
-	 make_empty_list( &rmesa->hw.tex[0] );
+	 rmesa->hw.tex[0].dirty = GL_FALSE;
       }
    }
 
@@ -152,7 +158,7 @@ static void radeonUploadSubImage( radeonContextPtr rmesa,
    drmRadeonTexImage tmp;
 
    level += t->firstLevel;
-   texImage = t->tObj->Image[level];
+   texImage = t->tObj->Image[0][level];
 
    if ( !texImage || !texImage->Data ) 
       return;
@@ -200,7 +206,7 @@ static void radeonSetTexImages( radeonContextPtr rmesa,
 				struct gl_texture_object *tObj )
 {
    radeonTexObjPtr t = (radeonTexObjPtr)tObj->DriverData;
-   const struct gl_texture_image *baseImage = tObj->Image[tObj->BaseLevel];
+   const struct gl_texture_image *baseImage = tObj->Image[0][tObj->BaseLevel];
    GLint totalSize;
    GLint texelsPerDword = 0, blitWidth = 0, blitPitch = 0;
    GLint x, y, width, height;
@@ -273,11 +279,11 @@ static void radeonSetTexImages( radeonContextPtr rmesa,
 
    numLevels = lastLevel - firstLevel + 1;
 
-   log2Width = tObj->Image[firstLevel]->WidthLog2;
-   log2Height = tObj->Image[firstLevel]->HeightLog2;
+   log2Width = tObj->Image[0][firstLevel]->WidthLog2;
+   log2Height = tObj->Image[0][firstLevel]->HeightLog2;
 
    for ( i = 0 ; i < numLevels ; i++ ) {
-      const struct gl_texture_image *texImage = tObj->Image[i + firstLevel];
+      const struct gl_texture_image *texImage = tObj->Image[0][i + firstLevel];
       if ( !texImage )
 	 break;
 
@@ -524,7 +530,7 @@ static void radeonUpdateTextureEnv( GLcontext *ctx, int unit )
    radeonContextPtr rmesa = RADEON_CONTEXT(ctx);
    const struct gl_texture_unit *texUnit = &ctx->Texture.Unit[unit];
    const struct gl_texture_object *tObj = texUnit->_Current;
-   const GLenum format = tObj->Image[tObj->BaseLevel]->Format;
+   const GLenum format = tObj->Image[0][tObj->BaseLevel]->Format;
    GLuint color_combine = radeon_color_combine[unit][RADEON_DISABLE];
    GLuint alpha_combine = radeon_alpha_combine[unit][RADEON_DISABLE];
 

@@ -1,0 +1,102 @@
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/magictouch/magictouch.man,v 1.3 2006/02/27 01:57:12 dawes Exp $
+.\" shorthand for double quote that works everywhere.
+.ds q \N'34'
+.TH MagicTouch __drivermansuffix__ __vendorversion__
+.SH NAME
+magictouch \- MagicTouch input driver
+.SH SYNOPSIS
+.B "Section \*qInputDevice\*q"
+.br
+.BI "  Identifier \*q" idevname \*q
+.br
+.B  "  Driver \*qMagicTouch\*q"
+.br
+.BI "  Option \*qDevice\*q   \*q" devpath \*q
+.br
+\ \ ...
+.br
+.B EndSection
+.SH DESCRIPTION
+.B MagicTouch
+is an XFree86 input driver for MagicTouch ProE-X controller...
+.PP
+The
+.B MagicTouch
+driver functions as a pointer input device, and may be used as the
+X server's core pointer.
+.SH SUPPORTED HARDWARE
+It currently supports the ProE-X resistive touchscreen serial (rs232) interface
+and touchscreens made by Keytec, Inc (MagicTouch)
+.SH CONFIGURATION DETAILS
+Please refer to XF86Config(__filemansuffix__) for general configuration
+details and for options that can be used with all input drivers.  This
+section only covers configuration details specific to this driver.
+.PP
+.PP
+.PP
+The following driver
+.B Options
+are supported:
+.TP 7
+.BI "Option \*qDevice\*q \*q" devpath \*q
+Specify the device path for the magictouch.  Valid devices are:
+.PP
+.RS 12
+/dev/ttyS0, /dev/ttyS1, ....
+This option is mandatory.
+.RE
+.PP
+.RS 7
+It's important to specify the right device Note: com1 -> /dev/ttyS0, com2 -> /dev/ttyS1 ....
+
+.RE
+.TP 7
+.BI "Option \*qScreenNumber\*q \*q" screennumber \*q
+sets the
+.I screennumber
+for the
+.I magictouch
+InputDevice.
+.PP
+.RS 7
+.I Default:
+ScreenNumber: "0"
+
+.RE
+.TP 7
+.BI "Option \*qMinX, MinY\*q \*q" value \*q
+These are the minimum X and Y values for the
+.I magictouch
+input device.
+.PP
+.RS 7
+Note: MinX, MinY must be less than MaxX, MaxY.
+.PP
+.I Range:
+"0" - "32767"
+.PP
+.I Default:
+MinX: "0"  MinY: "0"
+
+
+.RE
+.TP 7
+.BI "Option \*qMaxX, MaxY\*q \*q" value \*q
+These are the maximum X and Y values for the
+.I magictouch
+input device.
+.PP
+.RS 7
+Note: MaxX, MaxY must be greater than MinX, MinY.
+.PP
+.I Range:
+"0" - "32767"
+.PP
+.I Default:
+MaxX: "16384"  MaxY: "16384"
+
+
+.SH "SEE ALSO"
+XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__).
+.SH AUTHORS
+Authors include...

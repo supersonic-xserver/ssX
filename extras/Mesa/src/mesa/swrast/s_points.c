@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -144,12 +151,12 @@
 /*
  * Sprite (textured point)
  */
-#define FLAGS (RGBA | SPRITE)
+#define FLAGS (RGBA | SPRITE | SPECULAR)
 #define NAME sprite_point
 #include "s_pointtemp.h"
 
 
-#define FLAGS (RGBA | ATTENUATE | SPRITE)
+#define FLAGS (RGBA | SPRITE | SPECULAR | ATTENUATE)
 #define NAME atten_sprite_point
 #include "s_pointtemp.h"
 

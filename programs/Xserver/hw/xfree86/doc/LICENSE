@@ -2,7 +2,7 @@
 
                        Compiled by The XFree86 Project
 
-                                 April 2006
+                                9 March 2005
 
 1.  Introduction
 
@@ -49,14 +49,14 @@ XFree86 licensing policy, please contact us.
 
 3.1  Open Source
 
-We believe that all of the code in this release (4.7.0) of XFree86 meet the
+We believe that all of the code in this release (4.5.0) of XFree86 meet the
 requirements of the Open Source Definition <URL:http://open-
 source.org/docs/definition.php>, as maintained by the Open Source Initiative
 (OSI) <URL:http://opensource.org/>.
 
 3.2  Free Software
 
-We believe that most of the code in this release (4.7.0) of XFree86 meets the
+We believe that most of the code in this release (4.5.0) of XFree86 meets the
 requirements of the Free Software definition <URL:http://www.fsf.org/philoso-
 phy/free-sw.html> as defined by the Free Software Foundation (FSF)
 <URL:http://www.fsf.org/>.
@@ -70,7 +70,7 @@ The text of the XFree86 1.1 license is included below.  A FAQ for this
 licence can be found at the XFree86 web site
 <URL:http://www.xfree86.org/legal/licenses.html>
 
-Copyright (C) 1994-2006 The XFree86 Project, Inc.
+Copyright (C) 1994-2005 The XFree86 Project, Inc.
 
 All rights reserved.
 
@@ -131,8 +131,6 @@ Copyright (C) 2003 Eric Anholt
 
 Copyright (C) 2002 Apple Computer, Inc. All Rights Reserved.
 
-Copyright (C) 2005 ASPEED Technology Inc.
-
 Copyright (C) 1988 AT&T.  All Rights Reserved.
 
 Copyright (C) 1992 by Robert Baron
@@ -188,7 +186,7 @@ Copyright (C) 2000 by Rainer Keller
 
 Copyright (C) 1999-2003 by Peter Kunzmann, Citron GmbH, Germany.
 
-Copyright (C) 1994 through 2008 by Marc Aurele La France (TSI @ UQV),
+Copyright (C) 1994 through 2005 by Marc Aurele La France (TSI @ UQV),
 tsi@xfree86.org
 
 Copyright (C) 1996 by Steven Lang
@@ -769,6 +767,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Copyright (c) 2003 The NetBSD Foundation, Inc.  All rights reserved.
 
+This code is derived from software contributed to The NetBSD Foundation by
+Ben Collver <collver1@attbi.com>
+
 Redistribution and use in source and binary forms, with or without modifica-
 tion, are permitted provided that the following conditions are met:
 
@@ -779,7 +780,11 @@ tion, are permitted provided that the following conditions are met:
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
 
-  3.   Neither the name of The NetBSD Foundation nor the names of its con-
+  3.   All advertising materials mentioning features or use of this software
+      must display the following acknowledgement: This product includes soft-
+      ware developed by the NetBSD Foundation, Inc. and its contributors.
+
+  4.   Neither the name of The NetBSD Foundation nor the names of its con-
       tributors may be used to endorse or promote products derived from this
       software without specific prior written permission.
 
@@ -797,9 +802,9 @@ AGE.
 
 6.7  X-Oz Technologies
 
-Copyright 2003-2006 by David H. Dawes.
+Copyright 2003, 2004, 2005 by David H. Dawes.
 
-Copyright 2003-2006 by X-Oz Technologies.
+Copyright 2003, 2004, 2005 by X-Oz Technologies.
 
 All rights reserved.
 
@@ -1631,7 +1636,7 @@ the sale, use or other dealings in this Font Software without prior written
 authorization from the Gnome Foundation or Bitstream Inc., respectively. For
 further information, contact: fonts at gnome dot org.
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LICENSE.sgml,v 1.46 tsi Exp $
+     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LICENSE.sgml,v 1.41 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/LICENSE,v 1.52tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/LICENSE,v 1.46 2005/03/17 01:11:54 dawes Exp $

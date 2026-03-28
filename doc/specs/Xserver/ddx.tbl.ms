@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: ddx.tbl.ms,v 1.3 2000/08/17 19:42:41 cpqbld Exp $
 .EF 'Porting Layer Definition'- % -'April 8, 1994'
 .OF 'Porting Layer Definition'- % -'April 8, 1994'
 .EH '''

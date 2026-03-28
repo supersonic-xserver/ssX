@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /**************************************************************************
 
@@ -27,7 +34,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830.h,v 1.21 2006/01/29 01:51:49 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830.h,v 1.18 2005/03/03 18:06:26 alanh Exp $ */
 
 /*
  * Authors:
@@ -91,7 +98,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 typedef struct _VESARec {
    /* SVGA state */
    pointer state, pstate;
-   int statePage, stateSize, stateMode, stateRefresh;
+   int statePage, stateSize, stateMode;
    CARD32 *savedPal;
    int savedScanlinePitch;
    xf86MonPtr monitor;
@@ -151,7 +158,9 @@ typedef struct {
    ScrnInfoPtr    pScrn_1;
    ScrnInfoPtr    pScrn_2;
    int            RingRunning;
+#ifdef I830_XV
    int            XvInUse;
+#endif
 } I830EntRec, *I830EntPtr;
 
 typedef struct _I830Rec {
@@ -163,17 +172,13 @@ typedef struct _I830Rec {
 
    Bool newPipeSwitch;
 
-   Bool fakeSwitch;
-   
-   int fixedPipe;
-
    Bool Clone;
    int CloneRefresh;
    int CloneHDisplay;
    int CloneVDisplay;
 
    I830EntPtr entityPrivate;	
-   int pipe, origPipe;
+   int pipe;
    int init;
 
    unsigned int bufferOffset;		/* for I830SelectBuffer */
@@ -210,10 +215,10 @@ typedef struct _I830Rec {
    I830MemRange Dummy;
 #endif
 
+#ifdef I830_XV
    /* For Xvideo */
    I830MemRange *OverlayMem;
-   I830MemRange LinearMem;
-   unsigned int LinearAlloc;
+#endif
 
 #ifdef XF86DRI
    I830MemRange BackBuffer;
@@ -236,7 +241,6 @@ typedef struct _I830Rec {
 
    int MonType1;
    int MonType2;
-   Bool specifiedMonitor;
 
    DGAModePtr DGAModes;
    int numDGAModes;
@@ -278,10 +282,12 @@ typedef struct _I830Rec {
    Bool XvDisabled;			/* Xv disabled in PreInit. */
    Bool XvEnabled;			/* Xv enabled for this generation. */
 
+#ifdef I830_XV
    int colorKey;
    XF86VideoAdaptorPtr adaptor;
    ScreenBlockHandlerProcPtr BlockHandler;
    Bool *overlayOn;
+#endif
 
    Bool directRenderingDisabled;	/* DRI disabled in PreInit. */
    Bool directRenderingEnabled;		/* DRI enabled this generation. */
@@ -298,15 +304,7 @@ typedef struct _I830Rec {
    drm_handle_t ring_map;
 #endif
 
-   /* Broken-out options. */
    OptionInfoPtr Options;
-   int rotate;
-   Bool shadowFB;
-
-   /* Support for shadowFB and rotation. */
-   unsigned char *shadowPtr;
-   int shadowPitch;
-   void (*PointerMoved)(int, int, int);
 
    /* Stolen memory support */
    Bool StolenOnly;
@@ -329,12 +327,10 @@ typedef struct _I830Rec {
    /* Use BIOS call 0x5f05 to set the refresh rate. */
    Bool useExtendedRefresh;
 
-   Bool checkDevices;
+   Bool checkLid;
    int monitorSwitch;
    int operatingDevices;
    int savedDevices;
-   int toggleDevices;
-   int lastDevice0, lastDevice1, lastDevice2;
 
    /* These are indexed by the display types */
    Bool displayAttached[NumDisplayTypes];
@@ -354,7 +350,6 @@ typedef struct _I830Rec {
    Bool starting;
    Bool closing;
    Bool suspended;
-   Bool leaving;
 
    /* fbOffset converted to (x, y). */
    int xoffset;
@@ -365,7 +360,7 @@ typedef struct _I830Rec {
    Bool displayInfo;
    Bool devicePresence;
 
-   OsTimerPtr devicesTimer;
+   OsTimerPtr lidTimer;
 } I830Rec;
 
 #define I830PTR(p) ((I830Ptr)((p)->driverPrivate))
@@ -391,9 +386,11 @@ extern void I830EmitFlush(ScrnInfoPtr pScrn);
 
 extern Bool I830DGAInit(ScreenPtr pScreen);
 
+#ifdef I830_XV
 extern void I830InitVideo(ScreenPtr pScreen);
 extern void I830VideoSwitchModeBefore(ScrnInfoPtr pScrn, DisplayModePtr mode);
 extern void I830VideoSwitchModeAfter(ScrnInfoPtr pScrn, DisplayModePtr mode);
+#endif
 
 #ifdef XF86DRI
 extern Bool I830Allocate3DMemory(ScrnInfoPtr pScrn, const int flags);
@@ -434,27 +431,19 @@ extern void I830ReadAllRegisters(I830Ptr pI830, I830RegPtr i830Reg);
 
 extern void I830ChangeFrontbuffer(ScrnInfoPtr pScrn,int buffer);
 
-extern DisplayModePtr I830GetModePool(ScrnInfoPtr pScrn, vbeInfoPtr pVbe,
-					VbeInfoBlock *vbe);
-extern void I830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe);
-extern void I830UnsetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe);
-extern void I830PrintModes(ScrnInfoPtr pScrn);
+extern DisplayModePtr i830GetModePool(ScrnInfoPtr pScrn, vbeInfoPtr pVbe,
+					VbeInfoBlock *vbe, int modeTypes);
+extern void i830SetModeParameters(ScrnInfoPtr pScrn, vbeInfoPtr pVbe);
+extern void i830PrintModes(ScrnInfoPtr pScrn);
 extern int I830GetBestRefresh(ScrnInfoPtr pScrn, int refresh);
-extern Bool I830CheckModeSupport(ScrnInfoPtr pScrn, int x, int y, int mode);
-extern void I830PointerMoved(int index, int x, int y);
-extern void I830RefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
-extern void I830RefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
-extern void I830RefreshArea16(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
-extern void I830RefreshArea24(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
-extern void I830RefreshArea32(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
 
 /*
  * 12288 is set as the maximum, chosen because it is enough for
  * 1920x1440@32bpp with a 2048 pixel line pitch with some to spare.
  */
 #define I830_MAXIMUM_VBIOS_MEM		12288
-#define I830_DEFAULT_VIDEOMEM_2D	(MB(32) / 1024)
-#define I830_DEFAULT_VIDEOMEM_3D	(MB(64) / 1024)
+#define I830_DEFAULT_VIDEOMEM_2D	(MB(8) / 1024)
+#define I830_DEFAULT_VIDEOMEM_3D	(MB(32) / 1024)
 
 /* Flags for memory allocation function */
 #define FROM_ANYWHERE			0x00000000

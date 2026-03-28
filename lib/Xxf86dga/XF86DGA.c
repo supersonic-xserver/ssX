@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/Xxf86dga/XF86DGA.c,v 3.24 2003/05/05 20:42:30 tsi Exp $ */
+/* $XFree86: xc/lib/Xxf86dga/XF86DGA.c,v 3.25 2004/04/03 22:26:21 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1995  Jon Tombs
@@ -562,7 +569,7 @@ MapPhysAddress(unsigned long address, unsigned long size)
 	    return NULL;
     }
     vaddr = (void *)mmap(NULL, size + delta, PROT_READ | PROT_WRITE,
-                        MAP_FILE | MAP_SHARED, mapFd, (off_t)offset);
+                        MAP_FILE | MAP_SHARED, mapFd, (off_t)(unsigned long)offset);
     if (vaddr == (void *)-1)
 	return NULL;
 #endif

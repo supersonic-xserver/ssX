@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/mi/mibitblt.c,v 3.13 2005/10/14 15:17:22 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,11 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* Author: Todd Newman  (aided and abetted by Mr. Drewry) */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* Author: Todd Newman  (aided and abetted by Mr. Drewry) */
 
 #include <X11/X.h>
 #include <X11/Xprotostr.h>
@@ -63,25 +68,16 @@ SOFTWARE.
 #include <X11/Xmd.h>
 #include "servermd.h"
 
-#ifndef HAS_FFS
-extern int ffs(int);
-#endif
-
 /* MICOPYAREA -- public entry for the CopyArea request 
  * For each rectangle in the source region
  *     get the pixels with GetSpans
  *     set them in the destination with SetSpans
  * We let SetSpans worry about clipping to the destination.
  */
-_X_EXPORT RegionPtr
-miCopyArea(pSrcDrawable, pDstDrawable,
-	    pGC, xIn, yIn, widthSrc, heightSrc, xOut, yOut)
-    DrawablePtr 	pSrcDrawable;
-    DrawablePtr 	pDstDrawable;
-    GCPtr 		pGC;
-    int 		xIn, yIn;
-    int 		widthSrc, heightSrc;
-    int 		xOut, yOut;
+RegionPtr
+miCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
+	   GCPtr pGC, int xIn, int yIn, int widthSrc, int heightSrc,
+	   int xOut, int yOut)
 {
     DDXPointPtr		ppt, pptFirst;
     unsigned int	*pwidthFirst, *pwidth, *pbits;
@@ -358,7 +354,7 @@ miGetPlane(
 		 * Now get the bit and insert into a bitmap in XY format.
 		 */
 		bit = (pixel >> planeNum) & 1;
-#if 0
+#ifndef XFree86Server
 		/* XXX assuming bit order == byte order */
 #if BITMAP_BIT_ORDER == LSBFirst
 		bit <<= k;
@@ -400,7 +396,7 @@ miGetPlane(
  * Note how the clipped out bits of the bitmap are always the background
  * color so that the stipple never causes FillRect to draw them.
  */
-static void
+void
 miOpqStipDrawable(DrawablePtr pDraw, GCPtr pGC, RegionPtr prgnSrc,
 		  MiBits *pbits, int srcx, int w, int h, int dstx, int dsty)
 {
@@ -547,16 +543,10 @@ miOpqStipDrawable(DrawablePtr pDraw, GCPtr pGC, RegionPtr prgnSrc,
  * build a source clip
  * Use the bitmap we've built up as a Stipple for the destination 
  */
-_X_EXPORT RegionPtr
-miCopyPlane(pSrcDrawable, pDstDrawable,
-	    pGC, srcx, srcy, width, height, dstx, dsty, bitPlane)
-    DrawablePtr 	pSrcDrawable;
-    DrawablePtr		pDstDrawable;
-    GCPtr		pGC;
-    int 		srcx, srcy;
-    int 		width, height;
-    int 		dstx, dsty;
-    unsigned long	bitPlane;
+RegionPtr
+miCopyPlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
+	    GCPtr pGC, int srcx, int srcy, int width, int height,
+	    int dstx, int dsty, unsigned long bitPlane)
 {
     MiBits	*ptile;
     BoxRec 		box;
@@ -641,13 +631,9 @@ miCopyPlane(pSrcDrawable, pDstDrawable,
  * XY format:
  * get the single plane specified in planemask
  */
-_X_EXPORT void
-miGetImage(pDraw, sx, sy, w, h, format, planeMask, pDst)
-    DrawablePtr 	pDraw;
-    int			sx, sy, w, h;
-    unsigned int 	format;
-    unsigned long 	planeMask;
-    char *              pDst;
+void
+miGetImage(DrawablePtr pDraw, int sx, int sy, int w, int h,
+	   unsigned int format, unsigned long planeMask, char *pDst)
 {
     unsigned char	depth;
     int			i, linelength, width, srcx, srcy;
@@ -742,13 +728,9 @@ miGetImage(pDraw, sx, sy, w, h, format, planeMask, pDst)
  * ZPixmap format:
  *	This part is simple, just call SetSpans
  */
-_X_EXPORT void
-miPutImage(pDraw, pGC, depth, x, y, w, h, leftPad, format, pImage)
-    DrawablePtr		pDraw;
-    GCPtr		pGC;
-    int 		depth, x, y, w, h, leftPad;
-    int			format;
-    char		*pImage;
+void
+miPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y, int w, int h,
+	   int leftPad, int format, char *pImage)
 {
     DDXPointPtr		pptFirst, ppt;
     int			*pwidthFirst, *pwidth;

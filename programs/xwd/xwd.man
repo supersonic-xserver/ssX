@@ -1,3 +1,4 @@
+.\" $Xorg: xwd.man,v 1.4 2001/02/09 02:06:03 xorgcvs Exp $
 .\" Copyright 1988, 1994, 1998  The Open Group
 .\" 
 .\" Permission to use, copy, modify, distribute, and sell this software and its
@@ -22,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.\" $XFree86: xc/programs/xwd/xwd.man,v 1.11tsi Exp $
+.\" $XFree86: xc/programs/xwd/xwd.man,v 1.10 2005/02/11 03:03:22 dawes Exp $
 .\"
 .TH XWD 1 __vendorversion__
 .SH NAME
@@ -30,7 +31,7 @@ xwd - dump an image of an X window
 .SH SYNOPSIS
 .B "xwd"
 [-debug] [-help] [-nobdrs] [-out \fIfile\fP] [-xy] [-frame] [-add \fIvalue\fP]
-[-root | -id \fIid\fP | -name \fIname\fP | -rect] [-icmap] [-screen]
+[-root | -id \fIid\fP | -name \fIname\fP ] [-icmap] [-screen]
 [-display \fIdisplay\fP]
 .SH DESCRIPTION
 .PP
@@ -95,12 +96,6 @@ select a window with the pointer.
 This option indicates that the window with the specified WM_NAME property
 should be selected for the window dump, without requiring the user to
 select a window with the pointer.
-.PP
-.TP 8
-.B "-rect"
-This option indicates that the rectangle region of a screen should be
-selected with the pointer. Window-related parameters like \fBnobdrs\fP
-and \fBframe\fP are ignored.
 .PP
 .TP 8
 .B "-icmap"

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbfillrct.c,v 3.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbfillrct.c,v 3.3 2003/10/29 22:15:19 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,9 +54,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbfillrct.c,v 5.10 94/04/17 20:28:21 dpw Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -60,6 +68,7 @@ SOFTWARE.
 #include "maskbits.h"
 
 #define MODEQ(a, b) ((a) %= (b))
+void afbPaintOddSize();
 
 /*
 	filled rectangles.
@@ -70,13 +79,16 @@ helper function in the GC.
 #define NUM_STACK_RECTS		1024
 
 void
-afbPolyFillRect(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
-		xRectangle *prectInit)
+afbPolyFillRect(pDrawable, pGC, nrectFill, prectInit)
+	DrawablePtr pDrawable;
+	GCPtr pGC;
+	int nrectFill;				/* number of rectangles to fill */
+	xRectangle *prectInit;			/* Pointer to first rectangle to fill */
 {
 	xRectangle *prect;
 	RegionPtr prgnClip;
-	BoxPtr pbox;
-	BoxPtr pboxClipped;
+	register BoxPtr pbox;
+	register BoxPtr pboxClipped;
 	BoxPtr pboxClippedBase;
 	BoxPtr pextent;
 	BoxRec stackRects[NUM_STACK_RECTS];

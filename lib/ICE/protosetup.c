@@ -1,3 +1,11 @@
+/* $Xorg: protosetup.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -32,10 +40,21 @@ Author: Ralph Mor, X Consortium
 
 
 IceProtocolSetupStatus
-IceProtocolSetup(IceConn iceConn, int myOpcode, IcePointer clientData,
-		 Bool mustAuthenticate, int *majorVersionRet,
-		 int *minorVersionRet, char **vendorRet, char **releaseRet,
-		 int errorLength, char *errorStringRet)
+IceProtocolSetup (iceConn, myOpcode, clientData, mustAuthenticate,
+    majorVersionRet, minorVersionRet, vendorRet, releaseRet,
+    errorLength, errorStringRet)
+
+IceConn	   iceConn;
+int 	   myOpcode;
+IcePointer clientData;
+Bool       mustAuthenticate;
+int	   *majorVersionRet;
+int	   *minorVersionRet;
+char	   **vendorRet;
+char	   **releaseRet;
+int  	   errorLength;
+char 	   *errorStringRet;
+
 {
     iceProtocolSetupMsg	*pMsg;
     char		*pData;

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiload.h,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiload.h,v 1.8 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -32,24 +39,24 @@
 #include "xf86str.h"
 
 extern const char *ATIint10Symbols[], *ATIddcSymbols[], *ATIvbeSymbols[],
-                  *ATIxf1bppSymbols[], *ATIxf4bppSymbols[], *ATIfbSymbols[],
-                  *ATIshadowfbSymbols[], *ATIxaaSymbols[], *ATIramdacSymbols[],
-                  *ATIi2cSymbols[];
 
-extern ModuleDescPtr ATILoadSubModule  FunctionPrototype((ScrnInfoPtr,
-                                                          const char *,
-                                                          const char **));
-extern ModuleDescPtr ATILoadVBEModule  FunctionPrototype((ScrnInfoPtr));
+#ifndef AVOID_CPIO
 
-extern ModuleDescPtr ATILoadSubModules FunctionPrototype((ScrnInfoPtr, ATIPtr));
+                  *ATIxf1bppSymbols[], *ATIxf4bppSymbols[],
+
+#endif /* AVOID_CPIO */
+
+                  *ATIfbSymbols[], *ATIshadowfbSymbols[], *ATIxaaSymbols[],
+                  *ATIramdacSymbols[], *ATIi2cSymbols[];
+
+extern pointer ATILoadModule  FunctionPrototype((ScrnInfoPtr, const char *,
+                                                 const char **));
+extern pointer ATILoadModules FunctionPrototype((ScrnInfoPtr, ATIPtr));
 
 #else /* XFree86LOADER */
 
-#include <X11/Xdefs.h>
-
-#define ATILoadSubModule(pScreenInfo, Module, SymbolList) ((pointer)1)
-#define ATILoadVBEModule(pScreenInfo)                     ((pointer)1)
-#define ATILoadSubModules(pScreenInfo, pATI)              ((pointer)1)
+#define ATILoadModule(pScreenInfo, Module, SymboList) ((pointer)1)
+#define ATILoadModules(pScreenInfo, pATI)             ((pointer)1)
 
 #endif /* XFree86LOADER */
 

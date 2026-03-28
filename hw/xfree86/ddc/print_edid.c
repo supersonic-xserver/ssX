@@ -1,21 +1,32 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/print_edid.c,v 1.16 2003/09/24 02:43:17 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* print_edid.c: print out all information retrieved from display device 
  * 
  * Copyright 1998 by Egbert Eich <Egbert.Eich@Physik.TU-Darmstadt.DE>
  */
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include "misc.h"
 #include "xf86.h"
+#include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 #include "xf86DDC.h"
   
 static void print_vendor(int scrnIndex, struct vendor *);
 static void print_version(int scrnIndex, struct edid_version *);
-static void print_display(int scrnIndex, struct disp_features *,
-			  struct edid_version *);
+static void print_display(int scrnIndex, struct disp_features *);
 static void print_established_timings(int scrnIndex,
 				      struct established_timings *);
 static void print_std_timings(int scrnIndex, struct std_timings *);
@@ -24,38 +35,19 @@ static void print_detailed_monitor_section(int scrnIndex,
 static void print_detailed_timings(int scrnIndex, struct detailed_timings *);
 
 static void print_input_features(int scrnIndex, struct disp_features *);
-static void print_dpms_features(int scrnIndex, struct disp_features *,
-				struct edid_version *v);
+static void print_dpms_features(int scrnIndex, struct disp_features *);
 static void print_whitepoint(int scrnIndex, struct disp_features *);
-static void print_number_sections(int scrnIndex, int);
-
-#define EDID_WIDTH	16
-
+  
 xf86MonPtr
 xf86PrintEDID(xf86MonPtr m)
 {
-    CARD16 i, j;
-    char buf[EDID_WIDTH * 2 + 1];
-
     if (!(m)) return NULL;
-
     print_vendor(m->scrnIndex,&m->vendor);
     print_version(m->scrnIndex,&m->ver);
-    print_display(m->scrnIndex,&m->features, &m->ver);
+    print_display(m->scrnIndex,&m->features);
     print_established_timings(m->scrnIndex,&m->timings1);
     print_std_timings(m->scrnIndex,m->timings2);
     print_detailed_monitor_section(m->scrnIndex,m->det_mon);
-    print_number_sections(m->scrnIndex,m->no_sections);
-
-    xf86DrvMsg(m->scrnIndex, X_INFO, "EDID (in hex):\n");
- 
-    for (i = 0; i < 128; i += j) {
-	for (j = 0; j < EDID_WIDTH; ++j) {
-	    sprintf(&buf[j * 2], "%02x", m->rawData[i + j]);
-	}
-	xf86DrvMsg(m->scrnIndex, X_INFO, "\t%s\n", buf);
-    }
-    
     return m;
 }
   
@@ -75,8 +67,7 @@ print_version(int scrnIndex, struct edid_version *c)
 }
   
 static void
-print_display(int scrnIndex, struct disp_features *disp,
-	      struct edid_version *version)
+print_display(int scrnIndex, struct disp_features *disp)
 {
     print_input_features(scrnIndex,disp);
     xf86DrvMsg(scrnIndex,X_INFO,"Max H-Image Size [cm]: ");
@@ -89,18 +80,16 @@ print_display(int scrnIndex, struct disp_features *disp,
       else
 	xf86ErrorF("V-Size may change\n");
     xf86DrvMsg(scrnIndex,X_INFO,"Gamma: %.2f\n", disp->gamma);
-    print_dpms_features(scrnIndex,disp,version);
+    print_dpms_features(scrnIndex,disp);
     print_whitepoint(scrnIndex,disp);
 }
   
 static void 
 print_input_features(int scrnIndex, struct disp_features *c)
 {
-    if (DIGITAL(c->input_type)) {
+    if (DIGITAL(c->input_type))
 	xf86DrvMsg(scrnIndex,X_INFO,"Digital Display Input\n");
-	if (DFP1(c->input_dfp))
-	    xf86DrvMsg(scrnIndex,X_INFO,"DFP 1.x compatible TMDS\n");
-    } else {
+    else {
 	xf86DrvMsg(scrnIndex,X_INFO,"Analog Display Input,  ");
 	xf86ErrorF("Input Voltage Level: ");
 	switch (c->input_voltage){
@@ -136,8 +125,7 @@ print_input_features(int scrnIndex, struct disp_features *c)
 }
   
 static void 
-print_dpms_features(int scrnIndex, struct disp_features *c,
-		    struct edid_version *v)
+print_dpms_features(int scrnIndex, struct disp_features *c)
 {
      if (c->dpms) {
 	 xf86DrvMsg(scrnIndex,X_INFO,"DPMS capabilities:");
@@ -166,10 +154,6 @@ print_dpms_features(int scrnIndex, struct disp_features *c,
     if (PREFERRED_TIMING_MODE(c->msc))
 	xf86DrvMsg(scrnIndex,X_INFO,
 		   "First detailed timing is preferred mode\n"); 
-    else if (v->version == 1 && v->revision >= 3)
-	xf86DrvMsg(scrnIndex,X_INFO,
-		   "First detailed timing not preferred "
-		   "mode in violation of standard!");
     if (GFT_SUPPORTED(c->msc))
 	xf86DrvMsg(scrnIndex,X_INFO,
 		   "GTF timings supported\n"); 
@@ -264,15 +248,7 @@ print_detailed_monitor_section(int scrnIndex,
 	    if (m[i].section.ranges.max_clock != 0)
 		xf86ErrorF(" PixClock max %i MHz\n",m[i].section.ranges.max_clock);
 	    else
-		xf86ErrorF("\n");
-	    if (m[i].section.ranges.gtf_2nd_f > 0)
-		xf86DrvMsg(scrnIndex,X_INFO," 2nd GTF parameters: f: %i kHz "
-			   "c: %i m: %i k %i j %i\n",
-			   m[i].section.ranges.gtf_2nd_f,
-			   m[i].section.ranges.gtf_2nd_c,
-			   m[i].section.ranges.gtf_2nd_m,
-			   m[i].section.ranges.gtf_2nd_k,
-			   m[i].section.ranges.gtf_2nd_j);
+		xf86DrvMsg(scrnIndex,X_INFO,"\n");
 	    break;
 	case DS_STD_TIMINGS:
 	    for (j = 0; j<5; j++) 
@@ -289,9 +265,6 @@ print_detailed_monitor_section(int scrnIndex,
 			       m[i].section.wp[j].index,m[i].section.wp[j].white_x,
 			       m[i].section.wp[j].white_y,
 			       m[i].section.wp[j].white_gamma);
-	    break;
-	case DS_DUMMY:
-	default:
 	    break;
 	}
     }
@@ -319,32 +292,9 @@ print_detailed_timings(int scrnIndex, struct detailed_timings *t)
 	xf86ErrorF("v_border: %i\n",t->v_border);
 	if (IS_STEREO(t->stereo)) {
 	    xf86DrvMsg(scrnIndex,X_INFO,"Stereo: ");
-	    if (IS_RIGHT_STEREO(t->stereo)) {
-		if (!t->stereo_1)
-		    xf86ErrorF("right channel on sync\n");
-		else
-		    xf86ErrorF("left channel on sync\n");
-	    } else if (IS_LEFT_STEREO(t->stereo)) {
-		if (!t->stereo_1)
-		    xf86ErrorF("right channel on even line\n");
-		else 
-		    xf86ErrorF("left channel on evel line\n");
-	    }
-	    if (IS_4WAY_STEREO(t->stereo)) {
-		if (!t->stereo_1)
-		    xf86ErrorF("4-way interleaved\n");
-		else
-		    xf86ErrorF("side-by-side interleaved");
-	    }
+	    if (IS_RIGHT_ON_SYNC(t->stereo)) 
+		xf86ErrorF("right channel on sync\n");
+	    else xf86ErrorF("right channel on sync\n");
 	}
     }
 }
-
-static void
-print_number_sections(int scrnIndex, int num)
-{
-    if (num)
-	xf86DrvMsg(scrnIndex,X_INFO,"Number of EDID sections to follow: %i\n",
-		   num);
-}
-

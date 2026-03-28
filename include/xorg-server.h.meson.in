@@ -16,6 +16,9 @@
 #ifndef _XORG_SERVER_H_
 #define _XORG_SERVER_H_
 
+/* Provide standard fixed-width integer types */
+#include <stdint.h>
+
 #ifdef HAVE_XORG_CONFIG_H
 #error Include xorg-config.h when building the X server
 #endif

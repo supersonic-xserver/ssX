@@ -1,5 +1,5 @@
 #! /bin/nawk -f
-# $XFree86$
+# $Xorg: fix.nawk,v 1.3 2000/08/17 19:42:50 cpqbld Exp $
 #
 
 BEGIN {

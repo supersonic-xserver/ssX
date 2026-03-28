@@ -1,0 +1,12 @@
+/Jamfile/1.1.1.2/Fri Mar  5 14:26:25 2004//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.1/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/bdf.c/1.1.1.1/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/bdf.h/1.1.1.2/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/bdfdrivr.c/1.1.1.3/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/bdfdrivr.h/1.1.1.2/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/bdferror.h/1.1.1.1/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/bdflib.c/1.3/Thu Apr  5 16:34:01 2007//Tnetbsd-5-2-3-RELEASE
+/descrip.mms/1.1.1.1/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/module.mk/1.1.1.1/Fri Feb 28 13:19:15 2003//Tnetbsd-5-2-3-RELEASE
+/rules.mk/1.1.1.2/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+D

@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# $XFree86$
-#
-
 import string, sys, os, glob
 
 # current output directory

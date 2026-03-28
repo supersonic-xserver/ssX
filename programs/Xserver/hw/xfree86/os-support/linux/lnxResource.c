@@ -1,8 +1,22 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnxResource.c,v 3.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnxResource.c,v 3.19 2004/02/04 16:30:50 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* Resource information code */
 
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86Privstr.h"
@@ -206,8 +220,6 @@ xf86BusAccWindowsFromOS(void)
 
 #if defined(__sparc__) || defined(__powerpc__)
     RANGE(range, 0x00000000, 0x00ffffff, ResExcIoBlock);
-#elif defined(__mips__)
-    RANGE(range, 0x00000000, 0xffffffff, ResExcIoBlock);
 #else
     RANGE(range, 0x00000000, 0x0000ffff, ResExcIoBlock);
 #endif
@@ -226,8 +238,6 @@ xf86PciBusAccWindowsFromOS(void)
 
 #if defined(__sparc__) || defined(__powerpc__)
     RANGE(range, 0x00000000, 0x00ffffff, ResExcIoBlock);
-#elif defined(__mips__)
-    RANGE(range, 0x00000000, 0xffffffff, ResExcIoBlock);
 #else
     RANGE(range, 0x00000000, 0x0000ffff, ResExcIoBlock);
 #endif
@@ -248,8 +258,6 @@ xf86IsaBusAccWindowsFromOS(void)
 
 #if defined(__sparc__) || defined(__powerpc__)
     RANGE(range, 0x00000000, 0x00ffffff, ResExcIoBlock);
-#elif defined(__mips__)
-    RANGE(range, 0x00000000, 0xffffffff, ResExcIoBlock);
 #else
     RANGE(range, 0x00000000, 0x0000ffff, ResExcIoBlock);
 #endif
@@ -276,8 +284,6 @@ xf86AccResFromOS(resPtr ret)
     ret = xf86AddResToList(ret, &range, -1);
 #if defined(__sparc__) || defined(__powerpc__)
     RANGE(range, 0x00ffffff, 0x00ffffff, ResExcIoBlock);
-#elif defined(__mips__)
-    RANGE(range, 0xffffffff, 0xffffffff, ResExcIoBlock);
 #else
     RANGE(range, 0x0000ffff, 0x0000ffff, ResExcIoBlock);
 #endif

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_probe.c,v 1.35tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_probe.c,v 1.31 2003/11/10 18:41:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000 ATI Technologies Inc., Markham, Ontario, and
  *                VA Linux Systems Inc., Fremont, California.
@@ -46,7 +53,7 @@
 #include "xf86.h"
 #include "xf86_ansic.h"
 #define _XF86MISC_SERVER_
-#include <X11/extensions/xf86misc.h>
+#include "xf86misc.h"
 #include "xf86Resources.h"
 
 #ifdef XFree86LOADER
@@ -89,8 +96,6 @@ SymTabRec RADEONChipsets[] = {
     { PCI_CHIP_RADEON_QG, "ATI Radeon QG (AGP)" },
     { PCI_CHIP_RV100_QY, "ATI Radeon VE/7000 QY (AGP/PCI)" },
     { PCI_CHIP_RV100_QZ, "ATI Radeon VE/7000 QZ (AGP/PCI)" },
-    { PCI_CHIP_RN50_515E, "ATI ES1000 515E (PCI)" },
-    { PCI_CHIP_RN50_5969, "ATI ES1000 5969 (PCI)" },
     { PCI_CHIP_RADEON_LW, "ATI Radeon Mobility M7 LW (AGP)" },
     { PCI_CHIP_RADEON_LX, "ATI Mobility FireGL 7800 M7 LX (AGP)" },
     { PCI_CHIP_RADEON_LY, "ATI Radeon Mobility M6 LY (AGP)" },
@@ -115,13 +120,10 @@ SymTabRec RADEONChipsets[] = {
     { PCI_CHIP_RV250_Lg, "ATI Radeon Mobility 9000 (M9) Lg (AGP)" },
     { PCI_CHIP_RS300_5834, "ATI Radeon 9100 IGP (A5) 5834" },
     { PCI_CHIP_RS300_5835, "ATI Radeon Mobility 9100 IGP (U3) 5835" },
-    { PCI_CHIP_RS350_7834, "ATI Radeon 9100 PRO IGP 7834" },
-    { PCI_CHIP_RS350_7835, "ATI Radeon Mobility 9200 IGP 7835" },
-    { PCI_CHIP_RV280_5960, "ATI Radeon 9250 5960 (AGP)" },
+    { PCI_CHIP_RV280_5960, "ATI Radeon 9200PRO 5960 (AGP)" },
     { PCI_CHIP_RV280_5961, "ATI Radeon 9200 5961 (AGP)" },
     { PCI_CHIP_RV280_5962, "ATI Radeon 9200 5962 (AGP)" },
     { PCI_CHIP_RV280_5964, "ATI Radeon 9200SE 5964 (AGP)" },
-    { PCI_CHIP_RV280_5965, "ATI FireMV 2200 (PCI)" },
     { PCI_CHIP_RV280_5C61, "ATI Radeon Mobility 9200 (M9+) 5C61 (AGP)" },
     { PCI_CHIP_RV280_5C63, "ATI Radeon Mobility 9200 (M9+) 5C63 (AGP)" },
     { PCI_CHIP_R300_AD, "ATI Radeon 9500 AD (AGP)" },
@@ -130,7 +132,7 @@ SymTabRec RADEONChipsets[] = {
     { PCI_CHIP_R300_AG, "ATI FireGL Z1 AG (AGP)" },
     { PCI_CHIP_R300_ND, "ATI Radeon 9700 Pro ND (AGP)" },
     { PCI_CHIP_R300_NE, "ATI Radeon 9700/9500Pro NE (AGP)" },
-    { PCI_CHIP_R300_NF, "ATI Radeon 9600TX NF (AGP)" },
+    { PCI_CHIP_R300_NF, "ATI Radeon 9700 NF (AGP)" },
     { PCI_CHIP_R300_NG, "ATI FireGL X1 NG (AGP)" },
     { PCI_CHIP_RV350_AP, "ATI Radeon 9600 AP (AGP)" },
     { PCI_CHIP_RV350_AQ, "ATI Radeon 9600SE AQ (AGP)" },
@@ -138,13 +140,12 @@ SymTabRec RADEONChipsets[] = {
     { PCI_CHIP_RV350_AS, "ATI Radeon 9600 AS (AGP)" },
     { PCI_CHIP_RV350_AT, "ATI FireGL T2 AT (AGP)" },
     { PCI_CHIP_RV350_AV, "ATI FireGL RV360 AV (AGP)" },
-    { PCI_CHIP_RV350_NP, "ATI Radeon Mobility 9600/9700 (M10/M11) NP (AGP)" },
+    { PCI_CHIP_RV350_NP, "ATI Radeon Mobility 9600 (M10) NP (AGP)" },
     { PCI_CHIP_RV350_NQ, "ATI Radeon Mobility 9600 (M10) NQ (AGP)" },
     { PCI_CHIP_RV350_NR, "ATI Radeon Mobility 9600 (M11) NR (AGP)" },
     { PCI_CHIP_RV350_NS, "ATI Radeon Mobility 9600 (M10) NS (AGP)" },
     { PCI_CHIP_RV350_NT, "ATI FireGL Mobility T2 (M10) NT (AGP)" },
-    { PCI_CHIP_RV350_NV, "ATI FireGL Mobility T2e (M11) NV (AGP)" },
-    { PCI_CHIP_RV350_4155, "ATI Radeon 9650" },
+    { PCI_CHIP_RV350_NV, "ATI FireGL Mobility T2 (M11) NV (AGP)" },
     { PCI_CHIP_R350_AH, "ATI Radeon 9800SE AH (AGP)" },
     { PCI_CHIP_R350_AI, "ATI Radeon 9800 AI (AGP)" },
     { PCI_CHIP_R350_AJ, "ATI Radeon 9800 AJ (AGP)" },
@@ -153,75 +154,6 @@ SymTabRec RADEONChipsets[] = {
     { PCI_CHIP_R350_NI, "ATI Radeon 9800 NI (AGP)" },
     { PCI_CHIP_R350_NK, "ATI FireGL X2 NK (AGP)" },
     { PCI_CHIP_R360_NJ, "ATI Radeon 9800XT NJ (AGP)" },
-    { PCI_CHIP_RV380_3E50, "ATI Radeon X600 (RV380) 3E50 (PCIE)" },
-    { PCI_CHIP_RV380_3E54, "ATI FireGL V3200 (RV380) 3E54 (PCIE)" },
-    { PCI_CHIP_RV380_3150, "ATI Radeon Mobility X600 (M24) 3150 (PCIE)" },
-    { PCI_CHIP_RV380_3152, "ATI Radeon Mobility X300 (M24) 3152 (PCIE)" },
-    { PCI_CHIP_RV380_3154, "ATI FireGL M24 GL 3154 (PCIE)" },
-    { PCI_CHIP_RV370_5B60, "ATI Radeon X300 (RV370) 5B60 (PCIE)" },
-    { PCI_CHIP_RV370_5B62, "ATI Radeon X600 (RV370) 5B62 (PCIE)" },
-    { PCI_CHIP_RV370_5B63, "ATI Radeon X550 (RV370) 5B63 (PCIE)" },
-    { PCI_CHIP_RV370_5B64, "ATI FireGL V3100 (RV370) 5B64 (PCIE)" },
-    { PCI_CHIP_RV370_5B65, "ATI FireMV 2200 PCIE (RV370) 5B65 (PCIE)" },
-    { PCI_CHIP_RV370_5460, "ATI Radeon Mobility X300 (M22) 5460 (PCIE)" },
-    { PCI_CHIP_RV370_5462, "ATI Radeon Mobility X600 SE (M24C) 5462 (PCIE)" },
-    { PCI_CHIP_RV370_5464, "ATI FireGL M22 GL 5464 (PCIE)" },
-    { PCI_CHIP_RS400_5A41, "ATI Radeon XPRESS 200 5A41 (PCIE)" },
-    { PCI_CHIP_RS400_5A42, "ATI Radeon XPRESS 200M 5A42 (PCIE)" },
-    { PCI_CHIP_RC410_5A61, "ATI Radeon XPRESS 200 5A61 (PCIE)" },
-    { PCI_CHIP_RC410_5A62, "ATI Radeon XPRESS 200M 5A62 (PCIE)" },
-    { PCI_CHIP_RS480_5954, "ATI Radeon XPRESS 200 5954 (PCIE)" },
-    { PCI_CHIP_RS480_5955, "ATI Radeon XPRESS 200M 5955 (PCIE)" },
-    { PCI_CHIP_RS482_5974, "ATI Radeon XPRESS 200 5974 (PCIE)" },
-    { PCI_CHIP_RS482_5975, "ATI Radeon XPRESS 200M 5975 (PCIE)" },
-    { PCI_CHIP_RV410_5E48, "ATI FireGL V5000 (RV410) (PCIE)" },
-    { PCI_CHIP_RV410_564A, "ATI Mobility FireGL V5000 (M26) (PCIE)" },
-    { PCI_CHIP_RV410_564B, "ATI Mobility FireGL V5000 (M26) (PCIE)" },
-    { PCI_CHIP_RV410_564F, "ATI Mobility Radeon X700 XL (M26) (PCIE)" },
-    { PCI_CHIP_RV410_5652, "ATI Mobility Radeon X700 (M26) (PCIE)" },
-    { PCI_CHIP_RV410_5653, "ATI Mobility Radeon X700 (M26) (PCIE)" },
-    { PCI_CHIP_RV410_5E4B, "ATI Radeon X700 PRO (RV410) (PCIE)" },
-    { PCI_CHIP_RV410_5E4A, "ATI Radeon X700 XT (RV410) (PCIE)" },
-    { PCI_CHIP_RV410_5E4D, "ATI Radeon X700 (RV410) (PCIE)" },
-    { PCI_CHIP_RV410_5E4C, "ATI Radeon X700 SE (RV410) (PCIE)" },
-    { PCI_CHIP_RV410_5E4F, "ATI Radeon X700 SE (RV410) (PCIE)" },
-    { PCI_CHIP_R420_JH, "ATI Radeon X800 (R420) JH (AGP)" },
-    { PCI_CHIP_R420_JI, "ATI Radeon X800PRO (R420) JI (AGP)" },
-    { PCI_CHIP_R420_JJ, "ATI Radeon X800SE (R420) JJ (AGP)" },
-    { PCI_CHIP_R420_JK, "ATI Radeon X800 (R420) JK (AGP)" },
-    { PCI_CHIP_R420_JL, "ATI Radeon X800 (R420) JL (AGP)" },
-    { PCI_CHIP_R420_JM, "ATI FireGL X3 (R420) JM (AGP)" },
-    { PCI_CHIP_R420_JN, "ATI Radeon Mobility 9800 (M18) JN (AGP)" },
-    { PCI_CHIP_R420_JP, "ATI Radeon X800XT (R420) JP (AGP)" },
-    { PCI_CHIP_R420_4A4F, "ATI Radeon X800 SE (R420) (AGP)" },
-    { PCI_CHIP_R420_4A54, "ATI Radeon AIW X800 VE (R420) JT (AGP)" },
-    { PCI_CHIP_R423_UH, "ATI Radeon X800 (R423) UH (PCIE)" },
-    { PCI_CHIP_R423_UI, "ATI Radeon X800PRO (R423) UI (PCIE)" },
-    { PCI_CHIP_R423_UJ, "ATI Radeon X800LE (R423) UJ (PCIE)" },
-    { PCI_CHIP_R423_UK, "ATI Radeon X800SE (R423) UK (PCIE)" },
-    { PCI_CHIP_R423_UQ, "ATI FireGL V5100 (R423) UQ (PCIE)" },
-    { PCI_CHIP_R423_UR, "ATI FireGL V5100 (R423) UR (PCIE)" },
-    { PCI_CHIP_R423_UT, "ATI FireGL V7100 (R423) UT (PCIE)" },
-    { PCI_CHIP_R423_5D57, "ATI Radeon X800XT (R423) 5D57 (PCIE)" },
-    { PCI_CHIP_R423_5550, "ATI FireGL V7100 (R423) (PCIE)" },
-    { PCI_CHIP_R430_5D49, "ATI Mobility FireGL V5100 (M28) (PCIE)" },
-    { PCI_CHIP_R430_5D4A, "ATI Mobility Radeon X800 (M28) (PCIE)" },
-    { PCI_CHIP_R430_5D48, "ATI Mobility Radeon X800 XT (M28) (PCIE)" },
-    { PCI_CHIP_R430_554F, "ATI Radeon X800 (R430) (PCIE)" },
-    { PCI_CHIP_R430_554D, "ATI Radeon X800 XL (R430) (PCIE)" },
-    { PCI_CHIP_R430_554E, "ATI Radeon X800 SE (R430) (PCIE)" },
-    { PCI_CHIP_R430_554C, "ATI Radeon X800 XTP (R430) (PCIE)" },
-    { PCI_CHIP_R480_5D4C, "ATI Radeon X850 5D4C (PCIE)" },
-    { PCI_CHIP_R480_5D50, "ATI FireGL V7200 (R480) 5D50 (PCIE)" },
-    { PCI_CHIP_R480_5D4E, "ATI Radeon X850 SE (R480) (PCIE)" },
-    { PCI_CHIP_R480_5D4F, "ATI Radeon X850 PRO (R480) (PCIE)" },
-    { PCI_CHIP_R480_5D52, "ATI Radeon X850 XT (R480) (PCIE)" },
-    { PCI_CHIP_R480_5D4D, "ATI Radeon X850 XT PE (R480) (PCIE)" },
-    { PCI_CHIP_R481_4B4B, "ATI Radeon X850 PRO (R480) (AGP)" },
-    { PCI_CHIP_R481_4B4A, "ATI Radeon X850 SE (R480) (AGP)" },
-    { PCI_CHIP_R481_4B49, "ATI Radeon X850 XT (R480) (AGP)" },
-    { PCI_CHIP_R481_4B4C, "ATI Radeon X850 XT PE (R480) (AGP)" },
-
     { -1,                 NULL }
 };
 
@@ -232,8 +164,6 @@ PciChipsets RADEONPciChipsets[] = {
     { PCI_CHIP_RADEON_QG, PCI_CHIP_RADEON_QG, RES_SHARED_VGA },
     { PCI_CHIP_RV100_QY, PCI_CHIP_RV100_QY, RES_SHARED_VGA },
     { PCI_CHIP_RV100_QZ, PCI_CHIP_RV100_QZ, RES_SHARED_VGA },
-    { PCI_CHIP_RN50_515E, PCI_CHIP_RN50_515E, RES_SHARED_VGA },
-    { PCI_CHIP_RN50_5969, PCI_CHIP_RN50_5969, RES_SHARED_VGA },
     { PCI_CHIP_RADEON_LW, PCI_CHIP_RADEON_LW, RES_SHARED_VGA },
     { PCI_CHIP_RADEON_LX, PCI_CHIP_RADEON_LX, RES_SHARED_VGA },
     { PCI_CHIP_RADEON_LY, PCI_CHIP_RADEON_LY, RES_SHARED_VGA },
@@ -258,13 +188,10 @@ PciChipsets RADEONPciChipsets[] = {
     { PCI_CHIP_RV250_Lg, PCI_CHIP_RV250_Lg, RES_SHARED_VGA },
     { PCI_CHIP_RS300_5834, PCI_CHIP_RS300_5834, RES_SHARED_VGA },
     { PCI_CHIP_RS300_5835, PCI_CHIP_RS300_5835, RES_SHARED_VGA },
-    { PCI_CHIP_RS350_7834, PCI_CHIP_RS350_7834, RES_SHARED_VGA },
-    { PCI_CHIP_RS350_7835, PCI_CHIP_RS350_7835, RES_SHARED_VGA },
     { PCI_CHIP_RV280_5960, PCI_CHIP_RV280_5960, RES_SHARED_VGA },
     { PCI_CHIP_RV280_5961, PCI_CHIP_RV280_5961, RES_SHARED_VGA },
     { PCI_CHIP_RV280_5962, PCI_CHIP_RV280_5962, RES_SHARED_VGA },
     { PCI_CHIP_RV280_5964, PCI_CHIP_RV280_5964, RES_SHARED_VGA },
-    { PCI_CHIP_RV280_5965, PCI_CHIP_RV280_5965, RES_SHARED_VGA },
     { PCI_CHIP_RV280_5C61, PCI_CHIP_RV280_5C61, RES_SHARED_VGA },
     { PCI_CHIP_RV280_5C63, PCI_CHIP_RV280_5C63, RES_SHARED_VGA },
     { PCI_CHIP_R300_AD, PCI_CHIP_R300_AD, RES_SHARED_VGA },
@@ -287,7 +214,6 @@ PciChipsets RADEONPciChipsets[] = {
     { PCI_CHIP_RV350_NS, PCI_CHIP_RV350_NS, RES_SHARED_VGA },
     { PCI_CHIP_RV350_NT, PCI_CHIP_RV350_NT, RES_SHARED_VGA },
     { PCI_CHIP_RV350_NV, PCI_CHIP_RV350_NV, RES_SHARED_VGA },
-    { PCI_CHIP_RV350_4155, PCI_CHIP_RV350_4155, RES_SHARED_VGA },
     { PCI_CHIP_R350_AH, PCI_CHIP_R350_AH, RES_SHARED_VGA },
     { PCI_CHIP_R350_AI, PCI_CHIP_R350_AI, RES_SHARED_VGA },
     { PCI_CHIP_R350_AJ, PCI_CHIP_R350_AJ, RES_SHARED_VGA },
@@ -296,75 +222,6 @@ PciChipsets RADEONPciChipsets[] = {
     { PCI_CHIP_R350_NI, PCI_CHIP_R350_NI, RES_SHARED_VGA },
     { PCI_CHIP_R350_NK, PCI_CHIP_R350_NK, RES_SHARED_VGA },
     { PCI_CHIP_R360_NJ, PCI_CHIP_R360_NJ, RES_SHARED_VGA },
-    { PCI_CHIP_RV380_3E50, PCI_CHIP_RV380_3E50, RES_SHARED_VGA },
-    { PCI_CHIP_RV380_3E54, PCI_CHIP_RV380_3E54, RES_SHARED_VGA },
-    { PCI_CHIP_RV380_3150, PCI_CHIP_RV380_3150, RES_SHARED_VGA },
-    { PCI_CHIP_RV380_3152, PCI_CHIP_RV380_3152, RES_SHARED_VGA },
-    { PCI_CHIP_RV380_3154, PCI_CHIP_RV380_3154, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5B60, PCI_CHIP_RV370_5B60, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5B62, PCI_CHIP_RV370_5B62, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5B63, PCI_CHIP_RV370_5B63, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5B64, PCI_CHIP_RV370_5B64, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5B65, PCI_CHIP_RV370_5B65, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5460, PCI_CHIP_RV370_5460, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5462, PCI_CHIP_RV370_5462, RES_SHARED_VGA },
-    { PCI_CHIP_RV370_5464, PCI_CHIP_RV370_5464, RES_SHARED_VGA },
-    { PCI_CHIP_RS400_5A41, PCI_CHIP_RS400_5A41, RES_SHARED_VGA },
-    { PCI_CHIP_RS400_5A42, PCI_CHIP_RS400_5A42, RES_SHARED_VGA },
-    { PCI_CHIP_RC410_5A61, PCI_CHIP_RC410_5A61, RES_SHARED_VGA },
-    { PCI_CHIP_RC410_5A62, PCI_CHIP_RC410_5A62, RES_SHARED_VGA },
-    { PCI_CHIP_RS480_5954, PCI_CHIP_RS480_5954, RES_SHARED_VGA },
-    { PCI_CHIP_RS480_5955, PCI_CHIP_RS480_5955, RES_SHARED_VGA },
-    { PCI_CHIP_RS482_5974, PCI_CHIP_RS482_5974, RES_SHARED_VGA },
-    { PCI_CHIP_RS482_5975, PCI_CHIP_RS482_5975, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5E48, PCI_CHIP_RV410_5E48, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_564A, PCI_CHIP_RV410_564A, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_564B, PCI_CHIP_RV410_564B, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_564F, PCI_CHIP_RV410_564F, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5652, PCI_CHIP_RV410_5652, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5653, PCI_CHIP_RV410_5653, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5E4B, PCI_CHIP_RV410_5E4B, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5E4A, PCI_CHIP_RV410_5E4A, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5E4D, PCI_CHIP_RV410_5E4D, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5E4C, PCI_CHIP_RV410_5E4C, RES_SHARED_VGA },
-    { PCI_CHIP_RV410_5E4F, PCI_CHIP_RV410_5E4F, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JH, PCI_CHIP_R420_JH, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JI, PCI_CHIP_R420_JI, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JJ, PCI_CHIP_R420_JJ, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JK, PCI_CHIP_R420_JK, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JL, PCI_CHIP_R420_JL, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JM, PCI_CHIP_R420_JM, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JN, PCI_CHIP_R420_JN, RES_SHARED_VGA },
-    { PCI_CHIP_R420_JP, PCI_CHIP_R420_JP, RES_SHARED_VGA },
-    { PCI_CHIP_R420_4A4F, PCI_CHIP_R420_4A4F, RES_SHARED_VGA },
-    { PCI_CHIP_R420_4A54, PCI_CHIP_R420_4A54, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UH, PCI_CHIP_R423_UH, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UI, PCI_CHIP_R423_UI, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UJ, PCI_CHIP_R423_UJ, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UK, PCI_CHIP_R423_UK, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UQ, PCI_CHIP_R423_UQ, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UR, PCI_CHIP_R423_UR, RES_SHARED_VGA },
-    { PCI_CHIP_R423_UT, PCI_CHIP_R423_UT, RES_SHARED_VGA },
-    { PCI_CHIP_R423_5D57, PCI_CHIP_R423_5D57, RES_SHARED_VGA },
-    { PCI_CHIP_R423_5550, PCI_CHIP_R423_5550, RES_SHARED_VGA },
-    { PCI_CHIP_R430_5D49, PCI_CHIP_R430_5D49, RES_SHARED_VGA },
-    { PCI_CHIP_R430_5D4A, PCI_CHIP_R430_5D4A, RES_SHARED_VGA },
-    { PCI_CHIP_R430_5D48, PCI_CHIP_R430_5D48, RES_SHARED_VGA },
-    { PCI_CHIP_R430_554F, PCI_CHIP_R430_554F, RES_SHARED_VGA },
-    { PCI_CHIP_R430_554D, PCI_CHIP_R430_554D, RES_SHARED_VGA },
-    { PCI_CHIP_R430_554E, PCI_CHIP_R430_554E, RES_SHARED_VGA },
-    { PCI_CHIP_R430_554C, PCI_CHIP_R430_554C, RES_SHARED_VGA },
-    { PCI_CHIP_R480_5D4C, PCI_CHIP_R480_5D4C, RES_SHARED_VGA },
-    { PCI_CHIP_R480_5D50, PCI_CHIP_R480_5D50, RES_SHARED_VGA },
-    { PCI_CHIP_R480_5D4E, PCI_CHIP_R480_5D4E, RES_SHARED_VGA },
-    { PCI_CHIP_R480_5D4F, PCI_CHIP_R480_5D4F, RES_SHARED_VGA },
-    { PCI_CHIP_R480_5D52, PCI_CHIP_R480_5D52, RES_SHARED_VGA },
-    { PCI_CHIP_R480_5D4D, PCI_CHIP_R480_5D4D, RES_SHARED_VGA },
-    { PCI_CHIP_R481_4B4B, PCI_CHIP_R481_4B4B, RES_SHARED_VGA },
-    { PCI_CHIP_R481_4B4A, PCI_CHIP_R481_4B4A, RES_SHARED_VGA },
-    { PCI_CHIP_R481_4B49, PCI_CHIP_R481_4B49, RES_SHARED_VGA },
-    { PCI_CHIP_R481_4B4C, PCI_CHIP_R481_4B4C, RES_SHARED_VGA },
-
     { -1,                 -1,                 RES_UNDEFINED }
 };
 
@@ -450,24 +307,21 @@ RADEONProbe(DriverPtr drv, int flags)
 	foundScreen = TRUE;
     } else {
 	for (i = 0; i < numUsed; i++) {
-	    ScrnInfoPtr   pScrn;
-	    EntityInfoPtr pEnt;
-	    DevUnion     *pPriv;
-	    RADEONEntPtr  pRADEONEnt;
-
-	    if ((pScrn = xf86ConfigPciEntity(NULL, 0, usedChips[i],
+	    ScrnInfoPtr    pScrn = NULL;
+	    EntityInfoPtr  pEnt;
+	    pEnt = xf86GetEntityInfo(usedChips[i]);
+	    if ((pScrn = xf86ConfigPciEntity(pScrn, 0, usedChips[i],
 					     RADEONPciChipsets, 0, 0, 0,
 					     0, 0))) {
 #ifdef XFree86LOADER
-		ModuleDescPtr pModule;
-		if (!(pModule = xf86LoadSubModule(pScrn, "radeon"))) {
+		if (!xf86LoadSubModule(pScrn, "radeon")) {
 		    xf86Msg(X_ERROR, RADEON_NAME
 			    ":  Failed to load \"radeon\" module.\n");
 		    xf86DeleteScreen(pScrn->scrnIndex, 0);
 		    continue;
 		}
 
-		xf86LoaderModReqSymLists(pModule, RADEONSymbols, NULL);
+		xf86LoaderReqSymLists(RADEONSymbols, NULL);
 #endif
 
 		pScrn->driverVersion = RADEON_VERSION_CURRENT;
@@ -490,34 +344,38 @@ RADEONProbe(DriverPtr drv, int flags)
 
 	    pEnt = xf86GetEntityInfo(usedChips[i]);
 
-            /*
-	     * Create a RADEONEntity for all chips, even with old single head
-	     * Radeon, need to use pRADEONEnt for new monitor detection
-	     * routines.
-             */
-	    xf86SetEntitySharable(usedChips[i]);
+            /* create a RADEONEntity for all chips, even with
+               old single head Radeon, need to use pRADEONEnt
+               for new monitor detection routines
+            */
+            {
+		DevUnion   *pPriv;
+		RADEONEntPtr pRADEONEnt;
 
-	    if (gRADEONEntityIndex == -1)
-		gRADEONEntityIndex = xf86AllocateEntityPrivateIndex();
+		xf86SetEntitySharable(usedChips[i]);
 
-	    pPriv = xf86GetEntityPrivate(pEnt->index, gRADEONEntityIndex);
+		if (gRADEONEntityIndex == -1)
+		    gRADEONEntityIndex = xf86AllocateEntityPrivateIndex();
 
-	    if (!pPriv->ptr) {
-		int j;
-		int instance = xf86GetNumEntityInstances(pEnt->index);
+		pPriv = xf86GetEntityPrivate(pEnt->index,
+					     gRADEONEntityIndex);
 
-		for (j = 0; j < instance; j++)
-		    xf86SetEntityInstanceForScreen(pScrn, pEnt->index, j);
+		if (!pPriv->ptr) {
+		    int j;
+		    int instance = xf86GetNumEntityInstances(pEnt->index);
 
-		pPriv->ptr = xnfcalloc(sizeof(RADEONEntRec), 1);
-		pRADEONEnt = pPriv->ptr;
-		pRADEONEnt->HasSecondary = FALSE;
-		pRADEONEnt->IsSecondaryRestored = FALSE;
-	    } else {
-		pRADEONEnt = pPriv->ptr;
-		pRADEONEnt->HasSecondary = TRUE;
+		    for (j = 0; j < instance; j++)
+			xf86SetEntityInstanceForScreen(pScrn, pEnt->index, j);
+
+		    pPriv->ptr = xnfcalloc(sizeof(RADEONEntRec), 1);
+		    pRADEONEnt = pPriv->ptr;
+		    pRADEONEnt->HasSecondary = FALSE;
+		    pRADEONEnt->IsSecondaryRestored = FALSE;
+		} else {
+		    pRADEONEnt = pPriv->ptr;
+		    pRADEONEnt->HasSecondary = TRUE;
+		}
 	    }
-
 	    xfree(pEnt);
 	}
     }

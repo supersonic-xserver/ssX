@@ -26,7 +26,7 @@ lib/libXRes.1.dylib
 lib/libXRes.dylib
 lib/libXaw.6.1.dylib
 lib/libXaw.6.dylib
-lib/libXaw.7.1.dylib
+lib/libXaw.7.0.dylib
 lib/libXaw.7.dylib
 lib/libXaw.dylib
 lib/libXcursor.1.0.dylib
@@ -73,7 +73,7 @@ lib/libXrender.dylib
 lib/libXss.1.0.dylib
 lib/libXss.1.dylib
 lib/libXss.dylib
-lib/libXt.6.1.dylib
+lib/libXt.6.0.dylib
 lib/libXt.6.dylib
 lib/libXt.dylib
 lib/libXtst.6.1.dylib
@@ -88,6 +88,12 @@ lib/libXv.dylib
 lib/libXvMC.1.0.dylib
 lib/libXvMC.1.dylib
 lib/libXvMC.dylib
+lib/libXxf86misc.1.1.dylib
+lib/libXxf86misc.1.dylib
+lib/libXxf86misc.dylib
+lib/libXxf86vm.1.0.dylib
+lib/libXxf86vm.1.dylib
+lib/libXxf86vm.dylib
 lib/libdmx.1.0.dylib
 lib/libdmx.1.dylib
 lib/libdmx.dylib

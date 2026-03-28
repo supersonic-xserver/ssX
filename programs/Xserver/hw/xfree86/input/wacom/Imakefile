@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/Imakefile,v 1.10tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/wacom/Imakefile,v 1.10 2004/06/01 00:17:05 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -58,8 +58,8 @@ OBJS = xf86Wacom.o
 
 DRIVER = wacom
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-         -I$(SERVERSRC)/include -I$(SERVERSRC)/mi
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86SRC)/loader -I$(XF86OSSRC) \
+         -I$(SERVERSRC)/include -I$(SERVERSRC)/mi -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
 #if MakeHasPosixVariableSubstitutions
 SubdirLibraryRule($(OBJS))

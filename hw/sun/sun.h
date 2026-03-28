@@ -1,7 +1,12 @@
+/* $XFree86: xc/programs/Xserver/hw/sun/sun.h,v 3.16 2007/01/02 01:24:12 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $Xorg: sun.h,v 1.3 2000/08/17 19:48:29 cpqbld Exp $ */
 
-/*-
+/*
  * Copyright (c) 1987 by the Regents of the University of California
  *
  * Permission to use, copy, modify, and distribute this
@@ -13,9 +18,8 @@
  * express or implied warranty.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sun.h,v 3.13 2003/11/17 22:20:36 dawes Exp $ */
 
-#ifndef _SUN_H_
+#ifndef _SUN_H_ 
 #define _SUN_H_
 
 /* X headers */
@@ -70,10 +74,10 @@ extern char *getenv();
 #include <signal.h>
 
 
-/*
+/* 
  * Sun specific headers Sun moved in Solaris, and are different for NetBSD.
  *
- * Even if only needed by one source file, I have put them here
+ * Even if only needed by one source file, I have put them here 
  * to simplify finding them...
  */
 #ifdef SVR4
@@ -114,8 +118,8 @@ extern int getpagesize();
 #  ifdef __NetBSD__
 #   include <dev/sun/fbio.h>
 #   include <machine/kbd.h>
-#   include <dev/sun/kbio.h>	   /* also <sparc/kbio.h> -wsr */
-#   include <dev/sun/vuid_event.h> /* also <sparc/vud_event.h> -wsr */
+#   include <dev/sun/kbio.h>
+#   include <dev/sun/vuid_event.h>
 #  endif
 # endif
 #endif
@@ -125,15 +129,15 @@ extern int getpagesize();
  */
 #ifndef SVR4
 /* On SunOS 4.1.x the TCX pretends to be a CG3 */
-#define XFBTYPE_LASTPLUSONE	FBTYPE_LASTPLUSONE
+#define XFBTYPE_LASTPLUSONE	FBTYPE_LASTPLUSONE	
 #else
 #define XFBTYPE_TCX		21
 #define XFBTYPE_LASTPLUSONE	22
 #endif
 
-#include <sys/time.h>
+extern int gettimeofday();
 
-/*
+/* 
  * Server specific headers
  */
 #include "misc.h"
@@ -153,14 +157,16 @@ extern int getpagesize();
 #include "resource.h"
 #include "servermd.h"
 #include "windowstr.h"
-#include "mipointer.h"
 
-/*
- * ddx specific headers
+/* 
+ * ddx specific headers 
  */
 #ifndef PSZ
 #define PSZ 8
 #endif
+
+#include "mi/mibstore.h"
+#include "mi/mipointer.h"
 
 extern int monitorResolution;
 
@@ -208,10 +214,33 @@ extern int monitorResolution;
 #endif
 
 /*
- * SUN_MAXEVENTS is the maximum number of events the mouse and keyboard
- * functions will read on a given call to their GetEvents vectors.
+ * MAXEVENTS is the maximum number of events the mouse and keyboard functions
+ * will read on a given call to their GetEvents vectors.
  */
-#define SUN_MAXEVENTS 	32
+#define MAXEVENTS 	32
+
+/*
+ * Data private to any sun keyboard.
+ */
+typedef struct {
+    int		fd;
+    int		type;		/* Type of keyboard */
+    int		layout;		/* The layout of the keyboard */
+    int		click;		/* kbd click save state */
+    Leds	leds;		/* last known LED state */
+} sunKbdPrivRec, *sunKbdPrivPtr;
+
+extern sunKbdPrivRec sunKbdPriv;
+
+/*
+ * Data private to any sun pointer device.
+ */
+typedef struct {
+    int		fd;
+    int		bmask;		/* last known button state */
+} sunPtrPrivRec, *sunPtrPrivPtr;
+
+extern sunPtrPrivRec sunPtrPriv;
 
 typedef struct {
     BYTE	key;
@@ -224,81 +253,69 @@ typedef struct {
     CursorPtr	    pCursor;		/* current cursor */
 } sunCursorRec, *sunCursorPtr;
 
-#define NCMAP	256
-typedef struct {
-    u_char	    origRed[NCMAP];
-    u_char	    origGreen[NCMAP];
-    u_char	    origBlue[NCMAP];
-} sunCmapRec, *sunCmapPtr;
-
 typedef struct {
     ColormapPtr	    installedMap;
     CloseScreenProcPtr CloseScreen;
-    void	    (*UpdateColormap)(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-    void	    (*GetColormap)(ScreenPtr, int, int, u_char *, u_char *, u_char *);
-    Bool	    origColormapValid;
-    sunCmapRec	    origColormap;
-    void	    (*RestoreColormap)(ScreenPtr);
+    void	    (*UpdateColormap)();
+    void	    (*GetColormap)();
     sunCursorRec    hardwareCursor;
     Bool	    hasHardwareCursor;
 } sunScreenRec, *sunScreenPtr;
 
-extern DevPrivateKeyRec sunScreenPrivateKeyRec;
-#define sunScreenPrivateKey (&sunScreenPrivateKeyRec)
-#define sunSetScreenPrivate(pScreen, v) \
-    dixSetPrivate(&(pScreen)->devPrivates, sunScreenPrivateKey, (v))
-#define sunGetScreenPrivate(pScreen) ((sunScreenRec *) \
-    dixLookupPrivate(&(pScreen)->devPrivates, sunScreenPrivateKey))
+#define GetScreenPrivate(s)   ((sunScreenPtr) ((s)->devPrivates[sunScreenIndex].ptr))
+#define SetupScreen(s)	sunScreenPtr	pPrivate = GetScreenPrivate(s)
 
 typedef struct {
     unsigned char*  fb;		/* Frame buffer itself */
     int		    fd;		/* frame buffer for ioctl()s, */
     struct fbtype   info;	/* Frame buffer characteristics */
-    void	    (*EnterLeave)(ScreenPtr, int);/* screen switch */
+    void	    (*EnterLeave)();/* screen switch */
     unsigned char*  fbPriv;	/* fbattr stuff, for the real type */
 } fbFd;
 
 typedef Bool (*sunFbInitProc)(
+    int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    char** /* argv */
+    const char** /* argv */
 );
 
 typedef struct {
     sunFbInitProc	init;	/* init procedure for this fb */
-    const char		*name;	/* /usr/include/fbio names */
+    char*		name;	/* /usr/include/fbio names */
 } sunFbDataRec;
 
-/* sunInit.c */
+#ifdef XKB
+extern Bool		noXkbExtension;
+#endif
+
+extern Bool		sunAutoRepeatHandlersInstalled;
+extern long		sunAutoRepeatInitiate;
+extern long		sunAutoRepeatDelay;
 extern sunFbDataRec	sunFbData[];
 extern fbFd		sunFbs[];
 extern Bool		sunSwapLkeys;
-extern Bool		sunForceMono;
-extern Bool		sunDebug;
-extern char		*sunDeviceList;
 extern Bool		sunFlipPixels;
+extern Bool		sunActiveZaphod;
 extern Bool		sunFbInfo;
 extern Bool		sunCG4Frob;
 extern Bool		sunNoGX;
+extern int		sunScreenIndex;
+extern int*		sunProtected;
 
-/* sunKeyMap.c */
-extern KeySymsRec	sunKeySyms[];
-extern const int	sunMaxLayout;
-extern KeySym		*sunType4KeyMaps[];
+extern Bool sunCursorInitialize(
+    ScreenPtr /* pScreen */
+);
 
-/* sunKbd.c */
-extern DeviceIntPtr	sunKeyboardDevice;
+extern void sunDisableCursor(
+    ScreenPtr /* pScreen */
+);
 
-/* sunMouse.c */
-extern Bool		sunActiveZaphod;
-extern DeviceIntPtr	sunPointerDevice;
-extern miPointerScreenFuncRec sunPointerScreenFuncs;
+extern int sunChangeKbdTranslation(
+    int /* fd */,
+    Bool /* makeTranslated */
+);
 
-/* sunCursor.c */
-extern Bool sunCursorInitialize(ScreenPtr);
-extern void sunDisableCursor(ScreenPtr);
-
-/* sunInit.c */
 extern void sunNonBlockConsoleOff(
 #if defined(SVR4) || defined(CSRG_BASED)
     void
@@ -307,44 +324,84 @@ extern void sunNonBlockConsoleOff(
 #endif
 );
 
-/* sunGX.c */
-extern int sunGXInit(ScreenPtr, fbFd *);
+extern void sunEnqueueEvents(
+    void
+);
 
-/* sunFbs.c */
-extern Bool sunSaveScreen(ScreenPtr, int);
-extern Bool sunScreenInit(ScreenPtr);
-extern void *sunMemoryMap(size_t, off_t, int);
-extern Bool sunScreenAllocate(ScreenPtr);
-extern Bool sunInitCommon(int, ScreenPtr, off_t,
-    Bool (* /* init1 */)(ScreenPtr, void *, int, int, int, int, int, int),
-    void (* /* init2 */)(ScreenPtr),
-    Bool (* /* cr_cm */)(ScreenPtr),
-    Bool (* /* save */)(ScreenPtr, int),
-    int);
+extern int sunGXInit(
+    ScreenPtr /* pScreen */,
+    fbFd* /* fb */
+);
 
-/* sunKbd.c */
-extern int sunKbdProc(DeviceIntPtr, int);
+extern Bool sunSaveScreen(
+    ScreenPtr /* pScreen */,
+    int /* on */
+);
 
-/* sunMouse.c */
-extern int sunMouseProc(DeviceIntPtr, int);
+extern Bool sunScreenInit(
+    ScreenPtr /* pScreen */
+);
 
-/* sunCfb.c */
-Bool sunCG3Init(ScreenPtr, int, char **);
-Bool sunTCXInit(ScreenPtr, int, char **);
-Bool sunCG2Init(ScreenPtr, int, char **);
-Bool sunCG4Init(ScreenPtr, int, char **);
-Bool sunCG6Init(ScreenPtr, int, char **);
+extern pointer sunMemoryMap(
+    size_t /* len */,
+    off_t /* off */,
+    int /* fd */
+);
 
-/* sunCfb24.c */
-Bool sunCG8Init(ScreenPtr, int, char **);
+extern Bool sunScreenAllocate(
+    ScreenPtr /* pScreen */
+);
 
-/* sunMfb.c */
-Bool sunBW2Init(ScreenPtr, int, char **);
+extern Bool sunInitCommon(
+    int /* scrn */,
+    ScreenPtr /* pScrn */,
+    off_t /* offset */,
+    Bool (* /* init1 */)(),
+    void (* /* init2 */)(),
+    Bool (* /* cr_cm */)(),
+    Bool (* /* save */)(),
+    int /* fb_off */
+);
 
-/* XXX */
-extern void mfbDoBitblt(DrawablePtr, DrawablePtr, int, RegionPtr, DDXPointPtr);
+extern Firm_event* sunKbdGetEvents(
+    int /* fd */,
+    Bool /* on */,
+    int* /* pNumEvents */,
+    Bool* /* pAgain */
+);
 
-/*-
+extern Firm_event* sunMouseGetEvents(
+    int /* fd */,
+    Bool /* on */,
+    int* /* pNumEvents */,
+    Bool* /* pAgain */
+);
+
+extern void sunKbdEnqueueEvent(
+    DeviceIntPtr /* device */,
+    Firm_event* /* fe */
+);
+
+extern void sunMouseEnqueueEvent(
+    DeviceIntPtr /* device */,
+    Firm_event* /* fe */
+);
+
+extern int sunKbdProc(
+    DeviceIntPtr /* pKeyboard */,
+    int /* what */
+);
+
+extern int sunMouseProc(
+    DeviceIntPtr /* pMouse */,
+    int /* what */
+);
+
+extern void sunKbdWait(
+    void
+);
+
+/*
  * TVTOMILLI(tv)
  *	Given a struct timeval, convert its time into milliseconds...
  */
@@ -352,7 +409,7 @@ extern void mfbDoBitblt(DrawablePtr, DrawablePtr, int, RegionPtr, DDXPointPtr);
 
 extern Bool sunCfbSetupScreen(
     ScreenPtr /* pScreen */,
-    void * /* pbits */,		/* pointer to screen bitmap */
+    pointer /* pbits */,	/* pointer to screen bitmap */
     int /* xsize */,		/* in pixels */
     int /* ysize */,
     int /* dpix */,		/* dots per inch */
@@ -363,7 +420,7 @@ extern Bool sunCfbSetupScreen(
 
 extern Bool sunCfbFinishScreenInit(
     ScreenPtr /* pScreen */,
-    void * /* pbits */,		/* pointer to screen bitmap */
+    pointer /* pbits */,	/* pointer to screen bitmap */
     int /* xsize */,		/* in pixels */
     int /* ysize */,
     int /* dpix */,		/* dots per inch */
@@ -374,7 +431,7 @@ extern Bool sunCfbFinishScreenInit(
 
 extern Bool sunCfbScreenInit(
     ScreenPtr /* pScreen */,
-    void * /* pbits */,		/* pointer to screen bitmap */
+    pointer /* pbits */,	/* pointer to screen bitmap */
     int /* xsize */,		/* in pixels */
     int /* ysize */,
     int /* dpix */,		/* dots per inch */

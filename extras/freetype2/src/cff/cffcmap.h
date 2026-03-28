@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffcmap.h                                                              */
 /*                                                                         */
 /*    CFF character mapping table (cmap) support (specification).          */
 /*                                                                         */
-/*  Copyright 2002 by                                                      */
+/*  Copyright 2002, 2003 by                                                */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -38,7 +45,6 @@ FT_BEGIN_HEADER
   typedef struct  CFF_CMapStdRec_
   {
     FT_CMapRec  cmap;
-    FT_UInt     count;
     FT_UShort*  gids;   /* up to 256 elements */
     
   } CFF_CMapStdRec;

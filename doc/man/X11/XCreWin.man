@@ -273,7 +273,7 @@ ancestors are mapped and it is not obscured by any of its ancestors.
 .LP
 .ZN XCreateWindow
 can generate
-.ZN BadAlloc ,
+.ZN BadAlloc
 .ZN BadColor ,
 .ZN BadCursor ,
 .ZN BadMatch ,

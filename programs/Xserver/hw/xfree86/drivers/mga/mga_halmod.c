@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_halmod.c,v 1.1 2000/12/06 15:35:21 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #include "xf86Module.h"
 
 #ifdef XFree86LOADER
@@ -30,7 +37,7 @@ static XF86ModuleVersionInfo halVersRec =
 XF86ModuleData mga_halModuleData = { &halVersRec, halSetup, NULL };
 
 static pointer
-halSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+halSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
 	return (pointer)1;
 }

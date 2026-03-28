@@ -1,4 +1,4 @@
-// $XFree86$
+// $XConsortium: lt /main/3 1997/12/18 12:40:12 rch $
 
 partial alphanumeric_keys modifier_keys 
 xkb_symbols "basic" {

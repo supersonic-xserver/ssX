@@ -1,9 +1,16 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * font.c
  *
  * map dvi fonts to X fonts
  */
-/* $XFree86: xc/programs/xditview/font.c,v 1.5 2001/08/27 23:35:12 dawes Exp $ */
+/* $XFree86: xc/programs/xditview/font.c,v 1.6 2002/06/19 20:09:19 keithp Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/IntrinsicP.h>

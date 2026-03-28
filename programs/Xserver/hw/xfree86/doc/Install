@@ -1,8 +1,8 @@
-                   Installation Details for XFree86® 4.7.0
+                   Installation Details for XFree86® 4.5.0
 
                           The XFree86 Project, Inc
 
-                               12 August 2007
+                               2 February 2005
 
                                   Abstract
 
@@ -22,11 +22,11 @@ ries.  (The source for this customized version of GNU tar can be found in the
 XFree86 CVS repository's "utils" module, and from our ftp site
 <URL:ftp://ftp.xfree86.org/pub/XFree86/misc/utils-1.1.3.tgz>.)
 
-2.  Downloading the XFree86 4.7.0 binaries
+2.  Downloading the XFree86 4.5.0 binaries
 
-We provide XFree86 4.7.0 binaries for a range of operating systems at our ftp
-site <URL:ftp://ftp.xfree86.org/pub/XFree86/4.7.0/binaries/> and our web site
-<URL:http://ftp.xfree86.org/pub/XFree86/4.7.0/binaries/>.  Often during
+We provide XFree86 4.5.0 binaries for a range of operating systems at our ftp
+site <URL:ftp://ftp.xfree86.org/pub/XFree86/4.5.0/binaries/> and our web site
+<URL:http://ftp.xfree86.org/pub/XFree86/4.5.0/binaries/>.  Often during
 releases our site is heavily loaded.  Instead of downloading directly from us
 we recommend that instead you use one of our mirror sites.
 
@@ -71,9 +71,9 @@ NOTES:
      that your target will not be be available for this release.  This is
      likeliest possibility if you are looking more than about two weeks after
      the release date.  Check here
-     <URL:http://www.xfree86.org/4.7.0/UPDATES.html> for information about
+     <URL:http://www.xfree86.org/4.5.0/UPDATES.html> for information about
      updates to our binary distributions, and here
-     <URL:http://www.xfree86.org/4.7.0/ERRATA.html> for errata related to
+     <URL:http://www.xfree86.org/4.5.0/ERRATA.html> for errata related to
      this release.
 
 Assuming that you have run the Xinstall.sh script and found the binary dis-
@@ -138,9 +138,9 @@ NOTES:
 If you miss some and want to install them later, go to the Manual Installa-
 tion (section 4., page 1) section.
 
-3.  Installing XFree86 4.7.0 using the Xinstall.sh script
+3.  Installing XFree86 4.5.0 using the Xinstall.sh script
 
-We strongly recommend that our XFree86 4.7.0 binaries be installed using the
+We strongly recommend that our XFree86 4.5.0 binaries be installed using the
 Xinstall.sh script we provide.  There are a lot of steps in the manual
 installation process, and those steps can vary according to the platform and
 hardware setup.  There is a description of the manual installation process
@@ -284,9 +284,9 @@ server configuration file is not used on Darwin/Mac OS X.
 After the X server configuration is done, it may be advisable to reboot,
 especially if you run xdm (or equivalent) or the font server (xfs).
 
-4.  Installing XFree86 4.7.0 manually
+4.  Installing XFree86 4.5.0 manually
 
-This section contains information about manually installing the XFree86 4.7.0
+This section contains information about manually installing the XFree86 4.5.0
 binary distributions.  You should only use this method if you know what
 you're doing.  The information here covers some common cases, but not every
 possible case.  It also may not be complete or up to date.  Use at your own
@@ -393,7 +393,7 @@ Once that's done, the main part of the installation can be done:
      /sbin/ldconfig -m /usr/X11R6/lib    # For FreeBSD, NetBSD, OpenBSD
      /usr/X11R6/bin/mkfontdir /usr/X11R6/lib/X11/fonts/misc
 
-     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/Install.sgml,v 1.23 tsi Exp $
+     Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/Install.sgml,v 1.22 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/Install,v 1.40tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/Install,v 1.38 2005/03/17 01:11:54 dawes Exp $

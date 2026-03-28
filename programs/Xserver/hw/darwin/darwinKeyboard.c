@@ -1,8 +1,15 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 //=============================================================================
 //
 // Keyboard support for the Darwin X Server
 //
-// Copyright (c) 2001-2004 Torrey T. Lyons. All Rights Reserved.
+// Copyright (c) 2001-2003 Torrey T. Lyons. All Rights Reserved.
 // Copyright (c) 2003 Apple Computer, Inc. All Rights Reserved.
 // Copyright 2004 Kaleb S. KEITHLEY. All Rights Reserved.
 //
@@ -38,7 +45,7 @@
 //
 //=============================================================================
 
-/* $XFree86: xc/programs/Xserver/hw/darwin/darwinKeyboard.c,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/darwinKeyboard.c,v 1.21 2004/04/01 00:05:22 torrey Exp $ */
 
 /*
 ===========================================================================
@@ -64,12 +71,12 @@
 /* Define this to use Alt for Mode_switch. */
 #define ALT_IS_MODE_SWITCH 1
 
+#include <drivers/event_status_driver.h>
+#include <IOKit/hidsystem/ev_keymap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <IOKit/hidsystem/event_status_driver.h>
-#include <IOKit/hidsystem/ev_keymap.h>
 #include <architecture/byte_order.h>  // For the NXSwap*
 #include "darwin.h"
 #include "darwinKeyboard.h"
@@ -636,6 +643,24 @@ Bool DarwinParseNXKeyMapping(
     destroy_data_stream( keyMapStream );
     xfree( keyMap.mapping );
 
+#ifdef DUMP_DARWIN_KEYMAP
+    ErrorF("Darwin -> X converted keyboard map\n");
+    for (i = 0, k = info->keyMap; i < NX_NUMKEYCODES;
+         i++, k += GLYPHS_PER_KEY)
+    {
+        int j;
+        ErrorF("0x%02x:", i);
+        for (j = 0; j < GLYPHS_PER_KEY; j++) {
+            if (k[j] == NoSymbol) {
+                ErrorF("\tNoSym");
+            } else {
+                ErrorF("\t0x%x", k[j]);
+            }
+        }
+        ErrorF("\n");
+    }
+#endif
+
     return TRUE;
 }
 
@@ -651,6 +676,7 @@ DarwinBuildModifierMaps(
 {
     int i;
     KeySym *k;
+    int darwinSwapAltMeta = 0;
 
     memset(info->modMap, NoSymbol, sizeof(info->modMap));
     memset(info->modifierKeycodes, 0, sizeof(info->modifierKeycodes));
@@ -758,49 +784,6 @@ DarwinBuildModifierMaps(
 
 
 /*
- * DarwinLoadKeyboardMapping
- *  Load the keyboard map from a file or system and convert
- *  it to an equivalent X keyboard map and modifier map.
- */
-static void
-DarwinLoadKeyboardMapping(KeySymsRec *keySyms)
-{
-    memset(keyInfo.keyMap, 0, sizeof(keyInfo.keyMap));
-
-    if (!DarwinParseNXKeyMapping(&keyInfo)) {
-        if (!DarwinModeReadSystemKeymap(&keyInfo)) {
-            FatalError("Could not build a valid keymap.");
-        }
-    }
-
-    DarwinBuildModifierMaps(&keyInfo);
-
-#ifdef DUMP_DARWIN_KEYMAP
-    ErrorF("Darwin -> X converted keyboard map\n");
-    for (i = 0, k = info->keyMap; i < NX_NUMKEYCODES;
-         i++, k += GLYPHS_PER_KEY)
-    {
-        int j;
-        ErrorF("0x%02x:", i);
-        for (j = 0; j < GLYPHS_PER_KEY; j++) {
-            if (k[j] == NoSymbol) {
-                ErrorF("\tNoSym");
-            } else {
-                ErrorF("\t0x%x", k[j]);
-            }
-        }
-        ErrorF("\n");
-    }
-#endif
-
-    keySyms->map        = keyInfo.keyMap;
-    keySyms->mapWidth   = GLYPHS_PER_KEY;
-    keySyms->minKeyCode = MIN_KEYCODE;
-    keySyms->maxKeyCode = MAX_KEYCODE;
-}
-
-
-/*
  * DarwinKeyboardInit
  *      Get the Darwin keyboard map and compute an equivalent
  *      X keyboard map and modifier map. Set the new keyboard
@@ -811,88 +794,30 @@ void DarwinKeyboardInit(
 {
     KeySymsRec          keySyms;
 
+    memset( keyInfo.keyMap, 0, sizeof( keyInfo.keyMap ) );
+
     // Open a shared connection to the HID System.
     // Note that the Event Status Driver is really just a wrapper
     // for a kIOHIDParamConnectType connection.
     assert( darwinParamConnect = NXOpenEventStatus() );
 
-    DarwinLoadKeyboardMapping(&keySyms);
+    if (!DarwinParseNXKeyMapping(&keyInfo)) {
+        if (!DarwinModeReadSystemKeymap(&keyInfo)) {
+            FatalError("Could not build a valid keymap.");
+        }
+    }
 
-    /* Initialize the seed, so we don't reload the keymap unnecessarily
-       (and possibly overwrite xinitrc changes) */
-    DarwinModeSystemKeymapSeed();
+    DarwinBuildModifierMaps(&keyInfo);
+
+    keySyms.map        = keyInfo.keyMap;
+    keySyms.mapWidth   = GLYPHS_PER_KEY;
+    keySyms.minKeyCode = MIN_KEYCODE;
+    keySyms.maxKeyCode = MAX_KEYCODE;
 
     assert( InitKeyboardDeviceStruct( (DevicePtr)pDev, &keySyms,
                                       keyInfo.modMap, DarwinModeBell,
                                       DarwinChangeKeyboardControl ));
 }
-
-
-/* Borrowed from dix/devices.c */
-static Bool
-InitModMap(register KeyClassPtr keyc)
-{
-    int i, j;
-    CARD8 keysPerModifier[8];
-    CARD8 mask;
-
-    if (keyc->modifierKeyMap != NULL)
-        xfree (keyc->modifierKeyMap);
-
-    keyc->maxKeysPerModifier = 0;
-    for (i = 0; i < 8; i++)
-        keysPerModifier[i] = 0;
-    for (i = 8; i < MAP_LENGTH; i++)
-    {
-        for (j = 0, mask = 1; j < 8; j++, mask <<= 1)
-        {
-            if (mask & keyc->modifierMap[i])
-            {
-                if (++keysPerModifier[j] > keyc->maxKeysPerModifier)
-                    keyc->maxKeysPerModifier = keysPerModifier[j];
-            }
-        }
-    }
-    keyc->modifierKeyMap = (KeyCode *)xalloc(8*keyc->maxKeysPerModifier);
-    if (!keyc->modifierKeyMap && keyc->maxKeysPerModifier)
-        return (FALSE);
-    bzero((char *)keyc->modifierKeyMap, 8*(int)keyc->maxKeysPerModifier);
-    for (i = 0; i < 8; i++)
-        keysPerModifier[i] = 0;
-    for (i = 8; i < MAP_LENGTH; i++)
-    {
-        for (j = 0, mask = 1; j < 8; j++, mask <<= 1)
-        {
-            if (mask & keyc->modifierMap[i])
-            {
-                keyc->modifierKeyMap[(j*keyc->maxKeysPerModifier) +
-                         keysPerModifier[j]] = i;
-                keysPerModifier[j]++;
-            }
-        }
-    }
-    return TRUE;
-}
-
-
-void
-DarwinKeyboardReload(DeviceIntPtr pDev)
-{
-    KeySymsRec keySyms;
-
-    DarwinLoadKeyboardMapping(&keySyms);
-
-    if (SetKeySymsMap(&pDev->key->curKeySyms, &keySyms)) {
-        /* now try to update modifiers. */
-
-        memmove(pDev->key->modifierMap, keyInfo.modMap, MAP_LENGTH);
-        InitModMap(pDev->key);
-    }
-
-    SendMappingNotify(MappingKeyboard, MIN_KEYCODE, NUM_KEYCODES, 0);
-    SendMappingNotify(MappingModifier, 0, 0, 0);
-}
-
 
 //-----------------------------------------------------------------------------
 // Modifier translation functions

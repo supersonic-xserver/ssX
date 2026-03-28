@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   csstartNX.c
 
  * (c) Copyright 1992-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/csstartNX.c,v 1.6 2001/10/28 03:32:43 tsi Exp $ */
+/* $XFree86: xc/lib/dps/csstartNX.c,v 1.7 2002/05/31 18:45:48 dawes Exp $ */
 
 #include <sys/param.h>
 #include <X11/X.h>

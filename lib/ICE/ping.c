@@ -1,3 +1,11 @@
+/* $Xorg: ping.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -25,13 +33,17 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86$ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"
 
 Status
-IcePing(IceConn iceConn, IcePingReplyProc pingReplyProc, IcePointer clientData)
+IcePing (iceConn, pingReplyProc, clientData)
+
+IceConn		 iceConn;
+IcePingReplyProc pingReplyProc;
+IcePointer	 clientData;
+
 {
     _IcePingWait *newping = (_IcePingWait *) malloc (sizeof (_IcePingWait));
     _IcePingWait *ptr = iceConn->ping_waits;

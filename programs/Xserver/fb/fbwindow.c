@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fbwindow.c,v 1.12tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: fbwindow.c,v 1.1 1999/11/02 03:54:45 keithp Exp $
  *
  * Copyright © 1998 Keith Packard
  *
@@ -21,6 +28,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/Xserver/fb/fbwindow.c,v 1.11 2003/11/10 18:21:47 tsi Exp $ */
 
 #include "fb.h"
 #ifdef IN_MODULE
@@ -222,6 +230,11 @@ fbFillRegionSolid (DrawablePtr	pDrawable,
     }
 }
 
+#ifdef PANORAMIX
+#include "panoramiX.h"
+#include "panoramiXsrv.h"
+#endif
+
 void
 fbFillRegionTiled (DrawablePtr	pDrawable,
 		   RegionPtr	pRegion,
@@ -241,6 +254,17 @@ fbFillRegionTiled (DrawablePtr	pDrawable,
     int		xRot = pDrawable->x;
     int		yRot = pDrawable->y;
     
+#ifdef PANORAMIX
+    if(!noPanoramiXExtension) 
+    {
+	int index = pDrawable->pScreen->myNum;
+	if(&WindowTable[index]->drawable == pDrawable) 
+	{
+	    xRot -= panoramiXdataPtr[index].x;
+	    yRot -= panoramiXdataPtr[index].y;
+	}
+    }
+#endif
     fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
     fbGetDrawable (&pTile->drawable, tile, tileStride, tileBpp, tileXoff, tileYoff);
     tileWidth = pTile->drawable.width;

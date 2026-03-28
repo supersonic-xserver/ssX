@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -41,7 +48,7 @@ extern int	XFixesErrorBase;
 }
 
 #define VERIFY_REGION_OR_NONE(pRegion, rid, client, mode) { \
-    pRegion = 0; \
+    pRegion = (RegionPtr)0; \
     if (rid) VERIFY_REGION(pRegion, rid, client, mode); \
 }
 

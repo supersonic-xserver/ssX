@@ -1,4 +1,11 @@
 /* Based on hw/xfree86/os-support/bsd/bsd_apm.c which bore no explicit
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * copyright notice, so is covered by the following notice:
  *
  * Copyright (C) 1994-2003 The XFree86 Project, Inc.  All Rights Reserved.

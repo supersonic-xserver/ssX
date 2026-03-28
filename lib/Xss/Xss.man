@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/Xss/Xss.man,v 1.1 2003/10/26 19:00:24 herrb Exp $
+.\" $XFree86: xc/lib/Xss/Xss.man,v 1.2 2003/11/23 05:05:01 dawes Exp $
 .\"
 .\" Copyright (C) 2003 The XFree86 Project, Inc.  All Rights Reserved.
 .\"

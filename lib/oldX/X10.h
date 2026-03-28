@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * 
 Copyright 1985, 1986, 1987, 1998 The Open Group
 
@@ -25,7 +32,7 @@ in this Software without prior written authorization from The Open Group.
  * The X Window System is a Trademark of The Open Group.
  *
  */
-/* $XFree86: xc/lib/oldX/X10.h,v 1.4 2004/04/05 02:22:41 dawes Exp $ */
+/* $XFree86: xc/lib/oldX/X10.h,v 1.5 2004/06/01 00:16:57 dawes Exp $ */
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.

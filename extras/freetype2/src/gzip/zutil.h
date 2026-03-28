@@ -1,4 +1,11 @@
 /* zutil.h -- internal interface and configuration of the compression library
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
@@ -8,7 +15,9 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* $XFree86: xc/extras/freetype2/src/gzip/zutil.h,v 1.4tsi Exp $ */
+/* @(#) $Id: zutil.h,v 1.1.1.2 2005/03/18 13:07:34 tron Exp $ */
+
+/* $XFree86: xc/extras/freetype2/src/gzip/zutil.h,v 1.3 2004/04/26 16:15:54 dawes Exp $ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -186,9 +195,7 @@ typedef unsigned long  ulg;
 
 /* Diagnostic functions */
 #ifdef DEBUG
-#  ifndef FONTMODULE
-#    include <stdio.h>
-#  endif
+#  include <stdio.h>
    extern int z_verbose;
    extern void z_error    OF((char *m));
 #  define Assert(cond,msg) {if(!(cond)) z_error(msg);}

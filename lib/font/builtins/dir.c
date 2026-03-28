@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/font/builtins/dir.c,v 1.4tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: dir.c,v 1.2 1999/11/02 06:16:47 keithp Exp $
  *
  * Copyright 1999 SuSE, Inc.
  *
@@ -17,42 +24,45 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
+/* $XFree86: xc/lib/font/builtins/dir.c,v 1.4 2000/02/23 20:29:33 dawes Exp $ */
 
 #include "builtin.h"
 
 int
-BuiltinReadDirectory(char *directory, FontDirectoryPtr *pdir)
+BuiltinReadDirectory (directory, pdir)
+    char		*directory;
+    FontDirectoryPtr	*pdir;
 {
     FontDirectoryPtr	dir;
     int			i;
 
-    dir = FontFileMakeDir("", builtin_dir_count);
+    dir = FontFileMakeDir ("", builtin_dir_count);
     for (i = 0; i < builtin_dir_count; i++)
     {
-	if (!FontFileAddFontFile(dir,
-				 (char *) builtin_dir[i].font_name,
-				 (char *) builtin_dir[i].file_name))
+	if (!FontFileAddFontFile (dir,
+				  (char *) builtin_dir[i].font_name,
+				  (char *) builtin_dir[i].file_name))
 	{
-	    FontFileFreeDir(dir);
+	    FontFileFreeDir (dir);
 	    return BadFontPath;
 	}
     }
     for (i = 0; i < builtin_alias_count; i++)
     {
-	if (!FontFileAddFontAlias(dir,
-				  (char *) builtin_alias[i].alias_name,
-				  (char *) builtin_alias[i].font_name))
+	if (!FontFileAddFontAlias (dir, 
+				   (char *) builtin_alias[i].alias_name,
+				   (char *) builtin_alias[i].font_name))
 	{
-	    FontFileFreeDir(dir);
+	    FontFileFreeDir (dir);
 	    return BadFontPath;
 	}
     }
-    FontFileSortDir(dir);
+    FontFileSortDir (dir);
     *pdir = dir;
     return Successful;
 }

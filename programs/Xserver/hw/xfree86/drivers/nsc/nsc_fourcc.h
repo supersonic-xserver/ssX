@@ -1,5 +1,16 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_fourcc.h,v 1.2 2003/01/14 09:34:30 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: nsc_fourcc.h $
+ * $Revision: 1.1.1.1 $
+ * $Author: tron $
+ *
  * File Contents: This file consists of main Xfree video macro definitions.
  *
  * Project:       Geode Xfree Frame buffer device driver.

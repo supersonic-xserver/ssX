@@ -1,33 +1,57 @@
-/*
- * Copyright (c) 2000-2002 by The XFree86 Project, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86PM.c,v 3.12 2006/06/28 03:20:27 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+
+/*
+ * Copyright (c) 2000-2002 by The XFree86 Project, Inc.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
+ *
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
+ *
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include <X11/X.h>
 #include "xf86.h"
@@ -39,25 +63,25 @@ pmWait (*xf86PMConfirmEventToOs)(int fd,pmEvent event) = NULL;
 
 static Bool suspended = FALSE;
 
-static int
-eventName(pmEvent event, char **str)
+static char *
+eventName(pmEvent event)
 {
     switch(event) {
-    case XF86_APM_SYS_STANDBY: *str="System Standby Request"; return 0;
-    case XF86_APM_SYS_SUSPEND: *str="System Suspend Request"; return 0;
-    case XF86_APM_CRITICAL_SUSPEND: *str="Critical Suspend"; return 0;
-    case XF86_APM_USER_STANDBY: *str="User System Standby Request"; return 0;
-    case XF86_APM_USER_SUSPEND: *str="User System Suspend Request"; return 0;
-    case XF86_APM_STANDBY_RESUME: *str="System Standby Resume"; return 0;
-    case XF86_APM_NORMAL_RESUME: *str="Normal Resume System"; return 0;
-    case XF86_APM_CRITICAL_RESUME: *str="Critical Resume System"; return 0;
-    case XF86_APM_LOW_BATTERY: *str="Battery Low"; return 3;
-    case XF86_APM_POWER_STATUS_CHANGE: *str="Power Status Change";return 3;
-    case XF86_APM_UPDATE_TIME: *str="Update Time";return 3;
-    case XF86_APM_CAPABILITY_CHANGED: *str="Capability Changed"; return 3;
-    case XF86_APM_STANDBY_FAILED: *str="Standby Request Failed"; return 0;
-    case XF86_APM_SUSPEND_FAILED: *str="Suspend Request Failed"; return 0;
-    default: *str="Unknown Event"; return 0;
+    case XF86_APM_SYS_STANDBY: return ("System Standby Request");
+    case XF86_APM_SYS_SUSPEND: return ("System Suspend Request");
+    case XF86_APM_CRITICAL_SUSPEND: return ("Critical Suspend");
+    case XF86_APM_USER_STANDBY: return ("User System Standby Request");
+    case XF86_APM_USER_SUSPEND: return ("User System Suspend Request");
+    case XF86_APM_STANDBY_RESUME: return ("System Standby Resume");
+    case XF86_APM_NORMAL_RESUME: return ("Normal Resume System");
+    case XF86_APM_CRITICAL_RESUME: return ("Critical Resume System");
+    case XF86_APM_LOW_BATTERY: return ("Battery Low");
+    case XF86_APM_POWER_STATUS_CHANGE: return ("Power Status Change");
+    case XF86_APM_UPDATE_TIME: return ("Update Time");
+    case XF86_APM_CAPABILITY_CHANGED: return ("Capability Changed");
+    case XF86_APM_STANDBY_FAILED: return ("Standby Request Failed");
+    case XF86_APM_SUSPEND_FAILED: return ("Suspend Request Failed");
+    default: return ("Unknown Event");
     }
 }
 
@@ -67,18 +91,20 @@ suspend (pmEvent event, Bool undo)
     int i;
     InputInfoPtr pInfo;
 
-   xf86inSuspend = TRUE;
+    xf86inSuspend = TRUE;
     
     for (i = 0; i < xf86NumScreens; i++) {
         xf86EnableAccess(xf86Screens[i]);
 	if (xf86Screens[i]->EnableDisableFBAccess)
 	    (*xf86Screens[i]->EnableDisableFBAccess) (i, FALSE);
     }
+#if !defined(__EMX__)
     pInfo = xf86InputDevs;
     while (pInfo) {
 	DisableDevice(pInfo->dev);
 	pInfo = pInfo->next;
     }
+#endif
     xf86EnterServerState(SETUP);
     for (i = 0; i < xf86NumScreens; i++) {
         xf86EnableAccess(xf86Screens[i]);
@@ -117,11 +143,13 @@ resume(pmEvent event, Bool undo)
 	    (*xf86Screens[i]->EnableDisableFBAccess) (i, TRUE);
     }
     SaveScreens(SCREEN_SAVER_FORCER, ScreenSaverReset);
+#if !defined(__EMX__)
     pInfo = xf86InputDevs;
     while (pInfo) {
 	EnableDevice(pInfo->dev);
 	pInfo = pInfo->next;
     }
+#endif
     xf86inSuspend = FALSE;
 }
 
@@ -133,15 +161,13 @@ DoApmEvent(pmEvent event, Bool undo)
      * this might cause problems in the future. It is a global server 
      * variable therefore it needs to be in a server info structure
      */
-    int i, setup = 0;
+    int i;
     
     switch(event) {
-#if 0
     case XF86_APM_SYS_STANDBY:
-    case XF86_APM_USER_STANDBY:
-#endif
     case XF86_APM_SYS_SUSPEND:
     case XF86_APM_CRITICAL_SUSPEND: /*do we want to delay a critical suspend?*/
+    case XF86_APM_USER_STANDBY:
     case XF86_APM_USER_SUSPEND:
 	/* should we do this ? */
 	if (!undo && !suspended) {
@@ -152,9 +178,7 @@ DoApmEvent(pmEvent event, Bool undo)
 	    suspended = FALSE;
 	}
 	break;
-#if 0
     case XF86_APM_STANDBY_RESUME:
-#endif
     case XF86_APM_NORMAL_RESUME:
     case XF86_APM_CRITICAL_RESUME:
 	if (suspended) {
@@ -163,15 +187,13 @@ DoApmEvent(pmEvent event, Bool undo)
 	}
 	break;
     default:
+	xf86EnterServerState(SETUP);
 	for (i = 0; i < xf86NumScreens; i++) {
-	    if (xf86Screens[i]->PMEvent) {
-		if (!setup) xf86EnterServerState(SETUP);
-		setup = 1;
-		xf86EnableAccess(xf86Screens[i]);
+	    xf86EnableAccess(xf86Screens[i]);
+	    if (xf86Screens[i]->PMEvent)
 		xf86Screens[i]->PMEvent(i,event,undo);
-	    }
 	}
-	if (setup) xf86EnterServerState(OPERATING);
+	xf86EnterServerState(OPERATING);
 	break;
     }
 }
@@ -191,10 +213,8 @@ xf86HandlePMEvents(int fd, pointer data)
     if ((n = xf86PMGetEventFromOs(fd,events,MAX_NO_EVENTS))) {
 	do {
 	    for (i = 0; i < n; i++) {
-		char *str = NULL;
-		int verb = eventName(events[i],&str);
-
-		xf86MsgVerb(X_INFO,verb,"PM Event received: %s\n",str);
+		xf86MsgVerb(X_INFO,3,"PM Event received: %s\n",
+			    eventName(events[i]));
 		DoApmEvent(events[i],FALSE);
 		switch (xf86PMConfirmEventToOs(fd,events[i])) {
 		case PM_WAIT:

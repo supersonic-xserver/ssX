@@ -1,11 +1,18 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Shared code for the Darwin X Server
  * running with Quartz or IOKit display mode
  *
  **************************************************************/
 /*
- * Copyright (c) 2001-2004 Torrey T. Lyons. All Rights Reserved.
+ * Copyright (c) 2001-2003 Torrey T. Lyons. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -29,10 +36,10 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/darwin.c,v 1.63tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/darwin.c,v 1.58 2004/06/02 22:42:56 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "os.h"
 #include "servermd.h"
 #include "inputstr.h"
@@ -48,8 +55,8 @@
 #include "dix.h"
 
 #ifdef XINPUT
-# include <X11/extensions/XI.h>
-# include <X11/extensions/XIproto.h>
+# include "XI.h"
+# include "XIproto.h"
 # include "exevents.h"
 # include "extinit.h"
 #endif
@@ -89,16 +96,13 @@ unsigned int            darwinDesiredWidth = 0, darwinDesiredHeight = 0;
 int                     darwinDesiredDepth = -1;
 int                     darwinDesiredRefresh = -1;
 char                    *darwinKeymapFile = "USA.keymapping";
-int                     darwinSyncKeymap = FALSE;
-int                     darwinSwapAltMeta = FALSE;
 
 // modifier masks for faking mouse buttons
 int                     darwinFakeMouse2Mask = NX_COMMANDMASK;
 int                     darwinFakeMouse3Mask = NX_ALTERNATEMASK;
 
-// devices
-DeviceIntPtr            darwinPointer = NULL;
-DeviceIntPtr            darwinKeyboard = NULL;
+static DeviceIntPtr     darwinPointer;
+static DeviceIntPtr     darwinKeyboard;
 
 // Common pixmap formats
 static PixmapFormatRec formats[] = {
@@ -148,8 +152,8 @@ DarwinPrintBanner()
   ErrorF(" (%s)", XF86_CUSTOM_VERSION);
 #endif
   ErrorF(" / X Window System\n");
-  ErrorF("(protocol Version %d, revision %d)\n",
-         X_PROTOCOL, X_PROTOCOL_REVISION);
+  ErrorF("(protocol Version %d, revision %d, vendor release %d)\n",
+         X_PROTOCOL, X_PROTOCOL_REVISION, VENDOR_RELEASE );
   ErrorF("Release Date: %s\n", XF86_DATE);
   ErrorF("\tIf the server is older than 6-12 months, or if your hardware is\n"
          "\tnewer than the above date, look for a newer version before\n"
@@ -184,8 +188,8 @@ static Bool DarwinSaveScreen(ScreenPtr pScreen, int on)
 static Bool DarwinAddScreen(
     int         index,
     ScreenPtr   pScreen,
-    const int   argc,
-    const char  **argv )
+    int         argc,
+    char        **argv )
 {
     int         bitsPerRGB, i, dpi;
     static int  foundIndex = 0;
@@ -273,6 +277,10 @@ static Bool DarwinAddScreen(
     }
 #endif
 
+#ifdef MITSHM
+    ShmRegisterFbFuncs(pScreen);
+#endif
+
     // this must be initialized (why doesn't X have a default?)
     pScreen->SaveScreen = DarwinSaveScreen;
 
@@ -350,7 +358,7 @@ static int DarwinMouseProc(
     DeviceIntPtr    pPointer,
     int             what )
 {
-    unsigned char map[6];
+    char map[6];
 
     switch (what) {
 
@@ -532,7 +540,7 @@ static int DarwinParseModifierList(
  * InitInput
  *  Register the keyboard and mouse devices
  */
-void InitInput( const int argc, const char **argv )
+void InitInput( int argc, char **argv )
 {
     darwinPointer = AddInputDevice(DarwinMouseProc, TRUE);
     RegisterPointerDevice( darwinPointer );
@@ -610,7 +618,7 @@ DarwinAdjustScreenOrigins(ScreenInfo *pScreenInfo)
  *  After other screen setup has been done, a mode specific
  *  SetupScreen function can be called to finalize screen setup.
  */
-void InitOutput( ScreenInfo *pScreenInfo, const int argc, const char **argv )
+void InitOutput( ScreenInfo *pScreenInfo, int argc, char **argv )
 {
     int i;
     static unsigned long generation = 0;
@@ -692,7 +700,7 @@ void OsVendorInit(void)
  *  not device dependent, otherwise Count of number of elements of argv
  *  that are part of a device dependent commandline option.
  */
-int ddxProcessArgument( int argc, const char *argv[], int i )
+int ddxProcessArgument( int argc, char *argv[], int i )
 {
     int numDone;
 
@@ -737,31 +745,16 @@ int ddxProcessArgument( int argc, const char *argv[], int i )
         return 2;
     }
 
-    if ( !strcmp( argv[i], "-swapAltMeta" ) ) {
-        darwinSwapAltMeta = 1;
-        return 1;
-    }
-
     if ( !strcmp( argv[i], "-keymap" ) ) {
         if ( i == argc-1 ) {
             FatalError( "-keymap must be followed by a filename\n" );
         }
-        darwinKeymapFile = (char *)argv[i+1];
+        darwinKeymapFile = argv[i+1];
         return 2;
     }
 
     if ( !strcmp( argv[i], "-nokeymap" ) ) {
         darwinKeymapFile = NULL;
-        return 1;
-    }
-
-    if ( !strcmp( argv[i], "+synckeymap" ) ) {
-        darwinSyncKeymap = TRUE;
-        return 1;
-    }
-
-    if ( !strcmp( argv[i], "-synckeymap" ) ) {
-        darwinSyncKeymap = FALSE;
         return 1;
     }
 

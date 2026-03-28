@@ -1,5 +1,14 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fbbits.h,v 1.14 2003/11/03 05:11:00 tsi Exp $
+ *
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -27,10 +36,6 @@
 
 #define isClipped(c,ul,lr)  ((((c) - (ul)) | ((lr) - (c))) & 0x80008000)
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #ifdef BITSMUL
 #define MUL BITSMUL
 #else
@@ -40,13 +45,13 @@
 #ifdef BITSSTORE
 #define STORE(b,x)  BITSSTORE(b,x)
 #else
-#define STORE(b,x)  WRITE((b), (x))
+#define STORE(b,x)  (*(b) = (x))
 #endif
 
 #ifdef BITSRROP
 #define RROP(b,a,x)	BITSRROP(b,a,x)
 #else
-#define RROP(b,a,x)	WRITE((b), FbDoRRop (READ(b), (a), (x)))
+#define RROP(b,a,x)	(*(b) = FbDoRRop (*(b), (a), (x)))
 #endif
 
 #ifdef BITSUNIT
@@ -117,8 +122,6 @@ BRESSOLID (DrawablePtr	pDrawable,
 	    e += e3;
 	}
     }
-
-    fbFinishAccess (pDrawable);
 }
 #endif
 
@@ -263,8 +266,6 @@ onOffOdd:
 		dashlen = len;
 	}
     }
-
-    fbFinishAccess (pDrawable);
 }
 #endif
 
@@ -276,8 +277,6 @@ DOTS (FbBits	    *dst,
       BoxPtr	    pBox,
       xPoint	    *ptsOrig,
       int	    npt,
-      int	    xorg,
-      int	    yorg,
       int	    xoff,
       int	    yoff,
       FbBits	    and,
@@ -292,10 +291,10 @@ DOTS (FbBits	    *dst,
     INT32    	ul, lr;
     INT32    	pt;
 
-    ul = coordToInt(pBox->x1 - xorg,     pBox->y1 - yorg);
-    lr = coordToInt(pBox->x2 - xorg - 1, pBox->y2 - yorg - 1);
+    ul = coordToInt(pBox->x1 - xoff,     pBox->y1 - yoff);
+    lr = coordToInt(pBox->x2 - xoff - 1, pBox->y2 - yoff - 1);
 
-    bits += bitsStride * (yorg + yoff) + (xorg + xoff) * MUL;
+    bits += bitsStride * yoff + xoff * MUL;
     
     if (and == 0)
     {
@@ -543,18 +542,18 @@ ARC (FbBits	*dst,
 # define WRITE_ADDR4(n)	    ((n))
 #endif
 
-#define WRITE1(d,n,fg)	    WRITE(d + WRITE_ADDR1(n), (BITS) (fg))
+#define WRITE1(d,n,fg)	    ((d)[WRITE_ADDR1(n)] = (BITS) (fg))
 
 #ifdef BITS2
-# define WRITE2(d,n,fg)	    WRITE((BITS2 *) &((d)[WRITE_ADDR2(n)]), (BITS2) (fg))
+# define WRITE2(d,n,fg)	    (*((BITS2 *) &((d)[WRITE_ADDR2(n)])) = (BITS2) (fg))
 #else
-# define WRITE2(d,n,fg)	    (WRITE1(d,n,fg), WRITE1(d,(n)+1,fg))
+# define WRITE2(d,n,fg)	    WRITE1(d,(n)+1,WRITE1(d,n,fg))
 #endif
 
 #ifdef BITS4
-# define WRITE4(d,n,fg)	    WRITE((BITS4 *) &((d)[WRITE_ADDR4(n)]), (BITS4) (fg))
+# define WRITE4(d,n,fg)	    (*((BITS4 *) &((d)[WRITE_ADDR4(n)])) = (BITS4) (fg))
 #else
-# define WRITE4(d,n,fg)	    (WRITE2(d,n,fg), WRITE2(d,(n)+2,fg))
+# define WRITE4(d,n,fg)	    WRITE2(d,(n)+2,WRITE2(d,n,fg))
 #endif
 
 void
@@ -712,10 +711,8 @@ POLYLINE (DrawablePtr	pDrawable,
 		       intToX(pt2) + xoff, intToY(pt2) + yoff,
 		       npt == 0 && pGC->capStyle != CapNotLast,
 		       &dashoffset);
-	    if (!npt) {
-		fbFinishAccess (pDrawable);
+	    if (!npt)
 		return;
-	    }
 	    pt1 = pt2;
 	    pt2 = *pts++;
 	    npt--;
@@ -780,7 +777,6 @@ POLYLINE (DrawablePtr	pDrawable,
 		    {
 			RROP(bits,and,xor);
 		    }
-		    fbFinishAccess (pDrawable);
 		    return;
 		}
 		pt1 = pt2;
@@ -791,8 +787,6 @@ POLYLINE (DrawablePtr	pDrawable,
     	    }
 	}
     }
-
-    fbFinishAccess (pDrawable);
 }
 #endif
 
@@ -890,20 +884,20 @@ POLYSEGMENT (DrawablePtr    pDrawable,
 		FbMaskBits (dstX, width, startmask, nmiddle, endmask);
 		if (startmask)
 		{
-		    WRITE(dstLine, FbDoMaskRRop (READ(dstLine), andBits, xorBits, startmask));
+		    *dstLine = FbDoMaskRRop (*dstLine, andBits, xorBits, startmask);
 		    dstLine++;
 		}
 		if (!andBits)
 		    while (nmiddle--)
-			WRITE(dstLine++, xorBits);
+			*dstLine++ = xorBits;
 		else
 		    while (nmiddle--)
 		    {
-			WRITE(dstLine, FbDoRRop (READ(dstLine), andBits, xorBits));
+			*dstLine = FbDoRRop (*dstLine, andBits, xorBits);
 			dstLine++;
 		    }
 		if (endmask)
-		    WRITE(dstLine, FbDoMaskRRop (READ(dstLine), andBits, xorBits, endmask));
+		    *dstLine = FbDoMaskRRop (*dstLine, andBits, xorBits, endmask);
 	    }
 	    else
 	    {
@@ -957,8 +951,6 @@ POLYSEGMENT (DrawablePtr    pDrawable,
 	    }
 	}
     }
-
-    fbFinishAccess (pDrawable);
 }
 #endif
 

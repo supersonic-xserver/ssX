@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +33,7 @@
  *
  * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/loadmod.c,v 1.19 2005/06/29 01:14:12 dawes Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/loadmod.c,v 1.18 2003/06/12 14:12:38 eich Exp $
  */
 
 #ifdef USE_MODULES
@@ -182,7 +189,7 @@ LOOKUP xfree86LookupTab[] = {
    SYMFUNC(xf86memchr)
    SYMFUNC(xf86memcmp)
    SYMFUNC(xf86memcpy)
-#if (defined(__powerpc__) && (defined(Lynx) || defined(linux))) || defined(__sparc__) || defined(__ia64__) || defined (__amd64__) || defined(__x86_64__)
+#if (defined(__powerpc__) && (defined(Lynx) || defined(linux))) || defined(__sparc__) || defined(__ia64__) || defined (__AMD64__)
    /*
     * Some PPC, SPARC, and IA64 compilers generate calls to memcpy to handle
     * structure copies.  This causes a problem both here and in shared
@@ -552,7 +559,7 @@ xf86cfgCheckModule(void)
 }
 
 void
-xf86AddDriver(DriverPtr drv, ModuleDescPtr module, int flags)
+xf86AddDriver(DriverPtr drv, void *module, int flags)
 {
     driver = drv;
     if (driver)
@@ -567,13 +574,13 @@ xf86ServerIsOnlyDetecting(void)
 }
 
 void
-xf86AddInputDriver(InputDriverPtr inp, ModuleDescPtr module, int flags)
+xf86AddInputDriver(InputDriverPtr inp, void *module, int flags)
 {
     module_type = InputModule;
 }
 
 void
-xf86AddModuleInfo(ModuleInfoPtr inf, ModuleDescPtr module)
+xf86AddModuleInfo(ModuleInfoPtr inf, void *module)
 {
     info = inf;
 }
@@ -649,7 +656,7 @@ xf86MatchIsaInstances(const char *name, SymTabPtr chipsets, IsaChipsets *ISAchip
 }
 
 /*ARGSUSED*/
-ModuleDescPtr
+void *
 xf86LoadDrvSubModule(DriverPtr drv, const char *name)
 {
     pointer ret;

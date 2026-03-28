@@ -10,7 +10,7 @@
 # This script is compatible with the BSD install script, but was written
 # from scratch.
 #
-# $XFree86: xc/lib/fontconfig/config/install.sh,v 1.1 2002/05/21 17:06:21 keithp Exp $
+# $XFree86: xc/lib/Xft/config/install.sh,v 1.1 2002/05/23 23:01:57 keithp Exp $
 #
 
 

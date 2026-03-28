@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Video.c,v 1.15 2005/01/26 05:31:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -137,13 +144,13 @@ static xf86ConfigSymTabRec VideoPortTab[] =
 #define CLEANUP xf86freeVideoPortList
 
 XF86ConfVideoPortPtr
-xf86parseVideoPortSubSection (const char *name)
+xf86parseVideoPortSubSection (char *name)
 {
 	int has_ident = FALSE;
 	int token;
 	parsePrologue (XF86ConfVideoPortPtr, XF86ConfVideoPortRec)
 
-	ptr->vp_identifier = xf86configStrdup(name);
+	ptr->vp_identifier = name;
 
 	while ((token = xf86getToken (VideoPortTab)) != ENDSUBSECTION)
 	{
@@ -158,7 +165,7 @@ xf86parseVideoPortSubSection (const char *name)
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
 			TestFree(ptr->vp_identifier);
-			ptr->vp_identifier = xf86configStrdup(val.str);
+			ptr->vp_identifier = val.str;
 			has_ident = TRUE;
 			break;
 		case OPTION:
@@ -216,7 +223,7 @@ xf86parseVideoAdaptorSection (void)
 		case IDENTIFIER:
 			if (xf86getSubToken (&(ptr->va_comment)) != STRING)
 				Error (QUOTE_MSG, "Identifier");
-			ptr->va_identifier = xf86configStrdup(val.str);
+			ptr->va_identifier = val.str;
 			if (has_ident == TRUE)
 				Error (MULTIPLE_MSG, "Identifier");
 			has_ident = TRUE;
@@ -224,22 +231,22 @@ xf86parseVideoAdaptorSection (void)
 		case VENDOR:
 			if (xf86getSubToken (&(ptr->va_comment)) != STRING)
 				Error (QUOTE_MSG, "Vendor");
-			ptr->va_vendor = xf86configStrdup(val.str);
+			ptr->va_vendor = val.str;
 			break;
 		case BOARD:
 			if (xf86getSubToken (&(ptr->va_comment)) != STRING)
 				Error (QUOTE_MSG, "Board");
-			ptr->va_board = xf86configStrdup(val.str);
+			ptr->va_board = val.str;
 			break;
 		case BUSID:
 			if (xf86getSubToken (&(ptr->va_comment)) != STRING)
 				Error (QUOTE_MSG, "BusID");
-			ptr->va_busid = xf86configStrdup(val.str);
+			ptr->va_busid = val.str;
 			break;
 		case DRIVER:
 			if (xf86getSubToken (&(ptr->va_comment)) != STRING)
 				Error (QUOTE_MSG, "Driver");
-			ptr->va_driver = xf86configStrdup(val.str);
+			ptr->va_driver = val.str;
 			break;
 		case OPTION:
 			ptr->va_option_lst = xf86parseOption(ptr->va_option_lst);

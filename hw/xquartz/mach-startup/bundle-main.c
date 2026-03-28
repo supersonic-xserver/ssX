@@ -1,4 +1,11 @@
 /* main.c -- X application launcher
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  
  Copyright (c) 2007 Jeremy Huddleston
  Copyright (c) 2007 Apple Inc

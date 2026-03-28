@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/Xp/XpContext.c,v 1.8tsi Exp $ */
+/* $Xorg: XpContext.c,v 1.4 2000/08/17 19:46:05 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -34,6 +41,7 @@
  **
  ******************************************************************************
  *****************************************************************************/
+/* $XFree86: xc/lib/Xp/XpContext.c,v 1.7 2002/10/16 00:37:31 dawes Exp $ */
 
 #define NEED_REPLIES
 
@@ -75,7 +83,7 @@ XpCreateContext (
 
     if ( locale == (char *) NULL )
         req->localeLen = 0;
-    else if ( *locale == (char) 0 )
+    else if ( *locale == (char) NULL )
         req->localeLen = 0;
     else {
         locale_len     = strlen( locale );

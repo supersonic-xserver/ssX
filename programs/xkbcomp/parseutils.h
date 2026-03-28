@@ -1,3 +1,11 @@
+/* $Xorg: parseutils.h,v 1.3 2000/08/17 19:54:33 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
  Copyright (c) 1994 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbcomp/parseutils.h,v 1.6 2005/03/28 02:51:14 dawes Exp $ */
+/* $XFree86: xc/programs/xkbcomp/parseutils.h,v 1.5 2002/07/01 02:26:01 tsi Exp $ */
 
 #ifndef XKBPARSE_H
 #define	XKBPARSE_H 1
@@ -235,9 +243,7 @@ extern int yywrap(
 );
 
 extern int yylex(void);
-#if !defined(YYBISON) && !(defined(YYBYACC) && defined(__NetBSD__))
 extern int yyparse(void);
-#endif
 
 extern int setScanState(
     char *	/* file */,

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/Imakefile,v 1.21tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/Imakefile,v 1.19 2004/11/10 04:28:38 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -70,9 +70,6 @@ SUBDIRS = vm86 x86emu
 LNXDEF = -DDoSubModules
 #endif
 
-#if defined(i386Architecture) || defined(AMD64Architecture)
-PC_DEFINES=-D_PC
-#endif
 
 #ifdef IHaveSubdirs
 MakeSubdirs($(SUBDIRS))
@@ -82,14 +79,25 @@ DependSubdirs($(SUBDIRS))
 SRCS = pci.c xf86int10module.c helper_mem.c linux.c
 OBJS = pci.o xf86int10module.o helper_mem.o linux.o
 
+
 LinkSourceFile(helper_mem.c,$(XF86SRC)/int10)
 LinkSourceFile(pci.c,$(XF86SRC)/int10)
 LinkSourceFile(xf86int10module.c,$(XF86SRC)/int10)
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86SRC)/int10 -I$(XF86OSSRC) \
-           -I$(SERVERSRC)/include
 
-DEFINES = $(LNXDEF) $(PC_DEFINES)
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86SRC)/int10 \
+           -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(X86EMUINCLUDES)
+
+DEFINES = $(X86EMUDEFINES) $(EXTRADEFINES)
+
+#if defined(i386Architecture) || defined (AMD64Architecture)
+EXTRADEFINES=-D_PC
+#endif
+
+
+SpecialObjectRule(linux.o, linux.c,$(LNXDEF))
+
 
 #if defined(XF86INT10_BUILD) && XF86INT10_BUILD > X86EMU_GENERIC
 
@@ -97,7 +105,7 @@ ModuleObjectRule()
 
 #if HasParallelMake && defined (DoSingleLib)
 MakeMutex($(SUBDIRS) $(EXPOBJS) $(DONES))
-#endif
+#endif  
 
 LibraryModuleTarget(int10, $(OBJS)  $(EXPOBJS),linux)
 
@@ -113,3 +121,4 @@ InstallDriverSDKLibraryModule(int10,$(DRIVERSDKMODULEDIR),.)
 #endif
 
 DependTarget()
+

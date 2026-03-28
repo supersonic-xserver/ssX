@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -62,7 +62,7 @@ provides a level of indirection between pixel values and colors displayed
 on the screen.
 Xlib provides functions that you can use to manipulate a colormap.
 The X protocol defines colors using values in the RGB color space.
-The RGB color space is device-dependent;
+The RGB color space is device dependent;
 rendering an RGB value on differing output devices typically results
 in different colors.
 Xlib also provides a means for clients to specify color using
@@ -101,9 +101,9 @@ screen.
 For each possible value that a pixel can take in a window,
 there is a color cell in the colormap.
 For example, 
-if a window is four bits deep, pixel values 0 through 15 are defined. 
+if a window is 4 bits deep, pixel values 0 through 15 are defined. 
 A colormap is a collection of color cells.
-A color cell consists of a triple of red, green, and blue values.
+A color cell consists of a triple of red, green, and blue (RGB) values.
 The hardware imposes limits on the number of significant
 bits in these values.
 As each pixel is read out of display memory, the pixel
@@ -255,7 +255,7 @@ which is of type
 The following macros define standard formats.
 .sM
 .TS
-lw(.5i) lw(1.5i) lw(1.5i) lw(1.5i).
+lw(.5i) lw(1.6i) lw(1.4i) lw(1.5i).
 T{
 #define
 T}	T{
@@ -521,11 +521,11 @@ A value for this abstract name is obtained by searching one or more color
 name databases.
 Xlib first searches zero or more client-side databases;
 the number, location, and content of these databases is
-implementation dependent and might depend on the current locale.
+implementation-dependent and might depend on the current locale.
 If the name is not found, Xlib then looks for the color in the
 X server's database.
-If the color name is not in the Host Portable Character Encoding
-the result is implementation dependent.
+If the color name is not in the Host Portable Character Encoding,
+the result is implementation-dependent.
 .LP
 A numerical color specification
 consists of a color space name and a set of values in the following syntax:
@@ -592,7 +592,7 @@ a numeric specification, in one of the following formats:
 .LP
 The R, G, and B represent single hexadecimal digits.
 When fewer than 16 bits each are specified, 
-they represent the most-significant bits of the value
+they represent the most significant bits of the value
 (unlike the ``rgb:'' syntax, in which values are scaled).
 For example, the string ``#3a7'' is the same as ``#3000a0007000''.
 .NH 3
@@ -649,7 +649,7 @@ Color Conversion Contexts and Gamut Mapping
 .XE
 .LP
 When Xlib converts device-independent color specifications
-into device-dependent specifications and vice-versa,
+into device-dependent specifications and vice versa,
 it uses knowledge about the color limitations of the screen hardware.
 This information, typically called the device profile,
 .IN "Device profile"
@@ -972,7 +972,7 @@ It returns both the exact color values and
 the closest values provided by the screen 
 with respect to the visual type of the specified colormap.
 If the color name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 .PN XLookupColor
 returns nonzero if the name is resolved;
@@ -1022,7 +1022,7 @@ function looks up the string name of a color with respect to the screen
 associated with the specified colormap.
 It returns the exact color value.
 If the color name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 .PN XParseColor
 returns nonzero if the name is resolved;
@@ -1059,16 +1059,13 @@ Specifies the connection to the X server.
 .IP \fIcolormap\fP 1i
 Specifies the colormap.
 .ds St
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIcolor_string\fP 1i
 Specifies the color string\*(St.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIcolor_exact_return\fP 1i
 Returns the color specification parsed from the color string
-or parsed from the corresponding string found in a color name database.
+or parsed from the corresponding string found in a color-name database.
 .IP \fIcolor_screen_return\fP 1i
 Returns the color that can be reproduced on the screen.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIresult_format\fP 1i
 Specifies the color format for the returned color
 specifications (color_screen_return and color_exact_return arguments).
@@ -1094,7 +1091,7 @@ the closest values provided by the screen
 with respect to the visual type of the specified colormap.
 The values are returned in the format specified by result_format.
 If the color name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 .PN XcmsLookupColor
 returns
@@ -1128,7 +1125,7 @@ read/write cells normally should be considered private to the client
 that allocated them.
 .LP
 Read-only colormap cells are shared among clients.
-The server counts each allocation and free of the cell by clients.
+The server counts each allocation and freeing of the cell by clients.
 When the last client frees a shared cell, the cell is finally deallocated.
 If a single client allocates the same read-only cell multiple
 times, the server counts each such allocation, not just the first one.
@@ -1213,11 +1210,9 @@ Status XcmsAllocColor\^(\^\fIdisplay\fP\^, \fIcolormap\fP\^, \fIcolor_in_out\fP\
 Specifies the connection to the X server.
 .IP \fIcolormap\fP 1i
 Specifies the colormap.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIcolor_in_out\fP 1i
 Specifies the color to allocate and returns the pixel and color 
 that is actually used in the colormap.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIresult_format\fP 1i
 Specifies the color format for the returned color specification.
 .LP
@@ -1300,11 +1295,11 @@ the closest color supported by the screen.
 The allocated color cell is read-only.
 The pixel value is returned in screen_def_return.
 If the color name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 If screen_def_return and exact_def_return
-point to the same structure, the pixel field will be set correctly but the
-color values are undefined.
+point to the same structure, the pixel field will be set correctly,
+but the color values are undefined.
 .PN XAllocNamedColor
 returns nonzero if a cell is allocated;
 otherwise, it returns zero.
@@ -1346,18 +1341,14 @@ Specifies the connection to the X server.
 .IP \fIcolormap\fP 1i
 Specifies the colormap.
 .ds St \ whose color definition structure is to be returned
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIcolor_string\fP 1i
 Specifies the color string\*(St.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIcolor_screen_return\fP 1i
 Returns the pixel value of the color cell and color specification 
 that actually is stored for that cell.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIcolor_exact_return\fP 1i
 Returns the color specification parsed from the color string
-or parsed from the corresponding string found in a color name database.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
+or parsed from the corresponding string found in a color-name database.
 .IP \fIresult_format\fP 1i
 Specifies the color format for the returned color
 specifications (color_screen_return and color_exact_return arguments).
@@ -1378,7 +1369,7 @@ The
 .PN XcmsAllocNamedColor
 function is similar to
 .PN XAllocNamedColor
-except the color returned can be in any format specified.
+except that the color returned can be in any format specified.
 This function
 ultimately calls
 .PN XAllocColor
@@ -1392,7 +1383,7 @@ converted
 to an RGB value, and finally passed to
 .PN XAllocColor .
 If the color name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 .LP
 This function returns both the color specification as a result
@@ -1406,8 +1397,8 @@ If there is no interest in a returned color specification,
 unnecessary computation can be bypassed if result_format is set to
 .PN XcmsRGBFormat .
 If color_screen_return and color_exact_return
-point to the same structure, the pixel field will be set correctly but the
-color values are undefined.
+point to the same structure, the pixel field will be set correctly,
+but the color values are undefined.
 .LP
 .PN XcmsAllocNamedColor
 can generate a
@@ -1864,7 +1855,7 @@ Specifies the colormap.
 Specifies the color cell and the color to store.
 Values specified in this
 .PN XcmsColor
-structure remain unchanged upon return.
+structure remain unchanged on return.
 .LP
 .eM
 The
@@ -1905,7 +1896,7 @@ to RGB succeeded and the call to
 was made.
 To obtain the actual color stored, use
 .PN XcmsQueryColor .
-Due to the screen's hardware limitations or gamut compression,
+Because of the screen's hardware limitations or gamut compression,
 the color stored in the colormap may not be identical
 to the color specified.
 .LP
@@ -1949,7 +1940,7 @@ Values specified in the array remain unchanged upon return.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
+structures in the color-specification array.
 .IP \fIcompression_flags_return\fP 1i
 Returns an array of Boolean values indicating compression status.
 If a non-NULL pointer is supplied,
@@ -2000,7 +1991,7 @@ to RGB succeeded and the call to
 was made.
 To obtain the actual colors stored, use
 .PN XcmsQueryColors .
-Due to the screen's hardware limitations or gamut compression,
+Because of the screen's hardware limitations or gamut compression,
 the colors stored in the colormap may not be identical
 to the colors specified.
 .LP
@@ -2058,7 +2049,7 @@ bitwise inclusive OR of the bits
 and 
 .PN DoBlue .
 If the color name is not in the Host Portable Character Encoding, 
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 If the specified pixel is not a valid index into the colormap, a
 .PN BadValue
@@ -2211,7 +2202,6 @@ Specifies the pixel member that indicates the color cell to query.
 The color specification stored for the color cell is returned in this
 .PN XcmsColor
 structure.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
 .IP \fIresult_format\fP 1i
 Specifies the color format for the returned color specification.
 .LP
@@ -2266,8 +2256,7 @@ The color specifications for the color cells are returned in these structures.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
-.\" $Header: /vol1/history/xf86/xc/doc/specs/X11/CH06,v 1.1 1994/04/27 07:23:16 dawes Exp $
+structures in the color-specification array.
 .IP \fIresult_format\fP 1i
 Specifies the color format for the returned color specification.
 .LP
@@ -2299,7 +2288,7 @@ Color Conversion Context Functions
 .XE
 .LP
 This section describes functions to create, modify,
-and query CCCs.
+and query Color Conversion Contexts (CCCs).
 .LP
 Associated with each colormap is an initial CCC transparently generated by
 Xlib.
@@ -2754,9 +2743,9 @@ function frees the memory used for the specified CCC.
 Note that default CCCs and those currently associated with colormaps
 are ignored.
 .NH 2
-Converting Between Color Spaces
+Converting between Color Spaces
 .XS
-\*(SN Converting Between Color Spaces
+\*(SN Converting between Color Spaces
 .XE
 .LP
 .sp
@@ -2791,7 +2780,7 @@ Pixel members are ignored and remain unchanged upon return.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
+structures in the color-specification array.
 .IP \fItarget_format\fP 1i
 Specifies the target color specification format.
 .IP \fIcompression_flags_return\fP 1i
@@ -2878,7 +2867,7 @@ Pixel members should be ignored and must remain unchanged upon return.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
+structures in the color-specification array.
 .IP \fIindex\fP 1i
 Specifies the index into the array of
 .PN XcmsColor
@@ -2934,7 +2923,7 @@ is the Screen White Point.
 If the gamut compression procedure uses a device-independent color space not
 initially accessible for use in the color management system, use 
 .PN XcmsAddColorSpace
-to insure that it is added.
+to ensure that it is added.
 .NH 3
 Supplied Gamut Compression Procedures
 .XS
@@ -3088,7 +3077,7 @@ Pixel members should be ignored and must remain unchanged upon return.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
+structures in the color-specification array.
 .IP \fIcompression_flags_return\fP 1i
 Returns an array of Boolean values for indicating compression status.
 If a non-NULL pointer is supplied
@@ -3114,7 +3103,7 @@ and destination white points.
 This procedure simply converts the color specifications to 
 .PN XcmsCIELab
 using the source white point and then converts to the target specification
-format using the destinations white point.
+format using the destination's white point.
 No client data is necessary.
 .IP \(bu 5
 .PN XcmsCIELuvWhiteShiftColors
@@ -3125,7 +3114,7 @@ and destination white points.
 This procedure simply converts the color specifications to 
 .PN XcmsCIELuv
 using the source white point and then converts to the target specification
-format using the destinations white point.
+format using the destination's white point.
 No client data is necessary.
 .IP \(bu 5
 .PN XcmsTekHVCWhiteShiftColors
@@ -3136,7 +3125,7 @@ and destination white points.
 This procedure simply converts the color specifications to
 .PN XcmsTekHVC
 using the source white point and then converts to the target specification
-format using the destinations white point.
+format using the destination's white point.
 An advantage of this procedure over those previously described
 is an attempt to minimize hue shift.
 No client data is necessary.
@@ -3158,7 +3147,7 @@ When developing a custom white point adjustment procedure that uses a
 device-independent color space not initially accessible for use in the
 color management system, use
 .PN XcmsAddColorSpace
-to insure that it is added.
+to ensure that it is added.
 .LP
 As an example, 
 if the CCC specifies a white point adjustment procedure
@@ -3234,15 +3223,15 @@ and TekHVC color spaces.
 Functions are also provided that allow you to query 
 the color specification of:
 .IP \(bu 5
-White (full intensity red, green, and blue)
+White (full-intensity red, green, and blue)
 .IP \(bu 5
-Red (full intensity red while green and blue are zero)
+Red (full-intensity red while green and blue are zero)
 .IP \(bu 5
-Green (full intensity green while red and blue are zero)
+Green (full-intensity green while red and blue are zero)
 .IP \(bu 5
-Blue (full intensity blue while red and green are zero)
+Blue (full-intensity blue while red and green are zero)
 .IP \(bu 5
-Black (zero intensity red, green, and blue)
+Black (zero-intensity red, green, and blue)
 .LP
 The white point associated with color specifications passed to 
 and returned from these gamut querying
@@ -3272,7 +3261,7 @@ Red, Green, and Blue Queries
 .XE
 .LP
 To obtain the color specification for black 
-(zero intensity red, green, and blue), use
+(zero-intensity red, green, and blue), use
 .PN XcmsQueryBlack .
 .IN "XcmsQueryBlack" "" "@DEF@"
 .sM
@@ -3291,7 +3280,7 @@ The CCC's Client White Point and white point adjustment procedures
 are ignored.
 .IP \fItarget_format\fP 1i
 Specifies the target color specification format.
-.ds Cs zero intensity red, green, and blue
+.ds Cs zero-intensity red, green, and blue
 .IP \fIcolor_return\fP 1i
 Returns the color specification in the specified target format
 for \*(Cs.
@@ -3303,11 +3292,11 @@ The value returned in the pixel member is undefined.
 The
 .PN XcmsQueryBlack
 function returns the color specification in the specified target format
-for zero intensity red, green, and blue.
+for zero-intensity red, green, and blue.
 .sp
 .LP
 To obtain the color specification for blue 
-(full intensity blue while red and green are zero), use
+(full-intensity blue while red and green are zero), use
 .PN XcmsQueryBlue .
 .IN "XcmsQueryBlue" "" "@DEF@"
 .sM
@@ -3326,7 +3315,7 @@ The CCC's Client White Point and white point adjustment procedures
 are ignored.
 .IP \fItarget_format\fP 1i
 Specifies the target color specification format.
-.ds Cs full intensity blue while red and green are zero
+.ds Cs full-intensity blue while red and green are zero
 .IP \fIcolor_return\fP 1i
 Returns the color specification in the specified target format
 for \*(Cs.
@@ -3338,11 +3327,11 @@ The value returned in the pixel member is undefined.
 The
 .PN XcmsQueryBlue
 function returns the color specification in the specified target format
-for full intensity blue while red and green are zero.
+for full-intensity blue while red and green are zero.
 .sp
 .LP
 To obtain the color specification for green
-(full intensity green while red and blue are zero), use
+(full-intensity green while red and blue are zero), use
 .PN XcmsQueryGreen .
 .IN "XcmsQueryGreen" "" "@DEF@"
 .sM
@@ -3361,7 +3350,7 @@ The CCC's Client White Point and white point adjustment procedures
 are ignored.
 .IP \fItarget_format\fP 1i
 Specifies the target color specification format.
-.ds Cs full intensity green while red and blue are zero
+.ds Cs full-intensity green while red and blue are zero
 .IP \fIcolor_return\fP 1i
 Returns the color specification in the specified target format
 for \*(Cs.
@@ -3373,11 +3362,11 @@ The value returned in the pixel member is undefined.
 The
 .PN XcmsQueryGreen
 function returns the color specification in the specified target format
-for full intensity green while red and blue are zero.
+for full-intensity green while red and blue are zero.
 .sp
 .LP
 To obtain the color specification for red
-(full intensity red while green and blue are zero), use
+(full-intensity red while green and blue are zero), use
 .PN XcmsQueryRed .
 .IN "XcmsQueryRed" "" "@DEF@"
 .sM
@@ -3396,7 +3385,7 @@ The CCC's Client White Point and white point adjustment procedures
 are ignored.
 .IP \fItarget_format\fP 1i
 Specifies the target color specification format.
-.ds Cs full intensity red while green and blue are zero
+.ds Cs full-intensity red while green and blue are zero
 .IP \fIcolor_return\fP 1i
 Returns the color specification in the specified target format
 for \*(Cs.
@@ -3408,11 +3397,11 @@ The value returned in the pixel member is undefined.
 The
 .PN XcmsQueryRed
 function returns the color specification in the specified target format
-for full intensity red while green and blue are zero.
+for full-intensity red while green and blue are zero.
 .LP
 .sp
 To obtain the color specification for white
-(full intensity red, green, and blue), use
+(full-intensity red, green, and blue), use
 .PN XcmsQueryWhite .
 .IN "XcmsQueryWhite" "" "@DEF@"
 .sM
@@ -3431,7 +3420,7 @@ The CCC's Client White Point and white point adjustment procedures
 are ignored.
 .IP \fItarget_format\fP 1i
 Specifies the target color specification format.
-.ds Cs full intensity red, green, and blue
+.ds Cs full-intensity red, green, and blue
 .IP \fIcolor_return\fP 1i
 Returns the color specification in the specified target format
 for \*(Cs.
@@ -3443,7 +3432,7 @@ The value returned in the pixel member is undefined.
 The
 .PN XcmsQueryWhite
 function returns the color specification in the specified target format
-for full intensity red, green, and blue.
+for full-intensity red, green, and blue.
 .NH 3
 CIELab Queries
 .XS
@@ -4288,7 +4277,7 @@ The prefix member specifies the prefix that indicates a color string
 is in this color space's string format.
 For example, the strings ``ciexyz'' or ``CIEXYZ'' for CIE XYZ,
 and ``rgb'' or ``RGB'' for RGB.
-The prefix is case-insensitive.
+The prefix is case insensitive.
 The format member specifies the color specification format.
 Formats for unregistered color spaces are assigned at run time.
 The parseString member contains a pointer to the function 
@@ -4306,8 +4295,7 @@ structure from/to the current color space format to/from the CIE XYZ format.
 Each function returns an integer (int): nonzero if it succeeded
 and zero otherwise.
 The white point to be associated with the colors is specified
-explicitly, even though white points can be found in the Color Conversion
-Context.
+explicitly, even though white points can be found in the CCC.
 The inverse_flag member, if nonzero, specifies that for each function listed 
 in to_CIEXYZ,
 its inverse function can be found in from_CIEXYZ such that:
@@ -4381,7 +4369,7 @@ Pixel members should be ignored and must remain unchanged upon return.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
+structures in the color-specification array.
 .LP
 .eM
 .sp
@@ -4410,7 +4398,7 @@ Pixel members should be ignored and must remain unchanged upon return.
 .IP \fIncolors\fP 1i
 Specifies the number of 
 .PN XcmsColor
-structures in the color specification array.
+structures in the color-specification array.
 .IP \fIcompression_flags_return\fP 1i
 Returns an array of Boolean values for indicating compression status.
 If a non-NULL pointer is supplied

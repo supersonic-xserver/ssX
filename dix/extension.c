@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/extension.c,v 3.14 2005/10/14 15:16:21 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,10 +53,6 @@ SOFTWARE.
 
 ******************************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #define NEED_EVENTS
 #define NEED_REPLIES
@@ -59,12 +63,20 @@ SOFTWARE.
 #include "gcstruct.h"
 #include "scrnintstr.h"
 #include "dispatch.h"
-#include "xace.h"
+#ifdef XCSECURITY
+#define _SECURITY_SERVER
+#include <X11/extensions/security.h>
+#endif
+#ifdef LBX
+#include "lbxserve.h"
+#endif
 
 #define EXTENSION_BASE  128
 #define EXTENSION_EVENT_BASE  64
 #define LAST_EVENT  128
 #define LAST_ERROR 255
+
+ScreenProcEntry AuxillaryScreenProcs[MAXSCREENS];
 
 static ExtensionEntry **extensions = (ExtensionEntry **)NULL;
 
@@ -72,40 +84,7 @@ int lastEvent = EXTENSION_EVENT_BASE;
 static int lastError = FirstExtensionError;
 static unsigned int NumExtensions = 0;
 
-extern int extensionPrivateLen;
-extern unsigned *extensionPrivateSizes;
-extern unsigned totalExtensionSize;
-
-static void
-InitExtensionPrivates(ExtensionEntry *ext)
-{
-    char *ptr;
-    DevUnion *ppriv;
-    unsigned *sizes;
-    unsigned size;
-    int i;
-
-    if (totalExtensionSize == sizeof(ExtensionEntry))
-	ppriv = (DevUnion *)NULL;
-    else
-	ppriv = (DevUnion *)(ext + 1);
-
-    ext->devPrivates = ppriv;
-    sizes = extensionPrivateSizes;
-    ptr = (char *)(ppriv + extensionPrivateLen);
-    for (i = extensionPrivateLen; --i >= 0; ppriv++, sizes++)
-    {
-	if ( (size = *sizes) )
-	{
-	    ppriv->ptr = (pointer)ptr;
-	    ptr += size;
-	}
-	else
-	    ppriv->ptr = (pointer)NULL;
-    }
-}
-
-_X_EXPORT ExtensionEntry *
+ExtensionEntry *
 AddExtension(char *name, int NumEvents, int NumErrors, 
 	     int (*MainProc)(ClientPtr c1), 
 	     int (*SwappedMainProc)(ClientPtr c2), 
@@ -121,11 +100,9 @@ AddExtension(char *name, int NumEvents, int NumErrors,
 	        (unsigned)(lastError + NumErrors > LAST_ERROR))
         return((ExtensionEntry *) NULL);
 
-    ext = (ExtensionEntry *) xalloc(totalExtensionSize);
+    ext = (ExtensionEntry *) xalloc(sizeof(ExtensionEntry));
     if (!ext)
 	return((ExtensionEntry *) NULL);
-    bzero(ext, totalExtensionSize);
-    InitExtensionPrivates(ext);
     ext->name = (char *)xalloc(strlen(name) + 1);
     ext->num_aliases = 0;
     ext->aliases = (char **)NULL;
@@ -175,11 +152,18 @@ AddExtension(char *name, int NumEvents, int NumErrors,
         ext->errorBase = 0;
         ext->errorLast = 0;
     }
+#ifdef XCSECURITY
+    ext->secure = FALSE;
+#endif
 
+#ifdef LBX
+    (void) LbxAddExtension(name, ext->base, ext->eventBase, ext->errorBase);
+#endif
     return(ext);
 }
 
-_X_EXPORT Bool AddExtensionAlias(char *alias, ExtensionEntry *ext)
+Bool
+AddExtensionAlias(char *alias, ExtensionEntry *ext)
 {
     char *name;
     char **aliases;
@@ -195,7 +179,11 @@ _X_EXPORT Bool AddExtensionAlias(char *alias, ExtensionEntry *ext)
     strcpy(name,  alias);
     ext->aliases[ext->num_aliases] = name;
     ext->num_aliases++;
+#ifdef LBX
+    return LbxAddExtensionAlias(ext->index, alias);
+#else
     return TRUE;
+#endif
 }
 
 static int
@@ -223,7 +211,7 @@ FindExtension(char *extname, int len)
  * CheckExtension returns the extensions[] entry for the requested
  * extension name.  Maybe this could just return a Bool instead?
  */
-_X_EXPORT ExtensionEntry *
+ExtensionEntry *
 CheckExtension(const char *extname)
 {
     int n;
@@ -235,35 +223,39 @@ CheckExtension(const char *extname)
 	return NULL;
 }
 
-/*
- * Added as part of Xace.
- */
-ExtensionEntry *
-GetExtensionEntry(int major)
-{    
-    if (major < EXTENSION_BASE)
-	return NULL;
-    major -= EXTENSION_BASE;
-    if (major >= NumExtensions)
-	return NULL;
-    return extensions[major];
-}
-
-_X_EXPORT void
+void
 DeclareExtensionSecurity(char *extname, Bool secure)
 {
+#ifdef XCSECURITY
     int i = FindExtension(extname, strlen(extname));
     if (i >= 0)
-	XaceHook(XACE_DECLARE_EXT_SECURE, extensions[i], secure);
+    {
+	int majorop = extensions[i]->base;
+	extensions[i]->secure = secure;
+	if (secure)
+	{
+	    UntrustedProcVector[majorop] = ProcVector[majorop];
+	    SwappedUntrustedProcVector[majorop] = SwappedProcVector[majorop];
+	}
+	else
+	{
+	    UntrustedProcVector[majorop]	= ProcBadRequest;
+	    SwappedUntrustedProcVector[majorop] = ProcBadRequest;
+	}
+    }
+#endif
+#ifdef LBX
+    LbxDeclareExtensionSecurity(extname, secure);
+#endif
 }
 
-_X_EXPORT unsigned short
+unsigned short
 StandardMinorOpcode(ClientPtr client)
 {
     return ((xReq *)client->requestBuffer)->data;
 }
 
-_X_EXPORT unsigned short
+unsigned short
 MinorOpcodeOfRequest(ClientPtr client)
 {
     unsigned char major;
@@ -278,9 +270,13 @@ MinorOpcodeOfRequest(ClientPtr client)
 }
 
 void
-CloseDownExtensions(void)
+CloseDownExtensions()
 {
     int i,j;
+
+#ifdef LBX
+    LbxCloseDownExtensions();
+#endif
 
     for (i = NumExtensions - 1; i >= 0; i--)
     {
@@ -296,7 +292,20 @@ CloseDownExtensions(void)
     extensions = (ExtensionEntry **)NULL;
     lastEvent = EXTENSION_EVENT_BASE;
     lastError = FirstExtensionError;
+    for (i=0; i<MAXSCREENS; i++)
+    {
+	ScreenProcEntry *spentry = &AuxillaryScreenProcs[i];
+
+	while (spentry->num)
+	{
+	    spentry->num--;
+	    xfree(spentry->procList[spentry->num].name);
+	}
+	xfree(spentry->procList);
+	spentry->procList = (ProcEntryPtr)NULL;
+    }
 }
+
 
 int
 ProcQueryExtension(ClientPtr client)
@@ -317,7 +326,13 @@ ProcQueryExtension(ClientPtr client)
     else
     {
 	i = FindExtension((char *)&stuff[1], stuff->nbytes);
-        if (i < 0 || !XaceHook(XACE_EXT_ACCESS, client, extensions[i]))
+        if (i < 0
+#ifdef XCSECURITY
+	    /* don't show insecure extensions to untrusted clients */
+	    || (client->trustLevel == XSecurityClientUntrusted &&
+		!extensions[i]->secure)
+#endif
+	    )
             reply.present = xFalse;
         else
         {            
@@ -352,10 +367,12 @@ ProcListExtensions(ClientPtr client)
 
         for (i=0;  i<NumExtensions; i++)
 	{
-	    /* call callbacks to find out whether to show extension */
-	    if (!XaceHook(XACE_EXT_ACCESS, client, extensions[i]))
+#ifdef XCSECURITY
+	    /* don't show insecure extensions to untrusted clients */
+	    if (client->trustLevel == XSecurityClientUntrusted &&
+		!extensions[i]->secure)
 		continue;
-
+#endif
 	    total_length += strlen(extensions[i]->name) + 1;
 	    reply.nExtensions += 1 + extensions[i]->num_aliases;
 	    for (j = extensions[i]->num_aliases; --j >= 0;)
@@ -368,9 +385,11 @@ ProcListExtensions(ClientPtr client)
         for (i=0;  i<NumExtensions; i++)
         {
 	    int len;
-	    if (!XaceHook(XACE_EXT_ACCESS, client, extensions[i]))
+#ifdef XCSECURITY
+	    if (client->trustLevel == XSecurityClientUntrusted &&
+		!extensions[i]->secure)
 		continue;
-
+#endif
             *bufptr++ = len = strlen(extensions[i]->name);
 	    memmove(bufptr, extensions[i]->name,  len);
 	    bufptr += len;
@@ -391,16 +410,68 @@ ProcListExtensions(ClientPtr client)
     return(client->noClientException);
 }
 
-#ifdef XSERVER_DTRACE
-void LoadExtensionNames(char **RequestNames) {
+
+ExtensionLookupProc 
+LookupProc(char *name, GCPtr pGC)
+{
+    int i;
+    ScreenProcEntry *spentry;
+    spentry  = &AuxillaryScreenProcs[pGC->pScreen->myNum];
+    if (spentry->num)    
+    {
+        for (i = 0; i < spentry->num; i++)
+            if (strcmp(name, spentry->procList[i].name) == 0)
+                return(spentry->procList[i].proc);
+    }
+    return (ExtensionLookupProc)NULL;
+}
+
+Bool
+RegisterProc(char *name, GCPtr pGC, ExtensionLookupProc proc)
+{
+    return RegisterScreenProc(name, pGC->pScreen, proc);
+}
+
+Bool
+RegisterScreenProc(char *name, ScreenPtr pScreen, ExtensionLookupProc proc)
+{
+    ScreenProcEntry *spentry;
+    ProcEntryPtr procEntry = (ProcEntryPtr)NULL;
+    char *newname;
     int i;
 
-    for (i=0; i<NumExtensions; i++) {
-	int r = extensions[i]->base;
-
-	if (RequestNames[r] == NULL) {
-	    RequestNames[r] = strdup(extensions[i]->name);
-	}
+    spentry = &AuxillaryScreenProcs[pScreen->myNum];
+    /* first replace duplicates */
+    if (spentry->num)
+    {
+        for (i = 0; i < spentry->num; i++)
+            if (strcmp(name, spentry->procList[i].name) == 0)
+	    {
+                procEntry = &spentry->procList[i];
+		break;
+	    }
     }
+    if (procEntry)
+        procEntry->proc = proc;
+    else
+    {
+	newname = (char *)xalloc(strlen(name)+1);
+	if (!newname)
+	    return FALSE;
+	procEntry = (ProcEntryPtr)
+			    xrealloc(spentry->procList,
+				     sizeof(ProcEntryRec) * (spentry->num+1));
+	if (!procEntry)
+	{
+	    xfree(newname);
+	    return FALSE;
+	}
+	spentry->procList = procEntry;
+        procEntry += spentry->num;
+        procEntry->name = newname;
+        strcpy(newname, name);
+        procEntry->proc = proc;
+        spentry->num++;        
+    }
+    return TRUE;
 }
-#endif

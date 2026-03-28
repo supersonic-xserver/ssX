@@ -1,34 +1,65 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86fbman.c,v 1.34 2006/11/02 17:37:00 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1998-2001 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include "misc.h"
 #include "xf86.h"
@@ -45,7 +76,7 @@
 static int xf86FBMangerIndex = -1;
 static unsigned long xf86ManagerGeneration = 0;
 
-_X_EXPORT Bool xf86RegisterOffscreenManager(
+Bool xf86RegisterOffscreenManager(
     ScreenPtr pScreen, 
     FBManagerFuncsPtr funcs
 ){
@@ -62,7 +93,7 @@ _X_EXPORT Bool xf86RegisterOffscreenManager(
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86FBManagerRunning(ScreenPtr pScreen)
 {
     if(xf86FBMangerIndex < 0) 
@@ -73,7 +104,7 @@ xf86FBManagerRunning(ScreenPtr pScreen)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 xf86RegisterFreeBoxCallback(
     ScreenPtr pScreen,  
     FreeBoxCallbackProcPtr FreeBoxCallback,
@@ -90,7 +121,7 @@ xf86RegisterFreeBoxCallback(
 }
 
 
-_X_EXPORT FBAreaPtr
+FBAreaPtr
 xf86AllocateOffscreenArea(
    ScreenPtr pScreen, 
    int w, int h,
@@ -111,7 +142,7 @@ xf86AllocateOffscreenArea(
 }
 
 
-_X_EXPORT FBLinearPtr
+FBLinearPtr
 xf86AllocateOffscreenLinear(
     ScreenPtr pScreen, 
     int length,
@@ -132,7 +163,7 @@ xf86AllocateOffscreenLinear(
 }
 
 
-_X_EXPORT void
+void
 xf86FreeOffscreenArea(FBAreaPtr area)
 {
    FBManagerFuncsPtr funcs;
@@ -151,7 +182,7 @@ xf86FreeOffscreenArea(FBAreaPtr area)
 }
 
 
-_X_EXPORT void
+void
 xf86FreeOffscreenLinear(FBLinearPtr linear)
 {
    FBManagerFuncsPtr funcs;
@@ -170,7 +201,7 @@ xf86FreeOffscreenLinear(FBLinearPtr linear)
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86ResizeOffscreenArea(
    FBAreaPtr resize,
    int w, int h
@@ -188,7 +219,7 @@ xf86ResizeOffscreenArea(
    return (*funcs->ResizeOffscreenArea)(resize, w, h);
 }
 
-_X_EXPORT Bool
+Bool
 xf86ResizeOffscreenLinear(
    FBLinearPtr resize,
    int size
@@ -207,7 +238,7 @@ xf86ResizeOffscreenLinear(
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86QueryLargestOffscreenArea(
     ScreenPtr pScreen,
     int *w, int *h,
@@ -229,7 +260,7 @@ xf86QueryLargestOffscreenArea(
 		pScreen, w, h, gran, preferences, severity);
 }
 
-_X_EXPORT Bool
+Bool
 xf86QueryLargestOffscreenLinear(
     ScreenPtr pScreen,
     int *size,
@@ -250,7 +281,7 @@ xf86QueryLargestOffscreenLinear(
 }
 
 
-_X_EXPORT Bool
+Bool
 xf86PurgeUnlockedOffscreenAreas(ScreenPtr pScreen)
 {
    FBManagerFuncsPtr funcs;
@@ -829,7 +860,7 @@ AllocateLinear(
    ScreenPtr pScreen = offman->pScreen;
    FBLinearLinkPtr linear = NULL;
    FBLinearLinkPtr newlink = NULL;
-   int offset, end;
+   int offset = 0, end;
 
    if(size <= 0) return NULL;
 
@@ -918,7 +949,7 @@ localAllocateOffscreenLinear(
    ErrorF("ALLOCATING LINEAR\n");
 #endif
    if ((linear = AllocateLinear(offman, length, gran, privData)))
-  	return linear;
+   	return linear;
 
 #ifdef DEBUG
    ErrorF("NOPE, ALLOCATING AREA\n");
@@ -932,19 +963,20 @@ localAllocateOffscreenLinear(
    pitch = extents->x2 - extents->x1;
 
    if (gran > 1) {
-        if (gran > pitch) {
-            /* we can't match the specified alignment with XY allocations */
-            xfree(link);
-            return NULL;
-        }
+	if (gran > pitch) {
+	    /* we can't match the specified alignment with XY allocations */
+	    xfree(link);
+	    return NULL;
+	}
 
-        if (pitch % gran) {
-            /* pitch and granularity aren't a perfect match, let's allocate
-             * a bit more so we can align later on
-             */
-            length += gran - 1;
-        }
-    }
+	if (pitch % gran) {
+	    /*
+	     * pitch and granularity aren't a perfect match, allocate a bit
+	     * more and align later.
+	     */
+	    length += gran - 1;
+	}
+   }
 
    if(length < pitch) { /* special case */
 	w = length;
@@ -968,7 +1000,7 @@ localAllocateOffscreenLinear(
 	linear->size = h * w;
 	linear->offset = (pitch * area->box.y1) + area->box.x1;
 	if (gran > 1)
-            linear->offset = ((linear->offset + gran - 1) / gran) * gran;
+	    linear->offset = ((linear->offset + gran - 1) / gran) * gran;
 	linear->granularity = gran;
 	linear->MoveLinearCallback = moveCB;
 	linear->RemoveLinearCallback = removeCB;
@@ -1023,7 +1055,7 @@ localFreeOffscreenLinear(FBLinearPtr linear)
       FBLinearLinkPtr p = pLink->next;
       pLink->linear.size += p->linear.size;
       pLink->next = p->next;
-      free(p);
+      xfree(p);
    }
 
    if(pLinkPrev) {
@@ -1031,7 +1063,7 @@ localFreeOffscreenLinear(FBLinearPtr linear)
       	    FBLinearLinkPtr p = pLinkPrev->next;
       	    pLinkPrev->linear.size += p->linear.size;
       	    pLinkPrev->next = p->next;
-      	    free(p);
+      	    xfree(p);
     	}
    } 
    
@@ -1193,7 +1225,7 @@ xf86FBCloseScreen (int i, ScreenPtr pScreen)
    return (*pScreen->CloseScreen) (i, pScreen);
 }
 
-_X_EXPORT Bool
+Bool
 xf86InitFBManager(
     ScreenPtr pScreen,  
     BoxPtr FullBox
@@ -1215,7 +1247,7 @@ xf86InitFBManager(
    }
 
    if (FullBox->y2 < FullBox->y1) return FALSE;
-   if (FullBox->x2 < FullBox->x1) return FALSE;
+   if (FullBox->x2 < FullBox->x2) return FALSE;
 
    REGION_INIT(pScreen, &ScreenRegion, &ScreenBox, 1); 
    REGION_INIT(pScreen, &FullRegion, FullBox, 1); 
@@ -1230,7 +1262,7 @@ xf86InitFBManager(
    return ret;
 }
 
-_X_EXPORT Bool
+Bool
 xf86InitFBManagerArea(
     ScreenPtr pScreen,
     int PixelArea,
@@ -1322,7 +1354,7 @@ xf86InitFBManagerArea(
     return ret;
 }
 
-_X_EXPORT Bool
+Bool
 xf86InitFBManagerRegion(
     ScreenPtr pScreen,  
     RegionPtr FullRegion
@@ -1366,7 +1398,7 @@ xf86InitFBManagerRegion(
    return TRUE;
 } 
 
-_X_EXPORT Bool
+Bool
 xf86InitFBManagerLinear(
     ScreenPtr pScreen,  
     int offset,
@@ -1410,7 +1442,7 @@ xf86InitFBManagerLinear(
    disappear after the next release.  People should use the
    real linear functions instead */
 
-_X_EXPORT FBAreaPtr 
+FBAreaPtr 
 xf86AllocateLinearOffscreenArea (
    ScreenPtr pScreen, 
    int length,

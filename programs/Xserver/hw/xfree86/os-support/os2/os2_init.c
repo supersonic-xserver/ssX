@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_init.c,v 3.22 2006/04/08 18:30:26 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_init.c,v 3.19 2004/02/14 00:10:17 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (c) Copyright 1994 by Holger Veit
  *			<Holger.Veit@gmd.de>
@@ -27,6 +34,7 @@
  * in this Software without prior written authorization from Holger Veit.
  *
  */
+/* $XConsortium: os2_init.c /main/9 1996/10/19 18:07:13 kaleb $ */
 
 #define I_NEED_OS2_H
 #define INCL_DOSFILEMGR
@@ -38,8 +46,8 @@
 #define INCL_DOSMODULEMGR
 #define INCL_DOSFILEMGR
 #include <float.h>
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -74,7 +82,6 @@ void xf86OpenConsole()
 	int VioTid;
         ULONG actual_handles;
         LONG new_handles;
-	char popup_sem_name[25];
 
 	/* hv 250197 workaround for xkb-Problem: switch to X11ROOT drive */
 	char *x11r = getenv("X11ROOT");
@@ -89,9 +96,6 @@ void xf86OpenConsole()
 	}
 
 	xf86Msg(X_INFO,"Console opened\n");
-
-	/* fg 090305 we do not want ctrl-c to terminate the server */
-	signal(SIGINT,SIG_IGN);
 	OriginalVideoMode.cb=sizeof(VIOMODEINFO);
 	rc=VioGetMode(&OriginalVideoMode,(HVIO)0);
 	if(rc!=0) 
@@ -136,8 +140,7 @@ void xf86OpenConsole()
  
 /* Create popup semaphore */
 
-	sprintf(popup_sem_name, "\\SEM32\\XF86PUP.%d", getpid());
-	rc = DosCreateEventSem(popup_sem_name,&hevPopupPending,DC_SEM_SHARED,1);
+	rc = DosCreateEventSem("\\SEM32\\XF86PUP",&hevPopupPending,DC_SEM_SHARED,1);
 	if (rc) 
 		xf86Msg(X_ERROR,
 			"Could not create popup semaphore! RC=%d\n",rc);
@@ -223,9 +226,7 @@ void xf86CloseConsole()
 	rc = DosQuerySysInfo(5,5,&drive,sizeof(drive));
 	rc = DosSuppressPopUps(0x0000L,drive+96);    /* Reenable popups */
 	rc = DosCloseEventSem(hevPopupPending);
-#if 0
 	rc = VioDeRegister();
-#endif
 	return;
 }
 
@@ -233,7 +234,7 @@ void xf86CloseConsole()
 
 int xf86ProcessArgument (argc, argv, i)
 int argc;
-const char *argv[];
+char *argv[];
 int i;
 {
 	return 0;

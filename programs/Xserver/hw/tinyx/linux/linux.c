@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/linux/linux.c,v 1.2tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/linux/linux.c,v 1.2 2004/06/23 19:40:16 tsi Exp $
  *
  * Copyright © 1999 Keith Packard
  *
@@ -76,7 +83,7 @@
 #include <linux/kd.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <X11/keysym.h>
+#include <keysym.h>
 #include <linux/apm_bios.h>
 
 static int  vtno;

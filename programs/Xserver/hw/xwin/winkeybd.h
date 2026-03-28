@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -27,12 +34,12 @@
  *
  * Authors:	Harold L Hunt II
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winkeybd.h,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winkeybd.h,v 1.3 2002/07/05 09:19:26 alanh Exp $ */
 
 /*
  * We need symbols for the scan codes of keys.
  */
-#include "atKeynames.h"
+#include "../xfree86/common/atKeynames.h"
 
 
 /*
@@ -40,7 +47,7 @@
  *
  * This header declares a static KeySym array called 'map'.
  */
-#include "xf86Keymap.h"
+#include "../xfree86/common/xf86Keymap.h"
 
 
 #if WIN_NEW_KEYBOARD_SUPPORT

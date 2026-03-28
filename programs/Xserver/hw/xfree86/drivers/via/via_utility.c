@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_utility.c,v 1.4 2003/11/03 05:11:46 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_utility.c,v 1.5 2003/12/31 05:42:05 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -1771,7 +1778,7 @@ Bool VIAUTGetInfo(VIABIOSInfoPtr pBIOSInfo)
     unsigned char W_Buffer[3];
     unsigned char R_Buffer[2];
 
-    DEBUG(xf86DrvMsg(pBIOSInfo->scrnIndex, X_INFO, "VIAUTGetInfo\n"));
+    DEBUGX(xf86DrvMsg(pBIOSInfo->scrnIndex, X_INFO, "VIAUTGetInfo\n"));
     if (pBIOSInfo->TVEncoder) {
 	dev = xf86CreateI2CDevRec();
 	dev->DevName = "TV";
@@ -1895,10 +1902,10 @@ Bool VIAUTGetInfo(VIABIOSInfoPtr pBIOSInfo)
 	    pUserSetting->DefaultSetting = TRUE;
 	} else {
 	    xf86DestroyI2CDevRec(dev, TRUE);
-	    DEBUG(xf86Msg(X_DEFAULT, "DevInit fail!\n"));
+	    DEBUGX(xf86Msg(X_DEFAULT, "DevInit fail!\n"));
 	}
     } else
-	DEBUG(xf86Msg(X_DEFAULT, "No TVEncoder Exist!\n"));
+	DEBUGX(xf86Msg(X_DEFAULT, "No TVEncoder Exist!\n"));
     return TRUE;
 }
 

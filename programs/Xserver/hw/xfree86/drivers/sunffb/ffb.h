@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - defines.
  *
  * Copyright (C) 1998,1999,2000 Jakub Jelinek (jakub@redhat.com)
@@ -24,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb.h,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb.h,v 1.11 2004/12/05 23:06:37 tsi Exp $ */
 
 #ifndef FFB_H
 #define FFB_H
@@ -33,42 +40,54 @@
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"
 #include "xf86RamDac.h"
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "gcstruct.h"
 #include "windowstr.h"
+#include "xaa.h"
 #include "ffb_regs.h"
 #include "xf86sbusBus.h"
 #include "ffb_dac.h"
-#ifdef XF86DRI
+#ifdef XF86DRI___
 #include "xf86drm.h"
 #include "ffb_drishare.h"
 #endif
 #ifndef  DPMS_SERVER
 #define  DPMS_SERVER
 #endif   /* DPMS_SERVER */
+//#include "extensions/dpms.h"
 #include <X11/extensions/dpms.h>
 
-
 /* Various offsets in virtual (ie. mmap()) spaces Linux and Solaris support. */
-/*
- * Note: do not mmap FFB_DFB8R_VOFF and following mappings using one mmap
- * together with any previous SFB mapping, otherwise the OS won't be able to
- * use 4M pages for the DFB mappings. -jj
- */
-#define		FFB_SFB8R_VOFF		0x00000000
-#define		FFB_SFB8X_VOFF		0x00c00000
-#define		FFB_SFB32_VOFF		0x01000000
-#define		FFB_FBC_REGS_VOFF	0x04000000
-#define		FFB_DFB8R_VOFF		0x04004000
-#define		FFB_DFB8X_VOFF		0x04c04000
-#define		FFB_DFB24_VOFF		0x05004000
-#ifdef sun
-# define	FFB_DAC_VOFF		0x07006000
-# define	FFB_EXP_VOFF		0x07018000
-#else
-# define	FFB_DAC_VOFF		0x0bc06000
-# define	FFB_EXP_VOFF		0x0bc18000
-#endif
+/* Note: do not mmap FFB_DFB8R_VOFF and following mappings using one mmap together
+   with any previous SFB mapping, otherwise the OS won't be able to use 4M pages
+   for the DFB mappings. -jj */
+#define	FFB_SFB8R_VOFF		0x00000000
+#define	FFB_SFB8G_VOFF		0x00400000
+#define	FFB_SFB8B_VOFF		0x00800000
+#define	FFB_SFB8X_VOFF		0x00c00000
+#define	FFB_SFB32_VOFF		0x01000000
+#define	FFB_SFB64_VOFF		0x02000000
+#define	FFB_FBC_REGS_VOFF	0x04000000
+#define	FFB_BM_FBC_REGS_VOFF	0x04002000
+#define	FFB_DFB8R_VOFF		0x04004000
+#define	FFB_DFB8G_VOFF		0x04404000
+#define	FFB_DFB8B_VOFF		0x04804000
+#define	FFB_DFB8X_VOFF		0x04c04000
+#define	FFB_DFB24_VOFF		0x05004000
+#define	FFB_DFB32_VOFF		0x06004000
+#define	FFB_DFB422A_VOFF	0x07004000	/* DFB 422 mode write to A */
+#define	FFB_DFB422AD_VOFF	0x07804000	/* DFB 422 mode with line doubling */
+#define	FFB_DFB24B_VOFF		0x08004000	/* DFB 24bit mode write to B */
+#define	FFB_DFB422B_VOFF	0x09004000	/* DFB 422 mode write to B */
+#define	FFB_DFB422BD_VOFF	0x09804000	/* DFB 422 mode with line doubling */
+#define	FFB_SFB16Z_VOFF		0x0a004000	/* 16bit mode Z planes */
+#define	FFB_SFB8Z_VOFF		0x0a404000	/* 8bit mode Z planes */
+#define	FFB_SFB422_VOFF		0x0ac04000	/* SFB 422 mode write to A/B */
+#define	FFB_SFB422D_VOFF	0x0b404000	/* SFB 422 mode with line doubling */
+#define	FFB_FBC_KREGS_VOFF	0x0bc04000
+#define	FFB_DAC_VOFF		0x0bc06000
+#define	FFB_PROM_VOFF		0x0bc08000
+#define	FFB_EXP_VOFF		0x0bc18000
 
 #if defined(__GNUC__) && defined(USE_VIS)
 #define FFB_ALIGN64	__attribute__((aligned(8)))
@@ -145,17 +164,17 @@ typedef struct {
 	unsigned int fbc_cache;
 	unsigned int wid_cache;
 	enum ffb_chip_type ffb_type;
-	CreatorStipplePtr laststipple, tmpstipple;
-	unsigned *fb;
-	unsigned *sfb32;
-	unsigned *sfb8r;
-	unsigned *sfb8x;
-	unsigned *dfb24;
-	unsigned *dfb8r;
-	unsigned *dfb8x;
+	CreatorStipplePtr laststipple;
+	void *fb;
+	void *sfb32;
+	void *sfb8r;
+	void *sfb8x;
+	void *dfb24;
+	void *dfb8r;
+	void *dfb8x;
 
 	/* Slot offset 0x0200000, used to probe board type. */
-	volatile unsigned char *strapping_bits;
+	unsigned char *strapping_bits;
 
 	/* Needed for some 3DRAM revisions and ffb1 in hires */
 	unsigned char disable_pagefill;
@@ -176,6 +195,19 @@ typedef struct {
 	unsigned char has_double_res;
 	unsigned char has_z_buffer;
 	unsigned char has_double_buffer;
+        
+	/* XAA related info */
+	XAAInfoRecPtr pXAAInfo;
+	unsigned int xaa_fbc;
+	unsigned int xaa_wid;
+	unsigned int xaa_planemask;
+	unsigned int xaa_linepat;
+	int xaa_xdir, xaa_ydir, xaa_rop;
+	unsigned char *xaa_scanline_buffers[2];
+	int xaa_scanline_x, xaa_scanline_y, xaa_scanline_w;
+	unsigned char *xaa_tex;
+	int xaa_tex_pitch, xaa_tex_width, xaa_tex_height;
+	unsigned int xaa_tex_color;
 
 	enum ffb_resolution ffb_res;
 	BoxRec ClippedBoxBuf[64];
@@ -197,7 +229,7 @@ typedef struct {
 	void *I2C;
 	struct ffb_dac_info dac_info;
 
-#ifdef XF86DRI
+#ifdef XF86DRI___
 	void *pDRIInfo;
 	int numVisualConfigs;
 	void *pVisualConfigs;
@@ -230,7 +262,7 @@ extern Bool FFBDacInit(FFBPtr);
 extern void FFBDacFini(FFBPtr);
 extern void FFBDacEnterVT(FFBPtr);
 extern void FFBDacLeaveVT(FFBPtr);
-extern Bool FFBDacSaveScreen(ScrnInfoPtr, int);
+extern Bool FFBDacSaveScreen(ScreenPtr, FFBPtr, int);
 extern void FFBDacDPMSMode(FFBPtr, int, int);
 
 /* Exported WID layer routines. */
@@ -275,12 +307,15 @@ extern struct fastfill_parms ffb_fastfill_parms[];
 
 #define FFB_FFPARMS(__fpriv)	(ffb_fastfill_parms[(__fpriv)->ffb_res])
 
+extern int CreatorScreenPrivateIndex;
 extern int CreatorGCPrivateIndex;
 extern int CreatorWindowPrivateIndex;
 
 #define GET_FFB_FROM_SCRN(p)	((FFBPtr)((p)->driverPrivate))
 
-#define GET_FFB_FROM_SCREEN(s)	GET_FFB_FROM_SCRN(xf86Screens[(s)->myNum])
+/*#define GET_FFB_FROM_SCREEN(s)	GET_FFB_FROM_SCRN(xf86Screens[(s)->myNum])*/
+#define GET_FFB_FROM_SCREEN(s)                                         \
+	((FFBPtr)(s)->devPrivates[CreatorScreenPrivateIndex].ptr)
 
 #define CreatorGetGCPrivate(g)						\
 ((CreatorPrivGCPtr) (g)->devPrivates [CreatorGCPrivateIndex].ptr)
@@ -314,7 +349,8 @@ do {	fprintf __x;				\
 #endif
 
 /* Enable this to get very verbose tracing of the driver onto stderr. */
-#undef TRACE_FFB
+//#undef TRACE_FFB
+
 #ifdef TRACE_FFB
 #define FFBLOG(__x)		ErrorF __x
 #else

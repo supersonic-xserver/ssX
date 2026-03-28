@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - stipple/tile/line-pattern
  * verification.
  *
@@ -29,7 +36,6 @@
 #include "ffb_regs.h"
 #include "ffb_rcache.h"
 #include "ffb_fifo.h"
-#include "ffb_gc.h"
 
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -38,6 +44,8 @@
 #include "cfb.h"
 #undef PSZ
 #include "cfb32.h"
+
+CreatorStipplePtr FFB_tmpStipple;
 
 int
 CreatorCheckTile(PixmapPtr pPixmap, CreatorStipplePtr stipple, int ox, int oy, int ph)
@@ -245,12 +253,12 @@ CreatorCheckFill(GCPtr pGC, DrawablePtr pDrawable)
 		return TRUE;
 	}
 	if (!(stipple = gcPriv->stipple)) {
-		if (!pFfb->tmpstipple) {
-			pFfb->tmpstipple = (CreatorStipplePtr)xalloc(sizeof *pFfb->tmpstipple);
-			if (!pFfb->tmpstipple)
+		if (!FFB_tmpStipple) {
+			FFB_tmpStipple = (CreatorStipplePtr)xalloc(sizeof *FFB_tmpStipple);
+			if (!FFB_tmpStipple)
 				return FALSE;
 		}
-		stipple = pFfb->tmpstipple;
+		stipple = FFB_tmpStipple;
 	}
 	xrot = (pGC->patOrg.x + pDrawable->x) & 31;
 	yrot = (pGC->patOrg.y + pDrawable->y) & 31;
@@ -281,7 +289,7 @@ CreatorCheckFill(GCPtr pGC, DrawablePtr pDrawable)
 	}
 	stipple->alu = alu;
 	gcPriv->stipple = stipple;
-	if (stipple == pFfb->tmpstipple)
-		pFfb->tmpstipple = 0;
+	if (stipple == FFB_tmpStipple)
+		FFB_tmpStipple = 0;
 	return TRUE;
 }

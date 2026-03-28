@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/iplan2p4/iplcmap.c,v 3.2 2005/10/14 15:17:18 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/iplcmap.c,v 3.1 1998/11/22 10:37:41 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: iplcmap.c,v 4.19 94/04/17 20:28:46 dpw Exp $ */
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -31,8 +39,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "colormapst.h"
 #include "resource.h"

@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_tris.c,v 1.1.1.3tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_tris.c,v 1.1.1.3 2004/12/10 15:32:58 alanh Exp $ */ /* -*- c-basic-offset: 3 -*- */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -217,7 +224,7 @@ do {							\
 
 #define LOCAL_VARS(n)						\
    r128ContextPtr rmesa = R128_CONTEXT(ctx);			\
-   GLuint color[n] = {0, }, spec[n] = {0, };			\
+   GLuint color[n], spec[n];					\
    GLuint coloroffset = rmesa->coloroffset;			\
    GLuint specoffset = rmesa->specoffset;			\
    GLboolean havespec = (rmesa->specoffset != 0);		\

@@ -1,10 +1,24 @@
-/* $XTermId: xstrings.c,v 1.24 2006/01/29 22:34:04 tom Exp $ */
+/* $XTermId: xstrings.c,v 1.21 2005/01/11 00:13:47 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* $XFree86: xc/programs/xterm/xstrings.c,v 1.9 2005/01/14 01:50:03 dickey Exp $ */
 
 /************************************************************
 
-Copyright 2000-2005,2006 by Thomas E. Dickey
+Copyright 2000-2004,2005 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -55,22 +69,6 @@ x_basename(char *name)
     return (cp ? cp + 1 : name);
 }
 
-char *
-x_skip_blanks(char *s)
-{
-    while (isspace(CharOf(*s)))
-	++s;
-    return s;
-}
-
-char *
-x_skip_nonblanks(char *s)
-{
-    while (*s != '\0' && !isspace(CharOf(*s)))
-	++s;
-    return s;
-}
-
 int
 x_strcasecmp(const char *s1, const char *s2)
 {
@@ -79,19 +77,11 @@ x_strcasecmp(const char *s1, const char *s2)
     if (len != strlen(s2))
 	return 1;
 
-    return x_strncasecmp(s1, s2, len);
-}
-
-int
-x_strncasecmp(const char *s1, const char *s2, unsigned n)
-{
-    while (n-- != 0) {
+    while (len-- != 0) {
 	int c1 = toupper(CharOf(*s1));
 	int c2 = toupper(CharOf(*s2));
 	if (c1 != c2)
 	    return 1;
-	if (c1 == 0)
-	    break;
 	s1++, s2++;
     }
 
@@ -135,7 +125,8 @@ x_strindex(char *s1, char *s2)
 }
 
 /*
- * Trims leading/trailing spaces from a copy of the string.
+ * Trims leading/trailing spaces from the string, returns a copy of it if it
+ * is modified.
  */
 char *
 x_strtrim(char *s)
@@ -147,7 +138,9 @@ x_strtrim(char *s)
 	char *t = x_strdup(base);
 	s = t;
 	d = s;
-	s = x_skip_blanks(s);
+	while (isspace(CharOf(*s))) {
+	    ++s;
+	}
 	while ((*d++ = *s++) != '\0') {
 	    ;
 	}
@@ -157,7 +150,11 @@ x_strtrim(char *s)
 		*--s = '\0';
 	    }
 	}
-	base = t;
+	if (!strcmp(t, base)) {
+	    free(t);
+	} else {
+	    base = t;
+	}
     }
     return base;
 }

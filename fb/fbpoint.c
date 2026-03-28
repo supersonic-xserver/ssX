@@ -1,5 +1,12 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,10 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/fb/fbpoint.c,v 1.9 2006/01/09 14:59:47 dawes Exp $ */
 
 #include "fb.h"
 
@@ -32,8 +36,6 @@ typedef void	(*FbDots)  (FbBits	*dst,
 			    BoxPtr	pBox,
 			    xPoint	*pts,
 			    int		npt,
-			    int		xorg,
-			    int		yorg,
 			    int		xoff,
 			    int		yoff,
 			    FbBits	and,
@@ -46,8 +48,6 @@ fbDots (FbBits	    *dstOrig,
 	BoxPtr	    pBox,
 	xPoint	    *pts,
 	int	    npt,
-	int	    xorg,
-	int	    yorg,
 	int	    xoff,
 	int	    yoff,
 	FbBits	    andOrig,
@@ -67,13 +67,13 @@ fbDots (FbBits	    *dstOrig,
     y2 = pBox->y2;
     while (npt--)
     {
-	x = pts->x + xorg;
-	y = pts->y + yorg;
+	x = pts->x + xoff;
+	y = pts->y + yoff;
 	pts++;
 	if (x1 <= x && x < x2 && y1 <= y && y < y2)
 	{
-	    x = (x + xoff) * dstBpp;
-	    d = dst + ((y + yoff) * dstStride) + (x >> FB_STIP_SHIFT);
+	    x *= dstBpp;
+	    d = dst + (y * dstStride) + (x >> FB_STIP_SHIFT);
 	    x &= FB_STIP_MASK;
 #ifdef FB_24BIT
 	    if (dstBpp == 24)
@@ -88,20 +88,20 @@ fbDots (FbBits	    *dstOrig,
 		FbMaskStip (x, 24, leftMask, n, rightMask);
 		if (leftMask)
 		{
-		    WRITE(d, FbDoMaskRRop (READ(d), andT, xorT, leftMask));
+		    *d = FbDoMaskRRop (*d, andT, xorT, leftMask);
 		    andT = FbNext24Stip(andT);
 		    xorT = FbNext24Stip(xorT);
 		    d++;
 		}
 		if (rightMask)
-		    WRITE(d, FbDoMaskRRop(READ(d), andT, xorT, rightMask));
+		    *d = FbDoMaskRRop(*d, andT, xorT, rightMask);
 	    }
 	    else
 #endif
 	    {
 		FbStip	mask;
 		mask = FbStipMask(x, dstBpp);
-		WRITE(d, FbDoMaskRRop (READ(d), and, xor, mask));
+		*d = FbDoMaskRRop (*d, and, xor, mask);
 	    }
 	}
     }
@@ -157,6 +157,5 @@ fbPolyPoint (DrawablePtr    pDrawable,
     for (nBox = REGION_NUM_RECTS (pClip), pBox = REGION_RECTS (pClip);
 	 nBox--; pBox++)
 	(*dots) (dst, dstStride, dstBpp, pBox, pptInit, nptInit, 
-		 pDrawable->x, pDrawable->y, dstXoff, dstYoff, and, xor);
-    fbFinishAccess (pDrawable);
+		 pDrawable->x + dstXoff, pDrawable->y + dstYoff, and, xor);
 }

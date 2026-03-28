@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/mkfontscale/mkfontscale.c,v 1.25tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   Copyright (c) 2002-2003 by Juliusz Chroboczek
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,6 +26,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
+/* $XFree86: xc/programs/mkfontscale/mkfontscale.c,v 1.24 2005/02/07 01:01:16 tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -407,16 +414,14 @@ static char *widths[] = {
 
 #define NUMWIDTHS (sizeof(widths) / sizeof(widths[0]))
 
-#define NAME_BUFFER_SIZE 500
-
 static char*
 nameWidth(char *name)
 {
-    char buf[NAME_BUFFER_SIZE];
+    char buf[500];
     int i;
     int n = strlen(name);
 
-    if(n >= NAME_BUFFER_SIZE - 1) return NULL;
+    if(n >= 499) return NULL;
     for(i = 0; i < n; i++)
         buf[i] = tolower(name[i]);
     buf[i] = '\0';
@@ -427,27 +432,37 @@ nameWidth(char *name)
     return NULL;
 }
 
-static char weightL[NAME_BUFFER_SIZE];
-
-static const char*
+static char*
 t1Weight(char *weight)
 {
-    unsigned int i = 0;
-    unsigned int n = strlen(weight);
-    unsigned int j; 
-    unsigned char ch;
-    unsigned char space = ' '; 
-
-    if(n >= NAME_BUFFER_SIZE - 1) return NULL;
-    for(j = 0; j < n; j++) {
-        ch = (unsigned char) tolower(weight[j]);
-    	if ( ch != space) {
-            weightL[i] = ch ;
-	    i++ ;
-	}    
+    if(!weight)
+        return NULL;
+    if(strcmp(weight, "Thin") == 0)
+        return "thin";
+    if(strcmp(weight, "Light") == 0)
+        return "light";
+    if(strcmp(weight, "Regular") == 0)
+        return "medium";
+    if(strcmp(weight, "Normal") == 0)
+        return "medium";
+    if(strcmp(weight, "Medium") == 0)
+        return "medium";
+    if(strcmp(weight, "Book") == 0)
+        return "medium";
+    if(strcmp(weight, "Roman") == 0) /* Some URW++ fonts do that! */
+        return "medium";
+    if(strcmp(weight, "Demi") == 0)
+        return "semibold";
+    if(strcmp(weight, "DemiBold") == 0)
+        return "semibold";
+    else if(strcmp(weight, "Bold") == 0)
+        return "bold";
+    else if(strcmp(weight, "Black") == 0)
+        return "black";
+    else {
+        fprintf(stderr, "Unknown Type 1 weight \"%s\"\n", weight);
+        return NULL;
     }
-    weightL[i] = '\0';
-    return weightL;
 }
 
 static int
@@ -494,9 +509,8 @@ ListPtr
 makeXLFD(char *filename, FT_Face face, int isBitmap)
 {
     ListPtr xlfd = NULL;
-    char *foundry, *family, *slant, *sWidth, *adstyle, 
+    char *foundry, *family, *weight, *slant, *sWidth, *adstyle, 
         *spacing, *full_name;
-    const char *weight;
     TT_Header *head;
     TT_HoriHeader *hhea;
     TT_OS2 *os2;

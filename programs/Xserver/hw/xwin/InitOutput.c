@@ -1,3 +1,11 @@
+/* $TOG: InitOutput.c /main/20 1998/02/10 13:23:56 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xwin/InitOutput.c,v 1.38tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/InitOutput.c,v 1.36 2004/06/02 22:43:05 dawes Exp $ */
 
 #include "win.h"
 #include "winconfig.h"
@@ -399,7 +407,7 @@ ddxUseMsg (void)
 #define IS_OPTION(name) (strcmp (argv[i], name) == 0)
 
 int
-ddxProcessArgument (int argc, const char *argv[], int i)
+ddxProcessArgument (int argc, char *argv[], int i)
 {
   static Bool		s_fBeenHere = FALSE;
 
@@ -1190,7 +1198,7 @@ ddxProcessArgument (int argc, const char *argv[], int i)
   if (IS_OPTION ("-co"))
     {
       CHECK_ARGS (1);
-      g_cmdline.rgbPath = (char *)argv[++i];
+      g_cmdline.rgbPath = argv[++i];
       return 0; /* Let DIX parse this again */
     }
 
@@ -1200,7 +1208,7 @@ ddxProcessArgument (int argc, const char *argv[], int i)
   if (IS_OPTION ("-query"))
     {
       CHECK_ARGS (1);
-      g_pszQueryHost = (char *)argv[++i];
+      g_pszQueryHost = argv[++i];
       return 0; /* Let DIX parse this again */
     }
 
@@ -1210,7 +1218,7 @@ ddxProcessArgument (int argc, const char *argv[], int i)
   if (IS_OPTION ("-xf86config"))
     {
       CHECK_ARGS (1);
-      g_cmdline.configFile = (char *)argv[++i];
+      g_cmdline.configFile = argv[++i];
       return 2;
     }
 
@@ -1220,7 +1228,7 @@ ddxProcessArgument (int argc, const char *argv[], int i)
   if (IS_OPTION ("-keyboard"))
     {
       CHECK_ARGS (1);
-      g_cmdline.keyboard = (char *)argv[++i];
+      g_cmdline.keyboard = argv[++i];
       return 2;
     }
 
@@ -1230,7 +1238,7 @@ ddxProcessArgument (int argc, const char *argv[], int i)
   if (IS_OPTION ("-logfile"))
     {
       CHECK_ARGS (1);
-      g_pszLogFile = (char *)argv[++i];
+      g_pszLogFile = argv[++i];
       return 2;
     }
 
@@ -1265,7 +1273,7 @@ GetTimeInMillis (void)
  */
 
 void
-InitOutput (ScreenInfo *screenInfo, const int argc, const char *argv[])
+InitOutput (ScreenInfo *screenInfo, int argc, char *argv[])
 {
   int		i;
   int		iMaxConsecutiveScreen = 0;

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/glx/Imakefile,v 1.18tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/glx/Imakefile,v 1.17 2004/12/10 16:06:59 alanh Exp $
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -89,9 +89,10 @@ LinkSourceFile(glcontextmodes.h, $(MESASRCDIR)/src/mesa/drivers/dri/common)
                 g_render.o g_renderswap.o g_single.o g_singleswap.o \
                 glcontextmodes.o $(MOBJS)
 
-     INCLUDES = -I$(SERVERSRC)/GL/glx -I$(SERVERSRC)/GL/include \
-                -I$(SERVERSRC)/include -I$(MESASRCDIR)/include \
-                -I$(SERVERSRC)/mi -I$(LIBSRC)/GL/include
+     INCLUDES = -I$(SERVERSRC)/GL/glx -I$(SERVERSRC)/GL/include -I$(SERVERSRC)/include -I$(INCLUDESRC) -I$(MESASRCDIR)/include \
+                -I$(XINCLUDESRC) -I$(SERVERSRC)/mi \
+                -I$(EXTINCSRC) -I$(FONTINCSRC) -I$(LIBSRC)/GL/include \
+                -I$(XF86SRC)
 
 #if defined(DarwinArchitecture) && ((OSMajorVersion == 6 && OSMinorVersion < 3) || OSMajorVersion < 6)
   NO_EXT_DEFS = -DMISSING_GL_EXTS

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/getmmap.c,v 3.4 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -50,19 +58,15 @@ SOFTWARE.
  *
  */
 
-#define	 NEED_EVENTS	/* for inputstr.h    */
+#define	 NEED_EVENTS			/* for inputstr.h    */
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>	/* Request macro     */
+#include <X11/extensions/XIproto.h>			/* Request macro     */
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
 
 #include "getmmap.h"
@@ -75,14 +79,15 @@ SOFTWARE.
  */
 
 int
-SProcXGetDeviceModifierMapping(ClientPtr client)
-{
-    char n;
+SProcXGetDeviceModifierMapping(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xGetDeviceModifierMappingReq);
     swaps(&stuff->length, n);
-    return (ProcXGetDeviceModifierMapping(client));
-}
+    return(ProcXGetDeviceModifierMapping(client));
+    }
 
 /***********************************************************************
  *
@@ -91,44 +96,47 @@ SProcXGetDeviceModifierMapping(ClientPtr client)
  */
 
 int
-ProcXGetDeviceModifierMapping(ClientPtr client)
-{
-    CARD8 maxkeys;
-    DeviceIntPtr dev;
-    xGetDeviceModifierMappingReply rep;
-    KeyClassPtr kp;
-
+ProcXGetDeviceModifierMapping(client)
+    ClientPtr client;
+    {
+    CARD8				maxkeys;
+    DeviceIntPtr			dev;
+    xGetDeviceModifierMappingReply 	rep;
+    KeyClassPtr 			kp;
+    
     REQUEST(xGetDeviceModifierMappingReq);
     REQUEST_SIZE_MATCH(xGetDeviceModifierMappingReq);
 
-    dev = LookupDeviceIntRec(stuff->deviceid);
-    if (dev == NULL) {
-	SendErrorToClient(client, IReqCode, X_GetDeviceModifierMapping, 0,
-			  BadDevice);
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	SendErrorToClient (client, IReqCode, X_GetDeviceModifierMapping, 0, 
+		BadDevice);
 	return Success;
-    }
+	}
 
     kp = dev->key;
-    if (kp == NULL) {
-	SendErrorToClient(client, IReqCode, X_GetDeviceModifierMapping, 0,
-			  BadMatch);
+    if (kp == NULL)
+	{
+	SendErrorToClient (client, IReqCode, X_GetDeviceModifierMapping, 0, 
+		BadMatch);
 	return Success;
-    }
-    maxkeys = kp->maxKeysPerModifier;
+	}
+    maxkeys =  kp->maxKeysPerModifier;
 
     rep.repType = X_Reply;
     rep.RepType = X_GetDeviceModifierMapping;
     rep.numKeyPerModifier = maxkeys;
     rep.sequenceNumber = client->sequence;
     /* length counts 4 byte quantities - there are 8 modifiers 1 byte big */
-    rep.length = 2 * maxkeys;
+    rep.length = 2*maxkeys;
 
     WriteReplyToClient(client, sizeof(xGetDeviceModifierMappingReply), &rep);
 
     /* Reply with the (modified by DDX) map that SetModifierMapping passed in */
-    WriteToClient(client, 8 * maxkeys, (char *)kp->modifierKeyMap);
+    WriteToClient(client, 8*maxkeys, (char *)kp->modifierKeyMap);
     return Success;
-}
+    }
 
 /***********************************************************************
  *
@@ -138,12 +146,14 @@ ProcXGetDeviceModifierMapping(ClientPtr client)
  */
 
 void
-SRepXGetDeviceModifierMapping(ClientPtr client, int size,
-			      xGetDeviceModifierMappingReply * rep)
-{
-    char n;
+SRepXGetDeviceModifierMapping (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xGetDeviceModifierMappingReply	*rep;
+    {
+    register char n;
 
     swaps(&rep->sequenceNumber, n);
     swapl(&rep->length, n);
     WriteToClient(client, size, (char *)rep);
-}
+    }

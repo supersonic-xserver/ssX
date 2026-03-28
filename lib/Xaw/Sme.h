@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: Sme.h,v 1.5 2001/02/09 02:03:45 xorgcvs Exp $
  *
 Copyright 1989, 1994, 1998  The Open Group
 
@@ -22,7 +30,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
-/* $XFree86: xc/lib/Xaw/Sme.h,v 1.7 2006/01/09 14:59:02 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Sme.h,v 1.6 2001/12/14 19:54:43 dawes Exp $ */
 
 /*
  * This is the public header file for the Athena Sme object.
@@ -48,7 +56,6 @@ in this Software without prior written authorization from The Open Group.
  callback            Callback		Pointer		NULL
  destroyCallback     Callback		Pointer		NULL
  height		     Height		Dimension	0
- international       International	Boolean		False
  sensitive	     Sensitive		Boolean		True
  width		     Width		Dimension	0
  x		     Position		Position	0

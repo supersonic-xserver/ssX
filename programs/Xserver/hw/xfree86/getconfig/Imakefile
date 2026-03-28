@@ -1,3 +1,4 @@
+XCOMM $DHD: xc/programs/Xserver/hw/xfree86/getconfig/Imakefile,v 1.4 2003/10/03 21:32:46 dawes Exp $
 XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/getconfig/Imakefile,v 1.5 2004/12/07 18:21:51 dawes Exp $
 
 /*

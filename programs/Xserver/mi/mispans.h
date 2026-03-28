@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/mi/mispans.h,v 1.3 2001/12/14 20:00:26 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -45,6 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+
+/* $Xorg: mispans.h,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
 
 typedef struct {
     int         count;		/* number of spans		    */

@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_tex.h,v 1.1 2002/10/30 12:51:53 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_tex.h,v 1.1.1.2 2004/06/10 14:23:04 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -44,7 +51,7 @@ extern int r200UploadTexImages( r200ContextPtr rmesa, r200TexObjPtr t, GLuint fa
 
 extern void r200DestroyTexObj( r200ContextPtr rmesa, r200TexObjPtr t );
 
-extern void r200InitTextureFuncs( GLcontext *ctx );
+extern void r200InitTextureFuncs( struct dd_function_table *functions );
 
 #endif
 #endif /* __R200_TEX_H__ */

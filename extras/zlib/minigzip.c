@@ -1,4 +1,11 @@
 /* minigzip.c -- simulate gzip using the zlib compression library
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
@@ -12,6 +19,8 @@
  * real thing. On MSDOS, use only on file names without extension
  * or in pipe mode.
  */
+
+/* @(#) $Id: minigzip.c,v 1.1.1.1 2004/03/05 14:26:42 tron Exp $ */
 
 #include <stdio.h>
 #include "zlib.h"

@@ -62,7 +62,8 @@ site<![ %updaterel; [ and the source patch that updates &fullrelvers; to
 
 	These can be found at <htmlurl
 	name="ftp://ftp.xfree86.org/pub/XFree86/&fullrelvers;/source/"
-	url="ftp://ftp.xfree86.org/pub/XFree86/&fullrelvers;/source/">.
+	url="ftp://ftp.xfree86.org/pub/XFree86/&fullrelvers;/source/">
+	and similar locations on XFree86 mirror sites.
 	<tt>XFree86-&fullrelvers;-src-4.tgz</tt> and
 	<tt>XFree86-&fullrelvers;-src-5.tgz</tt> contains the fonts.
 	<tt>XFree86-&fullrelvers;-src-6.tgz</tt> contains the documentation

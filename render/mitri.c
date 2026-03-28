@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/mitri.c,v 1.7 2007/04/09 15:37:19 tsi Exp $
  *
- * Copyright Â© 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,10 +28,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "scrnintstr.h"
 #include "gcstruct.h"
@@ -68,6 +72,82 @@ miTriangleBounds (int ntri, xTriangle *tris, BoxPtr bounds)
 }
 
 void
+miRasterizeTriangle (PicturePtr	pPicture,
+		     xTriangle	*tri,
+		     int	x_off,
+		     int	y_off)
+{
+    ScreenPtr		pScreen = pPicture->pDrawable->pScreen;
+    PictureScreenPtr    ps = GetPictureScreen(pScreen);
+    xPointFixed		*top, *left, *right, *t;
+    xTrapezoid		trap[2];
+
+    top = &tri->p1;
+    left = &tri->p2;
+    right = &tri->p3;
+    if (left->y < top->y) {
+	t = left; left = top; top = t;
+    }
+    if (right->y < top->y) {
+	t = right; right = top; top = t;
+    }
+    if (right->x < left->x) {
+	t = right; right = left; left = t;
+    }
+    
+    /*
+     * Two cases:
+     *
+     *		+		+
+     *	       / \             / \
+     *	      /   \           /   \
+     *	     /     +         +     \
+     *      /    --           --    \
+     *     /   --               --   \
+     *    / ---                   --- \
+     *	 +--                         --+
+     */
+    
+    trap[0].top = top->y;
+    
+    trap[0].left.p1.x = top->x;
+    trap[0].left.p1.y = trap[0].top;
+    trap[0].left.p2.x = left->x;
+    trap[0].left.p2.y = left->y;
+    
+    trap[0].right.p1 = trap[0].left.p1;
+    trap[0].right.p2.x = right->x;
+    trap[0].right.p2.y = right->y;
+    
+    if (right->y < left->y)
+    {
+	trap[0].bottom = trap[0].right.p2.y;
+
+	trap[1].top = trap[0].bottom;
+	trap[1].bottom = trap[0].left.p2.y;
+	
+	trap[1].left = trap[0].left;
+	trap[1].right.p1 = trap[0].right.p2;
+	trap[1].right.p2 = trap[0].left.p2;
+    }
+    else
+    {
+	trap[0].bottom = trap[0].left.p2.y;
+	
+	trap[1].top = trap[0].bottom;
+	trap[1].bottom = trap[0].right.p2.y;
+	
+	trap[1].right = trap[0].right;
+	trap[1].left.p1 = trap[0].left.p2;
+	trap[1].left.p2 = trap[0].right.p2;
+    }
+    if (trap[0].top != trap[0].bottom)
+	(*ps->RasterizeTrapezoid) (pPicture, &trap[0], x_off, y_off);
+    if (trap[1].top != trap[1].bottom)
+	(*ps->RasterizeTrapezoid) (pPicture, &trap[1], x_off, y_off);
+}
+
+void
 miTriangles (CARD8	    op,
 	     PicturePtr	    pSrc,
 	     PicturePtr	    pDst,
@@ -78,25 +158,16 @@ miTriangles (CARD8	    op,
 	     xTriangle	    *tris)
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
-    PictureScreenPtr    ps = GetPictureScreen(pScreen);
+    BoxRec		bounds = {0, };
+    PicturePtr		pPicture = 0;
+    INT16		xDst, yDst;
+    INT16		xRel, yRel;
     
-    /*
-     * Check for solid alpha add
-     */
-    if (op == PictOpAdd && miIsSolidAlpha (pSrc))
+    xDst = tris[0].p1.x >> 16;
+    yDst = tris[0].p1.y >> 16;
+    
+    if (maskFormat)
     {
-	(*ps->AddTriangles) (pDst, 0, 0, ntri, tris);
-    }
-    else if (maskFormat)
-    {
-	BoxRec		bounds;
-	PicturePtr	pPicture;
-	INT16		xDst, yDst;
-	INT16		xRel, yRel;
-	
-	xDst = tris[0].p1.x >> 16;
-	yDst = tris[0].p1.y >> 16;
-
 	miTriangleBounds (ntri, tris, &bounds);
 	if (bounds.x2 <= bounds.x1 || bounds.y2 <= bounds.y1)
 	    return;
@@ -105,24 +176,40 @@ miTriangles (CARD8	    op,
 					 bounds.y2 - bounds.y1);
 	if (!pPicture)
 	    return;
-	(*ps->AddTriangles) (pPicture, -bounds.x1, -bounds.y1, ntri, tris);
-	
+    }
+    for (; ntri; ntri--, tris++)
+    {
+	if (!maskFormat)
+	{
+	    miTriangleBounds (1, tris, &bounds);
+	    if (bounds.x2 <= bounds.x1 || bounds.y2 <= bounds.y1)
+		continue;
+	    pPicture = miCreateAlphaPicture (pScreen, pDst, maskFormat,
+					     bounds.x2 - bounds.x1,
+					     bounds.y2 - bounds.y1);
+	    if (!pPicture)
+		break;
+	}
+	miRasterizeTriangle (pPicture, tris, -bounds.x1, -bounds.y1);
+	if (!maskFormat)
+	{
+	    xRel = bounds.x1 + xSrc - xDst;
+	    yRel = bounds.y1 + ySrc - yDst;
+	    CompositePicture (op, pSrc, pPicture, pDst,
+			      xRel, yRel, 0, 0, bounds.x1, bounds.y1,
+			      bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
+	    FreePicture (pPicture, 0);
+	}
+	/* XXX adjust xSrc and ySrc */
+    }
+    if (maskFormat)
+    {
 	xRel = bounds.x1 + xSrc - xDst;
 	yRel = bounds.y1 + ySrc - yDst;
 	CompositePicture (op, pSrc, pPicture, pDst,
 			  xRel, yRel, 0, 0, bounds.x1, bounds.y1,
 			  bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
 	FreePicture (pPicture, 0);
-    }
-    else
-    {
-	if (pDst->polyEdge == PolyEdgeSharp)
-	    maskFormat = PictureMatchFormat (pScreen, 1, PICT_a1);
-	else
-	    maskFormat = PictureMatchFormat (pScreen, 8, PICT_a8);
-	
-	for (; ntri; ntri--, tris++)
-	    miTriangles (op, pSrc, pDst, maskFormat, xSrc, ySrc, 1, tris);
     }
 }
 
@@ -137,24 +224,64 @@ miTriStrip (CARD8	    op,
 	    xPointFixed	    *points)
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
-    PictureScreenPtr    ps = GetPictureScreen(pScreen);
-    xTriangle		*tris, *tri;
-    int			ntri;
+    xTriangle		tri;
+    BoxRec		bounds = {0, };
+    PicturePtr		pPicture = 0;
+    INT16		xDst, yDst;
+    INT16		xRel, yRel;
+    
+    xDst = points[0].x >> 16;
+    yDst = points[0].y >> 16;
     
     if (npoint < 3)
 	return;
-    ntri = npoint - 2;
-    tris = ALLOCATE_LOCAL (ntri * sizeof (xTriangle));
-    if (!tris)
-	return;
-    for (tri = tris; npoint >= 3; npoint--, points++, tri++)
+    if (maskFormat)
     {
-	tri->p1 = points[0];
-	tri->p2 = points[1];
-	tri->p3 = points[2];
+	miPointFixedBounds (npoint, points, &bounds);
+	if (bounds.x2 <= bounds.x1 || bounds.y2 <= bounds.y1)
+	    return;
+	pPicture = miCreateAlphaPicture (pScreen, pDst, maskFormat,
+					 bounds.x2 - bounds.x1,
+					 bounds.y2 - bounds.y1);
+	if (!pPicture)
+	    return;
     }
-    (*ps->Triangles) (op, pSrc, pDst, maskFormat, xSrc, ySrc, ntri, tris);
-    DEALLOCATE_LOCAL (tris);
+    for (; npoint >= 3; npoint--, points++)
+    {
+	tri.p1 = points[0];
+	tri.p2 = points[1];
+	tri.p3 = points[2];
+	if (!maskFormat)
+	{
+	    miTriangleBounds (1, &tri, &bounds);
+	    if (bounds.x2 <= bounds.x1 || bounds.y2 <= bounds.y1)
+		continue;
+	    pPicture = miCreateAlphaPicture (pScreen, pDst, maskFormat, 
+					     bounds.x2 - bounds.x1,
+					     bounds.y2 - bounds.y1);
+	    if (!pPicture)
+		continue;
+	}
+	miRasterizeTriangle (pPicture, &tri, -bounds.x1, -bounds.y1);
+	if (!maskFormat)
+	{
+	    xRel = bounds.x1 + xSrc - xDst;
+	    yRel = bounds.y1 + ySrc - yDst;
+	    CompositePicture (op, pSrc, pPicture, pDst,
+			      xRel, yRel, 0, 0, bounds.x1, bounds.y1,
+			      bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
+	    FreePicture (pPicture, 0);
+	}
+    }
+    if (maskFormat)
+    {
+	xRel = bounds.x1 + xSrc - xDst;
+	yRel = bounds.y1 + ySrc - yDst;
+	CompositePicture (op, pSrc, pPicture, pDst,
+			  xRel, yRel, 0, 0, bounds.x1, bounds.y1,
+			  bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
+	FreePicture (pPicture, 0);
+    }
 }
 
 void
@@ -168,24 +295,65 @@ miTriFan (CARD8		op,
 	  xPointFixed	*points)
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
-    PictureScreenPtr    ps = GetPictureScreen(pScreen);
-    xTriangle		*tris, *tri;
+    xTriangle		tri;
+    BoxRec		bounds = {0, };
+    PicturePtr		pPicture = 0;
     xPointFixed		*first;
-    int			ntri;
+    INT16		xDst, yDst;
+    INT16		xRel, yRel;
+    
+    xDst = points[0].x >> 16;
+    yDst = points[0].y >> 16;
     
     if (npoint < 3)
 	return;
-    ntri = npoint - 2;
-    tris = ALLOCATE_LOCAL (ntri * sizeof (xTriangle));
-    if (!tris)
-	return;
-    first = points++;
-    for (tri = tris; npoint >= 3; npoint--, points++, tri++)
+    if (maskFormat)
     {
-	tri->p1 = *first;
-	tri->p2 = points[0];
-	tri->p3 = points[1];
+	miPointFixedBounds (npoint, points, &bounds);
+	if (bounds.x2 <= bounds.x1 || bounds.y2 <= bounds.y1)
+	    return;
+	pPicture = miCreateAlphaPicture (pScreen, pDst, maskFormat,
+					 bounds.x2 - bounds.x1,
+					 bounds.y2 - bounds.y1);
+	if (!pPicture)
+	    return;
     }
-    (*ps->Triangles) (op, pSrc, pDst, maskFormat, xSrc, ySrc, ntri, tris);
-    DEALLOCATE_LOCAL (tris);
+    first = points++;
+    npoint--;
+    for (; npoint >= 2; npoint--, points++)
+    {
+	tri.p1 = *first;
+	tri.p2 = points[0];
+	tri.p3 = points[1];
+	if (!maskFormat)
+	{
+	    miTriangleBounds (1, &tri, &bounds);
+	    if (bounds.x2 <= bounds.x1 || bounds.y2 <= bounds.y1)
+		continue;
+	    pPicture = miCreateAlphaPicture (pScreen, pDst, maskFormat, 
+					     bounds.x2 - bounds.x1,
+					     bounds.y2 - bounds.y1);
+	    if (!pPicture)
+		continue;
+	}
+	miRasterizeTriangle (pPicture, &tri, -bounds.x1, -bounds.y1);
+	if (!maskFormat)
+	{
+	    xRel = bounds.x1 + xSrc - xDst;
+	    yRel = bounds.y1 + ySrc - yDst;
+	    CompositePicture (op, pSrc, pPicture, pDst,
+			      xRel, yRel, 0, 0, bounds.x1, bounds.y1,
+			      bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
+	    FreePicture (pPicture, 0);
+	}
+    }
+    if (maskFormat)
+    {
+	xRel = bounds.x1 + xSrc - xDst;
+	yRel = bounds.y1 + ySrc - yDst;
+	CompositePicture (op, pSrc, pPicture, pDst,
+			  xRel, yRel, 0, 0, bounds.x1, bounds.y1,
+			  bounds.x2 - bounds.x1, bounds.y2 - bounds.y1);
+	FreePicture (pPicture, 0);
+    }
 }

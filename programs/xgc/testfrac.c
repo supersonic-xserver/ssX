@@ -1,10 +1,17 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** testfrac.c
 **
 ** How to make a widget to choose the fraction of tests to be run.
 **
 */
-/* $XFree86: xc/programs/xgc/testfrac.c,v 1.4 2003/05/07 21:02:07 herrb Exp $ */
+/* $XFree86: xc/programs/xgc/testfrac.c,v 1.5 2003/09/13 21:33:11 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Intrinsic.h>

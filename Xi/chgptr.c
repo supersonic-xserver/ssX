@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/chgptr.c,v 3.8 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,21 +60,17 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "XIstubs.h"
-#include "windowstr.h"	/* window structure  */
-#include "scrnintstr.h"	/* screen structure  */
+#include "windowstr.h"			/* window structure  */
+#include "scrnintstr.h"			/* screen structure  */
 
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 
 #include "dixevents.h"
 #include "exevents.h"
@@ -82,15 +86,16 @@ SOFTWARE.
  */
 
 int
-SProcXChangePointerDevice(ClientPtr client)
-{
-    char n;
+SProcXChangePointerDevice(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xChangePointerDeviceReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xChangePointerDeviceReq);
-    return (ProcXChangePointerDevice(client));
-}
+    return(ProcXChangePointerDevice(client));
+    }
 
 /***********************************************************************
  *
@@ -99,12 +104,160 @@ SProcXChangePointerDevice(ClientPtr client)
  */
 
 int
-ProcXChangePointerDevice(ClientPtr client)
-{
+ProcXChangePointerDevice (client)
+    register ClientPtr client;
+    {
+    DeviceIntPtr 	xptr = inputInfo.pointer;
+    DeviceIntPtr 	dev;
+    ValuatorClassPtr 	v;
+    xChangePointerDeviceReply	rep;
+    changeDeviceNotify	ev;
+
     REQUEST(xChangePointerDeviceReq);
     REQUEST_SIZE_MATCH(xChangePointerDeviceReq);
 
-    SendErrorToClient(client, IReqCode, X_ChangePointerDevice, 0,
-                      BadDevice);
+    rep.repType = X_Reply;
+    rep.RepType = X_ChangePointerDevice;
+    rep.length = 0;
+    rep.sequenceNumber = client->sequence;
+
+    dev = LookupDeviceIntRec (stuff->deviceid);
+    if (dev == NULL)
+	{
+	rep.status = -1;
+	SendErrorToClient(client, IReqCode, X_ChangePointerDevice, 0, 
+	    BadDevice);
+	return Success;
+	}
+
+    v = dev->valuator;
+    if (v == NULL || v->numAxes < 2 || 
+	stuff->xaxis >= v->numAxes ||
+	stuff->yaxis >= v->numAxes)
+	{
+	rep.status = -1;
+	SendErrorToClient(client, IReqCode, X_ChangePointerDevice, 0, BadMatch);
+	return Success;
+	}
+
+    if (((dev->grab) && !SameClient(dev->grab, client)) ||
+        ((xptr->grab) && !SameClient(xptr->grab, client)))
+	rep.status = AlreadyGrabbed;
+    else if ((dev->sync.frozen &&
+	     dev->sync.other && !SameClient(dev->sync.other, client)) ||
+	     (xptr->sync.frozen &&
+	      xptr->sync.other && !SameClient(xptr->sync.other, client)))
+	rep.status = GrabFrozen;
+    else
+	{
+	if (ChangePointerDevice (
+	    xptr, dev, stuff->xaxis, stuff->yaxis) != Success)
+	    {
+	    SendErrorToClient(client, IReqCode, X_ChangePointerDevice, 0, 
+		BadDevice);
+	    return Success;
+	    }
+	if (dev->focus)
+	    DeleteFocusClassDeviceStruct(dev);
+	if (!dev->button)
+	    InitButtonClassDeviceStruct (dev, 0, NULL);
+	if (!dev->ptrfeed)
+	   InitPtrFeedbackClassDeviceStruct(dev, (PtrCtrlProcPtr)NoopDDA);
+	RegisterOtherDevice (xptr);
+	RegisterPointerDevice (dev);
+
+	ev.type = ChangeDeviceNotify;
+	ev.deviceid = stuff->deviceid;
+	ev.time = currentTime.milliseconds;
+	ev.request = NewPointer;
+
+	SendEventToAllWindows (dev, ChangeDeviceNotifyMask, (xEvent *)&ev, 1);
+	SendMappingNotify (MappingPointer, 0, 0, client);
+
+	rep.status = 0;
+	}
+
+    WriteReplyToClient (client, sizeof (xChangePointerDeviceReply), 
+	&rep);
     return Success;
-}
+    }
+
+void
+DeleteFocusClassDeviceStruct(dev)
+    DeviceIntPtr dev;
+    {
+    xfree(dev->focus->trace);
+    xfree(dev->focus);
+    dev->focus = NULL;
+    }
+
+/***********************************************************************
+ *
+ * Send an event to interested clients in all windows on all screens.
+ *
+ */
+
+void
+SendEventToAllWindows (dev, mask, ev, count)
+    DeviceIntPtr dev;
+    Mask mask;
+    xEvent *ev;
+    int count;
+    {
+    int i;
+    WindowPtr pWin, p1;
+
+    for (i=0; i<screenInfo.numScreens; i++)
+	{
+	pWin = WindowTable[i];
+	(void)DeliverEventsToWindow(pWin, ev, count, mask, NullGrab, dev->id);
+	p1 = pWin->firstChild;
+	FindInterestedChildren (dev, p1, mask, ev, count);
+	}
+    }
+
+/***********************************************************************
+ *
+ * Walk through the window tree, finding all clients that want to know
+ * about the ChangeDeviceNotify Event.
+ *
+ */
+
+void
+FindInterestedChildren (dev, p1, mask, ev, count)
+    DeviceIntPtr	dev;
+    WindowPtr 		p1;
+    Mask		mask;
+    xEvent		*ev;
+    int			count;
+    {
+    WindowPtr p2;
+
+    while (p1)
+        {
+        p2 = p1->firstChild;
+	(void)DeliverEventsToWindow(p1, ev, count, mask, NullGrab, dev->id);
+	FindInterestedChildren (dev, p2, mask, ev, count);
+	p1 = p1->nextSib;
+        }
+    }
+
+/***********************************************************************
+ *
+ * This procedure writes the reply for the XChangePointerDevice 
+ * function, if the client and server have a different byte ordering.
+ *
+ */
+
+void
+SRepXChangePointerDevice (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xChangePointerDeviceReply	*rep;
+    {
+    register char n;
+
+    swaps(&rep->sequenceNumber, n);
+    swapl(&rep->length, n);
+    WriteToClient(client, size, (char *)rep);
+    }

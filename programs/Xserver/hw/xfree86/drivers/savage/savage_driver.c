@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_driver.c,v 1.58tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_driver.c,v 1.53 2004/11/26 13:45:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * vim: sw=4 ts=8 ai ic:
  *
@@ -17,7 +24,7 @@
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #include "xf86xv.h"
 
@@ -41,8 +48,8 @@ static void SavageLeaveVT(int scrnIndex, int flags);
 static void SavageSave(ScrnInfoPtr pScrn);
 static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr, SavageRegPtr, Bool);
 
-static Bool SavageScreenInit(int scrnIndex, ScreenPtr pScreen,
-			     const int argc, const char **argv);
+static Bool SavageScreenInit(int scrnIndex, ScreenPtr pScreen, int argc,
+			     char **argv);
 static int SavageInternalScreenInit(int scrnIndex, ScreenPtr pScreen);
 static ModeStatus SavageValidMode(int index, DisplayModePtr mode,
 				  Bool verbose, int flags);
@@ -253,12 +260,15 @@ static const char *ramdacSymbols[] = {
 static const char *vbeSymbols[] = {
     "VBEInit",
     "vbeDoEDID",
+#if 0
     "vbeFree",
+#endif
     NULL
 };
 
 #ifdef XFree86LOADER
 static const char *vbeOptSymbols[] = {
+    "vbeModeInit",
     "VBESetVBEMode",
     "VBEGetVBEInfo",
     "VBEFreeVBEInfo",
@@ -333,7 +343,7 @@ static XF86ModuleVersionInfo SavageVersRec = {
 
 XF86ModuleData savageModuleData = { &SavageVersRec, SavageSetup, NULL };
 
-static pointer SavageSetup(ModuleDescPtr module, pointer opts, int *errmaj,
+static pointer SavageSetup(pointer module, pointer opts, int *errmaj,
 			   int *errmin)
 {
     static Bool setupDone = FALSE;
@@ -341,10 +351,9 @@ static pointer SavageSetup(ModuleDescPtr module, pointer opts, int *errmaj,
     if (!setupDone) {
 	setupDone = TRUE;
 	xf86AddDriver(&SAVAGE, module, 0);
-	LoaderModRefSymLists(module, vgaHWSymbols, fbSymbols, ramdacSymbols, 
-			     xaaSymbols, shadowSymbols, vbeSymbols,
-			     vbeOptSymbols, int10Symbols, i2cSymbols,
-			     ddcSymbols, NULL);
+	LoaderRefSymLists(vgaHWSymbols, fbSymbols, ramdacSymbols, 
+			  xaaSymbols, shadowSymbols, vbeSymbols, vbeOptSymbols,
+			  int10Symbols, i2cSymbols, ddcSymbols, NULL);
 	return (pointer) 1;
     } else {
 	if (errmaj)
@@ -591,15 +600,12 @@ static Bool SavageGetRec(ScrnInfoPtr pScrn)
 
 static void SavageFreeRec(ScrnInfoPtr pScrn)
 {
-    SavagePtr psav;
-
     TRACE(( "SavageFreeRec(%x)\n", pScrn->driverPrivate ));
-    if (!(psav = pScrn->driverPrivate))
+    if (!pScrn->driverPrivate)
 	return;
-    vbeFree(psav->pVbe);
-    SavageUnmapMem(pScrn, 1);
     xfree(pScrn->driverPrivate);
     pScrn->driverPrivate = NULL;
+    SavageUnmapMem(pScrn, 1);
 }
 
 
@@ -697,8 +703,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     int mclk;
     vgaHWPtr hwp;
     int vgaCRIndex, vgaCRReg;
-    ModuleDescPtr ddc;
-    ModuleDescPtr pMod;
+    pointer ddc;
 
     TRACE(("SavagePreInit(%d)\n", flags));
 
@@ -709,10 +714,10 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	return TRUE;
     }
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, vgaHWSymbols, NULL);
+    xf86LoaderReqSymLists(vgaHWSymbols, NULL);
     if (!vgaHWGetHWRec(pScrn))
 	return FALSE;
 
@@ -950,13 +955,13 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     }
     psav->EntityIndex = pEnt->index;
 
-    if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
- 	xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+    if (xf86LoadSubModule(pScrn, "int10")) {
+ 	xf86LoaderReqSymLists(int10Symbols, NULL);
 	psav->pInt10 = xf86InitInt10(pEnt->index);
     }
 
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
+	xf86LoaderReqSymLists(vbeSymbols, NULL);
 	psav->pVbe = VBEInit(psav->pInt10, pEnt->index);
     }
 
@@ -1013,6 +1018,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 
     if (!SavageMapMMIO(pScrn)) {
 	SavageFreeRec(pScrn);
+        vbeFree(psav->pVbe);
 	return FALSE;
     }
 
@@ -1042,6 +1048,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	Gamma zeros = {0.0, 0.0, 0.0};
 
 	if (!xf86SetGamma(pScrn, zeros)) {
+	    vbeFree(psav->pVbe);
 	    SavageFreeRec(pScrn);
 	    return FALSE;
 	}
@@ -1221,7 +1228,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    xf86MonPtr pMon = NULL;
 #endif
 	   
-	    xf86LoaderModReqSymLists(ddc, ddcSymbols, NULL);
+	    xf86LoaderReqSymLists(ddcSymbols, NULL);
 #if 0
 /*
  * On many machines, the attempt to read DDC information via VBE puts the
@@ -1234,8 +1241,8 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    else 
 #endif
 	    if (!SavageDDC1(pScrn->scrnIndex)) {
-		if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
-		    xf86LoaderModReqSymLists(pMod, i2cSymbols, NULL);
+		if ( xf86LoadSubModule(pScrn, "i2c") ) {
+		    xf86LoaderReqSymLists(i2cSymbols,NULL);
 		    if (SavageI2CInit(pScrn)) {
 			unsigned char tmp;
 
@@ -1383,6 +1390,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     if (i == -1) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "xf86ValidateModes failure\n");
 	SavageFreeRec(pScrn);
+	vbeFree(psav->pVbe);
 	return FALSE;
     }
 
@@ -1391,6 +1399,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     if (i == 0 || pScrn->modes == NULL) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "No valid modes found\n");
 	SavageFreeRec(pScrn);
+	vbeFree(psav->pVbe);
 	return FALSE;
     }
 
@@ -1441,35 +1450,39 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     xf86PrintModes(pScrn);
     xf86SetDpi(pScrn, 0, 0);
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	SavageFreeRec(pScrn);
+	vbeFree(psav->pVbe);
 	return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
-    if (!psav->NoAccel ) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+    if( !psav->NoAccel ) {
+	if( !xf86LoadSubModule(pScrn, "xaa") ) {
 	    SavageFreeRec(pScrn);
+	    vbeFree(psav->pVbe);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL );
+	xf86LoaderReqSymLists(xaaSymbols, NULL );
     }
 
     if (psav->hwcursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+	if (!xf86LoadSubModule(pScrn, "ramdac")) {
 	    SavageFreeRec(pScrn);
+	    vbeFree(psav->pVbe);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
 
     if (psav->shadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 	    SavageFreeRec(pScrn);
+	    vbeFree(psav->pVbe);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
     vbeFree(psav->pVbe);
 
@@ -2244,7 +2257,7 @@ static void SavageUnmapMem(ScrnInfoPtr pScrn, int All)
 
 
 static Bool SavageScreenInit(int scrnIndex, ScreenPtr pScreen,
-			     const int argc, const char **argv)
+			     int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     SavagePtr psav;
@@ -3253,13 +3266,10 @@ static void
 SavageProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
         pVbe = VBEInit(NULL,index);
         ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 

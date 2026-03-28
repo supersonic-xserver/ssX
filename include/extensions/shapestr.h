@@ -1,5 +1,18 @@
-/* $XFree86: xc/include/extensions/shapestr.h,v 1.3tsi Exp $ */
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1989, 1998  The Open Group
 
@@ -25,6 +38,8 @@ in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
 
+/* $Xorg: shapestr.h,v 1.4 2001/02/09 02:03:24 xorgcvs Exp $ */
+
 #ifndef _SHAPESTR_H_
 #define _SHAPESTR_H_
 
@@ -33,7 +48,7 @@ in this Software without prior written authorization from The Open Group.
  * These would really be in SHAPE's X.h and Xproto.h equivalents
  */
 
-#include <X11/extensions/shape.h>
+#include "shape.h"
 
 #define Window CARD32
 #define Time CARD32
@@ -41,7 +56,7 @@ in this Software without prior written authorization from The Open Group.
 #define SHAPENAME "SHAPE"
 
 #define SHAPE_MAJOR_VERSION	1	/* current version numbers */
-#define SHAPE_MINOR_VERSION	1
+#define SHAPE_MINOR_VERSION	0
 
 typedef struct _ShapeQueryVersion {
 	CARD8	reqType;		/* always ShapeReqCode */

@@ -1,5 +1,10 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/etc/Imakefile,v 3.55tsi Exp $
+XCOMM $XConsortium: Imakefile /main/24 1996/10/28 04:24:12 kaleb $
 
+
+
+
+
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/etc/Imakefile,v 3.53 2005/03/07 16:39:18 tsi Exp $
 #include <Server.tmpl>
 
 #if SystemV
@@ -49,8 +54,8 @@ XINST = Xinstall.sh
        FILES = $(CONFIGFILES) $(TERMFILES) \
                $(PATCHFILES) $(XDMCONF) \
                xmodmap.std $(MISCFILES) $(XINST)
-    INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-	       -I$(SERVERSRC)/include -I$(XF86SRC)/scanpci \
+    INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+	       -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(XF86SRC)/scanpci \
 	       -I$(XF86SRC)/dummylib -I$(XF86OSSRC)/bus
 
 #ifdef ServerExtraSysLibs
@@ -59,9 +64,7 @@ SERVEREXTRASYSLIBS = ServerExtraSysLibs
 
 all:: $(FILES)
 
-#if defined(FreeBSDArchitecture) || \
-    defined(NetBSDArchitecture) || \
-    defined(OpenBSDArchitecture)
+#if defined(FreeBSDArchitecture) || defined(NetBSDArchitecture) || defined(OpenBSDArchitecture)
        SRCS1 = kbd_mode.c
      DEFINES = XFree86ConsoleDefines
 
@@ -73,6 +76,7 @@ InstallProgram(kbd_mode,$(BINDIR))
 InstallManPage(kbd_mode,$(MANDIR))
 #endif
 
+#if BuildScanpci
        SRCS2 = scanpci.c
 
 #if defined(i386Architecture) && \
@@ -88,6 +92,7 @@ AllTarget(ProgramTargetName(scanpci))
 NormalProgramTarget(scanpci,scanpci.o,$(XF86OSSRC)/libxf86_os.a ../scanpci/libscanpci.a ../dummylib/libdummy.a,-L../os-support -lxf86_os -L../scanpci -lscanpci -L../dummylib -ldummy $(SERVEREXTRASYSLIBS),NullParameter)
 InstallProgram(scanpci,$(BINDIR))
 InstallManPage(scanpci,$(MANDIR))
+#endif
 
 #if JoystickSupport
        SRCS3 = joycal.c

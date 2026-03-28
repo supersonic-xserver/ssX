@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,6 +28,7 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
 #include "propertyst.h"
 #include "swaprep.h"
 
@@ -396,8 +404,8 @@ ProcRRListOutputProperties (ClientPtr client)
     if (client->swapped) 
     {
 	int n;
-	swaps (&rep.sequenceNumber, n);
-	swapl (&rep.length, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
     }
     temppAtoms = pAtoms;
     for (prop = output->properties; prop; prop = prop->next)
@@ -441,8 +449,8 @@ ProcRRQueryOutputProperty (ClientPtr client)
     if (client->swapped) 
     {
 	int n;
-	swaps (&rep.sequenceNumber, n);
-	swapl (&rep.length, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
     }
     WriteReplyToClient (client, sizeof (xRRQueryOutputPropertyReply), &rep);
     if (prop->num_valid)

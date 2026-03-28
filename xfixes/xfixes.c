@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2006, Oracle and/or its affiliates. All rights reserved.
  * Copyright 2010, 2021 Red Hat, Inc.
  *
@@ -49,6 +56,7 @@
 #include "xfixesint.h"
 #include "protocol-versions.h"
 #include "extinit.h"
+#include "privates.h"
 
 static unsigned char XFixesReqCode;
 int XFixesEventBase;
@@ -93,7 +101,7 @@ ProcXFixesQueryVersion(ClientPtr client)
         swapl(&rep.majorVersion);
         swapl(&rep.minorVersion);
     }
-    WriteToClient(client, sizeof(xXFixesQueryVersionReply), &rep);
+    WriteToClient(client, sizeof(xXFixesQueryVersionReply), (char *) &rep);
     return Success;
 }
 
@@ -104,8 +112,10 @@ static const int version_requests[] = {
     X_XFixesChangeCursorByName, /* Version 2 */
     X_XFixesExpandRegion,       /* Version 3 */
     X_XFixesShowCursor,         /* Version 4 */
+#ifndef SSX_LEGACY_MODE
     X_XFixesDestroyPointerBarrier,      /* Version 5 */
     X_XFixesGetClientDisconnectMode,    /* Version 6 */
+#endif
 };
 
 int (*ProcXFixesVector[XFixesNumberRequests]) (ClientPtr) = {
@@ -141,10 +151,12 @@ int (*ProcXFixesVector[XFixesNumberRequests]) (ClientPtr) = {
         ProcXFixesExpandRegion,
 /*************** Version 4 ****************/
         ProcXFixesHideCursor, ProcXFixesShowCursor,
+#ifndef SSX_LEGACY_MODE
 /*************** Version 5 ****************/
         ProcXFixesCreatePointerBarrier, ProcXFixesDestroyPointerBarrier,
 /*************** Version 6 ****************/
         ProcXFixesSetClientDisconnectMode, ProcXFixesGetClientDisconnectMode,
+#endif
 };
 
 static int
@@ -205,10 +217,12 @@ static int (*SProcXFixesVector[XFixesNumberRequests]) (ClientPtr) = {
         SProcXFixesExpandRegion,
 /*************** Version 4 ****************/
         SProcXFixesHideCursor, SProcXFixesShowCursor,
+#ifndef SSX_LEGACY_MODE
 /*************** Version 5 ****************/
         SProcXFixesCreatePointerBarrier, SProcXFixesDestroyPointerBarrier,
 /*************** Version 6 ****************/
         SProcXFixesSetClientDisconnectMode, SProcXFixesGetClientDisconnectMode,
+#endif
 };
 
 static _X_COLD int
@@ -236,7 +250,9 @@ XFixesExtensionInit(void)
     if (XFixesSelectionInit() &&
         XFixesCursorInit() &&
         XFixesRegionInit() &&
+#ifndef SSX_LEGACY_MODE
         XFixesClientDisconnectInit() &&
+#endif
         (extEntry = AddExtension(XFIXES_NAME, XFixesNumberEvents,
                                  XFixesNumberErrors,
                                  ProcXFixesDispatch, SProcXFixesDispatch,
@@ -249,8 +265,10 @@ XFixesExtensionInit(void)
         EventSwapVector[XFixesEventBase + XFixesCursorNotify] =
             (EventSwapPtr) SXFixesCursorNotifyEvent;
         SetResourceTypeErrorValue(RegionResType, XFixesErrorBase + BadRegion);
+#ifndef SSX_LEGACY_MODE
         SetResourceTypeErrorValue(PointerBarrierType,
                                   XFixesErrorBase + BadBarrier);
+#endif
     }
 }
 

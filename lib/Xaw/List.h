@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xaw/List.h,v 1.8tsi Exp $ */
+/* $Xorg: List.h,v 1.4 2001/02/09 02:03:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 Copyright 1989, 1994, 1998  The Open Group
@@ -23,13 +37,14 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
+/* $XFree86: xc/lib/Xaw/List.h,v 1.8 2001/12/14 19:54:40 dawes Exp $ */
 
 /*  This is the List widget, it is useful to display a list, without the
- *  overhead of having a widget for each item in the list.  It allows
+ *  overhead of having a widget for each item in the list.  It allows 
  *  the user to select an item in a list and notifies the application through
  *  a callback function.
  *
- *	Created:	8/13/88
+ *	Created: 	8/13/88
  *	By:		Chris D. Peterson
  *                      MIT X Consortium
  */
@@ -51,7 +66,7 @@ in this Software without prior written authorization from The Open Group.
  cursor		     Cursor		Cursor		left_ptr
  cursorName	     Cursor		String		NULL
  defaultColumns      Columns            int             2          **5
- destroyCallback     Callback		Pointer		NULL
+ destroyCallback     Callback		Pointer		NULL 
  font		     Font		XFontStruct*	XtDefaultFont
  forceColumns        Columns            Boolean         False      **5
  foreground	     Foreground		Pixel		XtDefaultForeground
@@ -77,28 +92,28 @@ in this Software without prior written authorization from The Open Group.
        is set to the minimum size necessay to fit the entire list.
 
        If both Width and Height are zero then they are adjusted to fit the
-       entire list that is created width the number of default columns
+       entire list that is created width the number of default columns 
        specified in the defaultColumns resource.
 
  **2 - This is an array of strings the specify elements of the list.
-       This resource must be specified.
+       This resource must be specified. 
        (What good is a list widget without a list??  :-)
 
  **3 - Longest is the length of the widest string in pixels.
 
  **4 - If either of these values are zero (0) then the list widget calculates
-       the correct value.
+       the correct value. 
 
-       (This allows you to make startup faster if you already have
-	this information calculated)
+       (This allows you to make startup faster if you already have 
+        this information calculated)
 
-       NOTE: If the numberStrings value is zero the list must
-	     be NULL terminated.
+       NOTE: If the numberStrings value is zero the list must 
+             be NULL terminated.
 
  **5 - By setting the List.Columns resource you can force the application to
-       have a given number of columns.
-
- **6 - This returns the name and index of the item selected in an
+       have a given number of columns.	     
+        
+ **6 - This returns the name and index of the item selected in an 
        XawListReturnStruct that is pointed to by the client_data
        in the CallbackProc.
 
@@ -107,7 +122,7 @@ in this Software without prior written authorization from The Open Group.
 /*
  * Value returned when there are no highlighted objects
  */
-#define XAW_LIST_NONE -1
+#define XAW_LIST_NONE -1	
 
 #define XtCList "List"
 #define XtCSpacing "Spacing"
@@ -126,7 +141,7 @@ in this Software without prior written authorization from The Open Group.
 #define XtNrowSpacing "rowSpacing"
 #define XtNverticalList "verticalList"
 #define XtNshowCurrent "showCurrent"
-
+ 
 #ifndef XtNfontSet
 #define XtNfontSet "fontSet"
 #endif
@@ -163,7 +178,7 @@ _XFUNCPROTOBEGIN
  *	Changes the list being used and shown.
  *
  * Note:
- *	If nitems of longest are <= 0 then they will be calculated
+ *	If nitems of longest are <= 0 then they will be caluculated
  *	If nitems is <= 0 then the list needs to be NULL terminated
  */
 void XawListChange

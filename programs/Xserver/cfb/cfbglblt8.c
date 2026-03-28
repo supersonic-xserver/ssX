@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbglblt8.c,v 3.11tsi Exp $ */
+/* $Xorg: cfbglblt8.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -23,17 +30,18 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
+/* $XFree86: xc/programs/Xserver/cfb/cfbglblt8.c,v 3.8 2003/08/06 14:04:02 eich Exp $ */
 
 /*
  * Poly glyph blt.  Accepts an arbitrary font <= 32 bits wide, in Copy mode
  * only.
  */
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"cfb.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
@@ -116,24 +124,27 @@ static void cfbPolyGlyphBlt8Clipped(
  *  They are only provided on some architecures.
  */
 #ifdef USE_STIPPLE_CODE
-extern void cfbStippleStack(CfbBits *, glyphPointer, CfbBits, int, int, int);
-extern void cfbStippleStackTE(CfbBits *, glyphPointer, CfbBits, int, int, int);
-typedef void (*stippleProcPtr)(CfbBits *, glyphPointer, CfbBits, int, int, int);
+extern void		cfbStippleStack (), cfbStippleStackTE ();
 #endif
 
 void
-cfbPolyGlyphBlt8(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
-		 unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+cfbPolyGlyphBlt8 (pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int 	x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer	pglyphBase;	/* start of array of glyphs */
 {
 #ifndef GLYPHROP
-    CfbBits  pixel;
+    register CfbBits  pixel;
 #endif
 #if !defined(STIPPLE) && !defined(USE_STIPPLE_CODE)
-    CfbBits  c;
-    CfbBits  *dst;
+    register CfbBits  c;
+    register CfbBits  *dst;
 #endif
-    glyphPointer   glyphBits;
-    int	    xoff;
+    register glyphPointer   glyphBits;
+    register int	    xoff;
 
     FontPtr		pfont = pGC->font;
     CharInfoPtr		pci;
@@ -153,7 +164,7 @@ cfbPolyGlyphBlt8(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
 #endif
 #ifndef STIPPLE
 #ifdef USE_STIPPLE_CODE
-    stippleProcPtr	stipple;
+    void		(*stipple)();
 
     stipple = cfbStippleStack;
     if (FONTCONSTMETRICS(pfont))
@@ -225,20 +236,19 @@ cfbPolyGlyphBlt8(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
 	glyphBits = (glyphPointer) FONTGLYPHBITS(pglyphBase,pci);
 	xoff = x + pci->metrics.leftSideBearing;
 #if PSZ == 24
-	dstLine = pdstBase +
-	    (y - pci->metrics.ascent) * widthDst + ((xoff / PGSZB) * PSZB);
+	dstLine = pdstBase + (y - pci->metrics.ascent) * widthDst +((xoff>> 2)*3);
 #else
 	dstLine = pdstBase +
-	    (y - pci->metrics.ascent) * widthDst + (xoff >> PWSH);
+	          (y - pci->metrics.ascent) * widthDst + (xoff >> PWSH);
 #endif
 	x += pci->metrics.characterWidth;
 	if ((hTmp = pci->metrics.descent + pci->metrics.ascent))
 	{
 #if PSZ == 24
-	    xoff &= (PGSZB - 1);
+	    xoff &= 0x03;
 #else
 	    xoff &= PIM;
-#endif
+#endif /* PSZ == 24 */
 #ifdef STIPPLE
 	    STIPPLE(dstLine,glyphBits,pixel,bwidthDst,hTmp,xoff);
 #else
@@ -271,20 +281,25 @@ cfbPolyGlyphBlt8(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
 }
 
 static void
-cfbPolyGlyphBlt8Clipped(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
-			unsigned int nglyph, CharInfoPtr *ppci,
-			unsigned char *pglyphBase)
+cfbPolyGlyphBlt8Clipped(
+    DrawablePtr pDrawable,
+    GCPtr	pGC,
+    int 	x,
+    int         y,
+    unsigned int nglyph,
+    CharInfoPtr *ppci,		/* array of character info */
+    unsigned char *pglyphBase)	/* start of array of glyphs */
 {
 #ifndef GLYPHROP
-    CfbBits	pixel;
+    register CfbBits	pixel;
 #endif
 #if !defined(STIPPLE) && !defined(USE_STIPPLE_CODE)
-    CfbBits	c;
+    register CfbBits	c;
 #endif
-    glyphPointer   glyphBits;
-    int	xoff;
+    register glyphPointer   glyphBits;
+    register int	xoff;
 #if defined(USE_LEFTBITS) || (!defined(STIPPLE) && !defined(USE_STIPPLE_CODE))
-    CfbBits	*dst;
+    register CfbBits	*dst;
 #endif
 
     CharInfoPtr		pci;
@@ -359,12 +374,13 @@ cfbPolyGlyphBlt8Clipped(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
 	if ((hTmp = pci->metrics.descent + pci->metrics.ascent))
 	{
 #if PSZ == 24
-	    dstLine = pdstBase + yG * widthDst + ((xG / PGSZB) * PSZB);
+	    dstLine = pdstBase + yG * widthDst + ((xG>> 2)*3);
+	    /* never use (xG*3)>>2 */
 #else
 	    dstLine = pdstBase + yG * widthDst + (xG >> PWSH);
 #endif
 #if PSZ == 24
-	    xoff = xG & (PGSZB - 1);
+	    xoff = xG & 3;
 #else
 	    xoff = xG & PIM;
 #endif

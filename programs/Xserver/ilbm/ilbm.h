@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/ilbm/ilbm.h,v 3.3 2003/11/17 22:20:43 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,6 +54,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ilbm.h,v 5.31 94/04/17 20:28:15 dpw Exp $ */
 /* Monochrome Frame Buffer definitions
    written by drewry, september 1986
 */

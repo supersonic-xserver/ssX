@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftdbgmem.c                                                             */
 /*                                                                         */
 /*    Memory debugger (body).                                              */
 /*                                                                         */
-/*  Copyright 2001 by                                                      */
+/*  Copyright 2001, 2002, 2003, 2004 by                                    */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -30,7 +37,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
   typedef struct FT_MemNodeRec_*   FT_MemNode;
@@ -43,15 +49,15 @@
     FT_Byte*     address;
     FT_Long      size;     /* < 0 if the block was freed */
 
-   const char*  alloc_file_name;
+    const char*  alloc_file_name;
     FT_Long      alloc_line_no;
 
-   const char*  free_file_name;
+    const char*  free_file_name;
     FT_Long      free_line_no;
 
     FT_MemNode   link;
 
- } FT_MemNodeRec;
+  } FT_MemNodeRec;
 
 
   typedef struct  FT_MemTableRec_
@@ -63,17 +69,24 @@
     FT_ULong         alloc_total;
     FT_ULong         alloc_current;
     FT_ULong         alloc_max;
+    FT_ULong         alloc_count;
 
-   const char*      file_name;
+    FT_Bool          bound_total;    
+    FT_ULong         alloc_total_max;
+    
+    FT_Bool          bound_count;
+    FT_ULong         alloc_count_max;
+
+    const char*      file_name;
     FT_Long          line_no;
 
     FT_Memory        memory;
-   FT_Pointer       memory_user;
+    FT_Pointer       memory_user;
     FT_Alloc_Func    alloc;
     FT_Free_Func     free;
     FT_Realloc_Func  realloc;
 
- } FT_MemTableRec;
+  } FT_MemTableRec;
 
 
 #define FT_MEM_SIZE_MIN  7
@@ -121,8 +134,6 @@
     13845163,
   };
 
-
-#include <stdarg.h>
 
 
   extern void
@@ -199,12 +210,13 @@
       FT_ULong     i;
 
 
-      new_buckets = ft_mem_table_alloc( table,
+      new_buckets = (FT_MemNode *)
+                    ft_mem_table_alloc( table,
                                         new_size * sizeof ( FT_MemNode ) );
       if ( new_buckets == NULL )
         return;
 
-      MEM_Set( new_buckets, 0, sizeof ( FT_MemNode ) * new_size );
+      FT_MEM_ZERO( new_buckets, sizeof ( FT_MemNode ) * new_size );
 
       for ( i = 0; i < table->size; i++ )
       {
@@ -241,11 +253,11 @@
     FT_MemTable  table;
 
 
-    table = memory->alloc( memory, sizeof ( *table ) );
+    table = (FT_MemTable)memory->alloc( memory, sizeof ( *table ) );
     if ( table == NULL )
       goto Exit;
 
-    MEM_Set( table, 0, sizeof ( *table ) );
+    FT_MEM_ZERO( table, sizeof ( *table ) );
 
     table->size  = FT_MEM_SIZE_MIN;
     table->nodes = 0;
@@ -258,17 +270,18 @@
     table->realloc = memory->realloc;
     table->free    = memory->free;
 
-    table->buckets = memory->alloc( memory,
+    table->buckets = (FT_MemNode *)
+                     memory->alloc( memory,
                                     table->size * sizeof ( FT_MemNode ) );
     if ( table->buckets )
-      MEM_Set( table->buckets, 0, sizeof ( FT_MemNode ) * table->size );
+      FT_MEM_ZERO( table->buckets, sizeof ( FT_MemNode ) * table->size );
     else
     {
       memory->free( memory, table );
       table = NULL;
     }
 
- Exit:
+  Exit:
     return table;
   }
 
@@ -322,12 +335,13 @@
 
       table->size   = 0;
       table->nodes  = 0;
-      free( table );
 
       printf(
         "FreeType: total memory allocations = %ld\n", table->alloc_total );
       printf(
         "FreeType: maximum memory footprint = %ld\n", table->alloc_max );
+
+      free( table );
 
       if ( leak_count > 0 )
         ft_mem_debug_panic(
@@ -395,7 +409,7 @@
       }
 
       /* we need to create a new node in this table */
-      node = ft_mem_table_alloc( table, sizeof ( *node ) );
+      node = (FT_MemNode)ft_mem_table_alloc( table, sizeof ( *node ) );
       if ( node == NULL )
         ft_mem_debug_panic( "not enough memory to run memory tests" );
 
@@ -449,7 +463,7 @@
 
         /* we simply invert the node's size to indicate that the node */
         /* was freed.  We also change its contents.                   */
-        MEM_Set( address, 0xF3, node->size );
+        FT_MEM_SET( address, 0xF3, node->size );
 
         table->alloc_current -= node->size;
         node->size            = -node->size;
@@ -469,16 +483,28 @@
   ft_mem_debug_alloc( FT_Memory  memory,
                       FT_Long    size )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
     FT_Byte*     block;
 
 
     if ( size <= 0 )
       ft_mem_debug_panic( "negative block size allocation (%ld)", size );
 
-    block = ft_mem_table_alloc( table, size );
+    /* return NULL if the maximum number of allocations was reached */
+    if ( table->bound_count &&
+         table->alloc_count >= table->alloc_count_max )
+      return NULL;
+
+    /* return NULL if this allocation would overflow the maximum heap size */
+    if ( table->bound_total && 
+         table->alloc_current + (FT_ULong)size > table->alloc_total_max )
+      return NULL;         
+
+    block = (FT_Byte *)ft_mem_table_alloc( table, size );
     if ( block )
       ft_mem_table_set( table, block, (FT_ULong)size );
+
+    table->alloc_count++;
 
     table->file_name = NULL;
     table->line_no   = 0;
@@ -491,7 +517,7 @@
   ft_mem_debug_free( FT_Memory   memory,
                      FT_Pointer  block )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
 
 
     if ( block == NULL )
@@ -513,7 +539,7 @@
                         FT_Long     new_size,
                         FT_Pointer  block )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
     FT_MemNode   node, *pnode;
     FT_Pointer   new_block;
 
@@ -544,7 +570,7 @@
         block, file_name, line_no );
 
     if ( node->size != cur_size )
-      ft_mem_debug_panic( "invalid realloc request for %p. cur_size is "
+      ft_mem_debug_panic( "invalid ft_realloc request for %p. cur_size is "
                           "%ld instead of %ld in (%s:%ld)",
                           block, cur_size, node->size, file_name, line_no );
 
@@ -552,7 +578,7 @@
     if ( new_block == NULL )
       return NULL;
 
-    memcpy( new_block, block, cur_size < new_size ? cur_size : new_size );
+    ft_memcpy( new_block, block, cur_size < new_size ? cur_size : new_size );
 
     table->file_name = file_name;
     table->line_no   = line_no;
@@ -570,15 +596,42 @@
     FT_Int       result = 0;
 
 
-    if ( getenv( "FT_DEBUG_MEMORY" ) )
+    if ( getenv( "FT2_DEBUG_MEMORY" ) )
     {
       table = ft_mem_table_new( memory );
       if ( table )
       {
+        const char*  p;
+        
         memory->user    = table;
         memory->alloc   = ft_mem_debug_alloc;
         memory->realloc = ft_mem_debug_realloc;
         memory->free    = ft_mem_debug_free;
+        
+        p = getenv( "FT2_ALLOC_TOTAL_MAX" );
+        if ( p != NULL )
+        {
+          FT_Long   total_max = ft_atol(p);
+          
+          if ( total_max > 0 )
+          {
+            table->bound_total     = 1;
+            table->alloc_total_max = (FT_ULong) total_max;
+          }
+        }
+        
+        p = getenv( "FT2_ALLOC_COUNT_MAX" );
+        if ( p != NULL )
+        {
+          FT_Long  total_count = ft_atol(p);
+          
+          if ( total_count > 0 )
+          {
+            table->bound_count     = 1;
+            table->alloc_count_max = (FT_ULong) total_count;
+          }
+        }
+
         result = 1;
       }
     }
@@ -589,7 +642,7 @@
   extern void
   ft_mem_debug_done( FT_Memory  memory )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
 
 
     if ( table )
@@ -611,7 +664,7 @@
                   const char*  file_name,
                   FT_Long      line_no )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
 
 
     if ( table )
@@ -631,7 +684,7 @@
                     const char*  file_name,
                     FT_Long      line_no )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
 
 
     if ( table )
@@ -649,7 +702,7 @@
                  const char*  file_name,
                  FT_Long      line_no )
   {
-    FT_MemTable  table = memory->user;
+    FT_MemTable  table = (FT_MemTable)memory->user;
 
 
     if ( table )
@@ -657,7 +710,7 @@
       table->file_name = file_name;
       table->line_no   = line_no;
     }
-    FT_Free( memory, block );
+    FT_Free( memory, (void **)block );
   }
 
 

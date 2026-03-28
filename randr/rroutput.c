@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,6 +28,11 @@
  */
 
 #include "randrstr.h"
+#include "dixaccess.h"
+#include "dixstruct.h"
+#include "windowstr.h"
+#include "swaprep.h"
+#include "randr_compat_proto.h"
 
 RESTYPE	RROutputType;
 
@@ -494,7 +506,7 @@ ProcRRGetOutputInfo (ClientPtr client)
     {
 	crtcs[i] = output->crtcs[i]->id;
 	if (client->swapped)
-	    swapl (&crtcs[i], n);
+	    swapl(&crtcs[i]);
     }
     for (i = 0; i < output->numModes + output->numUserModes; i++)
     {
@@ -503,26 +515,26 @@ ProcRRGetOutputInfo (ClientPtr client)
 	else
 	    modes[i] = output->userModes[i - output->numModes]->mode.id;
 	if (client->swapped)
-	    swapl (&modes[i], n);
+	    swapl(&modes[i]);
     }
     for (i = 0; i < output->numClones; i++)
     {
 	clones[i] = output->clones[i]->id;
 	if (client->swapped)
-	    swapl (&clones[i], n);
+	    swapl(&clones[i]);
     }
     memcpy (name, output->name, output->nameLength);
     if (client->swapped) {
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.timestamp, n);
-	swapl(&rep.crtc, n);
-	swapl(&rep.mmWidth, n);
-	swapl(&rep.mmHeight, n);
-	swaps(&rep.nCrtcs, n);
-	swaps(&rep.nModes, n);
-	swaps(&rep.nClones, n);
-	swaps(&rep.nameLength, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.timestamp);
+	swapl(&rep.crtc);
+	swapl(&rep.mmWidth);
+	swapl(&rep.mmHeight);
+	swaps(&rep.nCrtcs);
+	swaps(&rep.nModes);
+	swaps(&rep.nClones);
+	swaps(&rep.nameLength);
     }
     WriteToClient(client, sizeof(xRRGetOutputInfoReply), (char *)&rep);
     if (extraLen)

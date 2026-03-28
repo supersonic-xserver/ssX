@@ -1,7 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_apm.c,v 3.15 2005/10/14 15:17:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <X11/X.h>
 #include "os.h"
@@ -9,13 +20,6 @@
 #include "xf86Priv.h"
 #define XF86_OS_PRIVS
 #include "xf86_OSproc.h"
-
-#ifdef HAVE_ACPI
-extern PMClose lnxACPIOpen(void);
-#endif
-
-#ifdef HAVE_APM
-
 #include "lnx.h"
 #include <linux/apm_bios.h>
 #include <unistd.h>
@@ -36,6 +40,7 @@ extern PMClose lnxACPIOpen(void);
 #endif
 
 static PMClose lnxAPMOpen(void);
+extern PMClose lnxACPIOpen(void);
 static void lnxCloseAPM(void);
 static pointer APMihPtr = NULL;
 
@@ -109,11 +114,6 @@ lnxPMConfirmEventToOs(int fd, pmEvent event)
     case XF86_APM_CRITICAL_SUSPEND:
     case XF86_APM_USER_SUSPEND:
 	if (ioctl( fd, APM_IOC_SUSPEND, NULL )) {
-	    /* I believe this is wrong (EE)
-	       EBUSY is sent when a device refuses to be suspended.
-	       In this case we still need to undo everything we have
-	       done to suspend ourselves or we will stay in suspended
-	       state forever. */
 	    if (errno == EBUSY)
 		return PM_CONTINUE;
 	    else
@@ -131,29 +131,20 @@ lnxPMConfirmEventToOs(int fd, pmEvent event)
     }
 }
 
-#endif // HAVE_APM
-
 PMClose
 xf86OSPMOpen(void)
 {
 	PMClose ret = NULL;
 
-#ifdef HAVE_ACPI
-	/* Favour ACPI over APM, but only when enabled */
+	/* Favour ACPI over APM */
 
-	if (!xf86acpiDisableFlag)
-		ret = lnxACPIOpen();
+	ret = lnxACPIOpen();
 
 	if (!ret)
-#endif
-#ifdef HAVE_APM
 		ret = lnxAPMOpen();
-#endif
 
 	return ret;
 }
-
-#ifdef HAVE_APM
 
 static PMClose
 lnxAPMOpen(void)
@@ -184,7 +175,8 @@ lnxAPMOpen(void)
 	xf86MsgVerb(X_INFO,3,"Open APM successful\n");
 	return lnxCloseAPM;
     }
-    xf86MsgVerb(X_INFO,3,"No APM support in BIOS or kernel\n");
+    xf86MsgVerb(X_WARNING,3,"Open APM failed (%s) (%s)\n", APM_DEVICE,
+		strerror(errno));
     return NULL;
 }
 
@@ -203,4 +195,3 @@ lnxCloseAPM(void)
     }
 }
 
-#endif // HAVE_APM

@@ -6,7 +6,7 @@
 
 1.  Supported hardware
 
-The s3virge driver in XFree86 4.7.0 supports the S3 ViRGE, ViRGE DX, GX, GX2,
+The s3virge driver in XFree86 4.5.0 supports the S3 ViRGE, ViRGE DX, GX, GX2,
 MX, MX+, and VX chipsets.  It also supports Trio3D and Trio3D/2x chips.  A
 majority of testing is done on ViRGE DX chips, making them the most stable to
 date.  This release has added support for doublescan modes on DX.
@@ -63,4 +63,4 @@ please contact our support email address  <XFree86@XFree86.org>
      Generated from XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/s3virge.sgml,v 1.7 dawes Exp $
 
 
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.s3virge,v 1.28tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/README.s3virge,v 1.27 2005/03/17 01:11:55 dawes Exp $

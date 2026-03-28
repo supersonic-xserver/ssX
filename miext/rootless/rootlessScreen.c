@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Screen routines for generic rootless X server
  */
 /*
@@ -28,11 +35,8 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessScreen.c,v 1.4 2005/10/16 18:06:07 tsi Exp $ */
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "mi.h"
 #include "scrnintstr.h"
@@ -60,7 +64,7 @@ extern int RootlessMiValidateTree(WindowPtr pRoot, WindowPtr pChild,
                                   VTKind kind);
 extern Bool RootlessCreateGC(GCPtr pGC);
 
-// Initialize globals
+/* Initialize globals */
 int rootlessGCPrivateIndex = -1;
 int rootlessScreenPrivateIndex = -1;
 int rootlessWindowPrivateIndex = -1;
@@ -147,7 +151,7 @@ RootlessCloseScreen(int i, ScreenPtr pScreen)
 
     s = SCREENREC(pScreen);
 
-    // fixme unwrap everything that was wrapped?
+    /* fixme unwrap everything that was wrapped? */
     pScreen->CloseScreen = s->CloseScreen;
 
     if (s->pixmap_data != NULL) {
@@ -172,11 +176,11 @@ RootlessGetImage(DrawablePtr pDrawable, int sx, int sy, int w, int h,
         int x0, y0, x1, y1;
         RootlessWindowRec *winRec;
 
-        // Many apps use GetImage to sync with the visible frame buffer
-        // FIXME: entire screen or just window or all screens?
+        /* Many apps use GetImage to sync with the visible frame buffer */
+        /* FIXME: entire screen or just window or all screens? */
         RootlessRedisplayScreen(pScreen);
 
-        // RedisplayScreen stops drawing, so we need to start it again
+        /* RedisplayScreen stops drawing, so we need to start it again */
         RootlessStartDrawing((WindowPtr)pDrawable);
 
         /* Check that we have some place to read from. */
@@ -247,7 +251,7 @@ RootlessComposite(CARD8 op, PicturePtr pSrc, PicturePtr pMask, PicturePtr pDst,
     PictureScreenPtr ps = GetPictureScreen(pScreen);
     WindowPtr srcWin, dstWin, maskWin = NULL;
 
-    if (pMask) {                        // pMask can be NULL
+    if (pMask) {                        /* pMask can be NULL */
         maskWin = (pMask->pDrawable->type == DRAWABLE_WINDOW) ?
                   (WindowPtr)pMask->pDrawable :  NULL;
     }
@@ -256,7 +260,7 @@ RootlessComposite(CARD8 op, PicturePtr pSrc, PicturePtr pMask, PicturePtr pDst,
     dstWin  = (pDst->pDrawable->type == DRAWABLE_WINDOW) ?
               (WindowPtr)pDst->pDrawable  :  NULL;
 
-    // SCREEN_UNWRAP(ps, Composite);
+    /* SCREEN_UNWRAP(ps, Composite); */
     ps->Composite = SCREENREC(pScreen)->Composite;
 
     if (srcWin  && IsFramedWindow(srcWin))
@@ -275,7 +279,7 @@ RootlessComposite(CARD8 op, PicturePtr pSrc, PicturePtr pMask, PicturePtr pDst,
     }
 
     ps->Composite = RootlessComposite;
-    // SCREEN_WRAP(ps, Composite);
+    /* SCREEN_WRAP(ps, Composite); */
 }
 
 
@@ -299,11 +303,11 @@ RootlessGlyphs(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
     if (srcWin && IsFramedWindow(srcWin)) RootlessStartDrawing(srcWin);
     if (dstWin && IsFramedWindow(dstWin)) RootlessStartDrawing(dstWin);
 
-    //SCREEN_UNWRAP(ps, Glyphs);
+    /* SCREEN_UNWRAP(ps, Glyphs); */
     ps->Glyphs = SCREENREC(pScreen)->Glyphs;
     ps->Glyphs(op, pSrc, pDst, maskFormat, xSrc, ySrc, nlist, list, glyphs);
     ps->Glyphs = RootlessGlyphs;
-    //SCREEN_WRAP(ps, Glyphs);
+    /* SCREEN_WRAP(ps, Glyphs); */
 
     if (dstWin && IsFramedWindow(dstWin)) {
         x = xSrc;
@@ -357,7 +361,7 @@ RootlessGlyphs(CARD8 op, PicturePtr pSrc, PicturePtr pDst,
     }
 }
 
-#endif // RENDER
+#endif /* RENDER */
 
 
 /*
@@ -375,11 +379,11 @@ RootlessValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
     ScreenPtr pScreen = pParent->drawable.pScreen;
 
     SCREEN_UNWRAP(pScreen, ValidateTree);
-    RL_DEBUG_MSG("VALIDATETREE start ");
+    RL_DEBUG_MSG(("VALIDATETREE start "));
 
-    // Use our custom version to validate from root
+    /* Use our custom version to validate from root */
     if (IsRoot(pParent)) {
-        RL_DEBUG_MSG("custom ");
+        RL_DEBUG_MSG(("custom "));
         result = RootlessMiValidateTree(pParent, pChild, kind);
     } else {
         HUGE_ROOT(pParent);
@@ -388,7 +392,7 @@ RootlessValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
     }
 
     SCREEN_WRAP(pScreen, ValidateTree);
-    RL_DEBUG_MSG("VALIDATETREE end\n");
+    RL_DEBUG_MSG(("VALIDATETREE end\n"));
 
     return result;
 }
@@ -407,27 +411,29 @@ RootlessMarkOverlappedWindows(WindowPtr pWin, WindowPtr pFirst,
     Bool result;
     ScreenPtr pScreen = pWin->drawable.pScreen;
     SCREEN_UNWRAP(pScreen, MarkOverlappedWindows);
-    RL_DEBUG_MSG("MARKOVERLAPPEDWINDOWS start ");
+    RL_DEBUG_MSG(("MARKOVERLAPPEDWINDOWS start "));
 
     HUGE_ROOT(pWin);
     if (IsRoot(pWin)) {
-        // root - mark nothing
-        RL_DEBUG_MSG("is root not marking ");
+        /* root - mark nothing */
+        RL_DEBUG_MSG(("is root not marking "));
         result = FALSE;
     }
     else if (! IsTopLevel(pWin)) {
-        // not top-level window - mark normally
+        /* not top-level window - mark normally */
         result = pScreen->MarkOverlappedWindows(pWin, pFirst, ppLayerWin);
     }
     else {
-        //top-level window - mark children ONLY - NO overlaps with sibs (?)
-        // This code copied from miMarkOverlappedWindows()
+	/*
+         * top-level window - mark children ONLY - NO overlaps with sibs (?)
+         * This code copied from miMarkOverlappedWindows()
+	 */
 
         register WindowPtr pChild;
         Bool anyMarked = FALSE;
         void (* MarkWindow)() = pScreen->MarkWindow;
 
-        RL_DEBUG_MSG("is top level! ");
+        RL_DEBUG_MSG(("is top level! "));
         /* single layered systems are easy */
         if (ppLayerWin) *ppLayerWin = pWin;
 
@@ -464,7 +470,7 @@ RootlessMarkOverlappedWindows(WindowPtr pWin, WindowPtr pFirst,
     }
     NORMAL_ROOT(pWin);
     SCREEN_WRAP(pScreen, MarkOverlappedWindows);
-    RL_DEBUG_MSG("MARKOVERLAPPEDWINDOWS end\n");
+    RL_DEBUG_MSG(("MARKOVERLAPPEDWINDOWS end\n"));
 
     return result;
 }
@@ -539,7 +545,7 @@ RootlessBlockHandler(pointer pbdata, OSTimePtr pTimeout, pointer pReadmask)
 static void
 RootlessWakeupHandler(pointer data, int i, pointer LastSelectMask)
 {
-    // nothing here
+    /* nothing here */
 }
 
 
@@ -559,7 +565,7 @@ RootlessAllocatePrivates(ScreenPtr pScreen)
         rootlessGeneration = serverGeneration;
     }
 
-    // no allocation needed for screen privates
+    /* no allocation needed for screen privates */
     if (!AllocateGCPrivate(pScreen, rootlessGCPrivateIndex,
                            sizeof(RootlessGCRec)))
         return FALSE;
@@ -568,7 +574,7 @@ RootlessAllocatePrivates(ScreenPtr pScreen)
 
     s = xalloc(sizeof(RootlessScreenRec));
     if (! s) return FALSE;
-    SCREENREC(pScreen) = s;
+    SCREENPRV(pScreen) = s;
 
     s->pixmap_data = NULL;
     s->pixmap_data_size = 0;
@@ -590,7 +596,7 @@ RootlessWrap(ScreenPtr pScreen)
     if (pScreen->a) { \
         s->a = pScreen->a; \
     } else { \
-        RL_DEBUG_MSG("null screen fn " #a "\n"); \
+        RL_DEBUG_MSG(("null screen fn " #a "\n")); \
         s->a = NULL; \
     } \
     pScreen->a = Rootless##a
@@ -623,7 +629,7 @@ RootlessWrap(ScreenPtr pScreen)
 
 #ifdef RENDER
     {
-        // Composite and Glyphs don't use normal screen wrapping
+        /* Composite and Glyphs don't use normal screen wrapping */
         PictureScreenPtr ps = GetPictureScreen(pScreen);
         s->Composite = ps->Composite;
         ps->Composite = RootlessComposite;
@@ -632,8 +638,8 @@ RootlessWrap(ScreenPtr pScreen)
     }
 #endif
 
-    // WRAP(ClearToBackground); fixme put this back? useful for shaped wins?
-    // WRAP(RestoreAreas); fixme put this back?
+    /* WRAP(ClearToBackground); fixme put this back? useful for shaped wins? */
+    /* WRAP(RestoreAreas); fixme put this back? */
 
 #undef WRAP
 }

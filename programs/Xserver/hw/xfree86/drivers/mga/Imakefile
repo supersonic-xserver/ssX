@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/Imakefile,v 1.54tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/Imakefile,v 1.52 2005/03/01 03:48:52 dawes Exp $
 XCOMM
 XCOMM This is an Imakefile for the MGA driver.
 XCOMM
@@ -62,7 +62,8 @@ SUBDIRS = $(HALSUBDIRS) util
 #if BuildXF86DRI
 DRISRCS = mga_dri.c
 DRIOBJS = mga_dri.o
-DRIINCLUDES = -I$(SERVERSRC)/GL/dri -I$(LIBSRC)/GL/dri -I$(DRMINCLUDESDIR)
+DRIINCLUDES = -I$(SERVERSRC)/GL/dri -I$(LIBSRC)/GL/dri \
+	-I$(TOP)/include -I$(DRMINCLUDESDIR)
 DRIDEFINES = $(GLX_DEFINES)
 #endif
 
@@ -115,16 +116,19 @@ SRCS = $(MGASRCS) $(MGAHALSRCS)
 OBJS = $(MGAOBJS) $(MGAHALOBJS)
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include $(MGAHALINCLUDES)
+INCLUDES = -I. -I../../include $(MGAHALINCLUDES)
 #else
-INCLUDES = $(MGAHALINCLUDES) -I$(XF86COMSRC) -I$(XF86OSSRC) \
-           -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(XF86SRC)/int10 \
-           -I$(XF86SRC)/xaa -I$(XF86SRC)/rac \
+INCLUDES = -I. $(MGAHALINCLUDES) -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/fb \
+           -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi -I$(XF86SRC)/int10 \
+           -I$(SERVERSRC)/cfb -I$(XF86SRC)/xaa -I$(XF86SRC)/rac \
            -I$(XF86SRC)/vgahw -I$(XF86SRC)/fbdevhw \
            -I$(XF86SRC)/ramdac -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-           -I$(SERVERSRC)/Xext -I$(XF86SRC)/xf8_32bpp \
-           -I$(SERVERSRC)/include -I$(XF86SRC)/shadowfb -I$(SERVERSRC)/render \
-           -I$(XF86SRC)/vbe $(DRIINCLUDES)
+           -I$(SERVERSRC)/Xext -I$(XF86SRC)/xf8_32bpp\
+           -I$(FONTINCSRC) -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+           -I$(XF86SRC)/xf24_32bpp -I$(XF86SRC)/shadowfb -I$(EXTINCSRC) \
+	   -I$(SERVERSRC)/render \
+	   -I$(XF86SRC)/vbe $(DRIINCLUDES)
 #endif
 
 DEFINES = $(MGAHALDEFINES) $(DRIDEFINES)
@@ -197,6 +201,8 @@ InstallDriverSDKObjectModule(mga,$(DRIVERSDKMODULEDIR),drivers)
 InstallDriverSDKObjectModule(mga_hal,$(DRIVERSDKMODULEDIR),drivers)
 #endif
 
+#if BuildMatroxHal
 MakeSubdirs($(SUBDIRS))
 ForceSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
+#endif

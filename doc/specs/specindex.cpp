@@ -125,7 +125,7 @@
     <li><a href="ctlseqs.html">Xterm control sequences</a> <a href="../PDF/ctlseqs.pdf">[PDF]</a></li>
   </ul>
 
-  <!-- $XFree86: xc/doc/specs/specindex.cpp,v 1.1 2005/01/14 04:25:13 dawes Exp $ -->
+  <!-- $XFree86: xc/doc/specs/specindex.cpp,v 1.2 2005/03/12 23:54:51 dawes Exp $ -->
 </body>
 </html>
  

@@ -45,7 +45,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-XCOMM $XFree86: xc/lib/GLw/Imakefile,v 1.4tsi Exp $
+XCOMM $XFree86: xc/lib/GLw/Imakefile,v 1.4 2004/02/13 23:58:29 dawes Exp $
 
 XCOMM
 XCOMM Imakefile for GLw library - lots of modifications for XFree86 by
@@ -79,7 +79,7 @@ SHAREDCODEDEF = SharedCodeDef -DUSE_XM_STUBS
 
 GLWSRCDIR = $(OGLSAMPLESRCDIR)/main/gfx/lib/glw
 
-INCLUDES = $(MOTIF_INCLUDES)
+INCLUDES = $(MOTIF_INCLUDES) -I.
 
 LOCAL_LDFLAGS = $(MOTIF_LDFLAGS)
 

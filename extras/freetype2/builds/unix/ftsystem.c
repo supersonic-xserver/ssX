@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftsystem.c                                                             */
 /*                                                                         */
 /*    Unix-specific FreeType low-level system interface (body).            */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2004 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,17 +23,14 @@
 /***************************************************************************/
 
 
+#include <ft2build.h>
+  /* we use our special ftconfig.h file, not the standard one */
 #include <ftconfig.h>
-#include <freetype/internal/ftdebug.h>
-#include <freetype/ftsystem.h>
-#include <freetype/fterrors.h>
-#include <freetype/fttypes.h>
-#include <freetype/internal/ftobjs.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include FT_INTERNAL_DEBUG_H
+#include FT_SYSTEM_H
+#include FT_ERRORS_H
+#include FT_TYPES_H
+#include FT_INTERNAL_OBJECTS_H
 
   /* memory-mapping includes and definitions */
 #ifdef HAVE_UNISTD_H
@@ -51,14 +55,16 @@
 #else
   extern
 #endif
-  int  munmap( char*  addr,
-               int    len );
+  int
+  munmap( char*  addr,
+          int    len );
 
 #define MUNMAP_ARG_CAST  char *
 
 #endif /* NEED_DECLARATION_MUNMAP */
 
 
+#include <sys/types.h>
 #include <sys/stat.h>
 
 #ifdef HAVE_FCNTL_H
@@ -68,6 +74,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 
   /*************************************************************************/
@@ -87,14 +94,15 @@
   /*                                                                       */
   /* <Input>                                                               */
   /*    memory :: A pointer to the memory object.                          */
+  /*                                                                       */
   /*    size   :: The requested size in bytes.                             */
   /*                                                                       */
   /* <Return>                                                              */
-  /*    block  :: The address of newly allocated block.                    */
+  /*    The address of newly allocated block.                              */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void*  ft_alloc( FT_Memory  memory,
-                   long       size )
+  FT_CALLBACK_DEF( void* )
+  ft_alloc( FT_Memory  memory,
+            long       size )
   {
     FT_UNUSED( memory );
 
@@ -122,11 +130,11 @@
   /* <Return>                                                              */
   /*    The address of the reallocated memory block.                       */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void*  ft_realloc( FT_Memory  memory,
-                     long       cur_size,
-                     long       new_size,
-                     void*      block )
+  FT_CALLBACK_DEF( void* )
+  ft_realloc( FT_Memory  memory,
+              long       cur_size,
+              long       new_size,
+              void*      block )
   {
     FT_UNUSED( memory );
     FT_UNUSED( cur_size );
@@ -144,13 +152,13 @@
   /*    The memory release function.                                       */
   /*                                                                       */
   /* <Input>                                                               */
-  /*    memory  :: A pointer to the memory object.                         */
+  /*    memory :: A pointer to the memory object.                          */
   /*                                                                       */
-  /*    block   :: The address of block in memory to be freed.             */
+  /*    block  :: The address of block in memory to be freed.              */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void  ft_free( FT_Memory  memory,
-                 void*      block )
+  FT_CALLBACK_DEF( void )
+  ft_free( FT_Memory  memory,
+           void*      block )
   {
     FT_UNUSED( memory );
 
@@ -182,16 +190,16 @@
   /*************************************************************************/
   /*                                                                       */
   /* <Function>                                                            */
-  /*    ft_close_stream                                                    */
+  /*    ft_close_stream_by_munmap                                          */
   /*                                                                       */
   /* <Description>                                                         */
-  /*    The function to close a stream.                                    */
+  /*    The function to close a stream which is opened by mmap.            */
   /*                                                                       */
   /* <Input>                                                               */
   /*    stream :: A pointer to the stream object.                          */
   /*                                                                       */
-  FT_CALLBACK_DEF
-  void  ft_close_stream( FT_Stream  stream )
+  FT_CALLBACK_DEF( void )
+  ft_close_stream_by_munmap( FT_Stream  stream )
   {
     munmap( (MUNMAP_ARG_CAST)stream->descriptor.pointer, stream->size );
 
@@ -204,22 +212,30 @@
   /*************************************************************************/
   /*                                                                       */
   /* <Function>                                                            */
-  /*    FT_New_Stream                                                      */
+  /*    ft_close_stream_by_free                                            */
   /*                                                                       */
   /* <Description>                                                         */
-  /*    Creates a new stream object.                                       */
+  /*    The function to close a stream which is created by ft_alloc.       */
   /*                                                                       */
   /* <Input>                                                               */
-  /*    filepathname :: The name of the stream (usually a file) to be      */
-  /*                    opened.                                            */
+  /*    stream :: A pointer to the stream object.                          */
   /*                                                                       */
-  /*    stream       :: A pointer to the stream object.                    */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    FreeType error code.  0 means success.                             */
-  /*                                                                       */
-  FT_EXPORT_DEF( FT_Error )  FT_New_Stream( const char*  filepathname,
-                                            FT_Stream    stream )
+  FT_CALLBACK_DEF( void )
+  ft_close_stream_by_free( FT_Stream  stream )
+  {
+    ft_free( NULL, stream->descriptor.pointer );
+
+    stream->descriptor.pointer = NULL;
+    stream->size               = 0;
+    stream->base               = 0;
+  }
+
+
+  /* documentation is in ftobjs.h */
+
+  FT_EXPORT_DEF( FT_Error )
+  FT_Stream_Open( FT_Stream    stream,
+                  const char*  filepathname )
   {
     int          file;
     struct stat  stat_buf;
@@ -232,14 +248,27 @@
     file = open( filepathname, O_RDONLY );
     if ( file < 0 )
     {
-      FT_ERROR(( "FT_New_Stream:" ));
+      FT_ERROR(( "FT_Stream_Open:" ));
       FT_ERROR(( " could not open `%s'\n", filepathname ));
       return FT_Err_Cannot_Open_Resource;
     }
 
+    /* Here we ensure that a "fork" will _not_ duplicate   */
+    /* our opened input streams on Unix.  This is critical */
+    /* since it avoids some (possible) access control      */
+    /* issues and cleans up the kernel file table a bit.   */
+    /*                                                     */
+#ifdef F_SETFD
+#ifdef FD_CLOEXEC
+    (void)fcntl( file, F_SETFD, FD_CLOEXEC );
+#else
+    (void)fcntl( file, F_SETFD, 1 );
+#endif /* FD_CLOEXEC */
+#endif /* F_SETFD */
+
     if ( fstat( file, &stat_buf ) < 0 )
     {
-      FT_ERROR(( "FT_New_Stream:" ));
+      FT_ERROR(( "FT_Stream_Open:" ));
       FT_ERROR(( " could not `fstat' file `%s'\n", filepathname ));
       goto Fail_Map;
     }
@@ -253,11 +282,49 @@
                                           file,
                                           0 );
 
-    if ( (long)stream->base == -1 )
+    if ( (long)stream->base != -1 )
+      stream->close = ft_close_stream_by_munmap;
+    else
     {
-      FT_ERROR(( "FT_New_Stream:" ));
+      ssize_t  total_read_count;
+    
+
+      FT_ERROR(( "FT_Stream_Open:" ));
       FT_ERROR(( " could not `mmap' file `%s'\n", filepathname ));
-      goto Fail_Map;
+      
+      stream->base = ft_alloc( NULL, stream->size );
+      
+      if ( !stream->base )
+      {
+        FT_ERROR(( "FT_Stream_Open:" ));
+        FT_ERROR(( " could not `alloc' memory\n" ));
+        goto Fail_Map;
+      }
+      
+      total_read_count = 0;
+      do {
+        ssize_t  read_count;
+
+
+        read_count = read( file, 
+                           stream->base + total_read_count, 
+                           stream->size - total_read_count );
+
+        if ( ( read_count == -1 ) )
+        {
+          if ( errno == EINTR )
+            continue;
+
+          FT_ERROR(( "FT_Stream_Open:" ));
+          FT_ERROR(( " error while `read'ing file `%s'\n", filepathname ));
+          goto Fail_Read;
+        }
+
+        total_read_count += read_count;
+
+      } while ( total_read_count != stream->size );
+
+      stream->close = ft_close_stream_by_free;
     }
 
     close( file );
@@ -265,14 +332,16 @@
     stream->descriptor.pointer = stream->base;
     stream->pathname.pointer   = (char*)filepathname;
 
-    stream->close = ft_close_stream;
-    stream->read  = 0;
+    stream->read = 0;
 
-    FT_TRACE1(( "FT_New_Stream:" ));
+    FT_TRACE1(( "FT_Stream_Open:" ));
     FT_TRACE1(( " opened `%s' (%d bytes) successfully\n",
                 filepathname, stream->size ));
 
     return FT_Err_Ok;
+
+  Fail_Read:
+    ft_free( NULL, stream->base );
 
   Fail_Map:
     close( file );
@@ -285,18 +354,21 @@
   }
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    FT_New_Memory                                                      */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Creates a new memory object.                                       */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    A pointer to the new memory object.  0 in case of error.           */
-  /*                                                                       */
-  FT_EXPORT_DEF( FT_Memory )  FT_New_Memory( void )
+#ifdef FT_DEBUG_MEMORY
+
+  extern FT_Int
+  ft_mem_debug_init( FT_Memory  memory );
+
+  extern void
+  ft_mem_debug_done( FT_Memory  memory );
+
+#endif
+
+
+  /* documentation is in ftobjs.h */
+
+  FT_EXPORT_DEF( FT_Memory )
+  FT_New_Memory( void )
   {
     FT_Memory  memory;
 
@@ -308,26 +380,24 @@
       memory->alloc   = ft_alloc;
       memory->realloc = ft_realloc;
       memory->free    = ft_free;
+#ifdef FT_DEBUG_MEMORY
+      ft_mem_debug_init( memory );
+#endif
     }
 
     return memory;
   }
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    FT_Done_Memory                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Discards memory manager.                                           */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    memory :: A handle to the memory manager.                          */
-  /*                                                                       */
-  FT_EXPORT_DEF( void )  FT_Done_Memory( FT_Memory  memory )
+  /* documentation is in ftobjs.h */
+
+  FT_EXPORT_DEF( void )
+  FT_Done_Memory( FT_Memory  memory )
   {
-    free( memory );
+#ifdef FT_DEBUG_MEMORY
+    ft_mem_debug_done( memory );
+#endif
+    memory->free( memory, memory );
   }
 
 

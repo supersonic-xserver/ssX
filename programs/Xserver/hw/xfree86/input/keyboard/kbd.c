@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.12 2005/10/14 15:16:56 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/keyboard/kbd.c,v 1.9 2003/12/18 21:53:45 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 2002 by The XFree86 Project, Inc.
@@ -13,16 +27,16 @@
  */
   
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 
 #include "xf86.h"
 #include "atKeynames.h"
 #include "xf86Privstr.h"
 
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "extnsionst.h"
 #include "extinit.h"
 #else
@@ -580,8 +594,7 @@ PostKbdEvent(InputInfoPtr pInfo, unsigned int scanCode, Bool down)
   /*
    * Now map the scancodes to real X-keycodes ...
    */
-  if ((scanCode == KEY_NOTUSED) || (scanCode == KEY_UNKNOWN))
-	return;
+  if ((scanCode == KEY_NOTUSED) || (scanCode == KEY_UNKNOWN)) return;
   
   keycode = scanCode + MIN_KEYCODE;
   keysym = (keyc->curKeySyms.map +
@@ -729,17 +742,13 @@ ModuleInfoRec KeyboardInfo = {
     KeyboardAvailableOptions,
 };
 
-static MODULETEARDOWNPROTO(xf86KbdUnplug);
-
 static void
 xf86KbdUnplug(pointer	p)
 {
 }
 
-static MODULESETUPPROTO(xf86KbdPlug);
-
 static pointer
-xf86KbdPlug(ModuleDescPtr	module,
+xf86KbdPlug(pointer	module,
 	    pointer	options,
 	    int		*errmaj,
 	    int		*errmin)

@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998  Metro Link Incorporated
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -162,10 +169,8 @@ static const char *reqSymbols[] = {
         NULL
 };
 
-static MODULESETUPPROTO(SetupProc);
-
 static pointer
-SetupProc(	ModuleDescPtr module,
+SetupProc(	pointer module,
 			pointer options,
 			int *errmaj,
 			int *errmin )

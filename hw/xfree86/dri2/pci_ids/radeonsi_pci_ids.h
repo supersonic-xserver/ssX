@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 CHIPSET(0x6780, TAHITI_6780, TAHITI)
 CHIPSET(0x6784, TAHITI_6784, TAHITI)
 CHIPSET(0x6788, TAHITI_6788, TAHITI)

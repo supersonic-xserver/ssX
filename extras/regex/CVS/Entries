@@ -1,0 +1,21 @@
+/COPYRIGHT/1.1.1.1/Mon Jan  1 12:49:18 2001//Tnetbsd-5-2-3-RELEASE
+/Makefile/1.1.1.1/Mon Jan  1 12:49:18 2001//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.1/Mon Jan  1 12:49:18 2001//Tnetbsd-5-2-3-RELEASE
+/WHATSNEW/1.1.1.1/Mon Jan  1 12:49:18 2001//Tnetbsd-5-2-3-RELEASE
+/cclass.h/1.1.1.1/Mon Jan  1 12:49:18 2001//Tnetbsd-5-2-3-RELEASE
+/cname.h/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/debug.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/engine.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/main.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/mkh/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regcomp.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regerror.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regex.3/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regex.7/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regex2.h/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regexec.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/regfree.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/split.c/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/tests/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+/utils.h/1.1.1.1/Mon Jan  1 12:49:19 2001//Tnetbsd-5-2-3-RELEASE
+D

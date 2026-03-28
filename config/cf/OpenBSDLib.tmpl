@@ -1,9 +1,10 @@
-XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.14tsi Exp $
+XCOMM platform:	$OpenBSD: OpenBSDLib.tmpl,v 1.6 2003/04/04 19:48:58 matthieu Exp $
+XCOMM platform: $XFree86: xc/config/cf/OpenBSDLib.tmpl,v 1.11 2004/12/31 14:55:35 tsi Exp $
 XCOMM
 
 /* Shared libraries dependencies */
 #if HasGcc && GccMajorVersion >= 3
-# define SharedGLUReqs	$(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) $(XLIB) -lsupc++
+# define SharedGLUReqs	$(LDPRELIB) $(XLIB) $(GLXLIB) -lsupc++
 #endif 
 
 /* Shared Library Revisions. Crank major on API Changes */
@@ -18,7 +19,7 @@ XCOMM
 #  define SharedXThrStubRev 7.0
 # endif
 # ifndef SharedXextRev
-#  define SharedXextRev 7.1
+#  define SharedXextRev 7.0
 # endif
 # ifndef SharedXssRev
 #  define SharedXssRev 2.0
@@ -98,13 +99,13 @@ XCOMM
 #  define SharedXpRev 7.0
 # endif
 # ifndef SharedXtRev
-#  define SharedXtRev 7.1
+#  define SharedXtRev 7.0
 # endif
 # ifndef SharedXaRev
 #  define SharedXaRev 2.0
 # endif
 # ifndef SharedXawRev
-#  define SharedXawRev 8.1
+#  define SharedXawRev 8.0
 # endif
 # ifndef SharedXaw6Rev
 #  define SharedXaw6Rev 7.1

@@ -1,4 +1,9 @@
-$XFree86: xc/config/cf/README,v 1.28tsi Exp $
+$Xorg: README,v 1.4 2000/08/18 04:03:58 coskrey Exp $
+
+
+
+
+$XFree86: xc/config/cf/README,v 1.24 2004/09/20 15:24:57 tsi Exp $
 
 The easiest way to write an Imakefile is to find another one that does
 something similar and copy/modify it!
@@ -20,9 +25,7 @@ Imake.tmpl provides defaults for the following variables:
 	CURDIR			current directory relative to top of sources
 	CcCmd			command to run C compiler
 	CompressCmd		command to run compress program
-	ConstructMFLAGS		Set MFLAGS to $(MAKEFLAGS)
-	ConstructMAKEFLAGS	Set MAKEFLAGS to $(MFLAGS)
-	PassMFLAGS		Include $(MFLAGS) in `make` command lines
+	ConstructMFLAGS		System V option to set MFLAGS make variable
 	CpCmd			command to copy one file to another
 	CplusplusCmd		command to run C++ compiler
 	CplusplusFilt		command to run C++ name demangler
@@ -61,8 +64,6 @@ Imake.tmpl provides defaults for the following variables:
 	HasFortran		boolean for system has Fortran compiler
 	HasGcc			boolean for system has GNU gcc compiler
 	HasGcc2			boolean for system has GNU gcc 2.x compiler
-	HasGcc3			boolean for system has GNU gcc 3.x compiler
-	HasGcc4			boolean for system has GNU gcc 4.x compiler
 	HasGcc2ForCplusplus	use gcc 2 for C++ programs?
 	HasGnuMake		use the GNU make program?
 	HasKrbIV		system has Kerberos version IV support?
@@ -100,8 +101,6 @@ Imake.tmpl provides defaults for the following variables:
 	InstManFlags		install flags for manual pages
 	InstPgmFlags		install flags for normal programs
 	InstUidFlags		install flags for xterm to chown /dev/ptys
-	InstUtmpFlags		install flags for utmp access
-	InstKmemFlags		install flags for /dev/kmem access
 	InstallCmd		command to install files
 	KrbIVIncludes		where to include KerberosIV header files from
 	KrbIVLibraries		where to load KerberosIV libraries from
@@ -235,10 +234,6 @@ X11.tmpl provides defaults for the following variables:
 	InstallFSConfig		install fs config file over old?
 	InstallLibManPages	boolean for installing library man pages
 	InstallSecurityConfig	install server security policy file over old?
-	InstallXtermSetUID	install xterm setuid, e.g., to open pty, utmp
-	InstallXtermSetGID	install xterm setgid, e.g., to open utmp
-				Defining UseUtempter overrides xterm set uid/gid
-	InstallXloadSetGID	install xload setgid to access kmem
 	InstallXdmConfig	install xdm config files over old?
 	InstallXinitConfig	install xinit config files over old?
 	KrbIVDefines		defines for use with KerberosIV
@@ -310,6 +305,7 @@ X11.tmpl provides defaults for the following variables:
 	ShmDefines		MIT-SHM define
 	TwmDir			directory in which to install twm config files
 	UseCCMakeDepend		boolean for using alternate makedepend script
+	UseRgbTxt		use rgb.txt file as is instead of DBM-compiled
 	VarDirectory		directory in /var for logs, etc., and config
 	VendorHasX11R6_3libXext	don't need Security & AppGroup in xrx plug-in
 	XAppLoadDir		directory in which to install app defaults
@@ -637,9 +633,6 @@ ComplexProgramTarget_3	Use after ComplexProgramTarget_2 for the
 
 NormalProgramTarget	Build a program.  Can be used multiple times
 			with different arguments in the same Imakefile.
-
-SetUidProgramTarget	Build a setuid program.  Normally not needed, since
-			install-flags provide the necessary functionality.
 
 Lower level rules, often used with NormalProgramTarget
 

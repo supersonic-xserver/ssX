@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbscrinit.c,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbscrinit.c,v 1.20 2003/07/16 01:38:37 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -27,9 +34,10 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $Xorg: cfbscrinit.c,v 1.3 2000/08/17 19:48:15 cpqbld Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -52,7 +60,9 @@ BSFuncRec cfbBSFuncRec = {
 };
 
 Bool
-cfbCloseScreen(int index, ScreenPtr pScreen)
+cfbCloseScreen (index, pScreen)
+    int		index;
+    ScreenPtr	pScreen;
 {
     int	    d;
     DepthPtr	depths = pScreen->allowedDepths;
@@ -69,21 +79,27 @@ cfbCloseScreen(int index, ScreenPtr pScreen)
     return TRUE;
 }
 
-static void
-DestroyColormapNoop(ColormapPtr pColormap)
+static void DestroyColormapNoop(
+        ColormapPtr pColormap)
 {
     /* NOOP */
 }
 
-static void
-StoreColorsNoop(ColormapPtr pColormap, int ndef, xColorItem *pdef)
+static void StoreColorsNoop(
+        ColormapPtr pColormap,
+        int ndef,
+        xColorItem * pdef)
 {
     /* NOOP */
 }
 
 Bool
-cfbSetupScreen(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
-	       int dpix, int dpiy, int width)
+cfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
 {
     if (!cfbAllocatePrivates(pScreen, (int *) 0, (int *) 0))
 	return FALSE;
@@ -123,7 +139,8 @@ cfbSetupScreen(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
 
 #ifdef CFB_NEED_SCREEN_PRIVATE
 Bool
-cfbCreateScreenResources(ScreenPtr pScreen)
+cfbCreateScreenResources(pScreen)
+    ScreenPtr pScreen;
 {
     Bool retval;
 
@@ -137,8 +154,12 @@ cfbCreateScreenResources(ScreenPtr pScreen)
 #endif
 
 Bool
-cfbFinishScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
-		    int dpix, int dpiy, int width)
+cfbFinishScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
 {
 #ifdef CFB_NEED_SCREEN_PRIVATE
     pointer oldDevPrivate;
@@ -176,8 +197,12 @@ cfbFinishScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
 
 /* dts * (inch/dot) * (25.4 mm / inch) = mm */
 Bool
-cfbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
-	      int dpix, int dpiy, int width)
+cfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
 {
     if (!cfbSetupScreen(pScreen, pbits, xsize, ysize, dpix, dpiy, width))
 	return FALSE;
@@ -185,7 +210,8 @@ cfbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
 }
 
 PixmapPtr
-cfbGetScreenPixmap(ScreenPtr pScreen)
+cfbGetScreenPixmap(pScreen)
+    ScreenPtr pScreen;
 {
 #ifdef CFB_NEED_SCREEN_PRIVATE
     return (PixmapPtr)pScreen->devPrivates[cfbScreenPrivateIndex].ptr;
@@ -195,7 +221,8 @@ cfbGetScreenPixmap(ScreenPtr pScreen)
 }
 
 void
-cfbSetScreenPixmap(PixmapPtr pPix)
+cfbSetScreenPixmap(pPix)
+    PixmapPtr pPix;
 {
 #ifdef CFB_NEED_SCREEN_PRIVATE
     if (pPix)

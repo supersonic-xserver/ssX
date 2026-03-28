@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/xkb/ddxCtrls.c,v 1.5 2005/10/14 15:17:28 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,10 +32,6 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <stdio.h>
 #define	NEED_EVENTS 1
 #include <X11/X.h>
@@ -36,7 +40,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
-#include <xkbsrv.h>
+#include <X11/extensions/XKBsrv.h>
 #include <X11/extensions/XI.h>
 
 void
@@ -53,8 +57,12 @@ if (xkbDebugFlags&0x4) {
 					ctrl->autoRepeat,realRepeat);
 }
 #endif
+#ifndef SSX_LEGACY_MODE
     if (dev->key && dev->key->xkbInfo && dev->key->xkbInfo->kbdProc)
 	(*dev->key->xkbInfo->kbdProc)(dev,ctrl);
+#else
+    /* stub - xkbInfo not available in legacy struct _KeyClassRec */
+#endif
     ctrl->autoRepeat= realRepeat;
     return;
 }
@@ -66,6 +74,7 @@ XkbDDXUsesSoftRepeat(DeviceIntPtr pXDev)
 #ifndef XKB_ALWAYS_USES_SOFT_REPEAT
     if (pXDev && pXDev->kbdfeed ) {
 	if (pXDev->kbdfeed->ctrl.autoRepeat) {
+#ifndef SSX_LEGACY_MODE
 	    if (pXDev->key && pXDev->key->xkbInfo) {
 		XkbDescPtr	xkb;
 		xkb= pXDev->key->xkbInfo->desc;
@@ -78,6 +87,9 @@ XkbDDXUsesSoftRepeat(DeviceIntPtr pXDev)
 		}
 		return ((xkb->ctrls->enabled_ctrls&XkbRepeatKeysMask)!=0);
 	    }
+#else
+	    /* stub - xkbInfo not available in legacy struct _KeyClassRec */
+#endif
 	}
     }
     return 0;
@@ -126,4 +138,3 @@ unsigned 	char *rep_old, *rep_new, *rep_fb;
     }
     return;
 }
-

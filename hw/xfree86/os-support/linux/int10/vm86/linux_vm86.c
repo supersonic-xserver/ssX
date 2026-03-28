@@ -1,12 +1,22 @@
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/vm86/linux_vm86.c,v 1.6 2008/10/15 20:56:04 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#include <errno.h>
-#include <string.h>
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
+#include "xf86_ansic.h"
 #include "xf86Pci.h"
 #include "compiler.h"
 #define _INT10_PRIVATE
@@ -198,7 +208,8 @@ vm86_GP_fault(xf86Int10InfoPtr pInt)
 static int
 do_vm86(xf86Int10InfoPtr pInt)
 {
-    int retval, signo;
+    volatile int signo;
+    int retval;
 
     xf86InterceptSignals(&signo);
     retval = vm86_rep(VM86S);
@@ -271,32 +282,47 @@ vm86_rep(struct vm86_struct *ptr)
 {
     int __res;
 
-#ifdef __PIC__
-    /* When compiling with -fPIC, we can't use asm constraint "b" because
-       %ebx is already taken by gcc. */
-    __asm__ __volatile__("pushl %%ebx\n\t"
-			 "push %%gs\n\t"
-			 "movl %2,%%ebx\n\t"
-			 "movl %1,%%eax\n\t"
-			 "int $0x80\n\t"
-			 "pop %%gs\n\t"
-			 "popl %%ebx"
-			 :"=a" (__res)
-			 :"n" ((int)113), "r" ((struct vm86_struct *)ptr));
+#if defined(__PIC__) && !defined(__amd64__) && !defined(__x86_64__)
+    /*
+     * When compiling with -fPIC on i386, we can't use asm constraint "b"
+     * because %ebx is already taken by gcc to hold the GOT address.
+     */
+    __asm__ __volatile__
+    (
+	"pushl %%ebx\n\t"
+	"push %%gs\n\t"
+	"movl %2,%%ebx\n\t"
+	"movl %1,%%eax\n\t"
+	"int $0x80\n\t"
+	"pop %%gs\n\t"
+	"popl %%ebx"
+	: "=a" (__res)
+	: "n" ((int)113),
+	  "r" ((struct vm86_struct *)ptr)
+	: "memory"
+    );
 #else
-    __asm__ __volatile__("push %%gs\n\t"
-			 "int $0x80\n\t"
-			 "pop %%gs"
-			 :"=a" (__res):"a" ((int)113),
-			 "b" ((struct vm86_struct *)ptr));
+    __asm__ __volatile__
+    (
+	"push %%gs\n\t"
+	"int $0x80\n\t"
+	"pop %%gs"
+	: "=a" (__res)
+	: "a" ((int)113),
+	  "b" ((struct vm86_struct *)ptr)
+	: "memory"
+    );
 #endif
 
-	    if (__res < 0) {
-		errno = -__res;
-		__res = -1;
-	    }
-	    else errno = 0;
-	    return __res;
+    if (__res < 0) {
+	errno = -__res;
+	__res = -1;
+    }
+    else
+    {
+	errno = 0;
+    }
+    return __res;
 }
 
 #endif

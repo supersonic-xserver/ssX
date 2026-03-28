@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/xeyes/Eyes.c,v 1.6 2006/01/09 15:01:08 dawes Exp $ */
+/* $XConsortium: Eyes.c,v 1.28 94/04/17 20:45:22 eswu Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XFree86: xc/programs/xeyes/Eyes.c,v 1.5 2004/12/07 16:35:36 dawes Exp $ */
 /*
 
 Copyright (c) 1991  X Consortium
@@ -44,7 +52,7 @@ from the X Consortium.
 # include <math.h>
 # include <X11/extensions/shape.h>
 
-#if (defined(SVR4) || defined(SYSV) && defined(i386)) && !defined(sun)
+#if (defined(SVR4) || defined(SYSV) && defined(i386))
 extern double hypot(double, double);
 #endif
 

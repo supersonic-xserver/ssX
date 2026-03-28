@@ -1,4 +1,6 @@
 #
+# $Xorg: system.twmrc,v 1.3 2000/08/17 19:54:08 cpqbld Exp $
+# 
 # Default twm configuration file; needs to be kept small to conserve string
 # space in systems whose compilers don't handle medium-sized strings.
 #

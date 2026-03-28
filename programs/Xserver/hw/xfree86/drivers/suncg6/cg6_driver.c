@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GX and Turbo GX framebuffer driver.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,8 +27,10 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg6/cg6_driver.c,v 1.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg6/cg6_driver.c,v 1.12 2005/02/18 02:55:09 dawes Exp $ */
 
+/* need this for PRIxPTR macro */
+#include <machine/int_fmtio.h>
 #include "xf86.h"
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"
@@ -33,13 +42,14 @@
 #include "fb.h"
 #include "xf86cmap.h"
 #include "cg6.h"
+#include "xf86sbusBus.h"
 
 static const OptionInfoRec * CG6AvailableOptions(int chipid, int busid);
 static void	CG6Identify(int flags);
 static Bool	CG6Probe(DriverPtr drv, int flags);
 static Bool	CG6PreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	CG6ScreenInit(int Index, ScreenPtr pScreen,
-			      const int argc, const char **argv);
+static Bool	CG6ScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	CG6EnterVT(int scrnIndex, int flags);
 static void	CG6LeaveVT(int scrnIndex, int flags);
 static Bool	CG6CloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -93,21 +103,6 @@ static const OptionInfoRec CG6Options[] = {
     { -1,			NULL,		OPTV_NONE,	{0}, FALSE }
 };
 
-static const char *fbSymbols[] =
-{
-    "fbPictureInit",
-    "fbScreenInit",
-    NULL
-};
-
-static const char *ramdacSymbols[] =
-{
-    "xf86CreateCursorInfoRec",
-    "xf86DestroyCursorInfoRec",
-    "xf86InitCursor",
-    NULL
-};
-
 static const char *xaaSymbols[] =
 {
     "XAACreateInfoRec",
@@ -137,7 +132,7 @@ static XF86ModuleVersionInfo suncg6VersRec =
 XF86ModuleData suncg6ModuleData = { &suncg6VersRec, cg6Setup, NULL };
 
 static pointer
-cg6Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+cg6Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -149,8 +144,7 @@ cg6Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Modules that this driver always requires can be loaded here
 	 * by calling LoadSubModule().
 	 */
-	xf86LoaderModRefSymLists(module, fbSymbols, ramdacSymbols,
-				 xaaSymbols, NULL);
+	LoaderRefSymLists(xaaSymbols, NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -308,7 +302,6 @@ CG6PreInit(ScrnInfoPtr pScrn, int flags)
     sbusDevicePtr psdp;
     MessageType from;
     int i;
-    ModuleDescPtr pMod;
 
     if (flags & PROBE_DETECT) return FALSE;
 
@@ -412,28 +405,22 @@ CG6PreInit(ScrnInfoPtr pScrn, int flags)
 	pCg6->NoAccel = TRUE;
 	xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Acceleration disabled\n");
     }
-
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+        
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	CG6FreeRec(pScrn);
 	return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
 
-    if (pCg6->HWCursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
-	    CG6FreeRec(pScrn);
-	    return FALSE;
-	}
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    if (pCg6->HWCursor && xf86LoadSubModule(pScrn, "ramdac") == NULL) {
+	CG6FreeRec(pScrn);
+	return FALSE;
     }
 
-    if (!pCg6->NoAccel) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
-	    CG6FreeRec(pScrn);
-	    return FALSE;
-	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+    if (pCg6->HWCursor && xf86LoadSubModule(pScrn, "xaa") == NULL) {
+	CG6FreeRec(pScrn);
+	return FALSE;
     }
+    xf86LoaderReqSymLists(xaaSymbols, NULL);
 
     /*********************
     set up clock and mode stuff
@@ -463,45 +450,52 @@ CG6PreInit(ScrnInfoPtr pScrn, int flags)
 /* This gets called at the start of each server generation */
 
 static Bool
-CG6ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	      const int argc, const char **argv)
+CG6ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     Cg6Ptr pCg6;
     sbusDevicePtr psdp;
-    int ret, vidmem;
+    int ret;
 
     pScrn = xf86Screens[pScreen->myNum];
     pCg6 = GET_CG6_FROM_SCRN(pScrn);
     psdp = pCg6->psdp;
-    vidmem = psdp->width * psdp->height;
 
     /* Map CG6 memory areas */
+    
     pCg6->fbc = xf86MapSbusMem(psdp, CG6_FBC_VOFF, sizeof(*pCg6->fbc));
     pCg6->thc = xf86MapSbusMem(psdp, CG6_THC_VOFF, sizeof(*pCg6->thc));
 
-    do {
-	if (!pCg6->NoAccel) {
-	    /*
-	     * To allow for off-screen pixmaps, first try mapping 2MB, then
-	     * 1MB, followed by the minimum required.
-	     */
-	    pCg6->vidmem = max(2 * 1024 * 1024, vidmem);
-	    pCg6->fb = xf86MapSbusMem(psdp, CG6_RAM_VOFF, pCg6->vidmem);
-	    if (pCg6->fb || (pCg6->vidmem == vidmem))
-		break;
-
-	    pCg6->vidmem = max(1024 * 1024, vidmem);
-	    pCg6->fb = xf86MapSbusMem(psdp, CG6_RAM_VOFF, pCg6->vidmem);
-	    if (pCg6->fb || (pCg6->vidmem == vidmem))
-		break;
-	}
-
-	pCg6->vidmem = vidmem;
+    /*
+     * XXX need something better here - we rely on the OS to allow mmap()ing 
+     * usable VRAM ONLY. Works with NetBSD, may crash and burn on other OSes.
+     */
+    pCg6->vidmem = 2 * 1024 * 1024;
+    pCg6->fb = xf86MapSbusMem(psdp, CG6_RAM_VOFF, pCg6->vidmem);
+    
+    if (pCg6->fb == NULL) {
+	/* mapping 2MB failed - try 1MB */
+	pCg6->vidmem = 1024 * 1024;
 	pCg6->fb = xf86MapSbusMem(psdp, CG6_RAM_VOFF, pCg6->vidmem);
-    } while (0);
+    }
 
+    if (pCg6->fb == NULL) {
+    	/* we can't map all video RAM - fall back to width*height */
+	pCg6->vidmem = psdp->width * psdp->height;
+	pCg6->fb = xf86MapSbusMem(psdp, CG6_RAM_VOFF, pCg6->vidmem);
+    }
+    
+    if (pCg6->fb != NULL) {
+        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "mapped %d KB video RAM\n", 
+	    pCg6->vidmem >> 10);
+    }
+    
     if (!pCg6->fbc || !pCg6->thc || !pCg6->fb) {
+    	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+		   "xf86MapSbusMem failed fbc:%" PRIxPTR " fb:%" PRIxPTR
+                   " thc:%" PRIxPTR "\n",
+		   pCg6->fbc, pCg6->fb, pCg6->thc );
+    
 	if (pCg6->fbc) {
 	    xf86UnmapSbusMem(psdp, pCg6->fbc, sizeof(*pCg6->fbc));
 	    pCg6->fbc = NULL;
@@ -519,12 +513,6 @@ CG6ScreenInit(int scrnIndex, ScreenPtr pScreen,
 
 	return FALSE;
     }
-
-    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Mapped %d KB of video memory\n",
-	pCg6->vidmem >> 10);
-
-    /* Darken the screen for aesthetic reasons and set the viewport */
-    CG6SaveScreen(pScreen, SCREEN_SAVER_ON);
 
     /*
      * The next step is to setup the screen's visuals, and initialise the
@@ -544,7 +532,6 @@ CG6ScreenInit(int scrnIndex, ScreenPtr pScreen,
     pScrn->rgbBits = 8;
 
     /* Setup the visuals we support. */
-
     if (!miSetVisualTypes(pScrn->depth, miGetDefaultVisualMask(pScrn->depth),
 			  pScrn->rgbBits, pScrn->defaultVisual))
 	return FALSE;
@@ -559,12 +546,12 @@ CG6ScreenInit(int scrnIndex, ScreenPtr pScreen,
     ret = fbScreenInit(pScreen, pCg6->fb, pScrn->virtualX,
 		       pScrn->virtualY, pScrn->xDpi, pScrn->yDpi,
 		       pScrn->virtualX, 8);
-    if (!ret)
-	return FALSE;
+    /*if (!ret)
+	return FALSE;*/
 
-    pCg6->width = pScrn->virtualX;
-    pCg6->height = pScrn->virtualY;
-    pCg6->maxheight = (pCg6->vidmem / pCg6->width) & 0xffff;
+    pCg6->width=pScrn->virtualX;
+    pCg6->height=pScrn->virtualY;
+    pCg6->maxheight=(pCg6->vidmem/pCg6->width)&0xffff;
 
     fbPictureInit(pScreen, 0, 0);
 
@@ -573,21 +560,23 @@ CG6ScreenInit(int scrnIndex, ScreenPtr pScreen,
     xf86SetSilkenMouse(pScreen);
 
     xf86SetBlackWhitePixels(pScreen);
-
+    
     if (!pCg6->NoAccel) {
-	BoxRec bx;
-
-	pCg6->pXAA = XAACreateInfoRec();
+    	BoxRec bx;
+	pCg6->pXAA=XAACreateInfoRec();
 	CG6AccelInit(pScrn);
-	bx.x1 = bx.y1 = 0;
-	bx.x2 = pCg6->width;
-	bx.y2 = pCg6->maxheight;
-	xf86InitFBManager(pScreen, &bx);
+	bx.x1=bx.y1=0;
+	bx.x2=pCg6->width;
+	bx.y2=pCg6->maxheight;
+	xf86InitFBManager(pScreen,&bx);
 	if(!XAAInit(pScreen, pCg6->pXAA))
 	    return FALSE;
 
-	xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Using acceleration\n");
+	xf86Msg(X_INFO, "%s: Using acceleration\n", pCg6->psdp->device);
     }
+
+    /* setup DGA */
+    Cg6DGAInit(pScreen);
 
     /* Initialise cursor functions */
     miDCInitialize(pScreen, xf86GetPointerScreenFuncs());
@@ -692,31 +681,19 @@ CG6CloseScreen(int scrnIndex, ScreenPtr pScreen)
     ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
     Cg6Ptr pCg6 = GET_CG6_FROM_SCRN(pScrn);
     sbusDevicePtr psdp = pCg6->psdp;
-    Bool closed;
 
     pScrn->vtSema = FALSE;
-
-    if (pCg6->HWCursor)
-	xf86SbusHideOsHwCursor(psdp);
-
-    if (pCg6->pXAA) {
-	XAADestroyInfoRec(pCg6->pXAA);
-	pCg6->pXAA = NULL;
-    }
-
-    pScreen->CloseScreen = pCg6->CloseScreen;
-    closed = (*pScreen->CloseScreen)(scrnIndex, pScreen);
-
-    if (pCg6->CursorInfoRec) {
-	xf86DestroyCursorInfoRec(pCg6->CursorInfoRec);
-	pCg6->CursorInfoRec = NULL;
-    }
 
     xf86UnmapSbusMem(psdp, pCg6->fbc, sizeof(*pCg6->fbc));
     xf86UnmapSbusMem(psdp, pCg6->thc, sizeof(*pCg6->thc));
     xf86UnmapSbusMem(psdp, pCg6->fb, pCg6->vidmem);
 
-    return closed;
+    if (pCg6->HWCursor)
+	xf86SbusHideOsHwCursor(psdp);
+
+    pScreen->CloseScreen = pCg6->CloseScreen;
+    return (*pScreen->CloseScreen)(scrnIndex, pScreen);
+    return FALSE;
 }
 
 
@@ -752,18 +729,18 @@ CG6SaveScreen(ScreenPtr pScreen, int mode)
     Cg6Ptr pCg6 = GET_CG6_FROM_SCRN(pScrn);
     unsigned int tmp = pCg6->thc->thc_misc;
 
-    switch(mode)
+    switch (mode)
     {
-    case SCREEN_SAVER_ON:
-    case SCREEN_SAVER_CYCLE:
-       tmp &= ~CG6_THC_MISC_SYNC_ENAB;
-       break;
-    case SCREEN_SAVER_OFF:
-    case SCREEN_SAVER_FORCER:
-       tmp |= CG6_THC_MISC_SYNC_ENAB;
-       break;
-    default:
-       return FALSE;
+	case SCREEN_SAVER_ON:
+	case SCREEN_SAVER_CYCLE:
+	    tmp &= ~CG6_THC_MISC_SYNC_ENAB;
+	    break;
+	case SCREEN_SAVER_OFF:
+	case SCREEN_SAVER_FORCER:
+	    tmp |= CG6_THC_MISC_SYNC_ENAB;
+	    break;
+	default:
+	    return FALSE;
     }
 
     pCg6->thc->thc_misc = tmp;

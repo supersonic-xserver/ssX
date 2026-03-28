@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_clear.c,v 1.2 2002/02/22 21:32:58 dawes Exp $
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_clear.c,v 1.1.1.2 2004/12/10 15:05:38 alanh Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * GLX Hardware Device Driver for Sun Creator/Creator3D
  * Copyright (C) 2000 David S. Miller
@@ -129,7 +136,7 @@ ffb_do_clear(ffbContextPtr fmesa, __DRIdrawablePrivate *dPriv,
 {
 	FFBDRIPtr gDRIPriv = (FFBDRIPtr) fmesa->driScreen->pDevPriv;
 	ffb_fbcPtr ffb = fmesa->regs;
-	XF86DRIClipRectPtr box = dPriv->pClipRects;
+	drm_clip_rect_t *box = dPriv->pClipRects;
 	int nc = dPriv->numClipRects;
 
 	cy  = dPriv->h - cy - cheight;

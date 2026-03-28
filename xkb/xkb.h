@@ -1,3 +1,19 @@
+/* $XFree86: xc/programs/Xserver/xkb/xkb.h,v 1.1 2003/07/16 01:39:08 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* #include "XKBfile.h" */
 
 extern int ProcXkbUseExtension(ClientPtr client);
@@ -27,11 +43,44 @@ extern int ProcXkbGetDeviceInfo(ClientPtr client);
 extern int ProcXkbSetDeviceInfo(ClientPtr client);
 extern int ProcXkbSetDebuggingFlags(ClientPtr client);
 
-extern void XkbExtensionInit(void);
+extern int XkbSetRepeatRate(DeviceIntPtr dev, int timeout, int interval, int major, int minor);
+extern int XkbGetRepeatRate(DeviceIntPtr dev, int *timeout, int *interval);
+
+extern Status XkbComputeGetIndicatorMapReplySize(
+    XkbIndicatorPtr             indicators,
+    xkbGetIndicatorMapReply     *rep);
+extern int XkbSendIndicatorMap(
+    ClientPtr                   client,
+    XkbIndicatorPtr             indicators,
+    xkbGetIndicatorMapReply     *rep);
+
+extern void XkbComputeCompatState(XkbSrvInfoPtr xkbi);
+extern void XkbSetPhysicalLockingKey(DeviceIntPtr dev, unsigned key);
 
 extern Bool XkbFilterEvents(ClientPtr pClient, int nEvents, xEvent *xE);
 
-extern Bool XkbCopyKeymap(
-    XkbDescPtr              src,
-    XkbDescPtr              dst,
-    Bool                    sendNotifies);
+extern Bool XkbApplyLEDChangeToKeyboard(
+    XkbSrvInfoPtr           xkbi,
+    XkbIndicatorMapPtr      map,
+    Bool                    on,
+    XkbChangesPtr           change);
+
+extern Bool XkbWriteRulesProp(ClientPtr client, pointer closure);
+
+extern XkbAction XkbGetButtonAction(DeviceIntPtr kbd, DeviceIntPtr dev, int button);
+
+/* extern Status XkbMergeFile(XkbDescPtr xkb, XkbFileInfo finfo); */
+
+extern Bool XkbDDXCompileNamedKeymap(
+    XkbDescPtr              xkb,
+    XkbComponentNamesPtr    names,
+    char *                  nameRtrn,
+    int                     nameRtrnLen);
+
+extern Bool XkbDDXCompileKeymapByNames(
+    XkbDescPtr              xkb,
+    XkbComponentNamesPtr    names,
+    unsigned                want,
+    unsigned                need,
+    char *                  nameRtrn,
+    int                     nameRtrnLen);

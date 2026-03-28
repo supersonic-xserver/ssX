@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/getfctl.h,v 3.2 2003/11/17 22:20:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1996 by Thomas E. Dickey <dickey@clark.net>
@@ -23,22 +31,66 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #ifndef GETFCTL_H
 #define GETFCTL_H 1
 
-int SProcXGetFeedbackControl(ClientPtr	/* client */
-    );
+int
+SProcXGetFeedbackControl(
+	ClientPtr              /* client */
+	);
 
-int ProcXGetFeedbackControl(ClientPtr	/* client */
-    );
+int
+ProcXGetFeedbackControl(
+	ClientPtr              /* client */
+	);
 
-void SRepXGetFeedbackControl(ClientPtr /* client */ ,
-			     int /* size */ ,
-			     xGetFeedbackControlReply *	/* rep */
-    );
+void
+CopySwapKbdFeedback (
+	ClientPtr              /* client */,
+	KbdFeedbackPtr         /* k */,
+	char **                /* buf */
+	);
+
+void
+CopySwapPtrFeedback (
+	ClientPtr              /* client */,
+	PtrFeedbackPtr         /* p */,
+	char **                /* buf */
+	);
+
+void
+CopySwapIntegerFeedback (
+	ClientPtr              /* client */,
+	IntegerFeedbackPtr     /* i */,
+	char **                /* buf */
+	);
+
+void
+CopySwapStringFeedback (
+	ClientPtr              /* client */,
+	StringFeedbackPtr      /* s */,
+	char **                /* buf */
+	);
+
+void
+CopySwapLedFeedback (
+	ClientPtr              /* client */,
+	LedFeedbackPtr         /* l */,
+	char **                /* buf */
+	);
+
+void
+CopySwapBellFeedback (
+	ClientPtr              /* client */,
+	BellFeedbackPtr        /* b */,
+	char **                /* buf */
+	);
+
+void
+SRepXGetFeedbackControl (
+	ClientPtr              /* client */,
+	int                    /* size */,
+	xGetFeedbackControlReply * /* rep */
+	);
 
 #endif /* GETFCTL_H */

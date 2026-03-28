@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2008 Red Hat, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +36,27 @@
 #include "misc.h"
 #include <errno.h>
 #include <string.h>
+
+/*
+ * SSX Legacy Build: Disable modern backtrace functionality.
+ * The modern backtrace() and ucontext logic often fails on legacy forks
+ * because struct offsets have changed in modern Linux kernels.
+ * This stub prevents linker errors while bypassing the header conflicts.
+ */
+#if defined(SSX_LEGACY_BUILD) || defined(SSX_NO_BACKTRACE)
+
+/*
+ * Stub implementation for legacy builds.
+ * This prevents linker complaints while bypassing the POSIX header issues.
+ */
+void
+xorg_backtrace(void)
+{
+    /* Stub - do nothing on legacy builds to avoid POSIX header conflicts */
+    return;
+}
+
+#else /* !SSX_LEGACY_BUILD */
 
 #ifdef HAVE_LIBUNWIND
 
@@ -328,3 +356,5 @@ xorg_backtrace(void)
 #endif
 #endif
 #endif
+
+#endif /* SSX_LEGACY_BUILD */

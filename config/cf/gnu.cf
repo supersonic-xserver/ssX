@@ -217,7 +217,7 @@ XCOMM i386Architecture
 #define HasGnuMake	YES
 
 #define MakeNamedTargetSubdir(dir,flags,subname)\
-        $(MAKE) -C dir $(PASSMFLAGS) $(PARALLELMFLAGS) flags subname
+        $(MAKE) -C dir $(MFLAGS) $(PARALLELMFLAGS) flags subname
 
 #define ArchitectureDefines	-DGNU_ARCHITECTURE
 

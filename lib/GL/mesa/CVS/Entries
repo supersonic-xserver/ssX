@@ -1,0 +1,12 @@
+/Imakefile/1.1.1.1/Fri Mar 18 13:03:52 2005//Tnetbsd-5-2-3-RELEASE
+/Imakefile.inc/1.1.1.1/Fri Mar 18 13:03:52 2005//Tnetbsd-5-2-3-RELEASE
+D/array_cache////
+D/drivers////
+D/main////
+D/math////
+D/shader////
+D/sparc////
+D/swrast////
+D/swrast_setup////
+D/tnl////
+D/x86////

@@ -8,4 +8,4 @@ EXPORTS
  XDestroyAssocTable
  XLookUpAssoc
  XMakeAssoc
-/* $XFree86$ */
+/* $Xorg: oldX-def.cpp,v 1.3 2000/08/17 19:46:42 cpqbld Exp $ */

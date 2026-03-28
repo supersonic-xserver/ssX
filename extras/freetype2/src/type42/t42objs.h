@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t42objs.h                                                              */
 /*                                                                         */
 /*    Type 42 objects manager (specification).                             */
 /*                                                                         */
-/*  Copyright 2002 by Roberto Alameda.                                     */
+/*  Copyright 2002, 2003 by Roberto Alameda.                               */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
 /*  modified, and distributed under the terms of the FreeType project      */
@@ -22,32 +29,14 @@
 #include FT_FREETYPE_H
 #include FT_TYPE1_TABLES_H
 #include FT_INTERNAL_TYPE1_TYPES_H
+#include "t42types.h"
 #include FT_INTERNAL_OBJECTS_H
 #include FT_INTERNAL_DRIVER_H
-#include FT_INTERNAL_POSTSCRIPT_NAMES_H
+#include FT_SERVICE_POSTSCRIPT_CMAPS_H
 #include FT_INTERNAL_POSTSCRIPT_HINTS_H
 
 
 FT_BEGIN_HEADER
-
-  /* Type42 face */
-  typedef struct  T42_FaceRec_
-  {
-    FT_FaceRec     root;
-    T1_FontRec     type1;
-    const void*    psnames;
-    const void*    psaux;
-    const void*    afm_data;
-
-    FT_CharMapRec  charmaprecs[2];
-    FT_CharMap     charmaps[2];
-    PS_Unicodes    unicode_map;
-
-    FT_Byte*       ttf_data;
-    FT_ULong       ttf_size;
-    FT_Face        ttf_face;
-
-  } T42_FaceRec, *T42_Face;
 
 
   /* Type42 size */
@@ -120,20 +109,11 @@ FT_BEGIN_HEADER
   FT_LOCAL( FT_Error )
   T42_GlyphSlot_Load( FT_GlyphSlot  glyph,
                       FT_Size       size,
-                      FT_Int        glyph_index,
-                      FT_Int        load_flags );
+                      FT_UInt       glyph_index,
+                      FT_Int32      load_flags );
 
   FT_LOCAL( void )
   T42_GlyphSlot_Done( T42_GlyphSlot slot );
-
-
-  FT_LOCAL( FT_UInt )
-  T42_CMap_CharIndex( FT_CharMap  charmap,
-                      FT_Long     charcode );
-
-  FT_LOCAL( FT_Long )
-  T42_CMap_CharNext( FT_CharMap  charmap,
-                     FT_Long     charcode );
 
 
   FT_LOCAL( FT_Error )

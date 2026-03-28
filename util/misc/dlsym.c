@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $Xorg: dlsym.c,v 1.3 2000/08/17 19:55:21 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Stub interface to dynamic linker routines
  * that SunOS uses but didn't ship with 4.1.

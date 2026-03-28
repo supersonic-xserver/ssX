@@ -1,3 +1,11 @@
+/* $Xorg: locking.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -25,7 +33,6 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86$ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"
@@ -37,21 +44,28 @@ Author: Ralph Mor, X Consortium
 
 
 Status
-IceInitThreads()
+IceInitThreads ()
+
 {
     return (0);
 }
 
 
 void
-IceAppLockConn(IceConn iceConn)
+IceAppLockConn (iceConn)
+
+IceConn iceConn;
+
 {
     IceLockConn (iceConn);
 }
 
 
 void
-IceAppUnlockConn(IceConn iceConn)
+IceAppUnlockConn (iceConn)
+
+IceConn iceConn;
+
 {
     IceUnlockConn (iceConn);
 }

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xcursorgen/xcursorgen.c,v 1.8 2002/11/23 02:33:20 keithp Exp $ */
+/* $XFree86: xc/programs/xcursorgen/xcursorgen.c,v 1.9 2003/04/21 14:15:35 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * xcursorgen.c
  *

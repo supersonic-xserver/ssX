@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -30,21 +37,9 @@
  *		Peter Busch
  *		Harold L Hunt II
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winwakeup.c,v 1.7 2003/07/29 21:25:18 dawes Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include "win.h"
-
-
-/*
- * References to external symbols
- */
-
-extern HWND			g_hDlgDepthChange;
-extern HWND			g_hDlgExit;
-extern HWND			g_hDlgAbout;
-
 
 /* See Porting Layer Definition - p. 7 */
 void
@@ -53,6 +48,9 @@ winWakeupHandler (int nScreen,
 		  unsigned long ulResult,
 		  pointer pReadmask)
 {
+#if 0
+  winScreenPriv((ScreenPtr)pWakeupData);
+#endif
   MSG			msg;
 
   /* Process all messages on our queue */
@@ -61,11 +59,12 @@ winWakeupHandler (int nScreen,
       if ((g_hDlgDepthChange == 0
 	   || !IsDialogMessage (g_hDlgDepthChange, &msg))
 	  && (g_hDlgExit == 0
-	      || !IsDialogMessage (g_hDlgExit, &msg))
-	  && (g_hDlgAbout == 0
-	      || !IsDialogMessage (g_hDlgAbout, &msg)))
+	      || !IsDialogMessage (g_hDlgExit, &msg)))
 	{
 	  DispatchMessage (&msg);
 	}
     }
+  winReorderWindowsMultiWindow ((ScreenPtr)pWakeupData);
 }
+
+

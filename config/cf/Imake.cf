@@ -1,3 +1,4 @@
+XCOMM $Xorg: Imake.cf,v 1.4 2000/08/17 19:41:45 cpqbld Exp $
 /*
  * To add support for another platform:
  * 
@@ -16,7 +17,7 @@
  *
  *     4.  Create a .cf file with the name given by MacroFile.
  */
-XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
+XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.91 2004/04/03 22:26:20 dawes Exp $
 
 #if defined(__APPLE__)
 # undef __APPLE__
@@ -120,8 +121,9 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
 #  undef i386
 # endif
 # if defined(__sparc__) || defined(sparc)
-#  define SparcArchitecture
-#  if defined(__arch64__)
+#  if !defined(__arch64__)
+#   define SparcArchitecture
+#  else
 #   define Sparc64Architecture
 #  endif
 #  undef sparc
@@ -210,7 +212,7 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
 #  undef alpha
 # endif
 # if defined(__arm__) || defined(arm)
-#  define armArchitecture
+#  define ArmArchitecture
 #  undef arm
 # endif
 # if defined(__hppa__) || defined(hppa)
@@ -264,7 +266,7 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
 #  define SparcArchitecture
 #  undef sparc
 #  if defined(__sparc_v9__) || defined(__arch64__)
-#    define Sparc64Architecture
+#   define Sparc64Architecture
 #  endif
 # endif
 # if defined(__sparc64__) || defined(__sparc_v9__) || defined(sparc64)
@@ -281,7 +283,7 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
 # endif
  /* MACHINE specific definitions ("__${MACHINE}__" is defined by imake) */
 # if defined(__acorn32__)
-#   define Arm32Architecture
+#  define Arm32Architecture
 #  define acorn32Architecture
 # endif
 # if defined(__amd64__)
@@ -338,6 +340,9 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
 # endif
 # if defined(__news68k__)
 #  define news68kArchitecture
+# endif
+# if defined(__ofppc__)
+#  define ofppcArchitecture
 # endif
 # if defined(__pc532__)
 #  define pc532Architecture
@@ -406,36 +411,6 @@ XCOMM $XFree86: xc/config/cf/Imake.cf,v 3.95tsi Exp $
 #if defined(__FreeBSD_kernel__)
 #define KFreeBSDArchitecture
 #endif
-
-#ifdef __DragonFly__
-# define MacroIncludeFile <DragonFly.cf>
-# define MacroFile DragonFly.cf
-# undef __DragonFly__
-# define DragonFlyArchitecture
-# ifdef __i386__
-#  define i386BsdArchitecture
-#  define i386Architecture
-#  undef i386
-# endif
-# ifdef __alpha__
-#  define AlphaBsdArchitecture
-#  define AlphaArchitecture
-#  undef __alpha__
-# endif
-# ifdef __sparc64__
-#  define Sparc64Architecture
-#  undef __sparc64__
-# endif
-# ifdef __ia64__
-#  define ia64Architecture
-#  undef __ia64__
-# endif
-# ifdef __amd64__
-#  define AMD64Architecture
-#  undef __amd64__
-#  undef __x86_64__
-# endif
-#endif /* __DragonFly__ */
 
 #ifdef AMOEBA
  /* Should be before the 'sun' entry because we may be cross-compiling */
@@ -1004,6 +979,11 @@ XCOMM Keep cpp from replacing path elements containing i486/i586/i686
 #  define MipsArchitecture
 #  undef mips
 #  undef __mips__
+#  if defined(MIPSEL) || defined(_MIPSEL)
+#   define MipselArchitecture
+#  endif
+#  undef MIPSEL
+#  undef _MIPSEL
 # endif
 # ifdef __hppa__
 #  ifndef HPArchitecture
@@ -1215,39 +1195,10 @@ XCOMM Keep cpp from replacing path elements containing i486/i586/i686
 # endif /* __i386__ */
 #endif /* QNX/Neutrino */
 
-#ifdef MipsArchitecture
-# if defined(__MIPSEL__) || defined(__MIPSEL) || \
-     defined(_MIPSEL) || defined(MIPSEL)
-#  undef  __MIPSEL__
-#  undef  __MIPSEL
-#  undef  _MIPSEL
-#  undef  MIPSEL
-#  undef  MipselArchitecture
-#  define MipselArchitecture
-# endif
-# if defined(__MIPSEB__) || defined(__MIPSEB) || \
-     defined(_MIPSEB) || defined(MIPSEB)
-#  undef  __MIPSEB__
-#  undef  __MIPSEB
-#  undef  _MIPSEB
-#  undef  MIPSEB
-#  undef  MipsebArchitecture
-#  define MipsebArchitecture
-# endif
-# if defined(MipselArchitecture) && defined(MipsebArchitecture)
-#  error "Conflicting MIPS endianness."
-# endif
-#endif
-
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-# if defined(__sparc_v9__) || defined(__sparc_v9) || \
-     defined(__arch64__) || defined(__sparc64__)
+#ifdef SparcArchitecture
+# if defined(__sparc_v9) || defined(__arch64__)
 #  define Sparc64Architecture
 # endif
-#endif
-
-#if defined(Sparc64Architecture) && !defined(SparcArchitecture)
-# define SparcArchitecture
 #endif
 
 #ifndef MacroIncludeFile

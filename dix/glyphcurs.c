@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/glyphcurs.c,v 1.4 2005/10/14 15:16:21 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,11 +53,6 @@ SOFTWARE.
 
 ************************************************************************/
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include "misc.h"
 #include <X11/fonts/fontstruct.h>
 #include "dixfontstr.h"
@@ -74,7 +77,8 @@ cursor metrics.
 */
 
 int
-ServerBitsFromGlyph(FontPtr pfont, unsigned ch, CursorMetricPtr cm, unsigned char **ppbits)
+ServerBitsFromGlyph(FontPtr pfont, unsigned int ch, CursorMetricPtr cm,
+		    unsigned char **ppbits)
 {
     ScreenPtr pScreen;
     GCPtr pGC;

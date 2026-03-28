@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,11 +26,10 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/extras/fontconfig/src/fcdir.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/extras/fontconfig/src/fcdir.c,v 1.2 2003/06/04 16:29:39 dawes Exp $ */
 
 #include "fcint.h"
 #include <dirent.h>
-#include <pwd.h>
 
 static FcBool
 FcFileIsDir (const FcChar8 *file)
@@ -220,23 +226,3 @@ FcDirSave (FcFontSet *set, FcStrSet *dirs, const FcChar8 *dir)
 {
     return FcDirCacheWriteDir (set, dirs, dir);
 }
-
-FcChar8 *
-FcGetHomeDir ()
-{
-    struct passwd *pw;
-    char *home = NULL, *p;
-
-    if (!(home = getenv("HOME"))) {
-	if ((p = getenv("USER"))) {
-	    pw = getpwnam(p);
-	} else {
-	    pw = getpwuid(getuid());
-	}
-	if (pw) {
-	    home = pw->pw_dir;
-	}
-    }
-    return FcStrCopy((FcChar8 *)home);
-}
-

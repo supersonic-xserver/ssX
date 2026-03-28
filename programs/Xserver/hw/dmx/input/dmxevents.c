@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxevents.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxevents.c,v 1.1 2004/06/30 20:21:44 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002-2003 Red Hat Inc., Durham, North Carolina.
  *
@@ -48,7 +55,7 @@
 #include "dmxsigio.h"
 #include "dmxmap.h"
 
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "opaque.h"
 #include "inputstr.h"
 #include "mipointer.h"

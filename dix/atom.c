@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/atom.c,v 3.6 2005/10/14 15:16:21 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,15 +53,8 @@ SOFTWARE.
 
 ******************************************************************/
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xatom.h>
-#include <stdio.h>
-#include <string.h>
 #include "misc.h"
 #include "resource.h"
 #include "dix.h"
@@ -74,13 +75,13 @@ static NodePtr *nodeTable;
 
 void FreeAtom(NodePtr patom);
 
-_X_EXPORT Atom 
-MakeAtom(const char *string, unsigned len, Bool makeit)
+Atom 
+MakeAtom(char *string, unsigned len, Bool makeit)
 {
     NodePtr * np;
     unsigned i;
-    int comp;
-    unsigned int fp = 0;
+    int     comp;
+    unsigned int   fp = 0;
 
     np = &atomRoot;
     for (i = 0; i < (len+1)/2; i++)
@@ -114,7 +115,7 @@ MakeAtom(const char *string, unsigned len, Bool makeit)
 	    return BAD_RESOURCE;
 	if (lastAtom < XA_LAST_PREDEFINED)
 	{
-	    nd->string = (char *) string;
+	    nd->string = string;
 	}
 	else
 	{
@@ -151,13 +152,13 @@ MakeAtom(const char *string, unsigned len, Bool makeit)
 	return None;
 }
 
-_X_EXPORT Bool
+Bool
 ValidAtom(Atom atom)
 {
     return (atom != None) && (atom <= lastAtom);
 }
 
-_X_EXPORT const char *
+char *
 NameForAtom(Atom atom)
 {
     NodePtr node;
@@ -167,7 +168,7 @@ NameForAtom(Atom atom)
 }
 
 void
-AtomError(void)
+AtomError()
 {
     FatalError("initializing atoms");
 }
@@ -185,7 +186,7 @@ FreeAtom(NodePtr patom)
 }
 
 void
-FreeAllAtoms(void)
+FreeAllAtoms()
 {
     if(atomRoot == (NodePtr)NULL)
 	return;
@@ -197,7 +198,7 @@ FreeAllAtoms(void)
 }
 
 void
-InitAtoms(void)
+InitAtoms()
 {
     FreeAllAtoms();
     tableLength = InitialTableSize;
@@ -209,3 +210,5 @@ InitAtoms(void)
     if (lastAtom != XA_LAST_PREDEFINED)
 	AtomError ();
 }
+
+    

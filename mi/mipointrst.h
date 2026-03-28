@@ -1,8 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * mipointrst.h
  *
  */
-
 
 /*
 
@@ -28,9 +34,17 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
+/* $XFree86: xc/programs/Xserver/mi/mipointrst.h,v 1.5 2006/01/09 15:00:37 dawes Exp $ */
 
 #include "mipointer.h"
 #include "scrnintstr.h"
+
+#define MOTION_SIZE	256
+
+typedef struct {
+    xTimecoord	    event;
+    ScreenPtr	    pScreen;
+} miHistoryRec, *miHistoryPtr;
 
 typedef struct {
     ScreenPtr		    pScreen;    /* current screen */
@@ -41,6 +55,9 @@ typedef struct {
     Bool		    confined;	/* pointer can't change screens */
     int			    x, y;	/* hot spot location */
     int			    devx, devy;	/* sprite position */
+    DevicePtr		    pPointer;   /* pointer device structure */
+    miHistoryRec	    history[MOTION_SIZE];
+    int			    history_start, history_end;
 } miPointerRec, *miPointerPtr;
 
 typedef struct {

@@ -1,17 +1,21 @@
 /* THIS IS A GENERATED FILE
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Do not change!  Changing this file implies a protocol change!
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/dix/initatoms.c,v 3.1 2005/10/14 15:16:22 tsi Exp $ */
 
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include "misc.h"
 #include "dix.h"
-void MakePredeclaredAtoms(void)
+void MakePredeclaredAtoms()
 {
     if (MakeAtom("PRIMARY", 7, 1) != XA_PRIMARY) AtomError();
     if (MakeAtom("SECONDARY", 9, 1) != XA_SECONDARY) AtomError();

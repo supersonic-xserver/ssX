@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/programs/xfs/Imakefile,v 3.27tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:19 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/programs/xfs/Imakefile,v 3.26 2003/08/25 04:06:01 dawes Exp $
 
 #undef ServerDefines
 #include <Server.tmpl>
@@ -29,10 +34,21 @@ FSSYSLIBS = $(LDPRELIBS) $(XFONTLIB) $(FREETYPE2LIB) $(SYSLIBS) $(ZLIB)
 
 SUBDIRS = $(FSDIRS)
 
+#ifdef DefaultFSConfigFile
+DEFAULTCONFIGFILE = DefaultFSConfigFile
+#else
+DEFAULTCONFIGFILE = /usr/lib/X11/fs/config
+#endif
+     EXTRAMANDEFS = -DDEFAULT_CONFIG_FILE=$(DEFAULTCONFIGFILE)
+
 FSLIBDIR = $(LIBDIR)/fs
 FSERRORS = $(LOGDIRECTORY)/xfs.log
 DEFAULTFONTPATH = DefaultFSFontPath
 SITE_CONFIG = -DDEFAULTFONTPATH=$(DEFAULTFONTPATH) -DFSERRORS=$(FSERRORS)
+
+$(OSLIB):	$(OSDIR)
+
+$(DIFSLIB):	$(DIFSDIR)
 
 all:: config
 

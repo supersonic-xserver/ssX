@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_driver.c,v 1.206tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_driver.c,v 1.197 2005/02/19 01:03:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * SiS driver main code
  *
@@ -61,11 +69,6 @@
 #include "xf86RAC.h"
 #include "shadowfb.h"
 #include "vbe.h"
-#ifndef xf86LoadVBEModule
-#   define xf86LoadVBEModule(_pScrn) \
-	   xf86LoadSubModule(_pScrn, "vbe")
-#endif
-
 
 #include "sis_shadow.h"
 
@@ -80,15 +83,17 @@
 #include "sis_driver.h"
 
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 #include "globals.h"
 
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
+#if (XF86_VERSION_CURRENT >= XF86_VERSION_NUMERIC(4,3,99,0,0)) || (defined(XvExtension))
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
+#endif
 
 #ifdef XF86DRI
 #include "dri.h"
@@ -326,20 +331,20 @@ static XF86ModuleVersionInfo sisVersRec =
 XF86ModuleData sisModuleData = { &sisVersRec, sisSetup, NULL };
 
 pointer
-sisSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+sisSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
     if(!setupDone) {
        setupDone = TRUE;
        xf86AddDriver(&SIS, module, 0);
-       LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, xaaSymbols,
-			    shadowSymbols, ramdacSymbols,
-			    vbeSymbols, int10Symbols,
+       LoaderRefSymLists(vgahwSymbols, fbSymbols, xaaSymbols,
+			 shadowSymbols, ramdacSymbols,
+			 vbeSymbols, int10Symbols,
 #ifdef XF86DRI
-			    drmSymbols, driSymbols, driRefSymbols,
+			 drmSymbols, driSymbols, driRefSymbols,
 #endif
-			    NULL);
+			 NULL);
        return (pointer)TRUE;
     }
 
@@ -2087,17 +2092,8 @@ SiSXineramaExtensionInit(ScrnInfoPtr pScrn)
           return;
        }
 
-#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,5,99,22,0)
 #ifdef PANORAMIX
        if(!noPanoramiXExtension) {
-          xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-       	     "Xinerama active, not initializing SiS Pseudo-Xinerama\n");
-          SiSnoPanoramiXExtension = TRUE;
-          return;
-       }
-#endif
-#else
-       if(IsXineramaActive()) {
           xf86DrvMsg(pScrn->scrnIndex, X_INFO,
        	     "Xinerama active, not initializing SiS Pseudo-Xinerama\n");
           SiSnoPanoramiXExtension = TRUE;
@@ -2392,7 +2388,6 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
 
     vbeInfoPtr pVbe;
     VbeInfoBlock *vbe;
-    ModuleDescPtr pMod, pDDCMod;
 
     static const char *ddcsstr = "CRT%d DDC monitor info: ************************************\n";
     static const char *ddcestr = "End of CRT%d DDC monitor info ******************************\n";
@@ -2414,10 +2409,9 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
 #endif
 
     if(flags & PROBE_DETECT) {
-       if((pMod = xf86LoadVBEModule(pScrn))) {
+       if(xf86LoadSubModule(pScrn, "vbe")) {
           int index = xf86GetEntityInfo(pScrn->entityList[0])->index;
 
-	  xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
 #if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,2,99,0,0)
 	  if((pVbe = VBEInit(NULL,index))) {
 #else
@@ -2450,12 +2444,12 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /* Load the vgahw module */
-    if(!(pMod = xf86LoadSubModule(pScrn, "vgahw"))) {
+    if(!xf86LoadSubModule(pScrn, "vgahw")) {
        SISErrorLog(pScrn, "Could not load vgahw module\n");
        return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     /* Due to the liberal license terms this is needed for
      * keeping the copyright notice readable and intact in
@@ -2593,8 +2587,8 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
        xf86DrvMsg(pScrn->scrnIndex, X_INFO,
        		"Initializing display adapter through int10\n");
 #endif
-       if((pMod = xf86LoadSubModule(pScrn, "int10"))) {
-          xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+       if(xf86LoadSubModule(pScrn, "int10")) {
+          xf86LoaderReqSymLists(int10Symbols, NULL);
 #if !defined(__alpha__)
           pSiS->pInt = xf86InitInt10(pSiS->pEnt->index);
 #endif
@@ -2621,7 +2615,7 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
     pScrn->racIoFlags = RAC_COLORMAP | RAC_CURSOR | RAC_VIEWPORT;
 
     /* The ramdac module should be loaded here when needed */
-    if(!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+    if(!xf86LoadSubModule(pScrn, "ramdac")) {
        SISErrorLog(pScrn, "Could not load ramdac module\n");
 #ifdef SISDUALHEAD
        if(pSiSEnt) pSiSEnt->ErrorAfterFirst = TRUE;
@@ -2631,7 +2625,7 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
        return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    xf86LoaderReqSymLists(ramdacSymbols, NULL);
 
     /* Set pScrn->monitor */
     pScrn->monitor = pScrn->confScreen->monitor;
@@ -4944,9 +4938,9 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
     didddc2 = FALSE;
 
     if((pSiS->VGAEngine == SIS_300_VGA) || (pSiS->VGAEngine == SIS_315_VGA)) {
-       if((pDDCMod = xf86LoadSubModule(pScrn, "ddc"))) {
+       if(xf86LoadSubModule(pScrn, "ddc")) {
           int crtnum = 0;
-          xf86LoaderModReqSymLists(pDDCMod, ddcSymbols, NULL);
+          xf86LoaderReqSymLists(ddcSymbols, NULL);
 	  if((pMonitor = SiSDoPrivateDDC(pScrn, &crtnum))) {
 	     didddc2 = TRUE;
 	     xf86DrvMsg(pScrn->scrnIndex, X_PROBED, ddcsstr, crtnum);
@@ -4973,16 +4967,17 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
     /* Now (re-)load and initialize the DDC module */
     if(!didddc2) {
 
-       if((pDDCMod = xf86LoadSubModule(pScrn, "ddc"))) {
-          xf86LoaderModReqSymLists(pDDCMod, ddcSymbols, NULL);
+       if(xf86LoadSubModule(pScrn, "ddc")) {
+
+          xf86LoaderReqSymLists(ddcSymbols, NULL);
 
           /* Now load and initialize VBE module. */
-          if((pMod = xf86LoadVBEModule(pScrn))) {
-	      xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+          if(xf86LoadSubModule(pScrn, "vbe")) {
+	      xf86LoaderReqSymLists(vbeSymbols, NULL);
 #if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,2,99,0,0)
 	      pSiS->pVbe = VBEInit(pSiS->pInt,pSiS->pEnt->index);
 #else
-              pSiS->pVbe = VBEExtendedInit(pSiS->pInt, pSiS->pEnt->index,
+              pSiS->pVbe = VBEExtendedInit(pSiS->pInt,pSiS->pEnt->index,
 	                SET_BIOS_SCRATCH | RESTORE_BIOS_SCRATCH);
 #endif
               if(!pSiS->pVbe) {
@@ -4995,7 +4990,7 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
           }
 
   	  if(pSiS->pVbe) {
-	      if((pMonitor = vbeDoEDID(pSiS->pVbe,pDDCMod))) {
+	      if((pMonitor = vbeDoEDID(pSiS->pVbe,NULL))) {
 	         xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
 	   	      "VBE CRT1 DDC monitor info:\n");
                  xf86SetDDCproperties(pScrn, xf86PrintEDID(pMonitor));
@@ -5714,7 +5709,7 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
       case 16:
       case 24:
       case 32:
-	if(!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+	if(!xf86LoadSubModule(pScrn, "fb")) {
            SISErrorLog(pScrn, "Failed to load fb module");
 #ifdef SISDUALHEAD
 	   if(pSiSEnt) pSiSEnt->ErrorAfterFirst = TRUE;
@@ -5735,12 +5730,12 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
         SISFreeRec(pScrn);
         return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
     /* Load XAA if needed */
     if(!pSiS->NoAccel) {
         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Accel enabled\n");
-        if(!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+        if(!xf86LoadSubModule(pScrn, "xaa")) {
 	    SISErrorLog(pScrn, "Could not load xaa module\n");
 #ifdef SISDUALHEAD
 	    if(pSiSEnt) pSiSEnt->ErrorAfterFirst = TRUE;
@@ -5750,12 +5745,12 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
             SISFreeRec(pScrn);
             return FALSE;
         }
-        xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+        xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     /* Load shadowfb if needed */
     if(pSiS->ShadowFB) {
-        if(!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+        if(!xf86LoadSubModule(pScrn, "shadowfb")) {
 	    SISErrorLog(pScrn, "Could not load shadowfb module\n");
 #ifdef SISDUALHEAD
 	    if(pSiSEnt) pSiSEnt->ErrorAfterFirst = TRUE;
@@ -5765,17 +5760,17 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
 	    SISFreeRec(pScrn);
             return FALSE;
         }
-        xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+        xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
 
     /* Load the dri and glx modules if requested. */
 #ifdef XF86DRI
     if(pSiS->loadDRI) {
        if(!xf86LoaderCheckSymbol("DRIScreenInit")) {
-          if((pMod = xf86LoadSubModule(pScrn, "dri"))) {
+          if(xf86LoadSubModule(pScrn, "dri")) {
 	     if(!xf86LoaderCheckSymbol("GlxSetVisualConfigs")) {
 	        if(xf86LoadSubModule(pScrn, "glx")) {
-                   xf86LoaderModReqSymLists(pMod, driSymbols, drmSymbols, NULL);
+                   xf86LoaderReqSymLists(driSymbols, drmSymbols, NULL);
 		} else {
 		   SISErrorLog(pScrn, "Failed to load glx module\n");
 		}
@@ -5791,8 +5786,8 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
     pSiS->UseVESA = 0;
     if(pSiS->VESA == 1) {
        if(!pSiS->pVbe) {
-          if((pMod = xf86LoadVBEModule(pScrn))) {
-	     xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+          if(xf86LoadSubModule(pScrn, "vbe")) {
+	     xf86LoaderReqSymLists(vbeSymbols, NULL);
 #if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,2,99,0,0)
 	     pSiS->pVbe = VBEInit(pSiS->pInt,pSiS->pEnt->index);
 #else
@@ -5805,11 +5800,12 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
           vbe = VBEGetVBEInfo(pSiS->pVbe);
           pSiS->vesamajor = (unsigned)(vbe->VESAVersion >> 8);
           pSiS->vesaminor = vbe->VESAVersion & 0xff;
+          pSiS->vbeInfo = vbe;
           if(pSiS->VESA == 1) {
              SiSBuildVesaModeList(pScrn, pSiS->pVbe, vbe);
+             VBEFreeVBEInfo(vbe);
              pSiS->UseVESA = 1;
           }
-          VBEFreeVBEInfo(vbe);
        } else {
           xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 	    	"Could not load and initialize VBE module.%s\n",
@@ -5838,15 +5834,8 @@ SISPreInit(ScrnInfoPtr pScrn, int flags)
     	pSiS->SiS_SD_Flags |= SiS_SD_ISDUALHEAD;
 	if(pSiS->SecondHead)      pSiS->SiS_SD_Flags |= SiS_SD_ISDHSECONDHEAD;
 	else			  pSiS->SiS_SD_Flags &= ~(SiS_SD_SUPPORTXVGAMMA1);
-#if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,5,99,22,0)
 #ifdef PANORAMIX
 	if(!noPanoramiXExtension) {
-	   pSiS->SiS_SD_Flags |= SiS_SD_ISDHXINERAMA;
-	   pSiS->SiS_SD_Flags &= ~(SiS_SD_SUPPORTXVGAMMA1);
-	}
-#endif
-#else
-	if(IsXineramaActive()) {
 	   pSiS->SiS_SD_Flags |= SiS_SD_ISDHXINERAMA;
 	   pSiS->SiS_SD_Flags &= ~(SiS_SD_SUPPORTXVGAMMA1);
 	}
@@ -7170,7 +7159,7 @@ SISBlockHandler(int i, pointer blockData, pointer pTimeout, pointer pReadmask)
  * depth, bitsPerPixel)
  */
 static Bool
-SISScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **argv)
+SISScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     vgaHWPtr hwp;
@@ -7180,7 +7169,6 @@ SISScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
     unsigned long OnScreenSize;
     int height, width, displayWidth;
     unsigned char *FBStart;
-    ModuleDescPtr pMod;
 #ifdef SISDUALHEAD
     SISEntPtr pSiSEnt = NULL;
 #endif
@@ -7197,8 +7185,8 @@ SISScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
 #ifdef SISDUALHEAD
     if((!pSiS->DualHeadMode) || (!pSiS->SecondHead)) {
 #endif    
-       if((pMod = xf86LoadVBEModule(pScrn))) {
-	  xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+       if(xf86LoadSubModule(pScrn, "vbe")) {
+	  xf86LoaderReqSymLists(vbeSymbols, NULL);
 #if XF86_VERSION_CURRENT < XF86_VERSION_NUMERIC(4,2,99,0,0)
           pSiS->pVbe = VBEInit(NULL, pSiS->pEnt->index);
 #else
@@ -7553,6 +7541,7 @@ SISScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
     
     pSiS->ResetXv = pSiS->ResetXvGamma = NULL;
 
+#if (XF86_VERSION_CURRENT >= XF86_VERSION_NUMERIC(4,3,99,0,0)) || (defined(XvExtension))
     if(!pSiS->NoXvideo) {
         if( (pSiS->VGAEngine == SIS_300_VGA) ||
 	    (pSiS->VGAEngine == SIS_315_VGA) ) {
@@ -7609,6 +7598,7 @@ SISScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
 
         }
     }
+#endif
 
 #ifdef XF86DRI
     if(pSiS->loadDRI) {
@@ -9045,7 +9035,7 @@ SISSaveScreenDH(ScreenPtr pScreen, int mode)
 #endif
 
 #ifdef DEBUG
-void
+static void
 SiSDumpModeInfo(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
     xf86DrvMsg(pScrn->scrnIndex,X_INFO, "Clock : %x\n", mode->Clock);

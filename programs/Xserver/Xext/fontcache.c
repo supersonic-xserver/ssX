@@ -1,4 +1,11 @@
-/*
+/*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998-1999 Shunsuke Akiyama <akiyama@jp.FreeBSD.org>.
  * All rights reserved.
  * Copyright (c) 1998-1999 X-TrueType Server Project, All rights
@@ -24,15 +31,17 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ *	Id: fontcache.c,v 1.12 1999/01/31 13:47:45 akiyama Exp $
  */
-/* $XFree86: xc/programs/Xserver/Xext/fontcache.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/fontcache.c,v 1.8 2003/11/17 22:20:26 dawes Exp $ */
 
 /* THIS IS NOT AN X CONSORTIUM STANDARD */
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
@@ -40,14 +49,13 @@
 #include "inputstr.h"
 #include "servermd.h"
 #define _FONTCACHE_SERVER_
-#include <X11/extensions/fontcacheP.h>
-#include <X11/extensions/fontcachstr.h>
-#include <X11/Xfuncproto.h>
+#include "fontcacheP.h"
+#include "fontcachstr.h"
+#include "Xfuncproto.h"
 
 #include "swaprep.h"
 #include "modinit.h"
 
-#ifdef FONTCACHE
 static int miscErrorBase;
 
 static void FontCacheResetProc(
@@ -91,15 +99,17 @@ FontCacheExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-FontCacheResetProc(ExtensionEntry *extEntry)
+FontCacheResetProc (extEntry)
+    ExtensionEntry* extEntry;
 {
 }
 
 static int
-ProcFontCacheQueryVersion(ClientPtr client)
+ProcFontCacheQueryVersion(client)
+    register ClientPtr client;
 {
     xFontCacheQueryVersionReply rep;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH(xFontCacheQueryVersionReq);
     rep.type = X_Reply;
@@ -118,11 +128,12 @@ ProcFontCacheQueryVersion(ClientPtr client)
 }
 
 static int
-ProcFontCacheGetCacheSettings(ClientPtr client)
+ProcFontCacheGetCacheSettings(client)
+    register ClientPtr client;
 {
     xFontCacheGetCacheSettingsReply rep;
     FontCacheSettings cinfo;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH(xFontCacheGetCacheSettingsReq);
     rep.type = X_Reply;
@@ -155,11 +166,12 @@ ProcFontCacheGetCacheSettings(ClientPtr client)
 }
 
 static int
-ProcFontCacheGetCacheStatistics(ClientPtr client)
+ProcFontCacheGetCacheStatistics(client)
+    register ClientPtr client;
 {
     xFontCacheGetCacheStatisticsReply rep;
     FontCacheStatistics cstats;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH(xFontCacheGetCacheStatisticsReq);
     rep.type = X_Reply;
@@ -207,7 +219,8 @@ ProcFontCacheGetCacheStatistics(ClientPtr client)
 }
 
 static int
-ProcFontCacheChangeCacheSettings(ClientPtr client)
+ProcFontCacheChangeCacheSettings(client)
+    register ClientPtr client;
 {
     FontCacheSettings cs;
 
@@ -235,7 +248,8 @@ ProcFontCacheChangeCacheSettings(ClientPtr client)
 }
 
 static int
-ProcFontCacheDispatch(ClientPtr client)
+ProcFontCacheDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -254,18 +268,20 @@ ProcFontCacheDispatch(ClientPtr client)
 }
 
 static int
-SProcFontCacheQueryVersion(ClientPtr client)
+SProcFontCacheQueryVersion(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xFontCacheQueryVersionReq);
     swaps(&stuff->length, n);
     return ProcFontCacheQueryVersion(client);
 }
 
 static int
-SProcFontCacheGetCacheSettings(ClientPtr client)
+SProcFontCacheGetCacheSettings(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xFontCacheGetCacheSettingsReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xFontCacheGetCacheSettingsReq);
@@ -273,9 +289,10 @@ SProcFontCacheGetCacheSettings(ClientPtr client)
 }
 
 static int
-SProcFontCacheGetCacheStatistics(ClientPtr client)
+SProcFontCacheGetCacheStatistics(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xFontCacheGetCacheStatisticsReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xFontCacheGetCacheStatisticsReq);
@@ -283,9 +300,10 @@ SProcFontCacheGetCacheStatistics(ClientPtr client)
 }
 
 static int
-SProcFontCacheChangeCacheSettings(ClientPtr client)
+SProcFontCacheChangeCacheSettings(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xFontCacheChangeCacheSettingsReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xFontCacheChangeCacheSettingsReq);
@@ -298,7 +316,8 @@ SProcFontCacheChangeCacheSettings(ClientPtr client)
 }
 
 static int
-SProcFontCacheDispatch(ClientPtr client)
+SProcFontCacheDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -315,4 +334,3 @@ SProcFontCacheDispatch(ClientPtr client)
 	return miscErrorBase + FontCacheBadProtocol;
     }
 }
-#endif

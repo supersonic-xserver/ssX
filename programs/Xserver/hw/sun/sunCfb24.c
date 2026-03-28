@@ -1,3 +1,19 @@
+/* $Xorg: sunCfb24.c,v 1.4 2001/02/09 02:04:43 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1994, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings in
 this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb24.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb24.c,v 1.3 2001/12/14 19:59:42 dawes Exp $ */
 
 /*
  * The CG8 is similar to the CG4 in that it has a mono plane, an enable 
@@ -127,7 +143,7 @@ Bool sunCG8Init (screen, pScreen, argc, argv)
     int		    screen;    	/* what screen am I going to be */
     ScreenPtr	    pScreen;  	/* The Screen to initialize */
     int		    argc;    	/* The number of the Server's arguments. */
-    const char	    **argv;   	/* The arguments themselves. Don't change! */
+    char	    **argv;   	/* The arguments themselves. Don't change! */
 {
     sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
     return sunInitCommon (screen, pScreen, (off_t) 0,

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_storm.c,v 1.105tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_storm.c,v 1.103 2004/06/01 00:17:01 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1994-2007 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -69,7 +76,7 @@
 #include "servermd.h"
 
 #ifdef XF86DRI
-#include "windowstr.h"
+#include "cfb.h"
 #include "GL/glxtokens.h"
 #endif
 
@@ -653,8 +660,6 @@ MGANAME(AccelInit)(ScreenPtr pScreen)
 	}
         pMga->MaxBlitDWORDS = 0x400000 >> 5;
 	/* fallthrough */
-    case PCI_CHIP_MGAG200_SE_A_PCI:
-    case PCI_CHIP_MGAG200_SE_B_PCI:
     case PCI_CHIP_MGAG200:
     case PCI_CHIP_MGAG200_PCI:
 	doRender = FALSE;
@@ -849,17 +854,8 @@ MGANAME(AccelInit)(ScreenPtr pScreen)
 	pMga->MaxFastBlitY = maxFastBlitMem / (pScrn->displayWidth * PSZ / 8);
     }
 
-    switch (pMga->Chipset) {
-    case PCI_CHIP_MGAG200_SE_A_PCI:
-    case PCI_CHIP_MGAG200_SE_B_PCI:
-        maxlines = (min(pMga->FbUsableSize, 1*1024*1024)) /
-                   (pScrn->displayWidth * PSZ / 8);
-        break;
-    default:
-        maxlines = (min(pMga->FbUsableSize, 16*1024*1024)) /
-                   (pScrn->displayWidth * PSZ / 8);
-        break;
-    }
+    maxlines = (min(pMga->FbUsableSize, 16*1024*1024)) /
+	               (pScrn->displayWidth * PSZ / 8);
 
 #ifdef XF86DRI
     if ( pMga->directRenderingEnabled ) {
@@ -1151,12 +1147,9 @@ MGAStormSync(ScrnInfoPtr pScrn)
 
     CHECK_DMA_QUIESCENT(pMga, pScrn);
 
-    /*
-     * The freeze that can happen here with some Mystique cards appears to
-     * have been caused by the memory clock being set too high.
-     */
-
-    while(MGAISBUSY());
+    /* This reportedly causes a freeze for the Mystique. */
+    if (!(pMga->Chipset == PCI_CHIP_MGA1064 && pMga->ChipRev < 3))
+	while(MGAISBUSY());
     /* flush cache before a read (mga-1064g 5.1.6) */
     OUTREG8(MGAREG_CRTC_INDEX, 0);
     if(pMga->AccelFlags & CLIPPER_ON) {
@@ -1249,8 +1242,6 @@ MGAStormEngineInit(ScrnInfoPtr pScrn)
     case PCI_CHIP_MGAG400:
     case PCI_CHIP_MGAG200:
     case PCI_CHIP_MGAG200_PCI:
-    case PCI_CHIP_MGAG200_SE_A_PCI:
-    case PCI_CHIP_MGAG200_SE_B_PCI:
 	pMga->SrcOrg = 0;
 	OUTREG(MGAREG_SRCORG, pMga->realSrcOrg);
 	OUTREG(MGAREG_DSTORG, pMga->DstOrg);

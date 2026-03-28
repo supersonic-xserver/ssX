@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Configure.c,v 3.93tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Configure.c,v 3.85 2005/01/26 05:31:48 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000-2002 by Alan Hourihane, Flint Mountain, North Wales.
  *
@@ -76,8 +83,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "os.h"
 #ifdef XFree86LOADER
 #include "loaderProcs.h"
@@ -89,8 +96,9 @@
 #define IN_XSERVER
 #include "xf86Parser.h"
 #include "xf86tokens.h"
+#include "vbe.h"
 #include "xf86DDC.h"
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
 #include "xf86Bus.h"
 #include "xf86Sbus.h"
 #endif
@@ -99,7 +107,7 @@
 typedef struct _DevToConfig {
     GDevRec GDev;
     pciVideoPtr pVideo;
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
     sbusDevicePtr sVideo;
 #endif
     int iDriver;
@@ -110,7 +118,7 @@ static int nDevToConfig = 0, CurrentDriver;
 
 xf86MonPtr ConfiguredMonitor;
 Bool xf86DoConfigurePass1 = TRUE;
-static Bool foundMouse = FALSE;
+Bool foundMouse = FALSE;
 
 #if defined(__UNIXOS2__)
 #define DFLT_MOUSE_DEV "mouse$"
@@ -170,7 +178,7 @@ xf86AddBusDeviceToConfigure(const char *driver, BusType bus, void *busData, int 
 	    if (!DevToConfig[i].pVideo)
 		return NULL;
 	break;
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
     case BUS_SBUS:
 	for (i = 0;  i < nDevToConfig;  i++)
 	    if (DevToConfig[i].sVideo &&
@@ -249,13 +257,14 @@ xf86AddBusDeviceToConfigure(const char *driver, BusType bus, void *busData, int 
 	NewDevice.GDev.identifier = "ISA Adapter";
 	NewDevice.GDev.busID = "ISA";
 	break;
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
     case BUS_SBUS: {
 	char *promPath = NULL;
 	NewDevice.sVideo = (sbusDevicePtr) busData;
 	NewDevice.GDev.identifier = NewDevice.sVideo->descr;
 	if (sparcPromInit() >= 0) {
 	    promPath = sparcPromNode2Pathname(&NewDevice.sVideo->node);
+	    
 	    sparcPromClose();
 	}
 	if (promPath) {
@@ -306,22 +315,17 @@ configureInputSection (void)
     configPrologue(XF86ConfInputPtr)
 
     ptr->inp_identifier = "Keyboard0";
-#if defined(WSCONS_SUPPORT)
+#if defined(WSCONS_SUPPORT) && defined(__NetBSD__) && defined(USE_MODULAR_KBD)
     /* check for /dev/wskbd */
     {
-#if defined(__NetBSD__)
-# define WSKBD "/dev/wskbd"
-#elif defined(__OpenBSD__)
-# define WSKBD "/dev/wskbd0"
-#endif
-	int fd = open(WSKBD, 0);
+	int fd = open("/dev/wskbd", 0);
 	if (fd > 0) {
 	    close(fd);
 	    ptr->inp_driver = "kbd";
 	    ptr->inp_option_lst = 
 		xf86addNewOption(ptr->inp_option_lst, "Protocol", "wskbd");
 	    ptr->inp_option_lst = 
-		xf86addNewOption(ptr->inp_option_lst, "Device", WSKBD);
+		xf86addNewOption(ptr->inp_option_lst, "Device", "/dev/wskbd");
         } else {
     	    /* no /dev/wskbd - fall back to legacy driver */
             ptr->inp_driver = "keyboard";
@@ -432,7 +436,7 @@ configureScreenSection (int screennum)
 }
 
 static const char* 
-optionTypeToString(OptionValueType type)
+optionTypeToSting(OptionValueType type)
 {
     switch (type) {
     case OPTV_NONE:
@@ -507,7 +511,7 @@ configureDeviceSection (int screennum)
 		const char *prefix = "        #Option     ";
 		const char *middle = " \t# ";
 		const char *suffix = "\n";
-		const char *opttype = optionTypeToString(p->type);
+		const char *opttype = optionTypeToSting(p->type);
 		char *optname;
 		int len = strlen(ptr->dev_comment) + strlen(prefix) +
 			  strlen(middle) + strlen(suffix) + 1;
@@ -713,8 +717,10 @@ configureFilesSection (void)
 {
     configPrologue(XF86ConfFilesPtr)
 
+#ifdef XFree86LOADER
    if (xf86FilePaths->modulePath)
        ptr->file_modulepath = strdup(xf86FilePaths->modulePath);
+#endif
    if (defaultFontPath)
        ptr->file_fontpath = strdup(defaultFontPath);
    if (rgbPath)
@@ -900,6 +906,9 @@ DoConfigure()
 #ifdef __UNIXOS2__
 #define PATH_MAX 2048
 #endif
+#if defined(__SCO__)
+#define PATH_MAX 1024
+#endif
 #ifndef PATH_MAX
 #define PATH_MAX 1024
 #endif
@@ -933,26 +942,26 @@ DoConfigure()
 	goto bail;
     }
 
-    dev2screen = xnfcalloc(1, nDevToConfig * sizeof(int));
+    xf86DoConfigurePass1 = FALSE;
+    
+    dev2screen = xnfcalloc(1,xf86NumDrivers*sizeof(int));
 
     {
-	Bool *driverProbed = xnfcalloc(1, xf86NumDrivers * sizeof(Bool));
-	int nextPrimary = 0;
-
+	Bool *driverProbed = xnfcalloc(1,xf86NumDrivers*sizeof(Bool));
 	for (screennum = 0;  screennum < nDevToConfig;  screennum++) {
-	    int k, l, n, oldNumScreens;
+	    int k,l,n,oldNumScreens;
 
 	    i = DevToConfig[screennum].iDriver;
 
-	    if (driverProbed[i])
-		continue;
+	    if (driverProbed[i]) continue;
 	    driverProbed[i] = TRUE;
 	    
 	    oldNumScreens = xf86NumScreens;
 
 	    (*xf86DriverList[i]->Probe)(xf86DriverList[i], 0);
 
-	    /* Possibly reorder */
+	    /* reorder */
+	    k = screennum > 0 ? screennum : 1;
 	    for (l = oldNumScreens; l < xf86NumScreens; l++) {
 	        /* is screen primary? */
 	        Bool primary = FALSE;
@@ -963,19 +972,22 @@ DoConfigure()
 			break;
 		    }
 		}
-
-		if (primary) {
-		    for (k = l; --k >= nextPrimary; )
-			dev2screen[k + 1] = dev2screen[k];
-		    dev2screen[nextPrimary++] = l;
-		} else {
-		    dev2screen[l] = l;
+		if (primary) continue;
+		/* not primary: assign it to next device of same driver */
+		/* 
+		 * NOTE: we assume that devices in DevToConfig 
+		 * and xf86Screens[] have the same order except
+		 * for the primary device which always comes first.
+		 */
+		for (; k < nDevToConfig; k++) {
+		    if (DevToConfig[k].iDriver == i) {
+		        dev2screen[k++] = l;
+			break;
+		    }
 		}
 	    }
-
-	    xf86SetPciVideo(NULL, NONE);
+	    xf86SetPciVideo(NULL,NONE);
 	}
-
 	xfree(driverProbed);
     }
     
@@ -1048,7 +1060,6 @@ DoConfigure()
     ErrorF("To test the server, run 'XFree86 -xf86config %s'\n\n", filename);
 
 bail:
-    CloseWellKnownConnections();
     OsCleanup(TRUE);
     AbortDDX();
     fflush(stderr);

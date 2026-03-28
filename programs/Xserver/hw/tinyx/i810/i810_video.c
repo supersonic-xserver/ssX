@@ -1,4 +1,18 @@
 /* COPYRIGHT AND PERMISSION NOTICE
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright (c) 2000, 2001 Nokia Home Communications
 
@@ -58,7 +72,7 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************/
 
 
-/* $XFree86: xc/programs/Xserver/hw/tinyx/i810/i810_video.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/i810/i810_video.c,v 1.1 2004/06/02 22:43:01 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -120,7 +134,7 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "txxv.h"
 #include "i810.h"
 
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 #include "../../xfree86/common/fourcc.h"
 

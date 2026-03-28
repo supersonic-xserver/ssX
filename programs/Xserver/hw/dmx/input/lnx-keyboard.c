@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/lnx-keyboard.c,v 1.2 2005/10/14 15:16:26 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/lnx-keyboard.c,v 1.1 2004/06/30 20:21:44 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Portions of this file were derived from the following files:
  *
  **********************************************************************
@@ -152,23 +159,16 @@
 /*****************************************************************************/
 
 #include "inputstr.h"
-#include <X11/Xos.h>
+#include "Xos.h"
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <signal.h>
 #include <sys/vt.h>
 #include <sys/kd.h>
 #include <termios.h>
-#include <linux/keyboard.h>
-#undef KEY_F13
-#undef KEY_F14
-#undef KEY_F15
-#undef KEY_F16
-#undef KEY_F17
-#undef KEY_XFER
-#undef KEY_UNKNOWN
 #include "atKeynames.h"
 #include "xf86Keymap.h"
+#include <linux/keyboard.h>
 
 #define NUM_AT2LNX (sizeof(at2lnx) / sizeof(at2lnx[0]))
 #define NUM_STATE_ENTRIES (256/32)

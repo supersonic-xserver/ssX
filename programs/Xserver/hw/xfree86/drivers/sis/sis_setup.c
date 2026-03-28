@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_setup.c,v 1.34 2005/10/14 15:16:45 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_setup.c,v 1.32 2004/06/21 00:43:22 twini Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Basic hardware and memory detection
  *
@@ -36,6 +44,8 @@
 #include "xf86Pci.h"
 #include "xf86.h"
 #include "fb.h"
+#include "xf1bpp.h"
+#include "xf4bpp.h"
 #include "xf86_OSproc.h"
 #include "xf86Resources.h"
 #include "xf86_ansic.h"
@@ -48,11 +58,11 @@
 #include "sis_dac.h"
 
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 static const char *dramTypeStr[] = {
         "Fast Page DRAM",

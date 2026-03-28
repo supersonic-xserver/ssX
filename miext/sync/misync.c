@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2010 NVIDIA Corporation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,7 +40,7 @@ static DevPrivateKeyRec syncScreenPrivateKeyRec;
 static DevPrivateKey syncScreenPrivateKey = &syncScreenPrivateKeyRec;
 
 #define SYNC_SCREEN_PRIV(pScreen) 				\
-    (SyncScreenPrivPtr) dixLookupPrivate(&pScreen->devPrivates,	\
+    (SyncScreenPrivPtr) dixLookupPrivate((PrivateRec **)&pScreen->devPrivates,	\
 					 syncScreenPrivateKey)
 
 typedef struct _syncScreenPriv {
@@ -139,17 +146,17 @@ void
 miSyncTriggerFence(SyncFence* pFence)
 {
     SyncTriggerList *ptl, *pNext;
-    CARD64 unused;
+    CARD64 unused_value;
 
     pFence->funcs.SetTriggered(pFence);
 
-    XSyncIntToValue(&unused, 0L);
+    XSyncIntToValue(&unused_value, 0);
 
     /* run through triggers to see if any fired */
     for (ptl = pFence->sync.pTriglist; ptl; ptl = pNext)
     {
 	pNext = ptl->next;
-	if ((*ptl->pTrigger->CheckTrigger)(ptl->pTrigger, unused))
+	if ((*ptl->pTrigger->CheckTrigger)(ptl->pTrigger, unused_value))
 	    (*ptl->pTrigger->TriggerFired)(ptl->pTrigger);
     }
 }

@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/XF86dri.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/XF86dri.c,v 1.1 2004/12/10 16:06:56 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -41,7 +48,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <X11/Xlibint.h>
 #include "xf86dristr.h"
 #include <X11/extensions/Xext.h>
-#include <X11/extensions/extutil.h>
+#include "extutil.h"
 
 static XExtensionInfo _xf86dri_info_data;
 static XExtensionInfo *xf86dri_info = &_xf86dri_info_data;
@@ -588,25 +595,26 @@ Bool XF86DRIGetDeviceInfo(dpy, screen, hFrameBuffer,
     return True;
 }
 
-/*
- * These two functions and the underlying X protocol are deprecated.
- */
-Bool XF86DRIOpenFullScreen(Display *dpy, int screen, Drawable drawable);
-
-Bool
-XF86DRIOpenFullScreen(Display *dpy, int screen, Drawable drawable)
+Bool XF86DRIOpenFullScreen(dpy, screen, drawable)
+    Display* dpy;
+    int screen;
+    Drawable drawable;
 {
+    /* This function and the underlying X protocol are deprecated.
+     */
     (void) dpy;
     (void) screen;
     (void) drawable;
     return False;
 }
 
-Bool XF86DRICloseFullScreen(Display *dpy, int screen, Drawable drawable);
-
-Bool
-XF86DRICloseFullScreen(Display *dpy, int screen, Drawable drawable)
+Bool XF86DRICloseFullScreen(dpy, screen, drawable)
+    Display* dpy;
+    int screen;
+    Drawable drawable;
 {
+    /* This function and the underlying X protocol are deprecated.
+     */
     (void) dpy;
     (void) screen;
     (void) drawable;

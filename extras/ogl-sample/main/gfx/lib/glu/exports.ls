@@ -36,6 +36,8 @@
 #  Declare the language and type map to use and initialize any special tables
 #  required for processing.
 #
+#   $Date: 2001/06/09 15:20:46 $ $Revision: 1.1.1.1 $
+#   $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/exports.ls,v 1.1.1.1 2001/06/09 15:20:46 tron Exp $
 
 function initialize() {
 

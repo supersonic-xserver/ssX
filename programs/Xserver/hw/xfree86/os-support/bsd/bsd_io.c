@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_io.c,v 3.24 2005/10/14 15:17:00 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_io.c,v 3.23 2002/10/21 20:38:04 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Dawes <dawes@xfree86.org>
@@ -23,9 +30,10 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: bsd_io.c /main/11 1996/10/19 18:06:07 kaleb $ */
 
 #define NEED_EVENTS
-#include <X11/X.h>
+#include "X.h"
 
 #include "compiler.h"
 
@@ -284,5 +292,3 @@ xf86WSKbdEvents(void)
 }
 
 #endif /* WSCONS_SUPPORT */
-
-

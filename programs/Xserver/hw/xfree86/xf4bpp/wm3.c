@@ -1,4 +1,24 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/wm3.c,v 1.4 2002/01/25 21:56:23 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+
+
+
+/* $XConsortium: wm3.c /main/5 1996/02/21 17:59:21 kaleb $ */
 
 #include "xf4bpp.h"
 #include "OScompiler.h"
@@ -13,7 +33,8 @@
 #define XOR  (3 << 3)
 
 int
-wm3_set_regs(GC *pGC)
+wm3_set_regs(pGC)
+GC *pGC;
 {
 #ifndef	PC98_EGC
     IOADDRESS REGBASE = xf86Screens[pGC->pScreen->myNum]->domainIOBase + 0x300;

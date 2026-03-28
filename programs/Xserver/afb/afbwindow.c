@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/afb/afbwindow.c,v 3.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbwindow.c,v 3.1 2003/09/13 21:33:04 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: afbwindow.c,v 5.14 94/04/17 20:28:36 dpw Exp $ */
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -48,7 +56,7 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
 #include "afb.h"
@@ -57,9 +65,10 @@ SOFTWARE.
 #include "maskbits.h"
 
 Bool
-afbCreateWindow(WindowPtr pWin)
+afbCreateWindow(pWin)
+	register WindowPtr pWin;
 {
-	afbPrivWin *pPrivWin;
+	register afbPrivWin *pPrivWin;
 
 	pPrivWin = (afbPrivWin *)(pWin->devPrivates[afbWindowPrivateIndex].ptr);
 	pPrivWin->pRotatedBorder = NullPixmap;
@@ -77,9 +86,10 @@ afbCreateWindow(WindowPtr pWin)
 /* This always returns true, because Xfree can't fail.  It might be possible
  * on some devices for Destroy to fail */
 Bool
-afbDestroyWindow(WindowPtr pWin)
+afbDestroyWindow(pWin)
+	WindowPtr pWin;
 {
-	afbPrivWin *pPrivWin;
+	register afbPrivWin *pPrivWin;
 
 	pPrivWin = (afbPrivWin *)(pWin->devPrivates[afbWindowPrivateIndex].ptr);
 
@@ -93,7 +103,8 @@ afbDestroyWindow(WindowPtr pWin)
 
 /*ARGSUSED*/
 Bool
-afbMapWindow(WindowPtr pWindow)
+afbMapWindow(pWindow)
+	WindowPtr pWindow;
 {
 	return (TRUE);
 }
@@ -108,9 +119,11 @@ in pPrivWin->pRotated*
 
 /*ARGSUSED*/
 Bool
-afbPositionWindow(WindowPtr pWin, int x, int y)
+afbPositionWindow(pWin, x, y)
+	WindowPtr pWin;
+	int x, y;
 {
-	afbPrivWin *pPrivWin;
+	register afbPrivWin *pPrivWin;
 	int		reset = 0;
 
 	pPrivWin = (afbPrivWin *)(pWin->devPrivates[afbWindowPrivateIndex].ptr);
@@ -150,7 +163,8 @@ afbPositionWindow(WindowPtr pWin, int x, int y)
 
 /*ARGSUSED*/
 Bool
-afbUnmapWindow(WindowPtr pWindow)
+afbUnmapWindow(pWindow)
+	WindowPtr pWindow;
 {
 	return (TRUE);
 }
@@ -164,14 +178,17 @@ visible in the source.
 
 
 void
-afbCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
+afbCopyWindow(pWin, ptOldOrg, prgnSrc)
+	WindowPtr pWin;
+	DDXPointRec ptOldOrg;
+	RegionPtr prgnSrc;
 {
 	DDXPointPtr pptSrc;
-	DDXPointPtr ppt;
+	register DDXPointPtr ppt;
 	RegionPtr prgnDst;
-	BoxPtr pbox;
-	int dx, dy;
-	int i, nbox;
+	register BoxPtr pbox;
+	register int dx, dy;
+	register int i, nbox;
 	WindowPtr pwinRoot;
 
 	pwinRoot = WindowTable[pWin->drawable.pScreen->myNum];
@@ -208,10 +225,12 @@ routine (i.e. the pixmap is paddable to 32 bits), also pre-rotate a copy
 of it in devPrivate.
 */
 Bool
-afbChangeWindowAttributes(WindowPtr pWin, unsigned long mask)
+afbChangeWindowAttributes(pWin, mask)
+	register WindowPtr pWin;
+	register unsigned long mask;
 {
-	unsigned long index;
-	afbPrivWin *pPrivWin;
+	register unsigned long index;
+	register afbPrivWin *pPrivWin;
 	WindowPtr		pBgWin;
 
 	pPrivWin = (afbPrivWin *)(pWin->devPrivates[afbWindowPrivateIndex].ptr);

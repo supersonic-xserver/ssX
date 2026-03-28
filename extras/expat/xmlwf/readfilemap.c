@@ -1,6 +1,12 @@
-/*
-Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
-See the file COPYING for copying permission.
+/* Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   See the file COPYING for copying permission.
 */
 
 #include <sys/types.h>
@@ -27,9 +33,12 @@ See the file COPYING for copying permission.
 #endif
 #endif
 
-int filemap(const char *name,
-	    void (*processor)(const void *, size_t, const char *, void *arg),
-	    void *arg)
+#include "filemap.h"
+
+int
+filemap(const char *name,
+        void (*processor)(const void *, size_t, const char *, void *arg),
+        void *arg)
 {
   size_t nbytes;
   int fd;
@@ -59,11 +68,13 @@ int filemap(const char *name,
   n = read(fd, p, nbytes);
   if (n < 0) {
     perror(name);
+    free(p);
     close(fd);
     return 0;
   }
   if (n != nbytes) {
     fprintf(stderr, "%s: read unexpected number of bytes\n", name);
+    free(p);
     close(fd);
     return 0;
   }

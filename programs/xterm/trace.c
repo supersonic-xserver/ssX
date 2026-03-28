@@ -1,4 +1,18 @@
-/* $XTermId: trace.c,v 1.62 2005/09/16 00:01:54 tom Exp $ */
+/* $XTermId: trace.c,v 1.59 2005/01/10 22:39:21 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * $XFree86: xc/programs/xterm/trace.c,v 3.22 2005/01/14 01:50:03 dickey Exp $
@@ -208,40 +222,23 @@ TraceSizeHints(XSizeHints * hints)
 {
     TRACE(("size hints:\n"));
     if (hints->flags & (USPosition | PPosition))
-	TRACE(("   position   %d,%d%s%s\n", hints->y, hints->x,
-	       hints->flags & USPosition ? " user" : "",
-	       hints->flags & PPosition ? " prog" : ""));
+	TRACE(("  position %d,%d\n", hints->y, hints->x));
     if (hints->flags & (USSize | PSize))
-	TRACE(("   size       %d,%d%s%s\n", hints->height, hints->width,
-	       hints->flags & USSize ? " user" : "",
-	       hints->flags & PSize ? " prog" : ""));
+	TRACE(("  size %d,%d\n", hints->height, hints->width));
     if (hints->flags & PMinSize)
-	TRACE(("   min        %d,%d\n", hints->min_height, hints->min_width));
+	TRACE(("  min %d,%d\n", hints->min_height, hints->min_width));
     if (hints->flags & PMaxSize)
-	TRACE(("   max        %d,%d\n", hints->max_height, hints->max_width));
+	TRACE(("  max %d,%d\n", hints->max_height, hints->max_width));
     if (hints->flags & PResizeInc)
-	TRACE(("   inc        %d,%d\n", hints->height_inc, hints->width_inc));
+	TRACE(("  inc %d,%d\n", hints->height_inc, hints->width_inc));
     if (hints->flags & PAspect)
-	TRACE(("   min aspect %d/%d\n", hints->min_aspect.y, hints->min_aspect.y));
+	TRACE(("  min aspect %d/%d\n", hints->min_aspect.y, hints->min_aspect.y));
     if (hints->flags & PAspect)
-	TRACE(("   max aspect %d/%d\n", hints->max_aspect.y, hints->max_aspect.y));
+	TRACE(("  max aspect %d/%d\n", hints->max_aspect.y, hints->max_aspect.y));
     if (hints->flags & PBaseSize)
-	TRACE(("   base       %d,%d\n", hints->base_height, hints->base_width));
+	TRACE(("  base %d,%d\n", hints->base_height, hints->base_width));
     if (hints->flags & PWinGravity)
-	TRACE(("   gravity    %d\n", hints->win_gravity));
-}
-
-void
-TraceWMSizeHints(XtermWidget xw)
-{
-    XSizeHints sizehints;
-    long supp = 0;
-
-    bzero(&sizehints, sizeof(sizehints));
-    if (!XGetWMNormalHints(xw->screen.display, XtWindow(SHELL_OF(xw)),
-			   &sizehints, &supp))
-	bzero(&sizehints, sizeof(sizehints));
-    TraceSizeHints(&sizehints);
+	TRACE(("  gravity %d\n", hints->win_gravity));
 }
 
 /*

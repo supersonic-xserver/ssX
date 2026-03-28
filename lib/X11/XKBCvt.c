@@ -1,3 +1,11 @@
+/* $Xorg: XKBCvt.c,v 1.5 2001/02/09 02:03:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1989, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/XKBCvt.c,v 3.36tsi Exp $ */
+/* $XFree86: xc/lib/X11/XKBCvt.c,v 3.35 2003/11/17 22:20:09 dawes Exp $ */
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -270,7 +278,7 @@ _XkbGetCharset()
 #else
         char *cf = __XOS2RedirRoot(CHARSET_FILE);
 #endif
-	if ( (stat(cf,&sbuf)==0) && ((sbuf.st_mode&S_IFMT) == S_IFREG) &&
+	if ( (stat(cf,&sbuf)==0) && (sbuf.st_mode&S_IFREG) &&
 	    (file = fopen(cf,"r")) ) {
 	    tmp = _XkbAlloc(sbuf.st_size+1);
 	    if (tmp!=NULL) {

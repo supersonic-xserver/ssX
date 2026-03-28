@@ -1,6 +1,11 @@
-#if !defined(WINPREFS_H)
-#define WINPREFS_H
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -29,22 +34,16 @@
  *
  * Authors:     Earle F. Philhower, III
  */
-
-/* Need Bool */
-#include <X11/Xdefs.h>
-/* Need TRUE */
-#include "misc.h"
+/* $XFree86: xc/programs/Xserver/hw/xwin/winprefs.h,v 1.1 2003/10/02 13:30:11 eich Exp $ */
 
 /* Need to know how long paths can be... */
 #include <limits.h>
-/* Xwindows redefines PATH_MAX to at least 1024 */
-#include <X11/Xwindows.h>
 
 #ifndef NAME_MAX
 #define NAME_MAX PATH_MAX
 #endif
 #define MENU_MAX 128   /* Maximum string length of a menu name or item */
-#define PARAM_MAX (4*PATH_MAX)  /* Maximum length of a parameter to a MENU */
+#define PARAM_MAX (4*PATH_MAX)  /* Maximim length of a parameter to a MENU */
 
 
 /* Supported commands in a MENU {} statement */
@@ -97,7 +96,7 @@ typedef struct ICONITEM
   unsigned long hicon;                /* LoadImage() result */
 } ICONITEM;
 
-typedef struct WINPREFS
+typedef struct WINMULTIWINDOWPREFS
 {
   /* Menu information */
   MENUPARSED *menu; /* Array of created menus */
@@ -117,22 +116,18 @@ typedef struct WINPREFS
   /* Icon information */
   char iconDirectory[PATH_MAX+1]; /* Where do the .icos lie? (Win32 path) */
   char defaultIconName[NAME_MAX+1];   /* Replacement for x.ico */
-  char trayIconName[NAME_MAX+1]; /* Replacement for tray icon */
 
   ICONITEM *icon;
   int iconItems;
 
-  /* Silent exit flag */
-  Bool fSilentExit;
-
-} WINPREFS;
+} WINMULTIWINDOWPREFS;
 
 
 
 
 /* Functions */
 void
-LoadPreferences(void);
+LoadPreferences();
 
 void
 SetupRootMenu (unsigned long hmenuRoot);
@@ -144,7 +139,7 @@ void
 HandleCustomWM_INITMENU(unsigned long hwndIn,
 			unsigned long hmenuIn);
 
-Bool
+int
 HandleCustomWM_COMMAND (unsigned long hwndIn,
 			int           command);
 
@@ -155,8 +150,5 @@ unsigned long
 winOverrideIcon (unsigned long longpWin);
 
 unsigned long
-winTaskbarIcon(void);
+winOverrideDefaultIcon();
 
-unsigned long
-winOverrideDefaultIcon(int size);
-#endif

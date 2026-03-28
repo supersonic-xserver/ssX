@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 by The XFree86 Project, Inc.
  * All rights reserved.
  *
@@ -44,7 +51,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* $XFree86: xc/config/util/revpath.c,v 1.2 1999/02/01 11:55:49 dawes Exp $ */
+/* $XFree86: xc/config/util/revpath.c,v 1.3 2004/02/13 23:58:28 dawes Exp $ */
 
 /*
  * Reverse a pathname.  It returns a relative path that can be used to undo

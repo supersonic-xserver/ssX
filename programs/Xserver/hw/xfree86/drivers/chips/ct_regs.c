@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Created 1998 by David Bateman <dbateman@eng.uts.edu.au>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -113,7 +120,7 @@
 /*
  * PIO Access to the C&T extension registers
  */
-static void
+void
 chipsStdWriteXR(CHIPSPtr cPtr, CARD8 index, CARD8 value)
 {
     outb(cPtr->PIOBase + CHIPS_XR_INDEX, index);

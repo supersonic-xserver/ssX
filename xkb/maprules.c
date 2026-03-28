@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  Copyright (c) 1996 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -48,7 +55,7 @@
 #include "dix.h"
 #include <X11/extensions/XKBstr.h>
 #define XKBSRV_NEED_FILE_FUNCS
-#include <xkbsrv.h>
+#include "XKBsrv_compat.h"
 
 #ifdef DEBUG
 #define PR_DEBUG(s)		fprintf(stderr,s)

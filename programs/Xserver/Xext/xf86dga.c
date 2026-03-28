@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/Xext/xf86dga.c,v 3.25tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xf86dga.c,v 3.24 2004/12/09 19:33:00 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 
@@ -9,8 +23,8 @@ Copyright (c) 1995, 1996, 1999  XFree86 Inc
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
@@ -19,8 +33,8 @@ Copyright (c) 1995, 1996, 1999  XFree86 Inc
 #include "scrnintstr.h"
 #include "servermd.h"
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dga.h>
-#include <X11/extensions/xf86dgastr.h>
+#include "xf86dga.h"
+#include "xf86dgastr.h"
 #include "swaprep.h"
 #include "dgaproc.h"
 
@@ -281,7 +295,7 @@ ProcXF86DGAViewPortChanged(ClientPtr client)
 }
 
 int
-ProcXF86DGADispatch(ClientPtr client)
+ProcXF86DGADispatch(register ClientPtr client)
 {
     REQUEST(xReq);
 

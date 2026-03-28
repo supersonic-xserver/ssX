@@ -1,4 +1,7 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.47tsi Exp $ */
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.41 2004/09/09 15:36:43 tsi Exp $ */
+
+
+
 
 #include <Server.tmpl>
 #ifdef LoaderTest
@@ -6,64 +9,52 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.47tsi Exp $ 
 SUBDIRS = test
 #endif
 
-#if defined(i386Architecture) || defined(PowerPCArchitecture)
-#define HasCoff YES
-#else
-#define HasCoff NO
-#endif
-
 #define UseDBMalloc	NO
 
 #if UseDBMalloc
-SYS_LIBRARIES = -ldbmalloc
-DBMALLOCDEFINE = -DDBMALLOC
+SYS_LIBRARIES=-ldbmalloc
+DBMALLOCDEFINE=-DDBMALLOC
 #endif
 
 #if HasDlopen
 DLOPENDEFINES = -DDLOPEN_SUPPORT
-DLSRC = dlloader.c
-DLOBJ = dlloader.o
+DLSRC=dlloader.c
+DLOBJ=dlloader.o
 #endif
 
-#if HasCoff
-COFFDEFINES = -DCOFF_SUPPORT
-COFFSRC = coffloader.c
-COFFOBJ = coffloader.o
+#if HasLibUsbHid
+USBDEFINES = -DUSB_HID
 #endif
 
 #if FontencCompatibility
  COMPAT_DEFINES = -DFONTENC_COMPATIBILITY
 #endif
 
+#if BuildFontCache
+ FONTCACHE_DEFINES = -DFONTCACHE
+#endif
+
 #if HasShm
     SHM_DEFINES = -DHAS_SHM
 #endif
 
-#if defined(LinuxArchitecture)
+#if defined(LinuxArchitecture) && \
+    (defined(i386Architecture) || defined(AMD64Architecture))
 ARCHDEFINES = -DDoMMAPedMerge -DMmapPageAlign
-#elif !defined(OS2Architecture) && !defined(SparcArchitecture)
-ARCHDEFINES = -DUseMMAP -DMmapPageAlign
 #endif
 
-#if UseStackTrace
-STRACEDEFS = -DSTACKTRACE
-STRACEINCS = -I$(TOP)/util/memleak
-#endif
-
-LOADERBUILDFLAGS = LoaderBuildFlags
-
-DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(COFFDEFINES) $(OS_DEFINES) \
-	  $(COMPAT_DEFINES) $(SHM_DEFINES) $(ARCHDEFINES) $(EXT_DEFINES) \
-	  $(STRACEDEFS) $(LOADERBUILDFLAGS)
+DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(OS_DEFINES) $(COMPAT_DEFINES) \
+	  $(SHM_DEFINES) $(FONTCACHE_DEFINES) $(ARCHDEFINES) $(USBDEFINES)
 
 MODULEDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
 
-   INCLUDES = -I.. -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(XF86SRC)/vbe \
+   INCLUDES = -I. -I.. -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(XF86SRC)/vbe \
 		-I$(SERVERSRC)/dbe -I$(SERVERSRC)/Xext -I$(XF86SRC)/int10 \
 		-I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+		-I$(SERVERSRC)/os -I$(XINCLUDESRC) -I$(FONTINCSRC) \
 		-I$(FONTLIBSRC)/include -I$(FONTLIBSRC)/fontcache \
-		-I$(SERVERSRC)/os -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-		-I$(SERVERSRC)/render -I$(XF86SRC)/parser $(STRACEINCS)
+		-I$(EXTINCSRC) -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
+		-I$(SERVERSRC)/render
 
 #ifdef OS2Architecture
 SRCS1 = os2funcs.c
@@ -75,13 +66,13 @@ SRCS1 = SparcMulDiv.S
 OBJS1 = SparcMulDiv.o
 #endif
 
-SRCS = aoutloader.c $(COFFSRC) $(DLSRC) elfloader.c hash.c loader.c \
+SRCS = aoutloader.c coffloader.c $(DLSRC) elfloader.c hash.c loader.c \
 	loadmod.c loadfont.c loadext.c os.c dixsym.c misym.c xf86sym.c \
 	fontsym.c extsym.c $(SRCS1)
-OBJS = aoutloader.o $(COFFOBJ) $(DLOBJ) elfloader.o hash.o loader.o \
+OBJS = aoutloader.o coffloader.o $(DLOBJ) elfloader.o hash.o loader.o \
 	loadmod.o loadfont.o loadext.o os.o dixsym.o misym.o xf86sym.o \
 	fontsym.o extsym.o $(OBJS1)
-XOBJS =  aoutloader.o $(COFFOBJ) $(DLOBJ) elfloader.o hash.o loader.o \
+XOBJS =  aoutloader.o coffloader.o $(DLOBJ) elfloader.o hash.o loader.o \
 	loadmod.o loadfont.o loadext.o os.o $(OBJS1)
 
 NormalAsmObjectRule()
@@ -90,7 +81,9 @@ NormalLibraryObjectRule()
 NormalLibraryTarget(loader,$(OBJS) )
 NormalLibraryTarget(xloader,$(XOBJS) )
 
-SpecialCObjectRule(loadmod,NullParameter,$(MODULEDEFINES))
+SpecialCObjectRule(loadmod,NullParameter,$(MODULEDEFINES) $(EXT_DEFINES))
+SpecialCObjectRule(xf86sym,NullParameter,$(EXT_DEFINES))
+SpecialCObjectRule(dixsym,NullParameter,$(EXT_DEFINES))
 
 #ifdef SparcArchitecture
 ObjectFromAsmSource(SparcMulDiv,NullParameter)

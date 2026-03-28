@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
 Copyright 1992, 1998  The Open Group
 
@@ -24,12 +31,9 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
+/* $XFree86: xc/programs/Xserver/Xext/sleepuntil.c,v 3.9 2005/10/14 15:16:11 tsi Exp $ */
 
 /* dixsleep.c - implement millisecond timeouts for X clients */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include "sleepuntil.h"
 #include <X11/X.h>
@@ -77,14 +81,9 @@ static void	    SertafiedWakeupHandler(
     pointer /* LastSelectMask */
 );
 
-_X_EXPORT int
-ClientSleepUntil (client, revive, notifyFunc, closure)
-    ClientPtr	client;
-    TimeStamp	*revive;
-    void	(*notifyFunc)(
-        ClientPtr /* client */,
-        pointer   /* closure */);
-    pointer	closure;
+int
+ClientSleepUntil(ClientPtr client, TimeStamp *revive,
+		 sleepUntilNotifyFunc notifyFunc, pointer closure)
 {
     SertafiedPtr	pRequest, pReq, pPrev;
 
@@ -138,9 +137,7 @@ ClientSleepUntil (client, revive, notifyFunc, closure)
 }
 
 static void
-ClientAwaken (client, closure)
-    ClientPtr	client;
-    pointer	closure;
+ClientAwaken(ClientPtr client, pointer closure)
 {
     if (!client->clientGone)
 	AttendClient (client);
@@ -148,9 +145,7 @@ ClientAwaken (client, closure)
 
 
 static int
-SertafiedDelete (value, id)
-    pointer value;
-    XID id;
+SertafiedDelete(pointer value, XID id)
 {
     SertafiedPtr	pRequest = (SertafiedPtr)value;
     SertafiedPtr	pReq, pPrev;
@@ -172,10 +167,7 @@ SertafiedDelete (value, id)
 }
 
 static void
-SertafiedBlockHandler (data, wt, LastSelectMask)
-    pointer	    data;		/* unused */
-    OSTimePtr	    wt;			/* wait time */
-    pointer	    LastSelectMask;
+SertafiedBlockHandler(pointer data, OSTimePtr wt, pointer LastSelectMask)
 {
     SertafiedPtr	    pReq, pNext;
     unsigned long	    delay;
@@ -208,10 +200,7 @@ SertafiedBlockHandler (data, wt, LastSelectMask)
 }
 
 static void
-SertafiedWakeupHandler (data, i, LastSelectMask)
-    pointer	    data;
-    int		    i;
-    pointer	    LastSelectMask;
+SertafiedWakeupHandler(pointer data, int i, pointer LastSelectMask)
 {
     SertafiedPtr	pReq, pNext;
     TimeStamp		now;

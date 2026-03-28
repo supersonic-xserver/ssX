@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/ppcPci.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/ppcPci.c,v 1.9 2002/08/27 22:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * ppcPci.c - PowerPC PCI access functions
  *
@@ -101,11 +108,6 @@ ppcPciInit()
  */
 static ADDRESS motoppcBusAddrToHostAddr(PCITAG, PciAddrType, ADDRESS);
 static ADDRESS motoppcHostAddrToBusAddr(PCITAG, PciAddrType, ADDRESS);
-
-static CARD32  pciCfgMech1Read(PCITAG tag, int offset);
-static void    pciCfgMech1Write(PCITAG tag, int offset, CARD32 val);
-static void    pciCfgMech1SetBits(PCITAG tag, int offset,
-				  CARD32 mask, CARD32 val);
 
 static pciBusFuncs_t motoppcFuncs0 = {
 /* pciReadLong      */	pciCfgMech1Read,
@@ -214,74 +216,4 @@ motoppcHostAddrToBusAddr(PCITAG tag, PciAddrType type, ADDRESS addr)
       return addr;
 
   /*NOTREACHED*/
-}
-
-static int buserr_detected;
-
-static
-void buserr(int sig)
-{
-	buserr_detected = 1;
-}
-
-static CARD32
-pciCfgMech1Read(PCITAG tag, int offset)
-{
-  unsigned long rv = 0xffffffff;
-#ifdef DEBUGPCI
-  ErrorF("pciCfgMech1Read(tag=%08lx,offset=%08x)\n", tag, offset);
-#endif
-
-  signal(SIGBUS, buserr);
-  buserr_detected = 0;
-
-  outl(0xCF8, PCI_EN | tag | (offset & 0xfc));
-  rv = inl(0xCFC);
-
-  signal(SIGBUS, SIG_DFL);
-  if (buserr_detected)
-  {
-#ifdef DEBUGPCI
-    ErrorF("pciCfgMech1Read() BUS ERROR\n");
-#endif
-    return(0xffffffff);
-  }
-  else
-    return(rv);
-}
-
-static void
-pciCfgMech1Write(PCITAG tag, int offset, CARD32 val)
-{
-#ifdef DEBUGPCI
-  ErrorF("pciCfgMech1Write(tag=%08lx,offset=%08x,val=%08lx)\n",
-        tag, offset, (unsigned long)val);
-#endif
-
-  signal(SIGBUS, SIG_IGN);
-
-  outl(0xCF8, PCI_EN | tag | (offset & 0xfc));
-#if defined(Lynx)
-  outb(0x80, 0x00);	/* without this the next access fails
-                         * on my Powerstack system when we use
-                         * assembler inlines for outl */
-#endif
-  outl(0xCFC, val);
-
-  signal(SIGBUS, SIG_DFL);
-}
-
-static void
-pciCfgMech1SetBits(PCITAG tag, int offset, CARD32 mask, CARD32 val)
-{
-    unsigned long rv = 0xffffffff;
-
-    signal(SIGBUS, buserr);
-
-    outl(0xCF8, PCI_EN | tag | (offset & 0xfc));
-    rv = inl(0xCFC);
-    rv = (rv & ~mask) | val;
-    outl(0xCFC, rv);
-
-    signal(SIGBUS, SIG_DFL);
 }

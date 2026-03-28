@@ -1,9 +1,23 @@
-/*  pcf.c                                                                 
+/*  pcf.c
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
     FreeType font driver for pcf fonts
 
-  Copyright 2000 by            
-  Francesco Zappa Nardelli     
+  Copyright 2000-2001, 2003 by
+  Francesco Zappa Nardelli
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +45,6 @@ THE SOFTWARE.
 #include <ft2build.h>
 #include "pcfutil.c"
 #include "pcfread.c"
-#include "pcfdriver.c"
+#include "pcfdrivr.c"
 
 /* END */

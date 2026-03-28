@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -19,9 +33,34 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * STUFF FOR PRIVATES
  *****************************************************************/
 
-typedef int *DevPrivateKey;
+/*
+ * XFree86 4.8.0 (May 2009) style DevPrivateKey definitions.
+ * The modern Xorg code uses 'typedef int *DevPrivateKey' which is
+ * incompatible with the 2009 DIX code that expects a struct.
+ */
+typedef struct _DevPrivateKeyRec {
+    int privateIndex;
+} DevPrivateKeyRec, *DevPrivateKey;
+
 struct _Private;
 typedef struct _Private PrivateRec;
+
+/*
+ * Legacy private key types for XFree86 4.8.0 compatibility
+ * These are used by miext/sync and other legacy extensions
+ */
+typedef enum {
+    PRIVATE_SCREEN,
+    PRIVATE_SYNC_FENCE,
+    PRIVATE_SYNC_FENCE_OBJ,
+    PRIVATE_SYNC_TRIGGER,
+    PRIVATE_SYNC_ITEMS,
+    PRIVATE_WINDOW,
+    PRIVATE_GC,
+    PRIVATE_PIXMAP,
+    PRIVATE_DEVICE,
+    PRIVATE_CLIENT,
+} DevPrivateType;
 
 /*
  * Request pre-allocated private space for your driver/module.
@@ -38,9 +77,21 @@ dixAllocatePrivate(PrivateRec **privates, const DevPrivateKey key);
 
 /*
  * Look up a private pointer.
+ * In legacy mode, use _dixLookupPrivate with DevUnion** to PrivateRec** cast
  */
-pointer
-dixLookupPrivate(PrivateRec **privates, const DevPrivateKey key);
+extern void *
+_dixLookupPrivate(PrivateRec **privates, const DevPrivateKey key);
+
+/*
+ * Compatibility wrapper for DevUnion vs PrivateRec type mismatch
+ * In legacy mode, pScreen->devPrivates is DevUnion** but functions expect PrivateRec**
+ */
+#ifdef SSX_LEGACY_MODE
+#include "miscstruct.h"
+#define dixLookupPrivate(p, k) _dixLookupPrivate((PrivateRec **)(p), k)
+#else
+#define dixLookupPrivate(p, k) _dixLookupPrivate(p, k)
+#endif
 
 /*
  * Look up the address of a private pointer.

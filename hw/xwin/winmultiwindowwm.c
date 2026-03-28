@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -27,53 +34,32 @@
  *
  * Authors:	Kensuke Matsuzaki
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winmultiwindowwm.c,v 1.3 2003/10/02 13:30:11 eich Exp $ */
 
 /* X headers */
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#ifdef __CYGWIN__
 #include <sys/select.h>
-#endif
 #include <fcntl.h>
 #include <setjmp.h>
-#define HANDLE void *
 #include <pthread.h>
-#undef HANDLE
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xlocale.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
-#include <X11/cursorfont.h>
 
-/* Windows headers */
-#ifdef __CYGWIN__
 /* Fixups to prevent collisions between Windows and X headers */
 #define ATOM DWORD
 
+/* Windows headers */
 #include <windows.h>
-#else
-#include <Xwindows.h>
-#endif
 
 /* Local headers */
-#include "objbase.h"
-#include "ddraw.h"
 #include "winwindow.h"
-#ifdef XWIN_MULTIWINDOWEXTWM
-#include "windowswmstr.h"
-#endif
 
-extern void winDebug(const char *format, ...);
-
-#ifndef CYGDEBUG
-#define CYGDEBUG NO
-#endif
 
 /*
  * Constant defines
@@ -81,9 +67,7 @@ extern void winDebug(const char *format, ...);
 
 #define WIN_CONNECT_RETRIES	5
 #define WIN_CONNECT_DELAY	5
-#ifdef HAS_DEVWINDOWS
-# define WIN_MSG_QUEUE_FNAME	"/dev/windows"
-#endif
+#define WIN_MSG_QUEUE_FNAME	"/dev/windows"
 #define WIN_JMP_OKAY		0
 #define WIN_JMP_ERROR_IO	2
 
@@ -102,7 +86,6 @@ typedef struct _WMMsgQueueRec {
   struct _WMMsgNodeRec	*pTail;
   pthread_mutex_t	pmMutex;
   pthread_cond_t	pcNotEmpty;
-  int			nQueueSize;
 } WMMsgQueueRec, *WMMsgQueuePtr;
 
 typedef struct _WMInfo {
@@ -111,7 +94,6 @@ typedef struct _WMInfo {
   Atom			atmWmProtos;
   Atom			atmWmDelete;
   Atom			atmPrivMap;
-  Bool			fAllowOtherWM;
 } WMInfoRec, *WMInfoPtr;
 
 typedef struct _WMProcArgRec {
@@ -121,11 +103,10 @@ typedef struct _WMProcArgRec {
 } WMProcArgRec, *WMProcArgPtr;
 
 typedef struct _XMsgProcArgRec {
-  Display		*pDisplay;
-  DWORD			dwScreen;
-  WMInfoPtr		pWMInfo;
+  Display      *pDisplay;
+  DWORD        dwScreen;
+  WMInfoPtr    pWMInfo;
   pthread_mutex_t	*ppmServerStarted;
-  HWND			hwndScreen;
 } XMsgProcArgRec, *XMsgProcArgPtr;
 
 
@@ -135,6 +116,8 @@ typedef struct _XMsgProcArgRec {
 
 extern char *display;
 extern void ErrorF (const char* /*f*/, ...);
+extern Bool g_fCalledSetLocale;
+extern Bool g_fCalledXInitThreads;
 
 
 /*
@@ -163,44 +146,27 @@ static void*
 winMultiWindowWMProc (void* pArg);
 
 static int
-winMultiWindowWMErrorHandler (Display *pDisplay, XErrorEvent *pErr);
-
-static int
-winMultiWindowWMIOErrorHandler (Display *pDisplay);
+winMultiWindowWMErrorHandler (Display *pDisp, XErrorEvent *e);
 
 static void *
 winMultiWindowXMsgProc (void *pArg);
 
-static int
-winMultiWindowXMsgProcErrorHandler (Display *pDisplay, XErrorEvent *pErr);
-
-static int
-winMultiWindowXMsgProcIOErrorHandler (Display *pDisplay);
-
-static int
-winRedirectErrorHandler (Display *pDisplay, XErrorEvent *pErr);
-
 static void
 winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg);
 
-#if 0
-static void
-PreserveWin32Stack(WMInfoPtr pWMInfo, Window iWindow, UINT direction);
-#endif
-
-static Bool
-CheckAnotherWindowManager (Display *pDisplay, DWORD dwScreen);
+static int
+winMutliWindowWMIOErrorHandler (Display *pDisplay);
 
 
 /*
  * Local globals
  */
 
-static jmp_buf			g_jmpWMEntry;
-static jmp_buf			g_jmpXMsgProcEntry;
-static Bool			g_shutdown = FALSE;
-static Bool			redirectError = FALSE;
-static Bool			g_fAnotherWMRunnig = FALSE;
+static int			g_nQueueSize;
+static jmp_buf			g_jmpEntry;
+static Bool                     g_shutdown = FALSE;
+
+
 
 /*
  * PushMessage - Push a message onto the queue
@@ -233,14 +199,11 @@ PushMessage (WMMsgQueuePtr pQueue, WMMsgNodePtr pNode)
     case WM_WM_MOVE:
       ErrorF ("\tWM_WM_MOVE\n");
       break;
-    case WM_WM_SIZE:
-      ErrorF ("\tWM_WM_SIZE\n");
-      break;
     case WM_WM_RAISE:
       ErrorF ("\tWM_WM_RAISE\n");
       break;
     case WM_WM_LOWER:
-      ErrorF ("\tWM_WM_LOWER\n");
+      ErrorF ("\tWM_WM_RAISE\n");
       break;
     case WM_WM_MAP:
       ErrorF ("\tWM_WM_MAP\n");
@@ -251,17 +214,14 @@ PushMessage (WMMsgQueuePtr pQueue, WMMsgNodePtr pNode)
     case WM_WM_KILL:
       ErrorF ("\tWM_WM_KILL\n");
       break;
-    case WM_WM_ACTIVATE:
-      ErrorF ("\tWM_WM_ACTIVATE\n");
-      break;
     default:
-      ErrorF ("\tUnknown Message.\n");
+      ErrorF ("Unknown Message.\n");
       break;
     }
 #endif
 
   /* Increase the count of elements in the queue by one */
-  ++(pQueue->nQueueSize);
+  ++g_nQueueSize;
 
   /* Release the queue mutex */
   pthread_mutex_unlock (&pQueue->pmMutex);
@@ -321,10 +281,10 @@ PopMessage (WMMsgQueuePtr pQueue, WMInfoPtr pWMInfo)
     }
 
   /* Drop the number of elements in the queue by one */
-  --(pQueue->nQueueSize);
+  --g_nQueueSize;
 
 #if CYGMULTIWINDOW_DEBUG
-  ErrorF ("Queue Size %d %d\n", pQueue->nQueueSize, QueueSize(pQueue));
+  ErrorF ("Queue Size %d %d\n", g_nQueueSize, QueueSize(pQueue));
 #endif
   
   /* Release the queue mutex */
@@ -375,11 +335,10 @@ InitQueue (WMMsgQueuePtr pQueue)
   pQueue->pTail = NULL;
 
   /* There are no elements initially */
-  pQueue->nQueueSize = 0;
+  g_nQueueSize = 0;
 
 #if CYGMULTIWINDOW_DEBUG
-  ErrorF ("InitQueue - Queue Size %d %d\n", pQueue->nQueueSize,
-	  QueueSize(pQueue));
+  ErrorF ("InitQueue - Queue Size %d %d\n", g_nQueueSize, QueueSize(pQueue));
 #endif
 
   ErrorF ("InitQueue - Calling pthread_mutex_init\n");
@@ -432,10 +391,7 @@ GetWindowName (Display *pDisplay, Window iWin, char **ppName)
       /* */
       if (xtpName.value)
 	{
-	  int size = xtpName.nitems * (xtpName.format >> 3);
-	  *ppName = malloc(size + 1);
-	  strncpy(*ppName, xtpName.value, size);
-	  (*ppName)[size] = 0;
+	  *ppName = strdup ((char*)xtpName.value);
 	  XFree (xtpName.value);
 	}
 
@@ -445,18 +401,22 @@ GetWindowName (Display *pDisplay, Window iWin, char **ppName)
     }
   else
     {
-      if (XmbTextPropertyToTextList (pDisplay, &xtpName, &ppList, &nNum) >= Success && nNum > 0 && *ppList)
+      XmbTextPropertyToTextList (pDisplay, &xtpName, &ppList, &nNum);
+
+      /* */
+      if (nNum && ppList && *ppList)
 	{
+	  XFree (xtpName.value);
 	  *ppName = strdup (*ppList);
 	  XFreeStringList (ppList);
 	}
-      XFree (xtpName.value);
 
 #if CYGMULTIWINDOW_DEBUG
       ErrorF ("GetWindowName - %s %s\n",
 	      XGetAtomName (pDisplay, xtpName.encoding), *ppName);
 #endif
     }
+
 
 #if CYGMULTIWINDOW_DEBUG
   ErrorF ("GetWindowName - Returning\n");
@@ -509,7 +469,7 @@ UpdateName (WMInfoPtr pWMInfo, Window iWindow)
 			  0,
 			  1,
 			  False,
-			  XA_INTEGER,//pWMInfo->atmPrivMap,
+			  pWMInfo->atmPrivMap,
 			  &atmType,
 			  &fmtRet,
 			  &items,
@@ -526,7 +486,7 @@ UpdateName (WMInfoPtr pWMInfo, Window iWindow)
   /* Some sanity checks */
   if (!hWnd) return;
   if (!IsWindow (hWnd)) return;
-
+  
   /* Set the Windows window name */
   GetWindowName (pWMInfo->pDisplay, iWindow, &pszName);
   if (pszName)
@@ -544,74 +504,6 @@ UpdateName (WMInfoPtr pWMInfo, Window iWindow)
       free (pszName);
     }
 }
-
-
-#if 0
-/*
- * Fix up any differences between the X11 and Win32 window stacks
- * starting at the window passed in
- */
-static void
-PreserveWin32Stack(WMInfoPtr pWMInfo, Window iWindow, UINT direction)
-{
-  Atom                  atmType;
-  int                   fmtRet;
-  unsigned long         items, remain;
-  HWND                  hWnd, *retHwnd;
-  DWORD                 myWinProcID, winProcID;
-  Window                xWindow;
-  WINDOWPLACEMENT       wndPlace;
-  
-  hWnd = NULL;
-  /* See if we can get the cached HWND for this window... */
-  if (XGetWindowProperty (pWMInfo->pDisplay,
-			  iWindow,
-			  pWMInfo->atmPrivMap,
-			  0,
-			  1,
-			  False,
-			  XA_INTEGER,//pWMInfo->atmPrivMap,
-			  &atmType,
-			  &fmtRet,
-			  &items,
-			  &remain,
-			  (unsigned char **) &retHwnd) == Success)
-    {
-      if (retHwnd)
-	{
-	  hWnd = *retHwnd;
-	  XFree (retHwnd);
-	}
-    }
-  
-  if (!hWnd) return;
-  
-  GetWindowThreadProcessId (hWnd, &myWinProcID);
-  hWnd = GetNextWindow (hWnd, direction);
-  
-  while (hWnd) {
-    GetWindowThreadProcessId (hWnd, &winProcID);
-    if (winProcID == myWinProcID)
-      {
-	wndPlace.length = sizeof(WINDOWPLACEMENT);
-	GetWindowPlacement (hWnd, &wndPlace);
-	if ( !(wndPlace.showCmd==SW_HIDE ||
-	       wndPlace.showCmd==SW_MINIMIZE) )
-	  {
-	    xWindow = (Window)GetProp (hWnd, WIN_WID_PROP);
-	    if (xWindow)
-	      {
-		if (direction==GW_HWNDPREV)
-		  XRaiseWindow (pWMInfo->pDisplay, xWindow);
-		else
-		  XLowerWindow (pWMInfo->pDisplay, xWindow);
-	      }
-	  }
-      }
-    hWnd = GetNextWindow(hWnd, direction);
-  }
-}
-#endif /* PreserveWin32Stack */
 
 
 /*
@@ -636,19 +528,13 @@ winMultiWindowWMProc (void *pArg)
     {
       WMMsgNodePtr	pNode;
 
-      if(g_fAnotherWMRunnig)/* Another Window manager exists. */
-	{
-	  Sleep (1000);
-	  continue;
-	}
-
       /* Pop a message off of our queue */
       pNode = PopMessage (&pWMInfo->wmMsgQueue, pWMInfo);
       if (pNode == NULL)
 	{
 	  /* Bail if PopMessage returns without a message */
 	  /* NOTE: Remember that PopMessage is a blocking function. */
-	  ErrorF ("winMultiWindowWMProc - Queue is Empty?  Exiting.\n");
+	  ErrorF ("winMultiWindowWMProc - Queue is Empty?\n");
 	  pthread_exit (NULL);
 	}
 
@@ -656,7 +542,7 @@ winMultiWindowWMProc (void *pArg)
       ErrorF ("winMultiWindowWMProc - %d ms MSG: %d ID: %d\n",
 	      GetTickCount (), (int)pNode->msg.msg, (int)pNode->msg.dwID);
 #endif
-
+      
       /* Branch on the message type */
       switch (pNode->msg.msg)
 	{
@@ -674,11 +560,9 @@ winMultiWindowWMProc (void *pArg)
 #if CYGMULTIWINDOW_DEBUG
 	  ErrorF ("\tWM_WM_RAISE\n");
 #endif
+
 	  /* Raise the window */
 	  XRaiseWindow (pWMInfo->pDisplay, pNode->msg.iWindow);
-#if 0
-	  PreserveWin32Stack (pWMInfo, pNode->msg.iWindow, GW_HWNDPREV);
-#endif
 	  break;
 
 	case WM_WM_LOWER:
@@ -698,17 +582,13 @@ winMultiWindowWMProc (void *pArg)
 	  XChangeProperty (pWMInfo->pDisplay,
 			   pNode->msg.iWindow,
 			   pWMInfo->atmPrivMap,
-			   XA_INTEGER,//pWMInfo->atmPrivMap,
+			   pWMInfo->atmPrivMap,
 			   32,
 			   PropModeReplace,
 			   (unsigned char *) &(pNode->msg.hwndWindow),
 			   1);
 	  UpdateName (pWMInfo, pNode->msg.iWindow);
 	  winUpdateIcon (pNode->msg.iWindow);
-#if 0
-	  /* Handles the case where there are AOT windows above it in W32 */
-	  PreserveWin32Stack (pWMInfo, pNode->msg.iWindow, GW_HWNDPREV);
-#endif
 	  break;
 
 	case WM_WM_UNMAP:
@@ -779,7 +659,7 @@ winMultiWindowWMProc (void *pArg)
 	  break;
 
 	default:
-	  ErrorF ("winMultiWindowWMProc - Unknown Message.  Exiting.\n");
+	  ErrorF ("winMultiWindowWMProc - Unknown Message.\n");
 	  pthread_exit (NULL);
 	  break;
 	}
@@ -807,7 +687,48 @@ winMultiWindowWMProc (void *pArg)
 
 
 /*
- * X message procedure
+ * winMultiWindowWMErrorHandler - Our application specific error handler
+ */
+
+static int
+winMultiWindowWMErrorHandler (Display *pDisplay, XErrorEvent *pErr)
+{
+  char pszErrorMsg[100];
+
+  if (pErr->request_code == X_ChangeWindowAttributes
+      && pErr->error_code == BadAccess)
+    {
+      ErrorF ("winMultiWindowWMErrorHandler - ChangeWindowAttributes "
+	      "BadAccess.\n");
+#if 0
+      pthread_exit (NULL);
+#endif
+      return 0;
+    }
+  
+  XGetErrorText (pDisplay,
+		 pErr->error_code,
+		 pszErrorMsg,
+		 sizeof (pszErrorMsg));
+  ErrorF ("winMultiWindowWMErrorHandler - ERROR: %s\n", pszErrorMsg);
+
+  if (pErr->error_code == BadWindow
+      || pErr->error_code == BadMatch
+      || pErr->error_code == BadDrawable)
+    {
+#if 0
+      pthread_exit (NULL);
+#endif
+      return 0;
+    }
+
+  pthread_exit (NULL);
+  return 0;
+}
+
+
+/*
+ *
  */
 
 static void *
@@ -829,7 +750,7 @@ winMultiWindowXMsgProc (void *pArg)
   /* Check that argument pointer is not invalid */
   if (pProcArg == NULL)
     {
-      ErrorF ("winMultiWindowXMsgProc - pProcArg is NULL.  Exiting.\n");
+      ErrorF ("winMultiWindowXMsgProc - pProcArg is NULL, bailing.\n");
       pthread_exit (NULL);
     }
 
@@ -839,55 +760,33 @@ winMultiWindowXMsgProc (void *pArg)
   iReturn = pthread_mutex_lock (pProcArg->ppmServerStarted);
   if (iReturn != 0)
     {
-      ErrorF ("winMultiWindowXMsgProc - pthread_mutex_lock () failed: %d.  "
-	      "Exiting.\n",
+      ErrorF ("winMultiWindowXMsgProc - pthread_mutex_lock () failed: %d\n",
 	      iReturn);
       pthread_exit (NULL);
     }
 
   ErrorF ("winMultiWindowXMsgProc - pthread_mutex_lock () returned.\n");
 
-  /* Allow multiple threads to access Xlib */
-  if (XInitThreads () == 0)
+  /* Only call XInitThreads once for the whole process */
+  if (!g_fCalledXInitThreads)
     {
-      ErrorF ("winMultiWindowXMsgProc - XInitThreads () failed.  Exiting.\n");
-      pthread_exit (NULL);
-    }
+      /* Allow multiple threads to access Xlib */
+      if (XInitThreads () == 0)
+	{
+	  ErrorF ("winMultiWindowXMsgProc - XInitThreads () failed.\n");
+	  pthread_exit (NULL);
+	}
+      
+      /* Flag that XInitThreads has been called */
+      g_fCalledXInitThreads = TRUE;
 
-  /* See if X supports the current locale */
-  if (XSupportsLocale () == False)
-    {
-      ErrorF ("winMultiWindowXMsgProc - Locale not supported by X.  "
-	      "Exiting.\n");
-      pthread_exit (NULL);
+      ErrorF ("winMultiWindowXMsgProc - XInitThreads () returned.\n");
     }
 
   /* Release the server started mutex */
   pthread_mutex_unlock (pProcArg->ppmServerStarted);
 
   ErrorF ("winMultiWindowXMsgProc - pthread_mutex_unlock () returned.\n");
-
-  /* Set jump point for IO Error exits */
-  iReturn = setjmp (g_jmpXMsgProcEntry);
-  
-  /* Check if we should continue operations */
-  if (iReturn != WIN_JMP_ERROR_IO
-      && iReturn != WIN_JMP_OKAY)
-    {
-      /* setjmp returned an unknown value, exit */
-      ErrorF ("winInitMultiWindowXMsgProc - setjmp returned: %d.  Exiting.\n",
-	      iReturn);
-      pthread_exit (NULL);
-    }
-  else if (iReturn == WIN_JMP_ERROR_IO)
-    {
-      ErrorF ("winInitMultiWindowXMsgProc - Caught IO Error.  Exiting.\n");
-      pthread_exit (NULL);
-    }
-
-  /* Install our error handler */
-  XSetErrorHandler (winMultiWindowXMsgProcErrorHandler);
-  XSetIOErrorHandler (winMultiWindowXMsgProcIOErrorHandler);
 
   /* Setup the display connection string x */
   snprintf (pszDisplay,
@@ -896,7 +795,6 @@ winMultiWindowXMsgProc (void *pArg)
   /* Print the display connection string */
   ErrorF ("winMultiWindowXMsgProc - DISPLAY=%s\n", pszDisplay);
   
-  /* Initialize retry count */
   iRetries = 0;
 
   /* Open the X display */
@@ -921,34 +819,21 @@ winMultiWindowXMsgProc (void *pArg)
   /* Make sure that the display opened */
   if (pProcArg->pDisplay == NULL)
     {
-      ErrorF ("winMultiWindowXMsgProc - Failed opening the display.  "
-	      "Exiting.\n");
+      ErrorF ("winMultiWindowXMsgProcwinInitMultiWindowWM - "
+	      "Failed opening the display, giving up.\n\f");
       pthread_exit (NULL);
     }
 
   ErrorF ("winMultiWindowXMsgProc - XOpenDisplay () returned and "
 	  "successfully opened the display.\n");
+  
+  /* Install our error handler */
+  XSetErrorHandler (winMultiWindowWMErrorHandler);
+  XSetIOErrorHandler (winMutliWindowWMIOErrorHandler);
 
-  /* Check if another window manager is already running */
-  if (pProcArg->pWMInfo->fAllowOtherWM)
-  {
-    g_fAnotherWMRunnig = CheckAnotherWindowManager (pProcArg->pDisplay, pProcArg->dwScreen);
-  } else {
-    redirectError = FALSE;
-    XSetErrorHandler (winRedirectErrorHandler); 	 
-    XSelectInput(pProcArg->pDisplay, 	 
-        RootWindow (pProcArg->pDisplay, pProcArg->dwScreen), 	 
-        SubstructureNotifyMask | ButtonPressMask); 	 
-    XSync (pProcArg->pDisplay, 0); 	 
-    XSetErrorHandler (winMultiWindowXMsgProcErrorHandler); 	 
-    if (redirectError) 	 
-    { 	 
-      ErrorF ("winMultiWindowXMsgProc - " 	 
-          "another window manager is running.  Exiting.\n"); 	 
-      pthread_exit (NULL); 	 
-    }
-    g_fAnotherWMRunnig = FALSE;
-  }
+  XSelectInput (pProcArg->pDisplay,
+		RootWindow(pProcArg->pDisplay, pProcArg->dwScreen),
+		SubstructureNotifyMask);
   
   /* Set up the supported icon sizes */
   xis = XAllocIconSize ();
@@ -977,52 +862,15 @@ winMultiWindowXMsgProc (void *pArg)
   /* Loop until we explicitly break out */
   while (1)
     {
-      if (g_shutdown)
-        break;
-
-      if (pProcArg->pWMInfo->fAllowOtherWM && !XPending (pProcArg->pDisplay))
-	{
-	  if (CheckAnotherWindowManager (pProcArg->pDisplay, pProcArg->dwScreen))
-	    {
-	      if (!g_fAnotherWMRunnig)
-		{
-		  g_fAnotherWMRunnig = TRUE;
-		  SendMessage(*(HWND*)pProcArg->hwndScreen, WM_UNMANAGE, 0, 0);
-		}
-	    }
-	  else
-	    {
-	      if (g_fAnotherWMRunnig)
-		{
-		  g_fAnotherWMRunnig = FALSE;
-		  SendMessage(*(HWND*)pProcArg->hwndScreen, WM_MANAGE, 0, 0);
-		}
-	    }
-	  Sleep (500);
-	  continue;
-	}
-
       /* Fetch next event */
       XNextEvent (pProcArg->pDisplay, &event);
 
       /* Branch on event type */
       if (event.type == CreateNotify)
 	{
-	  XWindowAttributes	attr;
-
 	  XSelectInput (pProcArg->pDisplay,
 			event.xcreatewindow.window,
 			PropertyChangeMask);
-
-	  /* Get the window attributes */
-	  XGetWindowAttributes (pProcArg->pDisplay,
-				event.xcreatewindow.window,
-				&attr);
-
-	  if (!attr.override_redirect)
-	    XSetWindowBorderWidth(pProcArg->pDisplay,
-				  event.xcreatewindow.window,
-				  0);
 	}
       else if (event.type == PropertyNotify
 	       && event.xproperty.atom == atmWmName)
@@ -1060,10 +908,6 @@ winMultiWindowXMsgProc (void *pArg)
 	  winSendMessageToWM (pProcArg->pWMInfo, &msg);
 	}
     }
-
-  XCloseDisplay (pProcArg->pDisplay);
-  pthread_exit (NULL);
- 
 }
 
 
@@ -1078,9 +922,7 @@ winInitWM (void **ppWMInfo,
 	   pthread_t *ptWMProc,
 	   pthread_t *ptXMsgProc,
 	   pthread_mutex_t *ppmServerStarted,
-	   int dwScreen,
-	   HWND hwndScreen,
-	   BOOL allowOtherWM)
+	   int dwScreen)
 {
   WMProcArgPtr		pArg = (WMProcArgPtr) malloc (sizeof(WMProcArgRec));
   WMInfoPtr		pWMInfo = (WMInfoPtr) malloc (sizeof(WMInfoRec));
@@ -1089,18 +931,12 @@ winInitWM (void **ppWMInfo,
   /* Bail if the input parameters are bad */
   if (pArg == NULL || pWMInfo == NULL)
     {
-      ErrorF ("winInitWM - malloc failed.\n");
+      ErrorF ("winInitWM - malloc fail.\n");
       return FALSE;
     }
   
-  /* Zero the allocated memory */
-  ZeroMemory (pArg, sizeof (WMProcArgRec));
-  ZeroMemory (pWMInfo, sizeof (WMInfoRec));
-  ZeroMemory (pXMsgArg, sizeof (XMsgProcArgRec));
-
   /* Set a return pointer to the Window Manager info structure */
   *ppWMInfo = pWMInfo;
-  pWMInfo->fAllowOtherWM = allowOtherWM;
 
   /* Setup the argument structure for the thread function */
   pArg->dwScreen = dwScreen;
@@ -1126,7 +962,6 @@ winInitWM (void **ppWMInfo,
   pXMsgArg->dwScreen = dwScreen;
   pXMsgArg->pWMInfo = pWMInfo;
   pXMsgArg->ppmServerStarted = ppmServerStarted;
-  pXMsgArg->hwndScreen = hwndScreen;
   if (pthread_create (ptXMsgProc, NULL, winMultiWindowXMsgProc, pXMsgArg))
     {
       /* Bail if thread creation failed */
@@ -1135,7 +970,7 @@ winInitWM (void **ppWMInfo,
     }
 
 #if CYGDEBUG || YES
-  winDebug ("winInitWM - Returning.\n");
+  ErrorF ("winInitWM - Returning.\n");
 #endif
 
   return TRUE;
@@ -1143,8 +978,11 @@ winInitWM (void **ppWMInfo,
 
 
 /*
- * Window manager thread - setup
+ * winInitMultiWindowWM - 
  */
+
+Bool
+winClipboardDetectUnicodeSupport ();
 
 static void
 winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg)
@@ -1152,13 +990,14 @@ winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg)
   int                   iRetries = 0;
   char			pszDisplay[512];
   int			iReturn;
+  Bool			fUnicodeSupport;
 
   ErrorF ("winInitMultiWindowWM - Hello\n");
 
   /* Check that argument pointer is not invalid */
   if (pProcArg == NULL)
     {
-      ErrorF ("winInitMultiWindowWM - pProcArg is NULL.  Exiting.\n");
+      ErrorF ("winInitMultiWindowWM - pProcArg is NULL, bailing.\n");
       pthread_exit (NULL);
     }
 
@@ -1168,26 +1007,52 @@ winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg)
   iReturn = pthread_mutex_lock (pProcArg->ppmServerStarted);
   if (iReturn != 0)
     {
-      ErrorF ("winInitMultiWindowWM - pthread_mutex_lock () failed: %d.  "
-	      "Exiting.\n",
+      ErrorF ("winInitMultiWindowWM - pthread_mutex_lock () failed: %d\n",
 	      iReturn);
       pthread_exit (NULL);
     }
 
   ErrorF ("winInitMultiWindowWM - pthread_mutex_lock () returned.\n");
 
-  /* Allow multiple threads to access Xlib */
-  if (XInitThreads () == 0)
+  /* Do we have Unicode support? */
+  fUnicodeSupport = winClipboardDetectUnicodeSupport ();
+
+  /* Set the current locale?  What does this do? */
+  if (fUnicodeSupport && !g_fCalledSetLocale)
     {
-      ErrorF ("winInitMultiWindowWM - XInitThreads () failed.  Exiting.\n");
-      pthread_exit (NULL);
+      ErrorF ("winInitMultiWindowWM - Calling setlocale ()\n");
+      if (!setlocale (LC_ALL, ""))
+	{
+	  ErrorF ("winInitMultiWindowWM - setlocale () error\n");
+	  pthread_exit (NULL);
+	}
+      ErrorF ("winInitMultiWindowWM - setlocale () returned\n");
+      
+      /* See if X supports the current locale */
+      if (XSupportsLocale () == False)
+	{
+	  ErrorF ("winInitMultiWindowWM - Locale not supported by X\n");
+	  pthread_exit (NULL);
+	}
     }
 
-  /* See if X supports the current locale */
-  if (XSupportsLocale () == False)
+  /* Flag that we have called setlocale */
+  g_fCalledSetLocale = TRUE;
+  
+  /* Only call XInitThreads once for the whole process */
+  if (!g_fCalledXInitThreads)
     {
-      ErrorF ("winInitMultiWindowWM - Locale not supported by X.  Exiting.\n");
-      pthread_exit (NULL);
+      /* Allow multiple threads to access Xlib */
+      if (XInitThreads () == 0)
+	{
+	  ErrorF ("winInitMultiWindowWM - XInitThreads () failed.\n");
+	  pthread_exit (NULL);
+	}
+      
+      /* Flag that XInitThreads has been called */
+      g_fCalledXInitThreads = TRUE;
+
+      ErrorF ("winInitMultiWindowWM - XInitThreads () returned.\n");
     }
 
   /* Release the server started mutex */
@@ -1196,26 +1061,27 @@ winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg)
   ErrorF ("winInitMultiWindowWM - pthread_mutex_unlock () returned.\n");
 
   /* Set jump point for IO Error exits */
-  iReturn = setjmp (g_jmpWMEntry);
+  iReturn = setjmp (g_jmpEntry);
   
   /* Check if we should continue operations */
   if (iReturn != WIN_JMP_ERROR_IO
       && iReturn != WIN_JMP_OKAY)
     {
       /* setjmp returned an unknown value, exit */
-      ErrorF ("winInitMultiWindowWM - setjmp returned: %d.  Exiting.\n",
+      ErrorF ("winInitMultiWindowWM - setjmp returned: %d exiting\n",
 	      iReturn);
+      pthread_exit (NULL);
+    }
+  else if (g_shutdown)
+    {
+      /* Shutting down, the X server severed out connection! */
+      ErrorF ("winInitMultiWindowWM - Detected shutdown in progress\n");
       pthread_exit (NULL);
     }
   else if (iReturn == WIN_JMP_ERROR_IO)
     {
-      ErrorF ("winInitMultiWindowWM - Caught IO Error.  Exiting.\n");
-      pthread_exit (NULL);
+      ErrorF ("winInitMultiWindowWM - setjmp returned WIN_JMP_ERROR_IO\n");
     }
-
-  /* Install our error handler */
-  XSetErrorHandler (winMultiWindowWMErrorHandler);
-  XSetIOErrorHandler (winMultiWindowWMIOErrorHandler);
 
   /* Setup the display connection string x */
   snprintf (pszDisplay,
@@ -1249,14 +1115,17 @@ winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg)
   /* Make sure that the display opened */
   if (pWMInfo->pDisplay == NULL)
     {
-      ErrorF ("winInitMultiWindowWM - Failed opening the display.  "
-	      "Exiting.\n");
+      ErrorF ("winInitMultiWindowWM - Failed opening the display, "
+	      "giving up.\n\f");
       pthread_exit (NULL);
     }
 
   ErrorF ("winInitMultiWindowWM - XOpenDisplay () returned and "
 	  "successfully opened the display.\n");
   
+  /* Install our error handler */
+  XSetErrorHandler (winMultiWindowWMErrorHandler);
+  XSetIOErrorHandler (winMutliWindowWMIOErrorHandler);
 
   /* Create some atoms */
   pWMInfo->atmWmProtos = XInternAtom (pWMInfo->pDisplay,
@@ -1265,21 +1134,9 @@ winInitMultiWindowWM (WMInfoPtr pWMInfo, WMProcArgPtr pProcArg)
   pWMInfo->atmWmDelete = XInternAtom (pWMInfo->pDisplay,
 				      "WM_DELETE_WINDOW",
 				      False);
-#ifdef XWIN_MULTIWINDOWEXTWM
   pWMInfo->atmPrivMap  = XInternAtom (pWMInfo->pDisplay,
-				      WINDOWSWM_NATIVE_HWND,
+				      WIN_HWND_CACHE,
 				      False);
-#endif
-
-
-  if (1) {
-    Cursor cursor = XCreateFontCursor (pWMInfo->pDisplay, XC_left_ptr);
-    if (cursor)
-    {
-      XDefineCursor (pWMInfo->pDisplay, DefaultRootWindow(pWMInfo->pDisplay), cursor);
-      XFreeCursor (pWMInfo->pDisplay, cursor);
-    }
-  }
 }
 
 
@@ -1306,127 +1163,20 @@ winSendMessageToWM (void *pWMInfo, winWMMessagePtr pMsg)
 
 
 /*
- * Window manager error handler
+ * winMutliWindowWMIOErrorHandler - Our application specific IO error handler
  */
 
 static int
-winMultiWindowWMErrorHandler (Display *pDisplay, XErrorEvent *pErr)
+winMutliWindowWMIOErrorHandler (Display *pDisplay)
 {
-  char pszErrorMsg[100];
-
-  if (pErr->request_code == X_ChangeWindowAttributes
-      && pErr->error_code == BadAccess)
-    {
-      ErrorF ("winMultiWindowWMErrorHandler - ChangeWindowAttributes "
-	      "BadAccess.\n");
-      return 0;
-    }
-  
-  XGetErrorText (pDisplay,
-		 pErr->error_code,
-		 pszErrorMsg,
-		 sizeof (pszErrorMsg));
-  ErrorF ("winMultiWindowWMErrorHandler - ERROR: %s\n", pszErrorMsg);
-
-  return 0;
-}
-
-
-/*
- * Window manager IO error handler
- */
-
-static int
-winMultiWindowWMIOErrorHandler (Display *pDisplay)
-{
-  ErrorF ("\nwinMultiWindowWMIOErrorHandler!\n\n");
-
-  if (g_shutdown)
-    pthread_exit(NULL);
+  printf ("\nwinMutliWindowWMIOErrorHandler!\n\n");
 
   /* Restart at the main entry point */
-  longjmp (g_jmpWMEntry, WIN_JMP_ERROR_IO);
+  longjmp (g_jmpEntry, WIN_JMP_ERROR_IO);
   
   return 0;
 }
 
-
-/*
- * X message procedure error handler
- */
-
-static int
-winMultiWindowXMsgProcErrorHandler (Display *pDisplay, XErrorEvent *pErr)
-{
-  char pszErrorMsg[100];
-  
-  XGetErrorText (pDisplay,
-		 pErr->error_code,
-		 pszErrorMsg,
-		 sizeof (pszErrorMsg));
-  ErrorF ("winMultiWindowXMsgProcErrorHandler - ERROR: %s\n", pszErrorMsg);
-  
-  return 0;
-}
-
-
-/*
- * X message procedure IO error handler
- */
-
-static int
-winMultiWindowXMsgProcIOErrorHandler (Display *pDisplay)
-{
-  ErrorF ("\nwinMultiWindowXMsgProcIOErrorHandler!\n\n");
-
-  /* Restart at the main entry point */
-  longjmp (g_jmpXMsgProcEntry, WIN_JMP_ERROR_IO);
-  
-  return 0;
-}
-
-
-/*
- * Catch RedirectError to detect other window manager running
- */
-
-static int
-winRedirectErrorHandler (Display *pDisplay, XErrorEvent *pErr)
-{
-  redirectError = TRUE;
-  return 0;
-}
-
-
-/*
- * Check if another window manager is running
- */
-
-static Bool
-CheckAnotherWindowManager (Display *pDisplay, DWORD dwScreen)
-{
-  redirectError = FALSE;
-  XSetErrorHandler (winRedirectErrorHandler);
-  XSelectInput(pDisplay, RootWindow (pDisplay, dwScreen),
-	       // SubstructureNotifyMask | ButtonPressMask
-	       ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
-	       SubstructureRedirectMask | KeyPressMask |
-	       ButtonPressMask | ButtonReleaseMask);
-  XSync (pDisplay, 0);
-  XSetErrorHandler (winMultiWindowXMsgProcErrorHandler);
-  XSelectInput(pDisplay, RootWindow (pDisplay, dwScreen),
-	       SubstructureNotifyMask);
-  XSync (pDisplay, 0);
-  if (redirectError)
-    {
-      //ErrorF ("CheckAnotherWindowManager() - another window manager is running.  Exiting.\n");
-      return TRUE;
-    }
-  else
-    {
-      return FALSE;
-    }
-}
 
 /*
  * Notify the MWM thread we're exiting and not to reconnect

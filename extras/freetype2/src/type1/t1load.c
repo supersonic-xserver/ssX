@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/type1/t1load.c,v 1.0tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1load.c                                                               */
 /*                                                                         */
@@ -1784,8 +1790,8 @@
     if ( error )
       goto Exit;
 
-    /* Ensure num_blue_values is even */
-    priv->num_blue_values &= ~1;
+   /* ensure even-ness of 'num_blue_values' */
+   priv->num_blue_values &= ~1;
 
 #ifndef T1_CONFIG_OPTION_NO_MM_SUPPORT
 

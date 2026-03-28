@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_ioperm.c,v 3.6 1999/04/29 09:13:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
  * Modified 1996 by Sebastien Marineau <marineau@genie.uottawa.ca>
@@ -22,6 +29,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: os2_ioperm.c /main/4 1996/04/18 16:50:01 kaleb $ */
+
+
 
 #define I_NEED_OS2_H
 #define INCL_32

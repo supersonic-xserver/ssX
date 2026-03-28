@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_tex.c,v 1.1 2002/02/22 21:32:59 dawes Exp $
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_tex.c,v 1.1.1.3 2004/12/10 15:05:38 alanh Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * GLX Hardware Device Driver for Sun Creator/Creator3D
  * Copyright (C) 2001 David S. Miller
@@ -25,17 +32,17 @@
  *    David S. Miller <davem@redhat.com>
  */
 
-#include <GL/gl.h>
-#include "texformat.h"
-#include "texstore.h"
-#include "teximage.h"
-#include "swrast/swrast.h"
-
+#include "glheader.h"
+#include "mtypes.h"
 #include "ffb_tex.h"
 
 /* No texture unit, all software. */
+/* XXX this function isn't needed since _mesa_init_driver_functions()
+ * will make all these assignments.
+ */
 void ffbDDInitTexFuncs(GLcontext *ctx)
 {
+        /*
 	ctx->Driver.ChooseTextureFormat = _mesa_choose_tex_format;
 	ctx->Driver.TexImage1D = _mesa_store_teximage1d;
 	ctx->Driver.TexImage2D = _mesa_store_teximage2d;
@@ -49,4 +56,5 @@ void ffbDDInitTexFuncs(GLcontext *ctx)
 	ctx->Driver.CopyTexSubImage2D = _swrast_copy_texsubimage2d;
 	ctx->Driver.CopyTexSubImage3D = _swrast_copy_texsubimage3d;
 	ctx->Driver.TestProxyTexImage = _mesa_test_proxy_teximage;
+	*/
 }

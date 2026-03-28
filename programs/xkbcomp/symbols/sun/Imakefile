@@ -1,7 +1,13 @@
-XCOMM $XFree86: xc/programs/xkbcomp/symbols/sun/Imakefile,v 1.7tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:46 cpqbld Exp $
 
-    DATAFILES = se us usb
+
+
+
+XCOMM $XFree86: xc/programs/xkbcomp/symbols/sun/Imakefile,v 1.6 2003/10/09 11:45:27 pascal Exp $
+
+     DATAFILES = se us usb
 
 all::
 
 InstallMultiple($(DATAFILES),$(LIBDIR)/xkb/symbols/sun)
+DependTarget()

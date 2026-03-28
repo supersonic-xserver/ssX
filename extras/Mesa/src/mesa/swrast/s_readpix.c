@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.2.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -86,7 +93,7 @@ read_index_pixels( GLcontext *ctx,
                                  GL_COLOR_INDEX, type, 0, i, 0);
 
       _mesa_pack_index_span(ctx, readWidth, type, dest, index,
-                            &ctx->Pack, ctx->_ImageTransferState);
+                            packing, ctx->_ImageTransferState);
    }
 
    _swrast_use_draw_buffer(ctx);
@@ -163,7 +170,7 @@ read_depth_pixels( GLcontext *ctx,
                                     GL_DEPTH_COMPONENT, type, 0, j, 0);
 
          _mesa_pack_depth_span(ctx, readWidth, (GLdepth *) dest, type,
-                               depth, &ctx->Pack);
+                               depth, packing);
       }
    }
 }
@@ -209,7 +216,7 @@ read_stencil_pixels( GLcontext *ctx,
       dest = _mesa_image_address(packing, pixels, width, height,
                                  GL_STENCIL_INDEX, type, 0, j, 0);
 
-      _mesa_pack_stencil_span(ctx, readWidth, type, dest, stencil, &ctx->Pack);
+      _mesa_pack_stencil_span(ctx, readWidth, type, dest, stencil, packing);
    }
 }
 
@@ -366,12 +373,18 @@ read_rgba_pixels( GLcontext *ctx,
       case GL_UNSIGNED_INT_2_10_10_10_REV:
          /* valid pixel type */
          break;
+      case GL_HALF_FLOAT_ARB:
+         if (!ctx->Extensions.ARB_half_float_pixel) {
+            _mesa_error( ctx, GL_INVALID_ENUM, "glReadPixels(type)" );
+            return;
+         }
+         break;
       default:
          _mesa_error( ctx, GL_INVALID_ENUM, "glReadPixels(type)" );
          return;
    }
 
-   if (!_mesa_is_legal_format_and_type(format, type) ||
+   if (!_mesa_is_legal_format_and_type(ctx, format, type) ||
        format == GL_INTENSITY) {
       _mesa_error(ctx, GL_INVALID_OPERATION, "glReadPixels(format or type)");
       return;
@@ -382,14 +395,14 @@ read_rgba_pixels( GLcontext *ctx,
       GLfloat *dest, *src, *tmpImage, *convImage;
       GLint row;
 
-      tmpImage = (GLfloat *) MALLOC(width * height * 4 * sizeof(GLfloat));
+      tmpImage = (GLfloat *) _mesa_malloc(width * height * 4 * sizeof(GLfloat));
       if (!tmpImage) {
          _mesa_error(ctx, GL_OUT_OF_MEMORY, "glReadPixels");
          return;
       }
-      convImage = (GLfloat *) MALLOC(width * height * 4 * sizeof(GLfloat));
+      convImage = (GLfloat *) _mesa_malloc(width * height * 4 * sizeof(GLfloat));
       if (!convImage) {
-         FREE(tmpImage);
+         _mesa_free(tmpImage);
          _mesa_error(ctx, GL_OUT_OF_MEMORY, "glReadPixels");
          return;
       }
@@ -409,8 +422,8 @@ read_rgba_pixels( GLcontext *ctx,
             }
             _mesa_map_ci_to_rgba_chan(ctx, readWidth, index, rgba);
          }
-         _mesa_pack_rgba_span(ctx, readWidth, (const GLchan (*)[4]) rgba,
-                              GL_RGBA, GL_FLOAT, dest, &_mesa_native_packing,
+         _mesa_pack_rgba_span_chan(ctx, readWidth, (const GLchan (*)[4]) rgba,
+                              GL_RGBA, GL_FLOAT, dest, &ctx->DefaultPacking,
                               transferOps & IMAGE_PRE_CONVOLUTION_BITS);
          dest += width * 4;
       }
@@ -423,7 +436,7 @@ read_rgba_pixels( GLcontext *ctx,
          ASSERT(ctx->Pixel.Separable2DEnabled);
          _mesa_convolve_sep_image(ctx, &readWidth, &height, tmpImage, convImage);
       }
-      FREE(tmpImage);
+      _mesa_free(tmpImage);
 
       /* finish transfer ops and pack the resulting image */
       src = convImage;
@@ -431,7 +444,7 @@ read_rgba_pixels( GLcontext *ctx,
          GLvoid *dest;
          dest = _mesa_image_address(packing, pixels, readWidth, height,
                                     format, type, 0, row, 0);
-         _mesa_pack_float_rgba_span(ctx, readWidth,
+         _mesa_pack_rgba_span_float(ctx, readWidth,
                                     (const GLfloat (*)[4]) src,
                                     format, type, dest, packing,
                                     transferOps & IMAGE_POST_CONVOLUTION_BITS);
@@ -468,7 +481,7 @@ read_rgba_pixels( GLcontext *ctx,
             CHECKARRAY(rgbaf, return);  /* mac 32k limitation */
             _mesa_chan_to_float_span(ctx, readWidth,
                                      (CONST GLchan (*)[4]) rgba, rgbaf);
-            _mesa_pack_float_rgba_span(ctx, readWidth,
+            _mesa_pack_rgba_span_float(ctx, readWidth,
                                        (CONST GLfloat (*)[4]) rgbaf,
                                        format, type, dst, packing,
                                        ctx->_ImageTransferState);
@@ -476,7 +489,7 @@ read_rgba_pixels( GLcontext *ctx,
          }
          else {
             /* GLubytes are fine */
-            _mesa_pack_rgba_span(ctx, readWidth, (CONST GLchan (*)[4]) rgba,
+            _mesa_pack_rgba_span_chan(ctx, readWidth, (CONST GLchan (*)[4]) rgba,
                                  format, type, dst, packing,
                                  ctx->_ImageTransferState);
          }
@@ -492,26 +505,33 @@ void
 _swrast_ReadPixels( GLcontext *ctx,
 		    GLint x, GLint y, GLsizei width, GLsizei height,
 		    GLenum format, GLenum type,
-		    const struct gl_pixelstore_attrib *pack,
+		    const struct gl_pixelstore_attrib *packing,
 		    GLvoid *pixels )
 {
    SWcontext *swrast = SWRAST_CONTEXT(ctx);
-   (void) pack;
 
    if (swrast->NewState)
       _swrast_validate_derived( ctx );
+
+   pixels = _swrast_validate_pbo_access(packing, width, height, 1,
+                                        format, type, (GLvoid *) pixels);
+
+   if (!pixels) {
+      _mesa_error( ctx, GL_INVALID_VALUE, "glReadPixels(pixels)" );
+      return;
+   }
 
    RENDER_START(swrast,ctx);
 
    switch (format) {
       case GL_COLOR_INDEX:
-         read_index_pixels(ctx, x, y, width, height, type, pixels, &ctx->Pack);
+         read_index_pixels(ctx, x, y, width, height, type, pixels, packing);
 	 break;
       case GL_STENCIL_INDEX:
-	 read_stencil_pixels(ctx, x,y, width,height, type, pixels, &ctx->Pack);
+	 read_stencil_pixels(ctx, x,y, width,height, type, pixels, packing);
          break;
       case GL_DEPTH_COMPONENT:
-	 read_depth_pixels(ctx, x, y, width, height, type, pixels, &ctx->Pack);
+	 read_depth_pixels(ctx, x, y, width, height, type, pixels, packing);
 	 break;
       case GL_RED:
       case GL_GREEN:
@@ -525,7 +545,7 @@ _swrast_ReadPixels( GLcontext *ctx,
       case GL_BGRA:
       case GL_ABGR_EXT:
          read_rgba_pixels(ctx, x, y, width, height,
-                          format, type, pixels, &ctx->Pack);
+                          format, type, pixels, packing);
 	 break;
       default:
 	 _mesa_error( ctx, GL_INVALID_ENUM, "glReadPixels(format)" );

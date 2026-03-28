@@ -1,4 +1,4 @@
-XCOMM $XFree86$
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:55:03 cpqbld Exp $
 
 XCOMM This isn't an option we must build a shared lib
 #define DoSharedLib YES
@@ -47,7 +47,7 @@ XCOMM -DPLUGIN_TRACE can be added to the following definition to debug
 PLUGIN_INCLUDES = -I$(PLUGINSRC) -I$(PLUGINSRC)/include
 
 DEFINES = -DNETSCAPE_PLUGIN $(PLUGIN_DEFINES) -DNO_STARTING_STATE $(SOCKET_DEFINES)
-INCLUDES = $(PLUGIN_INCLUDES) $(RX_INCLUDES) $(VENDOR_INCLUDES)
+INCLUDES = -I. $(PLUGIN_INCLUDES) $(RX_INCLUDES) $(VENDOR_INCLUDES)
 
 # most objects are the same as the ones for the standard plugin
 PLUGIN_OBJS = $(PLUGINSRC)/PRead.o $(PLUGINSRC)/PParse.o \

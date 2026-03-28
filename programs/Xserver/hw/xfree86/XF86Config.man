@@ -1426,7 +1426,7 @@ Sets a preferred resolution to use for the default mode.  By default
 the preferred mode resolution is taken from the DDC/EDID data if it is
 available and if it is provides a default mode preference.  This is typically
 true for flat panel displays, which have a native/preferred resolution.
-This option is not used if the
+This option is not used of the
 .B UsePreferredMode
 option is false.
 .TP 7

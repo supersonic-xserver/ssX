@@ -1,6 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/animcur.c,v 1.7 2005/10/14 15:17:27 tsi Exp $
  *
- * Copyright Â© 2002 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -30,10 +38,6 @@
  * creates composite cursors out of a set of static cursors and
  * delta times between each image.
  */
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
 
 #include <X11/X.h>
 #include <X11/Xmd.h>
@@ -87,8 +91,8 @@ static CursorBits   animCursorBits = {
     empty, empty, 2, 1, 1, 0, 0, 1
 };
 
-static int AnimCurScreenPrivateIndex = -1;
-static int AnimCurGeneration;
+int	AnimCurScreenPrivateIndex = -1;
+int	AnimCurGeneration;
 
 #define IsAnimCur(c)	    ((c)->bits == &animCursorBits)
 #define GetAnimCur(c)	    ((AnimCurPtr) ((c) + 1))

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbline.c,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbline.c,v 3.2 2001/10/28 03:32:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,8 +53,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbline.c,v 5.18 94/04/17 20:28:26 dpw Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -91,47 +99,55 @@ actual clipping.
 
 void
 #ifdef POLYSEGMENT
-afbSegmentSS(DrawablePtr pDrawable, GCPtr pGC, int nseg, xSegment *pSeg)
+afbSegmentSS(pDrawable, pGC, nseg, pSeg)
+	DrawablePtr		pDrawable;
+	GCPtr		pGC;
+	int				nseg;
+	register xSegment		*pSeg;
 #else
-afbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	  DDXPointPtr pptInit)
+afbLineSS(pDrawable, pGC, mode, npt, pptInit)
+	DrawablePtr pDrawable;
+	GCPtr		pGC;
+	int				mode;				/* Origin or Previous */
+	int				npt;				/* number of points */
+	DDXPointPtr pptInit;
 #endif
 {
 	int nboxInit;
-	int nbox;
+	register int nbox;
 	BoxPtr pboxInit;
-	BoxPtr pbox;
+	register BoxPtr pbox;
 #ifndef POLYSEGMENT
-	DDXPointPtr ppt;	/* pointer to list of translated points */
+	register DDXPointPtr ppt;		/* pointer to list of translated points */
 #endif
 
-	unsigned int oc1;	/* outcode of point 1 */
-	unsigned int oc2;	/* outcode of point 2 */
+	unsigned int oc1;				/* outcode of point 1 */
+	unsigned int oc2;				/* outcode of point 2 */
 
-	PixelType *addrlBase;	/* pointer to start of drawable */
-	int nlwidth;		/* width in longwords of destination pixmap */
-	int xorg, yorg;		/* origin of window */
+	PixelType *addrlBase;		/* pointer to start of drawable */
+	int nlwidth;				/* width in longwords of destination pixmap */
+	int xorg, yorg;				/* origin of window */
 
-	int adx;		/* abs values of dx and dy */
+	int adx;				/* abs values of dx and dy */
 	int ady;
-	int signdx;		/* sign of dx and dy */
+	int signdx;				/* sign of dx and dy */
 	int signdy;
-	int e, e1, e2;		/* bresenham error and increments */
-	int len;		/* length of segment */
-	int axis;		/* major axis */
+	int e, e1, e2;				/* bresenham error and increments */
+	int len;						/* length of segment */
+	int axis;						/* major axis */
 	int octant;
 	unsigned int bias = miGetZeroLineBias(pDrawable->pScreen);
 	int depthDst;
 #ifndef POLYSEGMENT
-	PixelType *addrl;	/* address of destination pixmap */
+	PixelType *addrl;				/* address of destination pixmap */
 	int d;
 #endif
 	int sizeDst;
 	unsigned char *rrops;
 
-	/* a bunch of temporaries */
-	int y1, y2;
-	int x1, x2;
+								/* a bunch of temporaries */
+	register int y1, y2;
+	register int x1, x2;
 	RegionPtr cclip;
 
 	cclip = pGC->pCompositeClip;
@@ -180,7 +196,7 @@ afbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 			   endpoint semantics
 			*/
 			if (y1 > y2) {
-				int tmp;
+				register int tmp;
 
 				tmp = y2;
 				y2 = y1 + 1;
@@ -224,7 +240,7 @@ afbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 			   endpoint semantics
 			*/
 			if (x1 > x2) {
-				int tmp;
+				register int tmp;
 
 				tmp = x2;
 				x2 = x1 + 1;
@@ -418,36 +434,44 @@ afbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 
 void
 #ifdef POLYSEGMENT
-afbSegmentSD(DrawablePtr pDrawable, GCPtr pGC, int nseg, xSegment *pSeg)
+afbSegmentSD(pDrawable, pGC, nseg, pSeg)
+	DrawablePtr		pDrawable;
+	register GCPtr		pGC;
+	int				nseg;
+	register xSegment		*pSeg;
 #else
-afbLineSD(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	  DDXPointPtr pptInit)
+afbLineSD(pDrawable, pGC, mode, npt, pptInit)
+	DrawablePtr pDrawable;
+	register GCPtr pGC;
+	int mode;				/* Origin or Previous */
+	int npt;				/* number of points */
+	DDXPointPtr pptInit;
 #endif
 {
 	int nboxInit;
-	int nbox;
+	register int nbox;
 	BoxPtr pboxInit;
-	BoxPtr pbox;
+	register BoxPtr pbox;
 #ifndef POLYSEGMENT
-	DDXPointPtr ppt;	/* pointer to list of translated points */
+	register DDXPointPtr ppt;		/* pointer to list of translated points */
 #endif
 
-	unsigned int oc1;	/* outcode of point 1 */
-	unsigned int oc2;	/* outcode of point 2 */
+	register unsigned int oc1;		/* outcode of point 1 */
+	register unsigned int oc2;		/* outcode of point 2 */
 
-	PixelType *addrlBase;	/* address of destination pixmap */
-	int nlwidth;		/* width in longwords of destination pixmap */
+	PixelType *addrlBase;		/* address of destination pixmap */
+	int nlwidth;				/* width in longwords of destination pixmap */
 	int sizeDst;
 	int depthDst;
-	int xorg, yorg;		/* origin of window */
+	int xorg, yorg;				/* origin of window */
 
-	int adx;		/* abs values of dx and dy */
+	int adx;				/* abs values of dx and dy */
 	int ady;
-	int signdx;		/* sign of dx and dy */
+	int signdx;				/* sign of dx and dy */
 	int signdy;
-	int e, e1, e2;		/* bresenham error and increments */
-	int len;		/* length of segment */
-	int axis;		/* major axis */
+	int e, e1, e2;				/* bresenham error and increments */
+	int len;						/* length of segment */
+	int axis;						/* major axis */
 	int octant;
 	unsigned int bias = miGetZeroLineBias(pDrawable->pScreen);
 	int x1, x2, y1, y2;
@@ -455,15 +479,15 @@ afbLineSD(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 	unsigned char *rrops;
 	unsigned char bgrrops[AFB_MAX_DEPTH];
 	unsigned char   *pDash;
-	int dashOffset;
-	int numInDashList;
-	int dashIndex;
-	int isDoubleDash;
-	int dashIndexTmp, dashOffsetTmp;
-	int unclippedlen;
+	int					dashOffset;
+	int					numInDashList;
+	int					dashIndex;
+	int					isDoubleDash;
+	int					dashIndexTmp, dashOffsetTmp;
+	int					unclippedlen;
 #ifndef POLYSEGMENT
 	PixelType *addrl;
-	int d;
+	int					d;
 #endif
 
 	cclip = pGC->pCompositeClip;

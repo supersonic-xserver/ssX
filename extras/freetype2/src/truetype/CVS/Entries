@@ -1,0 +1,17 @@
+/Jamfile/1.1.1.2/Fri Mar  5 14:26:30 2004//Tnetbsd-5-2-3-RELEASE
+/descrip.mms/1.1.1.2/Fri Feb 28 13:19:16 2003//Tnetbsd-5-2-3-RELEASE
+/module.mk/1.1.1.1/Mon Jan  1 12:49:50 2001//Tnetbsd-5-2-3-RELEASE
+/rules.mk/1.1.1.5/Fri Mar 18 13:07:38 2005//Tnetbsd-5-2-3-RELEASE
+/truetype.c/1.1.1.3/Sat Jan 19 15:26:34 2002//Tnetbsd-5-2-3-RELEASE
+/ttdriver.c/1.1.1.6/Fri Mar 18 13:07:38 2005//Tnetbsd-5-2-3-RELEASE
+/ttdriver.h/1.1.1.4/Fri Feb 28 13:19:16 2003//Tnetbsd-5-2-3-RELEASE
+/tterrors.h/1.1.1.1/Sat Jan 19 15:26:35 2002//Tnetbsd-5-2-3-RELEASE
+/ttgload.c/1.1.1.6/Fri Mar 18 13:07:38 2005//Tnetbsd-5-2-3-RELEASE
+/ttgload.h/1.1.1.6/Fri Mar 18 13:07:38 2005//Tnetbsd-5-2-3-RELEASE
+/ttinterp.c/1.1.1.6/Fri Mar 18 13:07:39 2005//Tnetbsd-5-2-3-RELEASE
+/ttinterp.h/1.1.1.5/Fri Mar 18 13:07:39 2005//Tnetbsd-5-2-3-RELEASE
+/ttobjs.c/1.1.1.6/Fri Mar 18 13:07:39 2005//Tnetbsd-5-2-3-RELEASE
+/ttobjs.h/1.1.1.6/Fri Mar 18 13:07:39 2005//Tnetbsd-5-2-3-RELEASE
+/ttpload.c/1.1.1.5/Fri Mar  5 14:26:30 2004//Tnetbsd-5-2-3-RELEASE
+/ttpload.h/1.1.1.5/Fri Mar  5 14:26:30 2004//Tnetbsd-5-2-3-RELEASE
+D

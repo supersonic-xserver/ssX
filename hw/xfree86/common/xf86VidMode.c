@@ -1,28 +1,56 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86VidMode.c,v 1.19 2005/10/14 15:16:33 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1999-2003 by The XFree86 Project, Inc.
+ * All rights reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *   1.  Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions, and the following disclaimer.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ *   2.  Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer
+ *       in the documentation and/or other materials provided with the
+ *       distribution, and in the same place and form as other copyright,
+ *       license and disclaimer information.
  *
- * Except as contained in this notice, the name of the copyright holder(s)
- * and author(s) shall not be used in advertising or otherwise to promote
- * the sale, use or other dealings in this Software without prior written
- * authorization from the copyright holder(s) and author(s).
+ *   3.  The end-user documentation included with the redistribution,
+ *       if any, must include the following acknowledgment: "This product
+ *       includes software developed by The XFree86 Project, Inc
+ *       (http://www.xfree86.org/) and its contributors", in the same
+ *       place and form as other third-party acknowledgments.  Alternately,
+ *       this acknowledgment may appear in the software itself, in the
+ *       same form and location as other such third-party acknowledgments.
+ *
+ *   4.  Except as contained in this notice, the name of The XFree86
+ *       Project, Inc shall not be used in advertising or otherwise to
+ *       promote the sale, use or other dealings in this Software without
+ *       prior written authorization from The XFree86 Project, Inc.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
@@ -33,10 +61,6 @@
  * so that two version of code that do similar things don't have to be
  * maintained.
  */
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 #include <X11/X.h>
 #include "os.h"
@@ -62,12 +86,14 @@ static Bool VidModeClose(int i, ScreenPtr pScreen);
 # define DEBUG_P(x) /**/
 #endif
 
-_X_EXPORT Bool
+Bool
 VidModeExtensionInit(ScreenPtr pScreen)
 {
 #ifdef XF86VIDMODE
     VidModePtr pVidMode;
     
+    DEBUG_P("VidModeExtensionInit");
+
     if (!xf86GetVidModeEnabled()) {
 	DEBUG_P("!xf86GetVidModeEnabled()");
 	return FALSE;
@@ -107,6 +133,8 @@ VidModeClose(int i, ScreenPtr pScreen)
 {
     VidModePtr pVidMode = VMPTR(pScreen);
 
+    DEBUG_P("VidModeClose");
+
     /* This shouldn't happen */
     if (!pVidMode)
 	return FALSE;
@@ -128,6 +156,8 @@ VidModeAvailable(int scrnIndex)
     ScrnInfoPtr pScrn;
     VidModePtr pVidMode;
 
+    DEBUG_P("VidModeAvailable");
+
     if (VidModeIndex < 0) {
 	DEBUG_P("VidModeIndex < 0");
 	return FALSE;
@@ -148,10 +178,12 @@ VidModeAvailable(int scrnIndex)
     }
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetCurrentModeline(int scrnIndex, pointer *mode, int *dotClock)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeGetCurrentModeline");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -163,25 +195,29 @@ VidModeGetCurrentModeline(int scrnIndex, pointer *mode, int *dotClock)
     return TRUE;
 }
 
-_X_EXPORT int
+int
 VidModeGetDotClock(int scrnIndex, int Clock)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeGetDotClock");
 
     if (!VidModeAvailable(scrnIndex))
 	return 0;
 
     pScrn = xf86Screens[scrnIndex];
-    if ((pScrn->progClock) || (Clock >= MAXCLOCKS))
+    if ((pScrn->progClock) || (Clock > MAXCLOCKS))
 	return Clock;
     else  
 	return pScrn->clock[Clock];
 }
 
-_X_EXPORT int
+int
 VidModeGetNumOfClocks(int scrnIndex, Bool *progClock)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeGetNumOfClocks");
 
     if (!VidModeAvailable(scrnIndex))
 	return 0;
@@ -196,11 +232,13 @@ VidModeGetNumOfClocks(int scrnIndex, Bool *progClock)
     }
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetClocks(int scrnIndex, int *Clocks)
 {
     ScrnInfoPtr pScrn;
     int i;
+
+    DEBUG_P("VidModeGetClocks");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -217,11 +255,13 @@ VidModeGetClocks(int scrnIndex, int *Clocks)
 }
 
 
-_X_EXPORT Bool
+Bool
 VidModeGetFirstModeline(int scrnIndex, pointer *mode, int *dotClock)
 {
     ScrnInfoPtr pScrn;
     VidModePtr pVidMode;
+
+    DEBUG_P("VidModeGetFirstModeline");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -240,12 +280,14 @@ VidModeGetFirstModeline(int scrnIndex, pointer *mode, int *dotClock)
     return VidModeGetNextModeline(scrnIndex, mode, dotClock);
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetNextModeline(int scrnIndex, pointer *mode, int *dotClock)
 {
     ScrnInfoPtr pScrn;
     VidModePtr pVidMode;
     DisplayModePtr p;
+
+    DEBUG_P("VidModeGetNextModeline");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -265,10 +307,12 @@ VidModeGetNextModeline(int scrnIndex, pointer *mode, int *dotClock)
     return FALSE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeDeleteModeline(int scrnIndex, pointer mode)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeDeleteModeline");
 
     if ((mode == NULL) || (!VidModeAvailable(scrnIndex)))
 	return FALSE;
@@ -278,10 +322,12 @@ VidModeDeleteModeline(int scrnIndex, pointer mode)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeZoomViewport(int scrnIndex, int zoom)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeZoomViewPort");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -291,10 +337,12 @@ VidModeZoomViewport(int scrnIndex, int zoom)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeSetViewPort(int scrnIndex, int x, int y)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeSetViewPort");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -312,10 +360,12 @@ VidModeSetViewPort(int scrnIndex, int x, int y)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetViewPort(int scrnIndex, int *x, int *y)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeGetViewPort");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -326,12 +376,14 @@ VidModeGetViewPort(int scrnIndex, int *x, int *y)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeSwitchMode(int scrnIndex, pointer mode)
 {
     ScrnInfoPtr pScrn;
     DisplayModePtr pTmpMode;
     Bool retval;
+
+    DEBUG_P("VidModeSwitchMode");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -348,10 +400,12 @@ VidModeSwitchMode(int scrnIndex, pointer mode)
     return retval;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeLockZoom(int scrnIndex, Bool lock)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeLockZoom");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -365,10 +419,12 @@ VidModeLockZoom(int scrnIndex, Bool lock)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetMonitor(int scrnIndex, pointer *monitor)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeGetMonitor");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -379,10 +435,12 @@ VidModeGetMonitor(int scrnIndex, pointer *monitor)
     return TRUE;
 }
 
-_X_EXPORT ModeStatus
+ModeStatus
 VidModeCheckModeForMonitor(int scrnIndex, pointer mode)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeCheckModeForMonitor");
 
     if ((mode == NULL) || (!VidModeAvailable(scrnIndex)))
 	return MODE_ERROR;
@@ -392,10 +450,12 @@ VidModeCheckModeForMonitor(int scrnIndex, pointer mode)
     return xf86CheckModeForMonitor((DisplayModePtr)mode, pScrn->monitor);
 }
 
-_X_EXPORT ModeStatus
+ModeStatus
 VidModeCheckModeForDriver(int scrnIndex, pointer mode)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeCheckModeForDriver");
 
     if ((mode == NULL) || (!VidModeAvailable(scrnIndex)))
 	return MODE_ERROR;
@@ -405,12 +465,14 @@ VidModeCheckModeForDriver(int scrnIndex, pointer mode)
     return xf86CheckModeForDriver(pScrn, (DisplayModePtr)mode, 0);
 }
 
-_X_EXPORT void
+void
 VidModeSetCrtcForMode(int scrnIndex, pointer mode)
 {
     ScrnInfoPtr pScrn;
     DisplayModePtr ScreenModes;
     
+    DEBUG_P("VidModeSetCrtcForMode");
+
     if ((mode == NULL) || (!VidModeAvailable(scrnIndex)))
 	return;
 
@@ -424,11 +486,13 @@ VidModeSetCrtcForMode(int scrnIndex, pointer mode)
     return;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeAddModeline(int scrnIndex, pointer mode)
 {
     ScrnInfoPtr pScrn;
     
+    DEBUG_P("VidModeAddModeline");
+
     if ((mode == NULL) || (!VidModeAvailable(scrnIndex)))
 	return FALSE;
 
@@ -445,12 +509,14 @@ VidModeAddModeline(int scrnIndex, pointer mode)
     return TRUE;
 }
 
-_X_EXPORT int
+int
 VidModeGetNumOfModes(int scrnIndex)
 {
     pointer mode = NULL;
     int dotClock= 0, nummodes = 0;
   
+    DEBUG_P("VidModeGetNumOfModes");
+
     if (!VidModeGetFirstModeline(scrnIndex, &mode, &dotClock))
 	return nummodes;
 
@@ -461,11 +527,13 @@ VidModeGetNumOfModes(int scrnIndex)
     } while (TRUE);
 }
 
-_X_EXPORT Bool
+Bool
 VidModeSetGamma(int scrnIndex, float red, float green, float blue)
 {
     ScrnInfoPtr pScrn;
     Gamma gamma;
+
+    DEBUG_P("VidModeSetGamma");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -480,10 +548,12 @@ VidModeSetGamma(int scrnIndex, float red, float green, float blue)
 	return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetGamma(int scrnIndex, float *red, float *green, float *blue)
 {
     ScrnInfoPtr pScrn;
+
+    DEBUG_P("VidModeGetGamma");
 
     if (!VidModeAvailable(scrnIndex))
 	return FALSE;
@@ -495,7 +565,7 @@ VidModeGetGamma(int scrnIndex, float *red, float *green, float *blue)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeSetGammaRamp(int scrnIndex, int size, CARD16 *r, CARD16 *g, CARD16 *b)
 {
     ScrnInfoPtr pScrn;
@@ -508,7 +578,7 @@ VidModeSetGammaRamp(int scrnIndex, int size, CARD16 *r, CARD16 *g, CARD16 *b)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 VidModeGetGammaRamp(int scrnIndex, int size, CARD16 *r, CARD16 *g, CARD16 *b)
 {
     ScrnInfoPtr pScrn;
@@ -521,7 +591,7 @@ VidModeGetGammaRamp(int scrnIndex, int size, CARD16 *r, CARD16 *g, CARD16 *b)
     return TRUE;
 }
 
-_X_EXPORT int
+int
 VidModeGetGammaRampSize(int scrnIndex)
 {
     if (!VidModeAvailable(scrnIndex))
@@ -530,7 +600,7 @@ VidModeGetGammaRampSize(int scrnIndex)
     return xf86GetGammaRampSize(xf86Screens[scrnIndex]->pScreen);
 }
 
-_X_EXPORT pointer
+pointer
 VidModeCreateMode(void)
 {
     DisplayModePtr mode;
@@ -546,14 +616,14 @@ VidModeCreateMode(void)
     return mode;
 }
 
-_X_EXPORT void
+void
 VidModeCopyMode(pointer modefrom, pointer modeto)
 {
   memcpy(modeto, modefrom, sizeof(DisplayModeRec));
 }
 
 
-_X_EXPORT int
+int
 VidModeGetModeValue(pointer mode, int valtyp)
 {
   int ret = 0;
@@ -596,7 +666,7 @@ VidModeGetModeValue(pointer mode, int valtyp)
   return ret;
 }
 
-_X_EXPORT void
+void
 VidModeSetModeValue(pointer mode, int valtyp, int val)
 {
   switch (valtyp) {
@@ -637,7 +707,7 @@ VidModeSetModeValue(pointer mode, int valtyp, int val)
   return;
 }
 
-_X_EXPORT vidMonitorValue
+vidMonitorValue
 VidModeGetMonitorValue(pointer monitor, int valtyp, int indx)
 {
   vidMonitorValue ret;

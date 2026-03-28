@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_tris.c,v 1.3 2002/10/30 12:51:28 alanh Exp $
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_tris.c,v 1.1.1.2 2004/12/10 15:05:37 alanh Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * GLX Hardware Device Driver for Sun Creator/Creator3D
  * Copyright (C) 2000, 2001 David S. Miller
@@ -306,8 +313,8 @@ static void ffbRasterPrimitive(GLcontext *ctx, GLenum rprim);
 #define FFB_MAX_TRIFUNC 	0x08
 
 static struct {
-	triangle_func triangle;
-	quad_func quad;
+	tnl_triangle_func triangle;
+	tnl_quad_func quad;
 } rast_tab[FFB_MAX_TRIFUNC];
 
 #define DO_OFFSET   (IND & FFB_OFFSET_BIT)
@@ -549,13 +556,13 @@ static void init_render_tab(void)
 		render_tab_flat_alpha_tricull_elt;
 
 	for (i = 0; i < MAX_FFB_RENDER_FUNCS; i++) {
-		render_func *rf = render_tabs[i];
-		render_func *rfe = render_tabs_elt[i];
+		tnl_render_func *rf = render_tabs[i];
+		tnl_render_func *rfe = render_tabs_elt[i];
 
 		if (i & FFB_TRI_CULL_BIT) {
 			int from_idx = (i & ~FFB_TRI_CULL_BIT);
-			render_func *rf_from = render_tabs[from_idx];
-			render_func *rfe_from = render_tabs_elt[from_idx];
+			tnl_render_func *rf_from = render_tabs[from_idx];
+			tnl_render_func *rfe_from = render_tabs_elt[from_idx];
 			int j;
 
 			for (j = GL_POINTS; j < GL_TRIANGLES; j++) {

@@ -1,3 +1,11 @@
+/* $Xorg: cout.c,v 1.3 2000/08/17 19:46:43 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
  Copyright (c) 1994 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/cout.c,v 3.9 2003/11/17 22:20:23 dawes Exp $ */
+ /* $XFree86: xc/lib/xkbfile/cout.c,v 3.9 2003/11/17 22:20:23 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>

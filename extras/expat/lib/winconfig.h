@@ -1,12 +1,17 @@
 /*================================================================
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** Copyright 2000, Clark Cooper
 ** All rights reserved.
 **
 ** This is free software. You are permitted to copy, distribute, or modify
 ** it under the terms of the MIT/X license (contained in the COPYING file
 ** with this distribution.)
-**
-**
 */
 
 #ifndef WINCONFIG_H
@@ -21,7 +26,12 @@
 
 #define XML_NS 1
 #define XML_DTD 1
-#define XML_BYTE_ORDER 12
 #define XML_CONTEXT_BYTES 1024
+
+/* we will assume all Windows platforms are little endian */
+#define BYTEORDER 1234
+
+/* Windows has memmove() available. */
+#define HAVE_MEMMOVE
 
 #endif /* ndef WINCONFIG_H */

@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $Xorg: thr_stubs.c,v 1.3 2000/08/17 19:55:21 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Stub interface to thread routines that Solaris needs but shipped
  * broken/buggy versions in 5.2 and 5.3

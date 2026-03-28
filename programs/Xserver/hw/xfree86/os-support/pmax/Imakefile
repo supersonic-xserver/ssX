@@ -1,5 +1,5 @@
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/pmax/Imakefile,v 1.14tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/pmax/Imakefile,v 1.14 2004/11/23 02:25:44 dawes Exp $
 
 #include <Server.tmpl>
 
@@ -19,8 +19,8 @@ OBJS =  pmax_devs.o pmax_init.o pmax_map.o pmax_pci.o pmax_ppc.o \
         kmod_noop.o agp_noop.o
 
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(XF86OSSRC)/bus \
-           -I$(SERVERSRC)/include -I../sysv
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(XF86OSSRC)/bus -I. \
+           -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(EXTINCSRC) -I../sysv
 
 RESDEFINES = -DUSESTDRES
 

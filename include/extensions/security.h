@@ -1,3 +1,11 @@
+/* $Xorg: security.h,v 1.4 2001/02/09 02:03:24 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998  The Open Group
 
@@ -23,7 +31,7 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
-/* $XFree86: xc/include/extensions/security.h,v 1.5 2006/01/09 14:58:19 dawes Exp $ */
+/* $XFree86: xc/include/extensions/security.h,v 1.4 2002/11/08 00:46:27 alanh Exp $ */
 
 #ifndef _SECURITY_H
 #define _SECURITY_H
@@ -160,7 +168,7 @@ extern void SecurityAudit(char *format, ...);
 extern Bool SecuritySameLevel(ClientPtr client, XID authId);
 #endif
 
-extern int XSecurityOptions(int argc, const char **argv, int i);
+extern int XSecurityOptions(int argc, char **argv, int i);
 
 /* Give this value or higher to the -audit option to get security messages */
 #define SECURITY_AUDIT_LEVEL 4

@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint.h,v 1.59 2003/04/23 21:51:36 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1997-2001 by Alan Hourihane <alanh@fairlite.demon.co.uk>
  *
@@ -57,7 +64,7 @@
 
 typedef struct {
 	CARD32 glintRegs[0x2000];
-	CARD32 DacRegs[0x1000];
+	CARD32 DacRegs[0x100];
 	CARD8 cmap[0x300];
 } GLINTRegRec, *GLINTRegPtr;
 

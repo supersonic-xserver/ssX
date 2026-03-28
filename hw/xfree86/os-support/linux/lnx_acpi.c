@@ -1,7 +1,20 @@
-#ifdef HAVE_XORG_CONFIG_H
-#include "xorg-config.h"
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_acpi.c,v 1.2 2005/10/14 15:17:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include <X11/X.h>
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -16,6 +29,7 @@
 #include <errno.h>
  
 #define ACPI_SOCKET  "/var/run/acpid.socket"
+#define ACPI_EVENTS  "/proc/acpi/event"
 
 #define ACPI_VIDEO_NOTIFY_SWITCH	0x80
 #define ACPI_VIDEO_NOTIFY_PROBE		0x81
@@ -36,20 +50,6 @@ static void lnxCloseACPI(void);
 static pointer ACPIihPtr = NULL;
 PMClose lnxACPIOpen(void);
 
-/* in milliseconds */
-#define ACPI_REOPEN_DELAY 1000
-
-static CARD32
-lnxACPIReopen(OsTimerPtr timer, CARD32 time, pointer arg)
-{
-    if (lnxACPIOpen()) {
-	TimerFree(timer);
-	return 0;
-    }
-
-    return ACPI_REOPEN_DELAY;
-}
-
 #define LINE_LENGTH 80
 
 static int
@@ -60,16 +60,8 @@ lnxACPIGetEventFromOs(int fd, pmEvent *events, int num)
 
     memset(ev, 0, LINE_LENGTH);
 
-    do {
-	n = read( fd, ev, LINE_LENGTH );
-    } while ((n == -1) && (errno == EAGAIN || errno == EINTR));
+    n = read( fd, ev, LINE_LENGTH );
 
-    if (n <= 0) {
-	lnxCloseACPI();
-	TimerSet(NULL, 0, ACPI_REOPEN_DELAY, lnxACPIReopen, NULL);
-	return 0;
-    }
-    
     /* Check that we have a video event */
     if (strstr(ev, "video") == ev) {
 	char *video = NULL;
@@ -78,7 +70,7 @@ lnxACPIGetEventFromOs(int fd, pmEvent *events, int num)
 	char *data = NULL; /* doesn't appear to be used in the kernel */
 	unsigned long int notify_l, data_l;
 
-	video = strtok(ev, " ");
+	video = strtok(ev, "video");
 
 	GFX = strtok(NULL, " ");
 #if 0
@@ -153,18 +145,24 @@ lnxACPIOpen(void)
 	addr.sun_family = AF_UNIX;
 	strcpy(addr.sun_path, ACPI_SOCKET);
 	if ((r = connect(fd, (struct sockaddr*)&addr, sizeof(addr))) == -1) {
-	    xf86MsgVerb(X_WARNING,3,"Open ACPI failed (%s) (%s)\n", ACPI_SOCKET,
-	    	strerror(errno));
 	    shutdown(fd, 2);
-	    close(fd);
+	    fd = -1;
+	}
+    }
+
+    /* acpid's socket isn't available, so try going direct */
+    if (fd == -1) {
+        if ((fd = open(ACPI_EVENTS, O_RDONLY)) < 0) {
+	    xf86MsgVerb(X_WARNING,3,"Open ACPI failed (%s) (%s)\n", ACPI_EVENTS,
+	    	strerror(errno));
 	    return NULL;
     	}
     }
 
     xf86PMGetEventFromOs = lnxACPIGetEventFromOs;
     xf86PMConfirmEventToOs = lnxACPIConfirmEventToOs;
-    ACPIihPtr = xf86AddGeneralHandler(fd,xf86HandlePMEvents,NULL);
-    xf86MsgVerb(X_INFO,3,"Open ACPI successful (%s)\n", ACPI_SOCKET);
+    ACPIihPtr = xf86AddInputHandler(fd,xf86HandlePMEvents,NULL);
+    xf86MsgVerb(X_INFO,3,"Open ACPI successful (%s)\n", (r != -1) ? ACPI_SOCKET : ACPI_EVENTS);
 
     return lnxCloseACPI;
 }
@@ -178,9 +176,9 @@ lnxCloseACPI(void)
    ErrorF("ACPI: Closing device\n");
 #endif
     if (ACPIihPtr) {
-	fd = xf86RemoveGeneralHandler(ACPIihPtr);
+	fd = xf86RemoveInputHandler(ACPIihPtr);
 	shutdown(fd, 2);
-	close(fd);
 	ACPIihPtr = NULL;
     }
 }
+

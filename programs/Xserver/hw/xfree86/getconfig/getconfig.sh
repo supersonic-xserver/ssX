@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# $DHD: xc/programs/Xserver/hw/xfree86/getconfig/getconfig.sh,v 1.2 2003/09/20 01:45:57 dawes Exp $
+
 #
 # Copyright 2003-2005 by David H. Dawes.
 # Copyright 2003-2005 by X-Oz Technologies.

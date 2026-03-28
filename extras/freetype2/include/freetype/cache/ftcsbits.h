@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftcsbits.h                                                             */
 /*                                                                         */
 /*    A small-bitmap cache (specification).                                */
 /*                                                                         */
-/*  Copyright 2000 by                                                      */
+/*  Copyright 2000-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -19,47 +26,75 @@
 #ifndef __FTCSBITS_H__
 #define __FTCSBITS_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
-#endif
-#include   FT_BUILD_H
-#include   FT_CACHE_H
-#include   FT_CACHE_INTERNAL_CHUNK_H
-#include   FT_CACHE_IMAGE_H
+
+#include <ft2build.h>
+#include FT_CACHE_H
+#include FT_CACHE_INTERNAL_GLYPH_H
+
 
 FT_BEGIN_HEADER
 
-  /* handle to small bitmap */
-  typedef struct FTC_SBitRec_*  FTC_SBit;
+#define FTC_SBIT_ITEMS_PER_NODE  16
 
-  /* handle to small bitmap cache */
-  typedef struct FTC_SBit_CacheRec_*  FTC_SBit_Cache;
-
-  /* a compact structure used to hold a single small bitmap */
-  typedef struct  FTC_SBitRec_
+  typedef struct  FTC_SNodeRec_
   {
-    FT_Byte   width;
-    FT_Byte   height;
-    FT_Char   left;
-    FT_Char   top;
+    FTC_GNodeRec  gnode;
+    FT_UInt       count;
+    FTC_SBitRec   sbits[FTC_SBIT_ITEMS_PER_NODE];
 
-    FT_Byte   format;
-    FT_Char   pitch;
-    FT_Char   xadvance;
-    FT_Char   yadvance;
-
-    FT_Byte*  buffer;
-
-  } FTC_SBitRec;
+  } FTC_SNodeRec, *FTC_SNode;
 
 
-  FT_EXPORT( FT_Error )  FTC_SBit_Cache_New( FTC_Manager      manager,
-                                             FTC_SBit_Cache  *acache );
+#define FTC_SNODE( x )         ( (FTC_SNode)( x ) )
+#define FTC_SNODE_GINDEX( x )  FTC_GNODE( x )->gindex
+#define FTC_SNODE_FAMILY( x )  FTC_GNODE( x )->family
 
-  FT_EXPORT( FT_Error )  FTC_SBit_Cache_Lookup( FTC_SBit_Cache   cache,
-                                                FTC_Image_Desc*  desc,
-                                                FT_UInt          gindex,
-                                                FTC_SBit        *sbit );
+  typedef FT_UInt
+  (*FTC_SFamily_GetCountFunc)( FTC_Family   family,
+                               FTC_Manager  manager );
+
+  typedef FT_Error
+  (*FTC_SFamily_LoadGlyphFunc)( FTC_Family   family,
+                                FT_UInt      gindex,
+                                FTC_Manager  manager,
+                                FT_Face     *aface );
+
+  typedef struct  FTC_SFamilyClassRec_
+  {
+    FTC_MruListClassRec        clazz;
+    FTC_SFamily_GetCountFunc   family_get_count;
+    FTC_SFamily_LoadGlyphFunc  family_load_glyph;
+
+  } FTC_SFamilyClassRec;
+
+  typedef const FTC_SFamilyClassRec*  FTC_SFamilyClass;
+
+#define FTC_SFAMILY_CLASS( x )  ((FTC_SFamilyClass)(x))
+
+#define FTC_CACHE__SFAMILY_CLASS( x )  \
+          FTC_SFAMILY_CLASS( FTC_CACHE__GCACHE_CLASS( x )->family_class )
+
+
+  FT_EXPORT( void )
+  FTC_SNode_Free( FTC_SNode  snode,
+                  FTC_Cache  cache );
+
+  FT_EXPORT( FT_Error )
+  FTC_SNode_New( FTC_SNode   *psnode,
+                 FTC_GQuery   gquery,
+                 FTC_Cache    cache );
+
+  FT_EXPORT( FT_ULong )
+  FTC_SNode_Weight( FTC_SNode  inode );
+
+
+  FT_EXPORT( FT_Bool )
+  FTC_SNode_Compare( FTC_SNode   snode,
+                     FTC_GQuery  gquery,
+                     FTC_Cache   cache );
+
+  /* */
+
 FT_END_HEADER
 
 #endif /* __FTCSBITS_H__ */

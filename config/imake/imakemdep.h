@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright (c) 1993, 1994, 1998  The Open Group
 
@@ -23,9 +37,9 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/imake/imakemdep.h,v 3.83tsi Exp $ */
+/* $XFree86: xc/config/imake/imakemdep.h,v 3.80 2005/02/01 02:25:06 dawes Exp $ */
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -330,8 +344,7 @@ in this Software without prior written authorization from The Open Group.
 #if defined(__386BSD__)
 #define DEFAULT_CPP "/usr/libexec/cpp"
 #endif
-#if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__OpenBSD__) || \
-    defined(__DragonFly__)
+#if defined(__FreeBSD__)  || defined(__NetBSD__) || defined(__OpenBSD__)
 #define USE_CC_E
 #endif
 #if defined(__sgi) && defined(__ANSI_CPP__)
@@ -395,8 +408,7 @@ char *cpp_argv[ARGUMENTS] = {
 #endif
 #if defined(__386BSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || \
     defined(__FreeBSD__) || defined(MACH) || defined(linux) || \
-    defined(__GNU__) || defined(__bsdi__) || defined(__GNUC__) || \
-    defined(__DragonFly__)
+    defined(__GNU__) || defined(__bsdi__) || defined(__GNUC__)
 # ifdef __i386__
 	"-D__i386__",
 #  if defined(__GNUC__) && (__GNUC__ >= 3)
@@ -425,7 +437,7 @@ char *cpp_argv[ARGUMENTS] = {
 	"-D__amd64__",
 # endif
 # ifdef __x86_64__
-	"-D__x86_64__",
+	"-D__AMD64__",
 # endif
 # ifdef __s390__
 	"-D__s390__",
@@ -854,7 +866,7 @@ char *cpp_argv[ARGUMENTS] = {
 #  define DEFAULT_OS_MINOR_REV   "r %*d.%[0-9]"
 #  define DEFAULT_OS_TEENY_REV   "v %[0-9]" 
 /* # define DEFAULT_OS_NAME        "srm %[^\n]" */ /* Not useful on ISC */
-# elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
+# elif defined(__FreeBSD__) || defined(__OpenBSD__)
 /* BSD/OS too? */
 /* uname -r returns "x.y[.z]-mumble", e.g. "2.1.5-RELEASE" or "2.2-0801SNAP" */
 #  define DEFAULT_OS_MAJOR_REV   "r %[0-9]"
@@ -1156,27 +1168,6 @@ struct symtab	predefs[] = {
 #ifdef __HIGHC__
 	{"__HIGHC__", "1"},
 #endif
-#ifdef __CHAR_UNSIGNED__
-	{"__CHAR_UNSIGNED__", "1"},
-#endif
-#ifdef __CHAR_BIT__
-	{"__CHAR_BIT__", DEF_STRINGIFY(__CHAR_BIT__)},
-#endif
-#ifdef __SCHAR_MAX__
-	{"__SCHAR_MAX__", DEF_STRINGIFY(__SCHAR_MAX__)},
-#endif
-#ifdef __SHRT_MAX__
-	{"__SHRT_MAX__", DEF_STRINGIFY(__SHRT_MAX__)},
-#endif
-#ifdef __INT_MAX__
-	{"__INT_MAX__", DEF_STRINGIFY(__INT_MAX__)},
-#endif
-#ifdef __LONG_MAX__
-	{"__LONG_MAX__", DEF_STRINGIFY(__LONG_MAX__)},
-#endif
-#ifdef __LONG_LONG_MAX__
-	{"__LONG_LONG_MAX__", DEF_STRINGIFY(__LONG_LONG_MAX__)},
-#endif
 #ifdef CMU
 	{"CMU", "1"},
 #endif
@@ -1319,14 +1310,8 @@ struct symtab	predefs[] = {
 #ifdef _MIPS_SZPTR
 	{"_MIPS_SZPTR", DEF_STRINGIFY(_MIPS_SZPTR)},
 #endif
-#ifdef __linux__
-	{"__linux__", "1"},
-#endif
 #ifdef __FreeBSD__
-	{"__FreeBSD__", DEF_STRINGIFY(__FreeBSD__)},
-#endif
-#ifdef __DragonFly__
-	{"__DragonFly__", DEF_STRINGIFY(__DragonFly__)},
+	{"__FreeBSD__", "1"},
 #endif
 #ifdef __OpenBSD__
 	{"__OpenBSD__", "1"},
@@ -1493,14 +1478,11 @@ typedef enum {
   netBSD,
   LinuX,
   emx,
-  win32,
-  dragonFly
+  win32
 } System;
 
 #   ifdef linux
 System sys = LinuX;
-#   elif defined __DragonFly__
-System sys = dragonfly;
 #   elif defined __FreeBSD__
 System sys = freebsd;
 #   elif defined __NetBSD__

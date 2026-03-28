@@ -1,5 +1,14 @@
 /*
- * Copyright Â© 1998 Keith Packard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fbwindow.c,v 1.13 2006/02/19 15:51:19 tsi Exp $
+ *
+ * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,13 +29,10 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <stdlib.h>
-
 #include "fb.h"
+#ifdef IN_MODULE
+#include "xf86_ansic.h"
+#endif
 
 Bool
 fbCreateWindow(WindowPtr pWin)
@@ -112,9 +118,6 @@ fbCopyWindowProc (DrawablePtr	pSrcDrawable,
 	       upsidedown);
 	pbox++;
     }
-
-    fbFinishAccess (pDstDrawable);
-    fbFinishAccess (pSrcDrawable);
 }
 
 void 
@@ -124,9 +127,9 @@ fbCopyWindow(WindowPtr	    pWin,
 {
     RegionRec	rgnDst;
     int		dx, dy;
+    WindowPtr	pwinRoot;
 
-    PixmapPtr	pPixmap = fbGetWindowPixmap (pWin);
-    DrawablePtr	pDrawable = &pPixmap->drawable;
+    pwinRoot = WindowTable[pWin->drawable.pScreen->myNum];
 
     dx = ptOldOrg.x - pWin->drawable.x;
     dy = ptOldOrg.y - pWin->drawable.y;
@@ -136,13 +139,7 @@ fbCopyWindow(WindowPtr	    pWin,
     
     REGION_INTERSECT(pWin->drawable.pScreen, &rgnDst, &pWin->borderClip, prgnSrc);
 
-#ifdef COMPOSITE
-    if (pPixmap->screen_x || pPixmap->screen_y)
-	REGION_TRANSLATE (pWin->drawable.pScreen, &rgnDst, 
-			  -pPixmap->screen_x, -pPixmap->screen_y);
-#endif
-
-    fbCopyRegion (pDrawable, pDrawable,
+    fbCopyRegion ((DrawablePtr)pwinRoot, (DrawablePtr)pwinRoot,
 		  0,
 		  &rgnDst, dx, dy, fbCopyWindowProc, 0, 0);
     
@@ -216,45 +213,21 @@ fbFillRegionSolid (DrawablePtr	pDrawable,
     int		n = REGION_NUM_RECTS(pRegion);
     BoxPtr	pbox = REGION_RECTS(pRegion);
 
-#ifndef FB_ACCESS_WRAPPER
-    int try_mmx = 0;
-    if (!and)
-        try_mmx = 1;
-#endif
-
     fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
     
     while (n--)
     {
-#ifndef FB_ACCESS_WRAPPER
-	if (!try_mmx || !pixman_fill (dst, dstStride, dstBpp,
-				      pbox->x1 + dstXoff, pbox->y1 + dstYoff,
-				      (pbox->x2 - pbox->x1),
-				      (pbox->y2 - pbox->y1),
-				      xor))
-	{
-#endif
-	    fbSolid (dst + (pbox->y1 + dstYoff) * dstStride,
-		     dstStride,
-		     (pbox->x1 + dstXoff) * dstBpp,
-		     dstBpp,
-		     (pbox->x2 - pbox->x1) * dstBpp,
-		     pbox->y2 - pbox->y1,
-		     and, xor);
-#ifndef FB_ACCESS_WRAPPER
-	}
-#endif
+	fbSolid (dst + (pbox->y1 + dstYoff) * dstStride,
+		 dstStride,
+		 (pbox->x1 + dstXoff) * dstBpp,
+		 dstBpp,
+		 (pbox->x2 - pbox->x1) * dstBpp,
+		 pbox->y2 - pbox->y1,
+		 and, xor);
 	fbValidateDrawable (pDrawable);
 	pbox++;
     }
-    
-    fbFinishAccess (pDrawable);
 }
-
-#ifdef PANORAMIX
-#include "panoramiX.h"
-#include "panoramiXsrv.h"
-#endif
 
 void
 fbFillRegionTiled (DrawablePtr	pDrawable,
@@ -275,17 +248,6 @@ fbFillRegionTiled (DrawablePtr	pDrawable,
     int		xRot = pDrawable->x;
     int		yRot = pDrawable->y;
     
-#ifdef PANORAMIX
-    if(!noPanoramiXExtension) 
-    {
-	int index = pDrawable->pScreen->myNum;
-	if(&WindowTable[index]->drawable == pDrawable) 
-	{
-	    xRot -= panoramiXdataPtr[index].x;
-	    yRot -= panoramiXdataPtr[index].y;
-	}
-    }
-#endif
     fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
     fbGetDrawable (&pTile->drawable, tile, tileStride, tileBpp, tileXoff, tileYoff);
     tileWidth = pTile->drawable.width;
@@ -308,12 +270,9 @@ fbFillRegionTiled (DrawablePtr	pDrawable,
 		FB_ALLONES,
 		dstBpp,
 		xRot * dstBpp,
-		yRot - (pbox->y1 + dstYoff));
+		yRot - pbox->y1);
 	pbox++;
     }
-
-    fbFinishAccess (&pTile->drawable);
-    fbFinishAccess (pDrawable);
 }
 
 void

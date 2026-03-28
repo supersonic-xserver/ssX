@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_ioctl.h,v 1.1 2002/10/30 12:51:52 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_ioctl.h,v 1.1.1.3 2004/12/10 15:05:57 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -43,7 +50,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_lock.h"
 
 #include "xf86drm.h"
-#include "radeon_common.h"
+#include "drm.h"
+#include "radeon_drm.h"
 
 extern void r200EmitState( r200ContextPtr rmesa );
 extern void r200EmitVertexAOS( r200ContextPtr rmesa,
@@ -103,17 +111,20 @@ extern void r200Flush( GLcontext *ctx );
 extern void r200Finish( GLcontext *ctx );
 extern void r200WaitForIdleLocked( r200ContextPtr rmesa );
 extern void r200WaitForVBlank( r200ContextPtr rmesa );
-extern void r200InitIoctlFuncs( GLcontext *ctx );
+extern void r200InitIoctlFuncs( struct dd_function_table *functions );
 
-extern void *r200AllocateMemoryMESA( GLsizei size, GLfloat readfreq,
+extern void *r200AllocateMemoryMESA( __DRInativeDisplay *dpy, int scrn, GLsizei size, GLfloat readfreq,
 				   GLfloat writefreq, GLfloat priority );
-extern void r200FreeMemoryMESA( GLvoid *pointer );
-extern GLuint r200GetMemoryOffsetMESA( const GLvoid *pointer );
+extern void r200FreeMemoryMESA( __DRInativeDisplay *dpy, int scrn, GLvoid *pointer );
+extern GLuint r200GetMemoryOffsetMESA( __DRInativeDisplay *dpy, int scrn, const GLvoid *pointer );
+
 extern GLboolean r200IsGartMemory( r200ContextPtr rmesa, const GLvoid *pointer,
 				   GLint size );
 
 extern GLuint r200GartOffsetFromVirtual( r200ContextPtr rmesa, 
 					 const GLvoid *pointer );
+
+void r200SetUpAtomList( r200ContextPtr rmesa );
 
 /* ================================================================
  * Helper macros:
@@ -133,7 +144,8 @@ do {						\
 #define R200_STATECHANGE( rmesa, ATOM )			\
 do {								\
    R200_NEWPRIM( rmesa );					\
-   move_to_head( &(rmesa->hw.dirty), &(rmesa->hw.ATOM));	\
+   rmesa->hw.ATOM.dirty = GL_TRUE;				\
+   rmesa->hw.is_dirty = GL_TRUE;				\
 } while (0)
 
 #define R200_DB_STATE( ATOM )			        \
@@ -147,7 +159,8 @@ static __inline int R200_DB_STATECHANGE(
    if (memcmp(atom->cmd, atom->lastcmd, atom->cmd_size*4)) {
       int *tmp;
       R200_NEWPRIM( rmesa );
-      move_to_head( &(rmesa->hw.dirty), atom );
+      atom->dirty = GL_TRUE;
+      rmesa->hw.is_dirty = GL_TRUE;
       tmp = atom->cmd; 
       atom->cmd = atom->lastcmd;
       atom->lastcmd = tmp;
@@ -166,6 +179,31 @@ do {							\
       r200Flush( rmesa->glCtx );			\
    }							\
 } while (0)
+
+/* Command lengths.  Note that any time you ensure ELTS_BUFSZ or VBUF_BUFSZ
+ * are available, you will also be adding an rmesa->state.max_state_size because
+ * r200EmitState is called from within r200EmitVbufPrim and r200FlushElts.
+ */
+#define AOS_BUFSZ(nr)	((3 + ((nr / 2) * 3) + ((nr & 1) * 2)) * sizeof(int))
+#define VERT_AOS_BUFSZ	(5 * sizeof(int))
+#define ELTS_BUFSZ(nr)	(12 + nr * 2)
+#define VBUF_BUFSZ	(3 * sizeof(int))
+
+/* Ensure that a minimum amount of space is available in the command buffer.
+ * This is used to ensure atomicity of state updates with the rendering requests
+ * that rely on them.
+ *
+ * An alternative would be to implement a "soft lock" such that when the buffer
+ * wraps at an inopportune time, we grab the lock, flush the current buffer,
+ * and hang on to the lock until the critical section is finished and we flush
+ * the buffer again and unlock.
+ */
+static __inline void r200EnsureCmdBufSpace( r200ContextPtr rmesa, int bytes )
+{
+   if (rmesa->store.cmd_used + bytes > R200_CMD_BUF_SZ)
+      r200FlushCmdBuf( rmesa, __FUNCTION__ );
+   assert( bytes <= R200_CMD_BUF_SZ );
+}
 
 /* Alloc space in the command buffer
  */

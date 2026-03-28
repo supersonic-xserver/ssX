@@ -3,7 +3,7 @@
 // 14.03.2004 Timur Jamakeev <ztimur@mail.ru> Created (Based on Russian Standard Keyboard).
 // 25.02.2005 Ilyas Bakirov  <just_ilyas@yahoo.com> Modified.
 //
-// $XFree86$
+// $XFree86: xc/programs/xkbcomp/symbols/ky,v 1.1 2005/02/25 18:25:36 dawes Exp $
 
 partial default alphanumeric_keys 
 xkb_symbols "basic" {

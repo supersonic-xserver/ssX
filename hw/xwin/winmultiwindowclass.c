@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -27,22 +34,12 @@
  *
  * Authors:     Earle F. Philhower, III
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winmultiwindowclass.c,v 1.3 2005/10/14 15:17:16 tsi Exp $ */
 
-#ifdef HAVE_XWIN_CONFIG_H
-#include <xwin-config.h>
-#endif
 #include <X11/Xatom.h>
 #include "propertyst.h"
 #include "windowstr.h"
 #include "winmultiwindowclass.h"
-#include "win.h"
-
-/*
- * Local function
- */
-
-DEFINE_ATOM_HELPER(AtmWmWindowRole, "WM_WINDOW_ROLE")
-
 
 int
 winMultiWindowGetClassHint (WindowPtr pWin, char **res_name, char **res_class)
@@ -158,9 +155,14 @@ winMultiWindowGetWindowRole (WindowPtr pWin, char **res_role)
   struct _Window	*pwin;
   struct _Property	*prop;
   int			len_role;
+  static Atom		atmWmWindowRole = 0;
 
   if (!pWin || !res_role) 
     return 0; 
+
+  /* Initialize the window role atom, not in XAtom.h */
+  if (!atmWmWindowRole)
+    atmWmWindowRole = MakeAtom ("WM_WINDOW_ROLE", 14, 1);
 
   pwin = (struct _Window*) pWin;
   
@@ -172,12 +174,12 @@ winMultiWindowGetWindowRole (WindowPtr pWin, char **res_role)
   *res_role = NULL;
   while (prop)
     {
-      if (prop->propertyName == AtmWmWindowRole ()
+      if (prop->propertyName == atmWmWindowRole
 	  && prop->type == XA_STRING
 	  && prop->format == 8
 	  && prop->data)
 	{
-	  len_role= prop->size;
+	  len_role= strlen ((char *) prop->data);
 
 	  (*res_role) = malloc (len_role + 1);
 
@@ -187,8 +189,7 @@ winMultiWindowGetWindowRole (WindowPtr pWin, char **res_role)
 	      return 0; 
 	    }
 
-	  strncpy ((*res_role), prop->data, len_role);
-	  (*res_role)[len_role] = 0;
+	  strcpy ((*res_role), prop->data);
 
 	  return 1;
 	}
@@ -232,46 +233,10 @@ winMultiWindowGetWMNormalHints (WindowPtr pWin, WinXSizeHints *hints)
       else
 	prop = prop->next;
     }
-
+  
   return 0;
 }
 
-int
-winMultiWindowGetTransientFor (WindowPtr pWin, WindowPtr *ppDaddy)
-{
-  struct _Window        *pwin;
-  struct _Property      *prop;
-
-  if (!pWin)
-    {
-      ErrorF ("winMultiWindowGetTransientFor - pWin was NULL\n");
-      return 0;
-    }
-
-  pwin = (struct _Window*) pWin;
-
-  if (pwin->optional)
-    prop = (struct _Property *) pwin->optional->userProps;
-  else
-    prop = NULL;
-
-  if (ppDaddy)
-    *ppDaddy = NULL;
-
-  while (prop)
-    {
-      if (prop->propertyName == XA_WM_TRANSIENT_FOR)
-        {
-          if (ppDaddy)
-            memcpy (*ppDaddy, prop->data, sizeof (WindowPtr));
-          return 1;
-        }
-      else
-        prop = prop->next;
-    }
-
-  return 0;
-}
 
 int
 winMultiWindowGetWMName (WindowPtr pWin, char **wmName)
@@ -302,7 +267,7 @@ winMultiWindowGetWMName (WindowPtr pWin, char **wmName)
 	  && prop->type == XA_STRING
 	  && prop->data)
 	{
-	  len_name = prop->size;
+	  len_name = strlen ((char *) prop->data);
 
 	  (*wmName) = malloc (len_name + 1);
 	  
@@ -312,8 +277,8 @@ winMultiWindowGetWMName (WindowPtr pWin, char **wmName)
 	      return 0;
 	    }
 
-	  strncpy ((*wmName), prop->data, len_name);
-	  (*wmName)[len_name] = 0;
+	  /* Add one to len_name to allow copying of trailing 0 */
+	  strncpy ((*wmName), prop->data, len_name+1);
 
 	  return 1;
 	}
@@ -323,3 +288,4 @@ winMultiWindowGetWMName (WindowPtr pWin, char **wmName)
   
   return 0;
 }
+

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
  *
@@ -21,7 +28,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_accel.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_accel.c,v 1.13 2004/04/03 21:39:55 dawes Exp $ */
 
 /*************************************************************************
  *
@@ -30,7 +37,7 @@
  *
  ************************************************************************/
 
-#include <X11/Xarch.h>
+#include "Xarch.h"
 #include "xaarop.h"
 #include "miline.h"
 
@@ -528,7 +535,7 @@ VIAInitAccel(ScreenPtr pScreen)
     AvailFBArea.y2 = cacheEnd;
      
     xf86InitFBManager(pScreen, &AvailFBArea);
-    DEBUG(xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+    DEBUGX(xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 					 "Using %d lines for offscreen memory.\n",
 					 AvailFBArea.y2 - pScrn->virtualY ));
 

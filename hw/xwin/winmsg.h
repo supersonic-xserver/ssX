@@ -1,6 +1,11 @@
-#ifndef __WIN_MSG_H__
-#define __WIN_MSG_H__
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +34,10 @@
  *
  * Authors: Alexander Gottwald	
  */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winmsg.h,v 1.2 2003/10/02 13:30:10 eich Exp $ */
+
+#ifndef __WIN_MSG_H__
+#define __WIN_MSG_H__
 
 /*
  * Function prototypes
@@ -39,12 +48,7 @@ void winDrvMsgVerb (int scrnIndex,
 void winDrvMsg (int scrnIndex, MessageType type, const char *format, ...);
 void winMsgVerb (MessageType type, int verb, const char *format, ...);
 void winMsg (MessageType type, const char *format, ...);
-void winDebug (const char *format, ...);
-void winTrace (const char *format, ...);
 
 void winErrorFVerb (int verb, const char *format, ...);
-void winW32Error(int verb, const char *message);
-void winW32ErrorEx(int verb, const char *message, DWORD errorcode);
-void winDebugWin32Message(const char* function, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #endif

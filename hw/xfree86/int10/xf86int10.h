@@ -1,3 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/int10/xf86int10.h,v 1.26 2005/10/14 15:16:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *                   XFree86 int10 module
@@ -42,6 +57,7 @@ typedef struct {
     int stackseg;
     PCITAG Tag;
     IOADDRESS ioBase;
+    IOADDRESS vmwarePort;	/* kludge */
 } xf86Int10InfoRec, *xf86Int10InfoPtr;
 
 typedef struct _int10Mem {
@@ -59,6 +75,18 @@ typedef struct {
     CARD8 save_vse;
     CARD8 save_46e8;
 } legacyVGARec, *legacyVGAPtr;
+
+typedef struct {
+    BusType bus;
+    union {
+	struct {
+	    int bus;
+	    int dev;
+	    int func;
+	} pci;
+	int legacy;
+    } location;
+} xf86int10BiosLocation, *xf86int10BiosLocationPtr;
     
 /* OS dependent functions */
 xf86Int10InfoPtr xf86InitInt10(int entityIndex);
@@ -130,7 +158,7 @@ void dump_code(xf86Int10InfoPtr pInt);
 void dump_registers(xf86Int10InfoPtr pInt);
 void stack_trace(xf86Int10InfoPtr pInt);
 xf86Int10InfoPtr getInt10Rec(int entityIndex);
-CARD8 bios_checksum(const CARD8 *start, int size);
+CARD8 bios_checksum(CARD8 *start, int size);
 void LockLegacyVGA(xf86Int10InfoPtr pInt, legacyVGAPtr vga);
 void UnlockLegacyVGA(xf86Int10InfoPtr pInt, legacyVGAPtr vga);
 #if defined (_PC)
@@ -169,12 +197,11 @@ int setup_system_bios(void *base_addr);
 void reset_int_vect(xf86Int10InfoPtr pInt);
 void set_return_trap(xf86Int10InfoPtr pInt);
 void * xf86HandleInt10Options(ScrnInfoPtr pScrn, int entityIndex);
-Bool int10skip(const void* options);
-Bool int10_check_bios(int scrnIndex, int codeSeg,
-    const unsigned char* vbiosMem);
-Bool initPrimary(const void* options);
-BusType xf86int10GetBiosLocationType(const xf86Int10InfoPtr pInt);
-Bool xf86int10GetBiosSegment(xf86Int10InfoPtr pInt, void *base);
+Bool int10skip(void* options);
+Bool int10_check_bios(int scrnIndex, int codeSeg, unsigned char* vbiosMem);
+Bool initPrimary(void* options);
+void xf86int10ParseBiosLocation(void* options, 
+				xf86int10BiosLocationPtr bios);
 #ifdef DEBUG
 void dprint(unsigned long start, unsigned long size);
 #endif

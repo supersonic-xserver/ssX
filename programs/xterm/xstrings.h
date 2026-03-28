@@ -1,10 +1,22 @@
-/* $XTermId: xstrings.h,v 1.10 2006/01/29 22:15:06 tom Exp $ */
-
 /* $XFree86: xc/programs/xterm/xstrings.h,v 1.4 2002/08/17 19:52:27 dickey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /************************************************************
 
-Copyright 2000-2002,2005 by Thomas E. Dickey
+Copyright 2000-2001,2002 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -38,12 +50,9 @@ authorization.
 #define included_xstrings_h 1
 
 extern char *x_basename(char *name);
-extern char *x_skip_blanks(char *s);
-extern char *x_skip_nonblanks(char *s);
 extern char *x_strdup(const char *s);
 extern char *x_strindex(char *s1, char *s2);
 extern char *x_strtrim(char *s);
 extern int x_strcasecmp(const char *s1, const char *s2);
-extern int x_strncasecmp(const char *s1, const char *s2, unsigned n);
 
 #endif /* included_xstrings_h */

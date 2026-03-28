@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2013 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -25,6 +32,22 @@
 #endif
 
 #include "present_priv.h"
+
+/* Polyfill for RegionDuplicate - not available in legacy MI region headers */
+#ifndef RegionDuplicate
+static inline RegionPtr
+RegionDuplicate(RegionPtr src)
+{
+    RegionPtr dst;
+    if (!src)
+        return NULL;
+    dst = miRegionCreate(NULL, 0);
+    if (dst)
+        miRegionCopy(dst, src);
+    return dst;
+}
+#endif
+
 
 void
 present_vblank_notify(present_vblank_ptr vblank, CARD8 kind, CARD8 mode, uint64_t ust, uint64_t crtc_msc)
@@ -77,7 +100,11 @@ present_vblank_create(WindowPtr window,
     vblank->window = window;
     vblank->pixmap = pixmap;
 
-    screen_priv->create_event_id(window_priv, vblank);
+    /* Use the create_event_id function pointer if available, otherwise use counter */
+    if (screen_priv->create_event_id)
+        screen_priv->create_event_id(window_priv, vblank);
+    else
+        vblank->event_id = ++screen_priv->event_id_counter;
 
     if (pixmap) {
         vblank->kind = PresentCompleteKindPixmap;
@@ -91,11 +118,15 @@ present_vblank_create(WindowPtr window,
         vblank->valid = RegionDuplicate(valid);
         if (!vblank->valid)
             goto no_mem;
+    } else {
+        vblank->valid = (RegionPtr)NULL;
     }
     if (update) {
         vblank->update = RegionDuplicate(update);
         if (!vblank->update)
             goto no_mem;
+    } else {
+        vblank->update = (RegionPtr)NULL;
     }
 
     vblank->x_off = x_off;
@@ -112,13 +143,13 @@ present_vblank_create(WindowPtr window,
         !(options & PresentOptionCopy) &&
         capabilities) {
         if (msc_is_after(*target_msc, crtc_msc) &&
-            screen_priv->check_flip (target_crtc, window, pixmap, TRUE, valid, x_off, y_off, &reason))
+            screen_priv->check_flip(screen_priv, target_crtc, window, pixmap, TRUE, valid, x_off, y_off, &reason))
         {
             vblank->flip = TRUE;
             vblank->sync_flip = TRUE;
             *target_msc = *target_msc - 1;
         } else if ((*capabilities & PresentCapabilityAsync) &&
-            screen_priv->check_flip (target_crtc, window, pixmap, FALSE, valid, x_off, y_off, &reason))
+            screen_priv->check_flip(screen_priv, target_crtc, window, pixmap, FALSE, valid, x_off, y_off, &reason))
         {
             vblank->flip = TRUE;
         }

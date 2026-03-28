@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2006 Sun Microsystems
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -12,7 +19,7 @@
  * is provided "as is" without express or implied warranty.
  *
  * SUN MICROSYSTEMS DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
  * EVENT SHALL SUN MICROSYSTEMS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
  * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
  * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
@@ -58,6 +65,7 @@
 #include "windowstr.h"
 #include "selection.h"
 #include "xfixes.h"
+#include "privates.h"
 
 extern int		XFixesEventBase;
 
@@ -66,7 +74,10 @@ typedef struct _XFixesClient {
     CARD32	minor_version;
 } XFixesClientRec, *XFixesClientPtr;
 
-#define GetXFixesClient(pClient)    ((XFixesClientPtr) (pClient)->devPrivates[XFixesClientPrivateIndex].ptr)
+/* ssx_legacy: use dixLookupPrivate for compatibility */
+#define GetXFixesClient(pClient)    ((XFixesClientPtr) dixLookupPrivate(&(pClient)->devPrivates, XFixesClientPrivateKey))
+
+extern DevPrivateKey XFixesClientPrivateKey;
 
 extern int	(*ProcXFixesVector[XFixesNumberRequests])(ClientPtr);
 
@@ -268,5 +279,53 @@ ProcXFixesShowCursor (ClientPtr client);
 
 int 
 SProcXFixesShowCursor (ClientPtr client);
+
+#ifndef SSX_LEGACY_MODE
+/* Pointer Barriers (Version 5) */
+
+int
+ProcXFixesCreatePointerBarrier (ClientPtr client);
+
+int
+SProcXFixesCreatePointerBarrier (ClientPtr client);
+
+int
+ProcXFixesDestroyPointerBarrier (ClientPtr client);
+
+int
+SProcXFixesDestroyPointerBarrier (ClientPtr client);
+
+/* Client Disconnect Mode (Version 6) */
+
+int
+ProcXFixesSetClientDisconnectMode (ClientPtr client);
+
+int
+SProcXFixesSetClientDisconnectMode (ClientPtr client);
+
+int
+ProcXFixesGetClientDisconnectMode (ClientPtr client);
+
+int
+SProcXFixesGetClientDisconnectMode (ClientPtr client);
+
+Bool
+XFixesClientDisconnectInit (void);
+
+#endif /* SSX_LEGACY_MODE */
+
+#ifdef PANORAMIX
+/* PanoramiX hooks */
+
+int
+PanoramiXFixesSetGCClipRegion (ClientPtr client);
+
+int
+PanoramiXFixesSetWindowShapeRegion (ClientPtr client);
+
+int
+PanoramiXFixesSetPictureClipRegion (ClientPtr client);
+
+#endif /* PANORAMIX */
 
 #endif /* _XFIXESINT_H_ */

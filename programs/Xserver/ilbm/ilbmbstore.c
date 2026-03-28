@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmbstore.c,v 3.1 2005/10/14 15:17:16 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmbstore.c,v 3.0 1996/08/18 01:53:43 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: ilbmbstore.c,v 5.7 94/04/17 20:28:18 dpw Exp $ */
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /*
 
@@ -34,14 +42,14 @@ from the X Consortium.
    to use interleaved bitplanes instead of normal bitplanes */
 
 #include	"ilbm.h"
-#include	<X11/X.h>
+#include	"X.h"
 #include	"mibstore.h"
 #include	"regionstr.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"windowstr.h"
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * ilbmSaveAreas --
  *		Function called by miSaveAreas to actually fetch the areas to be
@@ -97,7 +105,7 @@ ilbmSaveAreas(pPixmap, prgnSave, xorg, yorg, pWin)
 	DEALLOCATE_LOCAL(pPtsInit);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * ilbmRestoreAreas --
  *		Function called by miRestoreAreas to actually fetch the areas to be

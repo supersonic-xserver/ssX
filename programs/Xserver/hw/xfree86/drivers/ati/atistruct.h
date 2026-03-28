@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atistruct.h,v 1.50tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atistruct.h,v 1.45 2004/12/31 16:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1999 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1999 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -26,7 +33,6 @@
 
 #include "atibank.h"
 #include "aticlock.h"
-#include "atiendian.h"
 #include "atiregs.h"
 
 #include "xaa.h"
@@ -58,6 +64,8 @@ typedef struct _ATIHWRec
     /* Colour lookup table */
     CARD8 lut[256 * 3];
 
+#ifndef AVOID_CPIO
+
     /* VGA registers */
     CARD8 genmo, crt[25], seq[5], gra[9], attr[21];
 
@@ -67,6 +75,8 @@ typedef struct _ATIHWRec
 
     /* Shadow VGA CRTC registers */
     CARD8 shadow_vga[25];
+
+#endif /* AVOID_CPIO */
 
     /* Generic DAC registers */
     CARD8 dac_read, dac_write, dac_mask;
@@ -83,7 +93,7 @@ typedef struct _ATIHWRec
     /* Mach64 CPIO registers */
     CARD32 crtc_h_total_disp, crtc_h_sync_strt_wid,
            crtc_v_total_disp, crtc_v_sync_strt_wid,
-           crtc_off_pitch, crtc_gen_cntl, dsp_config, dsp_on_off, mem_buf_cntl,
+           crtc_off_pitch, crtc_gen_cntl, dsp_config, dsp_on_off,
            ovr_clr, ovr_wid_left_right, ovr_wid_top_bottom,
            cur_clr0, cur_clr1, cur_offset,
            cur_horz_vert_posn, cur_horz_vert_off,
@@ -133,10 +143,15 @@ typedef struct _ATIHWRec
     /* Clock programming data */
     int FeedbackDivider, ReferenceDivider, PostDivider;
 
-    /* These are used by ATISwap() */
+#ifndef AVOID_CPIO
+
+    /* This is used by ATISwap() */
     pointer frame_buffer;
     ATIBankProcPtr SetBank;
     unsigned int nBank, nPlane;
+
+#endif /* AVOID_CPIO */
+
 } ATIHWRec;
 
 /*
@@ -152,7 +167,13 @@ typedef struct _ATIRec
     /*
      * Adapter-related definitions.
      */
-    CARD8 Adapter, VGAAdapter;
+    CARD8 Adapter;
+
+#ifndef AVOID_CPIO
+
+    CARD8 VGAAdapter;
+
+#endif /* AVOID_CPIO */
 
     /*
      * Chip-related definitions.
@@ -161,14 +182,20 @@ typedef struct _ATIRec
     CARD16 ChipType;
     CARD8 Chip;
     CARD8 ChipClass, ChipRevision, ChipRev, ChipVersion, ChipFoundry;
+
+#ifndef AVOID_CPIO
+
     CARD8 Coprocessor, ChipHasSUBSYS_CNTL;
+
+#endif /* AVOID_CPIO */
 
     /*
      * Processor I/O decoding definitions.
      */
-    int Domain;
-    CARD8 IODecoding;
-    IOADDRESS CPIOBase, DomainIOBase;
+    CARD8 CPIODecoding;
+    IOADDRESS CPIOBase;
+
+#ifndef AVOID_CPIO
 
     /*
      * Processor I/O port definition for VGA.
@@ -182,11 +209,19 @@ typedef struct _ATIRec
     CARD8 B2Reg;        /* The B2 mirror */
     CARD8 VGAOffset;    /* Low index for CPIO_VGAWonder */
 
+#endif /* AVOID_CPIO */
+
     /*
      * DAC-related definitions.
      */
+
+#ifndef AVOID_CPIO
+
     IOADDRESS CPIO_DAC_MASK, CPIO_DAC_DATA, CPIO_DAC_READ, CPIO_DAC_WRITE,
               CPIO_DAC_WAIT;
+
+#endif /* AVOID_CPIO */
+
     CARD16 DAC;
     CARD8 rgbBits;
 
@@ -194,8 +229,15 @@ typedef struct _ATIRec
      * Definitions related to system bus interface.
      */
     pciVideoPtr PCIInfo;
+    CARD8 BusType;
+    CARD8 SharedAccelerator;
+
+#ifndef AVOID_CPIO
+
+    CARD8 SharedVGA;
     resRange VGAWonderResources[2];
-    CARD8 BusType, SharedAccelerator, SharedVGA;
+
+#endif /* AVOID_CPIO */
 
     /*
      * Definitions related to video memory.
@@ -217,12 +259,16 @@ typedef struct _ATIRec
     unsigned long LinearBase;
     int LinearSize, FBPitch;
 
+#ifndef AVOID_CPIO
+
     /*
      * Banking interface.
      */
     miBankInfoRec BankInfo;
     pointer pBank;
     CARD8 UseSmallApertures;
+
+#endif /* AVOID_CPIO */
 
     /*
      * Definitions related to MMIO register apertures.
@@ -330,6 +376,8 @@ typedef struct _ATIRec
                scratch_reg3, bus_cntl, lcd_index, mem_cntl, i2c_cntl_1,
                dac_cntl, gen_test_cntl, mpp_config, mpp_strobe_seq, tvo_cntl;
 
+#ifndef AVOID_CPIO
+
         CARD32 config_cntl;
 
         /* Mach8/Mach32 registers */
@@ -343,6 +391,9 @@ typedef struct _ATIRec
 
         /* VGA shadow registers */
         CARD8 shadow_crt03, shadow_crt11;
+
+#endif /* AVOID_CPIO */
+
     } LockData;
 
     /* Mode data */
@@ -364,7 +415,13 @@ typedef struct _ATIRec
     unsigned int OptionCRTDisplay:1;   /* Display on both CRT & DFP */
     unsigned int OptionCSync:1;        /* Use composite sync */
     unsigned int OptionDevel:1;        /* Intentionally undocumented */
+
+#ifndef AVOID_CPIO
+
     unsigned int OptionLinear:1;       /* Use linear aperture if available */
+
+#endif /* AVOID_CPIO */
+
     unsigned int OptionMMIOCache:1;    /* Cache MMIO writes */
     unsigned int OptionTestMMIOCache:1;/* Test MMIO cache integrity */
     unsigned int OptionPanelDisplay:1; /* Prefer digital panel over CRT */
@@ -379,19 +436,9 @@ typedef struct _ATIRec
     CARD8 MMIOInLinear;
 
     /*
-     * Number of signal that interrupts certain accesses.
-     */
-    volatile int CaughtSignal;
-
-    /*
      * Wrapped functions.
      */
     CloseScreenProcPtr CloseScreen;
-
-    /*
-     * Endianness transformation function.
-     */
-    ATIApplyEndianProc *ATIApplyEndian;
 } ATIRec;
 
 #define ATIPTR(_p) ((ATIPtr)((_p)->driverPrivate))

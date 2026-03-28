@@ -1,9 +1,27 @@
-/* $XTermId: data.h,v 1.93 2006/02/12 22:45:50 tom Exp $ */
+/* $XTermId: data.h,v 1.82 2005/01/12 22:08:00 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/data.h,v 3.37 2005/09/18 23:48:12 dickey Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright 2002-2005,2006 by Thomas E. Dickey
+ *	$Xorg: data.h,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
+ */
+
+/* $XFree86: xc/programs/xterm/data.h,v 3.35 2005/01/14 01:50:02 dickey Exp $ */
+
+/*
+ * Copyright 2002-2004,2005 by Thomas E. Dickey
  *
  *                         All Rights Reserved
  *
@@ -103,7 +121,7 @@ extern Boolean zIconBeep_flagged;
 extern Boolean sameName;
 #endif
 
-extern PtyData *VTbuffer;
+extern PtyData VTbuffer;
 extern int am_slave;
 extern int max_plus1;
 extern jmp_buf VTend;
@@ -116,20 +134,18 @@ extern PtySelect Select_mask;
 extern PtySelect X_mask;
 extern PtySelect pty_mask;
 
-extern Boolean waitingForTrackInfo;
+extern int waitingForTrackInfo;
 
 extern EventMode eventMode;
 
 extern XtermWidget term;
-
-extern SIG_ATOMIC_T need_cleanup;
 
 #if defined(HAVE_XKB_BELL_EXT)
 #include <X11/XKBlib.h>		/* has the prototype */
 #include <X11/extensions/XKBbells.h>	/* has the XkbBI_xxx definitions */
 #endif
 
-#ifndef XkbBI_Info
+#ifndef XkbBI_Info			
 #define	XkbBI_Info			0
 #define	XkbBI_MinorError		1
 #define	XkbBI_MajorError		2
@@ -143,23 +159,17 @@ extern Cardinal number_ourTopLevelShellArgs;
 extern Bool waiting_for_initial_map;
 extern Atom wm_delete_window;
 
-typedef struct XTERM_RESOURCE {
+typedef struct {
     char *xterm_name;
     char *icon_geometry;
     char *title;
     char *icon_name;
     char *term_name;
     char *tty_modes;
-
-    int minBufSize;
-    int maxBufSize;
-
     Boolean hold_screen;	/* true if we keep window open  */
     Boolean utmpInhibit;
     Boolean utmpDisplayId;
     Boolean messages;
-
-    String keyboardType;
     Boolean sunFunctionKeys;	/* %%% should be widget resource? */
 #if OPT_SUNPC_KBD
     Boolean sunKeyboard;
@@ -170,7 +180,6 @@ typedef struct XTERM_RESOURCE {
 #if OPT_SCO_FUNC_KEYS
     Boolean scoFunctionKeys;
 #endif
-
 #if OPT_INITIAL_ERASE
     Boolean ptyInitialErase;	/* if true, use pty's sense of erase char */
     Boolean backarrow_is_erase;	/* override backspace/delete */
@@ -192,9 +201,6 @@ typedef struct XTERM_RESOURCE {
 #endif
 #if OPT_SESSION_MGT
     Boolean sessionMgt;
-#endif
-#if OPT_TOOLBAR
-    Boolean toolBar;
 #endif
 } XTERM_RESOURCE;
 

@@ -1,32 +1,29 @@
-/*
- * Copyright © 2006-2007 Daniel Stone
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Author: Daniel Stone <daniel@fooishbar.org>
+/*****************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-#ifndef HOTPLUG_H
-#define HOTPLUG_H
 
-void config_init(void);
-void config_fini(void);
+ * Stub header for legacy XFree86 4.8.0 compatibility
+ * 
+ * Modern hotplugging (udev, HAL) did not exist in 2009
+ *****************************************************************/
+
+#ifndef HOTPLUG_H
+#define HOTPLUG_H 1
+
+/*
+ * Stub definitions for legacy build mode
+ * Hotplug support is disabled in XFree86 4.8.0
+ * HAVE_HOTPLUG is defined as 0 in legacy build mode
+ */
+
+/* 
+ * DeviceIntPtr is defined in input.h - do not redefine here
+ * IDevPtr is a stub for legacy compatibility
+ */
+typedef void *IDevPtr;
 
 #endif /* HOTPLUG_H */

@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/Xi/getvers.c,v 3.4 2005/10/14 15:16:14 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -52,22 +60,18 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
-#include <X11/X.h>	/* for inputstr.h    */
-#include <X11/Xproto.h>	/* Request macro     */
-#include "inputstr.h"	/* DeviceIntPtr      */
+#include <X11/X.h>				/* for inputstr.h    */
+#include <X11/Xproto.h>			/* Request macro     */
+#include "inputstr.h"			/* DeviceIntPtr	     */
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "extnsionst.h"
-#include "extinit.h"	/* LookupDeviceIntRec */
+#include "extinit.h"			/* LookupDeviceIntRec */
 #include "exglobals.h"
 
 #include "getvers.h"
 
-XExtensionVersion AllExtensionVersions[128];
+XExtensionVersion	AllExtensionVersions[128];
 
 /***********************************************************************
  *
@@ -76,16 +80,17 @@ XExtensionVersion AllExtensionVersions[128];
  */
 
 int
-SProcXGetExtensionVersion(ClientPtr client)
-{
-    char n;
+SProcXGetExtensionVersion(client)
+    register ClientPtr client;
+    {
+    register char n;
 
     REQUEST(xGetExtensionVersionReq);
     swaps(&stuff->length, n);
     REQUEST_AT_LEAST_SIZE(xGetExtensionVersionReq);
     swaps(&stuff->nbytes, n);
-    return (ProcXGetExtensionVersion(client));
-}
+    return(ProcXGetExtensionVersion(client));
+    }
 
 /***********************************************************************
  *
@@ -94,19 +99,21 @@ SProcXGetExtensionVersion(ClientPtr client)
  */
 
 int
-ProcXGetExtensionVersion(ClientPtr client)
-{
-    xGetExtensionVersionReply rep;
+ProcXGetExtensionVersion (client)
+    register ClientPtr client;
+    {
+    xGetExtensionVersionReply	rep;
 
     REQUEST(xGetExtensionVersionReq);
     REQUEST_AT_LEAST_SIZE(xGetExtensionVersionReq);
 
-    if (stuff->length != (sizeof(xGetExtensionVersionReq) +
-			  stuff->nbytes + 3) >> 2) {
-	SendErrorToClient(client, IReqCode, X_GetExtensionVersion, 0,
-			  BadLength);
+    if (stuff->length != (sizeof(xGetExtensionVersionReq) + 
+	stuff->nbytes + 3)>>2)
+	{
+	SendErrorToClient(client, IReqCode, X_GetExtensionVersion, 0, 
+		BadLength);
 	return Success;
-    }
+	}
 
     rep.repType = X_Reply;
     rep.RepType = X_GetExtensionVersion;
@@ -116,14 +123,17 @@ ProcXGetExtensionVersion(ClientPtr client)
     rep.minor_version = 0;
 
     rep.present = TRUE;
-    if (rep.present) {
-	rep.major_version = AllExtensionVersions[IReqCode - 128].major_version;
-	rep.minor_version = AllExtensionVersions[IReqCode - 128].minor_version;
-    }
-    WriteReplyToClient(client, sizeof(xGetExtensionVersionReply), &rep);
+    if (rep.present)
+	{
+	rep.major_version = 
+	    AllExtensionVersions[IReqCode-128].major_version;
+	rep.minor_version = 
+	    AllExtensionVersions[IReqCode-128].minor_version;
+	}
+    WriteReplyToClient (client, sizeof (xGetExtensionVersionReply), &rep);
 
     return Success;
-}
+    }
 
 /***********************************************************************
  *
@@ -133,14 +143,16 @@ ProcXGetExtensionVersion(ClientPtr client)
  */
 
 void
-SRepXGetExtensionVersion(ClientPtr client, int size,
-			 xGetExtensionVersionReply * rep)
-{
-    char n;
+SRepXGetExtensionVersion (client, size, rep)
+    ClientPtr	client;
+    int		size;
+    xGetExtensionVersionReply	*rep;
+    {
+    register char n;
 
     swaps(&rep->sequenceNumber, n);
     swapl(&rep->length, n);
     swaps(&rep->major_version, n);
     swaps(&rep->minor_version, n);
     WriteToClient(client, size, (char *)rep);
-}
+    }

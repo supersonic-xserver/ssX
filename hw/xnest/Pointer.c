@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993 by Davor Matic
 
@@ -11,10 +25,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-
-#ifdef HAVE_XNEST_CONFIG_H
-#include <xnest-config.h>
-#endif
+/* $XFree86: xc/programs/Xserver/hw/xnest/Pointer.c,v 1.4 2005/10/14 15:17:15 tsi Exp $ */
 
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -32,8 +43,6 @@ is" without express or implied warranty.
 #include "Screen.h"
 #include "Pointer.h"
 #include "Args.h"
-
-DeviceIntPtr xnestPointerDevice = NULL;
 
 void
 xnestChangePointerControl(DeviceIntPtr pDev, PtrCtrl *ctrl)
@@ -56,19 +65,23 @@ xnestPointerProc(DeviceIntPtr pDev, int onoff)
       for (i = 0; i <= nmap; i++)
 	map[i] = i; /* buttons are already mapped */
       InitPointerDeviceStruct(&pDev->public, map, nmap,
-			      GetMotionHistory,
+			      miPointerGetMotionEvents,
 			      xnestChangePointerControl,
-			      GetMotionHistorySize(), 2);
+			      miPointerGetMotionBufferSize());
       break;
     case DEVICE_ON: 
       xnestEventMask |= XNEST_POINTER_EVENT_MASK;
-      for (i = 0; i < xnestNumScreens; i++)
-	XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  if (xnestInputEnabled) {
+      	for (i = 0; i < xnestNumScreens; i++)
+	      XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  }
       break;
     case DEVICE_OFF: 
       xnestEventMask &= ~XNEST_POINTER_EVENT_MASK;
-      for (i = 0; i < xnestNumScreens; i++)
-	XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  if (xnestInputEnabled) {
+        for (i = 0; i < xnestNumScreens; i++)
+	      XSelectInput(xnestDisplay, xnestDefaultWindows[i], xnestEventMask);
+	  }
       break;
     case DEVICE_CLOSE: 
       break;

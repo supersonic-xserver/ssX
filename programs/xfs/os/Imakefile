@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/xfs/os/Imakefile,v 3.11tsi Exp $
+XCOMM $XFree86: xc/programs/xfs/os/Imakefile,v 3.10 2004/06/02 22:43:06 dawes Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -63,7 +63,8 @@ SRCS =	connection.c waitfor.c daemon.c io.c utils.c osinit.c \
 OBJS =  connection.o waitfor.o daemon.o io.o utils.o osinit.o \
 	config.o access.o osglue.o error.o $(OBJS1)
 
-INCLUDES = -I../include -I$(FONTLIBSRC)/include -I$(FONTLIBSRC)/bitmap
+INCLUDES = -I../include -I$(FONTINCSRC) -I$(EXTINCSRC) \
+	   -I$(FONTLIBSRC)/include -I$(FONTLIBSRC)/bitmap
 
 CONN_DEFINES = $(CONNECTION_FLAGS) -DFONT_t -DTRANS_SERVER -DTRANS_REOPEN
 
@@ -92,8 +93,6 @@ XFSPIDDIR = $(LIBDIR)/fs
 #endif
 PID_DEFINES = -DXFSPIDDIR=\"$(XFSPIDDIR)\"
 
-DEFINES = $(FONTCACHE_DEFINES)
-
 NormalLibraryObjectRule()
 NormalLibraryTarget(os,$(OBJS))
 
@@ -109,6 +108,6 @@ SpecialCObjectRule(error,$(ICONFIGFILES),$(ERROR_DEFINES))
 
 SpecialCObjectRule(osglue,$(ICONFIGFILES),$(CONN_DEFINES) $(OS_DEFINES))
 
-SpecialCObjectRule(config,$(ICONFIGFILES),$(CONN_DEFINES) $(SNF_DEFINES))
+SpecialCObjectRule(config,$(ICONFIGFILES),$(CONN_DEFINES) $(FONTCACHE_DEFINES) $(SNF_DEFINES))
 
 DependTarget()

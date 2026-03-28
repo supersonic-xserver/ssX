@@ -1,3 +1,18 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86Cursor.h,v 1.11 2003/02/15 03:14:47 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _XF86CURSOR_H
 #define _XF86CURSOR_H
@@ -44,8 +59,5 @@ void xf86ForceHWCursor (ScreenPtr pScreen, Bool on);
 #define HARDWARE_CURSOR_NIBBLE_SWAPPED			0x00000800
 #define HARDWARE_CURSOR_SHOW_TRANSPARENT		0x00001000
 #define HARDWARE_CURSOR_UPDATE_UNHIDDEN			0x00002000
-#ifdef ARGB_CURSOR
-#define HARDWARE_CURSOR_ARGB				0x00004000
-#endif
 
 #endif /* _XF86CURSOR_H */

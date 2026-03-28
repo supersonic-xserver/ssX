@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1990, 1991 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1992 by David Dawes <dawes@XFree86.org>
  * Copyright 1992 by Jim Tsillas <jtsilla@damon.ccs.northeastern.edu>
@@ -64,6 +71,7 @@
  *
  */
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_OSproc.h,v 3.59 2006/09/02 16:44:21 dawes Exp $ */
 
 #ifndef _XF86_OSPROC_H
 #define _XF86_OSPROC_H
@@ -144,13 +152,13 @@ extern pointer xf86MapVidMem(int, int, unsigned long, unsigned long);
 extern void xf86UnMapVidMem(int, pointer, unsigned long);
 extern void xf86MapReadSideEffects(int, int, pointer, unsigned long);
 extern int xf86ReadBIOS(unsigned long, unsigned long, unsigned char *, int);
-extern Bool xf86EnableIO(void);
+extern void xf86EnableIO(void);
 extern void xf86DisableIO(void);
 extern Bool xf86DisableInterrupts(void);
 extern void xf86EnableInterrupts(void);
 extern void xf86SetTVOut(int);
 extern void xf86SetRGBOut(void);
-extern void xf86OSRingBell(int, int, int);
+extern void xf86SoundKbdBell(int, int, int);
 #if defined(QNX4)
 #pragma aux xf86BusToMem modify [eax ebx ecx edx esi edi];
 #pragma aux xf86MemToBus modify [eax ebx ecx edx esi edi];
@@ -159,7 +167,6 @@ extern void xf86BusToMem(unsigned char *, unsigned char *, int);
 extern void xf86MemToBus(unsigned char *, unsigned char *, int);
 extern void xf86IODelay(void);
 extern void xf86UDelay(long usec);
-extern void xf86SetReallySlowBcopy(void);
 extern void xf86SlowBcopy(unsigned char *, unsigned char *, int);
 extern int xf86OpenSerial(pointer options);
 extern int xf86SetSerial(int fd, pointer options);
@@ -175,7 +182,6 @@ extern int xf86GetSerialModemState(int fd);
 extern int xf86SerialModemSetBits(int fd, int bits);
 extern int xf86SerialModemClearBits(int fd, int bits);
 extern int xf86LoadKernelModule(const char *pathname);
-extern void xf86RingBell(int volume, int pitch, int duration);
 
 /* AGP GART interface */
 
@@ -209,7 +215,9 @@ extern int xf86InstallSIGIOHandler(int fd, void (*f)(int, void *), void *);
 extern int xf86RemoveSIGIOHandler(int fd);
 extern int xf86BlockSIGIO (void);
 extern void xf86UnblockSIGIO (int);
+#ifdef XFree86Server
 extern void xf86AssertBlockedSIGIO (char *);
+#endif
 extern Bool xf86SIGIOSupported (void);
 
 #ifdef XF86_OS_PRIVS
@@ -220,9 +228,22 @@ extern Bool xf86VTSwitchPending(void);
 extern Bool xf86VTSwitchAway(void);
 extern Bool xf86VTSwitchTo(void);
 extern void xf86VTRequest(int sig);
-extern int xf86ProcessArgument(int, char **, int);
+extern int xf86ProcessArgument(int, const char **, int);
 extern void xf86UseMsg(void);
-extern void xf86ReloadInputDevs(int sig);
+extern void xf86SetKbdLeds(int);
+extern int xf86GetKbdLeds(void);
+extern void xf86SetKbdRepeat(char);
+extern void xf86KbdInit(void);
+extern int xf86KbdOn(void);
+extern int xf86KbdOff(void);
+extern void xf86KbdEvents(void);
+#ifdef XQUEUE
+extern int  xf86XqueKbdProc(DeviceIntPtr, int);
+extern void xf86XqueEvents(void);
+#endif
+#ifdef WSCONS_SUPPORT
+extern void xf86WSKbdEvents(void);
+#endif
 extern PMClose xf86OSPMOpen(void);
 
 #ifdef NEED_OS_RAC_PROTOS
@@ -243,8 +264,6 @@ resPtr xf86AccResFromOS(resPtr ret);
 #endif /* NEED_OS_RAC_PROTOS */
 
 extern Bool xf86GetPciSizeFromOS(PCITAG tag, int indx, int* bits);
-extern Bool xf86GetPciOffsetFromOS(PCITAG tag, int indx, unsigned long* bases);
-extern unsigned long xf86GetOSOffsetFromPCI(PCITAG tag, int space, unsigned long base);
 
 extern void xf86MakeNewMapping(int, int, unsigned long, unsigned long, pointer);
 extern void xf86InitVidMem(void);

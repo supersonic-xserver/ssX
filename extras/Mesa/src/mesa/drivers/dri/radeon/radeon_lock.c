@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/radeon/radeon_lock.c,v 1.5 2002/10/30 12:51:55 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_lock.c,v 1.1.1.2 2004/12/10 15:06:18 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -54,9 +61,9 @@ radeonUpdatePageFlipping( radeonContextPtr rmesa )
    int use_back;
 
 
-   rmesa->doPageFlip = rmesa->sarea->pfAllowPageFlip;
+   rmesa->doPageFlip = rmesa->sarea->pfState;
 
-   use_back = (rmesa->glCtx->Color._DrawDestMask == BACK_LEFT_BIT);
+   use_back = (rmesa->glCtx->Color._DrawDestMask == DD_BACK_LEFT_BIT);
    use_back ^= (rmesa->sarea->pfCurrentPage == 1);
 
    if ( RADEON_DEBUG & DEBUG_VERBOSE )
@@ -92,7 +99,7 @@ void radeonGetLock( radeonContextPtr rmesa, GLuint flags )
 {
    __DRIdrawablePrivate *dPriv = rmesa->dri.drawable;
    __DRIscreenPrivate *sPriv = rmesa->dri.screen;
-   RADEONSAREAPrivPtr sarea = rmesa->sarea;
+   drm_radeon_sarea_t *sarea = rmesa->sarea;
 
    drmGetLock( rmesa->dri.fd, rmesa->dri.hwContext, flags );
 
@@ -108,7 +115,7 @@ void radeonGetLock( radeonContextPtr rmesa, GLuint flags )
 
    if ( rmesa->lastStamp != dPriv->lastStamp ) {
       radeonUpdatePageFlipping( rmesa );
-      if (rmesa->glCtx->Color._DrawDestMask == BACK_LEFT_BIT)
+      if (rmesa->glCtx->Color._DrawDestMask == DD_BACK_LEFT_BIT)
          radeonSetCliprects( rmesa, GL_BACK_LEFT );
       else
          radeonSetCliprects( rmesa, GL_FRONT_LEFT );
@@ -116,12 +123,14 @@ void radeonGetLock( radeonContextPtr rmesa, GLuint flags )
       rmesa->lastStamp = dPriv->lastStamp;
    }
 
-   if ( sarea->ctxOwner != rmesa->dri.hwContext ) {
+   if ( sarea->ctx_owner != rmesa->dri.hwContext ) {
       int i;
-      sarea->ctxOwner = rmesa->dri.hwContext;
+      sarea->ctx_owner = rmesa->dri.hwContext;
 
       for ( i = 0 ; i < rmesa->nr_heaps ; i++ ) {
 	 DRI_AGE_TEXTURES( rmesa->texture_heaps[ i ] );
       }
    }
+
+   rmesa->lost_context = GL_TRUE;
 }

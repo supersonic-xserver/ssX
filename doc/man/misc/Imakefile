@@ -1,7 +1,7 @@
 XCOMM $XFree86: xc/doc/man/misc/Imakefile,v 1.9 2005/03/12 23:36:27 dawes Exp $
 
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -86,15 +86,6 @@ InstallGenManPage(Xvesa,$(MANDIR),$(MANSUFFIX))
 #if !defined(XfbdevServer) || !XfbdevServer
 InstallGenManPage(Xfbdev,$(MANDIR),$(MANSUFFIX))
 #endif
-#if (!defined(XsunServer) || !XsunServer) && \
-    (!defined(Xsun24Server) || !Xsun24Server) && \
-    (!defined(XsunMonoServer) || !XsunMonoServer)
-#define DoXsunManPage
-#endif
-#ifdef DoXsunManPage
-InstallGenManPage(Xsun,$(MANDIR),$(MANSUFFIX))
-InstallGenManPageAliases(Xsun,$(MANDIR),$(MANSUFFIX),XsunMono Xsun24)
-#endif
 
 LinkSourceFile(newport.man,$(XF86DRIVERSRC)/newport)
 LinkSourceFile(sunbw2.man,$(XF86DRIVERSRC)/sunbw2)
@@ -119,8 +110,5 @@ LinkSourceFile(Xvesa.man,$(SERVERSRC)/hw/tinyx/vesa)
 #endif
 #if !defined(XfbdevServer) || !XfbdevServer
 LinkSourceFile(Xfbdev.man,$(SERVERSRC)/hw/tinyx/fbdev)
-#endif
-#ifdef DoXsunManPage
-LinkSourceFile(Xsun.man,$(SERVERSRC)/hw/sun)
 #endif
 

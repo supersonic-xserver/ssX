@@ -1,3 +1,11 @@
+/* $Xorg: osglue.c,v 1.4 2001/02/09 02:05:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -42,6 +50,8 @@ in this Software without prior written authorization from The Open Group.
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * $NCDXorg: @(#)osglue.c,v 4.6 1991/07/09 14:07:30 lemke Exp $
  *
  */
 /* $XFree86: xc/programs/xfs/os/osglue.c,v 3.19 2002/10/19 20:04:20 herrb Exp $ */

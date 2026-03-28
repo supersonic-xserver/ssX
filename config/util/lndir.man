@@ -1,3 +1,5 @@
+.\" $Xorg: lndir.man,v 1.4 2001/02/09 02:03:17 xorgcvs Exp $
+.\"
 .\" Copyright (c) 1993, 1994, 1998 The Open Group
 .\" 
 .\" Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,7 +25,7 @@
 .\" from The Open Group.
 .\" 
 .\"
-.\" $XFree86: xc/config/util/lndir.man,v 1.11tsi Exp $
+.\" $XFree86: xc/config/util/lndir.man,v 1.6 2005/02/11 03:02:53 dawes Exp $
 .\"
 .TH LNDIR 1 __vendorversion__
 .SH NAME
@@ -31,7 +33,11 @@ lndir \- create a shadow directory of symbolic links to another directory tree
 .SH SYNOPSIS
 .B lndir
 [
-.I options
+.B \-silent
+] [
+.B \-ignorelinks
+] [
+.B \-withrevinfo
 ]
 .I \|fromdir\|
 [
@@ -44,20 +50,22 @@ program makes a shadow copy
 .I todir 
 of a directory tree
 .I fromdir, 
-except that the shadow is not populated with real files but instead with
-symbolic links pointing at the real files in the 
+except that the shadow is not
+populated with real files but instead with symbolic links pointing at
+the real files in the 
 .I fromdir
 directory tree.  This is usually useful for maintaining source code for
-different machine architectures.  You create a shadow directory containing
-links to the real source, which you will have usually mounted from a remote
-machine.  You can build in the shadow tree, and the object files will be in the
-shadow directory, while the source files in the shadow directory are just
-symlinks to the real files.
+different machine architectures.  You create a shadow directory
+containing links to the real source, which you will have usually
+mounted from a remote machine.  You can build in the shadow tree, and
+the object files will be in the shadow directory, while the
+source files in the shadow directory are just symlinks to the real
+files.
 .PP
 This scheme has the advantage that if you update the source, you need not 
-propagate the change to the other architectures by hand, since all source in
-all shadow directories are symlinks to the real thing: just cd to the shadow
-directory and recompile away.
+propagate the change to the other architectures by hand, since all
+source in all shadow directories are symlinks to the real thing: just cd
+to the shadow directory and recompile away.
 .PP
 The
 .I todir
@@ -66,54 +74,39 @@ argument is optional and defaults to the current directory.  The
 argument may be relative (e.g., ../src) and is relative to
 .I todir
 (not the current directory).
+.PP 
+.\" CVS.adm is used by the Concurrent Versions System.
+Note that BitKeeper, RCS, SCCS, CVS and CVS.adm directories are
+shadowed only if the \fB\-withrevinfo\fP flag is specified.
 .PP
 If you add files, simply run
 .I lndir
-again.  New files will be silently added.  Old files will be checked that they
-have the correct link.
+again.  New files will be silently added.  Old files will be
+checked that they have the correct link.
 .PP
-Deleting files is a more painful problem; the symlinks will just point into
-never\-never land.
+Deleting files is a more painful problem; the symlinks will
+just point into never never land.
+.PP
+If a file in \fIfromdir\fP is a symbolic link, \fIlndir\fP will make
+the same link in \fItodir\fP rather than making a link back to the
+(symbolic link) entry in \fIfromdir.\fP  The \fB\-ignorelinks\fP flag
+changes this behavior.
 .SH OPTIONS
 .IP \-silent
 Normally \fIlndir\fP outputs the name of each subdirectory as it
 descends into it.  The \fB\-silent\fP option suppresses these status
-messages.  \fB\-silent\fP may be abbreviated to \fB\-s\fP.
+messages.
 .IP \-ignorelinks
-If a file in \fIfromdir\fP is a symbolic link, \fIlndir\fP will make the same
-link in \fItodir\fP rather than making a link back to the (symbolic link) entry
-in \fIfromdir.\fP  The \fB\-ignorelinks\fP option changes this behavior.  The
-link created in \fItodir\fP will point back to the corresponding (symbolic
-link) file in \fIfromdir\fP.  If the link is to a directory, this is almost
-certainly the wrong thing.  The \fB\-ignorelinks\fP option may be
-abbreviated to \fB\-i\fP.
-.IP \-withsymdirs
-If a file in \fIfromdir\fP is a symbolic link to a directory and the
-\fB\-withsymdirs\fP option is specified, \fIlndir\fP will shadow the directory
-tree the symbolic link points to, whether or not the \fB\-ignorelinks\fP is
-also specified.  The \fB\-withsymdirs\fP option may be abbreviated to
-\fB\-d\fP.
-.IP \-clean
-\fIlndir\fP will remove dangling symbolic links and empty directories in the
-shadow tree.  The \fB\-clean\fP option may be abbreviated to \fB\-c\fP.
-.IP \-cleanonly
-\fIlndir\fP will do the cleaning phase only, not creating the shadow tree.
-The \fItodir\fP argument may be provided, and defaults to the current
-directory when not provided.
+Causes the program to not treat symbolic links in \fIfromdir\fP
+specially.  The link created in \fItodir\fP will point back to the
+corresponding (symbolic link) file in \fIfromdir\fP.
+If the link is to a directory, this is almost certainly the wrong thing.
+.IP
+This option exists mostly to emulate the behavior the C version of
+\fIlndir\fP had in X11R6.  Its use is not recommended.
 .IP \-withrevinfo
-\fIlndir\fP will normally not shadow any BitKeeper, RCS, SCCS, CVS, CVS.adm
-and .svn subdirectories, nor any .cvsignore and .gitignore files.  This option
-causes these directories and files to be treated as any other, rather than
-ignored.
-\fB\-withrevinfo\fP may be shortened to \fB\-r\fP.
-.IP \-noexceptions
-By default, \fIlndir\fP does not shadow files or directories whose name is
-\&.DS_Store, or ._.DS_Store, or starts with '.#', or ends in '~'.  This option,
-which may be abbreviated to \fB\-E\fP, causes such files to also be shadowed.
-.IP \-except \fIname\fP
-This option adds \fIname\fP to an initially empty list of filenames in
-\fIfromdir\fP that are not to be shadowed.  \fB\-except\fP may be specified as
-\fB\-e\fP.  This option may be repeated as many times as necessary.
+Causes any BitKeeper, RCS, SCCS, CVS and CVS.adm subdirectories to be
+treated as any other directory, rather than ignored.
 .SH DIAGNOSTICS
 The program displays the name of each subdirectory it enters, followed
 by a colon.  The \fB\-silent\fP option suppresses these messages.
@@ -123,4 +116,4 @@ The usual problem is that a regular file of the same name already
 exists.
 .PP
 If the link already exists but doesn't point to the correct file, the
-program prints the link name and the location to which it does point.
+program prints the link name and the location where it does point.

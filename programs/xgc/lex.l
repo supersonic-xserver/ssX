@@ -1,4 +1,5 @@
-/* $XFree86: xc/programs/xgc/lex.l,v 1.7 2006/04/18 15:48:46 tsi Exp $ */
+/* $XConsortium: lex.l,v 1.8 94/03/31 20:40:44 rws Exp $ */
+/* $XFree86: xc/programs/xgc/lex.l,v 1.4 2002/05/31 18:46:13 dawes Exp $ */
 /*
 ** lex file for xgc syntax
 */
@@ -10,7 +11,6 @@
 #include <X11/X.h>
 #include "gram.h"
 #include "constants.h"
-#include "lexstuff.h"
 #if defined(FLEX_SCANNER) && !defined(YY_FLEX_LEX_COMPAT) && !defined(__UNIXOS2__)
 int yylineno = 0;
 #endif
@@ -18,11 +18,10 @@ int yylineno = 0;
 
 %p				4000
 %a				3000
-%o				4000
 
 number				[0-9]+
-word				[^\n\t "]+
-string				\"([^\"]|\\.)*\"
+word				[^\n\t ]+
+string				\"([^"]|\\.)*\"
 
 %%
 

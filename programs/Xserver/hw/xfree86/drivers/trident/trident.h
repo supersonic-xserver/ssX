@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1992-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,8 @@
  *
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident.h,v 1.61 2005/08/08 20:15:28 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident.h,v 1.60 2003/10/30 13:38:01 alanh Exp $ */
+/*#define VBE_INFO*/
 
 #ifndef _TRIDENT_H_
 #define _TRIDENT_H_
@@ -38,8 +46,6 @@
 #include "xf86xv.h"
 #include "xf86Pci.h"
 #include "vbe.h"
-
-#define PCI_CHIP_2200		0x2200
 
 typedef struct {
 	unsigned char tridentRegs3x4[0x100];
@@ -131,6 +137,9 @@ typedef struct {
     xf86CursorInfoPtr	CursorInfoRec;
     xf86Int10InfoPtr	Int10;
     vbeInfoPtr		pVbe;
+#ifdef VBE_INFO
+    vbeModeInfoPtr	vbeModes;
+#endif
     XAAInfoRecPtr	AccelInfoRec;
     CloseScreenProcPtr	CloseScreen;
     ScreenBlockHandlerProcPtr BlockHandler;
@@ -303,8 +312,7 @@ typedef enum {
     CYBERBLADEE4,
     BLADEXP,
     CYBERBLADEXPAI1,
-    CYBERBLADEXP4,
-    XP5
+    CYBERBLADEXP4
 } TRIDENTType;
 
 #define UseMMIO		(pTrident->NoMMIO == FALSE)
@@ -335,7 +343,6 @@ typedef enum {
 			 (pTrident->Chipset == BLADE3D) || \
 			 (pTrident->Chipset == CYBERBLADEXPAI1) || \
 			 (pTrident->Chipset == CYBERBLADEXP4) || \
-			 (pTrident->Chipset == XP5) || \
 			 (pTrident->Chipset == BLADEXP))
 
 /*

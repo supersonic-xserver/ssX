@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/Xserver/lbx/lbxcmap.c,v 1.10tsi Exp $ */
+/* $Xorg: lbxcmap.c,v 1.4 2001/02/09 02:05:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998  The Open Group
 
@@ -24,13 +39,14 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
+/* $XFree86: xc/programs/Xserver/lbx/lbxcmap.c,v 1.10 2001/12/14 19:59:59 dawes Exp $ */
 
 #include <sys/types.h>
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/Xos.h>
+#include "X.h"
+#include "Xproto.h"
+#include "Xos.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -39,9 +55,9 @@ from The Open Group.
 #include "colormapst.h"
 #include "propertyst.h"
 #define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
+#include "lbxstr.h"
 #include "lbxserve.h"
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 #include <stdio.h>
 
 static int lbxScreenPrivIndex;		/* lbx screen private index */

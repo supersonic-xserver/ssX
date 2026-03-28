@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __FT_SYSTEM_MEMORY_H__
 #define __FT_SYSTEM_MEMORY_H__
 
@@ -5,7 +12,17 @@
 
 FT_BEGIN_HEADER
 
- /***********************************************************************
+ /************************************************************************/
+ /************************************************************************/
+ /*****                                                              *****/
+ /*****    NOTE: THE CONTENT OF THIS FILE IS NOT CURRENTLY USED      *****/
+ /*****          IN NORMAL BUILDS.  CONSIDER IT EXPERIMENTAL.        *****/
+ /*****                                                              *****/
+ /************************************************************************/
+ /************************************************************************/
+
+
+ /*@**********************************************************************
   *
   * @type: FT_Memory
   *
@@ -20,7 +37,7 @@ FT_BEGIN_HEADER
   typedef struct FT_MemoryRec_*   FT_Memory;
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @functype: FT_Memory_AllocFunc
   *
@@ -39,7 +56,7 @@ FT_BEGIN_HEADER
                                               FT_Pointer mem_data );
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @functype: FT_Memory_FreeFunc
   *
@@ -56,7 +73,7 @@ FT_BEGIN_HEADER
                                               FT_Pointer  mem_data );
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @functype: FT_Memory_ReallocFunc
   *
@@ -76,7 +93,7 @@ FT_BEGIN_HEADER
                                                 FT_Pointer   mem_data );
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @functype: FT_Memory_CreateFunc
   *
@@ -100,7 +117,7 @@ FT_BEGIN_HEADER
                                                FT_Pointer *amem_data );
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @functype: FT_Memory_DestroyFunc
   *
@@ -115,7 +132,7 @@ FT_BEGIN_HEADER
                                                 FT_Pointer mem_data );
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @struct: FT_Memory_FuncsRec
   *
@@ -141,7 +158,7 @@ FT_BEGIN_HEADER
   } FT_Memory_FuncsRec, *FT_Memory_Funcs;
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @type: FT_Memory_Funcs
   *
@@ -152,7 +169,7 @@ FT_BEGIN_HEADER
   typedef const FT_Memory_FuncsRec*  FT_Memory_Funcs;
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @function: ft_memory_new
   *
@@ -172,7 +189,7 @@ FT_BEGIN_HEADER
                  FT_Pointer       mem_init_data );
 
 
- /***********************************************************************
+ /*@**********************************************************************
   *
   * @function: ft_memory_destroy
   *

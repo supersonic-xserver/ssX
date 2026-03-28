@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/packrender.h,v 1.9tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/packrender.h,v 1.10 2004/04/22 13:58:39 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __GLX_packrender_h__
 #define __GLX_packrender_h__
 

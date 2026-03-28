@@ -1,3 +1,11 @@
+/* $XFree86: xc/programs/Xserver/dix/gc.c,v 3.12 2005/10/14 15:16:21 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,11 +53,6 @@ SOFTWARE.
 
 ******************************************************************/
 
-
-#ifdef HAVE_DIX_CONFIG_H
-#include <dix-config.h>
-#endif
-
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include <X11/Xproto.h>
@@ -67,12 +70,14 @@ SOFTWARE.
 extern XID clientErrorValue;
 extern FontPtr defaultFont;
 
-static Bool CreateDefaultTile(GCPtr pGC);
+static Bool CreateDefaultTile(
+    GCPtr /*pGC*/
+);
 
-static unsigned char DefaultDash[2] = {4, 4};
+unsigned char DefaultDash[2] = {4, 4};
 
-_X_EXPORT void
-ValidateGC(DrawablePtr pDraw, GC *pGC)
+void
+ValidateGC(DrawablePtr pDraw, GCPtr pGC)
 {
     (*pGC->funcs->ValidateGC) (pGC, pGC->stateChanges, pDraw);
     pGC->stateChanges = 0;
@@ -143,13 +148,14 @@ ValidateGC(DrawablePtr pDraw, GC *pGC)
 #define NEXT_PTR(_type, _var) { \
     assert(pUnion); _var = (_type)pUnion->ptr; pUnion++; }
 
-_X_EXPORT int
-dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr pUnion)
+int
+dixChangeGC(ClientPtr client, GCPtr pGC, BITS32 mask, CARD32 *pC32,
+	    ChangeGCValPtr pUnion)
 {
     BITS32 	index2;
     int 	error = 0;
-    PixmapPtr 	pPixmap;
-    BITS32	maskQ;
+    PixmapPtr 		pPixmap;
+    BITS32		maskQ;
 
     assert( (pC32 && !pUnion) || (!pC32 && pUnion) );
     pGC->serialNumber |= GC_CHANGE_SERIAL_BIT;
@@ -271,7 +277,7 @@ dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr
 		{
 		    NEXTVAL(XID, newpix);
 		    pPixmap = (PixmapPtr)SecurityLookupIDByType(client,
-					newpix, RT_PIXMAP, DixReadAccess);
+					newpix, RT_PIXMAP, SecurityReadAccess);
 		}
 		if (pPixmap)
 		{
@@ -307,7 +313,7 @@ dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr
 		{
 		    NEXTVAL(XID, newstipple)
 		    pPixmap = (PixmapPtr)SecurityLookupIDByType(client,
-				newstipple, RT_PIXMAP, DixReadAccess);
+				newstipple, RT_PIXMAP, SecurityReadAccess);
 		}
 		if (pPixmap)
 		{
@@ -349,7 +355,7 @@ dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr
 		{
 		    NEXTVAL(XID, newfont)
 		    pFont = (FontPtr)SecurityLookupIDByType(client, newfont,
-						RT_FONT, DixReadAccess);
+						RT_FONT, SecurityReadAccess);
 		}
 		if (pFont)
 		{
@@ -416,7 +422,7 @@ dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr
 		    }
 		    else
 		        pPixmap = (PixmapPtr)SecurityLookupIDByType(client,
-					pid, RT_PIXMAP, DixReadAccess);
+					pid, RT_PIXMAP, SecurityReadAccess);
 		}
 
 		if (pPixmap)
@@ -521,11 +527,11 @@ dixChangeGC(ClientPtr client, GC *pGC, BITS32 mask, CARD32 *pC32, ChangeGCValPtr
 
 /* Publically defined entry to ChangeGC.  Just calls dixChangeGC and tells
  * it that all of the entries are constants or IDs */
-_X_EXPORT int
-ChangeGC(GC *pGC, BITS32 mask, XID *pval)
+int
+ChangeGC(GCPtr pGC, BITS32 mask, XID *pval)
 {
-    /* ssX: Cast to CARD32* for compatibility on 64-bit systems */
-    return (dixChangeGC(NullClient, pGC, mask, (CARD32 *)pval, NULL));
+    CARD32 val32 = (CARD32)*pval;
+    return (dixChangeGC(NullClient, pGC, mask, &val32, NULL));
 }
 
 /* DoChangeGC(pGC, mask, pval, fPointer)
@@ -548,15 +554,14 @@ NOTE:
 	all values sent over the protocol for ChangeGC requests are
 32 bits long
 */
-_X_EXPORT int
-DoChangeGC(GC *pGC, BITS32 mask, XID *pval, int fPointer)
+int
+DoChangeGC(GCPtr pGC, BITS32 mask, XID *pval, int fPointer)
 {
     if (fPointer)
     /* XXX might be a problem on 64 bit big-endian servers */
 	return dixChangeGC(NullClient, pGC, mask, NULL, (ChangeGCValPtr)pval);
     else
-	/* ssX: Cast to CARD32* for compatibility on 64-bit systems */
-	return dixChangeGC(NullClient, pGC, mask, (CARD32 *)pval, NULL);
+	return dixChangeGC(NullClient, pGC, mask, (CARD32 *)(void *)pval, NULL);
 }
 
 
@@ -601,7 +606,7 @@ AllocateGC(ScreenPtr pScreen)
     return pGC;
 }
 
-_X_EXPORT GCPtr
+GCPtr
 CreateGC(DrawablePtr pDrawable, BITS32 mask, XID *pval, int *pStatus)
 {
     GCPtr pGC;
@@ -683,7 +688,7 @@ CreateGC(DrawablePtr pDrawable, BITS32 mask, XID *pval, int *pStatus)
 }
 
 static Bool
-CreateDefaultTile (GCPtr pGC)
+CreateDefaultTile(GCPtr pGC)
 {
     XID		tmpval[3];
     PixmapPtr 	pTile;
@@ -725,12 +730,12 @@ CreateDefaultTile (GCPtr pGC)
     return TRUE;
 }
 
-_X_EXPORT int
-CopyGC(GC *pgcSrc, GC *pgcDst, BITS32 mask)
+int
+CopyGC(GCPtr pgcSrc, GCPtr pgcDst, BITS32 mask)
 {
     BITS32	index2;
-    BITS32	maskQ;
-    int 	error = 0;
+    BITS32		maskQ;
+    int 		error = 0;
 
     if (pgcSrc == pgcDst)
 	return Success;
@@ -884,12 +889,13 @@ CopyGC(GC *pgcSrc, GC *pgcDst, BITS32 mask)
     return error;
 }
 
-/**
- * does the diX part of freeing the characteristics in the GC.
- *
- *  \param value  must conform to DeleteType
- */
-_X_EXPORT int
+/*****************
+ * FreeGC 
+ *   does the diX part of freeing the characteristics in the GC 
+ ***************/
+
+/*ARGSUSED*/
+int
 FreeGC(pointer value, XID gid)
 {
     GCPtr pGC = (GCPtr)value;
@@ -909,6 +915,17 @@ FreeGC(pointer value, XID gid)
     return(Success);
 }
 
+void
+SetGCMask(GCPtr pGC, Mask selectMask, Mask newDataMask)
+{
+    pGC->stateChanges = (~selectMask & pGC->stateChanges) |
+		        (selectMask & newDataMask);
+    if (selectMask & newDataMask)
+        pGC->serialNumber |= GC_CHANGE_SERIAL_BIT;        
+}
+
+
+
 /* CreateScratchGC(pScreen, depth)
     like CreateGC, but doesn't do the default tile or stipple,
 since we can't create them without already having a GC.  any code
@@ -922,7 +939,7 @@ is what fills the default tile.  (maybe this comment should
 go with CreateGC() or ChangeGC().)
 */
 
-_X_EXPORT GCPtr
+GCPtr
 CreateScratchGC(ScreenPtr pScreen, unsigned depth)
 {
     GCPtr pGC;
@@ -1005,9 +1022,6 @@ CreateGCperDepth(int screenNum)
     if (!(ppGC[0] = CreateScratchGC(pScreen, 1)))
 	return FALSE;
     ppGC[0]->graphicsExposures = FALSE;
-    /* Make sure we don't overflow GCperDepth[] */
-    if( pScreen->numDepths > MAXFORMATS )
-	    return FALSE;
 
     pDepth = pScreen->allowedDepths;
     for (i=0; i<pScreen->numDepths; i++, pDepth++)
@@ -1067,7 +1081,7 @@ FreeDefaultStipple(int screenNum)
     (*pScreen->DestroyPixmap)(pScreen->PixmapPerDepth[0]);
 }
 
-_X_EXPORT int
+int
 SetDashes(GCPtr pGC, unsigned offset, unsigned ndash, unsigned char *pdash)
 {
     long i;
@@ -1123,7 +1137,7 @@ SetDashes(GCPtr pGC, unsigned offset, unsigned ndash, unsigned char *pdash)
     return Success;
 }
 
-_X_EXPORT int
+int
 VerifyRectOrder(int nrects, xRectangle *prects, int ordering)
 {
     xRectangle	*prectP, *prectN;
@@ -1173,9 +1187,9 @@ VerifyRectOrder(int nrects, xRectangle *prects, int ordering)
     return -1;
 }
 
-_X_EXPORT int
-SetClipRects(GCPtr pGC, int xOrigin, int yOrigin, int nrects, 
-             xRectangle *prects, int ordering)
+int
+SetClipRects(GCPtr pGC, int xOrigin, int yOrigin, int nrects,
+	     xRectangle *prects, int ordering)
 {
     int			newct, size;
     xRectangle 		*prectsNew;
@@ -1210,7 +1224,7 @@ SetClipRects(GCPtr pGC, int xOrigin, int yOrigin, int nrects,
    if we can't, create one out of whole cloth (The Velveteen GC -- if
    you use it often enough it will become real.)
 */
-_X_EXPORT GCPtr
+GCPtr
 GetScratchGC(unsigned depth, ScreenPtr pScreen)
 {
     int i;
@@ -1259,7 +1273,7 @@ GetScratchGC(unsigned depth, ScreenPtr pScreen)
 mark it as available.
    if not, free it for real
 */
-_X_EXPORT void
+void
 FreeScratchGC(GCPtr pGC)
 {
     ScreenPtr pScreen = pGC->pScreen;

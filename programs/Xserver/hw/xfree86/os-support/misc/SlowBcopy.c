@@ -1,9 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/SlowBcopy.c,v 1.8 2005/10/14 15:17:05 tsi Exp $ */
- 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* $XConsortium: SlowBcopy.c /main/1 1996/05/07 17:14:10 kaleb $ */
 /*******************************************************************************
   for Alpha Linux
 *******************************************************************************/
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/misc/SlowBcopy.c,v 1.7 2004/02/11 22:06:21 tsi Exp $ */
+ 
 /* 
  *   Create a dependency that should be immune from the effect of register
  *   renaming as is commonly seen in superscalar processors.  This should
@@ -14,7 +23,7 @@
  *   
  */ 
 
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"

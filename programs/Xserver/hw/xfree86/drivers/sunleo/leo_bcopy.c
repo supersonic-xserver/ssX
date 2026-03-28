@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Leo (ZX) framebuffer - Bit-blit copies.
  *
  * Copyright (C) 1999 Jakub Jelinek (jakub@redhat.com)
@@ -26,7 +33,6 @@
 
 #include "leo.h"
 #include "leo_regs.h"
-#include "leo_gc.h"
 
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -175,5 +181,5 @@ LeoCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
 		return cfbCopyArea (pSrcDrawable, pDstDrawable,
 				    pGC, srcx, srcy, width, height, dstx, dsty);
 	return cfbBitBlt (pSrcDrawable, pDstDrawable,
-			  pGC, srcx, srcy, width, height, dstx, dsty, LeoDoBitblt, 0);
+			  pGC, srcx, srcy, width, height, dstx, dsty, (void (*)())LeoDoBitblt, 0);
 }
