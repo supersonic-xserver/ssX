@@ -183,6 +183,51 @@ If you're unsure whether your contribution meets these standards, open an issue 
 
 ---
 
+### Hardware Protection: The Pijul-Git Bridge
+
+**⚠️ WARNING: Git I/O Thrashing Hazard**
+
+Due to the massive scale of the ssX legacy codebase, rapid local Git commits can cause severe I/O thrashing. On systems with limited I/O bandwidth, this can render partitions (like `/home`) completely unmountable, causing data loss and system instability.
+
+**The Solution: Pijul**
+
+Pijul is a Rust-based version control system based on **Patch Theory**. It offers:
+- **Commutative patches** — no merge conflicts in the traditional sense
+- **Efficient storage** — smaller footprint than Git for large codebases
+- **I/O friendly** — designed to minimize disk writes
+
+**Installation**
+
+```bash
+# Install via Rust
+cargo install pijul
+```
+
+**The Pijul-Git Bridge Workflow**
+
+Pijul can interoperate with Git remotes. Here's how to use it safely:
+
+```bash
+# Clone the repo using Pijul (with Git remote bridge)
+pijul git clone https://github.com/supersonic-xserver/ssX.git
+
+# Make your changes...
+# (your edits here)
+
+# Push back to Git remote
+pijul git push
+```
+
+**Key Point:** Adding `pijul` before standard `git` commands gives you the best of both worlds:
+- Safe, local patch-based development with Pijul
+- Git compatibility for the central repository on GitHub
+
+This keeps your `/home` partition alive while satisfying the Git "Archons" who demand snapshot-format pushes.
+
+> *"The drive is safe. The patches are commutative."* — The Jesterman's Lemma
+
+---
+
 *The Jesterman guards the quality.*
 *The Fool protects the craft.*
 *Human hands write this code.*
@@ -190,4 +235,4 @@ If you're unsure whether your contribution meets these standards, open an issue 
 ---
 
 *This document is supplemental to the LICENSE and CODE_OF_SOVEREIGNTY.md.*
-*Last amended: AI-Assisted Policy v1.0*
+*Last amended: AI-Assisted Policy v1.1 (Pijul-Git Bridge Added)*
