@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt.h,v 1.4 2001/04/05 21:29:14 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt.h,v 1.5 2001/05/16 06:48:09 keithp Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _IMSTT_H
 #define _IMSTT_H

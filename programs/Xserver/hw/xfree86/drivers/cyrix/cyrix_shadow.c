@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_shadow.c,v 1.1 1999/08/14 10:49:48 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_shadow.c,v 1.1 2002/11/06 11:38:59 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
    Copyright (c) 1999,  The XFree86 Project Inc. 

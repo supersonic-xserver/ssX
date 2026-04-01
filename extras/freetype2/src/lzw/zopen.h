@@ -1,4 +1,19 @@
-/* $XFree86$ */
+/*	$NetBSD: zopen.h,v 1.1.1.1 2005/03/18 13:07:34 tron Exp $	*/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*-
  * Copyright (c) 1985, 1986, 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -41,9 +56,15 @@
  *
  */
 
-#ifndef FONTMODULE
-#include <stdio.h>
+#if defined(LIBC_SCCS) && !defined(lint)
+#if 0
+static char sccsid[] = "@(#)zopen.c	8.1 (Berkeley) 6/27/93";
+#else
+static char rcsid[] = "$NetBSD: zopen.h,v 1.1.1.1 2005/03/18 13:07:34 tron Exp $";
 #endif
+#endif /* LIBC_SCCS and not lint */
+
+#include <stdio.h>
 
 #define	BITS		16		/* Default bits. */
 #define	HSIZE		69001		/* 95% occupancy */

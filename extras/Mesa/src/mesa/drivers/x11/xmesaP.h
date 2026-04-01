@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/x11/xmesaP.h,v 1.1tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -519,6 +525,7 @@ extern XMesaBuffer XMesaCreateWindowBuffer2( XMesaVisual v,
 extern void XMesaSetVisualDisplay( XMesaDisplay *dpy, XMesaVisual v );
 extern GLboolean XMesaForceCurrent(XMesaContext c);
 extern GLboolean XMesaLoseCurrent(XMesaContext c);
+extern void XMesaReset( void );
 
 
 #endif

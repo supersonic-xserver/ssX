@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SBUS bus-specific code.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,12 +27,12 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.c,v 3.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86sbusBus.c,v 3.8 2004/05/04 16:21:42 tsi Exp $ */
 
 #include <ctype.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -56,32 +63,20 @@ Bool sbusSlotClaimed = FALSE;
 static int xf86nSbusInfo;
 
 static void
-#ifdef __OpenBSD__
-CheckSbusDevice(const char *device)
-#else
 CheckSbusDevice(const char *device, int fbNum)
-#endif
 {
     int fd, i;
+    struct fbgattr fbattr;
     sbusDevicePtr psdp;
 #ifdef sun
     struct vis_identifier vid;
-#endif
-#ifdef __OpenBSD__
-    struct wsdisplay_fbinfo fbinfo;
-#else
-    struct fbgattr fbattr;
 #endif
 
     fd = open(device, O_RDONLY, 0);
     if (fd < 0)
 	return;
 
-#ifdef __OpenBSD__
-    memset(&fbinfo, 0, sizeof(fbinfo));
-#else
     memset(&fbattr, 0, sizeof(fbattr));
-#endif
 
 #ifdef sun
     if (ioctl(fd, VIS_GETIDENTIFIER, &vid) >= 0)
@@ -99,25 +94,6 @@ CheckSbusDevice(const char *device, int fbNum)
     }
     else
 #endif
-#ifdef __OpenBSD__
-    {
-	int fbtype;
-
-	if (ioctl(fd, WSDISPLAYIO_GTYPE, &fbtype) < 0) {
-	    close(fd);
-	    return;
-	}
-
-	if (ioctl(fd, WSDISPLAYIO_GINFO, &fbinfo) < 0) {
-	    close(fd);
-	    return;
-	}
-
-	for (i = 0; sbusDeviceTable[i].devId; i++)
-	    if (sbusDeviceTable[i].fbType == fbtype)
-		break;
-    }
-#else
     {
 	if (ioctl(fd, FBIOGATTR, &fbattr) < 0) {
 	    if (ioctl(fd, FBIOGTYPE, &fbattr.fbtype) < 0) {
@@ -130,7 +106,6 @@ CheckSbusDevice(const char *device, int fbNum)
 	    if (sbusDeviceTable[i].fbType == fbattr.fbtype.fb_type)
 		break;
     }
-#endif
 
     close(fd);
 
@@ -142,51 +117,28 @@ CheckSbusDevice(const char *device, int fbNum)
     xf86SbusInfo[xf86nSbusInfo] = NULL;
     xf86SbusInfo[xf86nSbusInfo - 1] = psdp = xnfcalloc(sizeof(sbusDevice), 1);
     psdp->devId = sbusDeviceTable[i].devId;
+    psdp->fbNum = fbNum;
     psdp->device = xnfstrdup(device);
     psdp->descr = sbusDeviceTable[i].descr;
-#ifdef __OpenBSD__
-    psdp->fbNum = xf86nSbusInfo - 1;
-    psdp->width = fbinfo.width;
-    psdp->height = fbinfo.height;
-#else
-    psdp->fbNum = fbNum;
     psdp->width = fbattr.fbtype.fb_width;
     psdp->height = fbattr.fbtype.fb_height;
-#endif
     psdp->fd = -1;
 }
 
 void
 xf86SbusProbe(void)
 {
-    int useProm = 0;
+    int i, useProm = 0;
     char fbDevName[32];
     sbusDevicePtr psdp, *psdpp;
 
     xf86SbusInfo = xalloc(sizeof(psdp));
     *xf86SbusInfo = NULL;
 
-#ifdef __OpenBSD__
-    {
-	const char *c1, *c2;
-
-	for (c1 = "CDEFGHIJ"; *c1; c1++) {
-	    for (c2 = "0123456789ab"; *c2; c2++) {
-		sprintf(fbDevName, "/dev/tty%c%c", *c1, *c2);
-		CheckSbusDevice(fbDevName);
-	    }
-	}
+    for (i = 0; i < 32; i++) {
+	sprintf(fbDevName, "/dev/fb%d", i);
+	CheckSbusDevice(fbDevName, i);
     }
-#else
-    {
-	int i;
-
-	for (i = 0; i < 32; i++) {
-	    sprintf(fbDevName, "/dev/fb%d", i);
-	    CheckSbusDevice(fbDevName, i);
-	}
-    }
-#endif
 
     if (sparcPromInit() >= 0) {
 	useProm = 1;
@@ -386,57 +338,54 @@ xf86ParseSbusBusString(const char *busID, int *fbNum)
 {
     /*
      * The format is assumed to be one of:
-     * the name of the device (with or without the "/dev/" part)
+     * "fbN", e.g. "fb1", which means the device corresponding to /dev/fbN
      * "nameN", e.g. "cgsix0", which means Nth instance of card NAME
      * "/prompath", e.g. "/sbus@0,10001000/cgsix@3,0" which is PROM pathname
      * to the device.
      */
 
-    sbusDevicePtr *psdpp;
     const char *id;
-    int i, len, devId;
+    int i, len;
 
     if (StringToBusType(busID, &id) != BUS_SBUS)
 	return FALSE;
 
-    for (psdpp = xf86SbusInfo;  *psdpp; ++psdpp) {
-	if (!strcmp((*psdpp)->device, id)) {
-	    *fbNum = (*psdpp)->fbNum;
-	    return TRUE;
-	}
-    }
-
     if (*id != '/') {
-	for (psdpp = xf86SbusInfo;  *psdpp; ++psdpp) {
-	    if (!strcmp((*psdpp)->device + 5, id)) {
-		*fbNum = (*psdpp)->fbNum;
-		return TRUE;
-	    }
-	}
+	if (!strncmp(id, "fb", 2)) {
+	    if (!isdigit(id[2]))
+		return FALSE;
 
-	len = 0;
-	for (i = 0; sbusDeviceTable[i].devId; i++) {
-	    len = strlen(sbusDeviceTable[i].promName);
-	    if (!strncmp(sbusDeviceTable[i].promName, id, len) &&
-		isdigit(id[len]))
-		break;
-	}
+	    *fbNum = atoi(id + 2);
+	    return TRUE;
 
-	devId = sbusDeviceTable[i].devId;
-	if (!devId)
-	    return FALSE;
+	} else {
+	    sbusDevicePtr *psdpp;
+	    int devId;
 
-	i = atoi(id + len);
-	for (psdpp = xf86SbusInfo; *psdpp; ++psdpp) {
-	    if ((*psdpp)->devId != devId)
-		continue;
-
-	    if (!i) {
-		*fbNum = (*psdpp)->fbNum;
-		return TRUE;
+	    len = 0;
+	    for (i = 0; sbusDeviceTable[i].devId; i++) {
+		len = strlen(sbusDeviceTable[i].promName);
+		if (!strncmp(sbusDeviceTable[i].promName, id, len) &&
+		    isdigit(id[len]))
+		    break;
 	    }
 
-	    i--;
+	    devId = sbusDeviceTable[i].devId;
+	    if (!devId)
+		return FALSE;
+
+	    i = atoi(id + len);
+	    for (psdpp = xf86SbusInfo; *psdpp; ++psdpp) {
+		if ((*psdpp)->devId != devId)
+		    continue;
+
+		if (!i) {
+		    *fbNum = (*psdpp)->fbNum;
+		    return TRUE;
+		}
+
+		i--;
+	    }
 	}
 
 	return FALSE;
@@ -714,14 +663,9 @@ sbusDevicePtr
 xf86GetSbusInfoForEntity(int entityIndex)
 {
     sbusDevicePtr *psdpp;
-    EntityPtr p;
+    EntityPtr p = xf86Entities[entityIndex];
 
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities) ||
-	(xf86SbusInfo == NULL))
-	return NULL;
-
-    p = xf86Entities[entityIndex];
-    if (p->busType != BUS_SBUS)
+    if ((entityIndex >= xf86NumEntities) || (p->busType != BUS_SBUS))
 	return NULL;
 
     for (psdpp = xf86SbusInfo; *psdpp; psdpp++) {
@@ -784,10 +728,6 @@ xf86SbusUseBuiltinMode(ScrnInfoPtr pScrn, sbusDevicePtr psdp)
     pScrn->virtualY = psdp->height;
 }
 
-/*
- * Colourmap control.
- */
-
 static int sbusPaletteIndex = -1;
 static unsigned long sbusPaletteGeneration = 0;
 typedef struct _sbusCmap {
@@ -799,7 +739,8 @@ typedef struct _sbusCmap {
     unsigned char origBlue[16];
 } sbusCmapRec, *sbusCmapPtr;
 
-#define SBUSCMAPPTR(pScreen) (pScreen)->devPrivates[sbusPaletteIndex].ptr
+#define SBUSCMAPPTR(pScreen) \
+    ((sbusCmapPtr)((pScreen)->devPrivates[sbusPaletteIndex].ptr))
 
 static void
 xf86SbusCmapLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
@@ -874,7 +815,7 @@ xf86SbusHandleColormaps(ScreenPtr pScreen, sbusDevicePtr psdp)
     }
 
     cmap = xnfcalloc(1, sizeof(sbusCmapRec));
-    SBUSCMAPPTR(pScreen) = cmap;
+    pScreen->devPrivates[sbusPaletteIndex].ptr = cmap;
     cmap->psdp = psdp;
     fbcmap.index = 0;
     fbcmap.count = 16;
@@ -904,130 +845,4 @@ xf86SbusHandleColormaps(ScreenPtr pScreen, sbusDevicePtr psdp)
     pScreen->CloseScreen = xf86SbusCmapCloseScreen;
     return xf86HandleColormaps(pScreen, 256, 8,
 			       xf86SbusCmapLoadPalette, NULL, 0);
-}
-
-/*
- * Cursor control.
- */
-
-/* Tell OS that we are driving the HW cursor ourselves */
-void
-xf86SbusHideOsHwCursor(sbusDevicePtr psdp)
-{
-    struct fbcursor fbcursor;
-    unsigned char zeros[8];
-
-    memset(&fbcursor, 0, sizeof(fbcursor));
-    memset(&zeros, 0, sizeof(zeros));
-    fbcursor.cmap.count = 2;
-    fbcursor.cmap.red = zeros;
-    fbcursor.cmap.green = zeros;
-    fbcursor.cmap.blue = zeros;
-    fbcursor.image = (char *)zeros;
-    fbcursor.mask = (char *)zeros;
-    fbcursor.size.x = 32;
-    fbcursor.size.y = 1;
-    fbcursor.set = FB_CUR_SETALL;
-    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
-}
-
-/* Set HW cursor colormap */
-void
-xf86SbusSetOsHwCursorCmap(sbusDevicePtr psdp, int bg, int fg)
-{
-    struct fbcursor fbcursor;
-    unsigned char red[2], green[2], blue[2];
-
-    memset(&fbcursor, 0, sizeof(fbcursor));
-    red[0] = bg >> 16;
-    green[0] = bg >> 8;
-    blue[0] = bg;
-    red[1] = fg >> 16;
-    green[1] = fg >> 8;
-    blue[1] = fg;
-    fbcursor.cmap.count = 2;
-    fbcursor.cmap.red = red;
-    fbcursor.cmap.green = green;
-    fbcursor.cmap.blue = blue;
-    fbcursor.set = FB_CUR_SETCMAP;
-    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
-}
-
-/* Set HW cursor image & mask */
-void
-xf86SbusSetOsHwCursorImage(sbusDevicePtr psdp, pointer image, pointer mask)
-{
-    struct fbcursor fbcursor;
-
-    memset(&fbcursor, 0, sizeof(fbcursor));
-    fbcursor.image = image;
-    fbcursor.mask = mask;
-    fbcursor.set = FB_CUR_SETSHAPE;
-    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
-}
-
-/* Set hide/un-hide HW cursor */
-void
-xf86SbusSetOsHwCursor(sbusDevicePtr psdp, Bool onoff)
-{
-    struct fbcursor fbcursor;
-
-    memset(&fbcursor, 0, sizeof(fbcursor));
-    if (onoff)
-	fbcursor.enable = 1;
-    fbcursor.set = FB_CUR_SETCUR;
-    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
-}
-
-/* Set HW cursor position */
-void
-xf86SbusSetOsHwCursorPosition(sbusDevicePtr psdp, int x, int y)
-{
-    struct fbcursor fbcursor;
-
-    memset(&fbcursor, 0, sizeof(fbcursor));
-    fbcursor.pos.x = x;
-    fbcursor.pos.y = y;
-    fbcursor.set = FB_CUR_SETPOS;
-    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
-}
-
-/* Set HW cursor hot spot */
-void
-xf86SbusSetOsHwCursorHotSpot(sbusDevicePtr psdp, int hotx, int hoty)
-{
-    struct fbcursor fbcursor;
-
-    memset(&fbcursor, 0, sizeof(fbcursor));
-    fbcursor.hot.x = hotx;
-    fbcursor.hot.y = hoty;
-    fbcursor.set = FB_CUR_SETHOT;
-    ioctl(psdp->fd, FBIOSCURSOR, &fbcursor);
-}
-
-/*
- * Screen on/off
- */
-
-Bool
-xf86SbusSaveScreen(sbusDevicePtr psdp, int mode)
-{
-    int state;
-
-    switch (mode) {
-    case SCREEN_SAVER_ON:
-    case SCREEN_SAVER_CYCLE:
-	state = 0;
-	break;
-
-    case SCREEN_SAVER_OFF:
-    case SCREEN_SAVER_FORCER:
-	state = 1;
-	break;
-
-    default:
-	return FALSE;
-    }
-
-    return (ioctl(psdp->fd, FBIOSVIDEO, &state) >= 0);
 }

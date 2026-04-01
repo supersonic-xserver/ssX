@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: appgroup.ms,v 1.3 2000/08/17 19:42:41 cpqbld Exp $
 .EF 'AppGroup Extension Definition'- % -'October, 1996'
 .OF 'AppGroup Extension Definition'- % -'October, 1996'
 .EH '''

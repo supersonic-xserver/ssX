@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/truetype/ttgload.c,v 1.0tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ttgload.c                                                              */
 /*                                                                         */
@@ -367,11 +373,7 @@
 
     n_points = 0;
     if ( n_contours > 0 )
-    {
       n_points = cont[-1] + 1;
-      if ( n_points < 0 )
-        goto Invalid_Outline;
-    }
 
     error = FT_GlyphLoader_CheckPoints( gloader, n_points + 4, 0 );
     if ( error )
@@ -675,7 +677,7 @@
   {
     FT_GlyphLoader  gloader  = load->gloader;
     FT_Outline*     outline  = &gloader->current.outline;
-    FT_Int          n_points = outline->n_points;
+    FT_UInt         n_points = outline->n_points;
 #ifdef TT_CONFIG_OPTION_BYTECODE_INTERPRETER
     FT_UInt         n_ins;
 #endif

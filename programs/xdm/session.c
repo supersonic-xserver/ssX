@@ -1,3 +1,11 @@
+/* $Xorg: session.c,v 1.8 2001/02/09 02:05:40 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/session.c,v 3.41 2006/01/09 15:01:04 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/session.c,v 3.39 2004/07/25 20:17:04 dawes Exp $ */
 
 /*
  * xdm - display manager daemon
@@ -98,9 +106,7 @@ extern	struct passwd	*getpwnam(GETPWNAM_ARGS);
 # ifdef linux
 extern  void	endpwent(void);
 # endif
-# if !(defined(sun) && defined(SVR4))
 extern	char	*crypt(CRYPT_ARGS);
-# endif
 #endif
 
 #ifdef USE_PAM
@@ -520,6 +526,18 @@ SessionExit (struct display *d, int status, int removeAuth)
     exit (status);
 }
 
+#ifdef HAS_SETUSERCONTEXT
+static int
+/*ARGSUSED*/
+envset(void *envp, const char *name, const char *value, int overwrite)
+{
+	struct verify_info *verify = envp;
+	verify->userEnviron = setEnv(verify->userEnviron, (char *)name, 
+	    (char *)value);
+	return 0;
+}
+#endif
+
 static Bool
 StartClient (
     struct verify_info	*verify,
@@ -532,13 +550,12 @@ StartClient (
     char	*failsafeArgv[2];
     int	pid;
 #ifdef HAS_SETUSERCONTEXT
-    struct passwd* pwd;
+    struct passwd *pwd;
+    login_cap_t *lc;
 #endif
 #ifdef USE_PAM
     pam_handle_t *pamh = thepamh ();
-#ifndef HAS_SETUSERCONTEXT
     int	pam_error;
-#endif
 #endif
 
     if (verify->argv) {
@@ -566,17 +583,24 @@ StartClient (
 	/* Do system-dependent login setup here */
 
 #ifdef USE_PAM
-	/* pass in environment variables set by libpam and modules it called */
 	if (pamh) {
 	    long i;
-	    char **pam_env = pam_getenvlist(pamh);
+	    char **pam_env;
+
+	    pam_error = pam_setcred (pamh, PAM_ESTABLISH_CRED);
+	    if (pam_error != PAM_SUCCESS) {
+		LogError ("pam_setcred for \"%s\" failed: %s\n",
+			 name, pam_strerror(pamh, pam_error));
+		return(0);
+	    }
+
+	    /* pass in environment variables set by libpam and modules it called */
+	    pam_env = pam_getenvlist(pamh);
 	    for(i = 0; pam_env && pam_env[i]; i++) {
 		verify->userEnviron = putEnv(pam_env[i], verify->userEnviron);
 	    }
 	}
 #endif
-
-
 #ifndef AIXV3
 #ifndef HAS_SETUSERCONTEXT
 	if (setgid(verify->gid) < 0) {
@@ -596,16 +620,6 @@ StartClient (
 	    return (0);
 	}
 #endif   /* QNX4 doesn't support multi-groups, no initgroups() */
-#ifdef USE_PAM
-	if (pamh) {
-	    pam_error = pam_setcred (pamh, PAM_ESTABLISH_CRED);
-	    if (pam_error != PAM_SUCCESS) {
-		LogError ("pam_setcred for \"%s\" failed: %s\n",
-			 name, pam_strerror(pamh, pam_error));
-		return(0);
-	    }
-	}
-#endif
 	if (setuid(verify->uid) < 0) {
 	    LogError ("setuid %d (user \"%s\") failed, errno=%d\n",
 		     verify->uid, name, errno);
@@ -618,11 +632,23 @@ StartClient (
 	 */
 	pwd = getpwnam(name);
 	if (pwd) {
-	    if (setusercontext(NULL, pwd, pwd->pw_uid, LOGIN_SETALL) < 0) {
+	    lc = login_getclass(pwd->pw_class);
+	    if (lc == NULL) {
+		LogError ("login_class for \"%s\" not found\n",
+		    pwd->pw_class?pwd->pw_class:"default");
+		return (0);
+	    }
+	    if (setusercontext(lc, pwd, pwd->pw_uid,
+	    LOGIN_SETALL & ~(LOGIN_SETPATH|LOGIN_SETENV)) < 0) {
 		LogError ("setusercontext for \"%s\" failed, errno=%d\n", name,
 		    errno);
 		return (0);
 	    }
+	    if (login_getcapstr(lc, "path", NULL, NULL)) {
+		setuserpath(lc, pwd ? pwd->pw_dir : "", envset, verify);
+	    }
+	    setuserenv (lc, envset, verify);
+	    login_close(lc);
 	    endpwent();
 	} else {
 	    LogError ("getpwnam for \"%s\" failed, errno=%d\n", name, errno);

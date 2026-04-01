@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1objs.h                                                               */
 /*                                                                         */
 /*    Type 1 objects manager (specification).                              */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,17 +23,18 @@
 /***************************************************************************/
 
 
-#ifndef T1OBJS_H
-#define T1OBJS_H
+#ifndef __T1OBJS_H__
+#define __T1OBJS_H__
 
-#include <freetype/internal/ftobjs.h>
-#include <freetype/config/ftconfig.h>
-#include <freetype/internal/t1errors.h>
-#include <freetype/internal/t1types.h>
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#include <ft2build.h>
+#include FT_INTERNAL_OBJECTS_H
+#include FT_CONFIG_CONFIG_H
+#include FT_INTERNAL_TYPE1_TYPES_H
+
+
+FT_BEGIN_HEADER
+
 
   /* The following structures must be defined by the hinter */
   typedef struct T1_Size_Hints_   T1_Size_Hints;
@@ -99,13 +107,19 @@
   /*                                                                       */
   typedef struct  T1_SizeRec_
   {
-    FT_SizeRec      root;
-    FT_Bool         valid;
-    T1_Size_Hints*  hints;  /* defined in the hinter. This allows */
-                            /* us to experiment with different    */
-                            /* hinting schemes without having to  */
-                            /* change `t1objs' each time.         */
+    FT_SizeRec  root;
+
   } T1_SizeRec;
+
+
+  FT_LOCAL( void )
+  T1_Size_Done( T1_Size  size );
+
+  FT_LOCAL( FT_Error )
+  T1_Size_Reset( T1_Size  size );
+
+  FT_LOCAL( FT_Error )
+  T1_Size_Init( T1_Size  size );
 
 
   /*************************************************************************/
@@ -129,33 +143,35 @@
     FT_Fixed         x_scale;
     FT_Fixed         y_scale;
 
-    T1_Glyph_Hints*  hints;  /* defined in the hinter */
-
   } T1_GlyphSlotRec;
 
 
-  FT_LOCAL
-  FT_Error  T1_Init_Face( FT_Stream      stream,
-                          T1_Face        face,
-                          FT_Int         face_index,
-                          FT_Int         num_params,
-                          FT_Parameter*  params );
+  FT_LOCAL( FT_Error )
+  T1_Face_Init( FT_Stream      stream,
+                T1_Face        face,
+                FT_Int         face_index,
+                FT_Int         num_params,
+                FT_Parameter*  params );
 
-  FT_LOCAL
-  void  T1_Done_Face( T1_Face  face );
+  FT_LOCAL( void )
+  T1_Face_Done( T1_Face  face );
 
-  FT_LOCAL
-  FT_Error  T1_Init_Driver( T1_Driver  driver );
+  FT_LOCAL( FT_Error )
+  T1_GlyphSlot_Init( T1_GlyphSlot  slot );
+  
+  FT_LOCAL( void )
+  T1_GlyphSlot_Done( T1_GlyphSlot  slot );
 
-  FT_LOCAL
-  void  T1_Done_Driver( T1_Driver  driver );
+  FT_LOCAL( FT_Error )
+  T1_Driver_Init( T1_Driver  driver );
+
+  FT_LOCAL( void )
+  T1_Driver_Done( T1_Driver  driver );
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-#endif /* T1OBJS_H */
+#endif /* __T1OBJS_H__ */
 
 
 /* END */

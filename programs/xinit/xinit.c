@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1986, 1998  The Open Group
 
@@ -23,7 +37,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/programs/xinit/xinit.c,v 3.35tsi Exp $ */
+/* $XFree86: xc/programs/xinit/xinit.c,v 3.34 2005/01/29 00:22:02 dawes Exp $ */
 
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
@@ -594,7 +608,7 @@ startServer(char *server[])
 #ifdef USE_PAM
 		(void) signal(SIGHUP, SIG_IGN);
 #else
-		setpgrp(0, getpid());
+		setpgrp(0,getpid());
 #endif
 #endif
 		Execute (server, environ);
@@ -746,7 +760,6 @@ shutdown(void)
 	    return;
 	}
 
-#ifndef DONTKILL
 	fprintf(stderr, 
 	"\r\n%s:  X server slow to shut down, sending KILL signal.\r\n",
 		program);
@@ -760,23 +773,6 @@ shutdown(void)
 		fprintf (stderr, "\r\n");
 		Fatal("Can't kill server\r\n");
 	}
-#else
-	fprintf(stderr, 
-	"\r\n%s:  X server slow to shut down, sending interrupt signal.\r\n",
-		program);
-	fflush(stderr);
-	errno = 0;
-	if (killpg(serverpid, SIGINT) < 0) {
-		if (errno == ESRCH)
-			return;
-	}
-	if (!processTimeout(10, "server to die")) {
-		fprintf (stderr, "\r\n");
-		return;
-	}
-	fprintf(stderr, 
-	"\r\n%s:  X server slow to shut down.  Exiting.\r\n", program);
-#endif
 	fprintf (stderr, "\r\n");
 	return;
 }

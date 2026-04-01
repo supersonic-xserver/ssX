@@ -1,4 +1,23 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_select.c,v 3.12 2006/01/09 15:00:23 dawes Exp $ */
+/* $XConsortium: os2_select.c /main/6 1996/10/27 11:48:55 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_select.c,v 3.10 2004/02/14 00:10:18 dawes Exp $ */
 
 /*
  * (c) Copyright 1996 by Sebastien Marineau
@@ -51,7 +70,7 @@
 #define INCL_DOSMODULEMGR
 
 
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
@@ -457,7 +476,7 @@ void os2SocketMonitorThread(void *arg)
 		 * The next line shouldn't be here, but the DosPostEventSem()
 		 * below will return 299 from time to time under heavy load
 		 */
-		DosResetEventSem(hSocketSem,&ulPostCount);
+/*		DosResetEventSem(hSocketSem,&ulPostCount);*/
 
 		memcpy(sd_ptr->tcp_select_monitor,sd_ptr->tcp_select_mask,
 		        sd_ptr->socket_ntotal*sizeof(int));
@@ -478,7 +497,10 @@ void os2SocketMonitorThread(void *arg)
 				xf86Msg(X_ERROR,"Socket monitor: os2_select: sock_errno = %d\n",rc);
 		}
 
+		rc = DosQueryEventSem(hevServerHasFocus, &ulPostCount);
+
 		/* no need to rush while switched away */
+		if ((rc==0) && (ulPostCount==0))
 			rc == DosWaitEventSem(hevServerHasFocus,31L);
 	}
 }

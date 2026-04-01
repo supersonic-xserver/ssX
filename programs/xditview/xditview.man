@@ -1,3 +1,5 @@
+.\" $XConsortium: xditview.man,v 1.10 94/04/17 20:43:37 gildea Exp $
+.\"
 .\" $XFree86: xc/programs/xditview/xditview.man,v 1.6 2005/02/11 03:03:18 dawes Exp $
 .\"
 .TH XDITVIEW 1 __vendorversion__

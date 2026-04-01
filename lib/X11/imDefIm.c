@@ -1,3 +1,11 @@
+/* $Xorg: imDefIm.c,v 1.5 2000/08/17 19:45:12 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************
          Copyright 1990, 1991, 1992 by Sun Microsystems, Inc.
          Copyright 1992, 1993, 1994 by FUJITSU LIMITED
@@ -30,7 +38,7 @@ OF THIS SOFTWARE.
                                makoto@sm.sony.co.jp
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/imDefIm.c,v 1.17tsi Exp $ */
+/* $XFree86: xc/lib/X11/imDefIm.c,v 1.16 2003/11/17 22:20:11 dawes Exp $ */
 
 #include <X11/Xatom.h>
 #define NEED_EVENTS
@@ -420,8 +428,8 @@ _XimGetAuthProtocolNames(
     CARD8	*num,
     INT16	*len)
 {
-    *num = 0;
     if (!IS_USE_AUTHORIZATION_FUNC(im)) {
+	*num = 0;
 	*len = 0;
 	return True;
     }

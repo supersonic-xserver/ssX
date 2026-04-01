@@ -1,4 +1,14 @@
-/* $XFree86: xc/include/extensions/xtraplib.h,v 1.2tsi Exp $ */
+/*
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
+ *
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __XTRAPLIB__
 #define __XTRAPLIB__ 
 
@@ -52,14 +62,9 @@ SOFTWARE.
 #include <X11/extensions/xtrapdi.h>
 #include <X11/extensions/xtrapemacros.h>
 
-struct _XETC;
-
-typedef void (*XETrapCBProc)(struct _XETC *tc, XETrapDatum *pdatum,
-			     BYTE *userp);
-
 typedef struct  /* Callback structure */
 {
-    XETrapCBProc  func;
+    void_function func;
     BYTE          *data;
 } XETrapCB;
 

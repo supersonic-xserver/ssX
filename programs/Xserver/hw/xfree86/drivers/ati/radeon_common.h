@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_common.h,v 1.11tsi Exp $ */
 /* radeon_common.h -- common header definitions for Radeon 2D/3D/DRM suite
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 2000 VA Linux Systems, Inc., Fremont, California.
  * Copyright 2002 Tungsten Graphics, Inc., Cedar Park, Texas.
@@ -31,6 +37,9 @@
  *
  * Converted to common header format:
  *   Jens Owen <jens@tungstengraphics.com>
+ *
+ * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_common.h,v 1.11 2004/12/13 22:40:55 tsi Exp $
+ *
  */
 
 #ifndef _RADEON_COMMON_H_
@@ -70,8 +79,6 @@
 #define DRM_RADEON_IRQ_WAIT               0x17
 #define DRM_RADEON_CP_RESUME              0x18
 #define DRM_RADEON_SETPARAM               0x19
-#define DRM_RADEON_SURF_ALLOC             0x1a
-#define DRM_RADEON_SURF_FREE              0x1b
 #define DRM_RADEON_MAX_DRM_COMMAND_INDEX  0x39
 
 
@@ -91,8 +98,7 @@ typedef struct {
    enum {
       DRM_RADEON_INIT_CP    = 0x01,
       DRM_RADEON_CLEANUP_CP = 0x02,
-      DRM_RADEON_INIT_R200_CP = 0x03,
-      DRM_RADEON_INIT_R300_CP = 0x04
+      DRM_RADEON_INIT_R200_CP = 0x03
    } func;
    unsigned long sarea_priv_offset;
    int is_pci;
@@ -468,20 +474,6 @@ typedef struct drm_radeon_set_param {
 } drmRadeonSetParam;
 
 #define RADEON_SETPARAM_FB_LOCATION     1
-#define RADEON_SETPARAM_SWITCH_TILING   2
-#define RADEON_SETPARAM_PCIGART_LOCATION 3
-#define RADEON_SETPARAM_NEW_MEMMAP 4
 
-/* 1.14: Clients can allocate/free a surface
- */
-typedef struct drm_radeon_surface_alloc {
-	unsigned int address;
-	unsigned int size;
-	unsigned int flags;
-} drmRadeonSurfaceAlloc;
-
-typedef struct drm_radeon_surface_free {
-	unsigned int address;
-} drmRadeonSurfaceFree;
 
 #endif

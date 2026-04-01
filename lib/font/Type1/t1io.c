@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/t1io.c,v 3.9tsi Exp $ */
+/* $Xorg: t1io.c,v 1.3 2000/08/17 19:46:33 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -45,6 +52,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
+/* $XFree86: xc/lib/font/Type1/t1io.c,v 3.9 2001/08/27 19:49:54 dawes Exp $ */
 /*******************************************************************
 *  I/O package for Type 1 font reading
 ********************************************************************/
@@ -57,8 +65,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #else
-#include <X11/Xdefs.h>	/* Bool declaration */
-#include <X11/Xmd.h>	/* INT32 declaration */
+#include "Xdefs.h"	/* Bool declaration */
+#include "Xmd.h"	/* INT32 declaration */
 #include "xf86_ansic.h"
 #endif
 #include "t1stdio.h"
@@ -66,7 +74,7 @@
 #ifdef WIN32
 #include <X11/Xw32defs.h>
 #endif
-#include <X11/Xdefs.h>
+#include "Xdefs.h"
 
 /* Constants and variables used in the decryption */
 #define c1 ((unsigned short)52845)

@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/aticonsole.c,v 1.28tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/aticonsole.c,v 1.25 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1997 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1997 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -62,9 +69,14 @@ ATISaveScreen
     pATI = ATIPTR(pScreenInfo);
     switch (pATI->NewHW.crtc)
     {
+
+#ifndef AVOID_CPIO
+
         case ATI_CRTC_VGA:
             ATIVGASaveScreen(pATI, Mode);
             break;
+
+#endif /* AVOID_CPIO */
 
         case ATI_CRTC_MACH64:
             ATIMach64SaveScreen(pATI, Mode);
@@ -105,6 +117,9 @@ ATISetDPMSMode
             break;
 
         default:
+
+#ifndef AVOID_CPIO
+
             /* Assume EGA/VGA */
             ATIVGASetDPMSMode(pATI, DPMSMode);
             break;
@@ -112,6 +127,9 @@ ATISetDPMSMode
         case ATI_ADAPTER_NONE:
         case ATI_ADAPTER_8514A:
         case ATI_ADAPTER_MACH8:
+
+#endif /* AVOID_CPIO */
+
             break;
     }
 }
@@ -255,9 +273,13 @@ ATIEnterVT
     if (pATI->OptionShadowFB)
         return TRUE;
 
+#ifndef AVOID_CPIO
+
     /* If used, modify banking interface */
     if (!miModifyBanking(pScreen, &pATI->BankInfo))
         return FALSE;
+
+#endif /* AVOID_CPIO */
 
     pScreenPixmap = (*pScreen->GetScreenPixmap)(pScreen);
     PixmapPrivate = pScreenPixmap->devPrivate;
@@ -319,8 +341,12 @@ ATIFreeScreen
 
     ATILeaveGraphics(pScreenInfo, pATI);
 
+#ifndef AVOID_CPIO
+
     xfree(pATI->OldHW.frame_buffer);
     xfree(pATI->NewHW.frame_buffer);
+
+#endif /* AVOID_CPIO */
 
     xfree(pATI->pShadow);
     xfree(pATI->pDGAMode);

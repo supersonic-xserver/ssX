@@ -1,29 +1,13 @@
-/************************************************************
-Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
+/*
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
+ *
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-Permission to use, copy, modify, and distribute this
-software and its documentation for any purpose and without
-fee is hereby granted, provided that the above copyright
-notice appear in all copies and that both that copyright
-notice and this permission notice appear in supporting
-documentation, and that the name of Silicon Graphics not be 
-used in advertising or publicity pertaining to distribution 
-of the software without specific prior written permission.
-Silicon Graphics makes no representation about the suitability 
-of this software for any purpose. It is provided "as is"
-without any express or implied warranty.
-
-SILICON GRAPHICS DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
-SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY 
-AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL SILICON
-GRAPHICS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL 
-DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, 
-DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
-OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
-THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-********************************************************/
-/* $XFree86: xc/include/extensions/XKBsrv.h,v 3.24 2006/01/09 14:58:17 dawes Exp $ */
 
 #ifndef _XKBSRV_H_
 #define	_XKBSRV_H_
@@ -242,7 +226,7 @@ extern int	XkbReqCode;
 extern int	XkbEventBase;
 extern int	XkbKeyboardErrorCode;
 extern int	XkbDisableLockActions;
-extern const char *	XkbBaseDirectory;
+extern char *	XkbBaseDirectory;
 extern char *	XkbInitialMap;
 extern int	_XkbClientMajor;
 extern int	_XkbClientMinor;
@@ -318,7 +302,7 @@ extern void XkbUseMsg(
 
 extern int XkbProcessArguments(
     int				/* argc */,
-    const char **		/* argv */,
+    char **			/* argv */,
     int				/* i */
 );
 
@@ -1114,9 +1098,9 @@ extern	Bool XkbDDXNamesFromRules(
 );
 
 extern	FILE *XkbDDXOpenConfigFile(
-	const char *	/* mapName */,
-	char *		/* fileNameRtrn */,
-	int		/* fileNameRtrnLen */
+	char *	/* mapName */,
+	char *	/* fileNameRtrn */,
+	int	/* fileNameRtrnLen */
 );
 
 extern	Bool XkbDDXApplyConfig(

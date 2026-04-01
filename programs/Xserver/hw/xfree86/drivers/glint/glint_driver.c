@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997-2001 by Alan Hourihane, Wigan, England.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -28,7 +35,7 @@
  * this work is sponsored by S.u.S.E. GmbH, Fuerth, Elsa GmbH, Aachen, 
  * Siemens Nixdorf Informationssysteme and Appian Graphics.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint_driver.c,v 1.169tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/glint_driver.c,v 1.164 2004/12/10 16:07:01 alanh Exp $ */
 
 #include "fb.h"
 #include "cfb8_32.h"
@@ -60,11 +67,11 @@
 #include "glint.h"
 
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #ifndef DEBUG
 #define DEBUG 0
@@ -84,8 +91,8 @@ static const OptionInfoRec *	GLINTAvailableOptions(int chipid, int busid);
 static void	GLINTIdentify(int flags);
 static Bool	GLINTProbe(DriverPtr drv, int flags);
 static Bool	GLINTPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	GLINTScreenInit(int Index, ScreenPtr pScreen,
-				const int argc, const char **argv);
+static Bool	GLINTScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	GLINTEnterVT(int scrnIndex, int flags);
 static void	GLINTLeaveVT(int scrnIndex, int flags);
 static Bool	GLINTCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -275,12 +282,14 @@ static const char *shadowSymbols[] = {
     NULL
 };
 
+#ifdef XFree86LOADER
 static const char *vbeSymbols[] = {
     "VBEInit",
     "vbeDoEDID",
     "vbeFree",
     NULL
 };
+#endif
 
 static const char *ramdacSymbols[] = {
     "IBMramdac526CalculateMNPCForClock",
@@ -331,11 +340,13 @@ static const char *fbdevHWSymbols[] = {
 	NULL
 };
 
+#ifndef GLINT_AVOID_INT10
 const char *GLINTint10Symbols[] = {
     "xf86FreeInt10",
     "xf86InitInt10",
     NULL
 };
+#endif
 
 #ifdef XFree86LOADER
 
@@ -398,21 +409,24 @@ static XF86ModuleVersionInfo glintVersRec =
 XF86ModuleData glintModuleData = { &glintVersRec, glintSetup, NULL };
 
 pointer
-glintSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+glintSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
     if (!setupDone) {
 	setupDone = TRUE;
 	xf86AddDriver(&GLINT, module, 0);
-	LoaderModRefSymLists(module, fbSymbols, ddcSymbols, i2cSymbols,
-			     xaaSymbols, xf8_32bppSymbols,
-			     shadowSymbols, fbdevHWSymbols, GLINTint10Symbols,
-			     vbeSymbols, ramdacSymbols,
-#ifdef XF86DRI
-			     drmSymbols, driSymbols,
+	LoaderRefSymLists(fbSymbols, ddcSymbols, i2cSymbols,
+			  xaaSymbols, xf8_32bppSymbols,
+			  shadowSymbols, fbdevHWSymbols,
+#ifndef GLINT_AVOID_INT10
+			  GLINTint10Symbols,
 #endif
-			     NULL);
+			  vbeSymbols, ramdacSymbols,
+#ifdef XF86DRI
+			  drmSymbols, driSymbols,
+#endif
+			  NULL);
 	return (pointer)TRUE;
     }
 
@@ -614,14 +628,11 @@ static void
 GLINTProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-    if ((pMod = xf86LoadVBEModule(pScrn)))
+    if (xf86LoadSubModule(pScrn, "vbe"))
     {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
 	pVbe =  VBEInit(NULL,index);
 	vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 
@@ -638,7 +649,6 @@ GLINTProbe(DriverPtr drv, int flags)
     int *usedChips = NULL;
     Bool foundScreen = FALSE;
     char *name;   
-    ModuleDescPtr pMod;
 
     /* 
     TRACE_ENTER("GLINTProbe");
@@ -659,10 +669,10 @@ GLINTProbe(DriverPtr drv, int flags)
  	 * when no PCI cards have been found. This is for systems without
  	 * (proper) PCI support. (Michel)
   	 */
- 	if (!(pMod = xf86LoadDrvSubModule(drv, "fbdevhw")))
+ 	if (!xf86LoadDrvSubModule(drv, "fbdevhw"))
 	    return FALSE;
 	
- 	xf86LoaderModReqSymLists(pMod, fbdevHWSymbols, NULL);
+ 	xf86LoaderReqSymLists(fbdevHWSymbols, NULL);
   	
  	for (i = 0; i < numDevSections; i++) {
  	    dev = xf86FindOptionValue(devSections[i]->options,"fbdev");
@@ -991,7 +1001,6 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
     char *mod = NULL;
     const char *s;
     const char **syms = NULL;
-    ModuleDescPtr pMod = NULL;
 
     TRACE_ENTER("GLINTPreInit");
 
@@ -1236,13 +1245,13 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
 
     /* Check whether to use the FBDev stuff and fill in the rest of pScrn */
     if (xf86ReturnOptValBool(pGlint->Options, OPTION_FBDEV, FALSE)) {
-    	if (!FBDevProbed && !(pMod = xf86LoadSubModule(pScrn, "fbdevhw")))
+    	if (!FBDevProbed && !xf86LoadSubModule(pScrn, "fbdevhw"))
     	{
 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "couldn't load fbdevHW module!\n");	
 		return FALSE;
 	}
 
-	xf86LoaderModReqSymLists(pMod, fbdevHWSymbols, NULL);
+	xf86LoaderReqSymLists(fbdevHWSymbols, NULL);
 
 	if (!fbdevHWInit(pScrn,NULL,xf86FindOptionValue(pGlint->pEnt->device->options,"fbdev")))
 	{
@@ -1441,20 +1450,22 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
     }
     }
 
+#ifndef GLINT_AVOID_INT10
     /* Initialize the card through int10 interface if needed */
     if (pGlint->Chipset != PCI_VENDOR_3DLABS_CHIP_GAMMA && 
 	pGlint->Chipset != PCI_VENDOR_3DLABS_CHIP_GAMMA2 &&
 	pGlint->Chipset != PCI_VENDOR_3DLABS_CHIP_DELTA &&
 	!xf86IsPrimaryPci(pGlint->PciInfo) && !pGlint->FBDev) {
-    	if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
+    	if ( xf86LoadSubModule(pScrn, "int10")){
 	    xf86Int10InfoPtr pInt;
 
-	    xf86LoaderModReqSymLists(pMod, GLINTint10Symbols, NULL);
+	    xf86LoaderReqSymLists(GLINTint10Symbols, NULL);
 	    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Initializing int10\n");
 	    pInt = xf86InitInt10(pGlint->pEnt->index);
 	    xf86FreeInt10(pInt);
         }
     }
+#endif
 
     pGlint->FbMapSize = 0;
 
@@ -1678,10 +1689,10 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
 		   pGlint->FbMapSize / 1024);
 
     /* The ramdac module should be loaded here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "ramdac")))
+    if (!xf86LoadSubModule(pScrn, "ramdac"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    xf86LoaderReqSymLists(ramdacSymbols, NULL);
 
     /* Let's check what type of DAC we have and reject if necessary */
     switch (pGlint->Chipset) {
@@ -2353,38 +2364,38 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
 	}
 	break;
     }
-    if (mod && !(pMod = xf86LoadSubModule(pScrn, mod))) {
+    if (mod && xf86LoadSubModule(pScrn, mod) == NULL) {
 	GLINTFreeRec(pScrn);
 	return FALSE;
     }
     if (mod && syms) {
-	xf86LoaderModReqSymLists(pMod, syms, NULL);
+	xf86LoaderReqSymLists(syms, NULL);
     }
 
     /* Load XAA if needed */
     if (!pGlint->NoAccel) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    GLINTFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     /* Load shadowfb if needed */
     if (pGlint->ShadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 	    GLINTFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
 
     /* Load DDC */
-    if (!(pMod = xf86LoadSubModule(pScrn, "ddc"))) {
+    if (!xf86LoadSubModule(pScrn, "ddc")) {
 	GLINTFreeRec(pScrn);
 	return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+    xf86LoaderReqSymLists(ddcSymbols, NULL);
     /* Load I2C if needed */
     if ((pGlint->Chipset == PCI_VENDOR_3DLABS_CHIP_PERMEDIA2) ||
 	(pGlint->Chipset == PCI_VENDOR_3DLABS_CHIP_PERMEDIA2V) ||
@@ -2392,10 +2403,10 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
 	(pGlint->Chipset == PCI_VENDOR_3DLABS_CHIP_PERMEDIA4) ||
 	(pGlint->Chipset == PCI_VENDOR_3DLABS_CHIP_R4) ||
 	(pGlint->Chipset == PCI_VENDOR_TI_CHIP_PERMEDIA2)) {
-	if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
+	if (xf86LoadSubModule(pScrn, "i2c")) {
 	    I2CBusPtr pBus;
 
-	    xf86LoaderModReqSymLists(pMod, i2cSymbols, NULL);
+	    xf86LoaderReqSymLists(i2cSymbols, NULL);
 	    if ((pBus = xf86CreateI2CBusRec())) {
 		pBus->BusName = "DDC";
 		pBus->scrnIndex = pScrn->scrnIndex;
@@ -2459,7 +2470,7 @@ GLINTMapMem(ScrnInfoPtr pScrn)
      * We always map VGA IO registers - even if we don't need them
      */ 
     pGlint->IOBase = xf86MapPciMem(pScrn->scrnIndex, VIDMEM_MMIO_32BIT, 
-	       pGlint->PciTag, pGlint->IOAddress, 0x20000);
+	       pGlint->PciTag, pGlint->IOAddress, 0x10000);
 
     if (pGlint->IOBase == NULL)
 	return FALSE;
@@ -2834,8 +2845,7 @@ GLINTRestore(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 static Bool
-GLINTScreenInit(int scrnIndex, ScreenPtr pScreen,
-		const int argc, const char **argv)
+GLINTScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
     GLINTPtr pGlint = GLINTPTR(pScrn);
@@ -2892,7 +2902,7 @@ GLINTScreenInit(int scrnIndex, ScreenPtr pScreen,
      * function.  If not, the visuals will need to be setup before calling
      * a fb ScreenInit() function and fixed up after.
      *
-     * For most PC hardware at depths >= 8, the defaults that fb uses
+     * For most PC hardware at depths >= 8, the defaults that cfb uses
      * are not appropriate.  In this driver, we fixup the visuals after.
      */
 
@@ -3156,7 +3166,7 @@ GLINTScreenInit(int scrnIndex, ScreenPtr pScreen,
 
 #ifdef XF86DRI
     if (pGlint->directRenderingEnabled) {
-	/* Now that mi, fb, drm and others have done their thing, 
+	/* Now that mi, cfb, drm and others have done their thing, 
          * complete the DRI setup.
          */
 	pGlint->directRenderingEnabled = GLINTDRIFinishScreenInit(pScreen);

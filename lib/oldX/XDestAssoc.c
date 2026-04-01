@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/oldX/XDestAssoc.c,v 1.5tsi Exp $ */
+/* $Xorg: XDestAssoc.c,v 1.4 2001/02/09 02:04:05 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1985, 1998  The Open Group.
@@ -24,9 +31,10 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
+/* $XFree86: xc/lib/oldX/XDestAssoc.c,v 1.5 2004/04/03 22:38:52 tsi Exp $ */
 
-#include <X11/Xlibint.h>
-#include <X11/X10.h>
+#include "Xlibint.h"
+#include "X10.h"
 
 /*
  * XDestroyAssocTable - Destroy (free the memory associated with)

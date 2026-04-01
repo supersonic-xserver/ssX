@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/tinyx/i810/i810stub.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/i810/i810stub.c,v 1.1 2004/06/02 22:43:01 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* COPYRIGHT AND PERMISSION NOTICE
 
 Copyright (c) 2000, 2001 Nokia Home Communications
@@ -92,7 +99,7 @@ static const int i810Cards[]={ PCI_CHIP_I810, PCI_CHIP_I810_DC100, PCI_CHIP_I810
 #define numI810Cards (sizeof(i810Cards) / sizeof(i810Cards[0]))
 
 void
-InitCard (const char *name)
+InitCard (char *name)
 {
     KdCardAttr	attr;
     int		i;
@@ -104,19 +111,19 @@ InitCard (const char *name)
 
 
 void
-InitOutput (ScreenInfo *pScreenInfo, const int argc, const char **argv)
+InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     KdInitOutput (pScreenInfo, argc, argv);
 }
 
 void
-InitInput (const int argc, const char **argv)
+InitInput (int argc, char **argv)
 {
     KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
 }
 
 int
-ddxProcessArgument (int argc, const char **argv, int i)
+ddxProcessArgument (int argc, char **argv, int i)
 {
     return KdProcessArgument(argc, argv, i);
 }

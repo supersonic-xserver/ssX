@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/Imakefile,v 1.14tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/Imakefile,v 1.10 2004/03/18 07:06:48 dawes Exp $
 /*
  *
  * Copyright 1995-1998 The XFree86 Project, Inc.
@@ -71,15 +71,21 @@ OBJS = savage_driver.o \
         savage_vbe.o \
         savage_video.o
 
+DEFINES = -DPSZ=8
+
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-           -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(XF86SRC)/xaa \
-           -I$(SERVERSRC)/Xext -I$(XF86SRC)/vgahw -I$(XF86SRC)/ramdac \
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi \
+           -I$(XF86SRC)/xaa \
+           -I$(XF86SRC)/xf1bpp -I$(XF86SRC)/xf4bpp \
+           -I$(XF86SRC)/xf24_32bpp -I$(SERVERSRC)/Xext \
+           -I$(XF86SRC)/vgahw -I$(XF86SRC)/ramdac \
            -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
            -I$(XF86SRC)/rac -I$(XF86SRC)/int10 -I$(SERVERSRC)/render \
-           -I$(SERVERSRC)/include -I$(XF86SRC)/vbe -I$(XF86SRC)/shadowfb
+           -I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(FONTINCSRC) \
+           -I$(EXTINCSRC) -I$(XF86SRC)/vbe -I$(XF86SRC)/shadowfb
 #endif
 
 #if MakeHasPosixVariableSubstitutions
@@ -111,6 +117,7 @@ InstallDriverSDKNonExecFile(savage_image.c,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_regs.h,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_shadow.c,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_vbe.c,$(DRIVERSDKDIR)/drivers/savage)
+InstallDriverSDKNonExecFile(savage_vbe.h,$(DRIVERSDKDIR)/drivers/savage)
 InstallDriverSDKNonExecFile(savage_video.c,$(DRIVERSDKDIR)/drivers/savage)
 
 InstallDriverSDKObjectModule(savage,$(DRIVERSDKMODULEDIR),drivers)

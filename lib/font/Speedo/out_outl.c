@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/font/Speedo/out_outl.c,v 1.2tsi Exp $ */
+/* $Xorg: out_outl.c,v 1.3 2000/08/17 19:46:26 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989-1991, Bitstream Inc., Cambridge, MA.
@@ -31,13 +46,12 @@ WITH THE SPEEDO SOFTWARE OR THE BITSTREAM CHARTER OUTLINE FONT.
 
 #include "spdo_prv.h"               /* General definitions for Speedo     */
 
-#ifndef DEBUG
-#define DEBUG 0
-#endif
+
+#define   DEBUG      0
 
 #if DEBUG
 #include <stdio.h>
-#define SHOW(X) printf("X = %lx\n", (unsigned long)X)
+#define SHOW(X) printf("X = %d\n", X)
 #else
 #define SHOW(X)
 #endif

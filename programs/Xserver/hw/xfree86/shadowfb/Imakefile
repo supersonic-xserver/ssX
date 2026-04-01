@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/shadowfb/Imakefile,v 1.6tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/shadowfb/Imakefile,v 1.6 2004/06/01 00:17:06 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -57,10 +57,12 @@ XFMODOBJ = sfbmodule.o
 
 SRCS = 	shadow.c $(XFMODSRC)
 
+
 OBJS = 	shadow.o $(XFMODOBJ)
 
-INCLUDES = -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
-	   -I$(XF86OSSRC) -I$(XF86COMSRC) -I../../../render
+INCLUDES = -I. -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+	   -I$(XF86OSSRC) -I$(XF86COMSRC) -I$(XINCLUDESRC) -I$(FONTINCSRC) \
+           -I../../../render -I$(EXTINCSRC)
 
 
 ModuleObjectRule()

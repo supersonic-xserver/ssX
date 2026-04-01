@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/bdf/bdflib.c,v 1.6 2007/04/09 15:37:11 tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000 Computing Research Labs, New Mexico State University
  * Copyright 2001, 2002, 2003, 2004 Francesco Zappa Nardelli
  *
@@ -21,6 +27,7 @@
  * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+/* $XFree86: xc/extras/freetype2/src/bdf/bdflib.c,v 1.4 2004/04/26 16:15:54 dawes Exp $ */
 
   /*************************************************************************/
   /*                                                                       */
@@ -386,8 +393,10 @@
   } _bdf_parse_t;
 
 
-#define setsbit( m, cc )  ( m[(FT_Byte)(cc) >> 3] |= (FT_Byte)( 1 << ( (cc) & 7 ) ) )
-#define sbitset( m, cc )  ( m[(FT_Byte)(cc) >> 3]  & ( 1 << ( (cc) & 7 ) ) )
+#define setsbit( m, cc ) \
+          ( m[(FT_Byte)(cc) >> 3] |= (FT_Byte)( 1 << ( (cc) & 7 ) ) )
+#define sbitset( m, cc ) \
+          ( m[(FT_Byte)(cc) >> 3]  & ( 1 << ( (cc) & 7 ) ) )
 
 
   /* An empty string for empty fields. */
@@ -569,10 +578,11 @@
     unsigned long  i, j;
     char           *fp, *dp;
 
-    *len = 0;
 
     if ( list == 0 || list->used == 0 )
       return 0;
+
+    *len = 0;
 
     dp = list->field[0];
     for ( i = j = 0; i < list->used; i++ )
@@ -1158,7 +1168,7 @@
     font->spacing = opts->font_spacing;
 
     len = (unsigned long)( ft_strlen( font->name ) + 1 );
-    /* Limit font names to 256 characters */
+    /* Limit ourselves to 256 characters in the font name. */
     if ( len >= 256 )
     {
       error = BDF_Err_Invalid_Argument;
@@ -1499,8 +1509,10 @@
       /* Make sure the number of glyphs is non-zero. */
       if ( p->cnt == 0 )
         font->glyphs_size = 64;
-      else  /* Limit to the number of code points in Unicode */
-      if ( p->cnt > 1114112 )
+
+      /* Limit ourselves to 1,114,112 glyphs in the font (this is the */
+      /* number of code points available in Unicode).                 */
+      if ( p->cnt >= 1114112UL )
       {
         error = BDF_Err_Invalid_Argument;
         goto Exit;
@@ -1583,8 +1595,9 @@
         goto Exit;
       p->glyph_enc = _bdf_atol( p->list.field[1], 0, 10 );
 
-      /* Ensure p->have doesn't overflow */
-      if ( p->glyph_enc > ( sizeof ( p->have ) * 8 ) )
+      /* Check that the encoding is in the range [0,65536] because        */
+      /* otherwise p->have (a bitmap with static size) overflows.         */
+      if ( p->glyph_enc >= sizeof(p->have)*8 )
       {
         error = BDF_Err_Invalid_File_Format;
         goto Exit;
@@ -1840,7 +1853,8 @@
     /* And finally, gather up the bitmap. */
     if ( ft_memcmp( line, "BITMAP", 6 ) == 0 )
     {
-      FT_ULong bytes;
+      unsigned long bitmap_size;
+
 
       if ( !( p->flags & _BDF_BBX ) )
       {
@@ -1852,16 +1866,16 @@
 
       /* Allocate enough space for the bitmap. */
       glyph->bpr   = ( glyph->bbx.width * p->font->bpp + 7 ) >> 3;
-      bytes = glyph->bpr * glyph->bbx.height;
 
-      if ( bytes != (unsigned short)bytes )
+      bitmap_size = glyph->bpr * glyph->bbx.height;
+      if ( bitmap_size > 0xFFFFU )
       {
         FT_ERROR(( "_bdf_parse_glyphs: " ERRMSG4, lineno ));
         error = BDF_Err_Bbx_Too_Big;
         goto Exit;
       }
-
-      glyph->bytes = (unsigned short)( glyph->bpr * glyph->bbx.height );
+      else
+        glyph->bytes = (unsigned short)bitmap_size;
 
       if ( FT_NEW_ARRAY( glyph->bitmap, glyph->bytes ) )
         goto Exit;

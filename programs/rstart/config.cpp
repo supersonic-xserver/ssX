@@ -1,4 +1,4 @@
-XCOMM $XFree86$
+XCOMM $Xorg: config.cpp,v 1.3 2000/08/17 19:54:01 cpqbld Exp $
 XCOMM
 XCOMM Copyright (c) 1993 Quarterdeck Office Systems
 XCOMM

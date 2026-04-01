@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/lib/xkbfile/Imakefile,v 3.7tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:46:42 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/lib/xkbfile/Imakefile,v 3.7 2004/04/05 02:33:14 dawes Exp $
 
 #define DoNormalLib	NormalLibxkbfile
 #define DoSharedLib	SharedLibxkbfile
@@ -29,6 +34,7 @@ REQUIREDLIBS = SharedxkbfileReqs
 		   xkbconfig.o xkbbells.o maprules.o
          HEADERS = XKBfile.h XKM.h XKMformat.h XKBrules.h \
 		   XKBconfig.h XKBbells.h 
+        INCLUDES = -I. -I$(EXTINCSRC)
 
 ROOT_DEFINES = -DDFLT_XKB_CONFIG_ROOT=\"$(LIBDIR)/xkb\"
 

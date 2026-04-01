@@ -1,3 +1,11 @@
+/* $Xorg: policy.c,v 1.4 2001/02/09 02:05:40 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -36,6 +44,8 @@ from The Open Group.
 
 # include "dm.h"
 # include "dm_auth.h"
+
+#include <errno.h>
 
 #ifdef XDMCP
 
@@ -137,19 +147,15 @@ Willing (
 	    if ((fd = popen(willing, "r")))
 	    {
 		char *s = NULL;
-
-		while(!(s = fgets(statusBuf, sizeof(statusBuf), fd)) &&
-		      !feof(fd))
-		    ;
+		while(!(s = fgets(statusBuf, 256, fd)) && errno == EINTR)
+			;
 		if (s && strlen(statusBuf) > 0)
-		    statusBuf[strlen(statusBuf)-1] = 0; /* chop newline */
+			statusBuf[strlen(statusBuf)-1] = 0; /* chop newline */
 		else
-		    snprintf (statusBuf, sizeof(statusBuf),
-			      "Willing, but %s failed",willing);
+			snprintf (statusBuf, sizeof(statusBuf), "Willing, but %s failed",willing);
 	    }
 	    else
-	        snprintf (statusBuf, sizeof(statusBuf),
-			  "Willing, but %s failed",willing);
+	        snprintf (statusBuf, sizeof(statusBuf), "Willing, but %s failed",willing);
 	    if (fd) pclose(fd);
 	}
 	else
@@ -160,7 +166,7 @@ Willing (
     if (!status->data)
 	status->length = 0;
     else
-	memmove (status->data, statusBuf, status->length);
+	memmove( status->data, statusBuf, status->length);
     return ret;
 }
 

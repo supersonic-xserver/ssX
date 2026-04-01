@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -47,6 +54,7 @@ extern void _tnl_install_pipeline( GLcontext *ctx,
 /* These are implemented in the t_vb_*.c files:
  */
 extern const struct tnl_pipeline_stage _tnl_vertex_transform_stage;
+extern const struct tnl_pipeline_stage _tnl_vertex_cull_stage;
 extern const struct tnl_pipeline_stage _tnl_normal_transform_stage;
 extern const struct tnl_pipeline_stage _tnl_lighting_stage;
 extern const struct tnl_pipeline_stage _tnl_fog_coordinate_stage;
@@ -63,8 +71,8 @@ extern const struct tnl_pipeline_stage *_tnl_default_pipeline[];
 
 /* Convenience routines provided by t_vb_render.c:
  */
-extern render_func _tnl_render_tab_elts[];
-extern render_func _tnl_render_tab_verts[];
+extern tnl_render_func _tnl_render_tab_elts[];
+extern tnl_render_func _tnl_render_tab_verts[];
 
 extern void _tnl_RenderClippedPolygon( GLcontext *ctx, 
 				       const GLuint *elts, GLuint n );

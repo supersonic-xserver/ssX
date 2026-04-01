@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/Xrandr/Xrandr.man,v 1.7 2003/08/04 10:32:21 eich Exp $
+.\" $XFree86: xc/lib/Xrandr/Xrandr.man,v 1.8 2003/11/23 05:40:36 dawes Exp $
 .\"
 .\" Copyright 2002 Hewlett-Packard Company.\"
 .\" Permission to use, copy, modify, distribute, and sell this software and its

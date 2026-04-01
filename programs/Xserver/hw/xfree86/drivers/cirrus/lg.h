@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Common strutures and function for CL-GD546x -- The Laguna family
  *
  * lg.h
@@ -10,7 +17,7 @@
  *  Inspired by cir.h
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg.h,v 1.11 2000/12/06 15:35:16 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg.h,v 1.12 2001/05/04 19:05:36 dawes Exp $ */
 
 #ifndef LG_H
 #define LG_H

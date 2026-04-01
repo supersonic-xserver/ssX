@@ -128,4 +128,5 @@ EXPORTS
  XeviQueryExtension
  XeviQueryVersion
  XeviGetVisualInfo
+/* $Xorg: Xext-def.cpp,v 1.3 2000/08/17 19:45:53 cpqbld Exp $ */
 /* $XFree86: xc/lib/Xext/Xext-def.cpp,v 1.10 2004/05/06 01:17:29 dawes Exp $ */

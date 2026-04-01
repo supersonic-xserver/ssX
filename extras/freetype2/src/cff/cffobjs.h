@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffobjs.h                                                              */
 /*                                                                         */
 /*    OpenType objects manager (specification).                            */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -22,9 +29,9 @@
 
 #include <ft2build.h>
 #include FT_INTERNAL_OBJECTS_H
-#include FT_INTERNAL_CFF_TYPES_H
-#include FT_INTERNAL_CFF_ERRORS_H
-#include FT_INTERNAL_POSTSCRIPT_NAMES_H
+#include "cfftypes.h"
+#include FT_INTERNAL_TRUETYPE_TYPES_H
+#include FT_SERVICE_POSTSCRIPT_CMAPS_H
 
 
 FT_BEGIN_HEADER
@@ -51,7 +58,18 @@ FT_BEGIN_HEADER
   /* <Description>                                                         */
   /*    A handle to an OpenType size object.                               */
   /*                                                                       */
-  typedef FT_Size  CFF_Size;
+  typedef struct  CFF_SizeRec_
+  {
+    FT_SizeRec       root;
+
+#ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
+
+    FT_UInt          strike_index;    /* 0xFFFF to indicate invalid */
+    FT_Size_Metrics  strike_metrics;  /* current strike's metrics   */
+
+#endif
+
+  } CFF_SizeRec, *CFF_Size;
 
 
   /*************************************************************************/
@@ -89,15 +107,6 @@ FT_BEGIN_HEADER
   } CFF_Transform;
 
 
-  /* this is only used in the case of a pure CFF font with no charmap */
-  typedef struct  CFF_CharMapRec_
-  {
-    TT_CharMapRec  root;
-    PS_Unicodes    unicodes;
-
-  } CFF_CharMapRec, *CFF_CharMap;
-
-
   /***********************************************************************/
   /*                                                                     */
   /* TrueType driver class.                                              */
@@ -110,30 +119,46 @@ FT_BEGIN_HEADER
   } CFF_DriverRec;
 
 
+  FT_LOCAL( FT_Error )
+  cff_size_init( CFF_Size  size );
+
+  FT_LOCAL( void )
+  cff_size_done( CFF_Size  size );
+
+  FT_LOCAL( FT_Error )
+  cff_size_reset( CFF_Size  size );
+
+  FT_LOCAL( void )
+  cff_slot_done( CFF_GlyphSlot  slot );
+
+  FT_LOCAL( FT_Error )
+  cff_slot_init( CFF_GlyphSlot   slot );
+
+
   /*************************************************************************/
   /*                                                                       */
   /* Face functions                                                        */
   /*                                                                       */
-  FT_LOCAL
-  FT_Error  CFF_Init_Face( FT_Stream      stream,
-                           CFF_Face       face,
-                           FT_Int         face_index,
-                           FT_Int         num_params,
-                           FT_Parameter*  params );
+  FT_LOCAL( FT_Error )
+  cff_face_init( FT_Stream      stream,
+                 CFF_Face       face,
+                 FT_Int         face_index,
+                 FT_Int         num_params,
+                 FT_Parameter*  params );
 
-  FT_LOCAL
-  void  CFF_Done_Face( CFF_Face  face );
+  FT_LOCAL( void )
+  cff_face_done( CFF_Face  face );
 
 
   /*************************************************************************/
   /*                                                                       */
   /* Driver functions                                                      */
   /*                                                                       */
-  FT_LOCAL
-  FT_Error  CFF_Init_Driver( CFF_Driver  driver );
+  FT_LOCAL( FT_Error )
+  cff_driver_init( CFF_Driver  driver );
 
-  FT_LOCAL
-  void  CFF_Done_Driver( CFF_Driver  driver );
+  FT_LOCAL( void )
+  cff_driver_done( CFF_Driver  driver );
 
 
 FT_END_HEADER

@@ -6,10 +6,10 @@
 
 <title>Installation Details for XFree86&reg; &relvers;
 <author>The XFree86 Project, Inc
-<date>12 August 2007
+<date>2 February 2005
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/Install.sgml,v 1.22tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/Install.sgml,v 1.22 2005/02/06 22:41:40 dawes Exp $
 </ident>
 
 <abstract>

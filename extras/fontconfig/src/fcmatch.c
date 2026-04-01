@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * $XFree86: xc/extras/fontconfig/src/fcmatch.c,v 1.1.1.1 2003/06/04 02:58:01 dawes Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
@@ -27,7 +34,6 @@
 #include "fcint.h"
 #include <stdio.h>
 
-#if 0
 static double
 FcCompareInteger (char *object, FcValue value1, FcValue value2)
 {
@@ -40,7 +46,6 @@ FcCompareInteger (char *object, FcValue value1, FcValue value2)
 	v = -v;
     return (double) v;
 }
-#endif
 
 static double
 FcCompareString (char *object, FcValue value1, FcValue value2)
@@ -175,7 +180,7 @@ static FcMatcher _FcMatchers [] = {
     { FC_LANG,		FcCompareLang,		3, 3 },
 #define MATCH_LANG	    3
     
-    { FC_SPACING,	FcCompareSize,		5, 5 },
+    { FC_SPACING,	FcCompareInteger,	5, 5 },
 #define MATCH_SPACING	    4
     
     { FC_PIXEL_SIZE,	FcCompareSize,		6, 6 },
@@ -184,10 +189,10 @@ static FcMatcher _FcMatchers [] = {
     { FC_STYLE,		FcCompareString,	7, 7 },
 #define MATCH_STYLE	    6
     
-    { FC_SLANT,		FcCompareSize,		8, 8 },
+    { FC_SLANT,		FcCompareInteger,	8, 8 },
 #define MATCH_SLANT	    7
     
-    { FC_WEIGHT,	FcCompareSize,		9, 9 },
+    { FC_WEIGHT,	FcCompareInteger,	9, 9 },
 #define MATCH_WEIGHT	    8
     
     { FC_ANTIALIAS,	FcCompareBool,		10, 10 },
@@ -199,7 +204,7 @@ static FcMatcher _FcMatchers [] = {
     { FC_OUTLINE,	FcCompareBool,		12, 12 },
 #define MATCH_OUTLINE	    11
 
-    { FC_FONTVERSION,	FcCompareSize,		13, 13 },
+    { FC_FONTVERSION,	FcCompareInteger,	13, 13 },
 #define MATCH_FONTVERSION   12
 };
 

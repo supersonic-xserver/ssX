@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_init.c,v 3.17 2006/01/09 15:00:22 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_init.c,v 3.15 2003/12/02 20:45:13 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Orest Zborowski <obz@Kodak.com>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -23,9 +30,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: lnx_init.c /main/7 1996/10/23 18:46:30 kaleb $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 
 #include "compiler.h"
 
@@ -295,7 +303,7 @@ xf86CloseConsole()
 }
 
 int
-xf86ProcessArgument(int argc, const char *argv[], int i)
+xf86ProcessArgument(int argc, char *argv[], int i)
 {
 	/*
 	 * Keep server from detaching from controlling tty.  This is useful

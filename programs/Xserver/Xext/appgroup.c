@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/appgroup.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/appgroup.c,v 1.12 2004/06/02 22:42:55 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998, 2001  The Open Group
 
@@ -26,7 +33,7 @@ from The Open Group.
 */
 
 /*
- * Copyright (c) 1996-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1996-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -74,8 +81,8 @@ from The Open Group.
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
@@ -84,11 +91,11 @@ from The Open Group.
 #include "colormapst.h"
 #include "servermd.h"
 #define _XAG_SERVER_
-#include <X11/extensions/Xagstr.h>
-#include <X11/extensions/Xagsrv.h>
+#include "Xagstr.h"
+#include "Xagsrv.h"
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
-#include <X11/Xfuncproto.h>
+#include "security.h"
+#include "Xfuncproto.h"
 
 #define XSERV_t
 #include <X11/Xtrans.h>
@@ -134,8 +141,10 @@ extern xConnSetupPrefix connSetupPrefix;
 extern char* ConnectionInfo;
 extern int connBlockScreenStart;
 
-static int
-XagAppGroupFree(pointer what, XID id)
+static 
+int XagAppGroupFree(
+    pointer what,
+    XID id) /* unused */
 {
     int i;
     AppGroupPtr pAppGrp = (AppGroupPtr) what;
@@ -166,8 +175,10 @@ XagAppGroupFree(pointer what, XID id)
 }
 
 /* static */
-void
-XagClientStateChange(CallbackListPtr* pcbl, pointer nulldata, pointer calldata)
+void XagClientStateChange(
+    CallbackListPtr* pcbl,
+    pointer nulldata,
+    pointer calldata)
 {
     SecurityAuthorizationPtr pAuth;
     NewClientInfoRec* pci = (NewClientInfoRec*) calldata;
@@ -296,20 +307,22 @@ XagExtensionInit(INITARGS)
 }
 
 /*ARGSUSED*/
-static void
-XagResetProc(ExtensionEntry* extEntry)
+static 
+void XagResetProc(
+    ExtensionEntry* extEntry)
 {
     DeleteCallback (&ClientStateCallback, XagClientStateChange, NULL);
     XagCallbackRefCount = 0;
     while (appGrpList) XagAppGroupFree ((pointer) appGrpList, 0);
 }
 
-static int
-ProcXagQueryVersion(ClientPtr client)
+static 
+int ProcXagQueryVersion(
+    register ClientPtr client)
 {
     /* REQUEST (xXagQueryVersionReq); */
     xXagQueryVersionReply rep;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH (xXagQueryVersionReq);
     rep.type = X_Reply;
@@ -327,9 +340,12 @@ ProcXagQueryVersion(ClientPtr client)
     return client->noClientException;
 }
 
-static void
-ProcessAttr(AppGroupPtr pAppGrp, ClientPtr client, unsigned int attrib_mask,
-	    CARD32* attribs)
+static 
+void ProcessAttr(
+    AppGroupPtr pAppGrp,
+    ClientPtr client,
+    unsigned int attrib_mask,
+    CARD32* attribs)
 {
     int i;
 
@@ -362,8 +378,9 @@ ProcessAttr(AppGroupPtr pAppGrp, ClientPtr client, unsigned int attrib_mask,
     }
 }
 
-static void
-CreateConnectionInfo(AppGroupPtr pAppGrp)
+static 
+void CreateConnectionInfo(
+    AppGroupPtr pAppGrp)
 {
     xWindowRoot* rootp;
     xWindowRoot* roots[MAXSCREENS];
@@ -422,9 +439,12 @@ CreateConnectionInfo(AppGroupPtr pAppGrp)
     pAppGrp->connSetupPrefix.length = olen >> 2;
 }
 
-static AppGroupPtr
-CreateAppGroup(ClientPtr client, XID appgroupId, unsigned int attrib_mask,
-	       CARD32* attribs)
+static 
+AppGroupPtr CreateAppGroup(
+    ClientPtr client,
+    XID appgroupId,
+    unsigned int attrib_mask,
+    CARD32* attribs)
 {
     AppGroupPtr pAppGrp;
 
@@ -447,8 +467,11 @@ CreateAppGroup(ClientPtr client, XID appgroupId, unsigned int attrib_mask,
     return pAppGrp;
 }
 
-static int
-AttrValidate(ClientPtr client, int attrib_mask, AppGroupPtr pAppGrp)
+static 
+int AttrValidate(
+    ClientPtr client,
+    int attrib_mask,
+    AppGroupPtr pAppGrp)
 {
     WindowPtr pWin;
     int idepth, ivids, found;
@@ -488,8 +511,8 @@ AttrValidate(ClientPtr client, int attrib_mask, AppGroupPtr pAppGrp)
 }
 
 /* static */
-int
-ProcXagCreate(ClientPtr client)
+int ProcXagCreate (
+    register ClientPtr client)
 {
     REQUEST (xXagCreateReq);
     AppGroupPtr pAppGrp;
@@ -520,8 +543,8 @@ ProcXagCreate(ClientPtr client)
 }
 
 /* static */
-int
-ProcXagDestroy(ClientPtr client)
+int ProcXagDestroy(
+    register ClientPtr client)
 {
     AppGroupPtr pAppGrp;
     REQUEST (xXagDestroyReq);
@@ -536,8 +559,9 @@ ProcXagDestroy(ClientPtr client)
     return client->noClientException;
 }
 
-static int
-ProcXagGetAttr(ClientPtr client)
+static 
+int ProcXagGetAttr(
+    register ClientPtr client)
 {
     AppGroupPtr pAppGrp;
     REQUEST (xXagGetAttrReq);
@@ -571,8 +595,9 @@ ProcXagGetAttr(ClientPtr client)
     return client->noClientException;
 }
 
-static int
-ProcXagQuery(ClientPtr client)
+static 
+int ProcXagQuery(
+    register ClientPtr client)
 {
     ClientPtr pClient;
     AppGroupPtr pAppGrp;
@@ -602,8 +627,9 @@ ProcXagQuery(ClientPtr client)
     return BadMatch;
 }
 
-static int
-ProcXagCreateAssoc(ClientPtr client)
+static 
+int ProcXagCreateAssoc(
+    register ClientPtr client)
 {
     REQUEST (xXagCreateAssocReq);
 
@@ -624,8 +650,9 @@ ProcXagCreateAssoc(ClientPtr client)
     return client->noClientException;
 }
 
-static int
-ProcXagDestroyAssoc(ClientPtr client)
+static 
+int ProcXagDestroyAssoc(
+    register ClientPtr client)
 {
     /* REQUEST (xXagDestroyAssocReq); */
 
@@ -634,8 +661,9 @@ ProcXagDestroyAssoc(ClientPtr client)
     return client->noClientException;
 }
 
-static int
-ProcXagDispatch(ClientPtr client)
+static 
+int ProcXagDispatch (
+    register ClientPtr client)
 {
     REQUEST (xReq);
     switch (stuff->data)
@@ -659,19 +687,21 @@ ProcXagDispatch(ClientPtr client)
     }
 }
 
-static int
-SProcXagQueryVersion(ClientPtr client)
+static 
+int SProcXagQueryVersion(
+    register ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST(xXagQueryVersionReq);
     swaps(&stuff->length, n);
     return ProcXagQueryVersion(client);
 }
 
-static int
-SProcXagCreate(ClientPtr client)
+static 
+int SProcXagCreate(
+    ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST (xXagCreateReq);
     swaps (&stuff->length, n);
     REQUEST_AT_LEAST_SIZE (xXagCreateReq);
@@ -681,10 +711,11 @@ SProcXagCreate(ClientPtr client)
     return ProcXagCreate (client);
 }
 
-static int
-SProcXagDestroy(ClientPtr client)
+static 
+int SProcXagDestroy(
+    ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST (xXagDestroyReq);
     swaps (&stuff->length, n);
     REQUEST_SIZE_MATCH (xXagDestroyReq);
@@ -692,10 +723,11 @@ SProcXagDestroy(ClientPtr client)
     return ProcXagDestroy (client);
 }
 
-static int
-SProcXagGetAttr(ClientPtr client)
+static 
+int SProcXagGetAttr(
+    ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST (xXagGetAttrReq);
     swaps (&stuff->length, n);
     REQUEST_SIZE_MATCH (xXagGetAttrReq);
@@ -703,10 +735,11 @@ SProcXagGetAttr(ClientPtr client)
     return ProcXagGetAttr (client);
 }
 
-static int
-SProcXagQuery(ClientPtr client)
+static 
+int SProcXagQuery(
+    ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST (xXagQueryReq);
     swaps (&stuff->length, n);
     REQUEST_SIZE_MATCH (xXagQueryReq);
@@ -714,10 +747,11 @@ SProcXagQuery(ClientPtr client)
     return ProcXagQuery (client);
 }
 
-static int
-SProcXagCreateAssoc(ClientPtr client)
+static 
+int SProcXagCreateAssoc(
+    ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST (xXagCreateAssocReq);
     swaps (&stuff->length, n);
     REQUEST_SIZE_MATCH (xXagCreateAssocReq);
@@ -727,10 +761,11 @@ SProcXagCreateAssoc(ClientPtr client)
     return ProcXagCreateAssoc (client);
 }
 
-static int
-SProcXagDestroyAssoc(ClientPtr client)
+static 
+int SProcXagDestroyAssoc(
+    ClientPtr client)
 {
-    int n;
+    register int n;
     REQUEST (xXagDestroyAssocReq);
     swaps (&stuff->length, n);
     REQUEST_SIZE_MATCH (xXagDestroyAssocReq);
@@ -738,8 +773,9 @@ SProcXagDestroyAssoc(ClientPtr client)
     return ProcXagDestroyAssoc (client);
 }
 
-static int
-SProcXagDispatch(ClientPtr client)
+static 
+int SProcXagDispatch(
+    register ClientPtr client)
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -763,20 +799,20 @@ SProcXagDispatch(ClientPtr client)
     }
 }
 
-Colormap
-XagDefaultColormap(ClientPtr client)
+Colormap XagDefaultColormap(
+    ClientPtr client)
 {
     return (client->appgroup ? client->appgroup->default_colormap : None);
 }
 
-VisualID
-XagRootVisual(ClientPtr client)
+VisualID XagRootVisual(
+    ClientPtr client)
 {
     return (client->appgroup ? client->appgroup->root_visual : 0);
 }
 
-ClientPtr
-XagLeader(ClientPtr client)
+ClientPtr XagLeader(
+    ClientPtr client)
 {
     return (client->appgroup ? client->appgroup->leader : NULL);
 }
@@ -786,8 +822,9 @@ XagLeader(ClientPtr client)
  * We don't want to send it to the leader when the window is on a different
  * screen, e.g. a print screen.
  */
-Bool
-XagIsControlledRoot(ClientPtr client, WindowPtr pParent)
+Bool XagIsControlledRoot(
+    ClientPtr client,
+    WindowPtr pParent)
 {
     if (client->appgroup) {
 	if (client->appgroup->single_screen && 
@@ -801,9 +838,11 @@ XagIsControlledRoot(ClientPtr client, WindowPtr pParent)
     return FALSE; 
 }
 
-void
-XagConnectionInfo(ClientPtr client, xConnSetupPrefix** conn_prefix,
-		  char** conn_info, int* num_screen)
+void XagConnectionInfo(
+    ClientPtr client,
+    xConnSetupPrefix** conn_prefix,
+    char** conn_info,
+    int* num_screen)
 {
     if (client->appgroup && client->appgroup->ConnectionInfo) {
 	*conn_prefix = &client->appgroup->connSetupPrefix;
@@ -812,14 +851,15 @@ XagConnectionInfo(ClientPtr client, xConnSetupPrefix** conn_prefix,
     } 
 }
 
-XID
-XagId(ClientPtr client)
+XID XagId(
+    ClientPtr client)
 {
     return (client->appgroup ? client->appgroup->appgroupId : 0);
 }
 
-void
-XagGetDeltaInfo(ClientPtr client, CARD32* buf)
+void XagGetDeltaInfo(
+    ClientPtr client,
+    CARD32* buf)
 {
     *buf++ = (CARD32) client->appgroup->default_root;
     *buf++ = (CARD32) client->appgroup->root_visual;
@@ -828,8 +868,8 @@ XagGetDeltaInfo(ClientPtr client, CARD32* buf)
     *buf = (CARD32) client->appgroup->white_pixel;
 }
 
-void
-XagCallClientStateChange(ClientPtr client)
+void XagCallClientStateChange(
+    ClientPtr client)
 {
     if (appGrpList) {
 	NewClientInfoRec clientinfo;

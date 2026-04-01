@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/programs/xfs/difs/Imakefile,v 1.6tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:54:19 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/programs/xfs/difs/Imakefile,v 1.6 2001/08/01 00:45:04 tsi Exp $
 
 #undef ServerDefines
 #include <Server.tmpl>
@@ -12,7 +17,7 @@ OBJS =  main.o dispatch.o extensions.o globals.o events.o tables.o \
 	fonts.o difsutils.o cache.o initfonts.o atom.o
 
 
-INCLUDES = -I../include -I$(FONTLIBSRC)/include
+INCLUDES = -I../include -I$(FONTINCSRC) -I$(EXTINCSRC) -I$(FONTLIBSRC)/include
  DEFINES = AllocateLocalDefines
 #if BuildLowMem
 LOWMEMDEFINES = -DLOWMEMFTPT
@@ -22,8 +27,10 @@ LOWMEMDEFINES =
 FONTDEFINES = -DFONT_PCF -DFONT_FS -DFONT_SPEEDO $(LOWMEMDEFINES)
 #ifdef DefaultFSConfigFile
 DEFAULTCONFIGFILE = DefaultFSConfigFile
-     CONFIGDEFINES = -DDEFAULT_CONFIG_FILE=\"$(DEFAULTCONFIGFILE)\"
+#else
+DEFAULTCONFIGFILE = /usr/lib/X11/fs/config
 #endif
+     CONFIGDEFINES = -DDEFAULT_CONFIG_FILE=\"$(DEFAULTCONFIGFILE)\"
 
 #if BuildFontCacheLib
 FONTCACHE_DEFINES = FontCacheExtensionDefines

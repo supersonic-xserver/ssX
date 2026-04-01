@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1999  Machine Vision Holdings Incorporated
  * Author: Mayk Langer <langer@vsys.de>
  *
@@ -123,10 +130,9 @@ static const char *reqSymbols[] = {
 	NULL
 };
 
-static MODULESETUPPROTO(DMCSetupProc);
 
 static pointer
-DMCSetupProc(	ModuleDescPtr module,
+DMCSetupProc(	pointer module,
 			pointer options,
 			int *errmaj,
 			int *errmin )

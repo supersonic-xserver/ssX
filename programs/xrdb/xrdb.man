@@ -1,3 +1,4 @@
+.\" $Xorg: xrdb.man,v 1.4 2001/02/09 02:05:56 xorgcvs Exp $
 .\" Copyright 1991, Digital Equipment Corporation.
 .\" Copyright 1991, 1994, 1998  The Open Group
 .\" 

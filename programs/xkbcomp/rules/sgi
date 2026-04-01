@@ -1,4 +1,4 @@
-// $XFree86$
+// $Xorg: sgi,v 1.3 2000/08/17 19:54:41 cpqbld Exp $
 
 ! option                =   symbols
   grp:switch            =   +group(switch)

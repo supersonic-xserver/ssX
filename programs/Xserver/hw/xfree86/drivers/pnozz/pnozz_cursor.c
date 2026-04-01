@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/pnozz/pnozz_cursor.c,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SBus Weitek P9100 hardware cursor support
  *
  * Copyright (C) 2005 Michael Lorenz
@@ -23,12 +29,13 @@
  */
 /* $NetBSD: pnozz_cursor.c,v 1.3 2005/11/12 23:32:12 macallan Exp $ */
 
-#include "pnozz.h"
+#include <fcntl.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <dev/sun/fbio.h>
+#include <dev/wscons/wsconsio.h>
 
-/*
- * All of this should probably be moved down to the common layer, or some
- * generic SBUS module.
- */
+#include "pnozz.h"
 
 static void PnozzLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src);
 static void PnozzSetCursorPosition(ScrnInfoPtr pScrn, int x, int y);
@@ -38,18 +45,25 @@ static void
 PnozzLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src)
 {
     PnozzPtr pPnozz = GET_PNOZZ_FROM_SCRN(pScrn);
-
-    xf86SbusSetOsHwCursorImage(pPnozz->psdp, src, src + 0x200);
+    
+    pPnozz->Cursor.set = FB_CUR_SETSHAPE;
+    pPnozz->Cursor.image = src;
+    pPnozz->Cursor.mask = src + 0x200;
+    
+    if (ioctl(pPnozz->psdp->fd, FBIOSCURSOR, &pPnozz->Cursor) == -1) 
+	xf86Msg(X_ERROR, "FB_CUR_SETSHAPE failed\n");
 }
 
-static void
+void 
 PnozzShowCursor(ScrnInfoPtr pScrn)
 {
     PnozzPtr pPnozz = GET_PNOZZ_FROM_SCRN(pScrn);
 
-    if (pPnozz->enabled == 0) {
-	pPnozz->enabled = 1;
-	xf86SbusSetOsHwCursor(pPnozz->psdp, TRUE);
+    if (pPnozz->Cursor.enable == 0) {
+    	pPnozz->Cursor.enable = 1;
+	pPnozz->Cursor.set = FB_CUR_SETCUR;
+	if (ioctl(pPnozz->psdp->fd, FBIOSCURSOR, &pPnozz->Cursor) == -1) 
+	    xf86Msg(X_ERROR, "FB_CUR_SETCUR failed\n");
     }
 }
 
@@ -58,9 +72,11 @@ PnozzHideCursor(ScrnInfoPtr pScrn)
 {
     PnozzPtr pPnozz = GET_PNOZZ_FROM_SCRN(pScrn);
 
-    if (pPnozz->enabled == 1) {
-	pPnozz->enabled = 0;
-	xf86SbusSetOsHwCursor(pPnozz->psdp, FALSE);
+    if (pPnozz->Cursor.enable == 1) {
+    	pPnozz->Cursor.enable = 0;
+	pPnozz->Cursor.set = FB_CUR_SETCUR;
+	if (ioctl(pPnozz->psdp->fd, FBIOSCURSOR, &pPnozz->Cursor) == -1) 
+	    xf86Msg(X_ERROR, "FB_CUR_SETCUR failed\n");
     }
 }
 
@@ -69,14 +85,11 @@ PnozzSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
 {
     PnozzPtr pPnozz = GET_PNOZZ_FROM_SCRN(pScrn);
 
-    x += 63;
-    y += 63;
-
-    if ((x != pPnozz->x) || (y != pPnozz->y)) {
-	pPnozz->x = x;
-	pPnozz->y = y;
-	xf86SbusSetOsHwCursorPosition(pPnozz->psdp, x, y);
-    }
+    pPnozz->Cursor.pos.x = x + 63;
+    pPnozz->Cursor.pos.y = y + 63;
+    pPnozz->Cursor.set = FB_CUR_SETPOS;
+    if (ioctl(pPnozz->psdp->fd, FBIOSCURSOR, &pPnozz->Cursor) == -1) 
+	xf86Msg(X_ERROR, "FB_CUR_SETPOS failed\n");
 }
 
 static void
@@ -84,14 +97,18 @@ PnozzSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
 {
     PnozzPtr pPnozz = GET_PNOZZ_FROM_SCRN(pScrn);
 
-    if ((bg != pPnozz->bg) || (fg != pPnozz->bg)) {
-	pPnozz->bg = bg;
-	pPnozz->fg = fg;
-	xf86SbusSetOsHwCursorCmap(pPnozz->psdp, bg, fg);
-    }
+    pPnozz->Cursor.set = FB_CUR_SETCMAP;
+    pPnozz->Cursor.cmap.red[0] = (bg & 0xff0000) >> 16;
+    pPnozz->Cursor.cmap.green[0] = (bg & 0xff00) >> 8;
+    pPnozz->Cursor.cmap.blue[0] = bg & 0xff;
+    pPnozz->Cursor.cmap.red[1] = (fg & 0xff0000) >> 16;
+    pPnozz->Cursor.cmap.green[1] = (fg & 0xff00) >> 8;
+    pPnozz->Cursor.cmap.blue[1] = fg & 0xff;
+    if (ioctl(pPnozz->psdp->fd, FBIOSCURSOR, &pPnozz->Cursor) == -1) 
+	xf86Msg(X_ERROR, "FB_CUR_SETCMAP failed\n");
 }
 
-Bool
+Bool 
 PnozzHWCursorInit(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
@@ -99,21 +116,34 @@ PnozzHWCursorInit(ScreenPtr pScreen)
     xf86CursorInfoPtr infoPtr;
 
     pPnozz = GET_PNOZZ_FROM_SCRN(pScrn);
+    
+    pPnozz->Cursor.mask = NULL;
+    pPnozz->Cursor.image = NULL;
+    if (ioctl(pPnozz->psdp->fd, FBIOGCURSOR, &pPnozz->Cursor) == -1) {
+    	xf86Msg(X_ERROR, "Hardware cursor isn't available\n");
+	return FALSE;
+    }
 
     infoPtr = xf86CreateCursorInfoRec();
     if(!infoPtr) return FALSE;
-
+    
     pPnozz->CursorInfoRec = infoPtr;
 
     infoPtr->MaxWidth = 64;
     infoPtr->MaxHeight = 64;
-
-    xf86SbusSetOsHwCursorHotSpot(pPnozz->psdp, 63, 63);
-
+    
+    pPnozz->Cursor.hot.x = 63;
+    pPnozz->Cursor.hot.y = 63;
+    pPnozz->Cursor.set = FB_CUR_SETHOT;
+    ioctl(pPnozz->psdp->fd, FBIOSCURSOR, &pPnozz->Cursor);
+    
+    pPnozz->Cursor.cmap.red = pPnozz->pal;
+    pPnozz->Cursor.cmap.green = pPnozz->pal + 3;
+    pPnozz->Cursor.cmap.blue = pPnozz->pal + 6;
+    
     infoPtr->Flags = HARDWARE_CURSOR_AND_SOURCE_WITH_MASK |
-	HARDWARE_CURSOR_TRUECOLOR_AT_8BPP /* |
-	HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
-	HARDWARE_CURSOR_NIBBLE_SWAPPED */ ;
+	HARDWARE_CURSOR_TRUECOLOR_AT_8BPP /*| 
+	HARDWARE_CURSOR_BIT_ORDER_MSBFIRST | HARDWARE_CURSOR_NIBBLE_SWAPPED*/;
 
     infoPtr->SetCursorColors = PnozzSetCursorColors;
     infoPtr->SetCursorPosition = PnozzSetCursorPosition;

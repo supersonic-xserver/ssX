@@ -48,7 +48,7 @@
 .ft P
 .fi
 ..
-.\" $XFree86$
+.\" $Xorg: fontlib.ms,v 1.3 2000/08/17 19:42:42 cpqbld Exp $
 .EF 'Font Library Interface'- % -'July 27, 1991'
 .OF 'Font Library Interface'- % -'July 27, 1991'
 .EH ''''

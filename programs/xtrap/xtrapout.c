@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xtrap/xtrapout.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/xtrap/xtrapout.c,v 1.2 2001/12/12 00:43:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * @DEC_COPYRIGHT@
  */
@@ -104,16 +111,11 @@ SOFTWARE.
 
 
 /* Forward declarations */
-#ifdef SIGNALRETURNSINT
-typedef int sigRetType;
-#else
-typedef void sigRetType;
-#endif
-static sigRetType SetGlobalDone (int sig);
+static void SetGlobalDone (void );
 static void print_req_callback (XETC *tc , XETrapDatum *data , 
-    BYTE *my_buf );
+    char *my_buf );
 static void print_evt_callback (XETC *tc , XETrapDatum *data , 
-    BYTE *my_buf );
+    char *my_buf );
 
 
 FILE *ofp;
@@ -125,18 +127,14 @@ XrmOptionDescRec optionTable [] =
     {"-v",     "*verbose",   XrmoptionSkipArg, (caddr_t) NULL},
 };
 
-static sigRetType SetGlobalDone(int sig)
+static void SetGlobalDone(void)
 {
     GlobalDone = 1L;
     fprintf(stderr,"Process Completed!\n");
-#ifdef SIGNALRETURNSINT
-    return 0;
-#else
     return;
-#endif
 }
 
-static void print_req_callback(XETC *tc, XETrapDatum *data, BYTE *my_buf)
+static void print_req_callback(XETC *tc, XETrapDatum *data, char *my_buf)
 {
     char *req_type;
     req_type = (data->u.req.reqType == XETrapGetExtOpcode(tc) ? "XTrap" :
@@ -146,7 +144,7 @@ static void print_req_callback(XETC *tc, XETrapDatum *data, BYTE *my_buf)
         (long)data->u.req.id);
 }
 
-static void print_evt_callback(XETC *tc, XETrapDatum *data, BYTE *my_buf)
+static void print_evt_callback(XETC *tc, XETrapDatum *data, char *my_buf)
 {
     static Time last_time = 0;
     int delta;
@@ -228,7 +226,7 @@ main(int argc, char *argv[])
 
     appW = XtAppInitialize(&app,"XTrap",optionTable,(Cardinal)2L,
         (int *)&argc, (String *)argv, (String *)NULL,(ArgList)&tmp,
-        (Cardinal)0);
+        (Cardinal)NULL);
 
     dpy = XtDisplay(appW);
 #ifdef DEBUG
@@ -277,8 +275,8 @@ main(int argc, char *argv[])
     XEPrintCurrent(stderr,&ret_cur);
 
     /* Add signal handlers so that we clean up properly */
-    _InitExceptionHandling(SetGlobalDone);
-    (void)XEEnableCtrlKeys(SetGlobalDone);
+    _InitExceptionHandling((void_function)SetGlobalDone);
+    (void)XEEnableCtrlKeys((void_function)SetGlobalDone);
              
     XETrapAppWhileLoop(app,tc,&GlobalDone);
 

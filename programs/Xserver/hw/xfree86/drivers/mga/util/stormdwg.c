@@ -1,4 +1,22 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/util/stormdwg.c,v 1.3 2006/01/09 14:59:54 dawes Exp $ */
+/* $XConsortium: dwg.c /main/2 1996/10/28 06:57:55 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/util/stormdwg.c,v 1.2 2004/11/28 03:37:42 tsi Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,7 +110,9 @@ char *bitmod[] = {
 };
 
 int
-main(int argc, char *argv[])
+main(argc, argv)
+int argc;
+char *argv[];
 {
 	unsigned long val, tmp;
 

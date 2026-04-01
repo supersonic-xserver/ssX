@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclFonts.c,v 1.2tsi Exp $ */
+/* $Xorg: PclFonts.c,v 1.3 2000/08/17 19:48:08 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -13,6 +20,7 @@
 **    *********************************************************
 ** 
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclFonts.c,v 1.2 2003/07/16 01:38:34 dawes Exp $ */
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -46,7 +54,7 @@ copyright holders.
 */
 
 #include "regionstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "scrnintstr.h"
 

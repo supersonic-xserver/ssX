@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xnest/Window.c,v 3.9tsi Exp $ */
+/* $Xorg: Window.c,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -12,9 +19,10 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Window.c,v 3.8 2003/11/16 05:05:20 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "gcstruct.h"
 #include "window.h"
 #include "windowstr.h"
@@ -540,37 +548,6 @@ xnestShapeWindow(WindowPtr pWin)
       
       XShapeCombineMask(xnestDisplay, xnestWindow(pWin),
 			ShapeClip, 0, 0, None, ShapeSet);
-    }
-  }
-  
-  if (!xnestRegionEqual(xnestWindowPriv(pWin)->input_shape,
-			wInputShape(pWin))) {
-    
-    if (wInputShape(pWin)) {
-      REGION_COPY(pWin->drawable.pScreen, 
-			xnestWindowPriv(pWin)->input_shape, wInputShape(pWin));
-      
-      reg = XCreateRegion();
-      pBox = REGION_RECTS(xnestWindowPriv(pWin)->input_shape);
-      for (i = 0; 
-	   i < REGION_NUM_RECTS(xnestWindowPriv(pWin)->input_shape);
-	   i++) {
-        rect.x = pBox[i].x1;
-        rect.y = pBox[i].y1;
-        rect.width = pBox[i].x2 - pBox[i].x1;
-        rect.height = pBox[i].y2 - pBox[i].y1;
-        XUnionRectWithRegion(&rect, reg, reg);
-      }
-      XShapeCombineRegion(xnestDisplay, xnestWindow(pWin),
-			  ShapeInput, 0, 0, reg, ShapeSet);
-      XDestroyRegion(reg);
-    }
-    else {
-      REGION_EMPTY(pWin->drawable.pScreen, 
-				     xnestWindowPriv(pWin)->input_shape);
-      
-      XShapeCombineMask(xnestDisplay, xnestWindow(pWin),
-			ShapeInput, 0, 0, None, ShapeSet);
     }
   }
 }

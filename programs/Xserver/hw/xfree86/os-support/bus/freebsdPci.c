@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/freebsdPci.c,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/freebsdPci.c,v 1.6 2003/10/02 13:30:07 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *
@@ -84,7 +91,6 @@ static pciBusInfo_t freebsdPci0 = {
 /* bridge      */	NULL
 };
 
-#undef PCI_CPU
 #if !defined(__OpenBSD__) && !defined(__FreeBSD__)
 #if X_BYTE_ORDER == X_BIG_ENDIAN
 #ifdef __sparc__
@@ -120,24 +126,9 @@ static int pciFd = -1;
 void
 freebsdPciInit()
 {
-	/* Always prefer a hardware-derived mechanism over an OS-provided one */
-	if (pciNumBuses)
-		return;
-
 	pciFd = open("/dev/pci", O_RDWR);
-	if (pciFd < 0) {
-		if (errno != EPERM)
-			return;
-
-		/* Try again without write access */
-		pciFd = open("/dev/pci", O_RDONLY);
-		if (pciFd < 0)
-			return;
-
-		xf86MsgVerb(X_WARNING, 3,
-			"OS limits PCI configuration space access to"
-			" read-only\n");
-	}
+	if (pciFd < 0)
+		return;
 
 	pciNumBuses    = 1;
 	pciBusInfo[0]  = &freebsdPci0;
@@ -150,20 +141,14 @@ freebsdPciCfgRead(PCITAG tag, int off)
 {
 	struct pci_io io;
 	int error;
-
 	io.pi_sel.pc_bus = BUS(tag);
 	io.pi_sel.pc_dev = DFN(tag) >> 3;
 	io.pi_sel.pc_func = DFN(tag) & 7;
 	io.pi_reg = off;
 	io.pi_width = 4;
 	error = ioctl(pciFd, PCIOCREAD, &io);
-	if (error) {
-		xf86MsgVerb(X_WARNING, 4,
-			"PciCfgRead(%d:%d:%d, %02x) failed (%s)\n",
-			io.pi_sel.pc_bus, io.pi_sel.pc_dev, io.pi_sel.pc_func,
-			off, strerror(errno));
+	if (error)
 		return ~0;
-	}
 	return PCI_CPU(io.pi_data);
 }
 
@@ -171,20 +156,13 @@ static void
 freebsdPciCfgWrite(PCITAG tag, int off, CARD32 val)
 {
 	struct pci_io io;
-	int error;
-
 	io.pi_sel.pc_bus = BUS(tag);
 	io.pi_sel.pc_dev = DFN(tag) >> 3;
 	io.pi_sel.pc_func = DFN(tag) & 7;
 	io.pi_reg = off;
 	io.pi_width = 4;
 	io.pi_data = PCI_CPU(val);
-	error = ioctl(pciFd, PCIOCWRITE, &io);
-	if (error)
-		xf86MsgVerb(X_WARNING, 4,
-			"PciCfgWrite(%d:%d:%d, %02x, %08lx) failed (%s)\n",
-			io.pi_sel.pc_bus, io.pi_sel.pc_dev, io.pi_sel.pc_func,
-			off, (unsigned long)val, strerror(errno));
+	ioctl(pciFd, PCIOCWRITE, &io);
 }
 
 static void

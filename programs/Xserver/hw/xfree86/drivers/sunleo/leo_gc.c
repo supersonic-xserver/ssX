@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Leo (ZX) framebuffer - GC implementation.
  *
  * Copyright (C) 1999, 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunleo/leo_gc.c,v 1.3 2005/10/14 15:16:46 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunleo/leo_gc.c,v 1.2 2000/12/01 00:24:35 dawes Exp $ */
 
 #define PSZ 32
 
@@ -28,11 +35,11 @@
 #include "leo_regs.h"
 #include "leo_gc.h"
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "cfb.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -164,7 +171,7 @@ GCOps	LeoNonTEOps = {
 #endif
 };
 
-static GCOps *
+GCOps *
 LeoMatchCommon (GCPtr pGC, cfbPrivGCPtr devPriv)
 {
 	if (pGC->lineWidth != 0)
@@ -221,8 +228,6 @@ LeoDestroyGC (GCPtr pGC)
 	miDestroyGC (pGC);
 }
 
-extern GCOps cfbNonTEOps;
-
 void
 LeoValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 {
@@ -242,6 +247,8 @@ LeoValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 	type = pLeo->vtSema ? -1 : pDrawable->type;
 	if (type != DRAWABLE_WINDOW) {
 		if (gcPriv->type == DRAWABLE_WINDOW) {
+			extern GCOps cfbNonTEOps;
+
 			miDestroyGCOps (pGC->ops);
 			pGC->ops = &cfbNonTEOps;
 			changes = (1 << (GCLastBit+1)) - 1;

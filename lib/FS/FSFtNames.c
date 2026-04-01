@@ -1,3 +1,11 @@
+/* $Xorg: FSFtNames.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -52,8 +60,12 @@ in this Software without prior written authorization from The Open Group.
 
 #include "FSlibint.h"
 
-char **
-FSListFonts(FSServer *svr, char *pattern, int maxNames, int *actualCount)
+char      **
+FSListFonts(svr, pattern, maxNames, actualCount)
+    FSServer   *svr;
+    char       *pattern;
+    int         maxNames;
+    int        *actualCount;
 {
     long        nbytes;
     int         i,
@@ -112,8 +124,8 @@ FSListFonts(FSServer *svr, char *pattern, int maxNames, int *actualCount)
 
 }
 
-int
-FSFreeFontNames(char **list)
+int FSFreeFontNames(list)
+    char      **list;
 {
     if (list) {
 	FSfree(list[0] - 1);

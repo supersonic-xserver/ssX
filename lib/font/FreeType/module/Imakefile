@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/font/FreeType/module/Imakefile,v 1.23tsi Exp $
+XCOMM $XFree86: xc/lib/font/FreeType/module/Imakefile,v 1.22 2004/06/01 00:16:57 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,11 +52,11 @@ FT2INCDIR = $(TOP)/extras/freetype2/include
 #define IHaveModules
 #include <Server.tmpl>
 
-DEFINES = -DFONTMODULE Freetype2BuildDefines
+DEFINES = -DFONTMODULE Freetype2BuildDefines -DXFREE86_FT2
 
-INCLUDES = -I.. -I../../include \
+INCLUDES = -I. -I.. -I$(FONTINCSRC) -I../../include -I$(XINCLUDESRC) \
            -I$(SERVERSRC)/include \
-           -I$(FT2INCDIR) \
+	   -I$(FT2INCDIR) \
            -I$(FT2SOURCEDIR)/base \
            -I$(FT2SOURCEDIR)/gzip \
            -I$(FT2SOURCEDIR)/lzw \
@@ -70,7 +70,8 @@ INCLUDES = -I.. -I../../include \
            -I$(FT2SOURCEDIR)/pshinter \
            -I$(FT2SOURCEDIR)/autohint \
            -I$(FT2SOURCEDIR)/bdf \
-           -I$(FT2SOURCEDIR)/pcf
+           -I$(FT2SOURCEDIR)/pcf \
+           -I$(INCLUDESRC)
 
 FT2SRCS = ftbase.c ftinit.c ftglyph.c ftbbox.c ftsystem.c fttype1.c ftxf86.c \
           ftgzip.c ftlzw.c raster.c sfnt.c truetype.c cff.c type1.c \
@@ -96,7 +97,7 @@ LinkSourceFile(ftbase.c,$(FT2SOURCEDIR)/base)
 LinkSourceFile(ftinit.c,$(FT2SOURCEDIR)/base)
 LinkSourceFile(ftglyph.c,$(FT2SOURCEDIR)/base)
 LinkSourceFile(ftbbox.c,$(FT2SOURCEDIR)/base)
-LinkSourceFile(ftsystem.c,$(FT2SOURCEDIR)/base)
+LinkSourceFile(ftsystem.c,..)
 LinkSourceFile(ftutil.c,$(FT2SOURCEDIR)/base)
 LinkSourceFile(fttype1.c,$(FT2SOURCEDIR)/base)
 LinkSourceFile(ftxf86.c,$(FT2SOURCEDIR)/base)

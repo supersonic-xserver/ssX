@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/FreeBSD.cf,v 3.160tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/FreeBSD.cf,v 3.155 2005/03/03 03:32:17 dawes Exp $
 
 /*
  * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
@@ -162,9 +162,10 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # if HasLibPthread
 #  define ThreadsLibraries	-lpthread
 # else
-#  define NeedThreadStubLibrary  YES
+#  define BuildThreadStubLibrary  YES
 #  if OSRelVersion >= 500043
 #   define NeedUIThrStubs	NO
+#   define ThrStubsForCompat	YES
 #  else
 #   define NeedUIThrStubs	YES
 #  endif
@@ -183,8 +184,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 /* This fixes linking C programs against libGLU on FreeBSD 3.x */
 #if (OSMajorVersion == 3)
-#define SharedGLUReqs		$(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) \
-				$(XLIB) -lstdc++ -lgcc
+#define SharedGLUReqs		$(LDPRELIB) $(XLIB) $(GLXLIB) -lstdc++ -lgcc
 #endif
 
 #define AvoidNullMakeCommand	YES
@@ -233,7 +233,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  *
  *    ld: warning: libXThrStub.so.6, needed by libX11.so, not found
  */
-#if NeedThreadStubLibrary && (!defined(UseInstalledX11) || !UseInstalledX11)
+#if BuildThreadStubLibrary && (!defined(UseInstalledX11) || !UseInstalledX11)
 # define CcCmd			$(CLIENTENVSETUP) cc
 # define CplusplusCmd		$(CLIENTENVSETUP) c++
 #else
@@ -249,7 +249,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #if defined(UseInstalled)
 #define DefaultCCOptions	/**/
 #else
-#if (defined(HasGcc3) && HasGcc3) || (defined(HasGcc4) && HasGcc4)
+#if defined(HasGcc3) && HasGcc3
 #define NoSystemWarn		-Wno-system-headers
 #else
 #define NoSystemWarn
@@ -440,9 +440,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #ifndef HasPam
 #define HasPam		YES
 #endif
-#ifndef PamDefines
-#define PamDefines	-D_OPENPAM
-#endif
 #endif
 
 #undef  InstallCmd
@@ -523,10 +520,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define DefaultSystemPath	/bin:/usr/bin:/sbin:/usr/sbin:$(BINDIR)
 #ifndef SystemManDirectory
 #define SystemManDirectory	/usr/share/man
-#endif
-
-#ifndef PkgConfigDirectory
-#define PkgConfigDirectory	$(LIBDATADIR)/pkgconfig
 #endif
 
 #define InstKmemFlags	-g kmem -m 2755

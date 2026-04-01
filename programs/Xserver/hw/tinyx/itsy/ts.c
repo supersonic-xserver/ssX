@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,13 +26,13 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/itsy/ts.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/itsy/ts.c,v 1.1 2004/06/02 22:43:01 dawes Exp $ */
 
 #define NEED_EVENTS
 #include "itsy.h"
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "inputstr.h"
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 
 int
 itsyTsReadBytes (int fd, char *buf, int len, int min)

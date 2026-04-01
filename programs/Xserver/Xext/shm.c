@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/shm.c,v 3.48tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/shm.c,v 3.43 2004/09/25 18:06:20 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -27,9 +34,10 @@ in this Software without prior written authorization from The Open Group.
 
 /* THIS IS NOT AN X CONSORTIUM STANDARD OR AN X PROJECT TEAM SPECIFICATION */
 
+/* $Xorg: shm.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+
 #define SHM
 
-#ifndef EXTMODULE
 #include <sys/types.h>
 #ifndef Lynx
 #include <sys/ipc.h>
@@ -40,11 +48,10 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #include <unistd.h>
 #include <sys/stat.h>
-#endif
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -56,8 +63,8 @@ in this Software without prior written authorization from The Open Group.
 #include "extnsionst.h"
 #include "servermd.h"
 #define _XSHM_SERVER_
-#include <X11/extensions/shmstr.h>
-#include <X11/Xfuncproto.h>
+#include "shmstr.h"
+#include "Xfuncproto.h"
 #ifdef EXTMODULE
 #include "xf86_ansic.h"
 #endif
@@ -68,8 +75,6 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 #include "modinit.h"
-
-#ifdef MITSHM
 
 typedef struct _ShmDesc {
     struct _ShmDesc *next;
@@ -165,15 +170,15 @@ static ShmFuncs fbFuncs = {fbShmCreatePixmap, fbShmPutImage};
 static Bool badSysCall = FALSE;
 
 static void
-SigSysHandler(int signo)
+SigSysHandler(signo)
+int signo;
 {
     badSysCall = TRUE;
 }
 
-static Bool
-CheckForShmSyscall(void)
+static Bool CheckForShmSyscall()
 {
-    void (*oldHandler)(int);
+    void (*oldHandler)();
     int shmid = -1;
 
     /* If no SHM support in the kernel, the bad syscall will generate SIGSYS */
@@ -214,19 +219,15 @@ ShmExtensionInit(INITARGS)
     }
 #endif
 
-    sharedPixmaps = xTrue;
-    pixmapFormat = shmPixFormat[0];
-    for (i = 0; i < screenInfo.numScreens; i++)
+    sharedPixmaps = xFalse;
+    pixmapFormat = 0;
     {
-	if (!shmFuncs[i]) {
-	    /*
-	     * A faster ShmPutImage implementation can be used if the screen
-	     * stores pixmap data in the server's address space.  We now
-	     * assume this is so, by default, given that it is the more usual
-	     * case.
-	     */
-	    shmFuncs[i] = &fbFuncs;
-	}
+      sharedPixmaps = xTrue;
+      pixmapFormat = shmPixFormat[0];
+      for (i = 0; i < screenInfo.numScreens; i++)
+      {
+	if (!shmFuncs[i])
+	    shmFuncs[i] = &miFuncs;
 	if (!shmFuncs[i]->CreatePixmap)
 	    sharedPixmaps = xFalse;
 	if (shmPixFormat[i] && (shmPixFormat[i] != pixmapFormat))
@@ -234,11 +235,11 @@ ShmExtensionInit(INITARGS)
 	    sharedPixmaps = xFalse;
 	    pixmapFormat = 0;
 	}
-    }
-    if (!pixmapFormat)
+      }
+      if (!pixmapFormat)
 	pixmapFormat = ZPixmap;
-    if (sharedPixmaps)
-    {
+      if (sharedPixmaps)
+      {
 	for (i = 0; i < screenInfo.numScreens; i++)
 	{
 	    destroyPixmap[i] = screenInfo.screens[i]->DestroyPixmap;
@@ -253,6 +254,7 @@ ShmExtensionInit(INITARGS)
 		return;
 	}
 #endif
+      }
     }
     ShmSegType = CreateNewResourceType(ShmDetachSegment);
     if (ShmSegType &&
@@ -269,7 +271,8 @@ ShmExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-ShmResetProc(ExtensionEntry *extEntry)
+ShmResetProc (extEntry)
+ExtensionEntry	*extEntry;
 {
     int i;
 
@@ -281,19 +284,23 @@ ShmResetProc(ExtensionEntry *extEntry)
 }
 
 void
-ShmRegisterFuncs(ScreenPtr pScreen, ShmFuncsPtr funcs)
+ShmRegisterFuncs(
+    ScreenPtr pScreen,
+    ShmFuncsPtr funcs)
 {
     shmFuncs[pScreen->myNum] = funcs;
 }
 
 void
-ShmSetPixmapFormat(ScreenPtr pScreen, int format)
+ShmSetPixmapFormat(
+    ScreenPtr pScreen,
+    int format)
 {
     shmPixFormat[pScreen->myNum] = format;
 }
 
 static Bool
-ShmDestroyPixmap(PixmapPtr pPixmap)
+ShmDestroyPixmap (PixmapPtr pPixmap)
 {
     ScreenPtr	    pScreen = pPixmap->drawable.pScreen;
     Bool	    ret;
@@ -328,22 +335,18 @@ ShmDestroyPixmap(PixmapPtr pPixmap)
 }
 
 void
-ShmRegisterMiFuncs(ScreenPtr pScreen)
-{
-    shmFuncs[pScreen->myNum] = &miFuncs;
-}
-
-void
-ShmRegisterFbFuncs(ScreenPtr pScreen)
+ShmRegisterFbFuncs(pScreen)
+    ScreenPtr pScreen;
 {
     shmFuncs[pScreen->myNum] = &fbFuncs;
 }
 
 static int
-ProcShmQueryVersion(ClientPtr client)
+ProcShmQueryVersion(client)
+    register ClientPtr client;
 {
     xShmQueryVersionReply rep;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH(xShmQueryVersionReq);
     rep.type = X_Reply;
@@ -409,7 +412,8 @@ shm_access(ClientPtr client, struct ipc_perm *perm, int readonly)
 }
 
 static int
-ProcShmAttach(ClientPtr client)
+ProcShmAttach(client)
+    register ClientPtr client;
 {
     struct shmid_ds buf;
     ShmDescPtr shmdesc;
@@ -470,7 +474,9 @@ ProcShmAttach(ClientPtr client)
 
 /*ARGSUSED*/
 static int
-ShmDetachSegment(pointer value, XID shmseg)
+ShmDetachSegment(value, shmseg)
+    pointer value; /* must conform to DeleteType */
+    XID shmseg;
 {
     ShmDescPtr shmdesc = (ShmDescPtr)value;
     ShmDescPtr *prev;
@@ -486,7 +492,8 @@ ShmDetachSegment(pointer value, XID shmseg)
 }
 
 static int
-ProcShmDetach(ClientPtr client)
+ProcShmDetach(client)
+    register ClientPtr client;
 {
     ShmDescPtr shmdesc;
     REQUEST(xShmDetachReq);
@@ -498,9 +505,12 @@ ProcShmDetach(ClientPtr client)
 }
 
 static void
-miShmPutImage(DrawablePtr dst, GCPtr pGC, int depth, unsigned int format,
-	      int w, int h, int sx, int sy, int sw, int sh, int dx, int dy,
-	      char *data)
+miShmPutImage(dst, pGC, depth, format, w, h, sx, sy, sw, sh, dx, dy, data)
+    DrawablePtr dst;
+    GCPtr	pGC;
+    int		depth, w, h, sx, sy, sw, sh, dx, dy;
+    unsigned int format;
+    char 	*data;
 {
     PixmapPtr pmap;
     GCPtr putGC;
@@ -528,9 +538,12 @@ miShmPutImage(DrawablePtr dst, GCPtr pGC, int depth, unsigned int format,
 }
 
 static void
-fbShmPutImage(DrawablePtr dst, GCPtr pGC, int depth, unsigned int format,
-	      int w, int h, int sx, int sy, int sw, int sh, int dx, int dy,
-	      char *data)
+fbShmPutImage(dst, pGC, depth, format, w, h, sx, sy, sw, sh, dx, dy, data)
+    DrawablePtr dst;
+    GCPtr	pGC;
+    int		depth, w, h, sx, sy, sw, sh, dx, dy;
+    unsigned int format;
+    char 	*data;
 {
     if ((format == ZPixmap) || (depth == 1))
     {
@@ -556,7 +569,7 @@ fbShmPutImage(DrawablePtr dst, GCPtr pGC, int depth, unsigned int format,
 
 #ifdef PANORAMIX
 static int 
-ProcPanoramiXShmPutImage(ClientPtr client)
+ProcPanoramiXShmPutImage(register ClientPtr client)
 {
     int			 j, result = 0, orig_x, orig_y;
     PanoramiXRes	*draw, *gc;
@@ -696,7 +709,7 @@ ProcPanoramiXShmGetImage(ClientPtr client)
     }
     
     if (client->swapped) {
-	int n;
+	register int n;
     	swaps(&xgi.sequenceNumber, n);
     	swapl(&xgi.length, n);
 	swapl(&xgi.visual, n);
@@ -708,13 +721,13 @@ ProcPanoramiXShmGetImage(ClientPtr client)
 }
 
 static int
-ProcPanoramiXShmCreatePixmap(ClientPtr client)
+ProcPanoramiXShmCreatePixmap(
+    register ClientPtr client)
 {
     ScreenPtr pScreen = NULL;
     PixmapPtr pMap = NULL;
     DrawablePtr pDraw;
     DepthPtr pDepth;
-    CARD32 width, height, depth, size;
     int i, j, result;
     ShmDescPtr shmdesc;
     REQUEST(xShmCreatePixmapReq);
@@ -727,34 +740,24 @@ ProcPanoramiXShmCreatePixmap(ClientPtr client)
     LEGAL_NEW_RESOURCE(stuff->pid, client);
     VERIFY_GEOMETRABLE(pDraw, stuff->drawable, client);
     VERIFY_SHMPTR(stuff->shmseg, stuff->offset, TRUE, shmdesc, client);
-
-    width = stuff->width;
-    height = stuff->height;
-    depth = stuff->depth;
-
-    if (!width || !height || !depth)
+    if (!stuff->width || !stuff->height)
     {
 	client->errorValue = 0;
         return BadValue;
     }
-    if ((width > 32767) || (height > 32767))
-	return BadAlloc;
-
     if (stuff->depth != 1)
     {
         pDepth = pDraw->pScreen->allowedDepths;
         for (i=0; i<pDraw->pScreen->numDepths; i++, pDepth++)
-	   if (pDepth->depth == depth)
+	   if (pDepth->depth == stuff->depth)
                goto CreatePmap;
-	client->errorValue = depth;
+	client->errorValue = stuff->depth;
         return BadValue;
     }
 CreatePmap:
-    size = PixmapBytePad(width, depth) * height;
-    if (stuff->offset >= (CARD32)(-size))
-	return BadAlloc;
-
-    VERIFY_SHMSIZE(shmdesc, stuff->offset, size, client);
+    VERIFY_SHMSIZE(shmdesc, stuff->offset,
+		   PixmapBytePad(stuff->width, stuff->depth) * stuff->height,
+		   client);
 
     if(!(newPix = (PanoramiXRes *) xalloc(sizeof(PanoramiXRes))))
 	return BadAlloc;
@@ -770,7 +773,8 @@ CreatePmap:
     FOR_NSCREENS(j) {
 	pScreen = screenInfo.screens[j];
 
-	pMap = (*shmFuncs[j]->CreatePixmap)(pScreen, width, height, depth,
+	pMap = (*shmFuncs[j]->CreatePixmap)(pScreen, 
+				stuff->width, stuff->height, stuff->depth,
 				shmdesc->addr + stuff->offset);
 
 	if (pMap) {
@@ -806,10 +810,11 @@ CreatePmap:
 #endif
 
 static int
-ProcShmPutImage(ClientPtr client)
+ProcShmPutImage(client)
+    register ClientPtr client;
 {
-    GCPtr pGC;
-    DrawablePtr pDraw;
+    register GCPtr pGC;
+    register DrawablePtr pDraw;
     long length;
     ShmDescPtr shmdesc;
     REQUEST(xShmPutImageReq);
@@ -909,9 +914,10 @@ ProcShmPutImage(ClientPtr client)
 
 
 static int
-ProcShmGetImage(ClientPtr client)
+ProcShmGetImage(client)
+    register ClientPtr client;
 {
-    DrawablePtr pDraw;
+    register DrawablePtr pDraw;
     long		lenPer = 0, length;
     Mask		plane = 0;
     xShmGetImageReply	xgi;
@@ -1018,10 +1024,14 @@ ProcShmGetImage(ClientPtr client)
 }
 
 static PixmapPtr
-fbShmCreatePixmap(ScreenPtr pScreen, int width, int height, int depth,
-		  char *addr)
+fbShmCreatePixmap (pScreen, width, height, depth, addr)
+    ScreenPtr	pScreen;
+    int		width;
+    int		height;
+    int		depth;
+    char	*addr;
 {
-    PixmapPtr pPixmap;
+    register PixmapPtr pPixmap;
 
     pPixmap = (*pScreen->CreatePixmap)(pScreen, 0, 0, pScreen->rootDepth);
     if (!pPixmap)
@@ -1036,15 +1046,15 @@ fbShmCreatePixmap(ScreenPtr pScreen, int width, int height, int depth,
 }
 
 static int
-ProcShmCreatePixmap(ClientPtr client)
+ProcShmCreatePixmap(client)
+    register ClientPtr client;
 {
     PixmapPtr pMap;
-    DrawablePtr pDraw;
+    register DrawablePtr pDraw;
     DepthPtr pDepth;
-    int i;
+    register int i;
     ShmDescPtr shmdesc;
     REQUEST(xShmCreatePixmapReq);
-    CARD32 width, height, depth, size;
 
     REQUEST_SIZE_MATCH(xShmCreatePixmapReq);
     client->errorValue = stuff->pid;
@@ -1053,36 +1063,27 @@ ProcShmCreatePixmap(ClientPtr client)
     LEGAL_NEW_RESOURCE(stuff->pid, client);
     VERIFY_GEOMETRABLE(pDraw, stuff->drawable, client);
     VERIFY_SHMPTR(stuff->shmseg, stuff->offset, TRUE, shmdesc, client);
-
-    width = stuff->width;
-    height = stuff->height;
-    depth = stuff->depth;
-
-    if (!width || !height || !depth)
+    if (!stuff->width || !stuff->height)
     {
 	client->errorValue = 0;
         return BadValue;
     }
-    if ((width > 32767) || (height > 32767))
-	return BadAlloc;
-
     if (stuff->depth != 1)
     {
         pDepth = pDraw->pScreen->allowedDepths;
         for (i=0; i<pDraw->pScreen->numDepths; i++, pDepth++)
-	   if (pDepth->depth == depth)
+	   if (pDepth->depth == stuff->depth)
                goto CreatePmap;
-	client->errorValue = depth;
+	client->errorValue = stuff->depth;
         return BadValue;
     }
 CreatePmap:
-    size = PixmapBytePad(width, depth) * height;
-    if (stuff->offset >= (CARD32)(-size))
-	return BadAlloc;
-
-    VERIFY_SHMSIZE(shmdesc, stuff->offset, size, client);
+    VERIFY_SHMSIZE(shmdesc, stuff->offset,
+		   PixmapBytePad(stuff->width, stuff->depth) * stuff->height,
+		   client);
     pMap = (*shmFuncs[pDraw->pScreen->myNum]->CreatePixmap)(
-			    pDraw->pScreen, width, height, depth,
+			    pDraw->pScreen, stuff->width,
+			    stuff->height, stuff->depth,
 			    shmdesc->addr + stuff->offset);
     if (pMap)
     {
@@ -1097,11 +1098,12 @@ CreatePmap:
 	    return(client->noClientException);
 	}
     }
-    return BadAlloc;
+    return (BadAlloc);
 }
 
 static int
-ProcShmDispatch(ClientPtr client)
+ProcShmDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -1136,7 +1138,8 @@ ProcShmDispatch(ClientPtr client)
 }
 
 static void
-SShmCompletionEvent(xShmCompletionEvent *from, xShmCompletionEvent *to)
+SShmCompletionEvent(from, to)
+    xShmCompletionEvent *from, *to;
 {
     to->type = from->type;
     cpswaps(from->sequenceNumber, to->sequenceNumber);
@@ -1148,9 +1151,10 @@ SShmCompletionEvent(xShmCompletionEvent *from, xShmCompletionEvent *to)
 }
 
 static int
-SProcShmQueryVersion(ClientPtr client)
+SProcShmQueryVersion(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xShmQueryVersionReq);
 
     swaps(&stuff->length, n);
@@ -1158,9 +1162,10 @@ SProcShmQueryVersion(ClientPtr client)
 }
 
 static int
-SProcShmAttach(ClientPtr client)
+SProcShmAttach(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xShmAttachReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xShmAttachReq);
@@ -1170,9 +1175,10 @@ SProcShmAttach(ClientPtr client)
 }
 
 static int
-SProcShmDetach(ClientPtr client)
+SProcShmDetach(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xShmDetachReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xShmDetachReq);
@@ -1181,9 +1187,10 @@ SProcShmDetach(ClientPtr client)
 }
 
 static int
-SProcShmPutImage(ClientPtr client)
+SProcShmPutImage(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xShmPutImageReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xShmPutImageReq);
@@ -1207,9 +1214,10 @@ SProcShmPutImage(ClientPtr client)
 }
 
 static int
-SProcShmGetImage(ClientPtr client)
+SProcShmGetImage(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xShmGetImageReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xShmGetImageReq);
@@ -1229,9 +1237,10 @@ SProcShmGetImage(ClientPtr client)
 }
 
 static int
-SProcShmCreatePixmap(ClientPtr client)
+SProcShmCreatePixmap(client)
+    ClientPtr client;
 {
-    int n;
+    register int n;
     REQUEST(xShmCreatePixmapReq);
     swaps(&stuff->length, n);
     REQUEST_SIZE_MATCH(xShmCreatePixmapReq);
@@ -1248,7 +1257,8 @@ SProcShmCreatePixmap(ClientPtr client)
 }
 
 static int
-SProcShmDispatch (ClientPtr client)
+SProcShmDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -1269,5 +1279,3 @@ SProcShmDispatch (ClientPtr client)
 	return BadRequest;
     }
 }
-
-#endif

@@ -1,0 +1,29 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/irix/Imakefile,v 1.2 2005/10/14 15:17:03 tsi Exp $
+
+#include <Server.tmpl>
+
+SRCS = VTsw_noop.c agp_noop.c ioperm_noop.c kmod_noop.c libc_wrapper.c \
+       pm_noop.c posix_tty.c sigiostubs.c stdPci.c vidmem.c
+
+OBJS = VTsw_noop.o agp_noop.o ioperm_noop.o kmod_noop.o libc_wrapper.o \
+       pm_noop.o posix_tty.o sigiostubs.o stdPci.o vidmem.o
+
+INCLUDES = -I$(XF86OSSRC) -I$(XF86COMSRC) -I$(SERVERSRC)/include
+
+DEFINES = 
+
+SubdirLibraryRule($(OBJS))
+NormalLibraryObjectRule()
+
+LinkSourceFile(VTsw_noop.c,../shared)
+LinkSourceFile(agp_noop.c,../shared)
+LinkSourceFile(ioperm_noop.c,../shared)
+LinkSourceFile(kmod_noop.c,../shared)
+LinkSourceFile(libc_wrapper.c,../shared)
+LinkSourceFile(pm_noop.c,../shared)
+LinkSourceFile(posix_tty.c,../shared)
+LinkSourceFile(sigiostubs.c,../shared)
+LinkSourceFile(stdPci.c,../shared)
+LinkSourceFile(vidmem.c,../shared)
+
+DependTarget()

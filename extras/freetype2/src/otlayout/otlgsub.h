@@ -1,9 +1,28 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __OTL_GSUB_H__
 #define __OTL_GSUB_H__
 
 #include "otlayout.h"
 
 OTL_BEGIN_HEADER
+
+  typedef OTL_UInt  (*OTL_GSUB_AlternateFunc)( OTL_UInt     gindex,
+                                               OTL_UInt     count,
+                                               OTL_Bytes    alternates,
+                                               OTL_Pointer  data );
+
+  typedef struct OTL_GSUB_AlternateRec_
+  {
+    OTL_GSUB_AlternateFunc  handler_func;
+    OTL_Pointer             handler_data;
+
+  } OTL_GSUB_AlternateRec, *OTL_GSUB_Alternate;
 
   OTL_LOCAL( void )
   otl_gsub_validate( OTL_Bytes      table,

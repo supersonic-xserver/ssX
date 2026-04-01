@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c,v 3.73tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c,v 3.68 2003/09/24 02:43:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Orest Zborowski <obz@Kodak.com>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -23,8 +30,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: lnx_video.c /main/9 1996/10/19 18:06:34 kaleb $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -35,7 +43,6 @@
 #include "lnx.h"
 #ifdef __alpha__
 #include "xf86Axp.h"
-#include "lnx_axp.h"
 #endif
 
 #ifdef HAS_MTRR_SUPPORT
@@ -47,6 +54,25 @@
 #endif
 
 static Bool ExtendedEnabled = FALSE;
+
+#ifdef __ia64__
+
+#include "compiler.h"
+#include <sys/io.h>
+
+#elif !defined(__powerpc__) && \
+      !defined(__mc68000__) && \
+      !defined(__sparc__) && \
+      !defined(__mips__)
+
+/*
+ * Due to conflicts with "compiler.h", don't rely on <sys/io.h> to declare
+ * these.
+ */
+extern int ioperm(unsigned long __from, unsigned long __num, int __turn_on);
+extern int iopl(int __level);
+
+#endif
 
 #ifdef __alpha__
 
@@ -201,8 +227,7 @@ mtrr_cull_wc_region(int screenNum, unsigned long base, unsigned long size,
 			xf86DrvMsg(screenNum, from,
 				   "Removed MMIO write-combining range "
 				   "(0x%lx,0x%lx)\n",
-				   (unsigned long)gent.base,
-				   (unsigned long)gent.size);
+				   gent.base, gent.size);
 			wcr->next = wcreturn;
 			wcreturn = wcr;
 		} else {
@@ -210,7 +235,7 @@ mtrr_cull_wc_region(int screenNum, unsigned long base, unsigned long size,
 			xf86DrvMsgVerb(screenNum, X_WARNING, 0,
 				   "Failed to remove MMIO "
 				   "write-combining range (0x%lx,0x%lx)\n",
-				   gent.base, (unsigned long)gent.size);
+				   gent.base, gent.size);
 		}
 	}
 	return wcreturn;
@@ -501,9 +526,8 @@ xf86EnableIO(void)
 #endif
 	}
 	close(fd);
-#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && \
-      !defined(__sh__) && !defined(__hppa__)
-	if ((ioperm(0, 1024, 1) || iopl(3)) && (errno != ENOSYS))
+#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__hppa__)
+	if (ioperm(0, 1024, 1) || iopl(3))
 		FatalError("xf86EnableIOPorts: Failed to set IOPL for I/O\n");
 # if !defined(__alpha__)
 	ioperm(0x40,4,0); /* trap access to the timer chip */
@@ -521,10 +545,9 @@ xf86DisableIO(void)
 	if (!ExtendedEnabled)
 		return;
 #if defined(__powerpc__)
-	munmap((void *)ioBase, 0x20000);
+	munmap(ioBase, 0x20000);
 	ioBase = NULL;
-#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && \
-      !defined(__sh__) && !defined(__hppa__)
+#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__hppa__)
 	iopl(0);
 	ioperm(0, 1024, 0);
 #endif
@@ -543,17 +566,12 @@ xf86DisableIO(void)
 Bool
 xf86DisableInterrupts()
 {
-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && \
-    !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && \
-    !defined(__hppa__)
+#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__)
 	if (!ExtendedEnabled)
 	    if (iopl(3) || ioperm(0, 1024, 1))
-		if (errno != ENOSYS)
 			return (FALSE);
 #endif
-#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || \
-    defined(__sparc__) || defined(__mips__) || defined(__arm__) || \
-    defined(__sh__) || defined(__ia64__) || defined(__hppa__)
+#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__mips__) || defined(__arm__) || defined(__sh__) || defined(__ia64__) || defined(__hppa__)
 #else
 # ifdef __GNUC__
 #  if defined(__ia64__)
@@ -567,9 +585,7 @@ xf86DisableInterrupts()
 	asm("cli");
 # endif
 #endif
-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && \
-    !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && \
-    !defined(__hppa__)
+#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__)
 	if (!ExtendedEnabled) {
 	    iopl(0);
 	    ioperm(0, 1024, 0);
@@ -582,17 +598,12 @@ xf86DisableInterrupts()
 void
 xf86EnableInterrupts()
 {
-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && \
-    !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && \
-    !defined(__hppa__)
+#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__)
 	if (!ExtendedEnabled)
 	    if (iopl(3) || ioperm(0, 1024, 1))
-		if (errno != ENOSYS)
 			return;
 #endif
-#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || \
-    defined(__sparc__) || defined(__mips__) || defined(__arm__) || \
-    defined(__sh__) || defined(__ia64__) || defined(__hppa__)
+#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__mips__) || defined(__arm__) || defined(__sh__) || defined(__ia64__) || defined(__hppa__)
 #else
 # ifdef __GNUC__
 #  if defined(__ia64__)
@@ -606,9 +617,7 @@ xf86EnableInterrupts()
 	asm("sti");
 # endif
 #endif
-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && \
-    !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && \
-    !defined(__hppa__)
+#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__)
 	if (!ExtendedEnabled) {
 	    iopl(0);
 	    ioperm(0, 1024, 0);
@@ -620,17 +629,38 @@ xf86EnableInterrupts()
 #if defined (__alpha__)
 
 #define vuip    volatile unsigned int *
-#define vvp	volatile void *
 
-static int readSparse8(vvp Base, register unsigned long Offset);
-static int readSparse16(vvp Base, register unsigned long Offset);
-static int readSparse32(vvp Base, register unsigned long Offset);
-static void writeSparseNB8(int Value, vvp Base, register unsigned long Offset);
-static void writeSparseNB16(int Value, vvp Base, register unsigned long Offset);
-static void writeSparseNB32(int Value, vvp Base, register unsigned long Offset);
-static void writeSparse8(int Value, vvp Base, register unsigned long Offset);
-static void writeSparse16(int Value, vvp Base, register unsigned long Offset);
-static void writeSparse32(int Value, vvp Base, register unsigned long Offset);
+extern int readDense8(pointer Base, register unsigned long Offset);
+extern int readDense16(pointer Base, register unsigned long Offset);
+extern int readDense32(pointer Base, register unsigned long Offset);
+extern void
+writeDenseNB8(int Value, pointer Base, register unsigned long Offset);
+extern void
+writeDenseNB16(int Value, pointer Base, register unsigned long Offset);
+extern void
+writeDenseNB32(int Value, pointer Base, register unsigned long Offset);
+extern void
+writeDense8(int Value, pointer Base, register unsigned long Offset);
+extern void
+writeDense16(int Value, pointer Base, register unsigned long Offset);
+extern void
+writeDense32(int Value, pointer Base, register unsigned long Offset);
+
+static int readSparse8(pointer Base, register unsigned long Offset);
+static int readSparse16(pointer Base, register unsigned long Offset);
+static int readSparse32(pointer Base, register unsigned long Offset);
+static void
+writeSparseNB8(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseNB16(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseNB32(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparse8(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparse16(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparse32(int Value, pointer Base, register unsigned long Offset);
 
 #define DENSE_BASE	0x2ff00000000UL
 #define SPARSE_BASE	0x30000000000UL
@@ -736,7 +766,7 @@ unmapVidMemSparse(int ScreenNum, pointer Base, unsigned long Size)
 {
     unsigned long Offset = (unsigned long)Base - DENSE_BASE;
 #if 1
-    xf86Msg(X_INFO,"unmapVidMemSparse: unmapping Base %p Size 0x%lx\n",
+    xf86Msg(X_INFO,"unmapVidMemSparse: unmapping Base 0x%lx Size 0x%lx\n",
 	    Base, Size);
 #endif
     /* Unmap DENSE always. */
@@ -747,7 +777,7 @@ unmapVidMemSparse(int ScreenNum, pointer Base, unsigned long Size)
 }
 
 static int
-readSparse8(vvp Base, register unsigned long Offset)
+readSparse8(pointer Base, register unsigned long Offset)
 {
     register unsigned long result, shift;
     register unsigned long msb;
@@ -771,7 +801,7 @@ readSparse8(vvp Base, register unsigned long Offset)
 }
 
 static int
-readSparse16(vvp Base, register unsigned long Offset)
+readSparse16(pointer Base, register unsigned long Offset)
 {
     register unsigned long result, shift;
     register unsigned long msb;
@@ -795,7 +825,7 @@ readSparse16(vvp Base, register unsigned long Offset)
 }
 
 static int
-readSparse32(vvp Base, register unsigned long Offset)
+readSparse32(pointer Base, register unsigned long Offset)
 {
     /* NOTE: this is really using DENSE. */
     mem_barrier();
@@ -803,7 +833,7 @@ readSparse32(vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparse8(int Value, vvp Base, register unsigned long Offset)
+writeSparse8(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned long msb;
     register unsigned int b = Value & 0xffU;
@@ -824,7 +854,7 @@ writeSparse8(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparse16(int Value, vvp Base, register unsigned long Offset)
+writeSparse16(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned long msb;
     register unsigned int w = Value & 0xffffU;
@@ -845,7 +875,7 @@ writeSparse16(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparse32(int Value, vvp Base, register unsigned long Offset)
+writeSparse32(int Value, pointer Base, register unsigned long Offset)
 {
     /* NOTE: this is really using DENSE. */
     write_mem_barrier();
@@ -854,7 +884,7 @@ writeSparse32(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseNB8(int Value, vvp Base, register unsigned long Offset)
+writeSparseNB8(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned long msb;
     register unsigned int b = Value & 0xffU;
@@ -872,7 +902,7 @@ writeSparseNB8(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseNB16(int Value, vvp Base, register unsigned long Offset)
+writeSparseNB16(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned long msb;
     register unsigned int w = Value & 0xffffU;
@@ -890,49 +920,52 @@ writeSparseNB16(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseNB32(int Value, vvp Base, register unsigned long Offset)
+writeSparseNB32(int Value, pointer Base, register unsigned long Offset)
 {
     /* NOTE: this is really using DENSE. */
     *(vuip)((unsigned long)Base + (Offset)) = Value;
     return;
 }
 
-void (*xf86WriteMmio8)(int Value, vvp Base, unsigned long Offset) 
+void (*xf86WriteMmio8)(int Value, pointer Base, unsigned long Offset) 
      = writeDense8;
-void (*xf86WriteMmio16)(int Value, vvp Base, unsigned long Offset)
+void (*xf86WriteMmio16)(int Value, pointer Base, unsigned long Offset)
      = writeDense16;
-void (*xf86WriteMmio32)(int Value, vvp Base, unsigned long Offset)
+void (*xf86WriteMmio32)(int Value, pointer Base, unsigned long Offset)
      = writeDense32;
-void (*xf86WriteMmioNB8)(int Value, vvp Base, unsigned long Offset) 
+void (*xf86WriteMmioNB8)(int Value, pointer Base, unsigned long Offset) 
      = writeDenseNB8;
-void (*xf86WriteMmioNB16)(int Value, vvp Base, unsigned long Offset)
+void (*xf86WriteMmioNB16)(int Value, pointer Base, unsigned long Offset)
      = writeDenseNB16;
-void (*xf86WriteMmioNB32)(int Value, vvp Base, unsigned long Offset)
+void (*xf86WriteMmioNB32)(int Value, pointer Base, unsigned long Offset)
      = writeDenseNB32;
-int  (*xf86ReadMmio8)(vvp Base, unsigned long Offset) 
+int  (*xf86ReadMmio8)(pointer Base, unsigned long Offset) 
      = readDense8;
-int  (*xf86ReadMmio16)(vvp Base, unsigned long Offset)
+int  (*xf86ReadMmio16)(pointer Base, unsigned long Offset)
      = readDense16;
-int  (*xf86ReadMmio32)(vvp Base, unsigned long Offset)
+int  (*xf86ReadMmio32)(pointer Base, unsigned long Offset)
      = readDense32;
 
 #ifdef JENSEN_SUPPORT
 
-static int readSparseJensen8(vvp Base, register unsigned long Offset);
-static int readSparseJensen16(vvp Base, register unsigned long Offset);
-static int readSparseJensen32(vvp Base, register unsigned long Offset);
-static void writeSparseJensen8(int Value, vvp Base,
-			       register unsigned long Offset);
-static void writeSparseJensen16(int Value, vvp Base,
-				register unsigned long Offset);
-static void writeSparseJensen32(int Value, vvp Base,
-				register unsigned long Offset);
-static void writeSparseJensenNB8(int Value, vvp Base,
-				 register unsigned long Offset);
-static void writeSparseJensenNB16(int Value, vvp Base,
-				 register unsigned long Offset);
-static void writeSparseJensenNB32(int Value, vvp Base,
-				 register unsigned long Offset);
+static int
+readSparseJensen8(pointer Base, register unsigned long Offset);
+static int
+readSparseJensen16(pointer Base, register unsigned long Offset);
+static int
+readSparseJensen32(pointer Base, register unsigned long Offset);
+static void
+writeSparseJensen8(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseJensen16(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseJensen32(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseJensenNB8(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseJensenNB16(int Value, pointer Base, register unsigned long Offset);
+static void
+writeSparseJensenNB32(int Value, pointer Base, register unsigned long Offset);
 
 /*
  * The Jensen lacks dense memory, thus we have to address the bus via
@@ -983,7 +1016,7 @@ mapVidMemJensen(int ScreenNum, unsigned long Base, unsigned long Size, int flags
   close(fd);
   if (base == MAP_FAILED) {
     FatalError("xf86MapVidMem: Could not mmap framebuffer"
-	       " (0x%08lx,0x%lx) (%s)\n", Base, Size,
+	       " (0x%08x,0x%x) (%s)\n", Base, Size,
 	       strerror(errno));
   }
   return base;
@@ -996,7 +1029,7 @@ unmapVidMemJensen(int ScreenNum, pointer Base, unsigned long Size)
 }
 
 static int
-readSparseJensen8(vvp Base, register unsigned long Offset)
+readSparseJensen8(pointer Base, register unsigned long Offset)
 {
     register unsigned long result, shift;
 
@@ -1010,7 +1043,7 @@ readSparseJensen8(vvp Base, register unsigned long Offset)
 }
 
 static int
-readSparseJensen16(vvp Base, register unsigned long Offset)
+readSparseJensen16(pointer Base, register unsigned long Offset)
 {
     register unsigned long result, shift;
 
@@ -1024,7 +1057,7 @@ readSparseJensen16(vvp Base, register unsigned long Offset)
 }
 
 static int
-readSparseJensen32(vvp Base, register unsigned long Offset)
+readSparseJensen32(pointer Base, register unsigned long Offset)
 {
     register unsigned long result;
 
@@ -1035,7 +1068,7 @@ readSparseJensen32(vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseJensen8(int Value, vvp Base, register unsigned long Offset)
+writeSparseJensen8(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned int b = Value & 0xffU;
 
@@ -1044,7 +1077,7 @@ writeSparseJensen8(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseJensen16(int Value, vvp Base, register unsigned long Offset)
+writeSparseJensen16(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned int w = Value & 0xffffU;
 
@@ -1054,14 +1087,14 @@ writeSparseJensen16(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseJensen32(int Value, vvp Base, register unsigned long Offset)
+writeSparseJensen32(int Value, pointer Base, register unsigned long Offset)
 {
     write_mem_barrier();
     *(vuip)((unsigned long)Base+(Offset<<SPARSE)+(3<<(SPARSE-2))) = Value;
 }
 
 static void
-writeSparseJensenNB8(int Value, vvp Base, register unsigned long Offset)
+writeSparseJensenNB8(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned int b = Value & 0xffU;
 
@@ -1069,7 +1102,7 @@ writeSparseJensenNB8(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseJensenNB16(int Value, vvp Base, register unsigned long Offset)
+writeSparseJensenNB16(int Value, pointer Base, register unsigned long Offset)
 {
     register unsigned int w = Value & 0xffffU;
 
@@ -1078,7 +1111,7 @@ writeSparseJensenNB16(int Value, vvp Base, register unsigned long Offset)
 }
 
 static void
-writeSparseJensenNB32(int Value, vvp Base, register unsigned long Offset)
+writeSparseJensenNB32(int Value, pointer Base, register unsigned long Offset)
 {
     *(vuip)((unsigned long)Base+(Offset<<SPARSE)+(3<<(SPARSE-2))) = Value;
 }

@@ -1,3 +1,11 @@
+/* $Xorg: sm_genid.c,v 1.4 2001/02/09 02:03:30 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -24,7 +32,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/SM/sm_genid.c,v 3.19 2005/03/23 03:11:25 dawes Exp $ */
+/* $XFree86: xc/lib/SM/sm_genid.c,v 3.18 2004/01/20 03:36:27 dawes Exp $ */
 
 /*
  * Author: Ralph Mor, X Consortium
@@ -112,8 +120,10 @@ static char *hex_table[] = {	/* for generating client IDs */
 };
 
 
+
 char *
-SmsGenerateClientID(SmsConn smsConn)
+SmsGenerateClientID (smsConn)
+    SmsConn smsConn;
 {
 #if defined(TCPCONN) || defined(STREAMSCONN)
     char hostname[256];
@@ -174,12 +184,8 @@ SmsGenerateClientID(SmsConn smsConn)
     {
 	ptr2 = strchr (ptr1, '.');
 	len = ptr2 - ptr1;
-	if (!ptr2 || len > 3) {
-#if defined(IPv6) && defined(AF_INET6)
-	    freeaddrinfo(first_ai);
-#endif
+	if (!ptr2 || len > 3)
 	    return (NULL);
-	}
 	strncpy (temp, ptr1, len);
 	temp[len] = '\0';
 	decimal[i] = atoi (temp);

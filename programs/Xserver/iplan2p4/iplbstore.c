@@ -1,6 +1,20 @@
-/* $XFree86: xc/programs/Xserver/iplan2p4/iplbstore.c,v 3.1 2005/10/14 15:17:18 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/iplbstore.c,v 3.0 1996/08/18 01:54:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/*
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*-
  * iplbstore.c --
  *	Functions required by the backing-store implementation in MI.
  *
@@ -16,19 +30,27 @@
  *
  *
  */
+#ifndef lint
+static char rcsid[] =
+"$XConsortium: iplbstore.c,v 5.8 93/12/13 17:21:51 dpw Exp $ SPRITE (Berkeley)";
+#endif
 
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
+#ifdef CFB_NEED_SCREEN_PRIVATE
+#include "iplmap.h"
+#endif
+
 #include    "ipl.h"
-#include    <X11/X.h>
+#include    "X.h"
 #include    "mibstore.h"
 #include    "regionstr.h"
 #include    "scrnintstr.h"
 #include    "pixmapstr.h"
 #include    "windowstr.h"
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * iplSaveAreas --
  *	Function called by miSaveAreas to actually fetch the areas to be
@@ -89,7 +111,7 @@ iplSaveAreas(pPixmap, prgnSave, xorg, yorg, pWin)
     DEALLOCATE_LOCAL (pPtsInit);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * iplRestoreAreas --
  *	Function called by miRestoreAreas to actually fetch the areas to be

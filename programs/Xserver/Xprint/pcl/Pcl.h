@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/Pcl.h,v 1.15tsi Exp $ */
+/* $Xorg: Pcl.h,v 1.3 2000/08/17 19:48:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -44,6 +51,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/Pcl.h,v 1.13 2003/07/16 01:38:34 dawes Exp $ */
 
 #ifndef _PCL_H_
 #define _PCL_H_
@@ -59,7 +67,7 @@ copyright holders.
 #include <X11/extensions/Printstr.h>
 
 #include "regionstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "gcstruct.h"
 
@@ -379,12 +387,17 @@ extern Bool InitializeColorPclDriver(
     int ndx,
     ScreenPtr pScreen,
     int argc,
-    const char **argv);
+    char **argv);
 extern Bool InitializeMonoPclDriver(
     int ndx,
     ScreenPtr pScreen,
     int argc,
-    const char **argv);
+    char **argv);
+extern Bool InitializeLj3PclDriver(
+    int ndx,
+    ScreenPtr pScreen,
+    int argc,
+    char **argv);
 extern XpContextPtr PclGetContextFromWindow( WindowPtr win );
 
 /******

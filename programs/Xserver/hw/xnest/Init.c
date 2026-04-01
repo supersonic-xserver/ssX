@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993 by Davor Matic
 
@@ -11,7 +25,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Init.c,v 3.31tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Init.c,v 3.26 2004/06/02 22:43:05 dawes Exp $ */
 /*
  * Copyright (c) 1996-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -59,8 +73,8 @@ is" without express or implied warranty.
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "screenint.h"
 #include "input.h"
 #include "misc.h"
@@ -68,8 +82,7 @@ is" without express or implied warranty.
 #include "windowstr.h"
 #include "servermd.h"
 #include "mi.h"
-#include <X11/fonts/fontstruct.h>
-#include "extnsionst.h"
+#include "fontstruct.h"
 
 #include "Xnest.h"
 
@@ -83,11 +96,14 @@ is" without express or implied warranty.
 #include "Drawable.h"
 #include "XNGC.h"
 #include "XNFont.h"
+#ifdef DPMSExtension
+#include "dpmsproc.h"
+#endif
 
 Bool xnestDoFullGeneration = True;
 
 void
-InitOutput(ScreenInfo *screenInfo, const int argc, const char *argv[])
+InitOutput(ScreenInfo *screenInfo, int argc, char *argv[])
 {
   int i, j;
 
@@ -128,7 +144,7 @@ InitOutput(ScreenInfo *screenInfo, const int argc, const char *argv[])
 }
 
 void
-InitInput(const int argc, const char *argv[])
+InitInput(int argc, char *argv[])
 {
   pointer ptr, kbd;
 
@@ -162,15 +178,15 @@ void ddxGiveUp()
 
 #ifdef __DARWIN__
 void
-DarwinHandleGUI(int argc, const char *argv[], char *envp[])
+DarwinHandleGUI(int argc, char *argv[])
 {
 }
 
-void GlxExtensionInit(INITARGS);
+void GlxExtensionInit();
 void GlxWrapInitVisuals(void *procPtr);
 
 void
-DarwinGlxExtensionInit(INITARGS)
+DarwinGlxExtensionInit()
 {
     GlxExtensionInit();
 }
@@ -201,4 +217,30 @@ void OsVendorFatalError()
 /* this is just to get the server to link on AIX */
 #ifdef AIXV3
 int SelectWaitTime = 10000; /* usec */
+#endif
+
+#ifdef DPMSExtension
+/**************************************************************
+ * DPMSSet(), DPMSGet(), DPMSSupported()
+ *
+ * stubs
+ *
+ ***************************************************************/
+
+void
+DPMSSet(int level)
+{
+}
+
+int
+DPMSGet(int *level)
+{
+    return -1;
+}
+
+Bool
+DPMSSupported()
+{
+    return FALSE;
+}
 #endif

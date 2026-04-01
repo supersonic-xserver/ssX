@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/dix/main.c,v 3.54tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/main.c,v 3.45 2004/06/30 20:21:38 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: main.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
 
 /* The panoramix components contained the following notice */
 /****************************************************************
@@ -68,10 +76,12 @@ SOFTWARE.
 *                                                               *
 *****************************************************************/
 
+/* $TOG: main.c /main/86 1998/02/09 14:20:03 kaleb $ */
+
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xos.h>   /* for unistd.h  */
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xos.h"   /* for unistd.h  */
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "misc.h"
 #include "os.h"
@@ -83,28 +93,28 @@ SOFTWARE.
 #include "colormap.h"
 #include "colormapst.h"
 #include "cursorstr.h"
-#include <X11/fonts/font.h>
+#include "font.h"
 #include "opaque.h"
 #include "servermd.h"
 #include "site.h"
 #include "dixfont.h"
 #include "extnsionst.h"
-#include "dixevents.h"		/* InitEvents() */
-#include "dispatch.h"		/* InitProcVectors() */
-
 #ifdef PANORAMIX
 #include "panoramiXsrv.h"
+#else
+#include "dixevents.h"		/* InitEvents() */
+#include "dispatch.h"		/* InitProcVectors() */
 #endif
 
 #ifdef DPMSExtension
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "dpms.h"
 #include "dpmsproc.h"
 #endif
 
-#ifdef XPRINT
-#include "DiPrint.h"
-#endif
+extern int InitClientPrivates(
+    ClientPtr /*client*/
+);
 
 extern void Dispatch(
     void
@@ -143,7 +153,11 @@ NotImplemented(xEvent *from, xEvent *to)
  */
 /*ARGSUSED*/
 void
-ReplyNotSwappd(ClientPtr pClient, int size, void *pbuf)
+ReplyNotSwappd(
+	ClientPtr pClient ,
+	int size ,
+	void * pbuf
+	)
 {
     FatalError("Not implemented");
 }
@@ -228,7 +242,7 @@ static int indexForScanlinePad[ 65 ] = {
 #endif
 
 int
-main(int argc, const char *argv[], char *envp[])
+main(int argc, char *argv[], char *envp[])
 {
     int		i, j, k, error;
     char	*xauthfile;
@@ -249,9 +263,6 @@ main(int argc, const char *argv[], char *envp[])
 	FatalError("server restarted. Jumped through uninitialized pointer?\n");
     else
 	restart = 1;
-
-    /* Setup the allocator so that xalloc/xfree can be used early. */
-    OsInitAllocator();
 
     CheckUserParameters(argc, argv, envp);
 
@@ -427,8 +438,6 @@ main(int argc, const char *argv[], char *envp[])
 
 	Dispatch();
 
-	OsPrepareShutdown((dispatchException & DE_TERMINATE) != 0);
-
 	/* Now free up whatever must be freed */
 	if (screenIsSaved == SCREEN_SAVER_ON)
 	    SaveScreens(SCREEN_SAVER_OFF, ScreenSaverReset);
@@ -472,21 +481,24 @@ main(int argc, const char *argv[], char *envp[])
 	if (dispatchException & DE_TERMINATE)
 	{
 	    CloseWellKnownConnections();
-	    OsCleanup(TRUE);
+	}
+
+	OsCleanup((dispatchException & DE_TERMINATE) != 0);
+
+	if (dispatchException & DE_TERMINATE)
+	{
 	    ddxGiveUp();
 	    break;
 	}
 
-	OsCleanup(FALSE);
 	xfree(ConnectionInfo);
 	ConnectionInfo = NULL;
-	OsPrepareRestart();
     }
     return(0);
 }
 
 static int  VendorRelease = VENDOR_RELEASE;
-static const char *VendorString = VENDOR_STRING;
+static char *VendorString = VENDOR_STRING;
 
 void
 SetVendorRelease(int release)
@@ -495,7 +507,7 @@ SetVendorRelease(int release)
 }
 
 void
-SetVendorString(const char *string)
+SetVendorString(char *string)
 {
     VendorString = string;
 }
@@ -652,7 +664,15 @@ with its screen number, a pointer to its ScreenRec, argc, and argv.
 */
 
 int
-AddScreen(ScrnInitProcPtr pfnInit, const int argc, const char **argv)
+AddScreen(
+    Bool	(* pfnInit)(
+	int /*index*/,
+	ScreenPtr /*pScreen*/,
+	int /*argc*/,
+	char ** /*argv*/
+		),
+    int argc,
+    char **argv)
 {
 
     int i;
@@ -757,7 +777,8 @@ AddScreen(ScrnInitProcPtr pfnInit, const int argc, const char **argv)
 }
 
 static void
-FreeScreen(ScreenPtr pScreen)
+FreeScreen(pScreen)
+    ScreenPtr pScreen;
 {
     xfree(pScreen->WindowPrivateSizes);
     xfree(pScreen->GCPrivateSizes);
@@ -766,15 +787,4 @@ FreeScreen(ScreenPtr pScreen)
 #endif
     xfree(pScreen->devPrivates);
     xfree(pScreen);
-}
-
-Bool
-IsXineramaActive(void)
-{
-#ifdef PANORAMIX
-    if (!noPanoramiXExtension)
-	return TRUE;
-#endif
-
-    return FALSE;
 }

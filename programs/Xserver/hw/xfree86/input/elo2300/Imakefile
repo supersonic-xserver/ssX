@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/elo2300/Imakefile,v 1.6tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/elo2300/Imakefile,v 1.6 2004/06/01 00:17:04 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -54,7 +54,8 @@ OBJS = elo.o
 
 DRIVER = elo2300
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86SRC)/loader -I$(XF86OSSRC) \
+			-I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
 #if MakeHasPosixVariableSubstitutions
 SubdirLibraryRule($(OBJS))

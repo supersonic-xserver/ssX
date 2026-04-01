@@ -1,3 +1,19 @@
+/* $Xorg: bdfread.c,v 1.5 2001/02/09 02:04:01 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************************
 Copyright 1989 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -48,7 +64,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/font/bitmap/bdfread.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/lib/font/bitmap/bdfread.c,v 1.13 2003/05/27 22:26:48 tsi Exp $ */
 
 #ifndef FONTMODULE
 #include <ctype.h>
@@ -59,9 +75,16 @@ from The Open Group.
 #include "bitmap.h"
 #include "bdfint.h"
 
+#if HAVE_STDINT_H
+#include <stdint.h>
+#elif !defined(INT32_MAX)
+#define INT32_MAX 0x7fffffff
+#endif
+
 #define INDICES 256
 #define MAXENCODING 0xFFFF
 #define BDFLINELEN  1024
+#define BDFLINESTR  "%1023s" /* scanf specifier to read a BDFLINELEN string */
 
 static Bool bdfPadToTerminal(FontPtr pFont);
 extern int  bdfFileLineNum;
@@ -278,9 +301,14 @@ bdfReadCharacters(FontFilePtr file, FontPtr pFont, bdfFileState *pState,
 	bdfError("bad 'CHARS' in bdf file\n");
 	return (FALSE);
     }
-    if ((nchars < 1) || (nchars > (0x7fffffff / sizeof(CharInfoRec)))) {
+    if (nchars < 1) {
 	bdfError("invalid number of CHARS in BDF file\n");
 	return (FALSE);
+    }
+    if (nchars > INT32_MAX / sizeof(CharInfoRec)) {
+	bdfError("Couldn't allocate pCI (%d*%d)\n", nchars,
+		 sizeof(CharInfoRec));
+	goto BAILOUT;
     }
     ci = (CharInfoPtr) xalloc(nchars * sizeof(CharInfoRec));
     if (!ci) {
@@ -327,7 +355,7 @@ bdfReadCharacters(FontFilePtr file, FontPtr pFont, bdfFileState *pState,
 	char        charName[100];
 	int         ignore;
 
-	if (sscanf((char *) line, "STARTCHAR %s", charName) != 1) {
+	if (sscanf((char *) line, "STARTCHAR %99s", charName) != 1) {
 	    bdfError("bad character name in BDF file\n");
 	    goto BAILOUT;	/* bottom of function, free and return error */
 	}
@@ -536,13 +564,18 @@ bdfReadHeader(FontFilePtr file, bdfFileState *pState)
     unsigned char        lineBuf[BDFLINELEN];
 
     line = bdfGetLine(file, lineBuf, BDFLINELEN);
-    if (!line || sscanf((char *) line, "STARTFONT %s", namebuf) != 1 ||
+    if (!line ||
+	sscanf((char *) line, "STARTFONT " BDFLINESTR, namebuf) != 1 ||
 	    !bdfStrEqual(namebuf, "2.1")) {
 	bdfError("bad 'STARTFONT'\n");
 	return (FALSE);
     }
     line = bdfGetLine(file, lineBuf, BDFLINELEN);
-    if (!line || sscanf((char *) line, "FONT %[^\n]", pState->fontName) != 1) {
+#if MAXFONTNAMELEN != 1024
+# error "need to adjust sscanf length limit to be MAXFONTNAMELEN - 1" 
+#endif 
+    if (!line ||
+	sscanf((char *) line, "FONT %1023[^\n]", pState->fontName) != 1) {
 	bdfError("bad 'FONT'\n");
 	return (FALSE);
     }
@@ -626,7 +659,9 @@ bdfReadProperties(FontFilePtr file, FontPtr pFont, bdfFileState *pState)
 	while (*line && isspace(*line))
 	    line++;
 
-	switch (sscanf((char *) line, "%s%s%s", namebuf, secondbuf, thirdbuf)) {
+	switch (sscanf((char *) line, 
+			BDFLINESTR BDFLINESTR BDFLINESTR,
+			namebuf, secondbuf, thirdbuf)) {
 	default:
 	    bdfError("missing '%s' parameter value\n", namebuf);
 	    goto BAILOUT;

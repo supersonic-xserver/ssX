@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxscrinit.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxscrinit.c,v 1.2 2005/01/22 16:01:01 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -201,7 +208,7 @@ void dmxBEScreenInit(int idx, ScreenPtr pScreen)
 }
 
 /** Initialize screen number \a idx. */
-Bool dmxScreenInit(int idx, ScreenPtr pScreen, const int argc, const char *argv[])
+Bool dmxScreenInit(int idx, ScreenPtr pScreen, int argc, char *argv[])
 {
     DMXScreenInfo        *dmxScreen = &dmxScreens[idx];
     int                   i, j;

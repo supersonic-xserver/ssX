@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/mitmisc.c,v 3.9 2005/10/14 15:16:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/mitmisc.c,v 3.7 2003/11/17 22:20:26 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -27,18 +34,19 @@ in this Software without prior written authorization from The Open Group.
 
 /* RANDOM CRUFT! THIS HAS NO OFFICIAL X CONSORTIUM OR X PROJECT TEAM  BLESSING */
 
+/* $Xorg: mitmisc.c,v 1.4 2001/02/09 02:04:32 xorgcvs Exp $ */
+
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #define _MITMISC_SERVER_
-#include <X11/extensions/mitmiscstr.h>
+#include "mitmiscstr.h"
 #include "modinit.h"
 
-#ifdef MITMISC
 extern Bool permitOldBugs;
 
 #if 0
@@ -75,12 +83,14 @@ MITMiscExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-MITResetProc(ExtensionEntry *extEntry)
+MITResetProc (extEntry)
+ExtensionEntry	*extEntry;
 {
 }
 
 static int
-ProcMITSetBugMode(ClientPtr client)
+ProcMITSetBugMode(client)
+    register ClientPtr client;
 {
     REQUEST(xMITSetBugModeReq);
 
@@ -95,10 +105,11 @@ ProcMITSetBugMode(ClientPtr client)
 }
 
 static int
-ProcMITGetBugMode(ClientPtr client)
+ProcMITGetBugMode(client)
+    register ClientPtr client;
 {
     xMITGetBugModeReply rep;
-    int n;
+    register int n;
 
     REQUEST_SIZE_MATCH(xMITGetBugModeReq);
     rep.type = X_Reply;
@@ -114,7 +125,8 @@ ProcMITGetBugMode(ClientPtr client)
 }
 
 static int
-ProcMITDispatch(ClientPtr client)
+ProcMITDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -129,9 +141,10 @@ ProcMITDispatch(ClientPtr client)
 }
 
 static int
-SProcMITSetBugMode(ClientPtr client)
+SProcMITSetBugMode(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xMITSetBugModeReq);
 
     swaps(&stuff->length, n);
@@ -139,9 +152,10 @@ SProcMITSetBugMode(ClientPtr client)
 }
 
 static int
-SProcMITGetBugMode(ClientPtr client)
+SProcMITGetBugMode(client)
+    register ClientPtr	client;
 {
-    int n;
+    register int n;
     REQUEST(xMITGetBugModeReq);
 
     swaps(&stuff->length, n);
@@ -149,7 +163,8 @@ SProcMITGetBugMode(ClientPtr client)
 }
 
 static int
-SProcMITDispatch(ClientPtr client)
+SProcMITDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -162,5 +177,3 @@ SProcMITDispatch(ClientPtr client)
 	return BadRequest;
     }
 }
-
-#endif

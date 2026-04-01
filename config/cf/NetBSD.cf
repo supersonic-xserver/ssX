@@ -1,7 +1,7 @@
-XCOMM platform:  $XFree86: xc/config/cf/NetBSD.cf,v 3.134tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/NetBSD.cf,v 3.127 2005/02/04 02:58:27 dawes Exp $
 
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -114,12 +114,12 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  */
 #if ((OSMajorVersion == 1 && OSMinorVersion < 2) || \
      (OSMajorVersion == 1 && OSMinorVersion == 2 && OSTeenyVersion < 2))
-#  define HasDlsymBug		YES
+# define HasDlsymBug		YES
 #endif
 /* Mkstemp is there since 1.2 (at least) */
 #if ((OSMajorVersion > 1) || \
      (OSMajorVersion == 1 && OSMinorVersion >= 2)) 
-#define HasMkstemp		YES
+# define HasMkstemp		YES
 #endif
 /* But the standalone mktemp doesn't exist before NetBSD 1.5*/
 #if ((OSMajorVersion == 0) || \
@@ -138,16 +138,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #if ((OSMajorVersion > 1) || \
      (OSMajorVersion == 1 && OSMinorVersion >= 5))
-#define HasGetIfAddrs		YES
-#endif
-
-#if (OSMajorVersion >= 3)
-#ifndef HasPam
-#define HasPam			YES
-#endif
-#ifndef PamDefines
-#define PamDefines		-D_OPENPAM
-#endif
+# define HasGetIfAddrs		YES
 #endif
 
 #define HasUsableFileMmap	YES
@@ -159,16 +150,9 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define InstallXloadSetGID	NO
 
-#if (OSMajorVersion >= 1)
-#define InstallXtermSetGID	YES
-#ifndef InstUtmpFlags
-#define InstUtmpFlags		-m 2755 -g utmp
-#endif
-#endif
-
 #if ((OSMajorVersion < 1) || \
      (OSMajorVersion == 1 && OSMinorVersion < 5))
-#define BuildIPv6		NO
+# define BuildIPv6		NO
 #endif
 
 #define IPv6SocketsAlsoIPv4	NO
@@ -232,11 +216,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #undef CcCmd
 #define CcCmd 			gcc
 #ifndef DefaultCCOptions
-#if defined(UseInstalled)
-#define DefaultCCOptions 	/**/
-#else
+# if defined(UseInstalled)
+#  define DefaultCCOptions 	/**/
+# else
 #  define DefaultCCOptions 	-ansi -Dasm=__asm
-#endif
+# endif
 #endif
 
 #define CppCmd			cpp
@@ -277,9 +261,10 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  */
 #if UseElfFormat
 # if (OSMajorVersion > 0 && defined(i386Architecture)) || \
-      defined(PpcArchitecture) || defined(Sparc64Architecture)
-#  ifndef DoLoadableServer
-#  define DoLoadableServer	YES
+      defined(PpcArchitecture) || defined(Sparc64Architecture) || \
+      defined(ArmArchitecture)
+#  ifndef  DoLoadableServer
+#   define DoLoadableServer	YES
 #  endif
 # endif
 # if \
@@ -292,11 +277,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  ifndef  HasSharedLibraries
 #   define HasSharedLibraries	YES
 #  endif
-#endif
+# endif
 
-#define DlLibrary		-rdynamic /* no -ldl yet */
+# define DlLibrary		-rdynamic /* no -ldl yet */
 #else /* UseElfFormat */
-#define DlLibrary		/**/
+# define DlLibrary		/**/
 # if (OSMajorVersion > 0) && \
      (!defined(AlphaArchitecture) && !defined(MipsArchitecture))
    /* XXX: which port lacked a.out shlib support? */
@@ -325,11 +310,11 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  * MACHINE_CPU specific toolchain options
  */
 /* arm specific options */
-#ifdef armArchitecture
+#ifdef ArmArchitecture
 # undef  DefaultCCOptions
 # define DefaultCCOptions	-ansi -Dasm=__asm -fsigned-char \
 					-fomit-frame-pointer
-#endif /* armArchitecture */
+#endif /* ArmArchitecture */
 
 /* i386 specific options */
 #ifdef i386Architecture
@@ -337,7 +322,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #  if ((OSMajorVersion > 1) || \
        (OSMajorVersion == 1 && OSMinorVersion > 2))
     /* The GCC strength-reduce bug is fixed for NetBSD 1.3 and later */
-#   define DefaultGcc2i386Opt -O2 GccAliasingArgs
+#   define DefaultGcc2i386Opt	-O2 GccAliasingArgs
 #  endif
 # endif
 # define OptimizedCDebugFlags 	DefaultGcc2i386Opt
@@ -375,12 +360,12 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #if defined(x86_64Architecture)
 # define OptimizedCDebugFlags	-O2 GccAliasingArgs	/* XXX not needed anymore? */
 # define NetBSDMachineDefines	-D__AMD64__
-# endif
+#endif
 
 /* set default */
 #ifndef OptimizedCDebugFlags
-#  define OptimizedCDebugFlags 	-O2 GccAliasingArgs
-#  endif
+# define OptimizedCDebugFlags 	-O2 GccAliasingArgs
+#endif
 /* End of MACHINE_CPU specific options */
 
 
@@ -409,8 +394,8 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  * be a release for 1.4.9.
  */
 # if ((OSMajorVersion > 1) || \
-     (OSMajorVersion == 1 && OSMinorVersion > 4) || \
-     (OSMajorVersion == 1 && OSMinorVersion == 4 && OSTeenyVersion > 9))
+      (OSMajorVersion == 1 && OSMinorVersion > 4) || \
+      (OSMajorVersion == 1 && OSMinorVersion == 4 && OSTeenyVersion > 9))
 #  define UseGnuMalloc		NO
 # else
 #  define UseGnuMalloc		YES
@@ -550,7 +535,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 # endif
 #endif
 
-
 /*
  * ForceSubdirs - force make to build subdirectories
  * 
@@ -559,7 +543,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define ForceSubdirs(dirs)						@@\
 dirs:	.EXEC								@@\
 	@cd $@ ; echo "making all in $(CURRENT_DIR)/$@..."; \		@@\
-	$(MAKE) $(PASSMFLAGS) PassCDebugFlags all			@@\
+	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
 									@@\
 .EXEC:
 
@@ -569,29 +553,45 @@ dirs:	.EXEC								@@\
  */
 #define ManSuffix	1
 #define FileManSuffix	5
+#define ManSourcePath	$(MANPATH)/cat
 
-#define OsInstallManPageLongBase(file,destdir,dest,suffix)		@@\
+#define InstallManPageLongBase(file,destdir,dest)			@@\
 									@@\
 all:: file.0								@@\
 									@@\
 file.0:: file.$(MANNEWSUFFIX)						@@\
-	cat file.$(MANNEWSUFFIX) | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) | $(COL) > file.0	@@\
+	@if [ -f file.$(MANNEWSUFFIX) ]; \				@@\
+	then \								@@\
+	cat file.$(MANNEWSUFFIX) | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) | $(COL) > file.0; \	@@\
+	fi 								@@\
 									@@\
 install.man::                                                           @@\
-	@catdir=`echo destdir | sed -e s,man/man,man/cat,`; \		@@\
-	MakeDirInline($(DESTDIR)$$catdir); \				@@\
-	if [ -f file.0 ]; \						@@\
+	MakeDir($(DESTDIR)destdir)					@@\
+	-@if [ -f file.0 ]; \						@@\
 	then \								@@\
-	(set -x; $(INSTALL) -c $(INSTMANFLAGS) file.0 $(DESTDIR)$$catdir/dest.0); \@@\
+	$(INSTALL) -c $(INSTMANFLAGS) file.0 $(DESTDIR)destdir/dest.0; \@@\
 	fi								@@\
 									@@\
 clean::									@@\
 	RemoveFile(file.0)
 
-#define OsInstallMultipleMan(list,dest)					@@\
+#define InstallManPageLong(file,destdir,dest)				@@\
+BuildInstallHtmlManPage(file,dest,$(MANSUFFIX))				@@\
+									@@\
+CppManTarget(file, $(EXTRAMANDEFS))					@@\
+									@@\
+InstallManPageLongBase(file,destdir,dest)
+
+#define InstallGenManPageLong(file,destdir,dest,suffix)			@@\
+BuildInstallHtmlManPage(file,dest,suffix)				@@\
+									@@\
+CppManTarget(file, $(EXTRAMANDEFS))					@@\
+									@@\
+InstallManPageLongBase(file,destdir,dest)
+
+#define InstallMultipleMan(list,dest)                                   @@\
 install.man:: 								@@\
-	@catdir=`echo destdir | sed -e s,man/man,man/cat,`; \		@@\
-	MakeDirInline($(DESTDIR)$$catdir); \				@@\
+	MakeDir($(DESTDIR)dest)						@@\
 	case '${MFLAGS}' in *[i]*) set +e;; esac; \			@@\
 	for i in list; do \                                             @@\
 	  (MNAME=`echo $$i | cut -f1 -d.`; \				@@\
@@ -599,74 +599,42 @@ install.man:: 								@@\
 	  cat $$i | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) \		@@\
 		| $(COL) > $${MNAME}.0; \				@@\
 	  $(INSTALL) -c $(INSTMANFLAGS) $${MNAME}.0 \			@@\
-			$(DESTDIR)$$catdir/$${MNAME}.0; \		@@\
+			$(DESTDIR)dest/$${MNAME}.0; \			@@\
 	  $(RM) $${MNAME}.0); \						@@\
 	done
 
-#define OsInstallMultipleManSuffix(list,dest,suff)			@@\
+#define InstallMultipleManSuffix(list,dest,suff)                        @@\
 install.man:: 								@@\
-	@catdir=`echo destdir | sed -e s,man/man,man/cat,`; \		@@\
-	MakeDirInline($(DESTDIR)$$catdir); \				@@\
+	MakeDir($(DESTDIR)dest)						@@\
 	case '${MFLAGS}' in *[i]*) set +e;; esac; \			@@\
 	for i in list; do \                                             @@\
 	  (set -x; \							@@\
 	  cat $$i.suff | $(NEQN) | $(TBL) | $(NROFF) $(MANMACROS) \	@@\
 		| $(COL) > $$i.0; \					@@\
 	  $(INSTALL) -c $(INSTMANFLAGS) $$i.0	 \			@@\
-		$(DESTDIR)$$catdir/$$i.0; \				@@\
+		$(DESTDIR)dest/$$i.0; \					@@\
 	  $(RM) $$i.0 ); \						@@\
 	done
 
-#define OsInstallManPageAliasesBase(file,destdir,suffix,aliases)	@@\
+#define InstallManPageAliasesBase(file,destdir,aliases)			@@\
 install.man:: 								@@\
-	@catdir=`echo destdir | sed -e s,man/man,man/cat,`; \		@@\
-	case '${MFLAGS}' in *[i]*) set +e;; esac; \			@@\
+	@case '${MFLAGS}' in *[i]*) set +e;; esac; \                    @@\
 	for i in aliases; do \                                          @@\
 		(set -x; \						@@\
-		$(RM) $(DESTDIR)$$catdir/$$i.0;\  			@@\
-		(cd $(DESTDIR)/$$catdir; $(LN) file.0 $$i.0);\ 		@@\
+		$(RM) $(DESTDIR)destdir/$$i.0;\  			@@\
+		(cd $(DESTDIR)/destdir; $(LN) file.0 $$i.0);\ 		@@\
 		); \							@@\
 	done
 
-#ifndef InstallManPageSource
-#define InstallManPageSource	YES
-#endif
-
-#if !InstallManPageSource
-
-/* Install only the formatted man pages */
-
-#define InstallManPageLong(file,destdir,dest)				@@\
-BuildInstallHtmlManPage(file,dest,$(MANSUFFIX))				@@\
-									@@\
-CppManTarget(file, $(EXTRAMANDEFS))					@@\
-									@@\
-OsInstallManPageLongBase(file,destdir,dest,$(MANSUFFIX))
-
-#define InstallGenManPageLong(file,destdir,dest,suffix)			@@\
-BuildInstallHtmlManPage(file,dest,suffix)				@@\
-									@@\
-CppManTarget(file, $(EXTRAMANDEFS))					@@\
-									@@\
-OsInstallManPageLongBase(file,destdir,dest,suffix)
- 
 #define InstallManPageAliases(file,destdir,aliases)			@@\
 InstallHtmlManPageAliases(file,aliases,$(MANSUFFIX))			@@\
 									@@\
-OsInstallManPageAliasesBase(file,destdir,$(MANSUFFIX),aliases)
+InstallManPageAliasesBase(file,destdir,aliases)
 
 #define InstallGenManPageAliases(file,destdir,suffix,aliases)		@@\
 InstallHtmlManPageAliases(file,aliases,suffix)				@@\
 									@@\
-OsInstallManPageAliasesBase(file,destdir,suffix,aliases)
-
-#define InstallMultipleMan(list,dest)					@@\
-OsInstallMultipleMan(list,dest)
-
-#define InstallMultipleManSuffix(list,dest,suff)			@@\
-OsInstallMultipleManSuffix(list,dest,suff)
-
-#endif
+InstallManPageAliasesBase(file,destdir,aliases)
 
 /*
  * Unresolved references are fatal on NetBSD 1.5 for libGL, which is
@@ -675,7 +643,7 @@ OsInstallMultipleManSuffix(list,dest,suff)
 #if UseElfFormat && \
     (OSMajorVersion == 1 && OSMinorVersion == 5)
 # define SharedGLReqs		$(LDPRELIBS) $(XLIB) -lc
-#endif 
+#endif
 
 /*
  * src/x11 reachover makefiles always build these shared libraries.
@@ -699,6 +667,16 @@ OsInstallMultipleManSuffix(list,dest,suff)
  */
 #if !defined(BuildXInputLib) && !defined(BuildServersOnly)
 # define BuildXInputLib          YES
+#endif
+
+/*
+ * XFree86 uses its own (more portable) database routines to speed up 
+ * the RGB database lookups
+ * However, if you want to use ndbm anyway, you can set that to NO in 
+ * site.def
+ */
+#ifndef UseRgbTxt
+#define UseRgbTxt	YES
 #endif
 
 /*
@@ -862,6 +840,17 @@ OsInstallMultipleManSuffix(list,dest,suff)
 # endif
 #endif /* macppcArchitecture */
 
+/* ofppc */
+#if defined(ofppcArchitecture) 
+# define BuildServer            YES
+# define ServerOSDefines        XFree86ServerOSDefines -DDDXTIME
+# define ServerExtraDefines     GccGasOption XFree86ServerDefines
+# define XkbServerDefines       -DXKB_ALWAYS_USES_SOFT_REPEAT
+# ifndef  XFree86ConsoleDefines
+#  define XFree86ConsoleDefines -DWSCONS_SUPPORT
+# endif
+#endif /* ofppcArchitecture */
+
 /* pmax */
 #if defined(pmaxArchitecture)
 # define BuildServer		YES
@@ -889,9 +878,14 @@ OsInstallMultipleManSuffix(list,dest,suff)
 
 /* shark */
 #if defined(sharkArchitecture)
-# define BuildServer		NO	/* no IGS driver in XF86_4 */
+# define BuildServer		YES
 # define ServerOSDefines	XFree86ServerOSDefines
 # define ServerExtraDefines	GccGasOption XFree86ServerDefines
+# define ServerExtraSysLibs	-larm
+# undef  DefaultCCOptions
+# define DefaultCCOptions	-ansi -Dasm=__asm -fsigned-char \
+					-fomit-frame-pointer -march=armv4 \
+					-mtune=strongarm -D__arm__
 # ifndef XFree86ConsoleDefines
 #  if ((OSMajorVersion < 1) || \
        (OSMajorVersion == 1 && OSMinorVersion < 5))
@@ -901,6 +895,8 @@ OsInstallMultipleManSuffix(list,dest,suff)
 	-DWSCONS_SUPPORT 
 #  endif
 # endif
+# undef XF86CardDrivers
+# define XF86CardDrivers	chips wsfb igs
 #endif
 
 /* sparc */
@@ -1022,7 +1018,7 @@ OsInstallMultipleManSuffix(list,dest,suff)
 /* End of MACHINE specific options */
 
 #include <xfree86.cf>
-  
+
 /* 
  * General settings for all platforms 
  */ 
@@ -1052,7 +1048,7 @@ OsInstallMultipleManSuffix(list,dest,suff)
 #   define HasLibUsbHid		NO
 #   define UsbHidLib		-lusb
 #  endif
-#endif
+# endif
 #else
 # define HasLibUsb		NO
 #endif

@@ -7,6 +7,8 @@
 # made 10/02/1993 09:11 UTC by root@gamma
 # Source directory /home1/tmp/x11r5
 #
+# $XConsortium: dmmap.shar /main/4 1996/02/21 17:47:27 kaleb $
+#
 # existing files will NOT be overwritten unless -c is specified
 #
 # This shar contains:

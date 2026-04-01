@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis.h,v 1.120tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis.h,v 1.118 2005/02/19 01:03:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Main global data and definitions
  *
@@ -123,7 +131,7 @@
 #define NEED_REPLIES  		/* ? */
 #define EXTENSION_PROC_ARGS void *
 #include "extnsionst.h"  	/* required */
-#include <X11/extensions/panoramiXproto.h>  	/* required */
+#include "panoramiXproto.h"  	/* required */
 #endif
 #endif
 
@@ -460,7 +468,7 @@ typedef unsigned char UChar;
 
 /* Used for makeing use of the BIOS scratch area (save/restore mode number) */
 #undef SIS_USE_BIOS_SCRATCH
-#if (defined(i386) || defined(__i386) || defined(__i386__) || defined(__amd64__)) || defined(__x86_64__)
+#if (defined(i386) || defined(__i386) || defined(__i386__) || defined(__AMD64__))
 #define SIS_USE_BIOS_SCRATCH
 #endif
 
@@ -841,6 +849,7 @@ typedef struct {
     vbeInfoPtr 		pVbe;			/* For VESA mode switching */
     CARD16 		vesamajor;
     CARD16 		vesaminor;
+    VbeInfoBlock 	*vbeInfo;
     int 		UseVESA;
     sisModeInfoPtr      SISVESAModeList;
     xf86MonPtr 		monitor;
@@ -1032,6 +1041,12 @@ typedef struct {
 #endif
 #endif
 } SISRec, *SISPtr;
+
+typedef struct _ModeInfoData {
+    int mode;
+    VbeModeInfoBlock *data;
+    VbeCRTCInfoBlock *block;
+} ModeInfoData;
 
 #define SDMPTR(x) ((SiSMergedDisplayModePtr)(x->currentMode->Private))
 #define CDMPTR    ((SiSMergedDisplayModePtr)(pSiS->CurrentLayout.mode->Private))

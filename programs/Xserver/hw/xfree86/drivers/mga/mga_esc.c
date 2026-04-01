@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_esc.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_esc.c,v 1.3 2003/10/31 15:06:25 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /****************************************************************************
 * mga_esc.c
 *
@@ -38,6 +45,7 @@
 #include "vbe.h"
 
 #include "fb.h"
+#include "cfb8_32.h"
 #include "dixstruct.h"
 
 #include "mga_reg.h"
@@ -119,7 +127,6 @@ void MGAFillDisplayModeStruct(DisplayModePtr pMode, LPMGAMODEINFO pModeInfo)
    pMode->VRefresh = pModeInfo->ulRefreshRate;
 }
 
-/* This function cannot fail */
 static LPMGAMODEINFO  GetModeInfoPtr(ULONG ulScreen)
 {
 
@@ -134,7 +141,7 @@ static LPMGAMODEINFO  GetModeInfoPtr(ULONG ulScreen)
 
 static void GetVideoParameterStr(LPMGAMODEINFO pModeInfo, char *sResult)
 {
-    sprintf(sResult, "%ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld",
+    sprintf(sResult, "%d %d %d %d %d %d %d %d %d %d %d",
             pModeInfo->ulDispWidth,
             pModeInfo->ulDispHeight,
             pModeInfo->ulBpp,
@@ -213,28 +220,28 @@ static void  EscRead(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, Dis
     {
     case 0:
         ulData = INREG(ulAddr);
-        sprintf(sResult, "MGA[%04lX] = 0x%08lX", ulAddr, ulData);
+        sprintf(sResult, "MGA[%04X] = 0x%08X", ulAddr, ulData);
         break;
     case 1:
         ucIndex = INREG8(0x3c00);
         OUTREG8(0x3c00, (UCHAR)ulAddr);
         ulData = (ULONG)INREG8(0x3c0a);
         OUTREG8(0x3c00, ucIndex);
-        sprintf(sResult, "DAC[%02lX] = 0x%02lX", ulAddr, ulData);
+        sprintf(sResult, "DAC[%02X] = 0x%02X", ulAddr, ulData);
         break;
     case 2:
         ucIndex = INREG8(0x1fd4);
         OUTREG8(0x1fd4, (UCHAR)ulAddr);
         ulData = (ULONG)INREG8(0x1fd5);
         OUTREG8(0x1fd4, ucIndex);
-        sprintf(sResult, "CRTC[%02lX] = 0x%02lX", ulAddr, ulData);
+        sprintf(sResult, "CRTC[%02X] = 0x%02X", ulAddr, ulData);
         break;
     case 3:
         ucIndex = INREG8(0x1fde);
         OUTREG8(0x1fde, (UCHAR)ulAddr);
         ulData = (ULONG)INREG8(0x1fdf);
         OUTREG8(0x1fde, ucIndex);
-        sprintf(sResult, "CRTCEXT[%02lX] = 0x%02lX", ulAddr, ulData);
+        sprintf(sResult, "CRTCEXT[%02X] = 0x%02X", ulAddr, ulData);
         break;
     default:
         strcpy(sResult, "ERROR# 2");
@@ -299,6 +306,13 @@ static void  EscHLeft(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, Di
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
 
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
+
+
     if (pModeInfo->ulHBPorch > (8 * param[1]) )
     {
         pModeInfo->ulHBPorch -=8 * param[1];
@@ -318,6 +332,12 @@ static void  EscHRight(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, D
     LPMGAMODEINFO pModeInfo;
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
+
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
 
     if (pModeInfo->ulHFPorch > (8 * param[1]) )
     {
@@ -340,6 +360,12 @@ static void  EscVUp(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, Disp
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
 
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
+
     if (pModeInfo->ulVBPorch > (param[1]) )
     {
         pModeInfo->ulVBPorch -= param[1];
@@ -359,6 +385,12 @@ static void  EscVDown(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, Di
     LPMGAMODEINFO pModeInfo;
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
+
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
 
     if (pModeInfo->ulVFPorch >= (param[1]) )
     {
@@ -382,12 +414,20 @@ static void EscHLarger(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, D
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
 
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
+
     if ((param[0] & 0xffff) > 1)
     {
+
         ulStep = param[1] * 8;
     }
     else
     {
+
         ulStep = 8;
     }
 
@@ -419,14 +459,23 @@ static void EscHSmaller(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, 
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
 
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
+
     if ((param[0] & 0xffff) > 1)
     {
+
         ulStep = param[1] * 8;
     }
     else
     {
+
         ulStep = 8;
     }
+
 
     fRefresh = GetVRefresh(pModeInfo);
     fPixelClock = (float)pModeInfo->ulPixClock;
@@ -449,12 +498,20 @@ static void EscVTaller(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, D
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
 
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
+
     if ((param[0] & 0xffff) > 1)
     {
+
         ulStep = param[1];
     }
     else
     {
+
         ulStep = 1;
     }
 
@@ -487,14 +544,23 @@ static void EscVSmaller(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, 
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
 
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
+
     if ((param[0] & 0xffff) > 1)
     {
+
         ulStep = param[1];
     }
     else
     {
+
         ulStep = 1;
     }
+
 
     fRefresh = GetVRefresh(pModeInfo);
     fPixelClock = (float)pModeInfo->ulPixClock;
@@ -515,6 +581,12 @@ static void EscRefresh(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, D
     float fRefresh, fPixelClock;
 
     pModeInfo = GetModeInfoPtr(param[0] >> 16);
+
+    if ( !pMgaModeInfo )
+    {
+        strcpy(sResult, "#error 1");
+        return;
+    }
 
     if ((param[0] & 0xffff) < 2)
     {

@@ -1,3 +1,11 @@
+/* $Xorg: Xtranssock.c,v 1.11 2001/02/09 02:04:06 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -26,7 +34,7 @@ other dealings in this Software without prior written authorization
 from the copyright holders.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtranssock.c,v 3.73tsi Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtranssock.c,v 3.70 2004/04/03 22:26:22 dawes Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -278,12 +286,10 @@ static int TRANS(SocketINETClose) (XtransConnInfo ciptr);
  * that don't have IPv6 support.
  */
 #if defined(IPv6) && defined(AF_INET6)
-#ifndef __DARWIN__
 static const struct in6_addr local_in6addr_any = IN6ADDR_ANY_INIT;
 #pragma weak in6addr_any = local_in6addr_any
 #ifndef __USLC__
 #pragma weak getaddrinfo
-#endif
 #endif
 static int haveIPv6 = 1;
 #endif
@@ -538,7 +544,7 @@ static XtransConnInfo
 TRANS(SocketOpenCOTSClientBase) (char *transname, char *protocol,
 				char *host, char *port, int previndex)
 {
-    XtransConnInfo	ciptr = NULL;
+    XtransConnInfo	ciptr;
     int			i = previndex;
 
     PRMSG (2, "SocketOpenCOTSClient(%s,%s,%s)\n",
@@ -587,7 +593,7 @@ TRANS(SocketOpenCOTSServer) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
-    XtransConnInfo	ciptr = NULL;
+    XtransConnInfo	ciptr;
     int	i = -1;
 
     PRMSG (2,"SocketOpenCOTSServer(%s,%s,%s)\n", protocol, host, port);
@@ -654,7 +660,7 @@ TRANS(SocketOpenCLTSClient) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
-    XtransConnInfo	ciptr = NULL;
+    XtransConnInfo	ciptr;
     int			i = -1;
 
     PRMSG (2,"SocketOpenCLTSClient(%s,%s,%s)\n", protocol, host, port);
@@ -693,7 +699,7 @@ TRANS(SocketOpenCLTSServer) (Xtransport *thistrans, char *protocol,
 			     char *host, char *port)
 
 {
-    XtransConnInfo	ciptr = NULL;
+    XtransConnInfo	ciptr;
     int	i = -1;
 
     PRMSG (2,"SocketOpenCLTSServer(%s,%s,%s)\n", protocol, host, port);
@@ -738,7 +744,7 @@ static XtransConnInfo
 TRANS(SocketReopenCOTSServer) (Xtransport *thistrans, int fd, char *port)
 
 {
-    XtransConnInfo	ciptr = NULL;
+    XtransConnInfo	ciptr;
     int			i = -1;
 
     PRMSG (2,
@@ -772,7 +778,7 @@ static XtransConnInfo
 TRANS(SocketReopenCLTSServer) (Xtransport *thistrans, int fd, char *port)
 
 {
-    XtransConnInfo	ciptr = NULL;
+    XtransConnInfo	ciptr;
     int			i = -1;
 
     PRMSG (2,
@@ -1004,8 +1010,7 @@ TRANS(SocketINETCreateListener) (XtransConnInfo ciptr, char *port, unsigned int 
     } else {
 	namelen = sizeof (struct sockaddr_in6);
 #ifdef SIN6_LEN
-	((struct sockaddr_in6 *)&sockname)->sin6_len =
-					(unsigned char)sizeof(sockname);
+	((struct sockaddr_in6 *)&sockname)->sin6_len = sizeof(sockname);
 #endif
 	((struct sockaddr_in6 *)&sockname)->sin6_family = AF_INET6;
 	((struct sockaddr_in6 *)&sockname)->sin6_port = htons(sport);

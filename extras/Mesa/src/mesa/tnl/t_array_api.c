@@ -1,6 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  6.0
+ * Version:  6.1
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -52,10 +59,10 @@ static void fallback_drawarrays( GLcontext *ctx, GLenum mode, GLint start,
    assert(!ctx->CompileFlag);
    assert(ctx->Driver.CurrentExecPrimitive == GL_POLYGON+1);
 
-   glBegin(mode);
-   for (i = start; i < count; i++) 
-      glArrayElement( i );
-   glEnd();
+   GL_CALL(Begin)(mode);
+   for (i = 0; i < count; i++) 
+       GL_CALL(ArrayElement)( start + i );
+   GL_CALL(End)();
 }
 
 
@@ -69,11 +76,11 @@ static void fallback_drawelements( GLcontext *ctx, GLenum mode, GLsizei count,
 
    /* Here, indices will already reflect the buffer object if active */
 
-   glBegin(mode);
+   GL_CALL(Begin)(mode);
    for (i = 0 ; i < count ; i++) {
-      glArrayElement( indices[i] );
+      GL_CALL(ArrayElement)( indices[i] );
    }
-   glEnd();
+   GL_CALL(End)();
 }
 
 
@@ -150,7 +157,7 @@ _tnl_DrawArrays(GLenum mode, GLint start, GLsizei count)
       /* Small primitives: attempt to share a vb (at the expense of
        * using the immediate interface).
       */
-      fallback_drawarrays( ctx, mode, start, start + count );
+      fallback_drawarrays( ctx, mode, start, count );
    } 
    else if (start >= (GLint) ctx->Array.LockFirst &&
 	    start + count <= (GLint)(ctx->Array.LockFirst + ctx->Array.LockCount)) {
@@ -233,7 +240,7 @@ _tnl_DrawArrays(GLenum mode, GLint start, GLsizei count)
 	    skip = 0;
 	 }
 	 else {
-	    fallback_drawarrays( ctx, mode, start, start + count );
+	    fallback_drawarrays( ctx, mode, start, count );
 	    return;
 	 }
       }
@@ -438,4 +445,5 @@ void _tnl_array_init( GLcontext *ctx )
  */
 void _tnl_array_destroy( GLcontext *ctx )
 {
+   (void) ctx;
 }

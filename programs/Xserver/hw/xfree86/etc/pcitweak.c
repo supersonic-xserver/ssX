@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/pcitweak.c,v 1.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/pcitweak.c,v 1.18 2004/02/13 23:58:44 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1999-2002 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,7 +59,7 @@
  * Author: David Dawes <dawes@xfree86.org>
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -88,7 +95,7 @@ main(int argc, char *argv[])
 {
     int c;
     PCITAG tag;
-    int bus = 0, device = 0, func = 0;
+    int bus, device, func;
     Bool list = FALSE, rd = FALSE, wr = FALSE;
     Bool byte = FALSE, halfword = FALSE;
     int offset = 0;

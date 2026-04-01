@@ -1,3 +1,11 @@
+/* $Xorg: misc.c,v 1.4 2001/02/09 02:06:01 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 Copyright 1993, 1998  The Open Group
@@ -22,7 +30,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ******************************************************************************/
-/* $XFree86: xc/programs/xsm/misc.c,v 1.7 2005/09/14 14:23:16 tsi Exp $ */
+/* $XFree86: xc/programs/xsm/misc.c,v 1.6 2001/12/14 20:02:26 dawes Exp $ */
 
 #include "xsm.h"
 
@@ -109,7 +117,7 @@ System(char *s)
     int pid, status;
     if ((pid = fork ()) == 0) {
 	(void) setpgrp();
-	execl ("/bin/sh", "sh", "-c", s, (void *)0);
+	execl ("/bin/sh", "sh", "-c", s, 0);
     } else
 	waitpid (pid, &status, 0);
     return status;

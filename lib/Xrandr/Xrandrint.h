@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/Xrandr/Xrandrint.h,v 1.4tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/Xrandr/Xrandrint.h,v 1.4 2002/10/14 18:01:40 keithp Exp $
  *
  *
  * Copyright © 2000, Compaq Computer Corporation, 
@@ -32,11 +39,11 @@
 #define NEED_REPLIES
 #include <X11/Xlibint.h>
 #include <X11/Xutil.h>
-#include <X11/extensions/Xext.h>
-#include <X11/extensions/extutil.h>
-#include <X11/extensions/Xrandr.h>
-#include <X11/extensions/randr.h>
-#include <X11/extensions/randrproto.h>
+#include "Xext.h"			/* in ../include */
+#include "extutil.h"			/* in ../include */
+#include "Xrandr.h"
+#include "randr.h"
+#include "randrproto.h"
 
 extern XExtensionInfo XrandrExtensionInfo;
 extern char XrandrExtensionName[];

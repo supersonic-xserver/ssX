@@ -1,0 +1,277 @@
+#! /bin/sh
+#
+# Copyright 2005 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+#
+# Permission to use, copy, modify, distribute, and sell this software and its
+# documentation for any purpose is hereby granted without fee, provided that
+# the above copyright notice appear in all copies and that both that copyright
+# notice and this permission notice appear in supporting documentation, and
+# that the name of Marc Aurele La France not be used in advertising or
+# publicity pertaining to distribution of the software without specific,
+# written prior permission.  Marc Aurele La France makes no representations
+# about the suitability of this software for any purpose.  It is provided
+# "as-is" without express or implied warranty.
+#
+# MARC AURELE LA FRANCE DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.  IN NO
+# EVENT SHALL MARC AURELE LA FRANCE BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+# DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+# TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+#
+
+#
+# Script to clean whitespace in files.  Invoke with
+#
+#       $0 <file> ...
+#
+
+#
+# Potential issues:
+#
+#       - ACL's are not necessarily transfered properly (cp(1)'s fault);
+#       - You get what you asked for when pointing this script at make(1) or
+#         imake(1) files, binary data of any kind, etc.  You have been warned;
+#       - No, `echo` definitely isn't portable (re: TAB);
+#       - Neither are "+" and "{...}" sed(1) pattern repeaters, escaped or not;
+#       - This script assumes tab stops at every eight characters.
+#
+
+echo '$XFree86: xc/programs/Xserver/hw/xfree86/etc/spaceclean,v 1.2 2008/01/01 00:40:13 tsi Exp $' | \
+ awk "{print \""`basename $0`":  Version \" \$3}"
+
+if [ -n "${DEBUG}" ]; then
+ set -vx
+fi
+
+#
+# If nothing to do, then do nothing...
+#
+if [ $# -eq 0 ]; then
+ exit 0
+fi
+
+#
+# Defeat NLS.
+#
+LC_ALL=C
+export LC_ALL
+
+#
+# It'd be nice if things could be more easily portable...
+#
+TAB=`dd if=/dev/zero count=1 bs=1 2>/dev/null | tr '\000' '\t'`
+
+#
+# Other useful definitions.
+#
+SPC=" "
+SP1="${SPC}"
+SP2="${SP1}${SPC}"
+SP3="${SP2}${SPC}"
+SP4="${SP3}${SPC}"
+SP5="${SP4}${SPC}"
+SP6="${SP5}${SPC}"
+SP7="${SP6}${SPC}"
+SP8="${SP7}${SPC}"
+
+SPS="${SPC}*"
+
+#
+# Figure out a temporary file name we can use.
+#
+TempName="`date +SC%H%M%S`.TXT"
+while [ -f "${TempName}" -o \
+        -d "${TempName}" -o \
+        -h "${TempName}" -o \
+        -c "${TempName}" -o \
+        -b "${TempName}" -o \
+        -p "${TempName}" -o \
+        -z "${TempName}" ]; do
+ sleep 1
+ TempName="`date +SC%H%M%S`.TXT"
+done
+
+trap "rm -f ${TempFile}; exit 1" HUP INT QUIT TERM USR1 USR2
+
+#
+# Strip trailing whitespace.
+#
+for name in `grep -l "[${SPC}${TAB}]$" "$@"`; do
+ echo Cleaning "${name}"...
+ cp -p "${name}" "${TempName}"
+ chmod u+w "${TempName}"
+ sed "s/[${SPC}${TAB}]*$//" "${name}" > "${TempName}"
+ mv -f "${TempName}" "${name}"
+done
+
+#
+# We are now only interested in files containing a tab.
+#
+files=`grep -l "${TAB}" "$@"`
+if [ -z "$files" ]; then
+ exit 0
+fi
+set $files
+
+#
+# For files containing any line starting with eight blanks, change those first
+# eight blanks to a tab.
+#
+for name in `grep -l "^${SP8}" "$@"`; do
+ echo Cleaning "${name}"...
+ cp -p "${name}" "${TempName}"
+ chmod u+w "${TempName}"
+ sed "s/^${SP8}/${TAB}/" "${name}" > "${TempName}"
+ mv -f "${TempName}" "${name}"
+done
+
+#
+# We are now only interested in files containing tabs preceeded or followed by
+# blanks.
+#
+files=`grep -l "\(${TAB}${SPC}\)\|\(${SPC}${TAB}\)" "$@"`
+if [ -z "$files" ]; then
+ exit 0
+fi
+set $files
+
+#
+# For lines starting with one to seven blanks followed by a tab, remove the
+# starting blanks.
+#
+for name in `grep -l "^${SPC}${SPS}${TAB}" "$@"`; do
+ echo Cleaning "${name}"...
+ cp -p "${name}" "${TempName}"
+ chmod u+w "${TempName}"
+ sed "/^${SPC}${SPS}${TAB}/s/^${SPS}//" "${name}" > "${TempName}"
+ mv -f "${TempName}" "${name}"
+done
+
+#
+# Repeatedly change sequences of one tab followed by eight blanks to two tabs
+# until no such sequences remain.
+#
+StopLoop=0
+while [ ${StopLoop} -eq 0 ]; do
+ StopLoop=1
+ for name in `grep -l "${TAB}${SP8}" "$@"`; do
+  StopLoop=0
+  echo Cleaning "${name}"...
+  cp -p "${name}" "${TempName}"
+  chmod u+w "${TempName}"
+  sed "s/${TAB}${SP8}/${TAB}${TAB}/g" "${name}" > "${TempName}"
+  mv -f "${TempName}" "${name}"
+ done
+done
+
+#
+# Repeatedly change sequences of eight blanks followed by a tab to two tabs
+# until no such sequences remain.
+#
+StopLoop=0
+while [ ${StopLoop} -eq 0 ]; do
+ StopLoop=1
+ for name in `grep -l "${SP8}${TAB}" "$@"`; do
+  StopLoop=0
+  echo Cleaning "${name}"...
+  cp -p "${name}" "${TempName}"
+  chmod u+w "${TempName}"
+  sed "s/${SP8}${TAB}/${TAB}${TAB}/g" "${name}" > "${TempName}"
+  mv -f "${TempName}" "${name}"
+ done
+done
+
+#
+# Change sequences of a tab followed by one to seven blanks further followed by
+# a tab to two tabs.  This eliminates the "dead" blanks.  This is done twice to
+# catch all instances of such sequences, given sed(1)'s substitute command
+# cannot be portably made to re-scan what it has changed.
+#
+for name in `grep -l "${TAB}${SPC}${SPS}${TAB}" "$@"`; do
+ echo Cleaning "${name}"...
+ cp -p "${name}" "${TempName}"
+ chmod u+w "${TempName}"
+ sed \
+  -e "s/${TAB}${SPC}${SPS}${TAB}/${TAB}${TAB}/g" \
+  -e "s/${TAB}${SPC}${SPS}${TAB}/${TAB}${TAB}/g" \
+  "${name}" > "${TempName}"
+ mv -f "${TempName}" "${name}"
+done
+
+#
+# The sequences that remain, of a tab followed by one to seven blanks, need to
+# be left alone.  This leaves sequences of one to seven blanks followed by a
+# tab.  The following attempts to match patterns of the form ...
+#
+#       <a><b><c><d><e><f>
+#
+# ... where ...
+#
+#       <a> is either the start of a line (i.e. the "^" pattern), or a tab
+#           character;
+#       <b> is zero or more groups, each of eight consecutive non-tab
+#           characters;
+#       <c> is zero to six non-tab characters (yes, six not seven);
+#       <d> is a single non-tab non-blank character;
+#       <e> is one to seven blanks;
+#       <f> is a tab character.
+#
+# If the total number of characters matched by <c> and <e> is seven or more
+# (up to thirteen), the <e> blanks are replaced by a single tab character.
+# Otherwise, the <e> blanks can be removed.
+#
+# As above, those of these patterns that are anchored to the start of a line
+# need only be used once, whereas the patterns that start and end with a tab
+# need to be used twice.
+#
+# There's probably a more efficient, but still portable, way of doing this.  If
+# you find one, let me know,  Better yet, submit a patch.
+#
+NSP="[^${SPC}${TAB}]"
+NTB="[^${TAB}]"
+
+NT0=""
+NT1="${NT0}${NTB}"
+NT2="${NT1}${NTB}"
+NT3="${NT2}${NTB}"
+NT4="${NT3}${NTB}"
+NT5="${NT4}${NTB}"
+NT6="${NT5}${NTB}"
+NT8="\(${NT4}${NT4}\)*"
+
+for name in `grep -l "${SP1}${TAB}" "$@"`; do
+ echo Cleaning "${name}"...
+ cp -p "${name}" "${TempName}"
+ chmod u+w "${TempName}"
+ sed \
+  -e "s/^\(${NT8}${NT0}${NSP}\)${SP7}${SPS}${TAB}/\1${TAB}${TAB}/" \
+  -e "s/^\(${NT8}${NT1}${NSP}\)${SP6}${SPS}${TAB}/\1${TAB}${TAB}/" \
+  -e "s/^\(${NT8}${NT2}${NSP}\)${SP5}${SPS}${TAB}/\1${TAB}${TAB}/" \
+  -e "s/^\(${NT8}${NT3}${NSP}\)${SP4}${SPS}${TAB}/\1${TAB}${TAB}/" \
+  -e "s/^\(${NT8}${NT4}${NSP}\)${SP3}${SPS}${TAB}/\1${TAB}${TAB}/" \
+  -e "s/^\(${NT8}${NT5}${NSP}\)${SP2}${SPS}${TAB}/\1${TAB}${TAB}/" \
+  -e "s/^\(${NT8}${NT6}${NSP}\)${SP1}${SPS}${TAB}/\1${TAB}${TAB}/" \
+     \
+  -e "s/\(${TAB}${NT8}${NT0}${NSP}\)${SP7}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT1}${NSP}\)${SP6}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT2}${NSP}\)${SP5}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT3}${NSP}\)${SP4}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT4}${NSP}\)${SP3}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT5}${NSP}\)${SP2}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT6}${NSP}\)${SP1}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+     \
+  -e "s/\(${TAB}${NT8}${NT0}${NSP}\)${SP7}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT1}${NSP}\)${SP6}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT2}${NSP}\)${SP5}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT3}${NSP}\)${SP4}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT4}${NSP}\)${SP3}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT5}${NSP}\)${SP2}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+  -e "s/\(${TAB}${NT8}${NT6}${NSP}\)${SP1}${SPS}${TAB}/\1${TAB}${TAB}/g" \
+     \
+  -e "s/${SPC}${SPS}${TAB}/${TAB}/g" \
+     \
+  "${name}" > "${TempName}"
+ mv -f "${TempName}" "${name}"
+done

@@ -32,25 +32,23 @@
 ..
 .de Ms	\" Start message header - .Ms messagename
 .sM
-.na
 .PN \\$1
 .RS
 ..
 .de Mf	\" Field in message - .Mf name; types follow on separate line(s)
 .\".br
-.IP "\fI\\$1\fP\^: " "\w'\fI\\$1\fP\^: 'u"
+.IP "\fI\\$1\fP\^:" "\w'\fI\\$1\fP\^:'u+1"
 ..
 .de Mc	\" Field Continuation - .Mc; description follows on separate line(s)
 .br
 .\" \h'1i'
 ..
 .de Ma	\" Message addendum - .Ma title; contents follow
-.IP "\\$1: " "\w'\\$1: 'u"
+.IP "\\$1:" "\w'\\$1:'u+1"
 ..
 .de Me	\" End of message header - .Me
 .RE
 .LP
-.ad
 .eM
 ..
 .de Es	\" Start Encoding - .Es messagename
@@ -65,17 +63,32 @@
 .LP
 .KE
 ..
+.\"
+.\" --- cT --- centered title; centers $1, adds TOC entry unless $2 is "no"
+.\"
+.de cT
+\\&		\" filler so that the following .sp really leaves a space
+.sp 1
+.ce 1
+\\s+1\\fB\\$1\\fP\\s-1
+.sp 1
+.if !'\\$2'no' \{\
+.XS \\n(PN
+\\$1
+.XE
+\}
+..
 .ps 10
 .nr PS 10
 \&
 .TL
 \s+2\fBInter-Client Exchange (ICE) Protocol\fP\s-2
 .sp
-Version 1.0
+Version 1.1
 .sp
 X Consortium Standard
 .sp
-X Version 11, Release 6
+X Version 11, Release 6.4
 
 
 
@@ -136,9 +149,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Except as contained in this notice, the name of the X Consortium shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
+.sp 5
+X Window System is a trademark of X Consortium, Inc.
+.EH '\fBInter-Client Exchange Protocol\fP''\fBX11, Release 6.4\fP'
+.OH '\fBInter-Client Exchange Protocol\fP''\fBX11, Release 6.4\fP'
 .bp 1
-.EH '\fBInter-Client Exchange Protocol\fP''\fBVersion 1.0\fP'
-.OH '\fBInter-Client Exchange Protocol\fP''\fBVersion 1.0\fP'
 .EF ''\fB % \fP''
 .OF ''\fB % \fP''
 .nH 1 "Purpose and Goals"
@@ -861,7 +876,8 @@ or
 (none)
 .Me
 Received a message with an unknown minor opcode.
-.bp
+.br
+.ne 9
 .Ms BadState
 .Mf offending-minor-opcode
 <any>
@@ -947,7 +963,6 @@ None of the authentication protocols offered are available.
 None of the protocol versions offered are available.
 .\" .Ms SetupFailed
 .sM
-.na
 .PN SetupFailed
 .RS
 .Mf offending-minor-opcode
@@ -1012,7 +1027,8 @@ the authentication for some other reason.  (For instance, it
 may have been unable to contact an authentication server.)
 The reason field will give a human-interpretable message
 providing further detail.
-.bp
+.br
+.ne 10
 .Ms ProtocolDuplicate
 .Mf offending-minor-opcode
 .PN ProtocolSetup
@@ -1076,7 +1092,8 @@ connect to other end, send
 .St "receive" Error quit
 .St "receive <other>, send" Error quit
 .Se
-.bp
+.br
+.ne 22
 Here are top-level state transitions for the party that accepts connections.
 .Ss listener
 .\" .St "accept connection" "" init_wait
@@ -1356,7 +1373,7 @@ _
 .TE
 .RE
 .\" XXX - This is hokey, but I don't think you can nest .KS/.KE.
-.ne 12
+.ne 16
 .nH 2 "Message Encoding"
 .LP
 .Es Error
@@ -1533,4 +1550,328 @@ UnknownProtocol	8
 .sp 6p
 _
 .TE
-.YZ 3
+.bp
+.\" Set registers to number the appendixes A.1, B.1, C.1, ...
+.nr H1 0
+.af H1 A
+.cT "Appendix A" no
+.nH 1 "Modification History"
+.nH 2 "Release 6 to Release 6.1"
+.LP
+Release 6.1 added the ICE X rendezvous protocol (Appendix B) and
+updated the document version to 1.1.
+.nH 2 "Release 6.1 to Release 6.3"
+.LP
+Release 6.3 added the listen on well known ports feature.
+.bp
+.cT "Appendix B" no
+.nH 1 "ICE X Rendezvous Protocol"
+.nH 2 "Introduction"
+.LP
+The ICE X rendezvous protocol is designed to answer the need posed
+in Section 2 for one mechanism by which two clients interested in
+communicating via ICE are able to exchange the necessary information.
+This protocol is appropriate for any two ICE clients who also have X
+connections to the same X server.
+.nH 2 "Overview of ICE X Rendezvous"
+.LP
+The ICE X Rendezvous Mechanism requires clients willing to act as ICE
+originating parties to pre-register the ICE subprotocols they support in an
+ICE_PROTOCOLS property on their top-level window.  Clients willing to
+act as ICE answering parties then send an ICE_PROTOCOLS X
+.PN ClientMessage
+event to the ICE originating parties.  This
+.PN ClientMessage
+event identifies
+the ICE network IDs of the ICE answering party as well as the ICE
+subprotocol it wishes to speak.  Upon receipt of this message the ICE
+originating party uses the information to establish an ICE connection
+with the ICE answering party.
+.nH 2 "Registering Known Protocols"
+.LP
+Clients willing to act as ICE originating parties preregister
+the ICE subprotocols they support in a list of atoms held by an
+ICE_PROTOCOLS property on their top-level window.  The name of each
+atom listed in ICE_PROTOCOLS must be of the form
+ICE_INITIATE_\fIpname\fP where \fIpname\fP is the name of the ICE
+subprotocol the ICE originating party is willing to speak, as would be
+specified in an ICE
+.PN ProtocolSetup
+message.
+.LP
+Clients with an ICE_INITIATE_\fIpname\fP atom in the ICE_PROTOCOLS property
+on their top-level windows must respond to
+.PN ClientMessage
+events of
+type ICE_PROTOCOLS specifying ICE_INITIATE_\fIpname\fP.  If a client does not
+want to respond to these client message events, it should
+remove the ICE_INITIATE_\fIpname\fP atom from its ICE_PROTOCOLS property
+or remove the ICE_PROTOCOLS property entirely.
+.nH 2 "Initiating the Rendezvous"
+.LP
+To initiate the rendezvous a client acting as an ICE answering
+party sends an X
+.PN ClientMessage
+event of type ICE_PROTOCOLS to an ICE
+originating party.  This ICE_PROTOCOLS client message contains the
+information the ICE originating party needs to identify the ICE
+subprotocol the two parties will use as well as the ICE network
+identification string of the ICE answering party.
+.LP
+Before the ICE answering party sends the client message event it must
+define a text property on one of its windows.  This text property
+contains the ICE answering party's ICE network identification string
+and will be used by ICE originating parties to determine the ICE
+answering party's list of ICE network IDs.
+.LP
+The property name will normally be ICE_NETWORK_IDS, but may be any
+name of the ICE answering party's choosing.  The format for this text
+property is as follows:
+.ne 7
+.TS
+lB lB
+lw(1.25i) lw(4i) .
+_
+.sp 6p
+Field	Value
+.sp 6p
+_
+.sp 6p
+type	XA_STRING
+format	8
+value	comma-separated list of ICE network IDs
+.sp 6p
+_
+.TE
+.LP
+Once the ICE answering party has established this text property on one
+of its windows, it initiates the rendezvous by sending an
+ICE_PROTOCOLS
+.PN ClientMessage
+event to an ICE originating party's
+top-level window.  This event has the following format
+and must only be sent to windows that have pre-registered the ICE
+subprotocol in an ICE_PROTOCOLS property on their top-level window.
+.ne 13
+.TS
+lB lB
+lw(1.25i) lw(4i) .
+_
+.sp 6p
+Field	Value
+.sp 6p
+_
+.sp 6p
+message_type	Atom = "ICE_PROTOCOLS"
+format	32
+data.l[0]	Atom identifying the ICE subprotocol to speak
+data.l[1]	Timestamp
+data.l[2]	T{
+ICE answering party's window ID with
+ICE network IDs text property
+T}
+data.l[3]	T{
+Atom naming text property containing the ICE 
+answering party's ICE network IDs
+T}
+data.l[4]	Reserved.  Must be 0.
+.sp 6p
+_
+.TE
+The name of the atom in data.l[0] must be of the form
+ICE_INITIATE_\fIpname\fP, where \fIpname\fP is the name of the ICE
+subprotocol the ICE answering party wishes to speak.
+.LP
+When an ICE originating party receives a
+.PN ClientMessage
+event of type
+ICE_PROTOCOLS specifying ICE_INITIATE_\fIpname\fP it can initiate an ICE
+connection with the ICE answering party.
+To open this connection the client retrieves the ICE answering
+party's ICE network IDs from the window specified in data.l[2] using
+the text property specified in data.l[3].
+.LP
+If the connection attempt fails for any reason, the client must
+respond to the client message event by sending a return
+.PN ClientMessage
+event to the window specified in data.l[2].  This return
+event has the following format:
+.ne 13
+.TS
+lB lB
+lw(1.25i) lw(4i) .
+_
+.sp 6p
+Field	Value
+.sp 6p
+_
+.sp 6p
+message_type	Atom = "ICE_INITIATE_FAILED"			
+format	32
+data.l[0]	Atom identifying the ICE subprotocol requested	
+data.l[1]	Timestamp
+data.l[2]	T{
+Initiating party's window ID 
+(holding ICE_PROTOCOLS)
+T}
+data.l[3]	int: reason for failure				
+data.l[4]	Reserved, must be 0
+.sp 6p
+_
+.TE
+The values of data.l[0] and data.l[1] are copied directly from the
+client message event the client received.
+.LP
+The value in data.l[2] is
+the id of the window to which the ICE_PROTOCOLS.ICE_INITIATE_\fIpname\fP
+client message event was sent.
+.LP
+Data.l[3] has one of the following values:
+.LP
+.ne 21
+.TS
+lB cBw(0.6i) lB
+l n lw(4i) .
+_
+.sp 6p
+Value	Encoding	Description
+.sp 6p
+_
+.sp 6p
+T{
+.PN OpenFailed
+T}	1	T{
+The client was unable to open the connection
+(e.g. a call to IceOpenConnection() failed).  If the
+client is able to distinguish authentication or
+authorization errors from general errors, then
+the preferred reply is 
+.PN AuthenticationFailed
+for authorization errors.
+T}
+.sp 4p
+T{
+.PN AuthenticationFailed
+T}	2	T{
+Authentication or authorization of the
+connection or protocol setup was refused.
+This reply will be given only if the client is 
+able to distinguish it from
+.PN OpenFailed ;
+otherwise
+.PN OpenFailed
+will be returned.		
+T}
+.sp 4p
+T{
+.PN SetupFailed
+T}	3	T{
+The client was unable to initiate the specified
+protocol on the connection (e.g. a call to
+IceProtocolSetup() failed).			
+T}
+.sp 4p
+T{
+.PN UnknownProtocol
+T}	4	T{
+The client does not recognize the requested
+protocol.  (This represents a semantic error
+on the part of the answering party.)		
+T}
+.sp 4p
+T{
+.PN Refused
+T}	5	T{
+The client was in the process of removing
+ICE_INITIATE_\fIpname\fP from its ICE_PROTOCOLS list 
+when the client message was sent; the client no
+longer is willing to establish the specified ICE 
+communication.
+T}
+.sp 6p
+_
+.TE
+.sp
+.NT "Advice to Implementors"
+Clients willing to act as ICE originating parties must update the
+ICE_PROTOCOLS property on their top-level windows to include the
+ICE_INITIATE_\fIpname\fP atom(s) identifying the ICE subprotocols they
+speak.  The method a client uses to update the ICE_PROTOCOLS property
+to include ICE_INITIATE_\fIpname\fP atoms is implementation dependent, but
+the client must ensure the integrity of the list to prevent the
+accidental omission of any atoms previously in the list.
+.LP
+When setting up the ICE network IDs text property on one of its
+windows, the ICE answering party can determine its comma-separated
+list of ICE network IDs by calling IceComposeNetworkIdList() after
+making a call to IceListenForConnections().  The method an ICE
+answering party uses to find the top-level windows of clients willing
+to act as ICE originating parties is dependent upon the nature of the
+answering party.  Some may wish to use the approach of requiring the
+user to click on a client's window.  Others wishing to find existing
+clients without requiring user interaction might use something similar
+to the XQueryTree() method used by several freely-available
+applications.  In order for the ICE answering party to become
+automatically aware of new clients willing to originate ICE
+connections, the ICE answering party might register for
+SubstructureNotify events on the root window of the display.  When it
+receives a SubstructureNotify event, the ICE answering party can check
+to see if it was the result of the creation of a new client top-level
+window with an ICE_PROTOCOLS property.
+.LP
+In any case, before attempting to use this ICE X Rendezvous Mechanism
+ICE answering parties wishing to speak ICE subprotocol \fIpname\fP should
+check for the ICE_INITIATE_\fIpname\fP atom in the ICE_PROTOCOLS property on
+a client's top-level window.  A client that does not include an
+ICE_INITIATE_\fIpname\fP atom in a ICE_PROTOCOLS property on some top-level
+window should be assumed to ignore
+.PN ClientMessage
+events of type
+ICE_PROTOCOLS specifying ICE_INITIATE_\fIpname\fP for ICE subprotocol
+\fIpname\fP.
+.NE
+.nH 2 "ICE Subprotocol Versioning"
+.LP
+Although the version of the ICE subprotocol could be passed in the
+client message event, ICE provides more a flexible version negotiation
+mechanism than will fit within a single
+.PN ClientMessage
+event.  Because
+of this, ICE subprotocol versioning is handled within the ICE protocol
+setup phase.
+.NT Example
+Clients wish to communicate with each other via an ICE subprotocol
+known as "RAP V1.0".  In RAP terminology one party, the "agent",
+communicates with other RAP-enabled applications on demand.  The
+user may direct the agent to establish communication with a specific
+application by clicking on the application's window, or the agent may
+watch for new application windows to be created and automatically
+establish communication.
+.LP
+During startup the ICE answering party (the agent) first calls
+IceRegisterForProtocolReply() with a list of
+the versions (i.e., 1.0) of RAP the agent can speak.  The answering
+party then calls IceListenForConnections() followed by
+IceComposeNetworkIdList() and stores the resulting ICE network IDs
+string in a text property on one of its windows.
+.LP
+When the answering party (agent) finds a client with which it wishes to
+speak, it checks to see if the ICE_INITIATE_RAP atom is in the ICE_PROTOCOLS
+property on the client's top-level window.  If it is present the agent
+sends the client's top-level window an ICE_PROTOCOLS client
+message event as described above.  When the client receives the client
+message event and is willing to originate an ICE connection using RAP,
+it performs an IceRegisterForProtocolSetup() with a list of the
+versions of RAP the client can speak.  The client then retrieves
+the agent's ICE network ID from the property and window specified by
+the agent in the client message event and calls IceOpenConnection().
+After this call succeeds the client calls IceProtocolSetup() specifying
+the RAP protocol.  During this
+process, ICE calls the RAP protocol routines that handle the version
+negotiation.
+.LP
+Note that it is not necessary for purposes of this rendezvous that
+the client application call any ICElib functions prior to receipt
+of the client message event.
+.NE
+.YZ 1

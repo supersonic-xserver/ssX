@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
 ** Software License B, Version 1.1 (the "License"), the contents of this
@@ -36,7 +43,7 @@
 ** Author: Eric Veach, July 1994.
 **
 */
-/* $XFree86$ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/tessmono.h,v 1.2 2001/04/03 02:18:40 dawes Exp $ */
 
 #ifndef __tessmono_h_
 #define __tessmono_h_

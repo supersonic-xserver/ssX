@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbzerarc.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbzerarc.c,v 3.5 2003/10/29 22:44:53 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -25,14 +32,16 @@ in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
 
+/* $Xorg: cfbzerarc.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
+
 /* Derived from:
  * "Algorithm for drawing ellipses or hyperbolae with a digital plotter"
  * by M. L. V. Pitteway
  * The Computer Journal, November 1967, Volume 10, Number 3, pp. 282-289
  */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "regionstr.h"
 #include "gcstruct.h"
 #include "pixmapstr.h"
@@ -46,22 +55,25 @@ in this Software without prior written authorization from The Open Group.
 #ifdef PIXEL_ADDR
 
 static void
-RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
+RROP_NAME(cfbZeroArcSS8)(
+    DrawablePtr pDraw,
+    GCPtr pGC,
+    xArc *arc)
 {
     miZeroArcRec info;
     Bool do360;
-    int x;
+    register int x;
     PixelType *addrp;
-    PixelType *yorgp, *yorgop;
+    register PixelType *yorgp, *yorgop;
 #if PSZ == 24
     int xorg, xorg3, xorgo, xorgo3;
-    int xtmp;
+    register int xtmp;
 #endif
     RROP_DECLARE
-    int yoffset;
+    register int yoffset;
     int npwidth, dyoffset;
-    int y, a, b, d, mask;
-    int k1, k3, dx, dy;
+    register int y, a, b, d, mask;
+    register int k1, k3, dx, dy;
 
     cfbGetPixelWidthAndPointer(pDraw,npwidth, addrp)
 
@@ -73,11 +85,11 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
     info.xorgo += pDraw->x;
 #if PSZ == 24
     xorg = info.xorg;
-    xorg3 = xorg * PSZB;
-    info.xorg = (info.xorg * PSZB) / PGSZB;
+    xorg3 = xorg * 3;
+    info.xorg = (info.xorg * 3) >> 2;
     xorgo = info.xorgo;
-    xorgo3 = xorgo * PSZB; 
-    info.xorgo = (info.xorgo * PSZB) / PGSZB;
+    xorgo3 = xorgo * 3; 
+    info.xorgo = (info.xorgo * 3) >> 2;
 #endif
     MIARCSETUP();
     yoffset = y ? npwidth : 0;
@@ -104,29 +116,29 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
     }
     if (do360 && (arc->width == arc->height) && !(arc->width & 1))
     {
-	int xoffset = npwidth;
+	register int xoffset = npwidth;
 #if PSZ == 24
 	PixelType *yorghb = yorgp + (info.h * npwidth);
-	int tmp1, tmp2, tmp1_3, tmp2_3;
+	register int tmp1, tmp2, tmp1_3, tmp2_3;
 
 	tmp1 = xorg + info.h;
-	tmp1_3 = tmp1 * PSZB;
+	tmp1_3 = tmp1 * 3;
 	tmp2 = xorg - info.h;
-	tmp2_3 = tmp2 * PSZB;
+	tmp2_3 = tmp2 * 3;
 	while (1)
 	{
-	    xtmp = (xorg3 + x * PSZB) / PGSZB;
+	    xtmp = (xorg3 + x * 3) >> 2;
 	    RROP_SOLID24(yorgp + yoffset + xtmp, xorg + x);
 	    RROP_SOLID24(yorgop - yoffset + xtmp, xorg + x);
-	    xtmp = (xorg3 - x * PSZB) / PGSZB;
+	    xtmp = (xorg3 - x * 3) >> 2;
 	    RROP_SOLID24(yorgp + yoffset + xtmp, xorg - x);
 	    RROP_SOLID24(yorgop - yoffset + xtmp, xorg - x);
 	    if (a < 0)
 		break;
-	    xtmp = (tmp1_3 - y * PSZB) / PGSZB;
+	    xtmp = (tmp1_3 - y * 3) >> 2;
 	    RROP_SOLID24(yorghb - xoffset + xtmp, tmp1 - y);
 	    RROP_SOLID24(yorghb + xoffset + xtmp, tmp1 - y);
-	    xtmp = (tmp2_3 + y * PSZB) / PGSZB;
+	    xtmp = (tmp2_3 + y * 3) >> 2;
 	    RROP_SOLID24(yorghb - xoffset + xtmp, tmp2 + y);
 	    RROP_SOLID24(yorghb + xoffset + xtmp, tmp2 + y);
 	    xoffset += npwidth;
@@ -166,10 +178,10 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
 	{
 	    MIARCOCTANTSHIFT(dyoffset = npwidth;);
 #if PSZ == 24
-	    xtmp = (xorg3 + x * PSZB) / PGSZB;
+	    xtmp = (xorg3 + x * 3) >> 2;
 	    RROP_SOLID24(yorgp + yoffset + xtmp, xorg + x);
 	    RROP_SOLID24(yorgop - yoffset + xtmp, xorg + x);
-	    xtmp = (xorgo3 - x * PSZB) / PGSZB;
+	    xtmp = (xorgo3 - x * 3) >> 2;
 	    RROP_SOLID24(yorgp + yoffset + xtmp, xorgo - x);
 	    RROP_SOLID24(yorgop - yoffset + xtmp, xorgo - x);
 #else
@@ -193,19 +205,19 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
 	    }
 #if PSZ == 24
 	    if (mask & 1){
-	      xtmp = (xorg3 + x * PSZB) / PGSZB;
+	      xtmp = (xorg3 + x * 3) >> 2;
 	      RROP_SOLID24(yorgp + yoffset + xtmp, xorg + x);
 	    }
 	    if (mask & 2){
-	      xtmp = (xorgo3 - x * PSZB) / PGSZB;
+	      xtmp = (xorgo3 - x * 3) >> 2;
 	      RROP_SOLID24(yorgp + yoffset + xtmp, xorgo - x);
 	    }
 	    if (mask & 4){
-	      xtmp = (xorgo3 - x * PSZB) / PGSZB;
+	      xtmp = (xorgo3 - x * 3) >> 2;
 	      RROP_SOLID24(yorgop - yoffset + xtmp, xorgo - x);
 	    }
 	    if (mask & 8){
-	      xtmp = (xorg3 + x * PSZB) / PGSZB;
+	      xtmp = (xorg3 + x * 3) >> 2;
 	      RROP_SOLID24(yorgop - yoffset + xtmp, xorg + x);
 	    }
 #else
@@ -230,11 +242,11 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
 	mask = info.start.mask;
 #if PSZ == 24
     if (mask & 1){
-      xtmp = (xorg3 + x * PSZB) / PGSZB;
+      xtmp = (xorg3 + x * 3) >> 2;
       RROP_SOLID24(yorgp + yoffset + xtmp, xorg + x);
     }
     if (mask & 4){
-      xtmp = (xorgo3 - x * PSZB) / PGSZB;
+      xtmp = (xorgo3 - x * 3) >> 2;
       RROP_SOLID24(yorgop - yoffset + xtmp, xorgo - x);
     }
 #else
@@ -247,11 +259,11 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
     {
 #if PSZ == 24
 	if (mask & 2){
-	  xtmp = (xorgo3 - x * PSZB) / PGSZB;
+	  xtmp = (xorgo3 - x * 3) >> 2;
 	  RROP_SOLID24(yorgp + yoffset + xtmp, xorgo - x);
 	}
 	if (mask & 8){
-	  xtmp = (xorg3 + x * PSZB) / PGSZB;
+	  xtmp = (xorg3 + x * 3) >> 2;
 	  RROP_SOLID24(yorgop - yoffset + xtmp, xorg + x);
 	}
 #else
@@ -265,11 +277,14 @@ RROP_NAME(cfbZeroArcSS8)(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
 }
 
 void
-RROP_NAME(cfbZeroPolyArcSS8)(DrawablePtr pDraw, GCPtr pGC, int narcs,
-			     xArc *parcs)
+RROP_NAME (cfbZeroPolyArcSS8) (pDraw, pGC, narcs, parcs)
+    register DrawablePtr	pDraw;
+    GCPtr	pGC;
+    int		narcs;
+    xArc	*parcs;
 {
-    xArc *arc;
-    int i;
+    register xArc *arc;
+    register int i;
     BoxRec box;
     int x2, y2;
     RegionPtr cclip;

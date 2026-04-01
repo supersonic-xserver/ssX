@@ -1,4 +1,4 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/X86/fx_3dnow_fastpath.S,v 1.2 2000/09/26 15:56:51 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/X86/fx_3dnow_fastpath.S,v 1.1.1.1 2004/04/08 09:17:23 alanh Exp $ */
 
 #include "../../X86/assyntax.h"
 

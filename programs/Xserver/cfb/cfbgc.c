@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbgc.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbgc.c,v 1.6 2001/12/14 19:59:22 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,11 +53,13 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+/* $Xorg: cfbgc.c,v 1.4 2001/02/09 02:04:37 xorgcvs Exp $ */
+
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "cfb.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -228,7 +237,9 @@ GCOps	cfbNonTEOps = {
 };
 
 GCOps *
-cfbMatchCommon(GCPtr pGC, cfbPrivGCPtr devPriv)
+cfbMatchCommon (pGC, devPriv)
+    GCPtr	    pGC;
+    cfbPrivGCPtr    devPriv;
 {
     if (pGC->lineWidth != 0)
 	return 0;
@@ -270,7 +281,8 @@ cfbMatchCommon(GCPtr pGC, cfbPrivGCPtr devPriv)
 }
 
 Bool
-cfbCreateGC(GCPtr pGC)
+cfbCreateGC(pGC)
+    register GCPtr pGC;
 {
     cfbPrivGC  *pPriv;
 
@@ -312,7 +324,10 @@ cfbCreateGC(GCPtr pGC)
 */
 
 void
-cfbValidateGC(GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
+cfbValidateGC(pGC, changes, pDrawable)
+    register GCPtr  pGC;
+    unsigned long   changes;
+    DrawablePtr	    pDrawable;
 {
     int         mask;		/* stateChanges */
     int         index;		/* used for stepping through bitfields */

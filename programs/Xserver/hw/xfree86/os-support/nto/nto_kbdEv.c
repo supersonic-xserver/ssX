@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_kbdEv.c,v 1.4 2005/10/14 15:17:05 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/nto/nto_kbdEv.c,v 1.3 2001/11/16 16:47:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993 by David Dawes <dawes@physics.su.oz.au>
@@ -23,10 +30,11 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: std_kbdEv.c /main/4 1996/03/11 10:47:33 kaleb $ */
 
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "inputstr.h"
 #include "scrnintstr.h"
 

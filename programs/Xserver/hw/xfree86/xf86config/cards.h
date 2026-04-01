@@ -1,4 +1,24 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/cards.h,v 3.5 1999/07/05 12:12:06 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+
+
+
+/* $XConsortium: cards.h /main/3 1996/02/21 18:12:53 kaleb $ */
 
 #ifndef CARD_DATABASE_FILE
 #define CARD_DATABASE_FILE "Cards"

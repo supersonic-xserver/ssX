@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -73,7 +80,7 @@ void _tnl_update_eval( GLcontext *ctx )
       clear_active_eval2( tnl, attr );
    }
 
-   if (ctx->VertexProgram.Enabled) {
+   if (ctx->VertexProgram._Enabled) {
       for (attr = 0; attr < VERT_ATTRIB_MAX; attr++) {
 	 if (ctx->Eval.Map1Attrib[attr]) 
 	    set_active_eval1( tnl, attr, 4, &ctx->EvalMap.Map1Attrib[attr] );
@@ -165,9 +172,9 @@ void _tnl_do_EvalCoord1f(GLcontext* ctx, GLfloat u)
 				map->Order);
 
       if (tnl->vtx.eval.map1[0].sz == 4) 
-	 glVertex4fv( vertex );
+	 GL_CALL(Vertex4fv)( vertex );
       else
-	 glVertex3fv( vertex ); 
+	 GL_CALL(Vertex3fv)( vertex ); 
    }
 }
 
@@ -244,9 +251,9 @@ void _tnl_do_EvalCoord2f( GLcontext* ctx, GLfloat u, GLfloat v )
       }
 
       if (tnl->vtx.attrsz[0] == 4) 
-	 glVertex4fv( vertex );
+	 GL_CALL(Vertex4fv)( vertex );
       else
-	 glVertex3fv( vertex ); 
+	 GL_CALL(Vertex3fv)( vertex ); 
    }
 }
 

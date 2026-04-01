@@ -1,3 +1,15 @@
+/*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+* $Xorg: Clock.h,v 1.4 2001/02/09 02:05:39 xorgcvs Exp $
+*/
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1998  The Open Group
@@ -44,7 +56,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/xclock/Clock.h,v 1.13 2005/05/19 01:02:44 dawes Exp $ */
+/* $XFree86: xc/programs/xclock/Clock.h,v 1.12 2002/10/21 13:33:07 alanh Exp $ */
 
 #ifndef _XawClock_h
 #define _XawClock_h
@@ -135,8 +147,8 @@ SOFTWARE.
 #define XtNsharp "sharp"
 #define XtCSharp "Sharp"
 
-typedef struct _ClockRec *ClockWidget;  /* completely defined in ClockP.h */
-typedef struct _ClockClassRec *ClockWidgetClass;    /* completely defined in ClockP.h */
+typedef struct _ClockRec *ClockWidget;  /* completely defined in ClockPrivate.h */
+typedef struct _ClockClassRec *ClockWidgetClass;    /* completely defined in ClockPrivate.h */
 
 extern WidgetClass clockWidgetClass;
 

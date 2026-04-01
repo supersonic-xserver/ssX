@@ -1,4 +1,11 @@
 /* $XFree86: xc/lib/XTrap/XEDsptch.c,v 1.1 2001/11/02 23:29:27 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991 by Digital Equipment Corp., Maynard, MA
 
@@ -41,7 +48,7 @@ SOFTWARE.
 
 static void XETrapDispatchCB(XETC *tc, XETrapDatum *pdatum)
 {
-    XETrapCBProc pfunc = NULL;
+    void_function pfunc = NULL;
     BYTE *userp = NULL;
 
     /* Need to deal with Delta Timestamps here before calling client CB */

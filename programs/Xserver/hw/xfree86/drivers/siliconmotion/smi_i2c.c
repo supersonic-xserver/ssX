@@ -1,3 +1,19 @@
+/* Header:   //Mercury/Projects/archives/XFree86/4.0/smi_i2c.c-arc   1.10   27 Nov 2000 15:47:58   Frido  $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) 1994-2000 The XFree86 Project, Inc.  All Rights Reserved.
 Copyright (C) 2000 Silicon Motion, Inc.  All Rights Reserved.
@@ -24,7 +40,7 @@ Silicon Motion shall not be used in advertising or otherwise to promote the
 sale, use or other dealings in this Software without prior written
 authorization from the XFree86 Project and Silicon Motion.
 */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi_i2c.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/smi_i2c.c,v 1.2 2001/12/20 21:35:39 eich Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -40,10 +56,12 @@ authorization from the XFree86 Project and Silicon Motion.
 #undef ENTER_PROC
 #undef DEBUG_PROC
 #undef LEAVE_PROC
+#undef DEBUG
 #define VERBLEV 2
 #define ENTER_PROC(PROCNAME)
 #define DEBUG_PROC(PROCNAME)
 #define LEAVE_PROC(PROCNAME)
+#define DEBUG(arg)
 
 static void
 SMI_I2CPutBits(I2CBusPtr b, int clock,  int data)

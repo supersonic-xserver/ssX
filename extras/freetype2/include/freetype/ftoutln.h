@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftoutln.h                                                              */
 /*                                                                         */
 /*    Support for the FT_Outline type used to store glyph shapes of        */
 /*    most scalable font formats (specification).                          */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -20,13 +27,61 @@
 #ifndef __FTOUTLN_H__
 #define __FTOUTLN_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
 #endif
-#include   FT_BUILD_H
-#include   FT_FREETYPE_H
+
 
 FT_BEGIN_HEADER
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Section>                                                             */
+  /*    outline_processing                                                 */
+  /*                                                                       */
+  /* <Title>                                                               */
+  /*    Outline Processing                                                 */
+  /*                                                                       */
+  /* <Abstract>                                                            */
+  /*    Functions to create, transform, and render vectorial glyph images. */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    This section contains routines used to create and destroy scalable */
+  /*    glyph images known as `outlines'.  These can also be measured,     */
+  /*    transformed, and converted into bitmaps and pixmaps.               */
+  /*                                                                       */
+  /* <Order>                                                               */
+  /*    FT_Outline                                                         */
+  /*    FT_OUTLINE_FLAGS                                                   */
+  /*    FT_Outline_New                                                     */
+  /*    FT_Outline_Done                                                    */
+  /*    FT_Outline_Copy                                                    */
+  /*    FT_Outline_Translate                                               */
+  /*    FT_Outline_Transform                                               */
+  /*    FT_Outline_Reverse                                                 */
+  /*    FT_Outline_Check                                                   */
+  /*                                                                       */
+  /*    FT_Outline_Get_CBox                                                */
+  /*    FT_Outline_Get_BBox                                                */
+  /*                                                                       */
+  /*    FT_Outline_Get_Bitmap                                              */
+  /*    FT_Outline_Render                                                  */
+  /*                                                                       */
+  /*    FT_Outline_Decompose                                               */
+  /*    FT_Outline_Funcs                                                   */
+  /*    FT_Outline_MoveTo_Func                                             */
+  /*    FT_Outline_LineTo_Func                                             */
+  /*    FT_Outline_ConicTo_Func                                            */
+  /*    FT_Outline_CubicTo_Func                                            */
+  /*                                                                       */
+  /*************************************************************************/
 
 
   /*************************************************************************/
@@ -41,23 +96,25 @@ FT_BEGIN_HEADER
   /*    of new contours in the outline.                                    */
   /*                                                                       */
   /* <Input>                                                               */
-  /*    outline   :: A pointer to the source target.                       */
+  /*    outline        :: A pointer to the source target.                  */
   /*                                                                       */
-  /*    interface :: A table of `emitters', i.e,. function pointers called */
-  /*                 during decomposition to indicate path operations.     */
+  /*    func_interface :: A table of `emitters', i.e,. function pointers   */
+  /*                      called during decomposition to indicate path     */
+  /*                      operations.                                      */
   /*                                                                       */
   /* <InOut>                                                               */
-  /*    user      :: A typeless pointer which is passed to each emitter    */
-  /*                 during the decomposition.  It can be used to store    */
-  /*                 the state during the decomposition.                   */
+  /*    user           :: A typeless pointer which is passed to each       */
+  /*                      emitter during the decomposition.  It can be     */
+  /*                      used to store the state during the               */
+  /*                      decomposition.                                   */
   /*                                                                       */
   /* <Return>                                                              */
   /*    FreeType error code.  0 means sucess.                              */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_Decompose(
-                           FT_Outline*              outline,
-                           const FT_Outline_Funcs*  interface,
-                           void*                    user );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Decompose( FT_Outline*              outline,
+                        const FT_Outline_Funcs*  func_interface,
+                        void*                    user );
 
 
   /*************************************************************************/
@@ -89,14 +146,15 @@ FT_BEGIN_HEADER
   /*    The reason why this function takes a `library' parameter is simply */
   /*    to use the library's memory allocator.                             */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_New( FT_Library   library,
-                                         FT_UInt      numPoints,
-                                         FT_Int       numContours,
-                                         FT_Outline  *anoutline );
+  FT_EXPORT( FT_Error )
+  FT_Outline_New( FT_Library   library,
+                  FT_UInt      numPoints,
+                  FT_Int       numContours,
+                  FT_Outline  *anoutline );
 
 
-  FT_EXPORT( FT_Error )  FT_Outline_New_Internal(
-                           FT_Memory    memory,
+  FT_EXPORT( FT_Error )
+  FT_Outline_New_Internal( FT_Memory    memory,
                            FT_UInt      numPoints,
                            FT_Int       numContours,
                            FT_Outline  *anoutline );
@@ -126,12 +184,32 @@ FT_BEGIN_HEADER
   /*    The reason why this function takes an `library' parameter is       */
   /*    simply to use FT_Free().                                           */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_Done( FT_Library   library,
-                                          FT_Outline*  outline );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Done( FT_Library   library,
+                   FT_Outline*  outline );
 
 
-  FT_EXPORT( FT_Error )  FT_Outline_Done_Internal( FT_Memory    memory,
-                                                   FT_Outline*  outline );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Done_Internal( FT_Memory    memory,
+                            FT_Outline*  outline );
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Function>                                                            */
+  /*    FT_Outline_Check                                                   */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    Check the contents of an outline descriptor.                       */
+  /*                                                                       */
+  /* <Input>                                                               */
+  /*    outline :: A handle to a source outline.                           */
+  /*                                                                       */
+  /* <Return>                                                              */
+  /*    FreeType error code.  0 means success.                             */
+  /*                                                                       */
+  FT_EXPORT( FT_Error )
+  FT_Outline_Check( FT_Outline*  outline );
 
 
   /*************************************************************************/
@@ -157,8 +235,9 @@ FT_BEGIN_HEADER
   /* <Output>                                                              */
   /*    acbox   :: The outline's control box.                              */
   /*                                                                       */
-  FT_EXPORT( void )  FT_Outline_Get_CBox( FT_Outline*  outline,
-                                          FT_BBox     *acbox );
+  FT_EXPORT( void )
+  FT_Outline_Get_CBox( FT_Outline*  outline,
+                       FT_BBox     *acbox );
 
 
   /*************************************************************************/
@@ -177,9 +256,10 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*    yOffset :: The vertical offset.                                    */
   /*                                                                       */
-  FT_EXPORT( void )  FT_Outline_Translate( FT_Outline*  outline,
-                                           FT_Pos       xOffset,
-                                           FT_Pos       yOffset );
+  FT_EXPORT( void )
+  FT_Outline_Translate( FT_Outline*  outline,
+                        FT_Pos       xOffset,
+                        FT_Pos       yOffset );
 
 
   /*************************************************************************/
@@ -201,8 +281,9 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_Copy( FT_Outline*  source,
-                                          FT_Outline  *target );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Copy( FT_Outline*  source,
+                   FT_Outline  *target );
 
 
   /*************************************************************************/
@@ -224,8 +305,9 @@ FT_BEGIN_HEADER
   /*    You can use FT_Outline_Translate() if you need to translate the    */
   /*    outline's points.                                                  */
   /*                                                                       */
-  FT_EXPORT( void )  FT_Outline_Transform( FT_Outline*  outline,
-                                           FT_Matrix*   matrix );
+  FT_EXPORT( void )
+  FT_Outline_Transform( FT_Outline*  outline,
+                        FT_Matrix*   matrix );
 
 
   /*************************************************************************/
@@ -241,13 +323,14 @@ FT_BEGIN_HEADER
   /*    outline :: A pointer to the target outline descriptor.             */
   /*                                                                       */
   /* <Note>                                                                */
-  /*    This functions toggles the bit flag `ft_outline_reverse_fill' in   */
+  /*    This functions toggles the bit flag `FT_OUTLINE_REVERSE_FILL' in   */
   /*    the outline's `flags' field.                                       */
   /*                                                                       */
   /*    It shouldn't be used by a normal client application, unless it     */
   /*    knows what it is doing.                                            */
   /*                                                                       */
-  FT_EXPORT( void )  FT_Outline_Reverse( FT_Outline*  outline );
+  FT_EXPORT( void )
+  FT_Outline_Reverse( FT_Outline*  outline );
 
 
   /*************************************************************************/
@@ -276,9 +359,10 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*    It will use the raster correponding to the default glyph format.   */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_Get_Bitmap( FT_Library   library,
-                                                FT_Outline*  outline,
-                                                FT_Bitmap   *abitmap );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Get_Bitmap( FT_Library   library,
+                         FT_Outline*  outline,
+                         FT_Bitmap   *abitmap );
 
 
   /*************************************************************************/
@@ -312,9 +396,80 @@ FT_BEGIN_HEADER
   /*    converter is called, which means that the value you give to it is  */
   /*    actually ignored.                                                  */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_Render( FT_Library         library,
-                                            FT_Outline*        outline,
-                                            FT_Raster_Params*  params );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Render( FT_Library         library,
+                     FT_Outline*        outline,
+                     FT_Raster_Params*  params );
+
+
+ /**************************************************************************
+  *
+  * @enum:
+  *   FT_Orientation
+  *  
+  * @description:
+  *   A list of values used to describe an outline's contour orientation.
+  *
+  *   The TrueType and Postscript specifications use different conventions
+  *   to determine whether outline contours should be filled or unfilled.
+  *   
+  * @values:
+  *   FT_ORIENTATION_TRUETYPE ::
+  *     According to the TrueType specification, clockwise contours must
+  *     be filled, and counter-clockwise ones must be unfilled.
+  *
+  *   FT_ORIENTATION_POSTSCRIPT ::
+  *     According to the Postscript specification, counter-clockwise contours
+  *     must be filled, and clockwise ones must be unfilled.
+  *
+  *   FT_ORIENTATION_FILL_RIGHT ::
+  *     This is identical to @FT_ORIENTATION_TRUETYPE, but is used to
+  *     remember that in TrueType, everything that is to the right of
+  *     the drawing direction of a contour must be filled.
+  *
+  *   FT_ORIENTATION_FILL_LEFT ::
+  *     This is identical to @FT_ORIENTATION_POSTSCRIPT, but is used to
+  *     remember that in Postscript, everything that is to the left of
+  *     the drawing direction of a contour must be filled.
+  */
+  typedef enum
+  {
+    FT_ORIENTATION_TRUETYPE   = 0,
+    FT_ORIENTATION_POSTSCRIPT = 1,
+    FT_ORIENTATION_FILL_RIGHT = FT_ORIENTATION_TRUETYPE,
+    FT_ORIENTATION_FILL_LEFT  = FT_ORIENTATION_POSTSCRIPT
+  
+  } FT_Orientation;
+
+
+ /**************************************************************************
+  *
+  * @function:
+  *   FT_Outline_Get_Orientation
+  *  
+  * @description:
+  *   This function analyzes a glyph outline and tries to compute its
+  *   fill orientation (see @FT_Orientation).  This is done by computing
+  *   the direction of each global horizontal and/or vertical extrema
+  *   within the outline.
+  *
+  *   Note that this will return @FT_ORIENTATION_TRUETYPE for empty
+  *   outlines.
+  *
+  * @input:
+  *   outline ::
+  *     A handle to the source outline.
+  *
+  * @return:
+  *   The orientation.
+  *
+  */
+  FT_EXPORT( FT_Orientation )
+  FT_Outline_Get_Orientation( FT_Outline*  outline );
+
+
+  /* */
+
 
 FT_END_HEADER
 

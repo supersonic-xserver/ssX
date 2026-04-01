@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/xqueue.c,v 3.21 2005/10/14 15:17:08 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/xqueue.c,v 3.20 2001/03/06 18:20:31 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993-1999 by The XFree86 Project, Inc.
@@ -22,8 +29,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: xqueue.c /main/8 1996/10/19 18:08:11 kaleb $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "compiler.h"
 
 #include "xf86.h"

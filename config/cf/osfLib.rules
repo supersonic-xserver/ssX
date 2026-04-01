@@ -2,7 +2,7 @@
  * OSF/1 shared library rules
  */
 
-XCOMM $XFree86: xc/config/cf/osfLib.rules,v 1.5 2004/03/25 03:36:21 dawes Exp $
+XCOMM $XFree86: xc/config/cf/osfLib.rules,v 1.6 2004/06/01 00:16:53 dawes Exp $
 
 #ifndef HasSharedLibraries
 #define HasSharedLibraries YES

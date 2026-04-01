@@ -31,8 +31,12 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
+** $Date: 2004/03/05 14:26:35 $ $Revision: 1.1.1.2 $
 */
 /* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/interface/bezierEval.cc,v 1.2 2003/10/22 19:20:55 tsi Exp $ */
+/*
+** $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/interface/bezierEval.cc,v 1.1.1.2 2004/03/05 14:26:35 tron Exp $
+*/
 
 #include <stdlib.h>
 #include <stdio.h>

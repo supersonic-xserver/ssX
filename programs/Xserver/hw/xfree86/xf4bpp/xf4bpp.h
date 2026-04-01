@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/xf4bpp.h,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/xf4bpp.h,v 1.10 2003/11/17 22:20:42 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 
 #ifndef __XF4BPP_H__
@@ -8,7 +22,7 @@
 #include "windowstr.h"
 #include "gcstruct.h"
 #include "colormapst.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #ifndef PixelType
 #define PixelType CARD32
 #endif

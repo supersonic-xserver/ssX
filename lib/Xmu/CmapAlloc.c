@@ -1,3 +1,19 @@
+/* $Xorg: CmapAlloc.c,v 1.4 2001/02/09 02:03:51 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
 
 Copyright 1989, 1994, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/CmapAlloc.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/lib/Xmu/CmapAlloc.c,v 1.7 2001/12/14 19:55:35 dawes Exp $ */
 
 /*
  * Author:  Donna Converse, MIT X Consortium
@@ -296,7 +312,7 @@ icbrt_with_bits(int a, int bits)
     return icbrt_with_guess(a, a>>2*bits/3);
 }
 
-#ifdef _X_ROOT_STATS
+#if defined(_X_ROOT_STATS) || defined(DEBUG)
 int icbrt_loopcount;
 #endif
 
@@ -315,7 +331,7 @@ icbrt_with_guess(int a, int guess)
 {
     register int delta;
 
-#ifdef _X_ROOT_STATS
+#if defined(_X_ROOT_STATS) || defined(DEBUG)
     icbrt_loopcount = 0;
 #endif
     if (a <= 0)
@@ -324,12 +340,12 @@ icbrt_with_guess(int a, int guess)
 	guess = 1;
 
     do {
-	delta = (guess - a/(guess*guess))/3;
-#ifdef _X_ROOT_STATS
+#if defined(_X_ROOT_STATS) || defined(DEBUG)
 	icbrt_loopcount++;
+#endif
+	delta = (guess - a/(guess*guess))/3;
 #ifdef DEBUG
 	printf("pass %d: guess=%d, delta=%d\n", icbrt_loopcount, guess, delta);
-#endif
 #endif
 	guess -= delta;
     } while (delta != 0);

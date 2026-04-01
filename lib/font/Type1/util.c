@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/util.c,v 1.7tsi Exp $ */
+/* $Xorg: util.c,v 1.3 2000/08/17 19:46:34 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -44,13 +51,14 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
+/* $XFree86: xc/lib/font/Type1/util.c,v 1.6 2001/01/17 19:43:24 dawes Exp $ */
 /* Author: Katherine A. Hitchcock    IBM Almaden Research Laboratory */
  
 #ifndef FONTMODULE
 #include <stdio.h>
 #else
-#include <X11/Xdefs.h>
-#include <X11/Xmd.h>
+#include "Xdefs.h"
+#include "Xmd.h"
 #include "xf86_ansic.h"
 #endif
 #include "util.h"
@@ -96,7 +104,7 @@ vm_alloc(int bytes)
   bytes = (bytes + 7) & ~7;
  
   /* Allocate the space, if it is available */
-  if ((bytes > 0) && (bytes <= vm_free)) {
+  if (bytes > 0 && bytes <= vm_free) {
     answer = vm_next;
     vm_free -= bytes;
     vm_next += bytes;

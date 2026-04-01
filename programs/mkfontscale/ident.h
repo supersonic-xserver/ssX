@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   Copyright (c) 2003 by Juliusz Chroboczek
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,7 +27,7 @@
   THE SOFTWARE.
 */
 
-/* $XFree86$ */
+/* $XFree86: xc/programs/mkfontscale/ident.h,v 1.2 2003/07/08 15:39:49 tsi Exp $ */
 
 #ifndef _MKS_IDENT_H_
 #define _MKS_IDENT_H_ 1

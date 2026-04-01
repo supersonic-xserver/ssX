@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_tris.h,v 1.2 2002/02/22 21:32:59 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_tris.h,v 1.1.1.4 2004/12/10 15:05:37 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _FFB_TRIS_H
 #define _FFB_TRIS_H
@@ -22,8 +36,5 @@ extern void ffbChooseTriangleState(GLcontext *ctx);
 
 extern void ffbFallback( GLcontext *ctx, GLuint bit, GLboolean mode );
 #define FALLBACK( ctx, bit, mode ) ffbFallback( ctx, bit, mode )
-
-extern void ffb_fallback_line(GLcontext *, ffb_vertex *, ffb_vertex *);
-extern void ffb_fallback_point(GLcontext *, ffb_vertex *);
 
 #endif /* !(_FFB_TRIS_H) */

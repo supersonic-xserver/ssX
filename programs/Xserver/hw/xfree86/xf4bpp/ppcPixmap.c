@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcPixmap.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcPixmap.c,v 1.5 2000/04/27 16:26:49 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -69,6 +76,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ppcPixmap.c /main/5 1996/02/21 17:58:00 kaleb $ */
 
 #include "xf4bpp.h"
 #include "servermd.h"
@@ -77,9 +85,13 @@ SOFTWARE.
 #include "scrnintstr.h"
 
 PixmapPtr
-xf4bppCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
+xf4bppCreatePixmap( pScreen, width, height, depth )
+    ScreenPtr	pScreen ;
+    int		width ;
+    int		height ;
+    int		depth ;
 {
-    PixmapPtr pPixmap  = (PixmapPtr)NULL;
+    register PixmapPtr pPixmap  = (PixmapPtr)NULL;
     int size ;
     
     TRACE(("xf4bppCreatePixmap(pScreen=0x%x, width=%d, height=%d, depth=%d)\n", pScreen, width, height, depth)) ;
@@ -117,9 +129,10 @@ xf4bppCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
 }
 
 PixmapPtr
-xf4bppCopyPixmap(PixmapPtr pSrc)
+xf4bppCopyPixmap(pSrc)
+    register PixmapPtr	pSrc;
 {
-    PixmapPtr	pDst;
+    register PixmapPtr	pDst;
     int		size;
 
     TRACE(("xf4bppCopyPixmap(pSrc=0x%x)\n", pSrc)) ;

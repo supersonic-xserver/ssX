@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atixv.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atixv.c,v 1.7 2004/12/31 16:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2001 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2001 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,7 +29,6 @@
  */
 
 #include "atiadapter.h"
-#include "atichip.h"
 #include "atimach64xv.h"
 #include "atistruct.h"
 #include "atixv.h"
@@ -98,9 +104,14 @@ ATIXVPreInit
     ATIPtr      pATI
 )
 {
-    /* Currently a linear packed aperture is needed ... */
+
+#ifndef AVOID_CPIO
+
+    /* Currently a linear aperture is needed ... */
     if (!pATI->LinearBase)
         return;
+
+#endif /* AVOID_CPIO */
 
     (void)xf86XVRegisterGenericAdaptorDriver(ATIXVInitializeAdaptor);
 }
@@ -122,13 +133,8 @@ ATIInitializeXVideo
     int                 nAdaptor;
     Bool                result;
 
-    if ((pScreenInfo->depth < 8) ||
-        !(pScreenInfo->memPhysBase = pATI->LinearBase))
+    if (!(pScreenInfo->memPhysBase = pATI->LinearBase))
         return FALSE;
-
-    if ((ATIEndian.endian == ATI_BIG_ENDIAN) &&
-        (pATI->Chip >= ATI_CHIP_264VTB))
-        pScreenInfo->memPhysBase -= 0x00800000U;
 
     pScreenInfo->fbOffset = 0;
 

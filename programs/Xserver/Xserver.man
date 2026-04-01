@@ -1,3 +1,4 @@
+.\" $Xorg: Xserver.man,v 1.4 2001/02/09 02:04:07 xorgcvs Exp $
 .\" Copyright 1984 - 1991, 1993, 1994, 1998  The Open Group
 .\"
 .\" Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +22,7 @@
 .\" not be used in advertising or otherwise to promote the sale, use or
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
-.\" $XFree86: xc/programs/Xserver/Xserver.man,v 3.34 2006/01/09 14:59:40 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/Xserver.man,v 3.33 2005/02/11 03:03:10 dawes Exp $
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH XSERVER 1 __vendorversion__
@@ -709,11 +710,6 @@ user.
 .TP 8
 .I SIGTERM
 This signal causes the server to exit cleanly.
-.TP 8
-.I SIGINT
-This signal causes the server to exit after cleaning up the DDX/hardware
-state.  This type of exit is not as clean as a SIGTERM, but is faster, and
-far better than a SIGKILL.
 .TP 8
 .I SIGUSR1
 This signal is used quite differently from either of the above.  When the

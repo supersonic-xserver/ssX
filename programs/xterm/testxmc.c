@@ -1,7 +1,21 @@
-/* $XTermId: testxmc.c,v 1.31 2006/02/01 01:07:55 tom Exp $ */
+/* $XTermId: testxmc.c,v 1.27 2005/01/10 22:01:49 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * $XFree86: xc/programs/xterm/testxmc.c,v 3.13 2005/08/05 01:25:40 dickey Exp $
+ * $XFree86: xc/programs/xterm/testxmc.c,v 3.12 2005/01/14 01:50:03 dickey Exp $
  */
 
 /************************************************************
@@ -182,7 +196,7 @@ Resolve_XMC(TScreen * screen)
 
     /* Find the preceding cell.
      */
-    if (XTERM_CELL(row, col) != XMC_GLITCH) {
+    if (getXtermCell(screen, row, col) != XMC_GLITCH) {
 	if (col != 0) {
 	    col--;
 	} else if (!screen->xmc_inline && row != 0) {
@@ -203,7 +217,7 @@ Resolve_XMC(TScreen * screen)
 	    col = 0;
 	} else
 	    break;
-	if (XTERM_CELL(row, col) == XMC_GLITCH)
+	if (getXtermCell(screen, row, col) == XMC_GLITCH)
 	    break;
 	if ((SCRN_BUF_ATTRS(screen, row)[col] & my_attrs) != start) {
 	    SCRN_BUF_ATTRS(screen, row)[col] = start |
@@ -221,6 +235,6 @@ Resolve_XMC(TScreen * screen)
 
     if (changed) {
 	ScrnUpdate(screen, screen->cur_row, 0, row + 1 - screen->cur_row,
-		   MaxCols(screen), True);
+		   screen->max_col + 1, True);
     }
 }

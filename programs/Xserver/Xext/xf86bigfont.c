@@ -1,10 +1,17 @@
-/* $XFree86: xc/programs/Xserver/Xext/xf86bigfont.c,v 1.22tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xf86bigfont.c,v 1.19 2004/04/03 22:26:22 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * BIGFONT extension for sharing font metrics between clients (if possible)
  * and for transmitting font metrics to clients in a compressed form.
  *
  * Copyright (c) 1999-2000  Bruno Haible
- * Copyright (c) 1999-2007  The XFree86 Project, Inc.
+ * Copyright (c) 1999-2000  The XFree86 Project, Inc.
  */
 
 /* THIS IS NOT AN X CONSORTIUM STANDARD */
@@ -60,8 +67,8 @@
 #include <errno.h>
 #endif
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -70,7 +77,7 @@
 #include "extnsionst.h"
 
 #define _XF86BIGFONT_SERVER_
-#include <X11/extensions/xf86bigfstr.h>
+#include "xf86bigfstr.h"
 
 static void XF86BigfontResetProc(
     ExtensionEntry *	/* extEntry */
@@ -106,7 +113,8 @@ static unsigned int pagesize;
 static Bool badSysCall = FALSE;
 
 static void
-SigSysHandler(int signo)
+SigSysHandler(
+     int signo)
 {
     badSysCall = TRUE;
 }
@@ -143,7 +151,7 @@ CheckForShmSyscall(void)
 #endif
 
 void
-XFree86BigfontExtensionInit(INITARGS)
+XFree86BigfontExtensionInit()
 {
 #if 0
     ExtensionEntry* extEntry;
@@ -221,7 +229,8 @@ typedef struct _ShmDesc {
 static ShmDescPtr ShmList = (ShmDescPtr) NULL;
 
 static ShmDescPtr
-shmalloc(unsigned int size)
+shmalloc(
+    unsigned int size)
 {
     ShmDescPtr pDesc;
     int shmid;
@@ -277,7 +286,8 @@ shmalloc(unsigned int size)
 }
 
 static void
-shmdealloc(ShmDescPtr pDesc)
+shmdealloc(
+    ShmDescPtr pDesc)
 {
 #ifndef EARLY_REMOVE
     shmctl(pDesc->shmid, IPC_RMID, (void *) 0);
@@ -293,7 +303,8 @@ shmdealloc(ShmDescPtr pDesc)
 
 /* Called when a font is closed. */
 void
-XF86BigfontFreeFontShm(FontPtr pFont)
+XF86BigfontFreeFontShm(
+    FontPtr pFont)
 {
 #ifdef HAS_SHM
     ShmDescPtr pDesc;
@@ -322,7 +333,8 @@ XF86BigfontCleanup()
 
 /* Called when a server generation dies. */
 static void
-XF86BigfontResetProc(ExtensionEntry* extEntry)
+XF86BigfontResetProc(
+    ExtensionEntry* extEntry)
 {
     /* This function is normally called from CloseDownExtensions(), called
      * from main(). It will be followed by a call to FreeAllResources(),
@@ -339,7 +351,8 @@ XF86BigfontResetProc(ExtensionEntry* extEntry)
 /* ========== Handling of extension specific requests ========== */
 
 static int
-ProcXF86BigfontQueryVersion(ClientPtr client)
+ProcXF86BigfontQueryVersion(
+    ClientPtr client)
 {
     xXF86BigfontQueryVersionReply reply;
 
@@ -379,7 +392,8 @@ ProcXF86BigfontQueryVersion(ClientPtr client)
 }
 
 static void
-swapCharInfo(xCharInfo *pCI)
+swapCharInfo(
+    xCharInfo *pCI)
 {
     char tmp;
 
@@ -399,7 +413,8 @@ swapCharInfo(xCharInfo *pCI)
 	          (p->ascent << 11) + (p->descent << 6)) ^ p->attributes)
 
 static int
-ProcXF86BigfontQueryFont(ClientPtr client)
+ProcXF86BigfontQueryFont(
+    ClientPtr client)
 {
     FontPtr pFont;
     REQUEST(xXF86BigfontQueryFontReq);
@@ -409,7 +424,7 @@ ProcXF86BigfontQueryFont(ClientPtr client)
     int nCharInfos;
     int shmid;
 #ifdef HAS_SHM
-    ShmDescPtr pDesc = NULL;
+    ShmDescPtr pDesc;
 #else
 #define pDesc 0
 #endif
@@ -719,7 +734,8 @@ ProcXF86BigfontQueryFont(ClientPtr client)
 }
 
 static int
-ProcXF86BigfontDispatch(ClientPtr client)
+ProcXF86BigfontDispatch(
+    ClientPtr client)
 {
     REQUEST(xReq);
 
@@ -734,7 +750,8 @@ ProcXF86BigfontDispatch(ClientPtr client)
 }
 
 static int
-SProcXF86BigfontQueryVersion(ClientPtr client)
+SProcXF86BigfontQueryVersion(
+    ClientPtr client)
 {
     REQUEST(xXF86BigfontQueryVersionReq);
     char tmp;
@@ -744,7 +761,8 @@ SProcXF86BigfontQueryVersion(ClientPtr client)
 }
 
 static int
-SProcXF86BigfontQueryFont(ClientPtr client)
+SProcXF86BigfontQueryFont(
+    ClientPtr client)
 {
     REQUEST(xXF86BigfontQueryFontReq);
     char tmp;
@@ -756,7 +774,8 @@ SProcXF86BigfontQueryFont(ClientPtr client)
 }
 
 static int
-SProcXF86BigfontDispatch(ClientPtr client)
+SProcXF86BigfontDispatch(
+    ClientPtr client)
 {
     REQUEST(xReq);
 

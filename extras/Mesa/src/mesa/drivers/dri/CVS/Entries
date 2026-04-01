@@ -1,0 +1,20 @@
+/Makefile/1.1.1.1/Fri Mar 18 13:06:22 2005//Tnetbsd-5-2-3-RELEASE
+/Makefile.template/1.1.1.1/Fri Mar 18 13:06:22 2005//Tnetbsd-5-2-3-RELEASE
+D/common////
+D/dri_client////
+D/fb////
+D/ffb////
+D/gamma////
+D/i810////
+D/i830////
+D/i915////
+D/mach64////
+D/mga////
+D/r128////
+D/r200////
+D/radeon////
+D/savage////
+D/sis////
+D/tdfx////
+D/unichrome////
+D/x11////

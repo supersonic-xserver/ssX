@@ -30,7 +30,7 @@ lib/libX11.a
 lib/libX11.so.6.2
 lib/libXaw.a
 lib/libXaw.so.6.1
-lib/libXaw.so.7.1
+lib/libXaw.so.7.0
 lib/libXfont.a
 lib/libXfont.so.1.4
 lib/libXft.a

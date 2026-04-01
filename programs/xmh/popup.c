@@ -1,4 +1,13 @@
-/*
+/* $XConsortium: popup.c,v 2.38 94/08/26 18:04:22 swick Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ *
+ *
  *			  COPYRIGHT 1989
  *		   DIGITAL EQUIPMENT CORPORATION
  *		       MAYNARD, MASSACHUSETTS

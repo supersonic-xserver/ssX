@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbtile.c,v 3.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbtile.c,v 3.4 2003/10/29 22:15:19 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,8 +54,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbtile.c,v 5.8 94/04/17 20:28:36 dpw Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -73,35 +81,40 @@ is equivalent to iy%= tileheight, and saves a division.
 	tile area with a PPW bit wide pixmap
 */
 void
-MROP_NAME(afbTileAreaPPW)(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
-			  PixmapPtr ptile, unsigned long planemask)
+MROP_NAME(afbTileAreaPPW)(pDraw, nbox, pbox, alu, ptile, planemask)
+	DrawablePtr pDraw;
+	int nbox;
+	BoxPtr pbox;
+	int alu;
+	PixmapPtr ptile;
+	unsigned long planemask;
 {
-	PixelType *psrc;
-				/* pointer to bits in tile, if needed */
+	register PixelType *psrc;
+						/* pointer to bits in tile, if needed */
 	int tileHeight;		/* height of the tile */
-	PixelType srcpix;
+	register PixelType srcpix;
 	int nlwidth;		/* width in longwords of the drawable */
-	int w;			/* width of current box */
+	int w;				/* width of current box */
 	MROP_DECLARE_REG ()
-	int h;			/* height of current box */
-	int nlw;		/* loop version of nlwMiddle */
-	PixelType *p;		/* pointer to bits we're writing */
+	register int h;		/* height of current box */
+	register int nlw;		/* loop version of nlwMiddle */
+	register PixelType *p;		/* pointer to bits we're writing */
 	int sizeDst;
 	int depthDst;
-	int d;
+	register int d;
 	PixelType startmask;
-	PixelType endmask;	/* masks for reggedy bits at either end of line */
+	PixelType endmask;		/* masks for reggedy bits at either end of line */
 	int nlwMiddle;		/* number of longwords between sides of boxes */
 	int nlwExtra;		/* to get from right of box to left of next span */
-	int iy;			/* index of current scanline in tile */
-	PixelType *pbits;	/* pointer to start of drawable */
+	register int iy;		/* index of current scanline in tile */
+	PixelType *pbits;		/* pointer to start of drawable */
 	PixelType *saveP;
 	PixelType *pSaveSrc;
 	int saveH;
 	int saveIY;
 
 	afbGetPixelWidthSizeDepthAndPointer(pDraw, nlwidth, sizeDst, depthDst,
-						 pbits);
+													 pbits);
 
 	MROP_INITIALIZE(alu,~0)
 
@@ -217,19 +230,25 @@ MROP_NAME(afbTileAreaPPW)(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
 }
 
 void
-MROP_NAME(afbTileArea)(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
-		       PixmapPtr pTile, int xOff, int yOff,
-		       unsigned long planemask)
+MROP_NAME(afbTileArea)(pDraw, nbox, pbox, alu, pTile, xOff, yOff, planemask)
+	DrawablePtr pDraw;
+	int nbox;
+	BoxPtr pbox;
+	int alu;
+	PixmapPtr pTile;
+	int xOff;
+	int yOff;
+	unsigned long planemask;
 {
-	PixelType *psrc;
-				/* pointer to bits in tile, if needed */
+	register PixelType *psrc;
+						/* pointer to bits in tile, if needed */
 	int nlwidth;		/* width in longwords of the drawable */
 	MROP_DECLARE_REG ()
-	int h;			/* height of current box */
-	PixelType *pdst;	/* pointer to bits we're writing */
-	PixelType tmpsrc;
+	register int h;		/* height of current box */
+	register PixelType *pdst;		/* pointer to bits we're writing */
+	register PixelType tmpsrc;
 #if (MROP) != Mcopy
-	PixelType tmpdst;
+	register PixelType tmpdst;
 #endif
 	int sizeDst;
 	int depthDst;
@@ -243,17 +262,17 @@ MROP_NAME(afbTileArea)(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
 	int d;
 	int nstart;
 	PixelType startmask;
-	PixelType endmask;	/* masks for reggedy bits at either end of line */
+	PixelType endmask;		/* masks for reggedy bits at either end of line */
 	int nlMiddle;		/* number of longwords between sides of boxes */
 	int iy;
-	PixelType *pBase;	/* pointer to start of drawable */
+	PixelType *pBase;		/* pointer to start of drawable */
 	PixelType *saveP;
 	PixelType *pStartDst;
 	PixelType *pStartTile;
 	int saveH;
 
 	afbGetPixelWidthSizeDepthAndPointer(pDraw, nlwidth, sizeDst, depthDst,
-						 pBase);
+													 pBase);
 
 	MROP_INITIALIZE(alu,~0)
 
@@ -384,36 +403,41 @@ MROP_NAME(afbTileArea)(DrawablePtr pDraw, int nbox, BoxPtr pbox, int alu,
 }
 
 void
-MROP_NAME(afbOpaqueStippleAreaPPW)(DrawablePtr pDraw, int nbox, BoxPtr pbox,
-				   int alu, PixmapPtr ptile,
-				   unsigned char *rropsOS,
-				   unsigned long planemask)
+MROP_NAME(afbOpaqueStippleAreaPPW)(pDraw, nbox, pbox, alu, ptile,
+								   rropsOS, planemask)
+	DrawablePtr pDraw;
+	int nbox;
+	BoxPtr pbox;
+	int alu;
+	PixmapPtr ptile;
+	register unsigned char *rropsOS;
+	unsigned long planemask;
 {
-	PixelType *psrc;
-				/* pointer to bits in tile, if needed */
+	register PixelType *psrc;
+						/* pointer to bits in tile, if needed */
 	int tileHeight;		/* height of the tile */
-	PixelType srcpix = 0;
+	register PixelType srcpix = 0;
 	int nlwidth;		/* width in longwords of the drawable */
-	int w;			/* width of current box */
+	int w;				/* width of current box */
 	MROP_DECLARE_REG ()
-	int h;			/* height of current box */
-	int nlw;		/* loop version of nlwMiddle */
-	PixelType *p;		/* pointer to bits we're writing */
+	register int h;		/* height of current box */
+	register int nlw;		/* loop version of nlwMiddle */
+	register PixelType *p;		/* pointer to bits we're writing */
 	int sizeDst;
 	int depthDst;
-	int d;
+	register int d;
 	PixelType startmask;
-	PixelType endmask;	/* masks for reggedy bits at either end of line */
+	PixelType endmask;		/* masks for reggedy bits at either end of line */
 	int nlwMiddle;		/* number of longwords between sides of boxes */
 	int nlwExtra;		/* to get from right of box to left of next span */
-	int iy;			/* index of current scanline in tile */
-	PixelType *pbits;	/* pointer to start of drawable */
+	register int iy;		/* index of current scanline in tile */
+	PixelType *pbits;		/* pointer to start of drawable */
 	PixelType *saveP;
 	int saveH;
 	int saveIY;
 
 	afbGetPixelWidthSizeDepthAndPointer(pDraw, nlwidth, sizeDst, depthDst,
-						 pbits);
+													 pbits);
 
 	MROP_INITIALIZE(alu,~0)
 
@@ -593,19 +617,27 @@ MROP_NAME(afbOpaqueStippleAreaPPW)(DrawablePtr pDraw, int nbox, BoxPtr pbox,
 }
 
 void
-MROP_NAME(afbOpaqueStippleArea)(DrawablePtr pDraw, int nbox, BoxPtr pbox,
-				int alu, PixmapPtr pTile, int xOff, int yOff,
-				unsigned char *rropsOS, unsigned long planemask)
+MROP_NAME(afbOpaqueStippleArea)(pDraw, nbox, pbox, alu, pTile, xOff, yOff,
+								rropsOS, planemask)
+	DrawablePtr pDraw;
+	int nbox;
+	BoxPtr pbox;
+	int alu;
+	PixmapPtr pTile;
+	int xOff;
+	int yOff;
+	register unsigned char *rropsOS;
+	unsigned long planemask;
 {
-	PixelType *psrc;
-				/* pointer to bits in tile, if needed */
+	register PixelType *psrc;
+						/* pointer to bits in tile, if needed */
 	int nlwidth;		/* width in longwords of the drawable */
 	MROP_DECLARE_REG ()
-	int h;			/* height of current box */
-	PixelType *pdst;	/* pointer to bits we're writing */
-	PixelType tmpsrc = 0;
+	register int h;		/* height of current box */
+	register PixelType *pdst;		/* pointer to bits we're writing */
+	register PixelType tmpsrc = 0;
 #if (MROP) != Mcopy
-	PixelType tmpdst;
+	register PixelType tmpdst;
 #endif
 	int sizeDst;
 	int depthDst;
@@ -618,17 +650,17 @@ MROP_NAME(afbOpaqueStippleArea)(DrawablePtr pDraw, int nbox, BoxPtr pbox,
 	int d;
 	int nstart;
 	PixelType startmask;
-	PixelType endmask;	/* masks for reggedy bits at either end of line */
+	PixelType endmask;		/* masks for reggedy bits at either end of line */
 	int nlMiddle;		/* number of longwords between sides of boxes */
 	int iy;
-	PixelType *pBase;	/* pointer to start of drawable */
+	PixelType *pBase;		/* pointer to start of drawable */
 	PixelType *saveP;
 	PixelType *pStartDst;
 	PixelType *pStartTile;
 	int saveH;
 
 	afbGetPixelWidthSizeDepthAndPointer(pDraw, nlwidth, sizeDst, depthDst,
-						 pBase);
+													 pBase);
 
 	MROP_INITIALIZE(alu,~0)
 

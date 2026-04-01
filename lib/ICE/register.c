@@ -1,3 +1,11 @@
+/* $Xorg: register.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -25,17 +33,24 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86$ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"
 
 int
-IceRegisterForProtocolSetup(char *protocolName, char *vendor, char *release,
-			    int versionCount, IcePoVersionRec *versionRecs,
-			    int authCount, char **authNames,
-			    IcePoAuthProc *authProcs,
-			    IceIOErrorProc IOErrorProc)
+IceRegisterForProtocolSetup (protocolName, vendor, release,
+    versionCount, versionRecs, authCount, authNames, authProcs, IOErrorProc)
+
+char			*protocolName;
+char			*vendor;
+char			*release;
+int			versionCount;
+IcePoVersionRec		*versionRecs;
+int			authCount;
+char		        **authNames;
+IcePoAuthProc		*authProcs;
+IceIOErrorProc		IOErrorProc;
+
 {
     _IcePoProtocol 	*p;
     int			opcodeRet, i;
@@ -127,15 +142,26 @@ IceRegisterForProtocolSetup(char *protocolName, char *vendor, char *release,
 }
 
 
+
 int
-IceRegisterForProtocolReply(char *protocolName, char *vendor, char *release,
-			    int versionCount, IcePaVersionRec *versionRecs,
-			    int authCount, char **authNames,
-			    IcePaAuthProc *authProcs,
-			    IceHostBasedAuthProc hostBasedAuthProc,
-			    IceProtocolSetupProc protocolSetupProc,
-			    IceProtocolActivateProc protocolActivateProc,
-			    IceIOErrorProc IOErrorProc)
+IceRegisterForProtocolReply (protocolName, vendor, release,
+    versionCount, versionRecs, authCount, authNames, authProcs,
+    hostBasedAuthProc, protocolSetupProc, protocolActivateProc,
+    IOErrorProc)
+
+char				*protocolName;
+char				*vendor;
+char				*release;
+int				versionCount;
+IcePaVersionRec			*versionRecs;
+int				authCount;
+char				**authNames;
+IcePaAuthProc			*authProcs;
+IceHostBasedAuthProc		hostBasedAuthProc;
+IceProtocolSetupProc		protocolSetupProc;
+IceProtocolActivateProc		protocolActivateProc;
+IceIOErrorProc			IOErrorProc;
+
 {
     _IcePaProtocol 	*p;
     int			opcodeRet, i;

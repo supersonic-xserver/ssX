@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/lbxutil/image/dfaxg42d.c,v 1.6tsi Exp $ */
+/* $Xorg: dfaxg42d.c,v 1.3 2000/08/17 19:46:40 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1988, 1989, 1990, 1991, 1992 Sam Leffler
  * Copyright (c) 1991, 1992 Silicon Graphics, Inc.
@@ -22,6 +29,7 @@
  * LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
  * OF THIS SOFTWARE.
  */
+/* $XFree86: xc/lib/lbxutil/image/dfaxg42d.c,v 1.6 2001/04/23 20:31:05 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/Xfuncproto.h>
@@ -29,7 +37,7 @@
 #include <stdlib.h>
 #include "g3states.h"
 #include "lbxfax.h"
-#include <X11/extensions/lbximage.h>
+#include "lbximage.h"
 
 /*
  * -------------------------------------------------------------------------

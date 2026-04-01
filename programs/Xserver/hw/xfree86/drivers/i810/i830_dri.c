@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_dri.c,v 1.21 2005/02/01 19:49:40 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
@@ -593,6 +600,9 @@ I830DRIScreenInit(ScreenPtr pScreen)
 	    drmFreeVersion(version);
 	    return FALSE;
 	 }
+	 if (version->version_minor < 2)
+	    xf86DrvMsg(pScreen->myNum, X_WARNING, 
+			"Resume functionality not available with DRM < 1.2\n");
 	 pI830->drmMinor = version->version_minor;
 	 drmFreeVersion(version);
       }

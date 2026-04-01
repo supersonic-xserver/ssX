@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Imakefile,v 3.82 2005/06/07 08:02:14 dawes Exp $
+XCOMM $XFree86: xc/lib/Imakefile,v 3.81 2005/02/28 05:09:33 dawes Exp $
 /*
  * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -49,19 +49,23 @@ XCOMM $XFree86: xc/lib/Imakefile,v 3.82 2005/06/07 08:02:14 dawes Exp $
 #define IHaveSubdirs
 #define PassCDebugFlags
 
-#if NeedXTrans
+#if BuildLibraries || BuildServer || BuildClients
 XTRANSLIB = xtrans
 #endif
 
-#if BuildXaw6
+#if BuildXaw6 && BuildLibraries
 XAW6LIBDIR = Xaw6
+#endif
+
+#ifndef NeedBerklib
+#define NeedBerklib NO
 #endif
 
 #if NeedBerklib
 BERKDIR = Xbsd
 #endif
 
-#if BuildXKBfilelib || BuildServer
+#if BuildXKBfilelib
 XKBLIBDIR = xkbfile
 #endif
 
@@ -69,7 +73,7 @@ XKBLIBDIR = xkbfile
 XKBUILIBDIR = xkbui
 #endif
 
-#if BuildThreadStubLibrary
+#if BuildThreadStubLibrary && BuildLibraries
 THRSTUBLIBDIR = XThrStub
 #endif
 
@@ -181,15 +185,15 @@ APPLELIBDIR = apple
 XF86EXTLIBS = $(XF86MISCLIBDIR) $(XF86VMLIBDIR) \
 		$(XF86DGALIBDIR) $(XF86RUSHLIBDIR)
 
-#if BuildLbxUtilLibrary
+#if BuildLBX && (BuildLibraries || BuildServer || BuildClients)
 LBXUTILDIR = lbxutil
 #endif
 
-#if BuildZlib
+#if (BuildLBX || GzipFontCompression) && !HasZlib
 ZLIBDIR = zlib
 #endif
 
-#if BuildRegexLib
+#if defined(XFree86Version) && !HasPosixRegex
 REGEXDIR = regex
 #endif
 
@@ -201,11 +205,11 @@ XPRINTLIBDIR = Xp
 FONTCACHELIBDIR = Xfontcache
 #endif
 
-#if BuildServer || BuildClients || BuildLibraries || BuildFontLib
+#if BuildServer || BuildClients || BuildLibraries
 FONTSUBDIR = font
 #endif
 
-#if BuildFontEncLib || BuildServer
+#if BuildFontEncLib
 FONTENCSUBDIR = fontenc
 #endif
 
@@ -217,7 +221,7 @@ XAULIBDIR = Xau
 XDMCPLIBDIR = Xdmcp
 #endif
 
-#if BuildX11Lib || BuildServer
+#if BuildX11Lib
 X11LIBDIR = X11
 #endif
 
@@ -225,43 +229,16 @@ X11LIBDIR = X11
 XEXTLIBDIR = Xext
 #endif
 
-#if BuildXawLib
-XAWLIBDIR = Xaw
-#endif
-
-#if BuildOldXLib
+#if BuildLibraries
 OLDXLIBDIR = oldX
-#endif
-
-#if BuildICELib
 ICELIBDIR = ICE
-#endif
-
-#if BuildSMLib
 SMLIBDIR = SM
-#endif
-
-#if BuildXtLib
 XTLIBDIR = Xt
-#endif
-
-#if BuildXmuLib
 XMULIBDIR = Xmu
-#endif
-
-#if BuildXmuuLib
 XMUULIBDIR = Xmuu
-#endif
-
-#if BuildXpmLib
 XPMLIBDIR = Xpm
-#endif
-
-#if BuildXtstLib
+XAWLIBDIR = Xaw
 XTSTLIBDIR = Xtst
-#endif
-
-#if BuildFSLib
 FSLIBDIR = FS
 #endif
 

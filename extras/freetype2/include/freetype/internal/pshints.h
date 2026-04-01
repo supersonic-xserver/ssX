@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  pshints.h                                                              */
 /*                                                                         */
@@ -6,7 +13,7 @@
 /*    recorders (specification only).  These are used to support native    */
 /*    T1/T2 hints in the "type1", "cid" and "cff" font drivers.            */
 /*                                                                         */
-/*  Copyright 2001 by                                                      */
+/*  Copyright 2001, 2002, 2003 by                                          */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -25,7 +32,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_TYPE1_TABLES_H
-#include FT_INTERNAL_POSTSCRIPT_GLOBALS_H
 
 
 FT_BEGIN_HEADER
@@ -57,7 +63,7 @@ FT_BEGIN_HEADER
   (*PSH_Globals_DestroyFunc)( PSH_Globals  globals );
 
 
-  typedef struct PSH_Globals_FuncsRec_
+  typedef struct  PSH_Globals_FuncsRec_
   {
     PSH_Globals_NewFunc       create;
     PSH_Globals_SetScaleFunc  set_scale;
@@ -99,7 +105,7 @@ FT_BEGIN_HEADER
   /*      strange happened (e.g. memory shortage).                         */
   /*                                                                       */
   /*    The hints accumulated in the object can later be used by the       */
-  /*    Postscript hinter.                                                 */
+  /*    PostScript hinter.                                                 */
   /*                                                                       */
   typedef struct T1_HintsRec_*  T1_Hints;
 
@@ -216,6 +222,7 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /* @input:                                                               */
   /*    hints     :: A handle to the Type 1 hints recorder.                */
+  /*                                                                       */
   /*    end_point :: The index of the last point in the input glyph in     */
   /*                 which the previously defined hints apply.             */
   /*                                                                       */
@@ -261,11 +268,13 @@ FT_BEGIN_HEADER
   /*    been recorded.                                                     */
   /*                                                                       */
   /* @input:                                                               */
-  /*   hints   :: A handle to the Type 1 hints recorder.                   */
+  /*   hints     :: A handle to the Type 1 hints recorder.                 */
   /*                                                                       */
-  /*   outline :: A pointer to the target outline descriptor.              */
+  /*   outline   :: A pointer to the target outline descriptor.            */
   /*                                                                       */
-  /*   globals :: The hinter globals for this font.                        */
+  /*   globals   :: The hinter globals for this font.                      */
+  /*                                                                       */
+  /*   hint_mode :: Hinting information.                                   */
   /*                                                                       */
   /* @return:                                                              */
   /*   FreeType error code.  0 means success.                              */
@@ -278,9 +287,10 @@ FT_BEGIN_HEADER
   /*    which must correspond to the same font as the glyph.               */
   /*                                                                       */
   typedef FT_Error
-  (*T1_Hints_ApplyFunc)( T1_Hints     hints,
-                         FT_Outline*  outline,
-                         PSH_Globals  globals );
+  (*T1_Hints_ApplyFunc)( T1_Hints        hints,
+                         FT_Outline*     outline,
+                         PSH_Globals     globals,
+                         FT_Render_Mode  hint_mode );
 
 
   /*************************************************************************/
@@ -539,11 +549,13 @@ FT_BEGIN_HEADER
   /*    method.                                                            */
   /*                                                                       */
   /* @input:                                                               */
-  /*    hints   :: A handle to the Type 2 hints recorder.                  */
+  /*    hints     :: A handle to the Type 2 hints recorder.                */
   /*                                                                       */
-  /*    outline :: A pointer to the target outline descriptor.             */
+  /*    outline   :: A pointer to the target outline descriptor.           */
   /*                                                                       */
-  /*    globals :: The hinter globals for this font.                       */
+  /*    globals   :: The hinter globals for this font.                     */
+  /*                                                                       */
+  /*    hint_mode :: Hinting information.                                  */
   /*                                                                       */
   /* @return:                                                              */
   /*   FreeType error code.  0 means success.                              */
@@ -556,9 +568,10 @@ FT_BEGIN_HEADER
   /*    which must correspond to the same font than the glyph.             */
   /*                                                                       */
   typedef FT_Error
-  (*T2_Hints_ApplyFunc)( T2_Hints     hints,
-                         FT_Outline*  outline,
-                         PSH_Globals  globals );
+  (*T2_Hints_ApplyFunc)( T2_Hints        hints,
+                         FT_Outline*     outline,
+                         PSH_Globals     globals,
+                         FT_Render_Mode  hint_mode );
 
 
   /*************************************************************************/
@@ -607,7 +620,9 @@ FT_BEGIN_HEADER
     T1_Hints_Funcs     (*get_t1_funcs)     ( FT_Module  module );
     T2_Hints_Funcs     (*get_t2_funcs)     ( FT_Module  module );
 
-  } PSHinter_Interface, *PSHinter_InterfacePtr;
+  } PSHinter_Interface;
+
+  typedef PSHinter_Interface*  PSHinter_Service;
 
 
 FT_END_HEADER

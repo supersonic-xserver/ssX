@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_screen.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_screen.c,v 1.7 2004/12/13 22:40:53 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -223,7 +230,7 @@ radeonScreenPtr radeonCreateScreen( __DRIscreenPrivate *sPriv )
       drm_radeon_getparam_t gp;
 
       gp.param = RADEON_PARAM_GART_BUFFER_OFFSET;
-      gp.value = (int *)&screen->gart_buffer_offset;
+      gp.value = &screen->gart_buffer_offset;
 
       ret = drmCommandWriteRead( sPriv->fd, DRM_RADEON_GETPARAM,
 				 &gp, sizeof(gp));

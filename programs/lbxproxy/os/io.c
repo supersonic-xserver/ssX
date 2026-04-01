@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/os/io.c,v 1.13tsi Exp $ */
+/* $Xorg: io.c,v 1.6 2001/02/09 02:05:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/lbxproxy/os/io.c,v 1.13 2004/04/26 00:23:37 tsi Exp $ */
 /*****************************************************************
  * i/o functions
  *
@@ -55,7 +63,7 @@ SOFTWARE.
 
 #include <stdio.h>
 #include <X11/Xtrans.h>
-#include <X11/Xos.h>
+#include "Xos.h"
 #include "misc.h"
 #include <errno.h>
 #include <sys/param.h>
@@ -67,7 +75,7 @@ SOFTWARE.
 #include "io.h"
 
 #ifdef BIGREQS
-#include <X11/extensions/bigreqstr.h>
+#include "bigreqstr.h"
 #endif
 
 /* check for both EAGAIN and EWOULDBLOCK, because some supposedly POSIX

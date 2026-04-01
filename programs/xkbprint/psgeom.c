@@ -1,3 +1,11 @@
+/* $Xorg: psgeom.c,v 1.4 2000/08/17 19:54:50 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
  Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/xkbprint/psgeom.c,v 1.7 2005/09/14 14:23:16 tsi Exp $ */
+/* $XFree86: xc/programs/xkbprint/psgeom.c,v 1.6 2003/04/22 14:01:49 pascal Exp $ */
 
 #define	XK_TECHNICAL
 #define	XK_PUBLISHING
@@ -1385,13 +1393,17 @@ int	eG,nG,gI,l,g;
 		else			sprintf((char *)buf,"%c",(char)sym);
 		top->font[(g*2)+l]= FONT_LATIN1;
 		top->size[(g*2)+l]= SZ_MEDIUM;
-		switch ((char)buf[0]) {
+		switch (buf[0]) {
+#define uc unsigned char
 		    case '.': case ':': case ',': case ';':
 		    case '\'': case '"': case '`': case '~':
- 		    case '^': case '\250': case '\270': case '\267':
- 		    case '\260': case '\252': case '\272': case '\271':
- 		    case '\262': case '\263': case '\264': case '\255':
- 		    case '\254': case '\257':
+ 		    case '^': case (uc)'\250':
+		    case (uc)'\270': case (uc)'\267':
+ 		    case (uc)'\260': case (uc)'\252':
+		    case (uc)'\272': case (uc)'\271':
+ 		    case (uc)'\262': case (uc)'\263':
+		    case (uc)'\264': case (uc)'\255':
+ 		    case (uc)'\254': case (uc)'\257':
 			top->size[(g*2)+l]= SZ_LARGE;
 			break;
 		}

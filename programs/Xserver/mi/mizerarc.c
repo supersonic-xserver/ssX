@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mizerarc.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mizerarc.c,v 1.7 2003/07/16 01:38:59 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -27,6 +34,8 @@ Author:  Bob Scheifler, MIT X Consortium
 
 ********************************************************/
 
+/* $Xorg: mizerarc.c,v 1.4 2001/02/09 02:05:22 xorgcvs Exp $ */
+
 /* Derived from:
  * "Algorithm for drawing ellipses or hyperbolae with a digital plotter"
  * by M. L. V. Pitteway
@@ -34,8 +43,8 @@ Author:  Bob Scheifler, MIT X Consortium
  */
 
 #include <math.h>
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "regionstr.h"
 #include "gcstruct.h"
 #include "pixmapstr.h"
@@ -93,8 +102,8 @@ static miZeroArcPtRec oob = {65536, 65536, 0};
 
 Bool
 miZeroArcSetup(arc, info, ok360)
-    xArc *arc;
-    miZeroArcRec *info;
+    register xArc *arc;
+    register miZeroArcRec *info;
     Bool ok360;
 {
     int l;
@@ -400,11 +409,11 @@ miZeroArcSetup(arc, info, ok360)
 DDXPointPtr
 miZeroArcPts(arc, pts)
     xArc *arc;
-    DDXPointPtr pts;
+    register DDXPointPtr pts;
 {
     miZeroArcRec info;
-    int x, y, a, b, d, mask;
-    int k1, k3, dx, dy;
+    register int x, y, a, b, d, mask;
+    register int k1, k3, dx, dy;
     Bool do360;
 
     do360 = miZeroArcSetup(arc, &info, TRUE);
@@ -505,14 +514,14 @@ miZeroArcDashPts(
     GCPtr pGC,
     xArc *arc,
     DashInfo *dinfo,
-    DDXPointPtr points,
+    register DDXPointPtr points,
     int maxPts,
-    DDXPointPtr *evenPts, 
-    DDXPointPtr *oddPts )
+    register DDXPointPtr *evenPts, 
+    register DDXPointPtr *oddPts )
 {
     miZeroArcRec info;
-    int x, y, a, b, d, mask;
-    int k1, k3, dx, dy;
+    register int x, y, a, b, d, mask;
+    register int k1, k3, dx, dy;
     int dashRemaining;
     DDXPointPtr arcPts[4];
     DDXPointPtr startPts[5], endPts[5];
@@ -711,11 +720,11 @@ miZeroPolyArc(pDraw, pGC, narcs, parcs)
     xArc	*parcs;
 {
     int maxPts = 0;
-    int n, maxw = 0;
-    xArc *arc;
-    int i;
+    register int n, maxw = 0;
+    register xArc *arc;
+    register int i;
     DDXPointPtr points, pts, oddPts;
-    DDXPointPtr pt;
+    register DDXPointPtr pt;
     int numPts;
     Bool dospans;
     int *widths = NULL;
@@ -773,10 +782,7 @@ miZeroPolyArc(pDraw, pGC, narcs, parcs)
 	if (miCanZeroArc(arc))
 	{
 	    if (pGC->lineStyle == LineSolid)
-	    {
 		pts = miZeroArcPts(arc, points);
-		oddPts = NULL;
-	    }
 	    else
 	    {
 		pts = points;

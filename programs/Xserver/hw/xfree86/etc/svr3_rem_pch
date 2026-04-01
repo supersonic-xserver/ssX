@@ -9,6 +9,8 @@
 #	adapted for svr3 by Steve Forsythe (forsse@meaddata.com) from initial
 #	svr4 version by David Wexelblat (dwex@goblin.org, dwex@aib.com)
 #
+# $XConsortium: svr3_rem_pch /main/3 1996/02/21 17:48:32 kaleb $
+#
 
 N=`basename $0`
 

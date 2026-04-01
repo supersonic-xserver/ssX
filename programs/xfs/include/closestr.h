@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/include/closestr.h,v 1.3 2005/10/14 15:17:33 tsi Exp $ */
+/* $Xorg: closestr.h,v 1.4 2001/02/09 02:05:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -44,15 +51,17 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
+ * $NCDXorg: @(#)closestr.h,v 4.1 1991/05/02 04:15:46 lemke Exp $
+ *
  */
 
 #ifndef CLOSESTR_H
 #define CLOSESTR_H
 
-#include	<X11/fonts/FSproto.h>
+#include	"FSproto.h"
 #include	"closure.h"
 #include	"misc.h"
-#include	<X11/fonts/font.h>
+#include	"font.h"
 
 /* closure structures */
 

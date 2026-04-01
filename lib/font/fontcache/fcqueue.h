@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1991, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
@@ -31,6 +38,8 @@
  * SUCH DAMAGE.
  *
  *	@(#)queue.h	8.5 (Berkeley) 8/20/94
+ * $_Id_: queue.h,v 1.10.2.4 1998/05/12 16:35:25 bde Exp $
+ *
  * ----------------------------------------------------------------------
  *
  * Note:
@@ -38,6 +47,7 @@
  *  /usr/include/sys/queue.h, modified for X-TrueType Server by
  *  Shunsuke Akiyama <akiyama@jp.FreeBSD.org>.
  *
+ *	Id: fcqueue.h,v 1.1 1999/01/06 13:36:42 akiyama Exp $
  */
 
 #ifndef _FCQUEUE_H_

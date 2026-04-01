@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (C) Copyright 2004 Fred Gleason <fredg@salemradiolabs.com>
  *
  * Parts of this driver are based on the Elographics driver.
@@ -24,7 +31,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/eloinput/xf86EloInput.c,v 1.3 2005/10/14 15:16:55 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/eloinput/xf86EloInput.c,v 1.2 2005/01/21 18:07:12 tsi Exp $ */
 
 /*
  ******************************************************************************
@@ -72,17 +79,17 @@
 
 #else /* XFREE86_V4 */
 
-#include <X11/Xos.h>
+#include "Xos.h"
 #include <signal.h>
 #include <stdio.h>
 
 #define	 NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "inputstr.h"
 #include "scrnintstr.h"
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 
 #if defined(sun) && !defined(i386)
 #include <errno.h>
@@ -998,10 +1005,8 @@ InputDriverRec ELOINPUT = {
 };
 
 #ifdef XFree86LOADER
-static MODULESETUPPROTO(Plug);
-
 static pointer
-Plug(ModuleDescPtr	module,
+Plug(pointer	module,
      pointer	options,
      int	*errmaj,
      int	*errmin)
@@ -1009,8 +1014,6 @@ Plug(ModuleDescPtr	module,
   xf86AddInputDriver(&ELOINPUT, module, 0);
   return module;
 }
-
-static MODULETEARDOWNPROTO(Unplug);
 
 static void
 Unplug(pointer	p)

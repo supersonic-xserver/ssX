@@ -1,3 +1,19 @@
+/* $Xorg: pmint.h,v 1.4 2001/02/09 02:05:34 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998  The Open Group
 
@@ -50,6 +66,9 @@ typedef struct {
     char *vendor;
     char *release;
 } PMconn;
+
+
+/* main.c: $TOG: main.c /main/36 1998/03/04 11:30:05 barstow $ */
 
 extern void ForwardRequest ( PMconn *requestor, char *serviceName, char *serverAddress, char *hostAddress, char *startOptions, int authLen, char *authName, char *authData );
 extern int HostBasedAuthProc ( char *hostname );

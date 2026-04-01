@@ -1,0 +1,10 @@
+/Imakefile/1.1.1.4/Fri Mar 18 13:12:41 2005//Tnetbsd-5-2-3-RELEASE
+/sun_bios.c/1.1.1.3/Fri Mar 18 13:12:41 2005//Tnetbsd-5-2-3-RELEASE
+/sun_init.c/1.1.1.2/Fri Feb 28 13:20:21 2003//Tnetbsd-5-2-3-RELEASE
+/sun_inout.s/1.1.1.1/Sat Jan 19 15:12:45 2002//Tnetbsd-5-2-3-RELEASE
+/sun_io.c/1.1.1.2/Fri Feb 28 13:20:21 2003//Tnetbsd-5-2-3-RELEASE
+/sun_kbd.c/1.1.1.3/Fri Mar 18 13:12:41 2005//Tnetbsd-5-2-3-RELEASE
+/sun_kbdEv.c/1.1.1.3/Fri Mar 18 13:12:41 2005//Tnetbsd-5-2-3-RELEASE
+/sun_mouse.c/1.1.1.4/Fri Mar 18 13:12:41 2005//Tnetbsd-5-2-3-RELEASE
+/sun_vid.c/1.1.1.3/Fri Mar 18 13:12:41 2005//Tnetbsd-5-2-3-RELEASE
+D

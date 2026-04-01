@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1998 Itai Nahshon, Michael Schimek
  *
  * The original code was derived from and inspired by 
@@ -6,7 +13,7 @@
  *      (c) 1998 Gerd Knorr <kraxel@cs.tu-berlin.de>
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/i2c/xf86i2c.c,v 1.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/i2c/xf86i2c.c,v 1.16 2004/09/11 01:33:06 dawes Exp $ */
 
 #if 1
 #include "misc.h"
@@ -14,8 +21,8 @@
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "regionstr.h"
 #include "windowstr.h"

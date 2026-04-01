@@ -1,3 +1,11 @@
+/* $Xorg: connect.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -32,15 +40,21 @@ Author: Ralph Mor, X Consortium
 #include <X11/Xtrans.h>
 #include "globals.h"
 
-static XtransConnInfo ConnectToPeer(char *networkIdsList,
-				    char **actualConnectionRet);
+static XtransConnInfo ConnectToPeer();
 
 #define Strstr strstr
-
+
 IceConn
-IceOpenConnection(char *networkIdsList, IcePointer context,
-		  Bool mustAuthenticate, int majorOpcodeCheck,
-		  int errorLength, char *errorStringRet)
+IceOpenConnection (networkIdsList, context, mustAuthenticate, majorOpcodeCheck,
+    errorLength, errorStringRet)
+
+char 	   *networkIdsList;
+IcePointer context;
+Bool 	   mustAuthenticate;
+int  	   majorOpcodeCheck;
+int  	   errorLength;
+char 	   *errorStringRet;
+
 {
     IceConn			iceConn;
     int				extra, i, j;
@@ -419,13 +433,18 @@ IceOpenConnection(char *networkIdsList, IcePointer context,
 }
 
 
+
 IcePointer
-IceGetConnectionContext(IceConn iceConn)
+IceGetConnectionContext (iceConn)
+
+IceConn    iceConn;
+
 {
     return (iceConn->context);
 }
 
 
+
 /* ------------------------------------------------------------------------- *
  *                            local routines                                 *
  * ------------------------------------------------------------------------- */
@@ -434,7 +453,11 @@ IceGetConnectionContext(IceConn iceConn)
 
 
 static XtransConnInfo
-ConnectToPeer(char *networkIdsList, char **actualConnectionRet)
+ConnectToPeer (networkIdsList, actualConnectionRet)
+
+char *networkIdsList;
+char **actualConnectionRet;
+
 {
     char addrbuf[256];
     char* address;

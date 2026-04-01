@@ -1,4 +1,13 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
 /*
+ * $Xorg: editresP.h,v 1.4 2001/02/09 02:05:29 xorgcvs Exp $
  *
 Copyright 1989, 1998  The Open Group
 
@@ -24,12 +33,11 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Chris D. Peterson, MIT X Consortium
  */
-/* $XFree86: xc/programs/editres/editresP.h,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/editres/editresP.h,v 1.7 2001/12/14 20:00:42 dawes Exp $ */
 
 #include <X11/Xmu/EditresP.h>
 #include <X11/Xresource.h>
 
-#undef DEBUG
 #define DEBUG
 
 #ifdef DEBUG

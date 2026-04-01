@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mi.h,v 3.10tsi Exp $ */
+/* $Xorg: mi.h,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/mi/mi.h,v 3.10 2001/12/14 20:00:19 dawes Exp $ */
 
 #ifndef MI_H
 #define MI_H
@@ -53,7 +61,7 @@ SOFTWARE.
 #include "validate.h"
 #include "window.h"
 #include "gc.h"
-#include <X11/fonts/font.h>
+#include "font.h"
 #include "input.h"
 #include "cursor.h"
 

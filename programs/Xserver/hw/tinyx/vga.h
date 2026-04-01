@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -150,13 +157,7 @@ VGA32
 VgaGetImm (VgaCard *card, VgaReg *reg);
 
 void
-_VgaSync (VgaCard *card, VGA16 id);
-
-void
 VgaSet (VgaCard *card, VgaReg *reg, VGA32 value);
-
-void
-VgaFlushReg (VgaCard *card, VgaReg *reg);
 
 VGA32
 VgaGet (VgaCard *card, VgaReg *reg);

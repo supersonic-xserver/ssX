@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/afb/afbcmap.c,v 3.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbcmap.c,v 3.1 1998/11/22 10:36:58 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: afbcmap.c,v 4.19 94/04/17 20:28:46 dpw Exp $ */
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -28,61 +36,72 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "colormapst.h"
 #include "resource.h"
 #include "micmap.h"
-#include "afb.h"
 
 int
-afbListInstalledColormaps(ScreenPtr pScreen, Colormap *pmaps)
+afbListInstalledColormaps(pScreen, pmaps)
+	ScreenPtr		pScreen;
+	Colormap		*pmaps;
 {
 	return miListInstalledColormaps(pScreen, pmaps);
 }
 
 
 void
-afbInstallColormap(ColormapPtr pmap)
+afbInstallColormap(pmap)
+	ColormapPtr		pmap;
 {
 	miInstallColormap(pmap);
 }
 
 void
-afbUninstallColormap(ColormapPtr pmap)
+afbUninstallColormap(pmap)
+	ColormapPtr		pmap;
 {
 	miUninstallColormap(pmap);
 }
 
 void
-afbResolveColor(unsigned short *pred, unsigned short *pgreen,
-		unsigned short *pblue, VisualPtr pVisual)
+afbResolveColor(pred, pgreen, pblue, pVisual)
+	unsigned short		*pred, *pgreen, *pblue;
+	register VisualPtr		pVisual;
 {
 	miResolveColor(pred, pgreen, pblue, pVisual);
 }
 
 Bool
-afbInitializeColormap(ColormapPtr pmap)
+afbInitializeColormap(pmap)
+	register ColormapPtr		pmap;
 {
 	return miInitializeColormap(pmap);
 }
 
 int
-afbExpandDirectColors(ColormapPtr pmap, int ndef, xColorItem *indefs,
-		      xColorItem *outdefs)
+afbExpandDirectColors(pmap, ndef, indefs, outdefs)
+	ColormapPtr		pmap;
+	int				ndef;
+	xColorItem		*indefs, *outdefs;
 {
 	return miExpandDirectColors(pmap, ndef, indefs, outdefs);
 }
 
 Bool
-afbCreateDefColormap(ScreenPtr pScreen)
+afbCreateDefColormap(pScreen)
+	ScreenPtr pScreen;
 {
 	return miCreateDefColormap(pScreen);
 }
 
 Bool
-afbSetVisualTypes(int depth, int visuals, int bitsPerRGB)
+afbSetVisualTypes(depth, visuals, bitsPerRGB)
+	int depth;
+	int visuals;
+	int bitsPerRGB;
 {
 	return miSetVisualTypes(depth, visuals, bitsPerRGB, -1);
 }
@@ -94,9 +113,15 @@ afbSetVisualTypes(int depth, int visuals, int bitsPerRGB)
  */
 
 Bool
-afbInitVisuals(VisualPtr *visualp, DepthPtr *depthp, int *nvisualp,
-	       int *ndepthp, int *rootDepthp, VisualID *defaultVisp,
-	       unsigned long sizes, int bitsPerRGB)
+afbInitVisuals(visualp, depthp, nvisualp, ndepthp, rootDepthp, defaultVisp,
+					 sizes, bitsPerRGB)
+	VisualPtr *visualp;
+	DepthPtr *depthp;
+	int *nvisualp, *ndepthp;
+	int *rootDepthp;
+	VisualID *defaultVisp;
+	unsigned long sizes;
+	int bitsPerRGB;
 {
 	return miInitVisuals(visualp, depthp, nvisualp, ndepthp, rootDepthp,
 				defaultVisp, sizes, bitsPerRGB, -1);

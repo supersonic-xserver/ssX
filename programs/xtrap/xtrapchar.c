@@ -1,14 +1,26 @@
 /* $XFree86: xc/programs/xtrap/xtrapchar.c,v 1.3 2001/12/12 00:43:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * @DEC_COPYRIGHT@
  */
 /*
  * HISTORY
+ * Log: xtrapchar.c,v $
  * Revision 1.1.2.2  1993/12/14  12:37:15  Kenneth_Miller
  * 	ANSI-standardize code and turn client build on
  * 	[1993/12/09  20:15:33  Kenneth_Miller]
  *
+ * EndLog$
  */
+#if !defined(lint) && 0
+static char *rcsid = "@(#)RCSfile: xtrapchar.c,v $ Revision: 1.1.2.2 $ (DEC) Date: 1993/12/14 12:37:15 $";
+#endif
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991, 1993 by Digital Equipment Corp., 
 Maynard, MA

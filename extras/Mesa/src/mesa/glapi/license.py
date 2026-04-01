@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# $XFree86$
-#
 # (C) Copyright IBM Corporation 2004
 # All Rights Reserved.
 #

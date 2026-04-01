@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/dri.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/dri.h,v 1.1 2003/06/30 01:45:13 torrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -36,9 +43,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* Prototypes for AppleDRI functions */
 
 #ifndef _DRI_H_
-#define _DRI_H_
 
-#include <X11/Xdefs.h>
+#include "Xdefs.h"
 #include "scrnintstr.h"
 #define _APPLEDRI_SERVER_
 #include "appledri.h"
@@ -125,5 +131,7 @@ extern void DRISurfaceNotify (xp_surface_id id, int kind);
 extern void DRIQueryVersion(int *majorVersion,
                             int *minorVersion,
                             int *patchVersion);
+
+#define _DRI_H_
 
 #endif

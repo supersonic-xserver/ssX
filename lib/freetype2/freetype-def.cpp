@@ -139,11 +139,5 @@ FT_Get_X11_Font_Format
 FT_Get_BDF_Charset_ID
 FT_Get_Postscript_Name
 FT_Stream_Seek
-FT_Stream_EnterFrame
-FT_Stream_ExitFrame
-FT_Stream_GetShort
-FT_Stream_GetLong
-FT_Load_Sfnt_Table
-FT_Library_Version
 
 /* $XFree86: xc/lib/freetype2/freetype-def.cpp,v 1.9 2004/05/06 01:22:18 dawes Exp $ */

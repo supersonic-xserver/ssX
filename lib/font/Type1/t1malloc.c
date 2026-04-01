@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/t1malloc.c,v 1.13tsi Exp $ */
+/* $Xorg: t1malloc.c,v 1.3 2000/08/17 19:46:34 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines, Corp. 1991
  * All Rights Reserved
  * Copyright Lexmark International, Inc. 1991
@@ -26,6 +33,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/lib/font/Type1/t1malloc.c,v 1.12 2004/01/23 03:55:25 dawes Exp $ */
  /* MALLOC   CWEB         V0004 LOTS                                 */
 /*
 :h1.MALLOC - Fast Memory Allocation
@@ -38,8 +46,8 @@ routines (malloc/free).
 */
 
 #ifdef FONTMODULE
-#include <X11/Xdefs.h>	/* Bool declaration */
-#include <X11/Xmd.h>	/* INT32 declaration */
+#include "Xdefs.h"	/* Bool declaration */
+#include "Xmd.h"	/* INT32 declaration */
 #include "os.h"
 #include "xf86_ansic.h"
 #else
@@ -414,8 +422,6 @@ char *
 xiMalloc(unsigned size)
 {
   char *memaddr;
-
-  if ((int)size <= 0) return (char *)0;
  
   while ( (memaddr = malloc_local(size)) == NULL ) {
     /* Ask TYPE1IMAGER to give us some of its cache back */
@@ -454,13 +460,10 @@ Then we ensure that the block will be large enough to hold our
 (longs), not bytes, increased to span an integral number of double
 words, so that all memory blocks dispensed with be properly aligned.
 */
-        if (size < 0) return (char *)0;
         size += 2*sizeof(long) + DEBUGWORDS*sizeof(long);
-        if (size < 0) return (char *)0;
         if (size < sizeof(struct freeblock) + sizeof(long))
                size = sizeof(struct freeblock) + sizeof(long);
         size = ((unsigned) (size + sizeof(double) - 1) / sizeof(double)) * (sizeof(double)/sizeof(long));
-        if ((size < 0) || (size != (int)size)) return (char *)0;
  
 /*
 For speed, we will try first to give the user back a very recently

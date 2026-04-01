@@ -1,7 +1,14 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef _GLX_screens_h_
 #define _GLX_screens_h_
 
-/* $XFree86: xc/programs/Xserver/GL/glx/glxscreens.h,v 1.4 2001/03/21 16:29:37 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/glxscreens.h,v 1.1 2004/06/30 20:21:44 martin Exp $ */
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free

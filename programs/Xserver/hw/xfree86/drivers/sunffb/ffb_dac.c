@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - DAC programming.
  *
  * Copyright (C) 2000 David S. Miller (davem@redhat.com)
@@ -21,7 +28,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_dac.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_dac.c,v 1.4 2002/12/06 02:44:03 tsi Exp $ */
 
 #include "ffb.h"
 #include "ffb_rcache.h"
@@ -39,7 +46,7 @@
 
 #ifndef DPMS_SPIN_COUNT
 #define DPMS_SPIN_COUNT 100
-#endif
+#endif  /* DPMS_SPIN_COUNT */
 
 /* Cursor programming */
 
@@ -88,33 +95,45 @@ FFBDacCursorEnableDisable(FFBPtr pFfb, int enable)
 	DACCUR_WRITE(dac, FFBDAC_CUR_CTRL, val);
 }
 
+#define MEMBAR __asm__("membar #MemIssue;")
+
 void
 FFBDacCursorLoadBitmap(FFBPtr pFfb, int xshift, int yshift, unsigned int *bitmap)
 {
-	ffb_dacPtr dac = pFfb->dac;
-	int i, j;
+	volatile ffb_dacPtr dac = pFfb->dac;
+	int i, j, sync[]={FFBDAC_CUR_BITMAP_P0, FFBDAC_CUR_BITMAP_P1};
 
 	dac->cur = FFBDAC_CUR_BITMAP_P0;
 	for (j = 0; j < 2; j++) {
+		dac->cur = sync[j];
+		MEMBAR;
 		bitmap += yshift * 2;
 		if (!xshift) {
-			for (i = yshift * 2; i < 128; i++)
+			for (i = yshift * 2; i < 128; i++) {
 				dac->curdata = *bitmap++;
+				MEMBAR;
+			}
 		} else if (xshift < 32) {
 			for (i = yshift; i < 64; i++, bitmap += 2) {
 				dac->curdata = (bitmap[0] << xshift) |
 					(bitmap[1] >> (32 - xshift));
+				MEMBAR;
 				dac->curdata = bitmap[1] << xshift;
+				MEMBAR;
 			}
 		} else {
 			for (i = yshift; i < 64; i++, bitmap += 2) {
 				dac->curdata = bitmap[1] << (xshift - 32);
+				MEMBAR;
 				dac->curdata = 0;
+				MEMBAR;
 			}
 		}
 
-		for (i = 0; i < yshift * 2; i++)
+		for (i = 0; i < yshift * 2; i++) {
 			dac->curdata = 0;
+			MEMBAR;
+		}
 	}
 }
 
@@ -195,7 +214,7 @@ dac_stop(FFBPtr pFfb)
 
 			if (vctr == 0)
 				break;
-		}
+		}		
 
 		DACCFG_WRITE(dac, FFBDAC_CFG_TGEN, 0);
 	}
@@ -514,128 +533,118 @@ FFBDacLeaveVT(FFBPtr pFfb)
  * results in Off.  Maybe related?
  */
 static void
-SPIN(ffb_dacPtr d, int count)
-{
+SPIN(ffb_dacPtr d, int count) {
   while(count-- > 0) {
     (void) DACCFG_READ(d, FFBDAC_CFG_TGVC);
   }
+  return;
 }
 
 /*  Screen save (blank) restore */
 Bool
-FFBDacSaveScreen(ScrnInfoPtr pScrn, int mode)
-{
-    FFBPtr pFfb = GET_FFB_FROM_SCRN(pScrn);
-    ffb_dacPtr dac = pFfb->dac;
-    int tmp;
+FFBDacSaveScreen(ScreenPtr pScreen, FFBPtr pFfb, int mode) {
+  unsigned int tmp;
+  Bool redraw = FALSE;
+  ScrnInfoRec *si = xf86Screens[pScreen->myNum];
+  ffb_dacPtr dac;
+  if(!pFfb) return FALSE;   /* Is there any way at all this could happen? */
+  else dac = pFfb -> dac;
 
-    /* Get the timing information */
-    tmp = DACCFG_READ(dac, FFBDAC_CFG_TGEN);
+  /* 
+   * there seems to be a bug in ffb1 hardware which causes screen corruption 
+   * when (un)blanking - so we disable/enable screen access to cause a
+   * full redraw.
+   */
 
-    switch (mode) {
+  tmp = DACCFG_READ(dac, FFBDAC_CFG_TGEN);  /* Get the timing information */
+
+  switch(mode) {
     case SCREEN_SAVER_ON:
     case SCREEN_SAVER_CYCLE:
-	if (!(tmp & FFBDAC_CFG_TGEN_VIDE))
-	    return TRUE;
-
-	tmp &= ~FFBDAC_CFG_TGEN_VIDE;  /* Kill the video */
-	break;
+      tmp &= ~FFBDAC_CFG_TGEN_VIDE;  /* Kill the video */
+      break;
 
     case SCREEN_SAVER_OFF:
     case SCREEN_SAVER_FORCER:
-	if (tmp & FFBDAC_CFG_TGEN_VIDE)
-	    return TRUE;
-
-	tmp |= FFBDAC_CFG_TGEN_VIDE;  /* Turn the video on */
-	break;
-
-    default:
-	return FALSE;  /* Don't know what to do; gently fail. */
-    }
-
-    /* Restore timing register, video set as asked */
-    DACCFG_WRITE(dac, FFBDAC_CFG_TGEN, tmp);
-
-    SPIN(dac, DPMS_SPIN_COUNT / 10);
-
-    if (!(tmp & FFBDAC_CFG_TGEN_VIDE) || (pFfb->ffb_type >= ffb2_prototype))
-	return TRUE;
-
-    /* Redraw screen on buggy FFB1's */
-    (*pScrn->EnableDisableFBAccess)(pScrn->scrnIndex, FALSE);
-    (*pScrn->EnableDisableFBAccess)(pScrn->scrnIndex, TRUE);
-
-    return TRUE;
-}
-
-/*
- *  DPMS Control, also hinted at by David Miller.
- *
- *  The rule seems to be:
- *
- *  StandBy  =  -HSYNC +VSYNC -VIDEO
- *  Suspend  =  +HSYNC -VSYNC -VIDEO
- *  Off      =  -HSYNC -VSYNC -VIDEO
- *  On       =  +HSYNC +VSINC +VIDEO
- *
- *  If you don't force video off, someone periodically tries to turn the
- *  monitor on for some reason.  I don't know who or why, so I kill the video
- *  when trying to go into some sort of energy saving mode.  (In real life,
- *  'xset s blank s xx' could well have taken care of this.)
- *
- *  Also, on MY monitor, StandBy as above defined (-H+V-Vid) in fact
- *  gives the same as Off, which I don't want.  Hence, I just do (-Vid)
- *
- *  05.xii.01, FEM
- *  08.xii.01, FEM
- */
-void
-FFBDacDPMSMode(FFBPtr pFfb, int DPMSMode, int flags)
-{
-    int tmp;
-    ffb_dacPtr dac = pFfb->dac;
-
-    /* Get timing control */
-    tmp = DACCFG_READ(dac, FFBDAC_CFG_TGEN);
-
-    switch(DPMSMode) {
-    case DPMSModeOn:
-	/* Turn off VSYNC, HSYNC disable bits */
-	tmp &= ~(FFBDAC_CFG_TGEN_VSD | FFBDAC_CFG_TGEN_HSD);
-
-	/* Turn the video on */
-	tmp |= FFBDAC_CFG_TGEN_VIDE;
-	break;
-
-    case DPMSModeStandby:
-#ifdef DPMS_TRUE_STANDBY
-	/* HSYNC = OFF */
-	tmp |= FFBDAC_CFG_TGEN_HSD;
-#endif
-	/* VSYNC = ON and Video off */
-	tmp &= ~(FFBDAC_CFG_TGEN_VSD | FFBDAC_CFG_TGEN_VIDE);
-	break;
-
-    case DPMSModeSuspend:
-	/* VSYNC = OFF */
-	tmp |= FFBDAC_CFG_TGEN_VSD;
-	/* HSYNC = ON and Video off */
-	tmp &= ~(FFBDAC_CFG_TGEN_HSD | FFBDAC_CFG_TGEN_VIDE);
-	break;
-
-    case DPMSModeOff:
-	/* Kill HSYNC, VSYNC both */
-	tmp |= (FFBDAC_CFG_TGEN_VSD | FFBDAC_CFG_TGEN_HSD);
-	/* Kill the video */
-	tmp &= ~FFBDAC_CFG_TGEN_VIDE;
+      tmp |= FFBDAC_CFG_TGEN_VIDE;  /* Turn the video on */
+      if (pFfb->ffb_type < ffb2_prototype)
+        redraw = TRUE;
       break;
 
     default:
-      return;     /* If we get here, we really should log an error */
+      return FALSE;  /* Don't know what to do; gently fail. */
     }
+    
+  /* Restore timing register, video set as asked */
+  DACCFG_WRITE(dac, FFBDAC_CFG_TGEN, tmp);  
+  SPIN(dac, DPMS_SPIN_COUNT/10);
 
-    /* Restore timing register, video set as asked */
-    DACCFG_WRITE(dac, FFBDAC_CFG_TGEN,tmp);
+  if (redraw) {
+    /* this causes a complete redraw of the screen */
+    si->EnableDisableFBAccess(pScreen->myNum, FALSE);
+    si->EnableDisableFBAccess(pScreen->myNum, TRUE);
+  }
 
-    SPIN(dac, DPMS_SPIN_COUNT);  /* Is this necessary? Why? */
+  return TRUE;
+}
+
+/*  DPMS Control, also hinted at by David Miller.
+
+    The rule seems to be:
+    
+    StandBy  =  -HSYNC +VSYNC -VIDEO
+    Suspend  =  +HSYNC -VSYNC -VIDEO
+    Off      =  -HSYNC -VSYNC -VIDEO
+    On       =  +HSYNC +VSINC +VIDEO
+
+    If you don't force video off, someone periodically tries to turn the
+    monitor on for some reason.  I don't know who or why, so I kill the video
+    when trying to go into some sort of energy saving mode.  (In real life,
+    'xset s blank s xx' could well have taken care of this.)
+
+    Also, on MY monitor, StandBy as above defined (-H+V-Vid) in fact
+    gives the same as Off, which I don't want.  Hence, I just do (-Vid)
+
+    05.xii.01, FEM
+    08.xii.01, FEM
+*/
+void
+FFBDacDPMSMode(FFBPtr pFfb, int DPMSMode, int flags) {
+  int tmp;
+  ffb_dacPtr dac = pFfb -> dac;
+
+  tmp = DACCFG_READ(dac, FFBDAC_CFG_TGEN);  /* Get timing control */
+
+  switch(DPMSMode) {
+
+    case DPMSModeOn:
+      tmp &= ~(FFBDAC_CFG_TGEN_VSD | FFBDAC_CFG_TGEN_HSD); /* Turn off VSYNC, HSYNC
+							      disable bits */
+      tmp |= FFBDAC_CFG_TGEN_VIDE;  /* Turn the video on */
+       break;
+
+    case DPMSModeStandby:
+#ifdef  DPMS_TRUE_STANDBY
+      tmp |=  FFBDAC_CFG_TGEN_HSD;  /* HSYNC = OFF    */
+#endif  /* DPMS_TRUE_STANDBY */
+      tmp &= ~FFBDAC_CFG_TGEN_VSD;  /* VSYNC = ON     */
+      tmp &= ~FFBDAC_CFG_TGEN_VIDE; /* Kill the video */
+      break;
+
+    case DPMSModeSuspend:
+      tmp |=  FFBDAC_CFG_TGEN_VSD;  /* VSYNC = OFF    */
+      tmp &= ~FFBDAC_CFG_TGEN_HSD;  /* HSYNC = ON     */
+      tmp &= ~FFBDAC_CFG_TGEN_VIDE; /* Kill the video */
+      break;
+
+    case DPMSModeOff:
+      tmp |= (FFBDAC_CFG_TGEN_VSD | FFBDAC_CFG_TGEN_HSD);  /* Kill HSYNC, VSYNC both */
+      tmp &= ~FFBDAC_CFG_TGEN_VIDE;                        /* Kill the video         */
+      break;
+      
+    default:
+      return;     /* If we get here, we really should log an error */
+  }
+  DACCFG_WRITE(dac, FFBDAC_CFG_TGEN,tmp);  /* Restore timing register, video set as asked */
+  SPIN(dac, DPMS_SPIN_COUNT);  /* Is this necessary?  Why?  */
 }

@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/X11/imKStoUCS.c,v 1.4 2003/04/29 11:29:18 pascal Exp $ */
+/* $XFree86: xc/lib/X11/imKStoUCS.c,v 1.5 2003/11/17 22:20:11 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "Xlibint.h"
 #include "Ximint.h"

@@ -1,3 +1,11 @@
+/* $Xorg: xkbEvents.c,v 1.3 2000/08/17 19:53:47 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,17 +31,17 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbEvents.c,v 3.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/xkbEvents.c,v 3.12 2003/11/17 22:20:46 dawes Exp $ */
 
 #include <stdio.h>
 #define NEED_EVENTS 1
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
-#include <X11/extensions/XI.h>
+#include "XI.h"
 #include "inputstr.h"
 #include "windowstr.h"
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #include "xkb.h"
 
 /***====================================================================***/
@@ -41,7 +49,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 void
 XkbSendNewKeyboardNotify(DeviceIntPtr kbd,xkbNewKeyboardNotify *pNKN)
 {		
-int	i;
+register int	i;
 Time 		time;
 CARD16		changed;
 
@@ -62,7 +70,7 @@ CARD16		changed;
 		pNKN->time = time;
 		pNKN->changed = changed;
 		if ( clients[i]->swapped ) {
-		    int n;
+		    register int n;
 		    swaps(&pNKN->sequenceNumber,n);
 		    swapl(&pNKN->time,n);
 		    swaps(&pNKN->changed,n);
@@ -102,7 +110,7 @@ XkbSrvInfoPtr	xkbi;
 XkbStatePtr	state;
 XkbInterestPtr	interest;
 Time 		time;
-CARD16	changed,bState;
+register CARD16	changed,bState;
 
     interest = kbd->xkb_interest;
     if (!interest)
@@ -141,7 +149,7 @@ CARD16	changed,bState;
 	    pSN->changed = changed;
 	    pSN->ptrBtnState = bState;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pSN->sequenceNumber,n);
 		swapl(&pSN->time,n);
 		swaps(&pSN->changed,n);
@@ -187,7 +195,7 @@ CARD16		changed;
 	    pMN->sequenceNumber = clients[i]->sequence;
 	    pMN->changed = changed;
 	    if ( clients[i]->swapped ) {
-		int n;
+		register int n;
 		swaps(&pMN->sequenceNumber,n);
 		swapl(&pMN->time,n);
 		swaps(&pMN->changed,n);
@@ -310,7 +318,7 @@ Time 		 	time = 0;
 	    pCN->sequenceNumber = interest->client->sequence;
 	    pCN->time = time;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pCN->sequenceNumber,n);
 		swapl(&pCN->changedControls,n);
 		swapl(&pCN->enabledControls,n);
@@ -359,7 +367,7 @@ CARD32		state,changed;
 	    pEv->changed = changed;
 	    pEv->state = state;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pEv->sequenceNumber,n);
 		swapl(&pEv->time,n);
 		swapl(&pEv->changed,n);
@@ -442,7 +450,7 @@ XID		winID = 0;
 	    bn.name = name;
 	    bn.window=  winID;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&bn.sequenceNumber,n);
 		swapl(&bn.time,n);
 		swaps(&bn.pitch,n);
@@ -489,7 +497,7 @@ CARD16		sk_delay,db_delay;
 	    pEv->slowKeysDelay = sk_delay;
 	    pEv->debounceDelay = db_delay;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pEv->sequenceNumber,n);
 		swapl(&pEv->time,n);
 		swaps(&pEv->slowKeysDelay,n);
@@ -537,7 +545,7 @@ CARD32		changedIndicators;
 	    pEv->changedIndicators = changedIndicators;
 	    pEv->changedVirtualMods= changedVirtualMods;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pEv->sequenceNumber,n);
 		swapl(&pEv->time,n);
 		swaps(&pEv->changed,n);
@@ -585,7 +593,7 @@ CARD16		firstSI = 0, nSI = 0, nTotalSI = 0;
 	    pEv->nSI = nSI;
 	    pEv->nTotalSI = nTotalSI;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pEv->sequenceNumber,n);
 		swapl(&pEv->time,n);
 		swaps(&pEv->firstSI,n);
@@ -631,7 +639,7 @@ Time 		 time = 0;
 	    pEv->sequenceNumber = interest->client->sequence;
 	    pEv->time = time;
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pEv->sequenceNumber,n);
 		swapl(&pEv->time,n);
 	    }
@@ -691,7 +699,7 @@ CARD16		 reason, supported = 0;
 		    continue;
 	    }
 	    if ( interest->client->swapped ) {
-		int n;
+		register int n;
 		swaps(&pEv->sequenceNumber,n);
 		swapl(&pEv->time,n);
 		swapl(&pEv->ledsDefined,n);
@@ -809,9 +817,8 @@ XkbSrvInfoPtr	xkbi;
 		((xE[0].u.u.type==KeyPress)||(xE[0].u.u.type==KeyRelease))) {
 	    ErrorF("XKbFilterWriteEvents:\n");
 	    ErrorF("   Event state= 0x%04x\n",xE[0].u.keyButtonPointer.state);
-	    ErrorF("   XkbLastRepeatEvent!=xE (0x%lx!=0x%lx) %s\n",
-			(unsigned long)XkbLastRepeatEvent,
-			(unsigned long)xE,
+	    ErrorF("   XkbLastRepeatEvent!=xE (0x%x!=0x%x) %s\n",
+			XkbLastRepeatEvent,xE,
 			((XkbLastRepeatEvent!=(pointer)xE)?"True":"False"));
 	    ErrorF("   (xkbClientEventsFlags&XWDA)==0 (0x%x) %s\n",
 		pClient->xkbClientFlags,
@@ -827,7 +834,7 @@ XkbSrvInfoPtr	xkbi;
 	}
 	if ((pXDev->grab != NullGrab) && pXDev->fromPassiveGrab &&
 	    ((xE[0].u.u.type==KeyPress)||(xE[0].u.u.type==KeyRelease))) {
-	    unsigned state,flags;
+	    register unsigned state,flags;
 
 	    flags= pClient->xkbClientFlags;
 	    state= xkbi->state.compat_grab_mods;
@@ -865,7 +872,7 @@ XkbSrvInfoPtr	xkbi;
         }
     }
     else {
-	CARD8 	type;
+	register CARD8 	type;
 
 	for (i=0;i<nEvents;i++) {
 	    type= xE[i].u.u.type;

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdLnx.c,v 3.21 2006/02/20 00:14:37 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdLnx.c,v 3.18 2004/02/13 23:58:37 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Linux version of keymapping setup. The kernel (since 0.99.14) has support
  * for fully remapping the keyboard, but there are some differences between
@@ -29,7 +36,7 @@
  *
  */
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2001 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -75,8 +82,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+/* $XConsortium: xf86KbdLnx.c /main/7 1996/10/19 17:59:00 kaleb $ */
+
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -85,18 +94,10 @@
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
-#include <linux/keyboard.h>
-#undef KEY_F13
-#undef KEY_F14
-#undef KEY_F15
-#undef KEY_F16
-#undef KEY_F17
-#undef KEY_XFER
-#undef KEY_UNKNOWN
 #include "atKeynames.h"
 
 #include "xf86Keymap.h"
-#include <X11/DECkeysym.h>
+#include "DECkeysym.h"
 
 /*
  * LegalModifier --
@@ -188,6 +189,8 @@ xf86KbdGetMapping (KeySymsPtr pKeySyms, CARD8 *pModMap)
   pKeySyms->minKeyCode = MIN_KEYCODE;
   pKeySyms->maxKeyCode = MAX_KEYCODE; 
 }
+
+#include <linux/keyboard.h>
 
 static KeySym linux_to_x[256] = {
 	NoSymbol,	NoSymbol,	NoSymbol,	NoSymbol,
@@ -364,7 +367,7 @@ readKernelMapping(KeySymsPtr pKeySyms, CARD8 *pModMap)
   }
   else {
     k = map+GLYPHS_PER_KEY;
-    maxkey = NUM_AT2LNX - 1;
+    maxkey = NUM_AT2LNX;
   }
 
   for (i = 0; i < maxkey; ++i)

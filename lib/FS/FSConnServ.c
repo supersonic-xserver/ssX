@@ -1,3 +1,19 @@
+/* $Xorg: FSConnServ.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -22,7 +38,6 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86$ */
 
 /*
 
@@ -75,7 +90,8 @@ in this Software without prior written authorization from The Open Group.
 #define FS_CONNECTION_RETRIES 5
 
 XtransConnInfo
-_FSConnectServer(char *server_name)
+_FSConnectServer(server_name)
+    char       *server_name;
 {
     XtransConnInfo trans_conn = NULL;	/* transport connection object */
     int retry, connect_stat;
@@ -130,7 +146,9 @@ _FSConnectServer(char *server_name)
  */
 
 void
-_FSDisconnectServer(XtransConnInfo trans_conn)
+_FSDisconnectServer(trans_conn)
+    XtransConnInfo	trans_conn;
+
 {
     (void) _FSTransClose(trans_conn);
 }
@@ -142,8 +160,8 @@ _FSDisconnectServer(XtransConnInfo trans_conn)
  * 2) if the connection can be read, must enqueue events and handle errors,
  * until the connection is writable.
  */
-void
-_FSWaitForWritable(FSServer *svr)
+void _FSWaitForWritable(svr)
+    FSServer     *svr;
 {
     fd_set	r_mask;
     fd_set	w_mask;
@@ -205,8 +223,8 @@ _FSWaitForWritable(FSServer *svr)
 }
 
 
-void
-_FSWaitForReadable(FSServer *svr)
+void _FSWaitForReadable(svr)
+    FSServer     *svr;
 {
     fd_set	r_mask;
     int         result;
@@ -220,8 +238,9 @@ _FSWaitForReadable(FSServer *svr)
     } while (result <= 0);
 }
 
-void
-_FSSendClientPrefix(FSServer *svr, fsConnClientPrefix *client)
+void _FSSendClientPrefix(svr, client)
+    FSServer     *svr;
+    fsConnClientPrefix *client;
 {
     struct iovec iovarray[5],
                *iov = iovarray;

@@ -1,0 +1,26 @@
+/AUTHORS/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/COPYING/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/ChangeLog/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/INSTALL/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/Makefile.in/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/NEWS/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.2/Fri Mar 18 13:07:05 2005//Tnetbsd-5-2-3-RELEASE
+/config.h.in/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/configure/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/configure.in/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/cvscompile.sh/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/findfonts/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/fontconfig-config.in/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/fontconfig.pc.in/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/fonts.conf.in/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/fonts.dtd/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/local.def/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/setfontdirs/1.1.1.1/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+D/config////
+D/doc////
+D/fc-cache////
+D/fc-lang////
+D/fc-list////
+D/fontconfig////
+D/src////

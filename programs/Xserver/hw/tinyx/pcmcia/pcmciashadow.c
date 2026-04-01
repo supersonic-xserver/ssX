@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2001 by Alan Hourihane, Sychdyn, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,7 @@
  *
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/pcmcia/pcmciashadow.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/pcmcia/pcmciashadow.c,v 1.1 2004/06/02 22:43:02 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -69,12 +76,12 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include    <X11/X.h>
+#include    "X.h"
 #include    "scrnintstr.h"
 #include    "windowstr.h"
-#include    <X11/fonts/font.h>
+#include    "font.h"
 #include    "dixfontstr.h"
-#include    <X11/fonts/fontstruct.h>
+#include    "fontstruct.h"
 #include    "mi.h"
 #include    "regionstr.h"
 #include    "globals.h"

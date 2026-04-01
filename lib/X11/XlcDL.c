@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1985, 1986, 1987, 1991, 1998  The Open Group
 
 Portions Copyright 2000 Sun Microsystems, Inc. All Rights Reserved.
@@ -41,7 +48,7 @@ interest in or to any trademark, service mark, logo or trade name of
 Sun Microsystems, Inc. or its licensors is granted.
 
 */
-/* $XFree86: xc/lib/X11/XlcDL.c,v 1.15tsi Exp $ */
+/* $XFree86: xc/lib/X11/XlcDL.c,v 1.13 2003/11/17 22:20:10 dawes Exp $ */
 
 #include <stdio.h>
 #if defined(hpux)
@@ -55,13 +62,17 @@ Sun Microsystems, Inc. or its licensors is granted.
 #include "XlcPublic.h"
 #include "XlcPubI.h"
 
-#if defined(_LP64) && defined(__sparcv9) && defined(sun)
-# define _MACH64_NAME "sparcv9"
+#if defined(_LP64)  && defined(__sparcv9) && !defined(__NetBSD__)
+# define	_MACH64_NAME		"sparcv9"
 #else
-# undef  _MACH64_NAME
+# undef _MACH64_NAME
+#endif /* defined(_LP64)  && defined(__sparcv9) */
+
+#ifdef _MACH64_NAME
+#  define	_MACH64_NAME_LEN	(sizeof (_MACH64_NAME) - 1)
 #endif
 
-#define XI18N_DLREL 2
+#define XI18N_DLREL		2
 
 #define	iscomment(ch)	((ch) == '\0' || (ch) == '#')
 
@@ -124,7 +135,7 @@ strdup_with_underscore(const char *symbol)
 {
 	char *result;
 
-	if ((result = malloc(strlen(symbol) + 2)) == NULL)
+	if ((result = malloc(strlen(symbol) + 2)) == NULL) 
 		return NULL;
 	result[0] = '_';
 	strcpy(result + 1, symbol);
@@ -133,18 +144,18 @@ strdup_with_underscore(const char *symbol)
 
 #ifndef hpux
 static void *
-try_both_dlsym(void *handle, char *name)
+try_both_dlsym (void *handle, char *name)
 {
     void    *ret;
 
-    ret = dlsym(handle, name);
+    ret = dlsym (handle, name);
     if (!ret)
     {
-	 name = strdup_with_underscore(name);
+	 name = strdup_with_underscore (name);
 	 if (name)
 	 {
-	     ret = dlsym(handle, name);
-	     free(name);
+	     ret = dlsym (handle, name);
+	     free (name);
 	 }
     }
     return ret;
@@ -194,7 +205,7 @@ Limit the length of path to prevent stack buffer corruption.
 	  if (!xi18n_objects_list) return;
 	}
 	n = parse_line(p, args, 6);
-
+	
 	if (n == 3 || n == 5) {
 	  if (!strcmp(args[0], "XLC")){
 	    xi18n_objects_list[lc_count].type = XLC_OBJECT;
@@ -231,12 +242,12 @@ __lc_path(const char *dl_name, const char *lc_dir)
     /*
      * reject this for possible security issue
      */
-    if (strstr(dl_name, "../"))
+    if (strstr (dl_name, "../"))
 	return NULL;
 
-#if defined(_MACH64_NAME)
+#if defined (_LP64) && defined (_MACH64_NAME) && !defined(__NetBSD__)
     len = (lc_dir ? strlen(lc_dir) : 0 ) +
-	(dl_name ? strlen(dl_name) : 0) + sizeof(_MACH64_NAME)  + 9;
+	(dl_name ? strlen(dl_name) : 0) + _MACH64_NAME_LEN + 10;
     path = Xmalloc(len + 1);
 
     if (strchr(dl_name, '/') != NULL) {
@@ -265,7 +276,7 @@ __lc_path(const char *dl_name, const char *lc_dir)
 #else
     len = (lc_dir ? strlen(lc_dir) : 0 ) +
 	(dl_name ? strlen(dl_name) : 0) + 10;
-#if defined(POSTLOCALELIBDIR)
+#if defined POSTLOCALELIBDIR
     len += (strlen(POSTLOCALELIBDIR) + 1);
 #endif
     path = Xmalloc(len + 1);
@@ -275,14 +286,14 @@ __lc_path(const char *dl_name, const char *lc_dir)
 	slash_p = strrchr(lc_dir, '/');
 	*slash_p = '\0';
 	strcpy(path, lc_dir); strcat(path, "/");
-#if defined(POSTLOCALELIBDIR)
+#if defined POSTLOCALELIBDIR
 	strcat(path, POSTLOCALELIBDIR); strcat(path, "/");
 #endif
 	strcat(path, dl_name); strcat(path, ".so.2");
 	*slash_p = '/';
     } else {
 	strcpy(path, lc_dir); strcat(path, "/");
-#if defined(POSTLOCALELIBDIR)
+#if defined POSTLOCALELIBDIR
 	strcat(path, POSTLOCALELIBDIR); strcat(path, "/");
 #endif
 	strcat(path, dl_name); strcat(path, ".so.2");
@@ -304,7 +315,7 @@ open_object(
      char *lc_dir)
 {
   char *path;
-
+  
   if (object->refcount == 0) {
       path = __lc_path(object->dl_name, lc_dir);
       if (!path)
@@ -336,21 +347,21 @@ fetch_symbol(
 #endif
 
     if (symbol == NULL)
-	return NULL;
+    	return NULL;
 
 #if defined(hpux)
     getsyms_cnt = shl_getsymbols(object->dl_module, TYPE_PROCEDURE,
 				 EXPORT_SYMBOLS, malloc, &symbols);
 
     for(i=0; i<getsyms_cnt; i++) {
-	if(!strcmp(symbols[i].name, symbol)) {
+        if(!strcmp(symbols[i].name, symbol)) {
 	    result = symbols[i].value;
 	    break;
-	 }
+         }
     }
 
     if(getsyms_cnt > 0) {
-	free(symbols);
+        free(symbols);
     }
 #else
     result = try_both_dlsym(object->dl_module, symbol);
@@ -366,11 +377,11 @@ close_object(XI18NObjectsList object)
   if (object->refcount == 0)
     {
 #if defined(hpux)
-	shl_unload(object->dl_module);
+        shl_unload(object->dl_module);
 #else
-	dlclose(object->dl_module);
+        dlclose(object->dl_module);
 #endif
-	object->dl_module = NULL;
+        object->dl_module = NULL;
     }
 }
 
@@ -396,19 +407,19 @@ _XlcDynamicLoad(const char *lc_name)
     objects_list = xi18n_objects_list;
     count = lc_count;
     for (; count-- > 0; objects_list++) {
-	if (objects_list->type != XLC_OBJECT ||
+        if (objects_list->type != XLC_OBJECT ||
 	    strcmp(objects_list->locale_name, lc_name)) continue;
-	if (!open_object(objects_list, lc_dir))
+	if (!open_object (objects_list, lc_dir))
 	    continue;
 
-	lc_loader = (dynamicLoadProc)fetch_symbol(objects_list, objects_list->open);
+	lc_loader = (dynamicLoadProc)fetch_symbol (objects_list, objects_list->open);
 	if (!lc_loader) continue;
 	lcd = (*lc_loader)(lc_name);
 	if (lcd != (XLCd)NULL) {
 	    break;
 	}
-
-	close_object(objects_list);
+	
+	close_object (objects_list);
     }
     return (XLCd)lcd;
 }
@@ -436,17 +447,17 @@ _XDynamicOpenIM(XLCd lcd, Display *display, XrmDatabase rdb,
     if (objects_list->type != XIM_OBJECT ||
 	strcmp(objects_list->locale_name, lc_name)) continue;
 
-    if (!open_object(objects_list, lc_dir))
-	continue;
+    if (!open_object (objects_list, lc_dir))
+        continue;
 
     im_openIM = (dynamicOpenProcp)fetch_symbol(objects_list, objects_list->open);
     if (!im_openIM) continue;
     im = (*im_openIM)(lcd, display, rdb, res_name, res_class);
     if (im != (XIM)NULL) {
-	break;
+        break;
     }
-
-    close_object(objects_list);
+    
+    close_object (objects_list);
   }
   return (XIM)im;
 }
@@ -484,8 +495,8 @@ _XDynamicRegisterIMInstantiateCallback(
     if (objects_list->type != XIM_OBJECT ||
 	strcmp(objects_list->locale_name, lc_name)) continue;
 
-    if (!open_object(objects_list, lc_dir))
-	continue;
+    if (!open_object (objects_list, lc_dir))
+        continue;
     im_registerIM = (dynamicRegisterCBProcp)fetch_symbol(objects_list,
 					    objects_list->im_register);
     if (!im_registerIM) continue;
@@ -494,7 +505,7 @@ _XDynamicRegisterIMInstantiateCallback(
 				callback, client_data);
     if (ret_flag) break;
 
-    close_object(objects_list);
+    close_object (objects_list);
   }
   return (Bool)ret_flag;
 }
@@ -532,7 +543,7 @@ _XDynamicUnRegisterIMInstantiateCallback(
 	strcmp(objects_list->locale_name, lc_name)) continue;
 
     if (!objects_list->refcount) /* Must already be opened */
-	continue;
+        continue;
 
     im_unregisterIM = (dynamicUnregisterProcp)fetch_symbol(objects_list,
 					      objects_list->im_unregister);
@@ -542,7 +553,7 @@ _XDynamicUnRegisterIMInstantiateCallback(
 				  res_name, res_class,
 				  callback, client_data);
     if (ret_flag) {
-	close_object(objects_list); /* opened in RegisterIMInstantiateCallback */
+        close_object (objects_list); /* opened in RegisterIMInstantiateCallback */
 	break;
     }
   }
@@ -562,7 +573,7 @@ _XInitDynamicIM(XLCd lcd)
 
 
 typedef XOM (*dynamicIOpenProcp)(
-	XLCd, Display *, XrmDatabase, _Xconst char *, _Xconst char *);
+        XLCd, Display *, XrmDatabase, _Xconst char *, _Xconst char *);
 
 static XOM
 _XDynamicOpenOM(XLCd lcd, Display *display, XrmDatabase rdb,
@@ -587,14 +598,14 @@ _XDynamicOpenOM(XLCd lcd, Display *display, XrmDatabase rdb,
   for (; count-- > 0; objects_list++) {
     if (objects_list->type != XOM_OBJECT ||
 	strcmp(objects_list->locale_name, lc_name)) continue;
-    if (!open_object(objects_list, lc_dir))
-	continue;
-
+    if (!open_object (objects_list, lc_dir))
+        continue;
+    
     om_openOM = (dynamicIOpenProcp)fetch_symbol(objects_list, objects_list->open);
     if (!om_openOM) continue;
     om = (*om_openOM)(lcd, display, rdb, res_name, res_class);
     if (om != (XOM)NULL) {
-	break;
+        break;
     }
     close_object(objects_list);
   }

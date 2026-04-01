@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -137,9 +144,6 @@ int textmode = False;
 int nomodules = False;
 #endif
 int  noverify = False;
-
-static int myArgc;
-static char **myArgv;
 
 xf86cfgComputer computer;
 xf86cfgDevice cpu_device;
@@ -291,9 +295,6 @@ main(int argc, char *argv[])
 	else
 	    Usage();
     }
-
-    myArgc = argc;
-    myArgv = argv;
 
 #ifdef HAS_NCURSES
     if (textmode) {
@@ -2284,19 +2285,3 @@ ScreenSetup(Bool check)
     UpdateScreenUI();
     AdjustScreenUI();
 }
-
-int
-getArgc()
-{
-    return myArgc;
-}
-
-const char *
-getArgv(int i)
-{
-    if (i >= 0 && i < myArgc)
-	return myArgv[i];
-    else
-	return NULL;
-}
-

@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/xtrans/Xtransos2.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtransos2.c,v 3.10 2003/08/26 15:38:39 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * (c) Copyright 1996 by Sebastien Marineau and Holger Veit

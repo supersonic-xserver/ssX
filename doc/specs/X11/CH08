@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -1514,7 +1514,7 @@ Obtain and free font names
 .IP \(bu 5
 Compute character string sizes
 .IP \(bu 5
-Return logical extents
+Compute logical extents
 .IP \(bu 5
 Query character string sizes
 .LP
@@ -1602,7 +1602,7 @@ typedef struct {
 	XCharStruct max_bounds;	/* maximum bounds over all existing char */
 	XCharStruct *per_char;	/* first_char to last_char information */
 	int ascent;	/* logical extent above baseline for spacing */
-	int descent;	/* logical decent below baseline for spacing */
+	int descent;	/* logical descent below baseline for spacing */
 } XFontStruct;
 .De
 .LP
@@ -1685,7 +1685,7 @@ undefined or nonexistent character is printed.
 The default_char is a 16-bit character (not a 2-byte character).
 For a font using 2-byte matrix format, 
 the default_char has byte1 in the most-significant byte
-and byte2 in the least-significant byte.
+and byte2 in the least significant byte.
 If the default_char itself specifies an undefined or nonexistent character, 
 no printing is performed for an undefined or nonexistent character.
 .IP \(bu 5
@@ -1831,7 +1831,7 @@ The
 .PN XLoadFont
 function loads the specified font and returns its associated font ID.
 If the font name is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 When the characters ``?'' and ``*'' are used in a font name, a
 pattern match is performed and any matching font is used.
@@ -1930,7 +1930,7 @@ appropriate
 .PN XFontStruct
 structure.
 If the font name is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 If the font does not exist,
 .PN XLoadQueryFont
 returns NULL.
@@ -2093,12 +2093,12 @@ The pattern string can contain any characters,
 but each asterisk (*) is a wildcard for any number of characters,
 and each question mark (?) is a wildcard for a single character.
 If the pattern string is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 Each returned string is null-terminated.
 If the data returned by the server is in the Latin Portable Character Encoding,
 then the returned strings are in the Host Portable Character Encoding.
-Otherwise, the result is implementation dependent.
+Otherwise, the result is implementation-dependent.
 If there are no matching font names,
 .PN XListFonts
 returns NULL.
@@ -2170,12 +2170,12 @@ The pattern string can contain any characters,
 but each asterisk (*) is a wildcard for any number of characters,
 and each question mark (?) is a wildcard for a single character.
 If the pattern string is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 Use of uppercase or lowercase does not matter.
 Each returned string is null-terminated.
 If the data returned by the server is in the Latin Portable Character Encoding,
 then the returned strings are in the Host Portable Character Encoding.
-Otherwise, the result is implementation dependent.
+Otherwise, the result is implementation-dependent.
 If there are no matching font names,
 .PN XListFontsWithInfo
 returns NULL.
@@ -2215,12 +2215,13 @@ Specifies the actual number of font names.
 .eM
 The
 .PN XFreeFontInfo
-function frees a font structure or an array of font structures,
+function frees a font structure or an array of font structures
 and optionally an array of font names.
 If NULL is passed for names, no font names are freed.
 If a font structure for an open font (returned by
 .PN XLoadQueryFont )
-is passed, the structure is freed but the font is not closed; use
+is passed, the structure is freed,
+but the font is not closed; use
 .PN XUnloadFont
 to close the font.
 .NH 3
@@ -2236,7 +2237,7 @@ and the server information about 8-bit and 2-byte text strings.
 .IN "XTextWidth16"
 The width is computed by adding the character widths of all the characters.
 It does not matter if the font is an 8-bit or 2-byte font.
-These functions return the sum of the character metrics, in pixels.
+These functions return the sum of the character metrics in pixels.
 .LP
 .sp
 To determine the width of an 8-bit character string, use
@@ -2412,7 +2413,7 @@ For fonts defined with linear indexing rather than 2-byte matrix indexing,
 each 
 .PN XChar2b 
 structure is interpreted as a 16-bit number with byte1 as the 
-most-significant byte.
+most significant byte.
 If the font has no defined default character,
 undefined characters in the string are taken to have all zero metrics.
 .NH 3
@@ -2555,7 +2556,7 @@ For fonts defined with linear indexing rather than 2-byte matrix indexing,
 each 
 .PN XChar2b 
 structure is interpreted as a 16-bit number with byte1 as the 
-most-significant byte.
+most significant byte.
 If the font has no defined default character,
 undefined characters in the string are taken to have all zero metrics.
 .LP
@@ -2752,7 +2753,7 @@ For fonts defined with linear indexing rather than 2-byte matrix indexing,
 each 
 .PN XChar2b
 structure is interpreted as a 16-bit number with byte1 as the 
-most-significant byte.
+most significant byte.
 .LP
 Both functions use these GC components:
 function, plane-mask, fill-style, font, subwindow-mode, 
@@ -3116,7 +3117,7 @@ bytes_per_line member to an appropriate value based on the other
 members; otherwise, the value of bytes_per_line is not changed.
 All of the manipulation routines are initialized to functions
 that other Xlib image manipulation functions need to operate on the
-the type of image specified by the rest of the structure.
+type of image specified by the rest of the structure.
 .LP
 This function must be called for any image constructed by the client
 before passing it to any other Xlib function.
@@ -3342,6 +3343,7 @@ and
 .PN BadValue 
 errors.
 .sp
+.LP
 To copy the contents of a rectangle on the display
 to a location within a preexisting image structure, use
 .PN XGetSubImage .

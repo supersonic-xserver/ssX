@@ -1,5 +1,5 @@
 XCOMM font server configuration file
-XCOMM $XFree86$
+XCOMM $Xorg: config.cpp,v 1.3 2000/08/17 19:54:19 cpqbld Exp $
 
 clone-self = on
 use-syslog = off

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Newsgroups: mod.std.unix
 Subject: public domain AT&T getopt source
 Date: 3 Nov 85 19:34:15 GMT
@@ -9,7 +16,7 @@ UNIFORUM conference in Dallas.  I obtained it by electronic mail
 directly from AT&T.  The people there assure me that it is indeed
 in the public domain.
 */
-/* $XFree86$ */
+/* $XFree86: xc/extras/rman/getopt.c,v 1.3 2001/07/29 05:01:10 tsi Exp $ */
 
 /*LINTLIBRARY*/
 

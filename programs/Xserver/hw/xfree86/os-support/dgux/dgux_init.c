@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/dgux_init.c,v 1.3 2005/10/14 15:17:02 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/dgux/dgux_init.c,v 1.2 2003/11/17 22:20:40 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * INTEL DG/UX RELEASE 4.20 MU03
  * Copyright 1997 Takis Psarogiannakopoulos Cambridge,UK
@@ -20,8 +27,8 @@
  */
 
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -144,7 +151,7 @@ void xf86CloseConsole()
 
 int xf86ProcessArgument(argc, argv, i)
 int argc;
-const char *argv[];
+char *argv[];
 int i;
 {
 	if (!strcmp(argv[i], "-keeptty"))

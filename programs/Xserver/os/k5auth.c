@@ -1,3 +1,11 @@
+/* $Xorg: k5auth.c,v 1.4 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/os/k5auth.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/k5auth.c,v 3.5 2001/12/14 20:00:34 dawes Exp $ */
 
 /*
  * Kerberos V5 authentication scheme
@@ -49,14 +57,14 @@ from The Open Group.
 #undef BITS32
 #undef xfree
 #include <krb5/los-proto.h>
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "osdep.h"
-#include <X11/Xproto.h>
-#include <X11/Xfuncs.h>
+#include "Xproto.h"
+#include "Xfuncs.h"
 #include "dixstruct.h"
 #include <com_err.h>
-#include <X11/Xauth.h>
+#include "Xauth.h"
 
 extern int (*k5_Vector[256])();
 extern int SendConnSetup();
@@ -73,9 +81,11 @@ static char kerror[256];
  *
  * extract session key from a credentials struct
  */
-krb5_error_code
-tgt_keyproc(krb5_pointer keyprocarg, krb5_principal principal, krb5_kvno vno,
-	    krb5_keyblock **key)
+krb5_error_code tgt_keyproc(keyprocarg, principal, vno, key)
+    krb5_pointer keyprocarg;
+    krb5_principal principal;
+    krb5_kvno vno;
+    krb5_keyblock **key;
 {
     krb5_creds *creds = (krb5_creds *)keyprocarg;
     
@@ -87,8 +97,10 @@ tgt_keyproc(krb5_pointer keyprocarg, krb5_principal principal, krb5_kvno vno,
  *
  * compare "encoded" principals
  */
-Bool
-k5_cmpenc(unsigned char *pname, short plen, krb5_data *buf)
+Bool k5_cmpenc(pname, plen, buf)
+    unsigned char *pname;
+    short plen;
+    krb5_data *buf;
 {
     return (plen == buf->length &&
 	    memcmp(pname, buf->data, plen) == 0);
@@ -118,8 +130,11 @@ k5_cmpenc(unsigned char *pname, short plen, krb5_data *buf)
  * CARD16	length	= total length
  * STRING8	princ	= encoded principal of server
  */
-XID
-K5Check(unsigned short data_length, char *data, ClientPtr client, char **reason)
+XID K5Check(data_length, data, client, reason)
+    unsigned short data_length;
+    char *data;
+    ClientPtr client;
+    char **reason;
 {
     krb5_error_code retval;
     CARD16 tlen;
@@ -128,7 +143,7 @@ K5Check(unsigned short data_length, char *data, ClientPtr client, char **reason)
     krb5_creds *creds;
     char *outbuf, *cp;
     krb5_data princ;
-    char n;
+    register char n;
     xReq prefix;
 
     if (krb5_id == ~0L)
@@ -261,12 +276,12 @@ K5Check(unsigned short data_length, char *data, ClientPtr client, char **reason)
  * CARD16	length	= total length
  * STRING8	data	= the ap_rep
  */
-int
-k5_stage1(ClientPtr client)
+int k5_stage1(client)
+    register ClientPtr client;
 {
     long addrlen;
     krb5_error_code retval, retval2;
-    char n;
+    register char n;
     struct sockaddr cli_net_addr;
     xReq prefix;
     krb5_principal cprinc;
@@ -548,8 +563,8 @@ k5_stage1(ClientPtr client)
  * CARD8	data	= ignored (for now)
  * CARD16	length	= should be zero
  */
-int
-k5_stage3(ClientPtr client)
+int k5_stage3(client)
+    register ClientPtr client;
 {
     REQUEST(xReq);
 
@@ -561,8 +576,8 @@ k5_stage3(ClientPtr client)
 	return(SendConnSetup(client, NULL)); /* success! */
 }
 
-int
-k5_bad(ClientPtr client)
+k5_bad(client)
+    register ClientPtr client;
 {
     if (((OsCommPtr)client->osPrivate)->authstate.srvcreds)
 	krb5_free_creds((krb5_creds *)((OsCommPtr)client->osPrivate)->authstate.srvcreds);
@@ -580,8 +595,10 @@ k5_bad(ClientPtr client)
  *
  * Now will also take a service name.
  */
-int
-K5Add(unsigned short data_length, char *data, XID id)
+int K5Add(data_length, data, id)
+    unsigned short data_length;
+    char *data;
+    XID id;
 {
     krb5_principal princ;
     krb5_error_code retval;
@@ -718,8 +735,7 @@ K5Add(unsigned short data_length, char *data, XID id)
  *
  * Reset krb5_id, also nuke the current principal from the acl.
  */
-int
-K5Reset()
+int K5Reset()
 {
     krb5_principal princ;
     krb5_error_code retval;
@@ -765,20 +781,24 @@ K5Reset()
     return 0;
 }
 
-XID
-K5ToID(unsigned short data_length, char *data)
+XID K5ToID(data_length, data)
+    unsigned short data_length;
+    char *data;
 {
     return krb5_id;
 }
 
-int
-K5FromID(XID id, unsigned short *data_lenp, char **datap)
+int K5FromID(id, data_lenp, datap)
+    XID id;
+    unsigned short *data_lenp;
+    char **datap;
 {
     return 0;
 }
 
-int
-K5Remove(unsigned short data_length, char *data)
+int K5Remove(data_length, data)
+    unsigned short data_length;
+    char *data;
 {
     return 0;
 }

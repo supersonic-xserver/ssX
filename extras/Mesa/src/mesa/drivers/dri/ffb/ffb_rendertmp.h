@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_rendertmp.h,v 1.2 2003/01/29 23:00:40 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_rendertmp.h,v 1.1.1.1 2004/04/08 09:16:51 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #define IMPL_LOCAL_VARS						\
 	ffbContextPtr fmesa = FFB_CONTEXT(ctx);			\

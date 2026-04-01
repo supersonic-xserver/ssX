@@ -1,6 +1,24 @@
-/* $XTermId: main.h,v 1.30 2006/02/12 22:43:55 tom Exp $ */
+/* $XTermId: main.h,v 1.26 2004/11/23 02:11:04 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/main.h,v 3.13 2006/01/04 02:10:25 dickey Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*
+ *	$Xorg: main.h,v 1.3 2000/08/17 19:55:09 cpqbld Exp $
+ */
+
+/* $XFree86: xc/programs/xterm/main.h,v 3.12 2004/12/01 01:27:47 dickey Exp $ */
 
 /*
  * Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
@@ -79,14 +97,7 @@
 #define DEFLOCALEFILTER2(x)	#x
 #endif
 
-/*
- * If the configure script finds luit, we have the path directly.
- */
-#ifdef LUIT_PATH
-#define DEFLOCALEFILTER		LUIT_PATH
-#else
 #define DEFLOCALEFILTER1(x)	DEFLOCALEFILTER2(x)
 #define DEFLOCALEFILTER		DEFLOCALEFILTER1(PROJECTROOT) "/bin/luit"
-#endif
 
 #endif	/* included_main_h */

@@ -26,7 +26,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/cr/crAppleWM.m,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/cr/crAppleWM.m,v 1.1 2003/09/16 00:36:14 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "cr.h"
@@ -34,9 +34,9 @@
 #undef BOOL
 #define BOOL xBOOL
 #include "rootless.h"
-#include <X11/X.h>
+#include "X.h"
 #define _APPLEWM_SERVER_
-#include <X11/extensions/applewm.h>
+#include "applewm.h"
 #include "applewmExt.h"
 #undef BOOL
 
@@ -107,7 +107,7 @@ static int CRFrameDraw(
     const BoxRec *outer,
     const BoxRec *inner,
     unsigned int title_len,
-    const char *title_bytes)
+    const unsigned char *title_bytes)
 {
     CRWindowPtr crWinPtr;
     NSWindow *window;

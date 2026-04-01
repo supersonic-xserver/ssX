@@ -1,5 +1,5 @@
 .\" Use -ms and macros.t
-.\" $XFree86$
+.\" $Xorg: tog-cup.ms,v 1.3 2000/08/17 19:42:37 cpqbld Exp $
 .EH ''''
 .OH ''''
 .EF ''''

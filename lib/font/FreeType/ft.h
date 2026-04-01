@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1997 by Mark Leisher
 Copyright (c) 1998-2002 by Juliusz Chroboczek
 
@@ -21,7 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/* $XFree86: xc/lib/font/FreeType/ft.h,v 1.22 2003/06/08 15:41:13 herrb Exp $ */
+/* $XFree86: xc/lib/font/FreeType/ft.h,v 1.23 2003/10/19 18:53:49 dawes Exp $ */
 
 #ifndef _FT_H_
 #define _FT_H_

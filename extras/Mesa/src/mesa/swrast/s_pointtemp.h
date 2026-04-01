@@ -1,6 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  6.0
+ * Version:  6.2
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -47,7 +54,6 @@
  *
  * Notes: LARGE and ATTENUATE are exclusive of each other.
  *        TEXTURE requires RGBA
- *        SPECULAR requires TEXTURE
  */
 
 
@@ -86,7 +92,7 @@ NAME ( GLcontext *ctx, const SWvertex *vert )
    const GLchan specBlue  = vert->specular[2];
 #endif
 #if FLAGS & INDEX
-   const GLuint colorIndex = vert->index;
+   const GLuint colorIndex = (GLuint) vert->index; /* XXX round? */
 #endif
 #if FLAGS & TEXTURE
    GLfloat texcoord[MAX_TEXTURE_COORD_UNITS][4];
@@ -221,6 +227,21 @@ NAME ( GLcontext *ctx, const SWvertex *vert )
       count = span->end;
       (void) radius;
       for (y = ymin; y <= ymax; y++) {
+         /* check if we need to flush */
+         if (count + (xmax-xmin+1) >= MAX_WIDTH) {
+	     span->end = count;
+#if FLAGS & (TEXTURE | SPRITE)
+            if (ctx->Texture._EnabledUnits)
+               _swrast_write_texture_span(ctx, span);
+            else
+               _swrast_write_rgba_span(ctx, span);
+#elif FLAGS & RGBA
+            _swrast_write_rgba_span(ctx, span);
+#else
+            _swrast_write_index_span(ctx, span);
+#endif
+            count = span->end = 0;
+         }
          for (x = xmin; x <= xmax; x++) {
 #if FLAGS & (SPRITE | TEXTURE)
             GLuint u;
@@ -293,7 +314,11 @@ NAME ( GLcontext *ctx, const SWvertex *vert )
                if (ctx->Texture.Unit[u]._ReallyEnabled) {
                   if (ctx->Point.CoordReplace[u]) {
                      GLfloat s = 0.5F + (x + 0.5F - vert->win[0]) / size;
-                     GLfloat t = 0.5F - (y + 0.5F - vert->win[1]) / size;
+                     GLfloat t;
+                     if (ctx->Point.SpriteOrigin == GL_LOWER_LEFT)
+                        t = 0.5F + (y + 0.5F - vert->win[1]) / size;
+                     else /* GL_UPPER_LEFT */
+                        t = 0.5F - (y + 0.5F - vert->win[1]) / size;
                      span->array->texcoords[u][count][0] = s;
                      span->array->texcoords[u][count][1] = t;
                      span->array->texcoords[u][count][3] = 1.0F;

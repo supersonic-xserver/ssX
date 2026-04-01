@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/cff/cffload.c,v 1.0tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffload.c                                                              */
 /*                                                                         */
@@ -1236,7 +1242,7 @@
       }
 
       /* access element */
-      if ( off1  && ( off2 > off1 ) )
+      if ( off1 && off2 > off1 )
       {
         *pbyte_len = off2 - off1;
 
@@ -2045,8 +2051,8 @@
         goto Exit;
     }
 
-    /* ensure num_blue_values is even */
-    priv->num_blue_values &= ~1;
+      /* ensure that 'num_blue_values' is even */
+      priv->num_blue_values &= ~1;
 
     /* read the local subrs, if any */
     if ( priv->local_subrs_offset )

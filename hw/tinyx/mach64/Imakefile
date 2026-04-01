@@ -1,0 +1,20 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/mach64/Imakefile,v 1.2 2005/10/14 15:16:29 tsi Exp $
+
+#include "../TinyX.tmpl"
+
+#if BuildXvExt
+XVSRCS=mach64video.c
+XVOBJS=mach64video.o
+#endif
+
+SRCS = 	mach64.c mach64draw.c mach64stub.c $(XVSRCS)
+
+OBJS = 	mach64.o mach64draw.o mach64stub.o $(XVOBJS)
+
+DEFINES = XvExtensionDefines -DVESA /* -DUSE_PCI*/
+
+INCLUDES = $(TINYXINCLUDES) -I$(TINYXSRC)/vesa
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(mach64,$(OBJS))
+DependTarget()

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 VA Linux Systems, Inc.
  * All Rights Reserved.
  *
@@ -25,7 +32,7 @@
  *    Keith Whitwell <keith@tungstengraphics.com>
  *    Gareth Hughes <gareth@valinux.com>
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/mga/mgaioctl.h,v 1.11 2002/10/30 12:51:36 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mgaioctl.h,v 1.1.1.2 2004/06/10 14:22:55 alanh Exp $ */
 
 #ifndef MGA_IOCTL_H
 #define MGA_IOCTL_H
@@ -57,7 +64,7 @@ int mgaFlushDMA( int fd, drmLockFlags flags );
 void mgaDDFlush( GLcontext *ctx );
 void mgaDDFinish( GLcontext *ctx );
 
-void mgaDDInitIoctlFuncs( GLcontext *ctx );
+void mgaInitIoctlFuncs( struct dd_function_table *functions );
 
 #define FLUSH_BATCH(mmesa) do {						\
         if (MGA_DEBUG&DEBUG_VERBOSE_IOCTL)  				\

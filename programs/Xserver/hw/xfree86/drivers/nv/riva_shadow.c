@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (c) 1999,  The XFree86 Project Inc. 
    Written by Mark Vojkovich <markv@valinux.com>
 */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_shadow.c $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_shadow.c,v 1.1 2003/07/31 20:24:31 mvojkovi Exp $ */
 
 #include "riva_local.h"
 #include "riva_include.h"

@@ -1,4 +1,11 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Startup program for Darwin X servers
  *
@@ -38,7 +45,7 @@
  * dealings in this Software without prior written authorization from
  * Torrey T. Lyons.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XDarwinStartup.c,v 1.1 2002/03/28 02:21:18 torrey Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XDarwinStartup.c,v 1.2 2003/05/14 05:15:56 torrey Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>

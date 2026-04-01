@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Xplugin rootless implementation
  */
 /*
@@ -26,17 +33,16 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xpr.h,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xpr.h,v 1.5 2003/11/27 01:59:53 torrey Exp $ */
 
 #ifndef XPR_H
 #define XPR_H
 
 #include "screenint.h"
-#include "extnsionst.h"
 
 extern Bool QuartzModeBundleInit(void);
 
-void AppleDRIExtensionInit(INITARGS);
+void AppleDRIExtensionInit(void);
 void xprAppleWMInit(void);
 Bool xprInit(ScreenPtr pScreen);
 Bool xprIsX11Window(void *nsWindow, int windowNumber);

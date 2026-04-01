@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahhint.h                                                               */
 /*                                                                         */
 /*    Glyph hinter (declaration).                                          */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001, 2002 Catharon Productions Inc.                    */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -19,69 +26,57 @@
 /***************************************************************************/
 
 
-#ifndef AHHINT_H
-#define AHHINT_H
+#ifndef __AHHINT_H__
+#define __AHHINT_H__
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ahglobal.h"
 
-#else
 
-#include <autohint/ahglobal.h>
-
-#endif
-
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
 #define AH_HINT_DEFAULT        0
 #define AH_HINT_NO_ALIGNMENT   1
-#define AH_HINT_NO_HORZ_EDGES  0x20000L
-#define AH_HINT_NO_VERT_EDGES  0x40000L
+#define AH_HINT_NO_HORZ_EDGES  0x200000L  /* temporary hack */
+#define AH_HINT_NO_VERT_EDGES  0x400000L  /* temporary hack */
 
 
   /* create a new empty hinter object */
-  FT_LOCAL
-  FT_Error ah_hinter_new( FT_Library   library,
-                          AH_Hinter**  ahinter );
+  FT_LOCAL( FT_Error )
+  ah_hinter_new( FT_Library  library,
+                 AH_Hinter*  ahinter );
 
   /* Load a hinted glyph in the hinter */
-  FT_LOCAL
-  FT_Error  ah_hinter_load_glyph( AH_Hinter*    hinter,
-                                  FT_GlyphSlot  slot,
-                                  FT_Size       size,
-                                  FT_UInt       glyph_index,
-                                  FT_Int        load_flags );
+  FT_LOCAL( FT_Error )
+  ah_hinter_load_glyph( AH_Hinter     hinter,
+                        FT_GlyphSlot  slot,
+                        FT_Size       size,
+                        FT_UInt       glyph_index,
+                        FT_Int32      load_flags );
 
   /* finalize a hinter object */
-  FT_LOCAL
-  void  ah_hinter_done( AH_Hinter*  hinter );
+  FT_LOCAL( void )
+  ah_hinter_done( AH_Hinter  hinter );
 
-  FT_LOCAL
-  void  ah_hinter_done_face_globals( AH_Face_Globals*  globals );
+  FT_LOCAL( void )
+  ah_hinter_done_face_globals( AH_Face_Globals  globals );
 
-  FT_LOCAL
-  void  ah_hinter_get_global_hints( AH_Hinter*  hinter,
-                                    FT_Face     face,
-                                    void**      global_hints,
-                                    long*       global_len );
+  FT_LOCAL( void )
+  ah_hinter_get_global_hints( AH_Hinter  hinter,
+                              FT_Face    face,
+                              void**     global_hints,
+                              long*      global_len );
 
-  FT_LOCAL
-  void  ah_hinter_done_global_hints( AH_Hinter*  hinter,
-                                     void*       global_hints );
-
-
-#ifdef __cplusplus
-  }
-#endif
+  FT_LOCAL( void )
+  ah_hinter_done_global_hints( AH_Hinter  hinter,
+                               void*      global_hints );
 
 
-#endif /* AHHINT_H */
+FT_END_HEADER
+
+#endif /* __AHHINT_H__ */
 
 
 /* END */

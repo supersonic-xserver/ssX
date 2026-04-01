@@ -1,3 +1,11 @@
+/* $Xorg: xsm.h,v 1.4 2001/02/09 02:06:01 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 Copyright 1993, 1998  The Open Group
@@ -22,7 +30,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ******************************************************************************/
-/* $XFree86: xc/programs/xsm/xsm.h,v 1.12 2006/01/09 15:01:50 dawes Exp $ */
+/* $XFree86: xc/programs/xsm/xsm.h,v 1.11 2004/06/01 00:17:08 dawes Exp $ */
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -241,7 +249,7 @@ extern FILE *fdopen(int, char const *);
 #endif
 
 #if defined(sun) && defined(SVR4)
-extern int System(char *);
+extern int System();
 #define system(s) System(s)
 #endif
 

@@ -1,9 +1,12 @@
+.\"
+.\" print Table of Contents
+.if e \& \" Force blank page to begin TOC on an odd (right-hand) page.
 .EH ''''
 .OH ''''
+.bp
+\& \" Want old footings if blank page was forced.
 .EF ''''
 .OF ''''
-.bp
-\&
 .XS
 Index
 .XE

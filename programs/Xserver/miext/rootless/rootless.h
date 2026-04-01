@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * External interface to generic rootless mode
  */
 /*
@@ -27,7 +34,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/rootless.h,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootless.h,v 1.7 2004/07/02 01:30:33 torrey Exp $ */
 
 #ifndef _ROOTLESS_H
 #define _ROOTLESS_H
@@ -49,16 +56,16 @@ typedef void * RootlessFrameID;
  *  Each top-level X window has one RootlessWindowRec associated with it.
  */
 typedef struct _RootlessWindowRec {
-    /* Position and size includes the window border */
-    /* Position is in per-screen coordinates */
+    // Position and size includes the window border
+    // Position is in per-screen coordinates
     int x, y;
     unsigned int width, height;
     unsigned int borderWidth;
 
-    RootlessFrameID wid;	/* implementation specific frame id */
-    WindowPtr win;		/* underlying X window */
+    RootlessFrameID wid;	// implementation specific frame id
+    WindowPtr win;		// underlying X window
 
-    /* Valid only when drawing (ie. is_drawing is set) */
+    // Valid only when drawing (ie. is_drawing is set)
     char *pixelData;
     int bytesPerRow;
 
@@ -69,7 +76,7 @@ typedef struct _RootlessWindowRec {
     RegionRec damage;
 #endif
 
-    unsigned int is_drawing :1;	/* Currently drawing? */
+    unsigned int is_drawing :1;	// Currently drawing?
     unsigned int is_reorder_pending :1;
 } RootlessWindowRec, *RootlessWindowPtr;
 
@@ -90,7 +97,7 @@ extern unsigned int rootless_CopyWindow_threshold;
 /* Operations used by CompositePixels */
 enum rl_composite_op_enum {
     RL_COMPOSITE_SRC = 0,
-    RL_COMPOSITE_OVER
+    RL_COMPOSITE_OVER,
 };
 
 /* Data formats for depth field and composite functions */
@@ -99,7 +106,7 @@ enum rl_depth_enum {
     RL_DEPTH_ARGB8888,
     RL_DEPTH_RGB555,
     RL_DEPTH_A8,			/* for masks when compositing */
-    RL_DEPTH_INDEX8
+    RL_DEPTH_INDEX8,
 };
 
 /* Macro to form the composite function for CompositePixels */
@@ -113,7 +120,7 @@ enum rl_gravity_enum {
     RL_GRAVITY_NORTH_WEST       = 1,	/* anchor to top-left corner */
     RL_GRAVITY_NORTH_EAST       = 2,	/* anchor to top-right corner */
     RL_GRAVITY_SOUTH_EAST       = 3,	/* anchor to bottom-right corner */
-    RL_GRAVITY_SOUTH_WEST       = 4	/* anchor to bottom-left corner */
+    RL_GRAVITY_SOUTH_WEST       = 4,	/* anchor to bottom-left corner */
 };
 
 
@@ -267,20 +274,6 @@ typedef void (*RootlessSwitchWindowProc)
     (RootlessWindowPtr pFrame, WindowPtr oldWin);
 
 /*
- * Check if window should be reordered. (Optional)
- *  The underlying window system may animate windows being ordered in.
- *  We want them to be mapped but remain ordered out until the animation
- *  completes. If defined this function will be called to check if a
- *  framed window should be reordered now. If this function returns
- *  FALSE, the window will still be mapped from the X11 perspective, but
- *  the RestackFrame function will not be called for its frame.
- *
- *  pFrame      Frame to reorder
- */
-typedef Bool (*RootlessDoReorderWindowProc)
-    (RootlessWindowPtr pFrame);
-
-/*
  * Copy bytes. (Optional)
  *  Source and destinate may overlap and the right thing should happen.
  *
@@ -368,7 +361,6 @@ typedef struct _RootlessFrameProcs {
 
     /* Optional frame functions */
     RootlessSwitchWindowProc SwitchWindow;
-    RootlessDoReorderWindowProc DoReorderWindow;
 
     /* Optional acceleration functions */
     RootlessCopyBytesProc CopyBytes;

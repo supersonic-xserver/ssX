@@ -1,10 +1,17 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __CMD2D_H__
 #define __CMD2D_H__
 
 /*
  * commands the 2d microcode offers
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/cmd2d.h,v 1.2 1999/10/14 04:43:14 dawes Exp $ */
 
 #define CMD_SETUP					32
 #define CMD_SET_PIX_REG				2

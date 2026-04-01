@@ -1,3 +1,19 @@
+/* $Xorg: SMlibint.h,v 1.4 2001/02/09 02:03:30 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -513,21 +529,5 @@ extern SmPointer	_SmsNewClientData;
 
 extern SmcErrorHandler _SmcErrorHandler;
 extern SmsErrorHandler _SmsErrorHandler;
-
-extern void _SmcDefaultErrorHandler(SmcConn smcConn, Bool swap,
-	int offendingMinorOpcode, unsigned long offendingSequence,
-	int errorClass, int severity, SmPointer values);
-
-extern void _SmsDefaultErrorHandler(SmsConn smsConn, Bool swap,
-	int offendingMinorOpcode, unsigned long offendingSequence,
-	int errorClass, int severity, SmPointer values);
-
-extern void _SmcProcessMessage(IceConn iceConn, IcePointer clientData,
-	int opcode, unsigned long length, Bool swap,
-	IceReplyWaitInfo *replyWait, Bool *replyReadyRet);
-
-extern void _SmsProcessMessage(IceConn iceConn, IcePointer clientData,
-	int opcode, unsigned long length, Bool swap);
-
 
 #endif /* _SMLIBINT_H_ */

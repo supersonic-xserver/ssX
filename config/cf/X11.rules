@@ -1,4 +1,7 @@
-XCOMM $XFree86: xc/config/cf/X11.rules,v 1.7tsi Exp $
+XCOMM $Xorg: X11.rules,v 1.4 2000/08/17 19:41:46 cpqbld Exp $
+
+
+XCOMM $XFree86: xc/config/cf/X11.rules,v 1.7 2003/11/05 18:15:51 dawes Exp $
 
 /* Note whether we are the top level project. */
 #ifndef SeenTopLevelProject
@@ -12,12 +15,12 @@ XCOMM $XFree86: xc/config/cf/X11.rules,v 1.7tsi Exp $
  * If no clues are given assume X11 is in the tree, otherwise
  * UseInstalled overrides UseImports.  Do not do both. 
  */
+#ifndef UseInstalledX11
+# define UseInstalledX11	NO
+#endif
 #ifdef UseInstalled
 # undef UseInstalledX11
 # define UseInstalledX11	YES
-#endif
-#ifndef UseInstalledX11
-# define UseInstalledX11	NO
 #endif
 
 #ifndef ImportX11
@@ -73,20 +76,17 @@ XCOMM $XFree86: xc/config/cf/X11.rules,v 1.7tsi Exp $
 #  define TopXInclude	-I$(TOP)/imports/x11/include
 # elif !UseInstalledX11
 #  define TopXInclude	-I$(TOP)/exports/include
-# else
+#else
 #  ifdef X11ProjectRoot
-#   define TopXInclude	-I$(XPROJECTROOT)/include \
-			-I$(XPROJECTROOT)/include/X11 \
-			-I$(XPROJECTROOT)/include/X11/extensions \
-			-I$(XPROJECTROOT)/include/X11/fonts \
-			-I$(XPROJECTROOT)/include/GL
+#   define TopXInclude	-I$(XPROJECTROOT)/include
 #  else
 #   define TopXInclude	/**/
 #  endif
 # endif
 #endif
-
-#undef TopIncludes
+#ifdef TopIncludes
+# undef TopIncludes
+#endif
 #define TopIncludes	TopInclude $(TOP_X_INCLUDES)
 
 #if UseInstalledX11 && defined(X11ProjectRoot)

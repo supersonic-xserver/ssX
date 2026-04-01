@@ -1,3 +1,11 @@
+/* $Xorg: Display.h,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -11,7 +19,7 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Display.h,v 1.8 2006/01/09 15:00:29 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Display.h,v 1.7 2003/11/16 05:05:20 dawes Exp $ */
 
 #ifndef XNESTCOMMON_H
 #define XNESTCOMMON_H
@@ -40,7 +48,7 @@ extern XlibGC xnestBitmapGC;
 extern Window xnestConfineWindow;
 extern unsigned long xnestEventMask;
 
-void xnestOpenDisplay(int argc, const char *argv[]);
+void xnestOpenDisplay(int argc, char *argv[]);
 void xnestCloseDisplay(void);
 
 #endif /* XNESTCOMMON_H */

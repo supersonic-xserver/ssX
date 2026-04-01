@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsdi/bsdi_video.c,v 3.12 2005/10/14 15:17:01 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsdi/bsdi_video.c,v 3.11 2004/01/25 01:12:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -23,8 +30,9 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: bsdi_video.c /main/4 1996/02/21 17:51:22 kaleb $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "input.h"
 #include "scrnintstr.h"
 

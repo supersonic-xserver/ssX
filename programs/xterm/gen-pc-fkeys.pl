@@ -1,7 +1,6 @@
 #! /usr/bin/perl -w
 # Author: Thomas E. Dickey
 # $XTermId: gen-pc-fkeys.pl,v 1.4 2004/07/28 00:19:42 tom Exp $
-# $XFree86$
 #
 # Construct a list of function-key definitions corresponding to xterm's
 # Sun/PC keyboard.  This uses infocmp to obtain the strings to modify (and

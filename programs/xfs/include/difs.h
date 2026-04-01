@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/include/difs.h,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/xfs/include/difs.h,v 1.5 2004/02/13 23:58:53 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 1999 The XFree86 Project, Inc.
  * All rights reserved.
@@ -50,7 +57,7 @@
 
 #include "difsfn.h"
 #include "globals.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 
 typedef int (*InitialFunc)(ClientPtr);
 typedef int (*ProcFunc)(ClientPtr);

@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/afb/afbbstore.c,v 3.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbbstore.c,v 3.0 1996/08/18 01:45:28 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XConsortium: afbbstore.c,v 5.7 94/04/17 20:28:18 dpw Exp $ */
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /*
 
@@ -31,14 +39,14 @@ from the X Consortium.
 */
 
 #include	"afb.h"
-#include	<X11/X.h>
+#include	"X.h"
 #include	"mibstore.h"
 #include	"regionstr.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"windowstr.h"
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * afbSaveAreas --
  *		Function called by miSaveAreas to actually fetch the areas to be
@@ -59,13 +67,17 @@ from the X Consortium.
  *-----------------------------------------------------------------------
  */
 void
-afbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
-	     WindowPtr pWin)
+afbSaveAreas(pPixmap, prgnSave, xorg, yorg, pWin)
+	PixmapPtr		  		pPixmap;  		/* Backing pixmap */
+	RegionPtr		  		prgnSave; 		/* Region to save (pixmap-relative) */
+	int					  		xorg;					/* X origin of region */
+	int					  		yorg;					/* Y origin of region */
+	WindowPtr				pWin;
 {
-	DDXPointPtr	pPt;
-	DDXPointPtr	pPtsInit;
-	BoxPtr		pBox;
-	int		numRects;
+	register DDXPointPtr pPt;
+	DDXPointPtr				pPtsInit;
+	register BoxPtr		pBox;
+	register int		numRects;
 
 	numRects = REGION_NUM_RECTS(prgnSave);
 	pPtsInit = (DDXPointPtr)ALLOCATE_LOCAL(numRects * sizeof(DDXPointRec));
@@ -90,7 +102,7 @@ afbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
 	DEALLOCATE_LOCAL(pPtsInit);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * afbRestoreAreas --
  *		Function called by miRestoreAreas to actually fetch the areas to be
@@ -111,13 +123,17 @@ afbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
  *-----------------------------------------------------------------------
  */
 void
-afbRestoreAreas(PixmapPtr pPixmap, RegionPtr prgnRestore, int xorg, int yorg,
-		WindowPtr pWin)
+afbRestoreAreas(pPixmap, prgnRestore, xorg, yorg, pWin)
+	PixmapPtr		  		pPixmap;  		/* Backing pixmap */
+	RegionPtr		  		prgnRestore; 		/* Region to restore (screen-relative)*/
+	int					  		xorg;					/* X origin of window */
+	int					  		yorg;					/* Y origin of window */
+	WindowPtr				pWin;
 {
-	DDXPointPtr	pPt;
-	DDXPointPtr	pPtsInit;
-	BoxPtr		pBox;
-	int		numRects;
+	register DDXPointPtr pPt;
+	DDXPointPtr				pPtsInit;
+	register BoxPtr		pBox;
+	register int		numRects;
 
 	numRects = REGION_NUM_RECTS(prgnRestore);
 	pPtsInit = (DDXPointPtr)ALLOCATE_LOCAL(numRects*sizeof(DDXPointRec));

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ark/ark_driver.c,v 1.26tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ark/ark_driver.c,v 1.24 2004/11/26 13:44:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *	Copyright 2000	Ani Joshi <ajoshi@unixbox.com>
  *
@@ -56,8 +63,8 @@ static Bool ARKPreInit(ScrnInfoPtr pScrn, int flags);
 static Bool ARKEnterVT(int scrnIndex, int flags);
 static void ARKLeaveVT(int scrnIndex, int flags);
 static void ARKSave(ScrnInfoPtr pScrn);
-static Bool ARKScreenInit(int scrnIndex, ScreenPtr pScreen,
-			  const int argc, const char **argv);
+static Bool ARKScreenInit(int scrnIndex, ScreenPtr pScreen, int argc,
+			  char **argv);
 static Bool ARKMapMem(ScrnInfoPtr pScrn);
 static void ARKUnmapMem(ScrnInfoPtr pScrn);
 static Bool ARKModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode);
@@ -158,15 +165,14 @@ static XF86ModuleVersionInfo ARKVersRec = {
 
 XF86ModuleData arkModuleData = { &ARKVersRec, ARKSetup, NULL };
 
-pointer ARKSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+pointer ARKSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
 	static Bool setupDone = FALSE;
 
 	if (!setupDone) {
 		setupDone = TRUE;
 		xf86AddDriver(&ARK, module, 0);
-		LoaderModRefSymLists(module, fbSymbols, vgaHWSymbols,
-				     xaaSymbols, NULL);
+		LoaderRefSymLists(fbSymbols, vgaHWSymbols, xaaSymbols, NULL);
 		return (pointer) 1;
 	} else {
 		if (errmaj)
@@ -269,15 +275,14 @@ static Bool ARKPreInit(ScrnInfoPtr pScrn, int flags)
 	rgb zeros = {0, 0, 0};
 	Gamma gzeros = {0.0, 0.0, 0.0};
 	unsigned char tmp;
-	ModuleDescPtr pMod;
 
 	if (flags & PROBE_DETECT)
 		return FALSE;
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+	if (!xf86LoadSubModule(pScrn, "vgahw"))
 		return FALSE;
 
-	xf86LoaderModReqSymLists(pMod, vgaHWSymbols, NULL);
+	xf86LoaderReqSymLists(vgaHWSymbols, NULL);
 
 	if (!vgaHWGetHWRec(pScrn))
 		return FALSE;
@@ -485,26 +490,26 @@ static Bool ARKPreInit(ScrnInfoPtr pScrn, int flags)
 	xf86PrintModes(pScrn);
 	xf86SetDpi(pScrn, 0, 0);
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+	if (!xf86LoadSubModule(pScrn, "fb")) {
 	    ARKFreeRec(pScrn);
 	    return FALSE;
 	}
 
-	xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	xf86LoaderReqSymLists(fbSymbols, NULL);
 
 	if (!pARK->NoAccel) {
-		if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+		if (!xf86LoadSubModule(pScrn, "xaa")) {
 			ARKFreeRec(pScrn);
 			return FALSE;
 		}
-		xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+		xf86LoaderReqSymLists(xaaSymbols, NULL);
 	}
 
 	return TRUE;
 }
 
-static Bool ARKScreenInit(int scrnIndex, ScreenPtr pScreen,
-			  const int argc, const char **argv)
+static Bool ARKScreenInit(int scrnIndex, ScreenPtr pScreen, int argc,
+			  char **argv)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	ARKPtr pARK = ARKPTR(pScrn);

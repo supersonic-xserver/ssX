@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/glxext.h,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/glxProxy/glxext.h,v 1.2 2004/08/04 16:33:34 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef _glxext_h_
 #define _glxext_h_
 
@@ -83,13 +90,7 @@ extern int __glXBindSwapBarrierSGIX(__GLXclientState *cl, GLbyte *pc);
 extern int __glXJoinSwapGroupSGIX(__GLXclientState *cl, GLbyte *pc);
 extern int __glXSwapGetFBConfigsSGIX(__GLXclientState *cl, GLbyte *pc);
 
-extern int __glXSwapMakeCurrentReadSGI(__GLXclientState *cl, GLbyte *pc);
-extern int __glXSwapCreateContextWithConfigSGIX(__GLXclientState *cl, GLbyte *pc);
-extern int __glXSwapQueryMaxSwapBarriersSGIX(__GLXclientState *cl, GLbyte *pc);
-extern int __glXSwapBindSwapBarrierSGIX(__GLXclientState *cl, GLbyte *pc);
-extern int __glXSwapJoinSwapGroupSGIX(__GLXclientState *cl, GLbyte *pc);
-
-extern void GlxExtensionInit(INITARGS);
+extern void GlxExtensionInit(void);
 
 extern Bool __glXCoreType(void);
 

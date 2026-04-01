@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/freetype2/Imakefile,v 1.26tsi Exp $
+XCOMM $XFree86: xc/lib/freetype2/Imakefile,v 1.23 2004/04/29 17:55:37 torrey Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags
@@ -32,9 +32,9 @@ DARWINDEFINES = -DDARWIN_NO_CARBON
 # endif
 #endif
 
-DEFINES = $(DARWINDEFINES) Freetype2BuildDefines
+DEFINES = $(DARWINDEFINES) Freetype2BuildDefines -DXFREE86_FT2
 
-INCLUDES = \
+INCLUDES = -I.\
 	-I$(FREETYPESRC)\
 	-I$(FREETYPESRC)/base\
 	-I$(FREETYPESRC)/autofit\
@@ -56,7 +56,8 @@ INCLUDES = \
 	-I$(FREETYPESRC)/type1\
 	-I$(FREETYPESRC)/type42\
 	-I$(FREETYPESRC)/winfonts\
-	$(FREETYPE2INCLUDES)
+	$(FREETYPE2INCLUDES)\
+	-I$(XBUILDINCDIR)
 
 SUBDIRS=freetype
 
@@ -209,9 +210,9 @@ BuildIncludes($(HEADERS),.,.)
 InstallMultipleFlags($(HEADERS),$(INCDIR),$(INSTINCFLAGS))
 
 /* There might be an ft2build.h file in the wrong place.  If so, remove it. */
-install::								  @@\
-	@if [ -f $(DESTDIR)$(INCDIR)/freetype2/ft2build.h ]; then \	  @@\
-	    (set -x; $(RM) -f $(DESTDIR)$(INCDIR)/freetype2/ft2build.h) \ @@\
+install::
+	@if [ -f $(DESTDIR)$(INCDIR)/freetype2/ft2build.h ]; then \
+		(set -x; $(RM) -f $(DESTDIR)$(INCDIR)/freetype2/ft2build.h) \
 	fi
 
 LinkFile(ft2build.h,$(FREETYPETOP)/builds/unix/ft2unix.h)
@@ -257,3 +258,5 @@ LinkSourceFile(type42.c,$(FREETYPESRC)/type42)
 LinkSourceFile(winfnt.c,$(FREETYPESRC)/winfonts)
 
 DependTarget()
+
+DependSubdirs($(SUBDIRS))

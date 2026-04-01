@@ -1,3 +1,11 @@
+/* $Xorg: bigreq.c,v 1.4 2001/02/09 02:04:32 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1992, 1998  The Open Group
@@ -25,16 +33,16 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/bigreq.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/bigreq.c,v 3.9 2003/11/17 22:20:26 dawes Exp $ */
 
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
-#include <X11/extensions/bigreqstr.h>
+#include "bigreqstr.h"
 #include "opaque.h"
 #include "modinit.h"
 
@@ -69,16 +77,18 @@ BigReqExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-BigReqResetProc(ExtensionEntry *extEntry)
+BigReqResetProc (extEntry)
+    ExtensionEntry	*extEntry;
 {
 }
 
 static int
-ProcBigReqDispatch(ClientPtr client)
+ProcBigReqDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xBigReqEnableReq);
     xBigReqEnableReply rep;
-    int n;
+    register int n;
 
     if (client->swapped) {
 	swaps(&stuff->length, n);

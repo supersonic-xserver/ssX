@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: AsciiSink,v 1.3 2000/08/17 19:42:25 cpqbld Exp $
 .LP
 .NH 2
 Ascii Sink Object and Multi Sink Object

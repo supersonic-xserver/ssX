@@ -1,10 +1,17 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Startup code for the IOKit Darwin X Server
  *
  **************************************************************/
 /*
- * Copyright (c) 2001-2004 Torrey T. Lyons. All Rights Reserved.
+ * Copyright (c) 2001-2003 Torrey T. Lyons. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -28,13 +35,13 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKitStartup.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKitStartup.c,v 1.2 2003/11/01 08:13:08 torrey Exp $ */
 
 #include "darwin.h"
 #include "darwinKeyboard.h"
 #include "micmap.h"
 
-void GlxExtensionInit(INITARGS);
+void GlxExtensionInit(void);
 void GlxWrapInitVisuals(miInitVisualsProcPtr *procPtr);
 
 
@@ -45,7 +52,7 @@ void GlxWrapInitVisuals(miInitVisualsProcPtr *procPtr);
  */
 void DarwinHandleGUI(
     int         argc,
-    const char  *argv[],
+    char        *argv[],
     char        *envp[] )
 {
 }
@@ -56,7 +63,7 @@ void DarwinHandleGUI(
  *  Initialize the GLX extension.
  *  Mesa is linked into the IOKit mode X server so we just call directly.
  */
-void DarwinGlxExtensionInit(INITARGS)
+void DarwinGlxExtensionInit(void)
 {
     GlxExtensionInit();
 }
@@ -78,7 +85,7 @@ void DarwinGlxWrapInitVisuals(
  */
 int DarwinModeProcessArgument(
     int argc,
-    const char *argv[],
+    char *argv[],
     int i)
 {
 #ifdef DARWIN_WITH_QUARTZ
@@ -100,17 +107,6 @@ int DarwinModeProcessArgument(
     }
 #endif
 
-    return 0;
-}
-
-
-/*
- * DarwinModeSystemKeymapSeed
- *  Changes to NXKeyMapping are not tracked.
- */
-unsigned int
-DarwinModeSystemKeymapSeed(void)
-{
     return 0;
 }
 

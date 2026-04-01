@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/XTrap/XETrapInit.c,v 1.2 2001/11/08 04:00:12 tsi Exp $ */
+/* $XFree86: xc/lib/XTrap/XETrapInit.c,v 1.3 2002/10/16 00:37:27 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991, 1992 by Digital Equipment Corp., 
 Maynard, MA

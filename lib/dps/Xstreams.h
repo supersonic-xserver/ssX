@@ -1,3 +1,11 @@
+/* $XConsortium: Xstreams.h,v 1.6 91/07/19 23:22:53 gildea Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*	Copyright (c) 1990, 1991 UNIX System Laboratories, Inc. */
 /*	Copyright (c) 1988 AT&T */
 /*	  All Rights Reserved	*/

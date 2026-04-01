@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/txaa.c,v 1.2tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/txaa.c,v 1.2 2004/06/23 19:40:15 tsi Exp $
  *
  * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -69,7 +76,7 @@
  */
 
 #include "tinyx.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 
 int	kaaGeneration;

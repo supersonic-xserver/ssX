@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 2002-2003 by Juliusz Chroboczek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +26,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/fonttosfnt/util.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/fonttosfnt/util.c,v 1.13 2005/02/07 01:01:16 tsi Exp $ */
 
 #include <time.h>
 #include <string.h>
@@ -34,6 +41,7 @@ THE SOFTWARE.
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_INTERNAL_OBJECTS_H
 #include FT_BDF_H
 #include "X11/Xos.h"
 #include "fonttosfnt.h"

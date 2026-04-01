@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/os/connection.c,v 3.27 2005/10/14 15:17:33 tsi Exp $ */
+/* $Xorg: connection.c,v 1.5 2001/02/09 02:05:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * handles connections
  */
@@ -67,9 +74,11 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/os/connection.c,v 3.26 2003/07/09 15:27:40 tsi Exp $ */
 
 #include	<stdlib.h>
 #include	<X11/Xtrans.h>
+#include	<stdlib.h>
 #include	"misc.h"
 #include	<stdio.h>
 #include	<errno.h>
@@ -86,8 +95,8 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #include	<signal.h>
 
-#include	<X11/fonts/FS.h>
-#include	<X11/fonts/FSproto.h>
+#include	"FS.h"
+#include	"FSproto.h"
 #include	"clientstr.h"
 #include	"X11/Xpoll.h"
 #include	"osdep.h"

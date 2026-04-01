@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/Imakefile,v 1.24tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/Imakefile,v 1.23 2004/06/01 00:17:02 dawes Exp $
 
 XCOMM
 XCOMM This is an Imakefile for the Rendition driver.
@@ -60,16 +60,17 @@ OBJS = rendition.o vboard.o vmodes.o vramdac.o v1krisc.o \
        hwcursor.o vloaduc.o accel.o rendition_shadow.o
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi \
+INCLUDES = -I. -I$(SERVERSRC)/fb \
+	   -I$(SERVERSRC)/mi -I$(SERVERSRC)/cfb\
 	   -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c -I$(XF86SRC)/vgahw \
 	   -I$(XF86SRC)/rac -I$(XF86SRC)/int10 -I$(XF86SRC)/vbe \
-	   -I$(XF86COMSRC) -I$(XF86OSSRC) \
+	   -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(FONTINCSRC) -I$(XINCLUDESRC) \
 	   -I$(SERVERSRC)/include  -I$(XF86SRC)/xaa \
 	   -I$(XF86SRC)/ramdac -I$(SERVERSRC)/Xext \
 	   -I$(XF86SRC)/shadowfb -I$(XF86SRC)/rac -I$(XF86SRC)/loader \
-	   -I$(SERVERSRC)/render
+	   -I$(SERVERSRC)/render -I$(EXTINCSRC)
 #endif
 
 XCOMM

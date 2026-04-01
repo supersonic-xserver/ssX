@@ -13,10 +13,10 @@
 
 <title>README for XFree86&reg; &relvers;
 <author>The XFree86 Project, Inc
-<date>August 2007
+<date>16 March 2005
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/README.sgml,v 3.149 2006/04/12 01:39:22 dawes Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/README.sgml,v 3.148 2005/03/17 01:11:56 dawes Exp $
 </ident>
 
 <abstract>
@@ -201,16 +201,16 @@ at our <url name="web site" url="http://www.xfree86.org/developer/">.
 <![ %snapshot; [
 <![ %havebindist; [
 XFree86 &relvers; can be found at the <url name="XFree86 ftp server"
-url="ftp://ftp.xfree86.org/pub/XFree86/snapshots/&relvers;/">.
-This snapshot is available primarily in binary
+url="ftp://ftp.xfree86.org/pub/XFree86/snapshots/&relvers;/">, and at
+mirrors of this server.  This snapshot is available primarily in binary
 form for several popular platforms.
 ]]>
 ]]>
 
 <![ %release; [
 XFree86 &relvers; can be found at the <url name="XFree86 ftp server"
-url="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/">.
-Information about obtaining and installing
+url="ftp://ftp.xfree86.org/pub/XFree86/&relvers;/">,
+and at mirrors of this server.  Information about obtaining and installing
 binary distributions of this release can be found in the
 <htmlurl name="Installation Document" url="Install.html">.  Information about
 obtaining the release in source form is given below.
@@ -414,15 +414,6 @@ can't resolve the problem yourself, send the entire log file with your
 bug report but not the operating system core dump.  Do not edit  the
 log file as our developers use it to reproduce and debug your problem.
 
-<sect>Supporting XFree86
-<p>
 
-The XFree86 Project, Inc is a nonprofit that oversees the development
-of XFree86.  As with the XFree86 software, the nonprofit is run and
-operated entirely by unpaid volunteers.  Donations to The XFree86 Project
-go towards maintaining our online presence and related infrastructure
-and modest operating expenses.  If you find XFree86 useful, and would like
-to help us continue in our work, please consider a small <url name="
-donation" url="http://www.xfree86.org/donations/">.
 
 </article>

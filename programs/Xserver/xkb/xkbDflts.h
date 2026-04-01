@@ -1,3 +1,11 @@
+/* $Xorg: xkbDflts.h,v 1.3 2000/08/17 19:53:47 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* $XFree86: xc/programs/Xserver/xkb/xkbDflts.h,v 1.3 2003/11/17 22:20:46 dawes Exp $ */
 /* This file generated automatically by xkbcomp */
 /* DO  NOT EDIT */

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2001 by Alan Hourihane, Sychdyn, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -27,9 +34,9 @@
  *
  * Tested running under a Compaq IPAQ Pocket PC running Linux
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/pcmcia/pcmcia.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/pcmcia/pcmcia.c,v 1.2 2004/10/26 22:14:57 tsi Exp $ */
 /*
- * Copyright (c) 2004-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -79,6 +86,9 @@
 #define inline __inline__
 #endif
 #include "pcmcia.h"
+#define extern static
+#include <asm/io.h>
+#undef extern
 
 #define CLOCK 14318	/* KHz */
 #define CLK_N(a,b)	(a & 0xff)

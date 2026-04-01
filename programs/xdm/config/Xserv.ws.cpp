@@ -1,4 +1,4 @@
-XCOMM $XFree86$
+XCOMM $Xorg: Xserv.ws.cpp,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
 XCOMM
 XCOMM Xservers file, workstation prototype
 XCOMM
@@ -10,4 +10,4 @@ XCOMM you can add them here as well.  Each X terminal line should
 XCOMM look like:
 XCOMM	XTerminalName:0 foreign
 XCOMM
-:0 local BINDIR/X DEFAULTVT
+:0 local BINDIR/X DEFAULTVT -nolisten tcp

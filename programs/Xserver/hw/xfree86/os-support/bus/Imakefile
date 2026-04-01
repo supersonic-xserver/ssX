@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/Imakefile,v 1.38tsi Exp $
+XCOMM $XConsortium: Imakefile /main/16 1996/10/27 18:07:43 kaleb $
+
+
+
+
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/Imakefile,v 1.33 2004/09/28 15:17:14 dawes Exp $
 
 #include <Server.tmpl>
 
@@ -45,22 +50,24 @@ PCIDRVROBJ = linuxPci.o
 
 #elif defined(OpenBSDArchitecture) && \
 	(defined(PpcArchitecture) || \
-	 defined(AlphaArchitecture) || \
-	 defined(SparcArchitecture))
+	defined(AlphaArchitecture) || \
+	defined(Sparc64Architecture))
 
 XCOMM OpenBSD/alpha, OpenBSD/powerpc and OpenBSD/sparc64
 
 PCIDRVRSRC = freebsdPci.c
 PCIDRVROBJ = freebsdPci.o
 
-#if defined(SparcArchitecture)
-SBUSDRVSRC = Sbus.c
-SBUSDRVOBJ = Sbus.o
-#endif
-
 #elif defined(NetBSDArchitecture) && defined(PpcArchitecture)
 
 XCOMM NetBSD/powerpc
+
+PCIDRVRSRC = netbsdPci.c
+PCIDRVROBJ = netbsdPci.o
+
+#elif defined(NetBSDArchitecture) && defined(MipsArchitecture)
+
+XCOMM NetBSD/mips
 
 PCIDRVRSRC = netbsdPci.c
 PCIDRVROBJ = netbsdPci.o
@@ -72,6 +79,19 @@ XCOMM PowerPC PCI drivers
 PCIDRVRSRC = ppcPci.c
 PCIDRVROBJ = ppcPci.o
 
+#elif defined(NetBSDArchitecture) && defined(CatsArchitecture) 
+
+XCOMM NetBSD/cats
+
+PCIDRVRSRC = netbsdPci.c
+PCIDRVROBJ = netbsdPci.o
+
+#elif defined(NetBSDArchitecture) && defined(ArmArchitecture) 
+
+XCOMM NetBSD/shark
+
+PCIDRVRSRC = netbsdPci.c
+PCIDRVROBJ = netbsdPci.o
 #elif defined(LinuxArchitecture) && \
      (defined(i386Architecture) || defined(AMD64Architecture))
 
@@ -82,6 +102,7 @@ PCIDRVROBJ = ix86Pci.o linuxPci.o
 
 #elif defined(FreeBSDArchitecture) && \
      (defined(AlphaArchitecture) || defined(AMD64Architecture))
+
 
 XCOMM generic FreeBSD PCI driver (using /dev/pci)
 
@@ -97,21 +118,21 @@ PCIDRVROBJ = freebsdPci.o
 SBUSDRVSRC = Sbus.c
 SBUSDRVOBJ = Sbus.o
 
-#elif defined(NetBSDArchitecture) && defined(SparcArchitecture)
-
-XCOMM Sparc SBUS & PCI drivers
-
-PCIDRVRSRC = netbsdPci.c
-PCIDRVROBJ = netbsdPci.o
-SBUSDRVSRC = Sbus.c
-SBUSDRVOBJ = Sbus.o
-
 #elif defined(NetBSDArchitecture) && defined(AlphaArchitecture)
 
 XCOMM Alpha (NetBSD) PCI driver
 
 PCIDRVRSRC = netbsdPci.c
 PCIDRVROBJ = netbsdPci.o
+
+#elif defined(NetBSDArchitecture) && defined(SparcArchitecture)
+
+XCOMM Sparc(64) (NetBSD) PCI driver
+
+PCIDRVRSRC = netbsdPci.c
+PCIDRVROBJ = netbsdPci.o
+SBUSDRVSRC = netbsdSbus.c
+SBUSDRVOBJ = netbsdSbus.o
 
 #elif defined(i386Architecture) || \
       defined(ia64Architecture) || \
@@ -128,20 +149,31 @@ XCOMM PCIDRVROBJ = linuxPci.o
 XCOMM no PCI driver -- shouldn't get here
 #endif
 
-#if defined(SparcArchitecture)
-# if !defined(SunArchitecture)
-PCIARCHSRC = sparcPci.c
-PCIARCHOBJ = sparcPci.o
-# endif
-#elif defined(ia64Architecture)
+#if defined(ia64Architecture)
 PCIARCHSRC = ia64Pci.c 460gxPCI.c e8870PCI.c zx1PCI.c
 PCIARCHOBJ = ia64Pci.o 460gxPCI.o e8870PCI.o zx1PCI.o
+#endif
+
+XCOMM access the PCI bus through /dev/ttyE0 on NetBSD/sparc64 and PowerPC
+XCOMM that way we always see the console fb ( if it's a PCI device ) even if
+XCOMM it's not visible through /dev/pci0
+XCOMM we should probably do that on all archs that don't mmap PCI space via
+XCOMM /dev/mem
+
+#if defined(NetBSDArchitecture)
+
+#if defined(Sparc64Architecture) || defined(SparcArchitecture) || \
+    defined(PpcArchitecture)
+CFLAGS += -DPCI_VIA_TTYE0
+#endif
+
 #endif
 
 SRCS = Pci.c $(PCIDRVRSRC) $(SBUSDRVSRC) $(PCIARCHSRC)
 OBJS = Pci.o $(PCIDRVROBJ) $(SBUSDRVOBJ) $(PCIARCHOBJ)
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+	   -I$(SERVERSRC)/include -I$(XINCLUDESRC)
 
 NormalLibraryObjectRule()
 SubdirLibraryRule($(OBJS))
@@ -154,16 +186,12 @@ SubdirLibraryRule($(OBJS))
 SpecialCObjectRule(Pci,NullParameter,-O0)
 #endif
 
-#if defined(SunArchitecture) && \
-    defined(SparcArchitecture) && \
-   !defined(Sparc64Architecture)
+#if defined(SunArchitecture) && defined(SparcArchitecture)
 
 LFS_DEFINES = `getconf LFS_CFLAGS`
 
 SpecialCObjectRule(sparcPci,NullParameter,$(LFS_DEFINES))
 
 #endif
-
-InstallDriverSDKNonExecFile(xf86Pci.h,$(DRIVERSDKINCLUDEDIR))
 
 DependTarget()

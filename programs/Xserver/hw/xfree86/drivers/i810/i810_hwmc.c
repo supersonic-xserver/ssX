@@ -1,4 +1,18 @@
 /***************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Intel Corporation.  All Rights Reserved.
 
@@ -32,7 +46,7 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_hwmc.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_hwmc.c,v 1.6 2004/12/10 16:07:02 alanh Exp $ */
 
 
 #include "xf86.h"
@@ -50,8 +64,8 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "xf86xv.h"
 #include "xf86xvmc.h"
-#include <X11/extensions/Xv.h>
-#include <X11/extensions/XvMC.h>
+#include "Xv.h"
+#include "XvMC.h"
 #include "xaa.h"
 #include "dixstruct.h"
 #include "fourcc.h"

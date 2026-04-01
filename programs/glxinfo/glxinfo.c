@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Copyright (C) 1999-2002  Brian Paul   All Rights Reserved.
@@ -20,7 +27,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* $XFree86: xc/programs/glxinfo/glxinfo.c,v 1.10 2002/11/20 04:43:50 dawes Exp $ */
+/* $XFree86: xc/programs/glxinfo/glxinfo.c,v 1.11 2003/11/14 20:43:34 dawes Exp $ */
 
 /*
  * This program is a work-alike of the IRIX glxinfo program.

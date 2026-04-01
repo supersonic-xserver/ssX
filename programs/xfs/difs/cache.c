@@ -1,3 +1,11 @@
+/* $Xorg: cache.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -46,9 +54,8 @@ in this Software without prior written authorization from The Open Group.
  * @(#)cache.c	4.2	91/05/02
  *
  */
-/* $XFree86: xc/programs/xfs/difs/cache.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/xfs/difs/cache.c,v 1.7 2002/10/15 01:45:02 dawes Exp $ */
 
-#include	<stdlib.h>
 #include	"cachestr.h"
 #include	"misc.h"
 

@@ -1,0 +1,15 @@
+/Imakefile/1.1.1.4/Fri Mar 18 13:04:15 2005//Tnetbsd-5-2-3-RELEASE
+/SM-def.cpp/1.1.1.2/Sat Jun  9 14:54:11 2001//Tnetbsd-5-2-3-RELEASE
+/SM.h/1.1.1.3/Sat Jan 19 14:55:16 2002//Tnetbsd-5-2-3-RELEASE
+/SMlib.h/1.1.1.4/Fri Mar  5 14:24:06 2004//Tnetbsd-5-2-3-RELEASE
+/SMlibint.h/1.1.1.4/Fri Mar 18 13:04:16 2005//Tnetbsd-5-2-3-RELEASE
+/SMproto.h/1.1.1.3/Sat Jan 19 14:55:16 2002//Tnetbsd-5-2-3-RELEASE
+/globals.h/1.1.1.5/Fri Feb 28 13:18:46 2003//Tnetbsd-5-2-3-RELEASE
+/sm_auth.c/1.1.1.4/Fri Mar  5 14:24:06 2004//Tnetbsd-5-2-3-RELEASE
+/sm_client.c/1.1.1.4/Fri Mar 18 13:04:16 2005//Tnetbsd-5-2-3-RELEASE
+/sm_error.c/1.1.1.3/Sat Jan 19 14:55:17 2002//Tnetbsd-5-2-3-RELEASE
+/sm_genid.c/1.1.1.5/Fri Mar  5 14:24:06 2004//Tnetbsd-5-2-3-RELEASE
+/sm_manager.c/1.1.1.4/Fri Mar  5 14:24:06 2004//Tnetbsd-5-2-3-RELEASE
+/sm_misc.c/1.1.1.3/Sat Jan 19 14:55:17 2002//Tnetbsd-5-2-3-RELEASE
+/sm_process.c/1.1.1.4/Fri Mar  5 14:24:06 2004//Tnetbsd-5-2-3-RELEASE
+D

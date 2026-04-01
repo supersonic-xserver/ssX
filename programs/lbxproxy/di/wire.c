@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/di/wire.c,v 1.18tsi Exp $ */
+/* $Xorg: wire.c,v 1.4 2001/02/09 02:05:32 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1998  The Open Group
@@ -45,6 +52,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/lbxproxy/di/wire.c,v 1.17 2004/04/26 00:23:37 tsi Exp $ */
 
 #include "lbx.h"
 #include <stdio.h>
@@ -75,7 +83,7 @@ in this Software without prior written authorization from The Open Group.
 
 #include <X11/ICE/ICElib.h>
 #ifdef BIGREQS
-#include <X11/extensions/bigreqstr.h>
+#include "bigreqstr.h"
 #endif
 
 /*
@@ -1548,8 +1556,7 @@ ConnectToServer(dpy_name)
 	clients[0]->server = server;
 
 #ifdef NEED_UTSNAME
-	if (uname(&name) < 0)
-	    name.nodename[0] = '\0';
+	uname (&name);
 	(void) snprintf(my_host,sizeof(my_host),"%s",name.nodename);
 #else
         (void) gethostname (my_host,sizeof(my_host));

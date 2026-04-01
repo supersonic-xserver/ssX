@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -71,7 +71,7 @@ Creating and Freeing Pixmaps
 .LP
 Pixmaps can only be used on the screen on which they were created.
 Pixmaps are off-screen resources that are used for various operations,
-for example, defining cursors as tiling patterns 
+such as defining cursors as tiling patterns 
 or as the source for certain raster operations.
 Most graphics requests can operate either on a window or on a pixmap.
 A bitmap is a single bit-plane pixmap.
@@ -302,8 +302,8 @@ if no further explicit references to them are to be made.
 .LP
 For 2-byte matrix fonts, 
 the 16-bit value should be formed with the byte1
-member in the most-significant byte and the byte2 member in the 
-least-significant byte.
+member in the most significant byte and the byte2 member in the 
+least significant byte.
 .LP
 .PN XCreateGlyphCursor
 can generate

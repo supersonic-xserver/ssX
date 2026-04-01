@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhw.c,v 1.34 2005/10/14 15:16:52 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/fbdevhw/fbdevhw.c,v 1.33 2003/10/30 17:37:16 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* all driver need this */
 #include "xf86.h"
@@ -18,7 +32,7 @@
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #define DEBUG 0
 
@@ -51,7 +65,7 @@ static XF86ModuleVersionInfo fbdevHWVersRec =
 XF86ModuleData fbdevhwModuleData = { &fbdevHWVersRec, fbdevhwSetup, NULL };
 
 static pointer
-fbdevhwSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+fbdevhwSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
 	const char *osname;
 

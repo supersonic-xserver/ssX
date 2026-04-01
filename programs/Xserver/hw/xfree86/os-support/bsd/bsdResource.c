@@ -1,8 +1,22 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsdResource.c,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsdResource.c,v 1.9 2003/10/02 13:30:06 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* Resource information code */
 
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #include "xf86Privstr.h"
@@ -18,8 +32,7 @@ resRange PciAvoid[] = {_PCI_AVOID_PC_STYLE, _END};
 
 #ifdef INCLUDE_XF86_NO_DOMAIN
 
-#if defined(__alpha__) || defined(__sparc64__) || defined(__amd64__) || \
-    defined(__x86_64__)
+#if defined(__alpha__) || defined(__sparc64__) || defined(__amd64__)
 
 resPtr
 xf86BusAccWindowsFromOS(void)
@@ -113,7 +126,7 @@ xf86AccResFromOS(resPtr ret)
     return ret;
 }
 
-#elif defined(__powerpc__)
+#elif defined(__powerpc__) || defined(__arm__) || defined(__mips__) || defined(__sparc__)
 
 resPtr
 xf86BusAccWindowsFromOS(void)

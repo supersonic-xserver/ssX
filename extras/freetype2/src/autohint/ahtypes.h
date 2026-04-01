@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahtypes.h                                                              */
 /*                                                                         */
 /*    General types and definitions for the auto-hint module               */
 /*    (specification only).                                                */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001, 2002, 2003, 2004 Catharon Productions Inc.        */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -20,21 +27,17 @@
 /***************************************************************************/
 
 
-#ifndef AHTYPES_H
-#define AHTYPES_H
+#ifndef __AHTYPES_H__
+#define __AHTYPES_H__
 
 
-#include <freetype/internal/ftobjs.h>  /* for freetype.h + FT_LOCAL etc. */
+#include <ft2build.h>
+#include FT_INTERNAL_OBJECTS_H
 
-
-#ifdef FT_FLAT_COMPILE
-
-#include "ahloader.h"
-
+#ifdef DEBUG_HINTER
+#include <../src/autohint/ahloader.h>
 #else
-
-#include <autohint/ahloader.h>
-
+#include "ahloader.h"
 #endif
 
 
@@ -44,19 +47,16 @@
 #ifdef AH_DEBUG
 
 #include <stdio.h>
-
-#define AH_LOG( x )  printf##x
+#define AH_LOG( x )  printf ## x
 
 #else
 
 #define AH_LOG( x )  do ; while ( 0 ) /* nothing */
 
-#endif
+#endif /* AH_DEBUG */
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
   /*************************************************************************/
@@ -85,21 +85,11 @@
 
   /*************************************************************************/
   /*                                                                       */
-  /* If this option is defined, only weak interpolation will be used to    */
-  /* place the points between edges.  Otherwise, `strong' points are       */
-  /* detected and later hinted through strong interpolation to correct     */
-  /* some unpleasant artefacts.                                            */
-  /*                                                                       */
-#undef AH_OPTION_NO_STRONG_INTERPOLATION
-
-
-  /*************************************************************************/
-  /*                                                                       */
   /* Undefine this macro if you don't want to hint the metrics.  There is  */
   /* no reason to do this (at least for non-CJK scripts), except for       */
   /* experimentation.                                                      */
   /*                                                                       */
-#define AH_HINT_METRICS
+#undef  AH_HINT_METRICS
 
 
   /*************************************************************************/
@@ -128,68 +118,70 @@
   /*************************************************************************/
 
 
-  /* see agangles.h */
+  /* see ahangles.h */
   typedef FT_Int  AH_Angle;
 
 
   /* hint flags */
-#define ah_flah_none       0
+#define AH_FLAG_NONE       0
 
   /* bezier control points flags */
-#define ah_flah_conic                 1
-#define ah_flah_cubic                 2
-#define ah_flah_control               ( ah_flah_conic | ah_flah_cubic )
+#define AH_FLAG_CONIC                 1
+#define AH_FLAG_CUBIC                 2
+#define AH_FLAG_CONTROL               ( AH_FLAG_CONIC | AH_FLAG_CUBIC )
 
   /* extrema flags */
-#define ah_flah_extrema_x             4
-#define ah_flah_extrema_y             8
+#define AH_FLAG_EXTREMA_X             4
+#define AH_FLAG_EXTREMA_Y             8
 
   /* roundness */
-#define ah_flah_round_x              16
-#define ah_flah_round_y              32
+#define AH_FLAG_ROUND_X              16
+#define AH_FLAG_ROUND_Y              32
 
   /* touched */
-#define ah_flah_touch_x              64
-#define ah_flah_touch_y             128
+#define AH_FLAG_TOUCH_X              64
+#define AH_FLAG_TOUCH_Y             128
 
   /* weak interpolation */
-#define ah_flah_weak_interpolation  256
+#define AH_FLAG_WEAK_INTERPOLATION  256
+#define AH_FLAG_INFLECTION          512
 
   typedef FT_Int AH_Flags;
 
 
   /* edge hint flags */
-#define ah_edge_normal  0
-#define ah_edge_round   1
-#define ah_edge_serif   2
-#define ah_edge_done    4
+#define AH_EDGE_NORMAL  0
+#define AH_EDGE_ROUND   1
+#define AH_EDGE_SERIF   2
+#define AH_EDGE_DONE    4
 
   typedef FT_Int  AH_Edge_Flags;
 
 
   /* hint directions -- the values are computed so that two vectors are */
   /* in opposite directions iff `dir1+dir2 == 0'                        */
-#define ah_dir_none    4
-#define ah_dir_right   1
-#define ah_dir_left   -1
-#define ah_dir_up      2
-#define ah_dir_down   -2
+#define AH_DIR_NONE    4
+#define AH_DIR_RIGHT   1
+#define AH_DIR_LEFT   -1
+#define AH_DIR_UP      2
+#define AH_DIR_DOWN   -2
 
   typedef FT_Int  AH_Direction;
 
 
-  typedef struct AH_Point    AH_Point;
-  typedef struct AH_Segment  AH_Segment;
-  typedef struct AH_Edge     AH_Edge;
+  typedef struct AH_PointRec_*    AH_Point;
+  typedef struct AH_SegmentRec_*  AH_Segment;
+  typedef struct AH_EdgeRec_*     AH_Edge;
 
 
   /*************************************************************************/
   /*                                                                       */
   /* <Struct>                                                              */
-  /*    AH_Point                                                           */
+  /*    AH_PointRec                                                        */
   /*                                                                       */
   /* <Description>                                                         */
-  /*    A structure used to model an outline point to the AH_Outline type. */
+  /*    A structure used to model an outline point to the AH_OutlineRec    */
+  /*    type.                                                              */
   /*                                                                       */
   /* <Fields>                                                              */
   /*    flags     :: The current point hint flags.                         */
@@ -198,7 +190,7 @@
   /*                                                                       */
   /*    fx, fy    :: The current coordinates in font units.                */
   /*                                                                       */
-  /*    x,  y     :: The current hinter coordinates.                       */
+  /*    x,  y     :: The current hinted coordinates.                       */
   /*                                                                       */
   /*    u, v      :: Point coordinates -- meaning varies with context.     */
   /*                                                                       */
@@ -206,15 +198,11 @@
   /*                                                                       */
   /*    out_dir   :: The direction of the outwards vector (point->next).   */
   /*                                                                       */
-  /*    in_angle  :: The angle of the inwards vector.                      */
-  /*                                                                       */
-  /*    out_angle :: The angle of the outwards vector.                     */
-  /*                                                                       */
   /*    next      :: The next point in same contour.                       */
   /*                                                                       */
   /*    prev      :: The previous point in same contour.                   */
   /*                                                                       */
-  struct AH_Point
+  typedef struct  AH_PointRec_
   {
     AH_Flags      flags;    /* point flags used by hinter */
     FT_Pos        ox, oy;
@@ -225,18 +213,16 @@
     AH_Direction  in_dir;   /* direction of inwards vector  */
     AH_Direction  out_dir;  /* direction of outwards vector */
 
-    AH_Angle      in_angle;
-    AH_Angle      out_angle;
+    AH_Point      next;     /* next point in contour     */
+    AH_Point      prev;     /* previous point in contour */
 
-    AH_Point*     next;     /* next point in contour     */
-    AH_Point*     prev;     /* previous point in contour */
-  };
+  } AH_PointRec;
 
 
   /*************************************************************************/
   /*                                                                       */
   /* <Struct>                                                              */
-  /*    AH_Segment                                                         */
+  /*    AH_SegmentRec                                                      */
   /*                                                                       */
   /* <Description>                                                         */
   /*    A structure used to describe an edge segment to the auto-hinter.   */
@@ -248,16 +234,9 @@
   /*                                                                       */
   /*    dir        :: The segment direction.                               */
   /*                                                                       */
-  /*    first      :: The first point in the segment.                      */
+  /*    min_coord  :: The minimum coordinate of the segment.               */
   /*                                                                       */
-  /*    last       :: The last point in the segment.                       */
-  /*                                                                       */
-  /*    contour    :: A pointer to the first point of the segment's        */
-  /*                  contour.                                             */
-  /*                                                                       */
-  /*    pos        :: The segment position in font units.                  */
-  /*                                                                       */
-  /*    size       :: The segment size.                                    */
+  /*    max_coord  :: The maximum coordinate of the segment.               */
   /*                                                                       */
   /*    edge       :: The edge of the current segment.                     */
   /*                                                                       */
@@ -271,33 +250,40 @@
   /*                                                                       */
   /*    score      :: Used to score the segment when selecting them.       */
   /*                                                                       */
-  struct AH_Segment
+  /*    first      :: The first point in the segment.                      */
+  /*                                                                       */
+  /*    last       :: The last point in the segment.                       */
+  /*                                                                       */
+  /*    contour    :: A pointer to the first point of the segment's        */
+  /*                  contour.                                             */
+  /*                                                                       */
+  typedef struct  AH_SegmentRec_
   {
     AH_Edge_Flags  flags;
     AH_Direction   dir;
-
-    AH_Point*      first;       /* first point in edge segment             */
-    AH_Point*      last;        /* last point in edge segment              */
-    AH_Point**     contour;     /* ptr to first point of segment's contour */
-
     FT_Pos         pos;         /* position of segment           */
     FT_Pos         min_coord;   /* minimum coordinate of segment */
     FT_Pos         max_coord;   /* maximum coordinate of segment */
 
-    AH_Edge*       edge;
-    AH_Segment*    edge_next;
+    AH_Edge        edge;
+    AH_Segment     edge_next;
 
-    AH_Segment*    link;        /* link segment               */
-    AH_Segment*    serif;       /* primary segment for serifs */
+    AH_Segment     link;        /* link segment               */
+    AH_Segment     serif;       /* primary segment for serifs */
     FT_Pos         num_linked;  /* number of linked segments  */
-    FT_Int         score;
-  };
+    FT_Pos         score;
+
+    AH_Point       first;       /* first point in edge segment             */
+    AH_Point       last;        /* last point in edge segment              */
+    AH_Point*      contour;     /* ptr to first point of segment's contour */
+
+  } AH_SegmentRec;
 
 
   /*************************************************************************/
   /*                                                                       */
   /* <Struct>                                                              */
-  /*    AH_Edge                                                            */
+  /*    AH_EdgeRec                                                         */
   /*                                                                       */
   /* <Description>                                                         */
   /*    A structure used to describe an edge, which really is a horizontal */
@@ -305,55 +291,61 @@
   /*    located on it.                                                     */
   /*                                                                       */
   /* <Fields>                                                              */
-  /*    flags      :: The segment edge flags (straight, rounded, etc.).    */
-  /*                                                                       */
-  /*    dir        :: The main segment direction on this edge.             */
-  /*                                                                       */
-  /*    first      :: The first edge segment.                              */
-  /*                                                                       */
-  /*    last       :: The last edge segment.                               */
-  /*                                                                       */
   /*    fpos       :: The original edge position in font units.            */
   /*                                                                       */
   /*    opos       :: The original scaled edge position.                   */
   /*                                                                       */
   /*    pos        :: The hinted edge position.                            */
   /*                                                                       */
+  /*    flags      :: The segment edge flags (straight, rounded, etc.).    */
+  /*                                                                       */
+  /*    dir        :: The main segment direction on this edge.             */
+  /*                                                                       */
+  /*    scale      :: Scaling factor between original and hinted edge      */
+  /*                  positions.                                           */
+  /*                                                                       */
+  /*    blue_edge  :: Indicate the blue zone edge this edge is related to. */
+  /*                  Only set for some of the horizontal edges in a latin */
+  /*                  font.                                                */
+  /*                                                                       */
   /*    link       :: The linked edge.                                     */
   /*                                                                       */
   /*    serif      :: The serif edge.                                      */
   /*                                                                       */
-  /*    num_paired :: The number of other edges that pair to this one.     */
+  /*    num_linked :: The number of other edges that pair to this one.     */
   /*                                                                       */
   /*    score      :: Used to score the edge when selecting them.          */
   /*                                                                       */
-  /*    blue_edge  :: Indicate the blue zone edge this edge is related to. */
-  /*                  Only set for some of the horizontal edges in a Latin */
-  /*                  font.                                                */
+  /*    first      :: The first edge segment.                              */
   /*                                                                       */
-  struct AH_Edge
+  /*    last       :: The last edge segment.                               */
+  /*                                                                       */
+  typedef struct  AH_EdgeRec_
   {
-    AH_Edge_Flags  flags;
-    AH_Direction   dir;
-
-    AH_Segment*    first;
-    AH_Segment*    last;
-
     FT_Pos         fpos;
     FT_Pos         opos;
     FT_Pos         pos;
 
-    AH_Edge*       link;
-    AH_Edge*       serif;
+    AH_Edge_Flags  flags;
+    AH_Direction   dir;
+    FT_Fixed       scale;
+    FT_Pos*        blue_edge;
+
+    AH_Edge        link;
+    AH_Edge        serif;
     FT_Int         num_linked;
 
     FT_Int         score;
-    FT_Pos*        blue_edge;
-  };
+
+    AH_Segment     first;
+    AH_Segment     last;
+
+
+  } AH_EdgeRec;
 
 
   /* an outline as seen by the hinter */
-  typedef struct  AH_Outline_
+  typedef struct  AH_OutlineRec_
   {
     FT_Memory     memory;
 
@@ -366,39 +358,53 @@
 
     FT_Int        max_points;
     FT_Int        num_points;
-    AH_Point*     points;
+    AH_Point      points;
 
     FT_Int        max_contours;
     FT_Int        num_contours;
-    AH_Point**    contours;
+    AH_Point*     contours;
 
     FT_Int        num_hedges;
-    AH_Edge*      horz_edges;
+    AH_Edge       horz_edges;
 
     FT_Int        num_vedges;
-    AH_Edge*      vert_edges;
+    AH_Edge       vert_edges;
 
     FT_Int        num_hsegments;
-    AH_Segment*   horz_segments;
+    AH_Segment    horz_segments;
 
     FT_Int        num_vsegments;
-    AH_Segment*   vert_segments;
+    AH_Segment    vert_segments;
 
-  } AH_Outline;
+  } AH_OutlineRec, *AH_Outline;
 
 
-#define ah_blue_capital_top     0                              /* THEZOCQS */
-#define ah_blue_capital_bottom  ( ah_blue_capital_top + 1 )    /* HEZLOCUS */
-#define ah_blue_small_top       ( ah_blue_capital_bottom + 1 ) /* xzroesc  */
-#define ah_blue_small_bottom    ( ah_blue_small_top + 1 )      /* xzroesc  */
-#define ah_blue_small_minor     ( ah_blue_small_bottom + 1 )   /* pqgjy    */
-#define ah_blue_max             ( ah_blue_small_minor + 1 )
+#ifdef FT_CONFIG_CHESTER_SMALL_F
+
+#define AH_BLUE_CAPITAL_TOP     0                              /* THEZOCQS */
+#define AH_BLUE_CAPITAL_BOTTOM  ( AH_BLUE_CAPITAL_TOP + 1 )    /* HEZLOCUS */
+#define AH_BLUE_SMALL_F_TOP     ( AH_BLUE_CAPITAL_BOTTOM + 1 ) /* fijkdbh  */
+#define AH_BLUE_SMALL_TOP       ( AH_BLUE_SMALL_F_TOP + 1 )    /* xzroesc  */
+#define AH_BLUE_SMALL_BOTTOM    ( AH_BLUE_SMALL_TOP + 1 )      /* xzroesc  */
+#define AH_BLUE_SMALL_MINOR     ( AH_BLUE_SMALL_BOTTOM + 1 )   /* pqgjy    */
+#define AH_BLUE_MAX             ( AH_BLUE_SMALL_MINOR + 1 )
+
+#else /* !FT_CONFIG_CHESTER_SMALL_F */
+
+#define AH_BLUE_CAPITAL_TOP     0                              /* THEZOCQS */
+#define AH_BLUE_CAPITAL_BOTTOM  ( AH_BLUE_CAPITAL_TOP + 1 )    /* HEZLOCUS */
+#define AH_BLUE_SMALL_TOP       ( AH_BLUE_CAPITAL_BOTTOM + 1 ) /* xzroesc  */
+#define AH_BLUE_SMALL_BOTTOM    ( AH_BLUE_SMALL_TOP + 1 )      /* xzroesc  */
+#define AH_BLUE_SMALL_MINOR     ( AH_BLUE_SMALL_BOTTOM + 1 )   /* pqgjy    */
+#define AH_BLUE_MAX             ( AH_BLUE_SMALL_MINOR + 1 )
+
+#endif /* !FT_CONFIG_CHESTER_SMALL_F */
 
   typedef FT_Int  AH_Blue;
 
 
-#define ah_hinter_monochrome  1
-#define ah_hinter_optimize    2
+#define AH_HINTER_MONOCHROME  1
+#define AH_HINTER_OPTIMIZE    2
 
   typedef FT_Int  AH_Hinter_Flags;
 
@@ -406,7 +412,7 @@
   /*************************************************************************/
   /*                                                                       */
   /* <Struct>                                                              */
-  /*    AH_Globals                                                         */
+  /*    AH_GlobalsRec                                                      */
   /*                                                                       */
   /* <Description>                                                         */
   /*    Holds the global metrics for a given font face (be it in design    */
@@ -417,6 +423,9 @@
   /*                                                                       */
   /*    num_heights :: The number of heights.                              */
   /*                                                                       */
+  /*    stds        :: A two-element array giving the default stem width   */
+  /*                   and height.                                         */
+  /*                                                                       */
   /*    widths      :: Snap widths, including standard one.                */
   /*                                                                       */
   /*    heights     :: Snap height, including standard one.                */
@@ -425,24 +434,26 @@
   /*                                                                       */
   /*    blue_shoots :: The overshoot positions of blue zones.              */
   /*                                                                       */
-  typedef struct AH_Globals_
+  typedef struct  AH_GlobalsRec_
   {
-    FT_Int    num_widths;
-    FT_Int    num_heights;
+    FT_Int  num_widths;
+    FT_Int  num_heights;
 
-    FT_Pos    widths [AH_MAX_WIDTHS];
-    FT_Pos    heights[AH_MAX_HEIGHTS];
+    FT_Pos  stds[2];
 
-    FT_Pos    blue_refs  [ah_blue_max];
-    FT_Pos    blue_shoots[ah_blue_max];
+    FT_Pos  widths [AH_MAX_WIDTHS];
+    FT_Pos  heights[AH_MAX_HEIGHTS];
 
-  } AH_Globals;
+    FT_Pos  blue_refs  [AH_BLUE_MAX];
+    FT_Pos  blue_shoots[AH_BLUE_MAX];
+
+  } AH_GlobalsRec, *AH_Globals;
 
 
   /*************************************************************************/
   /*                                                                       */
   /* <Struct>                                                              */
-  /*    AH_Face_Globals                                                    */
+  /*    AH_Face_GlobalsRec                                                 */
   /*                                                                       */
   /* <Description>                                                         */
   /*    Holds the complete global metrics for a given font face (i.e., the */
@@ -460,47 +471,64 @@
   /*                                                                       */
   /*    y_scale :: The current vertical scale.                             */
   /*                                                                       */
-  typedef struct  AH_Face_Globals_
+  /*    control_overshoot ::                                               */
+  /*               Currently unused.                                       */
+  /*                                                                       */
+  typedef struct  AH_Face_GlobalsRec_
   {
-    FT_Face     face;
-    AH_Globals  design;
-    AH_Globals  scaled;
-    FT_Fixed    x_scale;
-    FT_Fixed    y_scale;
-    FT_Bool     control_overshoot;
+    FT_Face        face;
+    AH_GlobalsRec  design;
+    AH_GlobalsRec  scaled;
+    FT_Fixed       x_scale;
+    FT_Fixed       y_scale;
+    FT_Bool        control_overshoot;
 
-  } AH_Face_Globals;
+  } AH_Face_GlobalsRec, *AH_Face_Globals;
 
 
-  typedef struct  AH_Hinter
+  typedef struct  AH_HinterRec_
   {
-    FT_Memory         memory;
-    AH_Hinter_Flags   flags;
+    FT_Memory        memory;
+    AH_Hinter_Flags  flags;
 
-    FT_Int            algorithm;
-    FT_Face           face;
+    FT_Int           algorithm;
+    FT_Face          face;
 
-    AH_Face_Globals*  globals;
+    AH_Face_Globals  globals;
 
-    AH_Outline*       glyph;
+    AH_Outline       glyph;
 
-    AH_Loader*        loader;
-    FT_Vector         pp1;
-    FT_Vector         pp2;
+    AH_Loader        loader;
+    FT_Vector        pp1;               /* horizontal phantom points */
+    FT_Vector        pp2;
+    /* we ignore vertical phantom points */
 
-    FT_Bool           transformed;
-    FT_Vector         trans_delta;
-    FT_Matrix         trans_matrix;
+    FT_Bool          transformed;
+    FT_Vector        trans_delta;
+    FT_Matrix        trans_matrix;
 
-  } AH_Hinter;
+    FT_Bool          do_horz_hints;     /* disable X hinting            */
+    FT_Bool          do_vert_hints;     /* disable Y hinting            */
+    FT_Bool          do_horz_snapping;  /* disable X stem size snapping */
+    FT_Bool          do_vert_snapping;  /* disable Y stem size snapping */
+    FT_Bool          do_stem_adjust;    /* disable light stem snapping  */
+
+  } AH_HinterRec, *AH_Hinter;
 
 
-#ifdef __cplusplus
-  }
-#endif
+#ifdef DEBUG_HINTER
+  extern AH_Hinter  ah_debug_hinter;
+  extern FT_Bool    ah_debug_disable_horz;
+  extern FT_Bool    ah_debug_disable_vert;
+#else
+#define ah_debug_disable_horz  0
+#define ah_debug_disable_vert  0
+#endif /* DEBUG_HINTER */
 
 
-#endif /* AHTYPES_H */
+FT_END_HEADER
+
+#endif /* __AHTYPES_H__ */
 
 
 /* END */

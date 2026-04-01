@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -115,5 +122,47 @@ _mesa_GetClipPlane( GLenum plane, GLdouble *equation )
    equation[1] = (GLdouble) ctx->Transform.EyeUserPlane[p][1];
    equation[2] = (GLdouble) ctx->Transform.EyeUserPlane[p][2];
    equation[3] = (GLdouble) ctx->Transform.EyeUserPlane[p][3];
+}
+
+void GLAPIENTRY 
+_mesa_CullParameterfvEXT (GLenum cap, GLfloat *v)
+{
+   GET_CURRENT_CONTEXT(ctx);
+   ASSERT_OUTSIDE_BEGIN_END(ctx);
+
+   switch (cap) {
+   case GL_CULL_VERTEX_EYE_POSITION_EXT:
+      FLUSH_VERTICES(ctx, _NEW_TRANSFORM);
+      COPY_4FV(ctx->Transform.CullEyePos, v);
+      
+      _mesa_transform_vector( ctx->Transform.CullObjPos, 
+			      ctx->Transform.CullEyePos,
+			      ctx->ModelviewMatrixStack.Top->inv );
+      break;
+
+   case GL_CULL_VERTEX_OBJECT_POSITION_EXT:
+      FLUSH_VERTICES(ctx, _NEW_TRANSFORM);
+      COPY_4FV(ctx->Transform.CullObjPos, v);
+
+      _mesa_transform_vector( ctx->Transform.CullEyePos, 
+			      ctx->Transform.CullObjPos,
+			      ctx->ModelviewMatrixStack.Top->m );
+     break;
+   default:
+      _mesa_error( ctx, GL_INVALID_ENUM, "glCullParameterfvEXT" );
+   }
+}
+
+void GLAPIENTRY 
+_mesa_CullParameterdvEXT (GLenum cap, GLdouble *v)
+{
+   GLfloat f[4];
+   
+   f[0] = (GLfloat)v[0];
+   f[1] = (GLfloat)v[1];
+   f[2] = (GLfloat)v[2];
+   f[3] = (GLfloat)v[3];
+
+   _mesa_CullParameterfvEXT(cap, f);
 }
 

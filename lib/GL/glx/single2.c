@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/single2.c,v 1.15 2004/04/26 00:23:36 tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/single2.c,v 1.16 2004/12/10 16:06:56 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free

@@ -1,4 +1,18 @@
-/* $XFree86$ */
+/* $XFree86: xc/extras/freetype2/src/gzip/ftgzip.c,v 1.4 2005/02/28 23:19:13 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /***************************************************************************/
 /*                                                                         */
@@ -20,7 +34,7 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
-/* $XFree86: xc/extras/freetype2/src/gzip/ftgzip.c,v 1.3 2004/04/26 16:15:54 dawes Exp $ */
+/* $XFree86: xc/extras/freetype2/src/gzip/ftgzip.c,v 1.4 2005/02/28 23:19:13 dawes Exp $ */
 
 
 #include <ft2build.h>

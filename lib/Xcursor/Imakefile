@@ -72,7 +72,7 @@ xcursor.pc: xcursor.pc.in
 	RemoveFile($@)
 	sh config-subst $(SUBSTVARS) < xcursor.pc.in > $@
 
-InstallNonExecFile(xcursor.pc,$(PKGCONFIGDIR))
+InstallNonExecFile(xcursor.pc,$(USRLIBDIR)/pkgconfig)
 
 clean::
 	RemoveFile(xcursor.pc)

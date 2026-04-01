@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbcmap.c,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbcmap.c,v 1.8 2003/02/18 21:30:01 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mfbcmap.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
+#include "X.h"
 #include "scrnintstr.h"
 #include "colormapst.h"
 #include "resource.h"
@@ -68,28 +75,35 @@ SOFTWARE.
  */
 
 int
-mfbListInstalledColormaps(ScreenPtr pScreen, Colormap *pmaps)
+mfbListInstalledColormaps(pScreen, pmaps)
+    ScreenPtr	pScreen;
+    Colormap	*pmaps;
 {
     return miListInstalledColormaps(pScreen, pmaps);
 }
 
 
 void
-mfbInstallColormap(ColormapPtr pmap)
+mfbInstallColormap(pmap)
+    ColormapPtr	pmap;
 {
     miInstallColormap(pmap);
 }
 
 void
-mfbUninstallColormap(ColormapPtr pmap)
+mfbUninstallColormap(pmap)
+    ColormapPtr	pmap;
 {
     miUninstallColormap(pmap);
 }
 
 /*ARGSUSED*/
 void
-mfbResolveColor(unsigned short *pred, unsigned short *pgreen,
-		unsigned short *pblue, VisualPtr pVisual)
+mfbResolveColor (pred, pgreen, pblue, pVisual)
+    unsigned short	*pred;
+    unsigned short	*pgreen;
+    unsigned short	*pblue;
+    VisualPtr		pVisual;
 {
     /* 
      * Gets intensity from RGB.  If intensity is >= half, pick white, else
@@ -102,7 +116,8 @@ mfbResolveColor(unsigned short *pred, unsigned short *pgreen,
 }
 
 Bool
-mfbCreateColormap(ColormapPtr pMap)
+mfbCreateColormap(pMap)
+    ColormapPtr	pMap;
 {
     ScreenPtr	pScreen;
     unsigned short  red0, green0, blue0;
@@ -138,13 +153,15 @@ mfbCreateColormap(ColormapPtr pMap)
 
 /*ARGSUSED*/
 void
-mfbDestroyColormap(ColormapPtr pMap)
+mfbDestroyColormap (pMap)
+    ColormapPtr	pMap;
 {
     return;
 }
 
 Bool
-mfbCreateDefColormap(ScreenPtr pScreen)
+mfbCreateDefColormap (pScreen)
+    ScreenPtr	pScreen;
 {
     return miCreateDefColormap(pScreen);
 }

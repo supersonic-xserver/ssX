@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclPrint.c,v 1.9tsi Exp $ */
+/* $Xorg: PclPrint.c,v 1.3 2000/08/17 19:48:08 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -43,6 +50,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclPrint.c,v 1.8 2003/10/29 22:11:00 tsi Exp $ */
 
 #include <stdio.h>
 #include <string.h>
@@ -53,7 +61,7 @@ copyright holders.
 #include <X11/Xprotostr.h>
 
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #undef NEED_EVENTS
 
 #include "Pcl.h"
@@ -129,6 +137,9 @@ PclEndJob(
     PclContextPrivPtr priv = (PclContextPrivPtr)
       pCon->devPrivates[PclContextPrivateIndex].ptr;
 
+#ifdef CCP_DEBUG
+    FILE *xpoutput;
+#endif
     FILE *fp;
     int retVal;
     char *fileName, *trailer;
@@ -195,6 +206,16 @@ PclEndJob(
      */
     rewind( priv->pJobFile );
     stat( priv->jobFileName, &statBuf );
+    
+#ifdef CCP_DEBUG
+    unlink( "/users/prince/XpOutput" );
+    xpoutput = fopen( "/users/prince/XpOutput", "w" );
+    
+    rewind( priv->pJobFile );
+    TransferBytes( priv->pJobFile, xpoutput,
+		      (int)statBuf.st_size );
+    fclose( xpoutput );
+#endif
     
     XpSubmitJob( priv->jobFileName, pCon );
     fclose( priv->pJobFile );

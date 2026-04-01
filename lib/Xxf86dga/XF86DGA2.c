@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/Xxf86dga/XF86DGA2.c,v 1.29 2005/09/14 14:23:14 tsi Exp $ */
+/* $XFree86: xc/lib/Xxf86dga/XF86DGA2.c,v 1.28 2004/12/31 03:30:39 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1995  Jon Tombs
@@ -768,8 +775,7 @@ void XDGAKeyEventToXKeyEvent(
 #elif defined(SVR4) && defined(sun)
 #define DEV_MEM "/dev/xsvc"
 #elif defined(HAS_APERTURE_DRV)
-#define DEV_MEM "/dev/mem"
-#define DEV_APERTURE "/dev/xf86"
+#define DEV_MEM "/dev/xf86"
 #else
 #define DEV_MEM "/dev/mem"
 #endif
@@ -778,7 +784,7 @@ void XDGAKeyEventToXKeyEvent(
 
 typedef struct _DGAMapRec{
   mmapOffset physical;
-  void *virtual;
+  unsigned char *virtual;
   CARD32 size;
   int fd;
   int screen;
@@ -965,35 +971,23 @@ DGAMapPhysical(
     if (!name)
 	name = DEV_MEM;
 #endif
-    pMap->virtual = (void *)-1;
-    if ((pMap->fd = open(name, O_RDWR)) >= 0) {
+    if ((pMap->fd = open(name, O_RDWR)) < 0)
+	return False;
 #ifdef linux
-	/*
-	 * If we are to mmap() something in /proc/bus/pci, ensure we mmap() PCI
-	 * memory.  Oddly enough the default seems to be PCI I/O for some
-	 * kernels.  Also, avoid having to #include <linux/pci.h> here.
-	 */
+    /*
+     * If we are to mmap() something in /proc/bus/pci, ensure we mmap() PCI
+     * memory.  Oddly enough the default seems to be PCI I/O for some kernels.
+     * Also, avoid having to #include <linux/pci.h> here.
+     */
 # ifndef PCIIOC_MMAP_IS_MEM
 #  define PCIIOC_MMAP_IS_MEM \
 	  (('P' << 24) | ('C' << 16) | ('I' << 8) | 0x02)
 # endif
-	if (!memcmp(name, "/proc/bus/pci/", 14))
-	    ioctl(pMap->fd, PCIIOC_MMAP_IS_MEM, 0);	/* Ignore errors */
+    if (!memcmp(name, "/proc/bus/pci/", 14))
+	ioctl(pMap->fd, PCIIOC_MMAP_IS_MEM, 0);	/* Ignore errors */
 #endif
-	pMap->virtual = mmap(NULL, size, PROT_READ | PROT_WRITE, 
-			     MAP_FILE | MAP_SHARED, pMap->fd, (off_t)base);
-    }
-#ifdef DEV_APERTURE
-    /* Try DEV_APERTURE if previous attempt failed. */
-    if (pMap->virtual == (void *)-1) {
-	if (pMap->fd >= 0)
-	    close(pMap->fd);
-	if ((pMap->fd = open(DEV_APERTURE, O_RDWR)) >= 0) {
-	    pMap->virtual = mmap(NULL, size, PROT_READ | PROT_WRITE, 
-				 MAP_FILE | MAP_SHARED, pMap->fd, (off_t)base);
-	}
-    }
-#endif
+    pMap->virtual = mmap(NULL, size, PROT_READ | PROT_WRITE, 
+			MAP_FILE | MAP_SHARED, pMap->fd, (off_t)(unsigned long)base);
     if (pMap->virtual == (void *)-1)
 	return False;
     mprotect(pMap->virtual, size, PROT_READ | PROT_WRITE);

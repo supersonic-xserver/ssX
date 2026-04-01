@@ -1,0 +1,51 @@
+/Imakefile/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/Xdmx.man/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmx.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmx_glxvisuals.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmx_glxvisuals.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxcb.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxcb.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxclient.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxcmap.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxcmap.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxcursor.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxcursor.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxdpms.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxdpms.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxextension.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxextension.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxfont.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxfont.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxgc.c/1.2/Sun May 14 07:10:46 2006//Tnetbsd-5-2-3-RELEASE
+/dmxgc.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxgcops.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxgcops.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxinit.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxinit.h/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxinput.c/1.1.1.1/Fri Mar 18 13:10:55 2005//Tnetbsd-5-2-3-RELEASE
+/dmxinput.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxlog.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxlog.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxpict.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxpict.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxpixmap.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxpixmap.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxprop.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxprop.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxscrinit.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxscrinit.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxshadow.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxshadow.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxstat.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxstat.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxsync.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxsync.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxvisual.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxvisual.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxwindow.c/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+/dmxwindow.h/1.1.1.1/Fri Mar 18 13:10:56 2005//Tnetbsd-5-2-3-RELEASE
+D/config////
+D/doc////
+D/examples////
+D/glxProxy////
+D/input////

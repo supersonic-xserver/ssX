@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsdraw.c,v 1.3tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsdraw.c,v 1.1 2004/06/02 22:43:01 dawes Exp $
  *
  * Copyright © 2000 Keith Packard
  *
@@ -71,13 +78,13 @@
 #include "igs.h"
 #include "igsdraw.h"
 
-#include	<X11/Xmd.h>
+#include	"Xmd.h"
 #include	"gcstruct.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"regionstr.h"
 #include	"mistruct.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"fb.h"
 #include	"migc.h"
@@ -175,7 +182,7 @@ igsSetPattern (ScreenPtr    pScreen,
 	for (y = 0; y < 8; y++)
 	{
 	    bits = pix[stipY * pixStride];
-	    bits = FbRotLeft (bits, stipX);
+	    FbRotLeft (bits, stipX);
 	    tmp[y] = (CARD8) bits;
 	    stipY++;
 	    if (stipY == pPixmap->drawable.height)
@@ -1348,7 +1355,7 @@ static const GCOps	igsOps = {
 };
 
 static void
-igsValidateGC (GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
+igsValidateGC (GCPtr pGC, Mask changes, DrawablePtr pDrawable)
 {
     fbValidateGC (pGC, changes, pDrawable);
     

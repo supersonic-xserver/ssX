@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 1997,1998 by Metro Link, Inc.
  *
@@ -21,23 +28,14 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elfloader.h,v 1.5 2006/03/02 03:00:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elfloader.h,v 1.4 2003/10/15 16:29:03 dawes Exp $ */
 
 #ifndef _ELFLOADER_H
 #define _ELFLOADER_H
-
-typedef struct _elf_reloc *ELFRelocPtr;
-typedef struct _elf_COMMON *ELFCommonPtr;
-
 /* elfloader.c */
 extern void *ELFLoadModule(loaderPtr, int, LOOKUP **);
-extern void ELFResolveSymbols(LoaderDescPtr, int);
-extern int ELFCheckForUnresolved(LoaderDescPtr);
+extern void ELFResolveSymbols(void *);
+extern int ELFCheckForUnresolved(void *);
 extern char *ELFAddressToSection(void *, unsigned long);
 extern void ELFUnloadModule(void *);
-extern const char *ELFFindRelocName(LoaderDescPtr, int, unsigned long);
-extern const char *ELFAddressToSymbol(void *, unsigned long, unsigned long *,
-				      const char **, int);
-extern void *ELFReadExecutableSyms(int);
-
 #endif /* _ELFLOADER_h */

@@ -1,8 +1,15 @@
 /* Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    See the file COPYING for copying permission.
 */
 
-/* $XFree86: xc/extras/expat/lib/xmlrole.c,v 1.3 2003/04/10 20:05:16 herrb Exp $ */
+/* $XFree86: xc/extras/expat/lib/xmlrole.c,v 1.4 2003/09/29 23:39:30 alanh Exp $ */
 
 #ifdef COMPILED_FROM_DSP
 #include "winconfig.h"

@@ -1,3 +1,13 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* $Xorg: sunCfb.c,v 1.5 2001/02/09 02:04:43 xorgcvs Exp $ */
+
 /*
 Copyright 1990, 1998  The Open Group
 
@@ -51,7 +61,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
-/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.17tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunCfb.c,v 3.15 2003/10/07 21:43:09 herrb Exp $ */
 
 /*
  * Copyright 1987 by the Regents of the University of California
@@ -256,7 +266,7 @@ static void CGScreenInit (pScreen)
 
 static void checkMono (argc, argv)
     int argc;
-    const char** argv;
+    char** argv;
 {
     int i;
 
@@ -279,7 +289,7 @@ Bool sunCG3Init (screen, pScreen, argc, argv)
     int	    	  screen;    	/* what screen am I going to be */
     ScreenPtr	  pScreen;  	/* The Screen to initialize */
     int	    	  argc;	    	/* The number of the Server's arguments. */
-    const char    **argv;   	/* The arguments themselves. Don't change! */
+    char    	  **argv;   	/* The arguments themselves. Don't change! */
 {
     checkMono (argc, argv);
     sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
@@ -292,7 +302,7 @@ Bool sunTCXInit (screen, pScreen, argc, argv)
     int	    	  screen;    	/* what screen am I going to be */
     ScreenPtr	  pScreen;  	/* The Screen to initialize */
     int	    	  argc;	    	/* The number of the Server's arguments. */
-    const char    **argv;   	/* The arguments themselves. Don't change! */
+    char    	  **argv;   	/* The arguments themselves. Don't change! */
 {
     checkMono (argc, argv);
     sunFbs[screen].EnterLeave = (void (*)())NoopDDA;
@@ -321,7 +331,7 @@ Bool sunTCXInit (screen, pScreen, argc, argv)
 #endif /* } */
 #endif /* } */
 
-#if defined(INCLUDE_CG2_HEADER) || !defined(SVR4)
+#ifdef INCLUDE_CG2_HEADER
 typedef struct {
     struct cg2memfb	mem;
     struct cg2fb 	regs;
@@ -386,7 +396,7 @@ Bool sunCG2Init (screen, pScreen, argc, argv)
     int		screen;    	/* what screen am I going to be */
     ScreenPtr	pScreen;  	/* The Screen to initialize */
     int		argc;	    	/* The number of the Server's arguments. */
-    const char**argv;   	/* The arguments themselves. Don't change! */
+    char**	argv;   	/* The arguments themselves. Don't change! */
 {
     int		i;
     Bool	ret;
@@ -418,7 +428,7 @@ Bool sunCG2Init (screen, pScreen, argc, argv)
 #endif /* ifndef LOWMEMFTPT */
     return ret;
 }
-#endif /* INCLUDE_CG2_HEADER || !SVR4 */
+#endif /* INCLUDE_CG2_HEADER */
 
 #define	CG4_HEIGHT	900
 #define	CG4_WIDTH	1152
@@ -444,7 +454,7 @@ Bool sunCG4Init (screen, pScreen, argc, argv)
     int		screen;    	/* what screen am I going to be */
     ScreenPtr	pScreen;  	/* The Screen to initialize */
     int		argc;	    	/* The number of the Server's arguments. */
-    const char**argv;   	/* The arguments themselves. Don't change! */
+    char**	argv;   	/* The arguments themselves. Don't change! */
 {
     checkMono (argc, argv);
     if (sunCG4Frob)
@@ -465,7 +475,7 @@ Bool sunCG6Init (screen, pScreen, argc, argv)
     int		screen;    	/* The index of pScreen in the ScreenInfo */
     ScreenPtr	pScreen;  	/* The Screen to initialize */
     int		argc;	    	/* The number of the Server's arguments. */
-    const char**argv;   	/* The arguments themselves. Don't change! */
+    char**	argv;   	/* The arguments themselves. Don't change! */
 {
     pointer	fb;
 

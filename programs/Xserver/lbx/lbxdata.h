@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $Xorg: lbxdata.h,v 1.3 2000/08/17 19:53:31 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1994 Network Computing Devices, Inc.
  *
@@ -25,10 +32,10 @@
 #ifndef _LBXDATA_H_
 #define _LBXDATA_H_
 #define NEED_REPLIES
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
+#include "lbxstr.h"
 #include "dixfontstr.h"
 
 extern int  lbx_font_private;

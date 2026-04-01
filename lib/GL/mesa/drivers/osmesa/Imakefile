@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/drivers/osmesa/Imakefile,v 1.10tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/drivers/osmesa/Imakefile,v 1.8 2005/02/05 02:01:39 dawes Exp $
 
 /*
  * Copyright (c) 2000-2005 by The XFree86 Project, Inc.
@@ -87,7 +87,8 @@ MESA_INCLUDES = -I$(MESASRCDIR)/src/mesa \
 		-I$(MESASRCDIR)/include 
 
       DEFINES = $(ALLOC_DEFINES) $(DRI_DEFINES)
-     INCLUDES = $(MESA_INCLUDES) $(DRI_INCLUDES) -I$(GLXLIBSRC)/include
+     INCLUDES = -I$(XINCLUDESRC) -I$(EXTINCSRC) $(MESA_INCLUDES) \
+     	 	$(DRI_INCLUDES) -I$(GLXLIBSRC)/include
 
      MESAOBJS = $(COREMESAOBJS) $(MESA_ASM_OBJS)
     MESAEOBJS = $(COREMESAEOBJS) $(MESA_ASM_EOBJS)
@@ -112,8 +113,8 @@ MESA_INCLUDES = -I$(MESASRCDIR)/src/mesa \
 
 #ifdef SharedOSMesaReqs
  REQUIREDLIBS = SharedOSMesaReqs
-#elif !BuildXF86DRI || !GlxUseBuiltInDRIDriver
- REQUIREDLIBS = $(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) $(XLIB)
+#elif !GlxUseBuiltInDRIDriver
+ REQUIREDLIBS = $(LDPRELIB) $(GLXLIB)
 #endif
 
 #include <Library.tmpl>

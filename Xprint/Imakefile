@@ -1,0 +1,148 @@
+XCOMM $XFree86: xc/programs/Xserver/Xprint/Imakefile,v 1.25 2006/07/26 13:48:22 tsi Exp $
+
+#include <Server.tmpl>
+
+#define IHaveSubdirs
+
+SRCS1 = Init.c Quarks.c attributes.c Util.c mediaSizes.c Oid.c AttrValid.c
+
+OBJS1 = Init.o Quarks.o attributes.o Util.o mediaSizes.o Oid.o AttrValid.o
+
+#ifdef OS2Architecture
+SRCS_OS2 = os2_stubs.c
+OBJS_OS2 = os2_stubs.o
+#endif
+
+#if defined(XprtServer) && XprtServer
+
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+
+SRCS2 = ddxInit.c miinitext.c
+OBJS2 = ddxInit.o miinitext.o
+
+#if BuildRender
+RENDERDIRS = render
+#endif
+
+#if BuildRandR
+RANDRDIRS = randr
+#endif
+
+#if BuildRECORD
+RECORDDIRS = record
+#endif
+
+#if BuildDBE
+DBEDIRS = dbe
+#endif
+
+#if BuildXTrap
+XTRAPDIRS = XTrap
+#endif
+
+ XPSUBDIRS = dix os Xext \
+	     $(RENDERDIRS) $(RANDRDIRS) $(RECORDDIRS) $(DBEDIRS) $(XTRAPDIRS)
+
+#endif
+
+#if XpRasterDDX
+
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+
+RASTDIR = raster
+RASTDEF = -DXPRASTERDDX
+
+#endif
+
+#if XpColorPclDDX
+
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+
+PCLDIR = pcl
+PCLDEF = -DXPPCLDDX
+
+#endif
+
+#if XpMonoPclDDX
+
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+
+MPCLDIR = pcl-mono
+MPCLDEF = -DXPMONOPCLDDX
+
+#endif
+
+#if XpPostScriptDDX
+
+#undef  IHaveSubdirs
+#define IHaveSubdirs
+
+PSDIR = ps
+PSDEF = -DXPPSDDX
+
+#endif
+
+#if HasMkstemp
+MKTMP_DEFINES = -DHAS_MKSTEMP
+#endif
+
+      SRCS = $(SRCS1) $(SRCS2) $(SRCS_OS2)
+
+      OBJS = $(OBJS1) $(OBJS_OS2)
+
+#ifdef IHaveSubdirs
+   SUBDIRS = $(XPSUBDIRS) $(RASTDIR) $(PCLDIR) $(MPCLDIR) $(PSDIR)
+#endif
+
+#ifndef XprtExcludedExtensions
+#define XprtExcludedExtensions /**/
+#endif
+
+  INCLUDES = -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
+	     -I$(SERVERSRC)/cfb -I$(SERVERSRC)/Xext \
+	     -I$(SERVERSRC)/include -I$(XLIBSRC)
+
+  LINTLIBS = $(TOP)/server/dix/llib-ldix.ln $(TOP)/server/os/llib-los.ln \
+	     $(TOP)/server/ddx/mfb/llib-lmfb.ln \
+	     $(TOP)/server/ddx/mi/llib-lmi.ln \
+	     $(TOP)/server/ddx/cfb/llib-lcfb.ln
+
+   DEFINES = $(OS_DEFINES) $(MKTMP_DEFINES) \
+	     $(EXT_DEFINES) XprtExcludedExtensions \
+	     -DXPRINTDIR=\"$(XPRINTDIR)\" \
+	     $(RASTDEF) $(PCLDEF) $(MPCLDEF) $(PSDEF)
+
+/* Go ahead:  Call me paranoid ... */
+Makefiles::
+	@RemoveFiles(Quark.c Xlcint.h Xresource.h Xrm.c XrmI.h)
+
+LinkSourceFile(Quarks.c,$(XLIBSRC))
+
+NormalLibraryObjectRule()
+
+NormalLibraryTarget(printer,$(OBJS))
+NormalLintTarget($(SRCS))
+
+#if XprtServer
+all:: $(OBJS2)
+SpecialCObjectRule(ddxInit,$(ICONFIGFILES),NullParameter)
+LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),-DXPRINT)
+#endif
+
+#ifdef OS2Architecture
+LinkSourceFile(os2_stubs.c,../hw/xfree86/os-support/os2)
+SpecialCObjectRule(os2_stubs,$(ICONFIGFILES),-DOS2NULLSELECT)
+#endif
+
+DependTarget()
+
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+MakeLintLibSubdirs($(SUBDIRS))
+#endif

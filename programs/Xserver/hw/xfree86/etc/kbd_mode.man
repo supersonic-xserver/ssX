@@ -33,3 +33,4 @@ reset it typing:
 	kbd_mode -u
 .sp
 
+.\" $TOG: kbd_mode.man /main/6 1997/07/19 10:37:14 kaleb $

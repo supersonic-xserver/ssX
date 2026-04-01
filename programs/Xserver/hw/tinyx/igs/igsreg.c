@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsreg.c,v 1.1 2000/05/24 23:52:48 keithp Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsreg.c,v 1.1 2004/06/02 22:43:01 dawes Exp $
  *
  * Copyright © 2000 Keith Packard
  *

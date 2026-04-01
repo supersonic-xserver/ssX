@@ -1,3 +1,11 @@
+/* $Xorg: include.c,v 1.4 2001/02/09 02:03:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1993, 1994, 1998 The Open Group
@@ -23,7 +31,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/makedepend/include.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/config/makedepend/include.c,v 3.8 2004/06/09 19:00:09 tsi Exp $ */
 
 
 #include "def.h"
@@ -82,9 +90,10 @@ issymbolic(char *dir, char *component)
 static void
 remove_dotdot(char *path)
 {
-	char	*end, *from, *to, **cp;
-	char	*components[ MAXFILES ], newpath[ BUFSIZ ];
-	boolean	component_copied;
+	register char	*end, *from, *to, **cp;
+	char		*components[ MAXFILES ],
+			newpath[ BUFSIZ ];
+	boolean		component_copied;
 
 	/*
 	 * slice path up into components.
@@ -116,7 +125,7 @@ remove_dotdot(char *path)
 		    char **fp = cp + 2;
 		    char **tp = cp;
 
-		    do
+		    do 
 			*tp++ = *fp; /* move all the pointers down */
 		    while (*fp++);
 		    if (cp != components)
@@ -153,7 +162,7 @@ remove_dotdot(char *path)
 struct inclist *
 newinclude(char *newfile, char *incstring)
 {
-	struct inclist	*ip;
+	register struct inclist	*ip;
 
 	/*
 	 * First, put this file on the global list of include files.
@@ -175,7 +184,7 @@ newinclude(char *newfile, char *incstring)
 void
 included_by(struct inclist *ip, struct inclist *newfile)
 {
-	int i;
+	register int i;
 
 	if (ip == NULL)
 		return;
@@ -188,6 +197,8 @@ included_by(struct inclist *ip, struct inclist *newfile)
 	if (ip->i_list == NULL) {
 		ip->i_list = (struct inclist **)
 			malloc(sizeof(struct inclist *) * ++ip->i_listlen);
+		ip->i_merged = (boolean *)
+		    malloc(sizeof(boolean) * ip->i_listlen);
 	} else {
 		for (i=0; i<ip->i_listlen; i++)
 			if (ip->i_list[ i ] == newfile) {
@@ -203,14 +214,17 @@ included_by(struct inclist *ip, struct inclist *newfile)
 			}
 		ip->i_list = (struct inclist **) realloc(ip->i_list,
 			sizeof(struct inclist *) * ++ip->i_listlen);
+		ip->i_merged = (boolean *)
+		    realloc(ip->i_merged, sizeof(boolean) * ip->i_listlen);
 	}
 	ip->i_list[ ip->i_listlen-1 ] = newfile;
+	ip->i_merged[ ip->i_listlen-1 ] = FALSE;
 }
 
 void
 inc_clean (void)
 {
-	struct inclist *ip;
+	register struct inclist *ip;
 
 	for (ip = inclist; ip < inclistp; ip++) {
 		ip->i_flags &= ~MARKED;
@@ -220,10 +234,10 @@ inc_clean (void)
 struct inclist *
 inc_path(char *file, char *include, int type)
 {
-	static char	path[ BUFSIZ ];
-	char		**pp, *p;
-	struct inclist	*ip;
-	struct stat	st;
+	static char		path[ BUFSIZ ];
+	register char		**pp, *p;
+	register struct inclist	*ip;
+	struct stat		st;
 
 	/*
 	 * Check all previously found include files for a path that

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahglobal.c                                                             */
 /*                                                                         */
 /*    Routines used to compute global metrics automatically (body).        */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001, 2002, 2003, 2004 Catharon Productions Inc.        */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -19,26 +26,24 @@
 /***************************************************************************/
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
+#include FT_INTERNAL_DEBUG_H
 #include "ahglobal.h"
 #include "ahglyph.h"
-
-#else
-
-#include <autohint/ahglobal.h>
-#include <autohint/ahglyph.h>
-
-#endif
 
 
 #define MAX_TEST_CHARACTERS  12
 
+  /* cf. AH_BLUE_XXX constants in ahtypes.h */
+
   static
-  const char*  blue_chars[ah_blue_max] =
+  const char* const  blue_chars[AH_BLUE_MAX] =
   {
     "THEZOCQS",
     "HEZLOCUS",
+#ifdef FT_CONFIG_CHESTER_SMALL_F
+    "fijkdbh",
+#endif
     "xzroesc",
     "xzroesc",
     "pqgjy"
@@ -46,16 +51,17 @@
 
 
   /* simple insertion sort */
-  static
-  void  sort_values( FT_Int   count,
-                     FT_Pos*  table )
+  static void
+  sort_values( FT_Int   count,
+               FT_Pos*  table )
   {
-    FT_Int  i, j, swap;
+    FT_Int  i, j;
+    FT_Pos  swap;
 
 
     for ( i = 1; i < count; i++ )
     {
-      for ( j = i; j > 1; j-- )
+      for ( j = i; j > 0; j-- )
       {
         if ( table[j] > table[j - 1] )
           break;
@@ -68,11 +74,11 @@
   }
 
 
-  static
-  FT_Error  ah_hinter_compute_blues( AH_Hinter*  hinter )
+  static FT_Error
+  ah_hinter_compute_blues( AH_Hinter  hinter )
   {
     AH_Blue       blue;
-    AH_Globals*   globals = &hinter->globals->design;
+    AH_Globals    globals = &hinter->globals->design;
     FT_Pos        flats [MAX_TEST_CHARACTERS];
     FT_Pos        rounds[MAX_TEST_CHARACTERS];
     FT_Int        num_flats;
@@ -91,21 +97,22 @@
     charmap = face->charmap;
 
     /* do we have a Unicode charmap in there? */
-    error = FT_Select_Charmap( face, ft_encoding_unicode );
+    error = FT_Select_Charmap( face, FT_ENCODING_UNICODE );
     if ( error )
       goto Exit;
 
     /* we compute the blues simply by loading each character from the */
-    /* 'blue_chars[blues]' string, then compute its top-most and      */
-    /* bottom-most points                                             */
+    /* `blue_chars[blues]' string, then compute its top-most or       */
+    /* bottom-most points (depending on `AH_IS_TOP_BLUE')             */
 
     AH_LOG(( "blue zones computation\n" ));
     AH_LOG(( "------------------------------------------------\n" ));
 
-    for ( blue = ah_blue_capital_top; blue < ah_blue_max; blue++ )
+    for ( blue = AH_BLUE_CAPITAL_TOP; blue < AH_BLUE_MAX; blue++ )
     {
       const char*  p     = blue_chars[blue];
       const char*  limit = p + MAX_TEST_CHARACTERS;
+
       FT_Pos       *blue_ref, *blue_shoot;
 
 
@@ -165,7 +172,7 @@
         /* segment; we first need to find in which contour the extremum */
         /* lies, then see its previous and next points                  */
         {
-          FT_Int  index = extremum - points;
+          FT_Int  idx = (FT_Int)( extremum - points );
           FT_Int  n;
           FT_Int  first, last, prev, next, end;
           FT_Pos  dist;
@@ -177,7 +184,7 @@
           for ( n = 0; n < glyph->outline.n_contours; n++ )
           {
             end = glyph->outline.contours[n];
-            if ( end >= index )
+            if ( end >= idx )
             {
               last = end;
               break;
@@ -192,7 +199,7 @@
           /* now look for the previous and next points that are not on the */
           /* same Y coordinate.  Threshold the `closeness'...              */
 
-          prev = index;
+          prev = idx;
           next = prev;
 
           do
@@ -206,7 +213,7 @@
             if ( dist < -5 || dist > 5 )
               break;
 
-          } while ( prev != index );
+          } while ( prev != idx );
 
           do
           {
@@ -219,12 +226,12 @@
             if ( dist < -5 || dist > 5 )
               break;
 
-          } while ( next != index );
+          } while ( next != idx );
 
           /* now, set the `round' flag depending on the segment's kind */
-          round =
-            FT_CURVE_TAG( glyph->outline.tags[prev] ) != FT_Curve_Tag_On ||
-            FT_CURVE_TAG( glyph->outline.tags[next] ) != FT_Curve_Tag_On ;
+          round = FT_BOOL(
+            FT_CURVE_TAG( glyph->outline.tags[prev] ) != FT_CURVE_TAG_ON ||
+            FT_CURVE_TAG( glyph->outline.tags[next] ) != FT_CURVE_TAG_ON );
 
           AH_LOG(( "%c ", round ? 'r' : 'f' ));
         }
@@ -238,8 +245,8 @@
       AH_LOG(( "\n" ));
 
       /* we have computed the contents of the `rounds' and `flats' tables, */
-      /* now determine the reference and overshoot position of the blue;   */
-      /* we simply take the median value after a simple short              */
+      /* now determine the reference and overshoot position of the blue -- */
+      /* we simply take the median value after a simple sort               */
       sort_values( num_rounds, rounds );
       sort_values( num_flats,  flats  );
 
@@ -273,7 +280,7 @@
       {
         FT_Pos   ref      = *blue_ref;
         FT_Pos   shoot    = *blue_shoot;
-        FT_Bool  over_ref = ( shoot > ref );
+        FT_Bool  over_ref = FT_BOOL( shoot > ref );
 
 
         if ( AH_IS_TOP_BLUE( blue ) ^ over_ref )
@@ -292,19 +299,19 @@
   }
 
 
-  static
-  FT_Error  ah_hinter_compute_widths( AH_Hinter*  hinter )
+  static FT_Error
+  ah_hinter_compute_widths( AH_Hinter  hinter )
   {
     /* scan the array of segments in each direction */
-    AH_Outline*  outline = hinter->glyph;
-    AH_Segment*  segments;
-    AH_Segment*  limit;
-    AH_Globals*  globals = &hinter->globals->design;
-    FT_Pos*      widths;
-    FT_Int       dimension;
-    FT_Int*      p_num_widths;
-    FT_Error     error = 0;
-    FT_Pos       edge_distance_threshold = 32000;
+    AH_Outline  outline = hinter->glyph;
+    AH_Segment  segments;
+    AH_Segment  limit;
+    AH_Globals  globals = &hinter->globals->design;
+    FT_Pos*     widths;
+    FT_Int      dimension;
+    FT_Int*     p_num_widths;
+    FT_Error    error = 0;
+    FT_Pos      edge_distance_threshold = 32000;
 
 
     globals->num_widths  = 0;
@@ -315,7 +322,7 @@
     /* stem height of the "-", but it wasn't too good.  Moreover, we now */
     /* have a single character that gives us standard width and height.  */
     {
-      FT_UInt   glyph_index;
+      FT_UInt  glyph_index;
 
 
       glyph_index = FT_Get_Char_Index( hinter->face, 'o' );
@@ -326,7 +333,8 @@
       if ( error )
         goto Exit;
 
-      error = ah_outline_load( hinter->glyph, hinter->face );
+      error = ah_outline_load( hinter->glyph, 0x10000L, 0x10000L,
+                               hinter->face );
       if ( error )
         goto Exit;
 
@@ -341,9 +349,9 @@
 
     for ( dimension = 1; dimension >= 0; dimension-- )
     {
-      AH_Segment*  seg = segments;
-      AH_Segment*  link;
-      FT_Int       num_widths = 0;
+      AH_Segment  seg = segments;
+      AH_Segment  link;
+      FT_Int      num_widths = 0;
 
 
       for ( ; seg < limit; seg++ )
@@ -352,14 +360,14 @@
         /* we only consider stem segments there! */
         if ( link && link->link == seg && link > seg )
         {
-          FT_Int  dist;
+          FT_Pos  dist;
 
 
           dist = seg->pos - link->pos;
           if ( dist < 0 )
             dist = -dist;
 
-          if ( num_widths < 12 )
+          if ( num_widths < AH_MAX_WIDTHS )
             widths[num_widths++] = dist;
         }
       }
@@ -375,11 +383,10 @@
       limit        = segments + outline->num_vsegments;
       widths       = globals->widths;
       p_num_widths = &globals->num_widths;
-
     }
 
     /* Now, compute the edge distance threshold as a fraction of the */
-    /* smallest width in the font. Set it in `hinter.glyph' too!     */
+    /* smallest width in the font. Set it in `hinter->glyph' too!    */
     if ( edge_distance_threshold == 32000 )
       edge_distance_threshold = 50;
 
@@ -391,8 +398,8 @@
   }
 
 
-  FT_LOCAL_DEF
-  FT_Error  ah_hinter_compute_globals( AH_Hinter*  hinter )
+  FT_LOCAL_DEF( FT_Error )
+  ah_hinter_compute_globals( AH_Hinter  hinter )
   {
     return ah_hinter_compute_widths( hinter ) ||
            ah_hinter_compute_blues ( hinter );

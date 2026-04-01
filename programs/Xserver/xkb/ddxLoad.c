@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/xkb/ddxLoad.c,v 3.37 2005/10/14 15:17:28 tsi Exp $ */
+/* $Xorg: ddxLoad.c,v 1.3 2000/08/17 19:53:46 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,6 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/xkb/ddxLoad.c,v 3.36 2003/11/17 22:20:45 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -37,8 +45,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "scrnintstr.h"
 #include "windowstr.h"
 #define	XKBSRV_NEED_FILE_FUNCS
-#include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XI.h>
+#include "XKBsrv.h"
+#include "XI.h"
 #include "xkb.h"
 
 #if defined(CSRG_BASED) || defined(linux) || defined(__sgi) || defined(AIXV3) || defined(__osf__) || defined(__GNU__)
@@ -369,7 +377,7 @@ int i;
 }
 
 FILE *
-XkbDDXOpenConfigFile(const char *mapName,char *fileNameRtrn,int fileNameRtrnLen)
+XkbDDXOpenConfigFile(char *mapName,char *fileNameRtrn,int fileNameRtrnLen)
 {
 char	buf[PATH_MAX],xkm_output_dir[PATH_MAX];
 FILE *	file;

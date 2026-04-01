@@ -1,5 +1,11 @@
-/* $XFree86$ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -188,7 +194,7 @@ static int test_transform_function( transform_func func, int psize,
    mat->type = mtypes[mtype];
 
    m = mat->m;
-   ASSERT( ((unsigned long)m & 15) == 0 );
+   ASSERT( ((GLuint)m & 15) == 0 );
 
    init_matrix( m );
 

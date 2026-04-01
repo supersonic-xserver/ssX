@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  sfobjs.h                                                               */
 /*                                                                         */
 /*    SFNT object management (specification).                              */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,42 +23,39 @@
 /***************************************************************************/
 
 
-#ifndef SFOBJS_H
-#define SFOBJS_H
-
-#include <freetype/internal/sfnt.h>
-#include <freetype/internal/ftobjs.h>
+#ifndef __SFOBJS_H__
+#define __SFOBJS_H__
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#include <ft2build.h>
+#include FT_INTERNAL_SFNT_H
+#include FT_INTERNAL_OBJECTS_H
 
 
-  FT_LOCAL
-  FT_Error  SFNT_Init_Face( FT_Stream      stream,
-                            TT_Face        face,
-                            FT_Int         face_index,
-                            FT_Int         num_params,
-                            FT_Parameter*  params );
-
-  FT_LOCAL
-  FT_Error  SFNT_Load_Face( FT_Stream      stream,
-                            TT_Face        face,
-                            FT_Int         face_index,
-                            FT_Int         num_params,
-                            FT_Parameter*  params );
-
-  FT_LOCAL
-  void  SFNT_Done_Face( TT_Face  face );
+FT_BEGIN_HEADER
 
 
-#ifdef __cplusplus
-  }
-#endif
+  FT_LOCAL( FT_Error )
+  sfnt_init_face( FT_Stream      stream,
+                  TT_Face        face,
+                  FT_Int         face_index,
+                  FT_Int         num_params,
+                  FT_Parameter*  params );
+
+  FT_LOCAL( FT_Error )
+  sfnt_load_face( FT_Stream      stream,
+                  TT_Face        face,
+                  FT_Int         face_index,
+                  FT_Int         num_params,
+                  FT_Parameter*  params );
+
+  FT_LOCAL( void )
+  sfnt_done_face( TT_Face  face );
 
 
-#endif /* SFDRIVER_H */
+FT_END_HEADER
+
+#endif /* __SFDRIVER_H__ */
 
 
 /* END */

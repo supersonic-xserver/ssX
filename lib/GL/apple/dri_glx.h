@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 Copyright (c) 2002 Apple Computer, Inc.
@@ -25,7 +39,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/apple/dri_glx.h,v 1.3 2003/10/24 15:25:06 tsi Exp $ */
+/* $XFree86: xc/lib/GL/apple/dri_glx.h,v 1.4 2004/12/10 17:47:24 alanh Exp $ */
 
 /*
  * Authors:

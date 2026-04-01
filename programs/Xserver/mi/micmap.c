@@ -1,3 +1,11 @@
+/* $XConsortium: cfbcmap.c,v 4.19 94/04/17 20:28:46 dpw Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -26,7 +34,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/mi/micmap.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/micmap.c,v 1.12 2004/06/30 20:21:46 martin Exp $ */
 
 /*
  * This is based on cfbcmap.c.  The functions here are useful independently
@@ -35,8 +43,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "colormapst.h"
 #include "resource.h"
@@ -121,8 +129,8 @@ miResolveColor(unsigned short *pred, unsigned short *pgreen,
 Bool
 miInitializeColormap(ColormapPtr pmap)
 {
-    unsigned i;
-    VisualPtr pVisual;
+    register unsigned i;
+    register VisualPtr pVisual;
     unsigned lim, maxent, shift;
 
     pVisual = pmap->pVisual;
@@ -207,13 +215,13 @@ int
 miExpandDirectColors(ColormapPtr pmap, int ndef, xColorItem *indefs,
 			xColorItem *outdefs)
 {
-    int    red, green, blue;
+    register int    red, green, blue;
     int		    maxred, maxgreen, maxblue;
     int		    stepred, stepgreen, stepblue;
     VisualPtr	    pVisual;
-    int    pixel;
-    int    nresult;
-    int    i;
+    register int    pixel;
+    register int    nresult;
+    register int    i;
 
     pVisual = pmap->pVisual;
 

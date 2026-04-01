@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmgetsp.c,v 3.1 2005/10/14 15:17:16 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmgetsp.c,v 3.0 1996/08/18 01:53:54 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,12 +54,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ilbmgetsp.c,v 5.10 94/04/17 20:28:24 dpw Exp $ */
 
 /* Modified jun 95 by Geert Uytterhoeven (Geert.Uytterhoeven@cs.kuleuven.ac.be)
    to use interleaved bitplanes instead of normal bitplanes */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 
 #include "misc.h"
 #include "region.h"

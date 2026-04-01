@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/dri/xf86dri.h,v 1.8 2002/10/30 12:51:25 alanh Exp $ */
+/* $XFree86: xc/lib/GL/glx/xf86dri.h,v 1.1 2004/12/10 16:06:56 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.

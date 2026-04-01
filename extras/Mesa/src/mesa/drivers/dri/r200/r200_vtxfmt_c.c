@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_vtxfmt_c.c,v 1.2 2002/12/16 16:18:56 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_vtxfmt_c.c,v 1.4 2004/12/10 17:47:23 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 

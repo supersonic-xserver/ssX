@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/lbx/lbxsrvopts.h,v 1.3tsi Exp $ */
+/* $Xorg: lbxsrvopts.h,v 1.3 2000/08/17 19:53:31 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1994 Network Computing Devices, Inc.
  *
@@ -21,11 +28,12 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/Xserver/lbx/lbxsrvopts.h,v 1.3 2001/01/17 22:37:00 dawes Exp $ */
 
 #ifndef _LBX_SRVOPTS_H_
 #define _LBX_SRVOPTS_H_
 
-#include <X11/extensions/lbxopts.h>
+#include "lbxopts.h"
 
 typedef struct _LbxNegOpts {
     int		nopts;

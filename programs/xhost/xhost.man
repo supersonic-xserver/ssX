@@ -1,3 +1,4 @@
+.\" $Xorg: xhost.man,v 1.4 2001/02/09 02:05:46 xorgcvs Exp $
 .\" Copyright 1988, 1998  The Open Group
 .\" 
 .\" Permission to use, copy, modify, distribute, and sell this software and its
@@ -39,6 +40,10 @@ for a workstation (single user) environment, although it does limit the
 worst abuses.  Environments which require more sophisticated measures should
 implement the user-based mechanism or use the hooks in the
 protocol for passing other authentication data to the server.
+.P
+For better security use authority cookies (see xauth(1)) instead. Combine
+it with a secure X11 forwarder like SSH (see ssh(1)) for connections over
+an insecure network.
 .SH OPTIONS
 \fIXhost\fP accepts the following command line options described below.  For
 security, the options that effect access control may only be run from the
@@ -115,7 +120,7 @@ is printed.
 .SH FILES
 /etc/X*.hosts
 .SH "SEE ALSO"
-X(__miscmansuffix__), Xsecurity(__miscmansuffix__), Xserver(1), xdm(1), getaddrinfo(3)
+X(__miscmansuffix__), Xsecurity(__miscmansuffix__), Xserver(1), xdm(1), getaddrinfo(3), ssh(1)
 .SH ENVIRONMENT
 .TP 8
 .B DISPLAY

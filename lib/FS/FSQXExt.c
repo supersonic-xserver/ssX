@@ -1,3 +1,19 @@
+/* $Xorg: FSQXExt.c,v 1.4 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -64,8 +80,13 @@ _FS_convert_char_info(fsXCharInfo *src, FSXCharInfo *dst)
 }
 
 int
-FSQueryXExtents8(FSServer *svr, Font fid, Bool range_type, unsigned char *str,
-		 unsigned long str_len, FSXCharInfo **extents)
+FSQueryXExtents8(svr, fid, range_type, str, str_len, extents)
+    FSServer   *svr;
+    Font        fid;
+    Bool        range_type;
+    unsigned char *str;
+    unsigned long str_len;
+    FSXCharInfo **extents;
 {
     fsQueryXExtents8Req *req;
     fsQueryXExtents8Reply reply;
@@ -105,8 +126,13 @@ FSQueryXExtents8(FSServer *svr, Font fid, Bool range_type, unsigned char *str,
 }
 
 int
-FSQueryXExtents16(FSServer *svr, Font fid, Bool range_type, FSChar2b *str,
-		  unsigned long str_len, FSXCharInfo **extents)
+FSQueryXExtents16(svr, fid, range_type, str, str_len, extents)
+    FSServer   *svr;
+    Font        fid;
+    Bool        range_type;
+    FSChar2b   *str;
+    unsigned long str_len;
+    FSXCharInfo **extents;
 {
     fsQueryXExtents16Req *req;
     fsQueryXExtents16Reply reply;

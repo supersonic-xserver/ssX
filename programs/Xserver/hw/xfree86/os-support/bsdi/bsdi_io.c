@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsdi/bsdi_io.c,v 3.15 2005/10/14 15:17:01 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsdi/bsdi_io.c,v 3.14 2003/02/17 15:11:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Dawes <dawes@xfree86.org>
@@ -23,8 +30,9 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: bsdi_io.c /main/10 1996/10/19 18:06:13 kaleb $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "compiler.h"
 

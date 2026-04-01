@@ -1,3 +1,11 @@
+/* $Xorg: XpGetData.c,v 1.4 2000/08/17 19:46:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -33,7 +41,7 @@
  **
  ******************************************************************************
  *****************************************************************************/
-/* $XFree86: xc/lib/Xp/XpGetData.c,v 1.6 2005/03/23 03:11:25 dawes Exp $ */
+/* $XFree86: xc/lib/Xp/XpGetData.c,v 1.5 2002/10/16 00:37:32 dawes Exp $ */
 
 #define NEED_REPLIES
 
@@ -62,8 +70,12 @@ typedef struct {
  * XpGetDocumentData().
  */
 static Bool
-_XpGetDocDataHandler(Display *dpy, xReply *rep, char *buf, int len,
-		     XPointer adata)
+_XpGetDocDataHandler(dpy, rep, buf, len, adata)
+    register Display *dpy;
+    register xReply *rep;
+    char *buf;
+    int len;
+    XPointer adata;
 {
     register _XpState            *state;
     xPrintGetDocumentDataReply   replbuf;

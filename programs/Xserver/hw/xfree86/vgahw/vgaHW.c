@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.c,v 1.62tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.c,v 1.61 2004/10/26 22:26:38 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Loosely based on code bearing the following copyright:
@@ -55,7 +69,7 @@
 
 #define _NEED_SYSI86
 
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
 
 #include "xf86.h"
@@ -757,13 +771,12 @@ vgaHWSeqReset(vgaHWPtr hwp, Bool start)
 void
 vgaHWRestoreFonts(ScrnInfoPtr scrninfp, vgaRegPtr restore)
 {
-
-#if defined(SAVE_TEXT) || defined(SAVE_FONT1) || defined(SAVE_FONT2)
-
     vgaHWPtr hwp = VGAHWPTR(scrninfp);
     int savedIOBase;
     unsigned char miscOut, attr10, gr1, gr3, gr4, gr5, gr6, gr8, seq2, seq4;
     Bool doMap = FALSE;
+
+#if defined(SAVE_TEXT) || defined(SAVE_FONT1) || defined(SAVE_FONT2)
 
     /* If nothing to do, return now */
     if (!hwp->FontInfo1 && !hwp->FontInfo2 && !hwp->TextInfo)
@@ -810,11 +823,15 @@ vgaHWRestoreFonts(ScrnInfoPtr scrninfp, vgaRegPtr restore)
 #endif
 
     hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
-    hwp->writeGr(hwp, 0x01, 0x00);	/* all planes come from CPU */
-    hwp->writeGr(hwp, 0x03, 0x00);	/* don't rotate, write unmodified */
     hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
     hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
-    hwp->writeGr(hwp, 0x08, 0xFF);	/* write all bits in a byte */
+
+    if (scrninfp->depth == 4) {
+	/* GJA */
+	hwp->writeGr(hwp, 0x03, 0x00);	/* don't rotate, write unmodified */
+	hwp->writeGr(hwp, 0x08, 0xFF);	/* write all bits in a byte */
+	hwp->writeGr(hwp, 0x01, 0x00);	/* all planes come from CPU */
+    }
 
 #ifdef SAVE_FONT1
     if (hwp->FontInfo1) {
@@ -940,13 +957,12 @@ vgaHWRestore(ScrnInfoPtr scrninfp, vgaRegPtr restore, int flags)
 void
 vgaHWSaveFonts(ScrnInfoPtr scrninfp, vgaRegPtr save)
 {
-
-#if defined(SAVE_TEXT) || defined(SAVE_FONT1) || defined(SAVE_FONT2)
-
     vgaHWPtr hwp = VGAHWPTR(scrninfp);
     int savedIOBase;
-    unsigned char miscOut, attr10, gr1, gr3, gr4, gr5, gr6, gr8, seq2, seq4;
+    unsigned char miscOut, attr10, gr4, gr5, gr6, seq2, seq4;
     Bool doMap = FALSE;
+
+#if defined(SAVE_TEXT) || defined(SAVE_FONT1) || defined(SAVE_FONT2)
 
     if (hwp->Base == NULL) {
 	doMap = TRUE;
@@ -964,12 +980,9 @@ vgaHWSaveFonts(ScrnInfoPtr scrninfp, vgaRegPtr save)
 
     /* save the registers that are needed here */
     miscOut = hwp->readMiscOut(hwp);
-    gr1 = hwp->readGr(hwp, 0x01);
-    gr3 = hwp->readGr(hwp, 0x03);
     gr4 = hwp->readGr(hwp, 0x04);
     gr5 = hwp->readGr(hwp, 0x05);
     gr6 = hwp->readGr(hwp, 0x06);
-    gr8 = hwp->readGr(hwp, 0x08);
     seq2 = hwp->readSeq(hwp, 0x02);
     seq4 = hwp->readSeq(hwp, 0x04);
 
@@ -996,11 +1009,8 @@ vgaHWSaveFonts(ScrnInfoPtr scrninfp, vgaRegPtr save)
 #endif
 
     hwp->writeSeq(hwp, 0x04, 0x06);	/* enable plane graphics */
-    hwp->writeGr(hwp, 0x01, 0x00);	/* all planes come from CPU */
-    hwp->writeGr(hwp, 0x03, 0x00);	/* don't rotate, write unmodified */
     hwp->writeGr(hwp, 0x05, 0x00);	/* write mode 0, read mode 0 */
     hwp->writeGr(hwp, 0x06, 0x05);	/* set graphics */
-    hwp->writeGr(hwp, 0x08, 0xFF);	/* write all bits in a byte */
 
 #ifdef SAVE_FONT1
     if (hwp->FontInfo1 || (hwp->FontInfo1 = xalloc(FONT_AMOUNT))) {
@@ -1032,12 +1042,9 @@ vgaHWSaveFonts(ScrnInfoPtr scrninfp, vgaRegPtr save)
     hwp->writeAttr(hwp, 0x10, attr10);
     hwp->writeSeq(hwp, 0x02, seq2);
     hwp->writeSeq(hwp, 0x04, seq4);
-    hwp->writeGr(hwp, 0x01, gr1);
-    hwp->writeGr(hwp, 0x03, gr3);
     hwp->writeGr(hwp, 0x04, gr4);
     hwp->writeGr(hwp, 0x05, gr5);
     hwp->writeGr(hwp, 0x06, gr6);
-    hwp->writeGr(hwp, 0x08, gr8);
     hwp->writeMiscOut(hwp, miscOut);
     hwp->IOBase = savedIOBase;
 

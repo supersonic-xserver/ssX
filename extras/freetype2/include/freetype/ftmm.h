@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftmm.h                                                                 */
 /*                                                                         */
 /*    FreeType Multiple Master font interface (specification).             */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -19,13 +26,32 @@
 #ifndef __FTMM_H__
 #define __FTMM_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
-#endif
-#include   FT_BUILD_H
-#include   FT_TYPE1_TABLES_H
+
+#include <ft2build.h>
+#include FT_TYPE1_TABLES_H
+
 
 FT_BEGIN_HEADER
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Section>                                                             */
+  /*    multiple_masters                                                   */
+  /*                                                                       */
+  /* <Title>                                                               */
+  /*    Multiple Masters                                                   */
+  /*                                                                       */
+  /* <Abstract>                                                            */
+  /*    How to manage Multiple Masters fonts.                              */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    The following types and functions are used to manage Multiple      */
+  /*    Master fonts, i.e. the selection of specific design instances by   */
+  /*    setting design axis coordinates.                                   */
+  /*                                                                       */
+  /*************************************************************************/
+
 
   /*************************************************************************/
   /*                                                                       */
@@ -79,18 +105,7 @@ FT_BEGIN_HEADER
 
   } FT_Multi_Master;
 
-
-  typedef FT_Error  (*FT_Get_MM_Func)( FT_Face           face,
-                                       FT_Multi_Master*  master );
-
-  typedef FT_Error  (*FT_Set_MM_Design_Func)( FT_Face   face,
-                                              FT_UInt   num_coords,
-                                              FT_Long*  coords );
-
-  typedef FT_Error  (*FT_Set_MM_Blend_Func)( FT_Face   face,
-                                             FT_UInt   num_coords,
-                                             FT_Long*  coords );
-
+  /* */
 
   /*************************************************************************/
   /*                                                                       */
@@ -109,8 +124,9 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Get_Multi_Master( FT_Face           face,
-                                              FT_Multi_Master  *amaster );
+  FT_EXPORT( FT_Error )
+  FT_Get_Multi_Master( FT_Face           face,
+                       FT_Multi_Master  *amaster );
 
 
   /*************************************************************************/
@@ -134,10 +150,10 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Set_MM_Design_Coordinates(
-                           FT_Face   face,
-                           FT_UInt   num_coords,
-                           FT_Long*  coords );
+  FT_EXPORT( FT_Error )
+  FT_Set_MM_Design_Coordinates( FT_Face   face,
+                                FT_UInt   num_coords,
+                                FT_Long*  coords );
 
 
   /*************************************************************************/
@@ -162,10 +178,13 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Set_MM_Blend_Coordinates(
-                           FT_Face    face,
-                           FT_UInt    num_coords,
-                           FT_Fixed*  coords );
+  FT_EXPORT( FT_Error )
+  FT_Set_MM_Blend_Coordinates( FT_Face    face,
+                               FT_UInt    num_coords,
+                               FT_Fixed*  coords );
+
+
+  /* */
 
 
 FT_END_HEADER

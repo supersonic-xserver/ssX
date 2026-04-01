@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/auth.c,v 1.15 2005/10/14 15:17:26 tsi Exp $ */
+/* $Xorg: auth.c,v 1.5 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -26,6 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/os/auth.c,v 1.14 2003/08/27 19:57:21 herrb Exp $ */
 
 /*
  * authorization hooks for the server
@@ -44,10 +52,10 @@ from The Open Group.
 # include   <sys/stat.h>
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-# include   <X11/extensions/security.h>
+# include   "extensions/security.h"
 #endif
 #ifdef WIN32
-#include <X11/Xw32defs.h>
+#include "Xw32defs.h"
 #endif
 
 struct protocol {
@@ -117,12 +125,12 @@ static struct protocol   protocols[] = {
  * specified authorization file
  */
 
-static const char *authorization_file = (char *)NULL;
+static char *authorization_file = (char *)NULL;
 
 static Bool ShouldLoadAuth = TRUE;
 
 void
-InitAuthorization (const char *file_name)
+InitAuthorization (char *file_name)
 {
     authorization_file = file_name;
 }
@@ -355,6 +363,7 @@ GenerateAuthorization(
     return -1;
 }
 
+#ifndef HAVE_ARC4RANDOM
 /* A random number generator that is more unpredictable
    than that shipped with some systems.
    This code is taken from the C standard. */
@@ -373,10 +382,24 @@ xdm_srand(unsigned int seed)
 {
     next = seed;
 }
+#endif
 
 void
 GenerateRandomData (int len, char *buf)
 {
+#ifdef HAVE_ARC4RANDOM
+    u_int32_t *rnd = (u_int32_t *)buf;
+    int i;
+
+    for (i = 0; i < len / 4; i++)
+    {
+	rnd[i] = arc4random();
+    }
+    for (i = (len / 4) * 4; i < len; i++)
+    {
+	buf[i] = arc4random() & 0xff;
+    }
+#else
     static int seed;
     int value;
     int i;
@@ -390,6 +413,7 @@ GenerateRandomData (int len, char *buf)
     }
 
     /* XXX add getrusage, popen("ps -ale") */
+#endif
 }
 
 #endif /* XCSECURITY */

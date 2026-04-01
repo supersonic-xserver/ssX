@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/bsdiLib.tmpl,v 3.4tsi Exp $
+XCOMM $XFree86: xc/config/cf/bsdiLib.tmpl,v 3.4 2003/11/04 01:59:31 dawes Exp $
 
 /*
  * BSDI shared library template (converted from Linux template)
@@ -30,8 +30,12 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedXmuReqs	$(LDPRELIB) $(XTOOLLIB) $(XLIB)
 #define SharedXextReqs	$(LDPRELIB) $(XONLYLIB)
 #define SharedXiReqs	$(LDPRELIB) $(XLIB)
+#define SharedPexReqs	$(LDPRELIB) $(XONLYLIB) MathLibrary
 #define SharedXtstReqs	$(LDPRELIB) $(XLIB)
+#define SharedXieReqs	$(LDPRELIB) $(XONLYLIB)
 #define SharedSMReqs	$(LDPRELIB) $(ICELIB)
+#define SharedFrescoReqs	$(LDPRELIB) $(XONLYLIB) FrescoSysLibs
+#define SharedXtfReqs	$(LDPRELIB) $(FRESCOLIB) $(XTOOLLIB) $(XLIB) FrescoSysLibs
 
 /* Motif lib requirements */
 #define SharedXReqs $(XTOOLLIB) $(XPLIB) $(XLIB)

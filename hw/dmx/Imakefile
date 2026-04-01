@@ -1,0 +1,124 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/dmx/Imakefile,v 1.11 2006/02/19 15:51:19 tsi Exp $
+
+#include <Server.tmpl>
+#include <lnxdoc.rules>
+
+#define IHaveSubdirs
+
+#if BuildGlxInDmx
+GLX_SRCS = dmx_glxvisuals.c
+GLX_OBJS = dmx_glxvisuals.o
+GLXPROXY_SUBDIR = glxProxy
+#endif
+
+#if !BuildServersOnly || BuildDmxDevelTools
+EXAMPLEDIR = examples
+#if BuildSgmlDocs
+DMXDOCDIR = doc
+#endif
+#endif
+
+#if BuildRender
+RENDER_SRCS = dmxpict.c
+RENDER_OBJS = dmxpict.o
+#endif
+
+SUBDIRS = dix os Xext input config $(DMXDOCDIR) $(EXAMPLEDIR) $(GLXPROXY_SUBDIR)
+
+#ifdef OS2Architecture
+SRCS1 = os2_stubs.c
+OBJS1 = os2_stubs.o
+#endif
+
+SRCS =	dmxinit.c \
+	dmxscrinit.c \
+	dmxshadow.c \
+	dmxcursor.c \
+	dmxinput.c \
+	dmxdpms.c \
+	dmxgc.c \
+	dmxgcops.c \
+	dmxwindow.c \
+	dmxpixmap.c \
+	dmxfont.c \
+	dmxcmap.c \
+	dmxvisual.c \
+	dmxlog.c \
+	dmxcb.c \
+	dmxprop.c \
+	dmxstat.c \
+	dmxsync.c \
+	dmxextension.c \
+	miinitext.c \
+	$(GLX_SRCS) \
+	$(RENDER_SRCS) \
+	$(SRCS1)
+
+OBJS =	dmxinit.o \
+	dmxscrinit.o \
+	dmxshadow.o \
+	dmxcursor.o \
+	dmxinput.o \
+	dmxdpms.o \
+	dmxgc.o \
+	dmxgcops.o \
+	dmxwindow.o \
+	dmxpixmap.o \
+	dmxfont.o \
+	dmxcmap.o \
+	dmxvisual.o \
+	dmxlog.o \
+	dmxcb.o \
+	dmxprop.o \
+	dmxstat.o \
+	dmxsync.o \
+	dmxextension.o \
+	miinitext.o \
+	$(GLX_OBJS) \
+	$(RENDER_OBJS) \
+	$(OBJS1)
+
+#include <dmx.cf>
+
+#ifdef XVendorString
+    VENDORSTRING = XVendorString
+   VENDOR_STRING = -DVENDOR_STRING=\"$(VENDORSTRING)\"
+#endif
+
+#ifdef XVendorRelease
+    VENDORRELEASE = XVendorRelease
+   VENDOR_RELEASE = -DVENDOR_RELEASE="$(VENDORRELEASE)"
+#endif
+
+VENDOR_DEFINES = $(VENDOR_STRING) $(VENDOR_RELEASE)
+
+        OSNAME = OSName
+      OSVENDOR = OSVendor
+OSNAME_DEFINES = -DOSNAME='"$(OSNAME)"' -DOSVENDOR='"$(OSVENDOR)"'
+
+INCLUDES = -I$(SERVERSRC)/include -I$(SERVERSRC)/os -I$(SERVERSRC)/mi \
+	   -I$(SERVERSRC)/fb -I$(SERVERSRC)/miext/shadow \
+	   -I$(SERVERSRC)/render -I$(SERVERSRC)/Xext
+
+DEFINES = $(OS_DEFINES) $(EXT_DEFINES) -DDMXEXT $(DMX_DEFINES) \
+	  $(VENDOR_DEFINES) $(OSNAME_DEFINES)
+
+all:: $(OBJS)
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+LinkSourceFile(miinitext.c,$(SERVERSRC)/mi)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),-DDMXSERVER)
+
+#ifdef OS2Architecture
+LinkSourceFile(os2_stubs.c,$(SERVERSRC)/hw/xfree86/os-support/os2)
+SpecialCObjectRule(os2_stubs,$(ICONFIGFILES),-DOS2NULLSELECT)
+#endif
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(dmxlib,$(OBJS))
+
+InstallManPage(Xdmx,$(MANDIR))
+
+DependTarget()

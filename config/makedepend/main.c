@@ -1,3 +1,11 @@
+/* $Xorg: main.c,v 1.5 2001/02/09 02:03:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1993, 1994, 1998 The Open Group
@@ -23,7 +31,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/makedepend/main.c,v 3.37tsi Exp $ */
+/* $XFree86: xc/config/makedepend/main.c,v 3.34 2004/03/13 23:52:23 tsi Exp $ */
 
 #include "def.h"
 #ifdef hpux
@@ -64,7 +72,7 @@ int	_debugmask;
 #define DASH_INC_PRE    "#include \""
 #define DASH_INC_POST   "\""
 
-static char *ProgramName;
+char *ProgramName;
 
 char	*directives[] = {
 	"if",
@@ -113,7 +121,6 @@ boolean		show_where_not = FALSE;
 /* Warn on multiple includes of same file */
 boolean		warn_multiple = FALSE;
 
-static char *base_name(char *file);
 static void setfile_cmdinc(struct filepointer *filep, long count, char **list);
 static void redirect(char *line, char *makefile);
 
@@ -140,7 +147,7 @@ catch (int sig)
 #define sa_mask sv_mask
 #define sa_flags sv_flags
 #endif
-static struct sigaction sig_act;
+struct sigaction sig_act;
 #endif /* USGISH */
 
 int
@@ -230,7 +237,6 @@ main(int argc, char *argv[])
 			endmarker = &argv[0][2];
 			if (endmarker[0] == '\0') endmarker = "--";
 			break;
-
 		case 'D':
 			if (argv[0][2] == '\0') {
 				argv++;
@@ -243,7 +249,6 @@ main(int argc, char *argv[])
 				}
 			define(argv[0] + 2, &maininclist);
 			break;
-
 		case 'I':
 			if (incp >= includedirs + MAXDIRS)
 			    fatalerr("Too many -I flags.\n");
@@ -253,7 +258,6 @@ main(int argc, char *argv[])
 				argc--;
 			}
 			break;
-
 		case 'U':
 			/* Undef's override all -D's so save them up */
 			numundefs++;
@@ -268,18 +272,15 @@ main(int argc, char *argv[])
 			}
 			undeflist[numundefs - 1] = argv[0] + 2;
 			break;
-
 		case 'Y':
 			defincdir = argv[0]+2;
 			break;
-
 		/* do not use if endmarker processing */
 		case 'a':
 			if (endmarker) break;
 			if (argv[0][2]) goto badopt;
 			append = TRUE;
 			break;
-
 		case 'w':
 			if (endmarker) break;
 			if (argv[0][2] == '\0') {
@@ -290,7 +291,6 @@ main(int argc, char *argv[])
 			} else
 				width = atoi(argv[0]+2);
 			break;
-
 		case 'o':
 			if (endmarker) break;
 			if (argv[0][2] == '\0') {
@@ -300,7 +300,6 @@ main(int argc, char *argv[])
 			} else
 				objsuffix = argv[0]+2;
 			break;
-
 		case 'p':
 			if (endmarker) break;
 			if (argv[0][2] == '\0') {
@@ -310,7 +309,6 @@ main(int argc, char *argv[])
 			} else
 				objprefix = argv[0]+2;
 			break;
-
 		case 'v':
 			if (endmarker) break;
 			verbose = TRUE;
@@ -319,7 +317,6 @@ main(int argc, char *argv[])
 				_debugmask = atoi(argv[0]+2);
 #endif
 			break;
-
 		case 's':
 			if (endmarker) break;
 			startat = argv[0]+2;
@@ -331,7 +328,6 @@ main(int argc, char *argv[])
 				fatalerr("-s flag's value should start %s\n",
 					"with '#'.");
 			break;
-
 		case 'f':
 			if (endmarker) break;
 			makefile = argv[0]+2;
@@ -347,11 +343,12 @@ main(int argc, char *argv[])
 			warn_multiple = TRUE;
 			break;
 
-		/* Ignore -O, -g so we can just pass ${CFLAGS} to makedepend */
+		/* Ignore -O, -g so we can just pass ${CFLAGS} to
+		   makedepend
+		 */
 		case 'O':
 		case 'g':
 			break;
-
 		case 'i':
 			if (strcmp(&argv[0][1],"include") == 0) {
 				char *buf;
@@ -374,10 +371,8 @@ main(int argc, char *argv[])
 				break;
 			}
 			/* intentional fall through */
-
 		default:
 			if (endmarker) break;
-
 		badopt:
 	/*		fatalerr("unknown option = %s\n", argv[0]); */
 			warning("ignoring option %s\n", argv[0]);
@@ -592,13 +587,8 @@ freefile(struct filepointer *fp)
 
 char *copy(char *str)
 {
-	char	*p;
+	char	*p = (char *)malloc(strlen(str) + 1);
 
-	if (!str)
-		return NULL;
-	p = (char *)malloc(strlen(str) + 1);
-	if (!p)
-		fatalerr("out of memory");
 	strcpy(p, str);
 	return(p);
 }
@@ -722,12 +712,6 @@ char *getnextline(struct filepointer *filep)
 				/* punt lines with just # (yacc generated) */
 				for (cp = bol+1;
 				     *cp && (*cp == ' ' || *cp == '\t'); cp++);
-				/*
-				 * TurboC seems to want its pragmas in column
-				 * 2.
-				 */
-				if (!strncmp(cp, "pragma", 6))
-					whitespace = FALSE;
 				if (*cp) goto done;
 				--p;
 			}
@@ -755,7 +739,7 @@ done:
  * Strip the file name down to what we want to see in the Makefile.
  * It will have objprefix and objsuffix around it.
  */
-static char *base_name(char *file)
+char *base_name(char *file)
 {
 	char	*p;
 

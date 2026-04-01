@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.32tsi Exp $
+XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.30 2004/04/05 02:33:12 dawes Exp $
 
 #define DoNormalLib NormalLibXft
 #define DoSharedLib SharedLibXft
@@ -23,8 +23,7 @@ XCOMM $XFree86: xc/lib/Xft/Imakefile,v 1.32tsi Exp $
 #endif
 
 #ifdef UseInstalled
-/*
- * when using xmkmf, make sure the needed definitions for the fontconfig
+/* when using xmkmf, make sure the needed definitions for the fontconfig
  * library are available
  */
 
@@ -44,8 +43,8 @@ TYPE1DIR=XftType1Dir
 #if HasGcc2 || HasGcc3
 WARNINGS=-Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wnested-externs
 #endif
-INCLUDES=$(FONTCONFIGINCLUDES) $(FREETYPE2INCLUDES) $(WARNINGS)
-DEFINES=$(FREETYPE2DEFINES) $(RENDERDEFINES)
+INCLUDES=$(FONTCONFIGINCLUDES) $(FREETYPE2INCLUDES) -I$(XBUILDINCDIR) $(WARNINGS)
+DEFINES=$(FREETYPE2DEFINES) $(RENDERDEFINES) -DXFREE86_FT2
 
 XFT_REVISION=0
 
@@ -136,7 +135,7 @@ xft.pc: xft.pc.in
 	RemoveFile($@)
 	sh config/config-subst $(SUBSTVARS) < xft.pc.in > $@
 
-InstallNonExecFile(xft.pc,$(PKGCONFIGDIR))
+InstallNonExecFile(xft.pc,$(USRLIBDIR)/pkgconfig)
 
 clean::
 	RemoveFile(xft.pc)

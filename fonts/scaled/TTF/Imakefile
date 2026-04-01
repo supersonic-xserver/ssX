@@ -16,11 +16,20 @@ FONTINSTDIR = $(FONTDIR)/TTF
 MakeFontsScale($(OBJS))
 MakeFontsDir(fonts.scale)
 
+#if UseFreetype2
 MakeFcCache($(FONTS))
+#endif
 
 InstallFonts($(FONTINSTDIR))
 InstallEncodingsDir($(ENCODINGSSRC),$(FONTINSTDIR))
+#if UseFreetype2
 InstallFcCache($(FONTINSTDIR))
+#endif
+
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif
 
 LinkSourceFile(Vera.ttf,$(VERASRCDIR))
 LinkSourceFile(VeraBI.ttf,$(VERASRCDIR))

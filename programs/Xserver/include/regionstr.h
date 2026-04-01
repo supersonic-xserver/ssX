@@ -1,3 +1,11 @@
+/* $Xorg: regionstr.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/regionstr.h,v 1.15tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/include/regionstr.h,v 1.14 2004/09/03 18:39:12 tsi Exp $ */
 
 #ifndef REGIONSTRUCT_H
 #define REGIONSTRUCT_H
@@ -391,9 +399,5 @@ extern void miRegionEmpty(
 
 extern BoxPtr miRegionExtents(
     RegionPtr /*pReg*/);
-
-#ifdef DEBUG
-extern int miPrintRegion(RegionPtr rgn);
-#endif
 
 #endif /* REGIONSTRUCT_H */

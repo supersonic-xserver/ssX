@@ -1,5 +1,12 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbsolid.c,v 3.11tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: cfbsolid.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -25,10 +32,11 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Keith Packard, MIT X Consortium
  */
+/* $XFree86: xc/programs/Xserver/cfb/cfbsolid.c,v 3.9 2003/10/29 22:44:53 tsi Exp $ */
 
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "gcstruct.h"
 #include "window.h"
@@ -45,7 +53,7 @@ in this Software without prior written authorization from The Open Group.
 
 #if defined(FAST_CONSTANT_OFFSET_MODE) && (RROP != GXcopy)
 # define Expand(left,right,leftAdjust) {\
-    int part = nmiddle & (PGSZB - 1); \
+    int part = nmiddle & 3; \
     int widthStep; \
     widthStep = widthDst - nmiddle - leftAdjust; \
     nmiddle >>= 2; \
@@ -110,11 +118,14 @@ in this Software without prior written authorization from The Open Group.
 	
 
 void
-RROP_NAME(cfbFillRectSolid)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
-			    BoxPtr pBox)
+RROP_NAME(cfbFillRectSolid) (pDrawable, pGC, nBox, pBox)
+    DrawablePtr	    pDrawable;
+    GCPtr	    pGC;
+    int		    nBox;
+    BoxPtr	    pBox;
 {
-    int    m;
-    CfbBits   *pdst;
+    register int    m;
+    register CfbBits   *pdst;
     RROP_DECLARE
     CfbBits   *pdstBase, *pdstRect;
     int		    nmiddle;
@@ -124,7 +135,7 @@ RROP_NAME(cfbFillRectSolid)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 #if PSZ == 24
     int		    leftIndex, rightIndex;
 #else
-    CfbBits   leftMask, rightMask;
+    register CfbBits   leftMask, rightMask;
 #endif
 
     cfbGetLongWidthAndPointer (pDrawable, widthDst, pdstBase)
@@ -139,7 +150,7 @@ RROP_NAME(cfbFillRectSolid)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 #if PSZ == 8
 	if (w == 1)
 	{
-	    char    *pdstb = ((char *) pdstRect) + pBox->x1;
+	    register char    *pdstb = ((char *) pdstRect) + pBox->x1;
 	    int	    incr = widthDst * PGSZB;
 
 	    while (h--)
@@ -152,19 +163,19 @@ RROP_NAME(cfbFillRectSolid)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 	{
 #endif
 #if PSZ == 24
-	leftIndex = pBox->x1 & (PGSZB - 1);
-/*	rightIndex = ((leftIndex + w) < 5) ? 0 : pBox->x2 & (PGSZB - 1); */
-	rightIndex = pBox->x2 & (PGSZB - 1);
+	leftIndex = pBox->x1 &3;
+/*	rightIndex = ((leftIndex+w)<5)?0:pBox->x2 &3;*/
+	rightIndex = pBox->x2 &3;
 
 	nmiddle = w - rightIndex;
 	if(leftIndex){
-	  nmiddle -= (PGSZB - leftIndex);
+	  nmiddle -= (4 - leftIndex);
 	}
 	nmiddle >>= 2;
 	if(nmiddle < 0)
 	  nmiddle = 0;
 
-	pdstRect += (pBox->x1 * PSZB) / PGSZB;
+	pdstRect += (pBox->x1 * 3) >> 2;
 	pdst = pdstRect;	
 	switch(leftIndex+w){
 	case 4:
@@ -771,17 +782,22 @@ RROP_NAME(cfbFillRectSolid)(DrawablePtr pDrawable, GCPtr pGC, int nBox,
 }
 
 void
-RROP_NAME(cfbSolidSpans)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
-			 DDXPointPtr pptInit, int *pwidthInit, int fSorted)
+RROP_NAME(cfbSolidSpans) (pDrawable, pGC, nInit, pptInit, pwidthInit, fSorted)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int		nInit;			/* number of spans to fill */
+    DDXPointPtr pptInit;		/* pointer to list of start points */
+    int		*pwidthInit;		/* pointer to list of n widths */
+    int 	fSorted;
 {
     CfbBits   *pdstBase;
     int		    widthDst;
 
     RROP_DECLARE
     
-    CfbBits  *pdst;
-    int	    nlmiddle;
-    int	    w;
+    register CfbBits  *pdst;
+    register int	    nlmiddle;
+    register int	    w;
     int			    x;
     
 				/* next three parameters are post-clip */
@@ -794,7 +810,7 @@ RROP_NAME(cfbSolidSpans)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
 #if PSZ == 24
     int		    leftIndex, rightIndex;
 #else
-    CfbBits  startmask, endmask;
+    register CfbBits  startmask, endmask;
 #endif
 
     devPriv = cfbGetGCPrivate(pGC);
@@ -824,20 +840,20 @@ RROP_NAME(cfbSolidSpans)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
 	if (!w)
 	    continue;
 #if PSZ == 24
-	leftIndex = x & (PGSZB - 1);
-/*	rightIndex = ((leftIndex + w) < 5) ? 0 : (x + w) & (PGSZB - 1); */
-	rightIndex = (x + w) & (PGSZB - 1);
+	leftIndex = x &3;
+/*	rightIndex = ((leftIndex+w)<5)?0:(x+w)&3;*/
+	rightIndex = (x+w)&3;
 
 	nlmiddle = w - rightIndex;
 	if(leftIndex){
-	  nlmiddle -= (PGSZB - leftIndex);
+	  nlmiddle -= (4 - leftIndex);
 	}
-/*	nlmiddle += PSZB; */
+/*	nlmiddle += 3;*/
 	nlmiddle >>= 2;
 	if(nlmiddle < 0)
 	  nlmiddle = 0;
 
-	pdst += (x / PGSZB) * PSZB;
+	pdst += (x >> 2)*3;
 	pdst += leftIndex? (leftIndex -1):0;
 	switch(leftIndex+w){
 	case 4:
@@ -1018,7 +1034,7 @@ RROP_NAME(cfbSolidSpans)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
 		    pdst--;
 		break;
 	    case 2:
-/*		pdst++; */
+/*		pdst++;*/
 #if RROP == GXcopy
 		    *pdst = ((*pdst) & 0xFFFF) | (piQxelXor[1] & 0xFFFF0000);
 		    pdst++;
@@ -1313,7 +1329,7 @@ RROP_NAME(cfbSolidSpans)(DrawablePtr pDrawable, GCPtr pGC, int nInit,
 #if PSZ == 8
 	if (w <= PGSZB)
 	{
-	    char   *addrb;
+	    register char   *addrb;
 
 	    addrb = ((char *) pdst) + x;
 	    while (w--)

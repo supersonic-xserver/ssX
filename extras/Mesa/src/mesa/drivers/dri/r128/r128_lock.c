@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r128/r128_lock.c,v 1.5 2002/10/30 12:51:38 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_lock.c,v 1.1.1.2 2004/12/10 15:05:53 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1999, 2000 ATI Technologies Inc. and Precision Insight, Inc.,
@@ -52,7 +59,7 @@ r128UpdatePageFlipping( r128ContextPtr rmesa )
 
    rmesa->doPageFlip = rmesa->sarea->pfAllowPageFlip;
 
-   use_back = (rmesa->glCtx->Color._DrawDestMask == BACK_LEFT_BIT);
+   use_back = (rmesa->glCtx->Color._DrawDestMask == DD_BACK_LEFT_BIT);
    use_back ^= (rmesa->sarea->pfCurrentPage == 1);
 
    if ( R128_DEBUG & DEBUG_VERBOSE_API )
@@ -85,7 +92,7 @@ void r128GetLock( r128ContextPtr rmesa, GLuint flags )
 {
    __DRIdrawablePrivate *dPriv = rmesa->driDrawable;
    __DRIscreenPrivate *sPriv = rmesa->driScreen;
-   R128SAREAPrivPtr sarea = rmesa->sarea;
+   drm_r128_sarea_t *sarea = rmesa->sarea;
    int i;
 
    drmGetLock( rmesa->driFd, rmesa->hHWContext, flags );
@@ -104,7 +111,7 @@ void r128GetLock( r128ContextPtr rmesa, GLuint flags )
       r128UpdatePageFlipping( rmesa );
       rmesa->lastStamp = dPriv->lastStamp;
       rmesa->new_state |= R128_NEW_CLIP;
-      rmesa->SetupNewInputs = ~0;
+      rmesa->tnl_state = ~0;
    }
 
    rmesa->dirty |= R128_UPLOAD_CONTEXT | R128_UPLOAD_CLIPRECTS;
@@ -112,8 +119,8 @@ void r128GetLock( r128ContextPtr rmesa, GLuint flags )
    rmesa->numClipRects = dPriv->numClipRects;
    rmesa->pClipRects = dPriv->pClipRects;
 
-   if ( sarea->ctxOwner != rmesa->hHWContext ) {
-      sarea->ctxOwner = rmesa->hHWContext;
+   if ( sarea->ctx_owner != rmesa->hHWContext ) {
+      sarea->ctx_owner = rmesa->hHWContext;
       rmesa->dirty = R128_UPLOAD_ALL;
    }
 

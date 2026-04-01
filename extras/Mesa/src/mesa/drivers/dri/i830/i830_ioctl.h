@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /**************************************************************************
 
@@ -26,7 +33,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
 
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_ioctl.h,v 1.3 2002/10/30 12:51:35 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_ioctl.h,v 1.1.1.2 2004/06/10 14:22:50 alanh Exp $ */
 
 /*
  * Author:
@@ -53,7 +60,7 @@ void i830WaitAgeLocked( i830ContextPtr imesa, int age );
 void i830WaitAge( i830ContextPtr imesa, int age );
 void i830DmaFinish( i830ContextPtr imesa );
 void i830RegetLockQuiescent( i830ContextPtr imesa );
-void i830DDInitIoctlFuncs( GLcontext *ctx );
+void i830InitIoctlFuncs( struct dd_function_table *functions );
 void i830CopyBuffer( const __DRIdrawablePrivate *dpriv );
 void i830PageFlip( const __DRIdrawablePrivate *dpriv );
 int i830_check_copy(int fd);

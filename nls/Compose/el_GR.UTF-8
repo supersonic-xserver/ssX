@@ -1572,12 +1572,4 @@ XCOMM Miscellaneous extensions.
 <Multi_key> <Greek_delta> <Greek_RHO>	: "₯"	U20af
 <Multi_key> <Greek_delta> <Greek_rho>	: "₯"	U20af
 
-XCOMM Khmer digraphs
-
-<U17ff>	:	"ាំ"
-<U17fe>	:	"ោះ"
-<U17fd>	:	"េះ"
-<U17fc>	:	"ុំ"
-<U17fb>	:	"ុះ"
-
 XCOMM End

@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Priv.h,v 3.93 2006/03/07 01:03:40 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Priv.h,v 3.89 2005/01/28 02:11:19 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
@@ -105,8 +119,6 @@
 #include "xf86Privstr.h"
 #include "propertyst.h"
 
-#define PRIVS_ELEVATED (getuid() != geteuid() || getgid() != getegid())
-
 /*
  * Parameters set ONLY from the command line options
  * The global state of these things is held in xf86InfoRec (when appropriate).
@@ -125,10 +137,10 @@ extern Bool xf86sFlag;
 extern Bool xf86bsEnableFlag;
 extern Bool xf86bsDisableFlag;
 extern Bool xf86silkenMouseDisableFlag;
-extern const char *xf86LayoutName;
-extern const char *xf86ScreenName;
-extern const char *xf86PointerName;
-extern const char *xf86KeyboardName;
+extern char *xf86LayoutName;
+extern char *xf86ScreenName;
+extern char *xf86PointerName;
+extern char *xf86KeyboardName;
 #ifdef KEEPBPP
 extern int xf86Bpp;
 #endif
@@ -139,7 +151,7 @@ extern rgb xf86Weight;
 extern Bool xf86FlipPixels;
 extern Bool xf86BestRefresh;
 extern Gamma xf86Gamma;
-extern const char *xf86ServerName;
+extern char *xf86ServerName;
 extern Bool xf86ShowUnresolved;
 
 /* Other parameters */
@@ -193,6 +205,9 @@ extern RootWinPropPtr *xf86RegisteredPropertiesTable;
 /* Function Prototypes */
 #ifndef _NO_XF86_PROTOTYPES
 
+/* xf86Beta.c */
+extern void xf86CheckBeta(int extraDays, char *key);
+
 /* xf86Bus.c */
 
 void xf86BusProbe(void);
@@ -234,10 +249,10 @@ extern DisplayModeRec xf86DefaultModes [];
 
 /* xf86DoScanPci.c */
 
-void DoScanPci(int argc, const char **argv, int i);
+void DoScanPci(int argc, char **argv, int i);
 
 /* xf86DoProbe.c */
-void DoProbeArgs(int argc, const char **argv, int i);
+void DoProbeArgs(int argc, char **argv, int i);
 void DoProbe(void);
 void DoConfigure(void);
 
@@ -254,10 +269,6 @@ void xf86HandlePMEvents(int fd, pointer data);
 extern int (*xf86PMGetEventFromOs)(int fd,pmEvent *events,int num);
 extern pmWait (*xf86PMConfirmEventToOs)(int fd,pmEvent event);
 void xf86GrabServerCallback(CallbackListPtr *, pointer, pointer);
-#ifdef WSCONS_SUPPORT
-struct wscons_event;
-void xf86PostWSKbdEvent(struct wscons_event *event);
-#endif
 
 /* xf86Helper.c */
 void xf86LogInit(void);
@@ -282,11 +293,6 @@ int xf86KbdProc(DeviceIntPtr pKeyboard, int what);
 /* xf86Kbd.c */ 
 
 void xf86KbdGetMapping(KeySymsPtr pKeySyms, CARD8 *pModMap);
-
-#ifdef WSCONS_SUPPORT
-/* xf86KbdBSD.c */ 
-int WSKbdToKeycode(int keycode);
-#endif
 
 /* xf86Lock.c */
 

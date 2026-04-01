@@ -1,5 +1,7 @@
 $XFree86: xc/programs/xedit/lisp/TODO,v 1.9 2002/12/16 03:59:27 paulo Exp $
 
+LAST UPDATED:	$Date: 2003/02/28 13:19:29 $
+
   Small todo list
 
 o Change function/macro body to know if a &key or &optional argument was not

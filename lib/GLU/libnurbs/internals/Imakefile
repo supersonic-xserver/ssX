@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GLU/libnurbs/internals/Imakefile,v 1.12tsi Exp $
+XCOMM $XFree86: xc/lib/GLU/libnurbs/internals/Imakefile,v 1.12 2003/10/23 21:30:04 tsi Exp $
 
 XCOMM License Applicability. Except to the extent portions of this file are
 XCOMM made subject to an alternative license as permitted in the SGI Free
@@ -139,7 +139,9 @@ OBJS = \
 INCLUDES = \
 	-I../nurbtess \
 	-I../../libutil \
-	-I../../include
+	-I../../include \
+	-I$(TOP)/include \
+	-I$(TOP)/include/GL
 
 #if defined(SGIArchitecture)
 OSDEFINES = -D_SCO_DS

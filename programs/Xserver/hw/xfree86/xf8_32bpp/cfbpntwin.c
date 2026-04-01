@@ -1,6 +1,20 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbpntwin.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbpntwin.c,v 1.5 2001/10/01 13:44:15 eich Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-#include <X11/X.h>
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -13,6 +27,11 @@
 #include "cfb32.h"
 #include "cfb8_32.h"
 #include "mi.h"
+
+#ifdef PANORAMIX
+#include "panoramiX.h"
+#include "panoramiXsrv.h"
+#endif
 
 void
 cfb8_32PaintWindow(
@@ -38,7 +57,15 @@ cfb8_32PaintWindow(
 	case BackgroundPixmap:
 	    xorg = pWin->drawable.x;
 	    yorg = pWin->drawable.y;
-
+#ifdef PANORAMIX
+	    if(!noPanoramiXExtension) {
+		int index = pWin->drawable.pScreen->myNum;
+		if(WindowTable[index] == pWin) {
+		    xorg -= panoramiXdataPtr[index].x;
+		    yorg -= panoramiXdataPtr[index].y;
+		}
+	    }
+#endif
 	    cfb32FillBoxTileOddGeneral ((DrawablePtr)pWin,
 			(int)REGION_NUM_RECTS(pRegion), REGION_RECTS(pRegion),
 			pWin->background.pixmap, xorg, yorg, GXcopy, 
@@ -78,6 +105,15 @@ cfb8_32PaintWindow(
 	    xorg = pBgWin->drawable.x;
 	    yorg = pBgWin->drawable.y;
 
+#ifdef PANORAMIX
+	    if(!noPanoramiXExtension) {
+		int index = pWin->drawable.pScreen->myNum;
+		if(WindowTable[index] == pBgWin) {
+		    xorg -= panoramiXdataPtr[index].x;
+		    yorg -= panoramiXdataPtr[index].y;
+		}
+	    }
+#endif
 	    cfb32FillBoxTileOddGeneral ((DrawablePtr)pWin,
 			(int)REGION_NUM_RECTS(pRegion), REGION_RECTS(pRegion),
 			pWin->border.pixmap, xorg, yorg, GXcopy, 

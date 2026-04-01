@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/XTrap/xtrapdi.c,v 1.7 2003/10/28 22:52:10 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*****************************************************************************
 Copyright 1987, 1988, 1989, 1990, 1991 by Digital Equipment Corp., Maynard, MA
 X11R6 Changes Copyright (c) 1994 by Robert Chesler of Absol-Puter, Hudson, NH.
@@ -20,53 +27,6 @@ CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 *****************************************************************************/
-/*
- * Copyright (c) 2005 by The XFree86 Project, Inc.
- * All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject
- * to the following conditions:
- *
- *   1.  Redistributions of source code must retain the above copyright
- *       notice, this list of conditions, and the following disclaimer.
- *
- *   2.  Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer
- *       in the documentation and/or other materials provided with the
- *       distribution, and in the same place and form as other copyright,
- *       license and disclaimer information.
- *
- *   3.  The end-user documentation included with the redistribution,
- *       if any, must include the following acknowledgment: "This product
- *       includes software developed by The XFree86 Project, Inc
- *       (http://www.xfree86.org/) and its contributors", in the same
- *       place and form as other third-party acknowledgments.  Alternately,
- *       this acknowledgment may appear in the software itself, in the
- *       same form and location as other such third-party acknowledgments.
- *
- *   4.  Except as contained in this notice, the name of The XFree86
- *       Project, Inc shall not be used in advertising or otherwise to
- *       promote the sale, use or other dealings in this Software without
- *       prior written authorization from The XFree86 Project, Inc.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 /*
  *  ABSTRACT:
  *
@@ -90,7 +50,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *	Robert Chesler - add client arg to swapping routines for X11R6 port
  *
  */
-
+
 /*-----------------*
  *  Include Files  *
  *-----------------*/
@@ -120,8 +80,8 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "pixmapstr.h"          /* DrawableRec */
 #include "windowstr.h"          /* Drawable Lookup structures */
 #include <X11/extensions/xtrapdi.h>
-#include "xtrapddmi.h"
-#include "xtrapproto.h"
+#include <X11/extensions/xtrapddmi.h>
+#include <X11/extensions/xtrapproto.h>
 #include "colormapst.h"
 #ifdef PANORAMIX
 #include "panoramiX.h"
@@ -139,24 +99,24 @@ DevicePtr XETrapPtrDev                       = NULL;
 int    XETrapErrorBase                       = 0L;
 xXTrapGetAvailReply XETrap_avail;            /* What's available to clients */
 
-globalref XETDispatchFunc XETrapDispatchVector[10L]; /* Vector of XTrap Rtns */
-globalref XETDispatchFunc XETSwDispatchVector[10L];  /* Swapped XTrap Rtns */
+globalref int_function XETrapDispatchVector[10L]; /* Vector of XTrap Rtns */
+globalref int_function XETSwDispatchVector[10L];  /* Swapped XTrap Rtns */
 
-globalref XETProcFunc XETrapProcVector[256L]; /* The "shadowed" ProcVector */
+globalref int_function XETrapProcVector[256L]; /* The "shadowed" ProcVector */
     /* The "real" EventVector (XTrap creates it till events 
      * truly become vectored
      */
 #ifndef VECTORED_EVENTS
-globalref ProcessInputProc EventProcVector[XETrapCoreEvents];
+globalref int_function EventProcVector[XETrapCoreEvents];
 #else
 extern WindowPtr GetCurrentRootWindow();
-globalref ProcessInputProc EventProcVector[128L];
+globalref int_function EventProcVector[128L];
 #endif
-static ProcessInputProc keybd_process_inp = NULL;  /* Used for VECTORED_EVENTS */
+static int_function keybd_process_inp = NULL;  /* Used for VECTORED_EVENTS */
     /* The "shadowed" Event Vector */
-globalref ProcessInputProc XETrapEventProcVector[XETrapCoreEvents];
+globalref int_function XETrapEventProcVector[XETrapCoreEvents];
 
-globalref XETSwReqFunc XETSwProcVector[256L];/* Vector of Req swapping rtns */
+globalref void_function XETSwProcVector[256L];/* Vector of Req swapping rtns */
 
 /* This macro returns a true/false indicator based on whether it changes the
  * environment state bits local to the server extension. This is based on the
@@ -216,8 +176,7 @@ static ClientList cmd_clients;   /* Linked-list of clients using command key */
 /*----------------------------*
  *  Forward Declarations
  *----------------------------*/
-static void _SwapInputProc (ProcessInputProc (*f1), ProcessInputProc (*f2));
-static void _SwapEventProc (XETProcFunc (*f1), XETProcFunc (*f2));
+static void _SwapProc (int (**f1 )(), int (**f2 )());
 static void sXETrapEvent (xETrapDataEvent *from , xETrapDataEvent *to );
 static int add_accelerator_node (ClientPtr client , ClientList *accel );
 static void remove_accelerator_node (ClientPtr client , ClientList *accel );
@@ -228,8 +187,7 @@ static void GetSendNamedColorRep (ClientPtr client , xResourceReq *req );
 static void GetSendColorCellsRep (ClientPtr client , xResourceReq *req );
 static void GetSendColorPlanesRep (ClientPtr client , xResourceReq *req );
 #endif
-static int realXETrapConfig(xXTrapConfigReq *request, ClientPtr client);
-
+
 /*
  *  DESCRIPTION:
  *
@@ -239,8 +197,7 @@ static int realXETrapConfig(xXTrapConfigReq *request, ClientPtr client);
  *      client would be reset here.
  *
  */
-int
-XETrapDestroyEnv(pointer value, XID id)
+int XETrapDestroyEnv(pointer value, XID id)
 {
     xXTrapReq request;
     XETrapEnv *penv = XETenv[(long)value];
@@ -274,7 +231,7 @@ XETrapDestroyEnv(pointer value, XID id)
 
     return 0;
 }                       
-
+
 /*
  *  DESCRIPTION:
  *
@@ -288,8 +245,7 @@ XETrapDestroyEnv(pointer value, XID id)
  *      server restart.
  *
  */
-void
-XETrapCloseDown(ExtensionEntry *extEntry)
+void XETrapCloseDown(ExtensionEntry *extEntry)
 {                                           
     long i;
 
@@ -303,7 +259,7 @@ XETrapCloseDown(ExtensionEntry *extEntry)
     ignore_grabs = False;
     return;
 }                       
-
+
 /*
  *
  *  DESCRIPTION:
@@ -322,8 +278,7 @@ XETrapCloseDown(ExtensionEntry *extEntry)
  *      functions are retained for vectoring purposes.
  */
 
-Bool
-XETrapRedirectDevices()
+Bool XETrapRedirectDevices()
 {
     Bool retval = True;
 
@@ -337,9 +292,9 @@ XETrapRedirectDevices()
         else
         {
             EventProcVector[KeyPress] =
-                XETrapKbdDev->realInputProc;
+                (int_function)XETrapKbdDev->realInputProc;
             EventProcVector[KeyRelease] =
-                XETrapKbdDev->realInputProc;
+                (int_function)XETrapKbdDev->realInputProc;
         }
 #ifdef VECTORED_EVENTS
         keybd_process_inp = EventProcVector[KeyPress];
@@ -362,11 +317,11 @@ XETrapRedirectDevices()
         else
         {
             EventProcVector[ButtonPress] = 
-                XETrapPtrDev->realInputProc;
+                (int_function)XETrapPtrDev->realInputProc;
             EventProcVector[ButtonRelease] = 
-                XETrapPtrDev->realInputProc;
+                (int_function)XETrapPtrDev->realInputProc;
             EventProcVector[MotionNotify] = 
-                XETrapPtrDev->realInputProc;
+                (int_function)XETrapPtrDev->realInputProc;
         }
         XETrapEventProcVector[ButtonPress]   = XETrapPointer;
         XETrapEventProcVector[ButtonRelease] = XETrapPointer;
@@ -375,7 +330,7 @@ XETrapRedirectDevices()
 #endif /* !VECTORED_EVENTS */
     return(retval);
 }
-
+
 /*
  *
  *  DESCRIPTION:
@@ -392,10 +347,9 @@ XETrapRedirectDevices()
  *
  */
 
-void
-DEC_XTRAPInit()
+void DEC_XTRAPInit()
 {
-    ExtensionEntry *extEntry;
+    register ExtensionEntry *extEntry;
     unsigned int i;
     Atom a;
 
@@ -418,7 +372,8 @@ DEC_XTRAPInit()
     XETrap_avail.data.event_base   = extEntry->eventBase;
 
     /* Set up our swapped reply vector */
-    ReplySwapVector[XETrap_avail.data.major_opcode] = sReplyXTrapDispatch;
+    ReplySwapVector[XETrap_avail.data.major_opcode] = 
+	(void_function) sReplyXTrapDispatch;
 
     /* Set up our swapped event vector */
     EventSwapVector[extEntry->eventBase + XETrapData] = 
@@ -507,7 +462,7 @@ DEC_XTRAPInit()
     }
     for (i=128L; i<=255L; i++)
     {   /* Extension "swapped" requests are not implemented */
-        XETSwProcVector[i] = XETSwNotImplemented;
+        XETSwProcVector[i] = NotImplemented;
     }
 #ifdef VERBOSE
     ErrorF("%s:  Vers. %d.%d-%d successfully loaded\n", XTrapExtName,
@@ -518,7 +473,7 @@ DEC_XTRAPInit()
 
     return;
 }
-
+
 /*
  *  DESCRIPTION:
  *
@@ -534,8 +489,7 @@ DEC_XTRAPInit()
  *
  */
 
-int
-XETrapCreateEnv(ClientPtr client)
+int XETrapCreateEnv(ClientPtr client)
 {
     XETrapEnv *penv = NULL;
     int status = Success;
@@ -582,7 +536,7 @@ XETrapCreateEnv(ClientPtr client)
 
     return(status);
 }
-
+
 /*
  *  DESCRIPTION:
  *
@@ -599,12 +553,11 @@ XETrapCreateEnv(ClientPtr client)
  *      necessary.
  */
 
-int
-XETrapDispatch(ClientPtr client)
+int XETrapDispatch(ClientPtr client)
 {
 
     REQUEST(xXTrapReq);
-    int status = Success;
+    register int status = Success;
 
     REQUEST_AT_LEAST_SIZE(xXTrapReq);
 
@@ -629,7 +582,7 @@ XETrapDispatch(ClientPtr client)
     }
     return(status);
 }
-
+
 /*
  *  DESCRIPTION:
  *                     
@@ -642,12 +595,11 @@ XETrapDispatch(ClientPtr client)
  *        DIFFERENT than that of the extension.
  */
 
-int
-sXETrapDispatch(ClientPtr client)
+int sXETrapDispatch(ClientPtr client)
 {
 
     REQUEST(xXTrapReq);
-    int status = Success;
+    register int status = Success;
 
     REQUEST_AT_LEAST_SIZE(xXTrapReq);
 
@@ -672,7 +624,7 @@ sXETrapDispatch(ClientPtr client)
     }
     return(status);
 }
-
+
 /*
  *  DESCRIPTION:
  *
@@ -682,12 +634,11 @@ sXETrapDispatch(ClientPtr client)
  *      is created.
  *
  */
-int
-XETrapReset(xXTrapReq *request, ClientPtr client)
+int XETrapReset(xXTrapReq *request, ClientPtr client)
 {
     static xXTrapConfigReq DummyReq;
-    int i;
-    int status = Success;
+    register int i;
+    register int status = Success;
     XETrapEnv *penv = XETenv[client->index];
 
     /* in case any i/o's pending */
@@ -713,7 +664,7 @@ XETrapReset(xXTrapReq *request, ClientPtr client)
         DummyReq.config_flags_event[i] = 0xFF;  /* Clear all protocol events */
     }
     /* Call config routine to clear all configurable fields */
-    status = realXETrapConfig(&DummyReq, client);
+    status = XETrapConfig(&DummyReq, client);
     /* reset the environment */
     for (i=0L; i<ASIZE(penv->cur.data_state_flags); i++)
     {
@@ -723,19 +674,16 @@ XETrapReset(xXTrapReq *request, ClientPtr client)
    
     return(status);
 }
-
+
 /*
  *  DESCRIPTION:
  *
  *      This function sends a reply back to the requesting client indicating
  *      the available states of the extension can be configured for.
  */
-int
-XETrapGetAvailable(xXTrapReq *r, ClientPtr client)
+int XETrapGetAvailable(xXTrapGetReq *request, ClientPtr client)
 {
     XETrapEnv *penv = XETenv[client->index];
-    xXTrapGetReq *request = (xXTrapGetReq *)r;
-
     update_protocol(request, client);
     /* Initialize the reply as needed */
     XETrap_avail.data.xtrap_protocol = penv->protocol;
@@ -744,15 +692,14 @@ XETrapGetAvailable(xXTrapReq *r, ClientPtr client)
     WriteReplyToClient(client, sizeof(xXTrapGetAvailReply), &XETrap_avail);
     return(Success);
 }
-
+
 /*
  *  DESCRIPTION:
  *
  *      This function sends a reply back to the requesting client indicating
  *      the current state of the extension.
  */
-int
-XETrapGetCurrent(xXTrapReq *request, ClientPtr client)
+int XETrapGetCurrent(xXTrapReq *request, ClientPtr client)
 {
     XETrapEnv *penv = XETenv[client->index];
     int rep_size = (penv->protocol == 31 ? 284 : sz_xXTrapGetCurReply);
@@ -765,7 +712,7 @@ XETrapGetCurrent(xXTrapReq *request, ClientPtr client)
 
     return(Success);
 }
-
+
 /*
  *  DESCRIPTION:
  *
@@ -773,8 +720,7 @@ XETrapGetCurrent(xXTrapReq *request, ClientPtr client)
  *      statistics (counts) of requests and events.  If stat's isn't
  *      configured, return failure.
  */
-int
-XETrapGetStatistics(xXTrapReq *request, ClientPtr client)
+int XETrapGetStatistics(xXTrapReq *request, ClientPtr client)
 {
     int status = Success;
     XETrapEnv *penv = XETenv[client->index];
@@ -815,15 +761,14 @@ XETrapGetStatistics(xXTrapReq *request, ClientPtr client)
     }
     return(status);
 }
-
+
 /*
  *  DESCRIPTION:
  *
  *      This function is dispatched when a client requests the extension to
  *      be configured in some manner.
  */
-static int
-realXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
+int XETrapConfig(xXTrapConfigReq *request, ClientPtr client)
 {
     UByteP vflags       = request->config_flags_valid;
     UByteP dflags       = request->config_flags_data;
@@ -851,7 +796,7 @@ realXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
                 {   /* Client wants the XTrap rtn */
                     if (++(vectored_events[i]) <= 1L)
                     {   /* first client, so do it */
-                        _SwapInputProc(&(XETrapEventProcVector[i]), 
+                        _SwapProc(&(XETrapEventProcVector[i]), 
                             &(EventProcVector[i]));
                     }
                 }
@@ -859,7 +804,7 @@ realXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
                 {   /* Client wants the *real* rtn */
                     if (--(vectored_events[i]) <= 0L)
                     {   /* No more clients using, so do it */
-                        _SwapInputProc(&(XETrapEventProcVector[i]), 
+                        _SwapProc(&(XETrapEventProcVector[i]), 
                             &(EventProcVector[i]));
                     }
                 }
@@ -868,22 +813,22 @@ realXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
                     case KeyPress:  /* needed for command key processing */
                     case KeyRelease:
                         XETrapKbdDev->processInputProc = 
-                            (EventProcVector[i] ? 
-                            EventProcVector[i] : 
-                            keybd_process_inp);
+                            (void_function)(EventProcVector[i] ? 
+                            (void_function)EventProcVector[i] : 
+                            (void_function)keybd_process_inp);
                         XETrapKbdDev->realInputProc = 
-                            (EventProcVector[i] ?
-                            EventProcVector[i] : 
-                            keybd_process_inp);
+                            (void_function)(EventProcVector[i] ?
+                            (void_function)EventProcVector[i] : 
+                            (void_function)keybd_process_inp);
                         break;
 #ifndef VECTORED_EVENTS
                     case ButtonPress: /* hack until events become vectored */
                     case ButtonRelease:
                     case MotionNotify:
                         XETrapPtrDev->processInputProc = 
-                            EventProcVector[i];
+                            (void_function)EventProcVector[i];
                         XETrapPtrDev->realInputProc = 
-                            EventProcVector[i];
+                            (void_function)EventProcVector[i];
                         break;
                     default:
                         status = BadImplementation;
@@ -947,14 +892,14 @@ realXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
                 {   /* Client wants the XTrap rtn */
                     if (++(vectored_requests[i]) <= 1L)
                     {   /* first client, so do it */
-                        _SwapEventProc(&(XETrapProcVector[i]), &(ProcVector[i]));
+                        _SwapProc(&(XETrapProcVector[i]), &(ProcVector[i]));
                     }
                 }
                 else
                 {   /* Client wants the *real* rtn */
                     if (--(vectored_requests[i]) <= 0L)
                     {   /* No more clients using, so do it */
-                        _SwapEventProc(&(XETrapProcVector[i]), &(ProcVector[i]));
+                        _SwapProc(&(XETrapProcVector[i]), &(ProcVector[i]));
                     }
                 }
                 if (status == Success)
@@ -1024,14 +969,7 @@ realXETrapConfig(xXTrapConfigReq *request, ClientPtr client)
     }    
     return(status);
 }
-int
-XETrapConfig(xXTrapReq *r, ClientPtr client)
-{
-    xXTrapConfigReq *request = (xXTrapConfigReq *)r;
-    return realXETrapConfig(request, client);
-}
-
-
+
 /*
  *  DESCRIPTION:
  *
@@ -1039,8 +977,7 @@ XETrapConfig(xXTrapReq *r, ClientPtr client)
  *      of requests and/or core events to the client may take place.
  *
  */
-int
-XETrapStartTrap(xXTrapReq *request, ClientPtr client)
+int XETrapStartTrap(xXTrapReq *request, ClientPtr client)
 {
     XETrapEnv *penv = XETenv[client->index];
     int status = add_accelerator_node(penv->client, &io_clients);
@@ -1057,8 +994,7 @@ XETrapStartTrap(xXTrapReq *request, ClientPtr client)
  *      of requests and/or core events to the client may *not* take place.
  *
  */
-int
-XETrapStopTrap(xXTrapReq *request, ClientPtr client)
+int XETrapStopTrap(xXTrapReq *request, ClientPtr client)
 {
     XETrapEnv *penv = XETenv[client->index];
 
@@ -1066,19 +1002,17 @@ XETrapStopTrap(xXTrapReq *request, ClientPtr client)
     BitFalse(penv->cur.data_state_flags, XETrapTrapActive);
     return(Success);
 }
-
+
 /*
  *  DESCRIPTION:
  *
  *      This function sends a reply back to the requesting client indicating
  *      the specific XTrap version of this extension.
  */
-int
-XETrapGetVersion(xXTrapReq *r, ClientPtr client)
+int XETrapGetVersion(xXTrapGetReq *request, ClientPtr client)
 {
     xXTrapGetVersReply ver_rep;
     XETrapEnv *penv = XETenv[client->index];
-    xXTrapGetReq *request = (xXTrapGetReq *)r;
 
     update_protocol(request,client);    /* to agree on protocol version */
     /* Initialize the reply as needed */
@@ -1093,15 +1027,14 @@ XETrapGetVersion(xXTrapReq *r, ClientPtr client)
     WriteReplyToClient(client, sizeof(xXTrapGetVersReply), &ver_rep);
     return(Success);
 }
-
+
 /*
  *  DESCRIPTION:
  *
  *      This function sends a reply back to the requesting client indicating
  *      the specific XTrap version of this extension.
  */
-int
-XETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
+int XETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
 {
     xXTrapGetLITimReply tim_rep;
     XETrapEnv *penv = XETenv[client->index];
@@ -1115,7 +1048,7 @@ XETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
     WriteReplyToClient(client, sizeof(xXTrapGetLITimReply), &tim_rep);
     return(Success);
 }
-
+
 /*
  *  DESCRIPTION:
  *
@@ -1130,8 +1063,7 @@ XETrapGetLastInpTime(xXTrapReq *request, ClientPtr client)
  *        back if writing to a swapped client, however, and this is done
  *        by calling the appropriate XETSwProcVector[] routine.
  */
-int
-XETrapRequestVector(ClientPtr client)
+int XETrapRequestVector(ClientPtr client)
 {
     int status = True;
     XETrapDatum *pdata, *spdata = NULL;
@@ -1221,7 +1153,7 @@ XETrapRequestVector(ClientPtr client)
                     else if (penv->cur.data_config_max_pkt_size == 
                         XETrapMinPktSize)
                     {   /* Minimum size, so swap it as an ResourceReq */
-                        XETSwResourceReq(&(spdata->u.req), penv->client);
+                        XETSwResourceReq(&(spdata->u.req));
                     }
                     else
                     {   /* trying to swap an extension request! */
@@ -1384,15 +1316,14 @@ XETrapRequestVector(ClientPtr client)
  *                   key should be ignored for subsequent server processing.
  *
  */
-void
-XETrapKeyboard(xEvent *x_event, DeviceIntPtr keybd, int count)
+int XETrapKeyboard(xEvent *x_event, DevicePtr keybd, int count)
 {                     
-    BYTE  type   = x_event->u.u.type;
-    BYTE  detail = x_event->u.u.detail;
+    register BYTE  type   = x_event->u.u.type;
+    register BYTE  detail = x_event->u.u.detail;
     XETrapEnv *penv;
     ClientList *stc = &stats_clients;
     ClientList *cmc = &cmd_clients;
-    ProcessInputProc cur_func = XETrapKeyboard;
+    int_function cur_func = XETrapKeyboard;
 
 #ifdef VERBOSE
     if (count != 1L)
@@ -1533,8 +1464,9 @@ XETrapKeyboard(xEvent *x_event, DeviceIntPtr keybd, int count)
     }
 #endif
     key_ignore = False; /* reset for next time around */
+    return 0;
 }
-
+
 /*
  *  DESCRIPTION:
  *
@@ -1548,12 +1480,11 @@ XETrapKeyboard(xEvent *x_event, DeviceIntPtr keybd, int count)
  *
  */
 #ifndef VECTORED_EVENTS
-void
-XETrapPointer(xEvent *x_event, DeviceIntPtr ptrdev, int count)
+int XETrapPointer(xEvent *x_event, DevicePtr ptrdev, int count)
 {
     XETrapEnv *penv;
     ClientList *stc = &stats_clients;
-    ProcessInputProc cur_func = XETrapPointer;
+    int_function cur_func = XETrapPointer;
 
 #ifdef VERBOSE
     if (count != 1L)
@@ -1587,10 +1518,11 @@ XETrapPointer(xEvent *x_event, DeviceIntPtr ptrdev, int count)
             (void)(*EventProcVector[x_event->u.u.type])(x_event,ptrdev,count);
         }
     }
+    return 0;
 }
 #endif /* !VECTORED_EVENTS */
 
-
+
 /*
  *  DESCRIPTION:
  *
@@ -1599,11 +1531,10 @@ XETrapPointer(xEvent *x_event, DeviceIntPtr ptrdev, int count)
  *      and writes out both the header and detail information.
  *
  */
-void
-XETrapStampAndMail(xEvent *x_event)
+void XETrapStampAndMail(xEvent *x_event)
 {
     XETrapDatum data;
-    CARD32 size;
+    register CARD32 size;
     XETrapEnv *penv;
     ClientList *ioc = &io_clients;
 
@@ -1674,11 +1605,10 @@ XETrapStampAndMail(xEvent *x_event)
     return;
 }
 #ifdef VECTORED_EVENTS
-int
-XETrapEventVector(ClientPtr client, xEvent *x_event)
+int XETrapEventVector(ClientPtr client, xEvent *x_event)
 {
     XETrapDatum data;
-    CARD32 size;
+    register CARD32 size;
     XETrapEnv *penv;
     ClientList *ioc = &io_clients;
 
@@ -1733,10 +1663,9 @@ XETrapEventVector(ClientPtr client, xEvent *x_event)
     return;
 }
 #endif /* VECTORED_EVENTS */
-void
-sReplyXTrapDispatch(ClientPtr client, int size, void *reply)
+void sReplyXTrapDispatch(ClientPtr client, int size, char *reply)
 {
-    XETrapRepHdr *rep = (XETrapRepHdr *)reply;
+    register XETrapRepHdr *rep = (XETrapRepHdr *)reply;
 
     switch(rep->detail)
     {   
@@ -1782,7 +1711,7 @@ sReplyXTrapDispatch(ClientPtr client, int size, void *reply)
     }
     return;
 }
-
+
 /* 
  * XLib communications routines 
  */
@@ -1796,8 +1725,7 @@ sReplyXTrapDispatch(ClientPtr client, int size, void *reply)
  *      an X Event.  nbytes must be at least equal to XETrapMinPktSize
  *
  */
-int
-XETrapWriteXLib(XETrapEnv *penv, BYTE *data, CARD32 nbytes)
+int XETrapWriteXLib(XETrapEnv *penv, BYTE *data, CARD32 nbytes)
 {
     CARD32 size, total = 0L;
     xETrapDataEvent event;
@@ -1843,8 +1771,7 @@ XETrapWriteXLib(XETrapEnv *penv, BYTE *data, CARD32 nbytes)
  *  Static Functions
  *----------------------------*/
 
-static void
-update_protocol(xXTrapGetReq *reqptr, ClientPtr client)
+static void update_protocol(xXTrapGetReq *reqptr, ClientPtr client)
 {
     XETrapEnv *penv = XETenv[client->index];
     /* update protocol number */
@@ -1866,20 +1793,9 @@ update_protocol(xXTrapGetReq *reqptr, ClientPtr client)
  * lint from complaining about mixed types. It seems to work, but I would
  * probably classify this as a hack.
  */
-static void
-_SwapInputProc (ProcessInputProc (*f1), ProcessInputProc (*f2))
+static void _SwapProc( register int (**f1)(), register int (**f2)())
 {
-    ProcessInputProc t1 = *f1;
-    *f1 = *f2;
-    *f2 = t1;
-
-    return;
-}
-
-static void
-_SwapEventProc (XETProcFunc (*f1), XETProcFunc (*f2))
-{
-    XETProcFunc t1 = *f1;
+    register int (*t1)() = *f1;
     *f1 = *f2;
     *f2 = t1;
 
@@ -1894,8 +1810,7 @@ _SwapEventProc (XETProcFunc (*f1), XETProcFunc (*f2))
  *	swapped by code in XETrapRequestVector().
  *
  */
-static void
-sXETrapEvent(xETrapDataEvent *from, xETrapDataEvent *to)
+static void sXETrapEvent(xETrapDataEvent *from, xETrapDataEvent *to)
 {
     to->type = from->type;
     to->detail = from->detail;
@@ -1912,8 +1827,7 @@ sXETrapEvent(xETrapDataEvent *from, xETrapDataEvent *to)
  *      (either io_clients, stats_clients, or cmd_clients).
  *
  */
-static int
-add_accelerator_node(ClientPtr client, ClientList *accel)
+static int add_accelerator_node(ClientPtr client, ClientList *accel)
 {
     Bool found = False;
     int status = Success;
@@ -1952,8 +1866,7 @@ add_accelerator_node(ClientPtr client, ClientList *accel)
  *      (either io_clients, stats_clients, or cmd_clients).
  *
  */
-static void
-remove_accelerator_node(ClientPtr client, ClientList *accel)
+static void remove_accelerator_node(ClientPtr client, ClientList *accel)
 {
     while (accel->next != NULL)
     {
@@ -1974,8 +1887,7 @@ remove_accelerator_node(ClientPtr client, ClientList *accel)
 }
 
 #ifdef COLOR_REPLIES
-static void
-GetSendColorRep(ClientPtr client, xResourceReq *req)
+static void GetSendColorRep(ClientPtr client, xResourceReq *req)
 {   /* adapted from ProcAllocColor() in dispatch.c */
     XETrapDatum data;
     int retval;
@@ -2031,8 +1943,7 @@ GetSendColorRep(ClientPtr client, xResourceReq *req)
     }
 }
 
-static void
-GetSendNamedColorRep(ClientPtr client, xResourceReq *req)
+static void GetSendNamedColorRep(ClientPtr client, xResourceReq *req)
 {   /* adapted from ProcAllocNamedColor() in dispatch.c */
     XETrapDatum data;
     XETrapEnv *penv = XETenv[client->index];
@@ -2100,8 +2011,7 @@ GetSendNamedColorRep(ClientPtr client, xResourceReq *req)
     }
 }
 
-static void
-GetSendColorCellsRep(ClientPtr client, xResourceReq *req)
+static void GetSendColorCellsRep(ClientPtr client, xResourceReq *req)
 {   /* adapted from ProcAllocColorCells() in dispatch.c */
     int                   retval;
     int                   npixels, nmasks;
@@ -2173,8 +2083,7 @@ GetSendColorCellsRep(ClientPtr client, xResourceReq *req)
     }
     DEALLOCATE_LOCAL(data);
 }
-static void
-GetSendColorPlanesRep(ClientPtr client, xResourceReq *req)
+static void GetSendColorPlanesRep(ClientPtr client, xResourceReq *req)
 {   /* adapted from ProcAllocColorPlanes() in dispatch.c */
     int                   retval;
     int                   npixels, nmasks;

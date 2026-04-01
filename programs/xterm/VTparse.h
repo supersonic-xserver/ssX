@@ -1,8 +1,26 @@
-/* $XTermId: VTparse.h,v 1.39 2006/02/12 22:45:50 tom Exp $ */
+/* $XTermId: VTparse.h,v 1.32 2004/11/25 15:03:47 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/xterm/VTparse.h,v 3.22 2005/11/13 23:10:35 dickey Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2002-2005,2006 by Thomas E. Dickey
+ *	$Xorg: VTparse.h,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
+ */
+
+/* $XFree86: xc/programs/xterm/VTparse.h,v 3.20 2004/12/01 01:27:46 dickey Exp $ */
+/*
+ * Copyright 2002-2003,2004 by Thomas E. Dickey
  *
  *                         All Rights Reserved
  *

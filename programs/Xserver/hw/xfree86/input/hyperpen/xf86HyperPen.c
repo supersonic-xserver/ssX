@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * xf86HyperPen
  *
  * Based on the xf86Summa driver.
@@ -35,7 +42,7 @@
  * TORTIOUS ACTIONS, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/hyperpen/xf86HyperPen.c,v 1.13 2005/10/14 15:16:56 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/hyperpen/xf86HyperPen.c,v 1.12 2004/10/23 15:29:31 dawes Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -52,7 +59,7 @@
 #include <xf86_OSproc.h>
 #include <xf86Xinput.h>
 #include <exevents.h>		/* Needed for InitValuator/Proximity stuff */
-#include <X11/keysym.h>
+#include <keysym.h>
 #include <mipointer.h>
 
 #include <xf86Module.h>
@@ -1179,9 +1186,6 @@ InputDriverRec HYPERPEN = {
  *
  * called when the module subsection is found in XF86Config
  */
-
-static MODULETEARDOWNPROTO(xf86HypUnplug);
-
 static void
 xf86HypUnplug(pointer	p)
 {
@@ -1193,11 +1197,8 @@ xf86HypUnplug(pointer	p)
  *
  * called when the module subsection is found in XF86Config
  */
-
-static MODULESETUPPROTO(xf86HypPlug);
-
 static pointer
-xf86HypPlug(ModuleDescPtr	module,
+xf86HypPlug(pointer	module,
 	    pointer	options,
 	    int		*errmaj,
 	    int		*errmin)

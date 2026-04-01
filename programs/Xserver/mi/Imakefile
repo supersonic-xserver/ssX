@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/programs/Xserver/mi/Imakefile,v 3.36tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:53:36 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/programs/Xserver/mi/Imakefile,v 3.35 2003/04/21 12:32:13 sven Exp $
 
 #include <Server.tmpl>
 
@@ -36,9 +41,18 @@ OBJS =	$(CBRT_OBJ) mivaltree.o mipolyseg.o mipolyrect.o \
 	mipointer.o misprite.o midispcur.o miscrinit.o miclipn.o migc.o \
 	micmap.o mioverlay.o
 
-INCLUDES = -I../include -I../render -I$(SERVERSRC)/Xext
+#ifdef XFree86Version
+/* 
+ * Make sure XINPUT, XF86VidTune, etc aren't defined for the miinitext.o 
+ * used by Xnest, Xvfb 
+ */
+EXT_DEFINES = ExtensionDefines -UXINPUT -UXF86VIDMODE -UXFreeXDGA -UXF86MISC \
+	-UXFree86LOADER
+#endif
+
+INCLUDES = -I. -I../include -I../../../include/fonts -I../render \
+           -I$(XINCLUDESRC) -I$(FONTINCSRC) -I$(EXTINCSRC) -I$(SERVERSRC)/Xext
 LINTLIBS = ../dix/llib-ldix.ln ../os/llib-los.ln
-DEFINES = $(EXT_DEFINES) -UXFree86LOADER
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(mi,$(OBJS))
@@ -49,10 +63,10 @@ NormalLintTarget($(SRCS))
 NormalLibraryTarget(cbrt,cbrt.o)
 #endif
 
-SpecialCObjectRule(miinitext,$(ICONFIGFILES),NullParameter)
-SpecialCObjectRule(miscrinit,$(ICONFIGFILES),NullParameter)
+SpecialCObjectRule(miinitext,$(ICONFIGFILES),$(EXT_DEFINES))
+SpecialCObjectRule(miscrinit,$(ICONFIGFILES),$(EXT_DEFINES))
 #ifdef ItsyCompilerBug
-SpecialCObjectRule(mipolycon,NullParameter,-O0)
+SpecialCObjectRule(mipolycon,$(_NOOP_),-O0)
 #endif
 #if defined(OpenBSDArchitecture) && defined(Sparc64Architecture)
 SpecialCObjectRule(mizerclip,NullParameter,-O0)

@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/include/freetype/fterrdef.h,v 1.2 2007/04/05 16:08:57 tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  fterrdef.h                                                             */
 /*                                                                         */

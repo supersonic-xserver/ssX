@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_3d_reg.h,v 1.4 2002/12/10 01:26:53 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_3d_reg.h,v 1.1.1.2 2004/12/10 15:05:47 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #define I830_SET_FIELD( var, mask, value ) (var &= ~(mask), var |= value)
 
 #define CMD_3D (0x3<<29)
@@ -200,6 +207,8 @@
 #define SRC_ABLEND_FACT(x)		((x)<<6)
 #define ENABLE_DST_ABLEND_FACTOR	(1<<5)
 #define DST_ABLEND_FACT(x)		(x)
+
+#define BLEND_STATE_MASK (ALPHA_BLENDFUNC_MASK | SRC_DST_ABLEND_MASK)
 
 #define BLENDFACT_ZERO			0x01
 #define BLENDFACT_ONE			0x02

@@ -1,0 +1,17 @@
+/Jamfile/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afangles.c/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afdummy.c/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afdummy.h/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afglobal.c/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afglobal.h/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afhints.c/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/afhints.h/1.1.1.1/Fri Mar 18 13:07:29 2005//Tnetbsd-5-2-3-RELEASE
+/aflatin.c/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/aflatin.h/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/afloader.c/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/afloader.h/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/afmodule.c/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/afmodule.h/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/aftypes.h/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+/autofit.c/1.1.1.1/Fri Mar 18 13:07:30 2005//Tnetbsd-5-2-3-RELEASE
+D

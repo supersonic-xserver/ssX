@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/offscreen.c,v 1.5 2001/08/01 00:44:56 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1993 Gerrit Jan Akkerman 
  *
@@ -41,6 +48,7 @@
  * SOFTWARE.
  *
 */
+/* $XConsortium: offscreen.c /main/4 1996/02/21 17:56:55 kaleb $ */
 
 #include "xf4bpp.h"
 #include "vgaVideo.h"

@@ -1,0 +1,105 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/sun/Imakefile,v 1.12 2006/02/19 15:51:20 tsi Exp $
+
+#include <Server.tmpl>
+
+#define IHaveSubdirs
+
+#if BuildXKB
+XKBDIRS = xkb
+#endif
+
+#if BuildRender
+RENDERDIRS = render
+#endif
+
+#if BuildRandR
+RANDRDIRS = randr
+#endif
+
+#if BuildRECORD
+RECORDDIRS = record
+#endif
+
+#if BuildDBE
+DBEDIRS = dbe
+#endif
+
+#if BuildXTrap
+XTRAPDIRS = XTrap
+#endif
+
+SUBDIRS = dix os Xext $(XKBDIRS) $(RENDERDIRS) $(RANDRDIRS) $(RECORDDIRS) \
+	  $(DBEDIRS) $(XTRAPDIRS)
+
+SRCS1 = sunCfb.c sunCfb24.c sunCursor.c sunFbs.c sunIo.c sunKbd.c sunMfb.c \
+	sunMouse.c sunKeyMap.c
+
+OBJS1 = sunCfb.o sunCfb24.o sunCursor.o sunFbs.o sunIo.o sunKbd.o sunMfb.o \
+	sunMouse.o sunKeyMap.o
+
+#if !BuildLowMem
+SRCS2 = sunGX.c
+OBJS2 = sunGX.o
+#endif
+
+SRCS3 = sunInit.c sunInitExt.c
+OBJS3 = sunInit.o sunInitExt.o
+
+#ifndef i386Architecture
+SRCS4 = sunInitMono.c sunInExMono.c sunInitMulti.c
+OBJS4 = sunInitMono.o sunInExMono.o sunInitMulti.o
+#endif
+
+#ifdef XsunExcludedExtensions
+SUN_DEFINES = XsunExcludedExtensions
+#endif
+
+DEFINES = $(OS_DEFINES) $(EXT_DEFINES) $(SUN_DEFINES)
+
+SRCS = $(SRCS1) $(SRCS2) $(SRCS3) $(SRCS4) kbd_mode.c constype.c
+
+OBJS = $(OBJS1) $(OBJS2)
+
+   INCLUDES = -I$(SERVERSRC)/mi -I$(SERVERSRC)/mfb \
+	      -I$(SERVERSRC)/cfb -I$(SERVERSRC)/cfb32 \
+	      -I$(SERVERSRC)/dbe -I$(SERVERSRC)/record \
+	      -I$(SERVERSRC)/include -I$(SERVERSRC)
+   LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln \
+	      $(SERVERSRC)/mfb/llib-lmfb.ln $(SERVERSRC)/mi/llib-lmi.ln \
+	      $(SERVERSRC)/cfb/llib-lcfb.ln
+
+NormalLibraryObjectRule()
+
+all:: $(OBJS3) $(OBJS4) kbd_mode constype
+
+lintlib:
+
+NormalLibraryTarget(sun,$(OBJS))
+NormalLintTarget($(SRCS1))
+
+LinkFile(sunInitExt.c,$(SERVERSRC)/mi/miinitext.c)
+sunInitExt.o: $(ICONFIGFILES)
+
+#ifndef i386Architecture
+sunInExMono.o: $(ICONFIGFILES)
+ObjectFromSpecialSource(sunInExMono,$(SERVERSRC)/mi/miinitext,-UGLXEXT -URENDER)
+ObjectFromSpecialSource(sunInitMono,sunInit,-DSUNMAXDEPTH=1)
+ObjectFromSpecialSource(sunInitMulti,sunInit,-DSUNMAXDEPTH=32)
+#endif
+
+SingleProgramTarget(kbd_mode, kbd_mode.o,,)
+SingleProgramTarget(constype, constype.o,,)
+InstallProgram(kbd_mode,$(BINDIR))
+InstallProgram(constype,$(BINDIR))
+InstallManPage(kbd_mode,$(MANDIR))
+InstallManPage(constype,$(MANDIR))
+InstallManPage(Xsun,$(MANDIR))
+#ifndef i386Architecture
+InstallManPageAliases(Xsun,$(MANDIR),XsunMono)
+InstallManPageAliases(Xsun,$(MANDIR),Xsun24)
+#endif
+
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

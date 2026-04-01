@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_driver.c,v 1.103tsi Exp $ 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_driver.c,v 1.99 2004/11/26 13:45:05 tsi Exp $ 
  *
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -26,6 +33,11 @@
  *
  * Large parts rewritten for XFree86 4.0 by Koen Gadeyne.
  */
+/* $XConsortium: et4_driver.c /main/27 1996/10/28 04:48:15 kaleb $ */
+
+
+
+
 
 /*** Generic includes ***/
 
@@ -45,7 +57,7 @@
 #include "xf86int10.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /*** Chip-specific includes ***/
 
@@ -60,8 +72,8 @@ static const OptionInfoRec * TsengAvailableOptions(int chipid, int busid);
 static void TsengIdentify(int flags);
 static Bool TsengProbe(DriverPtr drv, int flags);
 static Bool TsengPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool TsengScreenInit(int Index, ScreenPtr pScreen, const int argc,
-    const char **argv);
+static Bool TsengScreenInit(int Index, ScreenPtr pScreen, int argc,
+    char **argv);
 static Bool TsengEnterVT(int scrnIndex, int flags);
 static void TsengLeaveVT(int scrnIndex, int flags);
 static Bool TsengCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -292,7 +304,7 @@ static XF86ModuleVersionInfo tsengVersRec =
 XF86ModuleData tsengModuleData = { &tsengVersRec, tsengSetup, NULL };
 
 static pointer
-tsengSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+tsengSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -308,8 +320,8 @@ tsengSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, vgaHWSymbols, miscfbSymbols, fbSymbols,
-			     xaaSymbols, int10Symbols, ramdacSymbols,  NULL);
+	LoaderRefSymLists(vgaHWSymbols, miscfbSymbols, fbSymbols, xaaSymbols,
+			  int10Symbols, ramdacSymbols,  NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -1529,7 +1541,6 @@ TsengPreInit(ScrnInfoPtr pScrn, int flags)
     TsengPtr pTseng;
     MessageType from;
     int i;
-    ModuleDescPtr pMod;
 
     if (flags & PROBE_DETECT) return FALSE;
 
@@ -1564,9 +1575,9 @@ TsengPreInit(ScrnInfoPtr pScrn, int flags)
     pTseng->pEnt = xf86GetEntityInfo(*pScrn->entityList);
 
 #if 1
-    if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
+    if (xf86LoadSubModule(pScrn, "int10")) {
  	xf86Int10InfoPtr pInt;
-	xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+	xf86LoaderReqSymLists(int10Symbols, NULL);
 #if 1
 	xf86DrvMsg(pScrn->scrnIndex,X_INFO,"initializing int10\n");
 	pInt = xf86InitInt10(pTseng->pEnt->index);
@@ -1575,9 +1586,9 @@ TsengPreInit(ScrnInfoPtr pScrn, int flags)
     }
 #endif
     
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
-    xf86LoaderModReqSymLists(pMod, vgaHWSymbols, NULL);
+    xf86LoaderReqSymLists(vgaHWSymbols, NULL);
     /*
      * Allocate a vgaHWRec
      */
@@ -1852,43 +1863,43 @@ TsengPreInit(ScrnInfoPtr pScrn, int flags)
     /* Load bpp-specific modules */
     switch (pScrn->bitsPerPixel) {
     case 1:
-	if (!(pMod = xf86LoadSubModule(pScrn, "xf1bpp"))) {
+	if (xf86LoadSubModule(pScrn, "xf1bpp") == NULL) {
 	  TsengFreeRec(pScrn);
 	  return FALSE;
 	}
-	xf86LoaderModReqSymbols(pMod, "xf1bppScreenInit", NULL);
+	xf86LoaderReqSymbols("xf1bppScreenInit", NULL);
 	break;
     case 4:
-	if (!(pMod = xf86LoadSubModule(pScrn, "xf4bpp"))) {
+	if (xf86LoadSubModule(pScrn, "xf4bpp") == NULL) {
 	  TsengFreeRec(pScrn);
 	  return FALSE;
 	}
-	xf86LoaderModReqSymbols(pMod, "xf4bppScreenInit", NULL);
+	xf86LoaderReqSymbols("xf4bppScreenInit", NULL);
 	break;
     default:
-	if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+	if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	  TsengFreeRec(pScrn);
 	  return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	xf86LoaderReqSymLists(fbSymbols, NULL);
 	break;
     }
 
     /* Load XAA if needed */
     if (pTseng->UseAccel) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    TsengFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
     /* Load ramdac if needed */
     if (pTseng->HWCursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+	if (!xf86LoadSubModule(pScrn, "ramdac")) {
 	    TsengFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
 /*    TsengLock(); */
 
@@ -2019,8 +2030,7 @@ end_memsetup:
 }
 
 static Bool
-TsengScreenInit(int scrnIndex, ScreenPtr pScreen,
-    const int argc, const char **argv)
+TsengScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     TsengPtr pTseng;

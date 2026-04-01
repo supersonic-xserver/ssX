@@ -1,5 +1,15 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/panel/platform.c,v 1.4 2003/11/03 05:11:24 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: platform.c $
+ * $Revision: 1.1.1.2 $
+ *
  * File Contents: This file contains platform dependent functions
  *                which provide interface to that platform.
  *

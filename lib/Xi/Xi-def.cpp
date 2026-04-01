@@ -46,4 +46,4 @@ EXPORTS
  _xibadevent
  _xibadmode
  _xidevicebusy
-/* $XFree86$ */
+/* $Xorg: Xi-def.cpp,v 1.3 2000/08/17 19:45:58 cpqbld Exp $ */

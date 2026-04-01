@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - GC implementation.
  *
  * Copyright (C) 1998,1999,2000 Jakub Jelinek (jakub@redhat.com)
@@ -24,7 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_gc.c,v 1.5 2005/10/14 15:16:46 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/ffb_gc.c,v 1.4 2003/06/23 17:35:48 eich Exp $ */
 
 #include "ffb.h"
 #include "ffb_regs.h"
@@ -35,7 +42,7 @@
 
 #include "scrnintstr.h"
 #include "pixmapstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 
 #define PSZ 8
@@ -443,10 +450,7 @@ CreatorNewFillArea(GCPtr pGC, cfbPrivGCPtr devPriv, CreatorPrivGCPtr gcPriv, int
 	pGC->ops->PushPixels = mfbPushPixels;
 }
 
-extern GCOps cfbNonTEOps;
-extern GCOps cfb32NonTEOps;
-
-static void
+void
 CreatorValidateGC (GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 {
 	int	mask;		/* stateChanges */
@@ -465,6 +469,9 @@ CreatorValidateGC (GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
 	type = pFfb->vtSema ? -1 : pDrawable->type;
 	if (type != DRAWABLE_WINDOW) {
 		if (gcPriv->type == DRAWABLE_WINDOW) {
+			extern GCOps cfbNonTEOps;
+			extern GCOps cfb32NonTEOps;
+
 			miDestroyGCOps (pGC->ops);
 
 			if (pGC->depth == 8)

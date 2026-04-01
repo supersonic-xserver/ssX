@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dlloader.c,v 1.18 2006/03/16 16:50:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dlloader.c,v 1.14 2004/02/13 23:58:44 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1997 The XFree86 Project, Inc.
@@ -46,83 +60,12 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * Copyright 2003-2006 by David H. Dawes.
- * Copyright 2003-2006 by X-Oz Technologies.
- * All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- * 
- *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions, and the following disclaimer.
- *
- *  2. Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- * 
- *  3. The end-user documentation included with the redistribution,
- *     if any, must include the following acknowledgment: "This product
- *     includes software developed by X-Oz Technologies
- *     (http://www.x-oz.com/)."  Alternately, this acknowledgment may
- *     appear in the software itself, if and wherever such third-party
- *     acknowledgments normally appear.
- *
- *  4. Except as contained in this notice, the name of X-Oz
- *     Technologies shall not be used in advertising or otherwise to
- *     promote the sale, use or other dealings in this Software without
- *     prior written authorization from X-Oz Technologies.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL X-OZ TECHNOLOGIES OR ITS CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 
-#ifdef sgi
-/*
- * From the IRIX dladdr manpage:
- *
- * "<dlfcn.h> does not contain a prototype for dladdr or definition of Dl_info.
- * The #include <dlfcn.h> in the SYNOPSIS line is traditional, but contains no
- * dladdr prototype and no IRIX library contains an implementation.  Write your
- * own declaration based on the code below.
- *
- * The following code is dependent on internal interfaces that are not part of
- * the IRIX compatibility guarantee; however, there is no future intention to
- * change this interface, so on a practical level, the code below is safe to
- * use on IRIX."
- *
- * The following is adapted from the sample code the manpage contains.
- */
-#include <rld_interface.h>
-
-static int dladdr(void *address, Dl_info *dl)
-{
-    void *v = _rld_new_interface(_RLD_DLADDR,address,dl);
-    return (long)v;
-}
-
-#endif
-
-#include <X11/Xos.h>
+#include "Xos.h"
 #include "os.h"
 
 #include "sym.h"
@@ -245,6 +188,18 @@ DLLoadModule(loaderPtr modrec, int fd, LOOKUP ** ppLookup)
 }
 
 void
+DLResolveSymbols(void *mod)
+{
+    return;
+}
+
+int
+DLCheckForUnresolved(void *mod)
+{
+    return 0;
+}
+
+void
 DLUnloadModule(void *modptr)
 {
     DLModulePtr dlfile = (DLModulePtr) modptr;
@@ -269,27 +224,3 @@ DLUnloadModule(void *modptr)
     dlclose(dlfile->dlhandle);
     xf86loaderfree(modptr);
 }
-
-const char *
-DLAddressToSymbol(void *mod, unsigned long addr, unsigned long *symaddr,
-		  const char **filename, int exe)
-{
-#ifdef HAVE_DLADDR
-    static Dl_info info;
-    int ret;
-
-    ret = dladdr((void *)addr, &info);
-    if (ret) {
-	*symaddr = (unsigned long)info.dli_saddr;
-	*filename = info.dli_fname;
-#ifdef NEED_UNDERSCORE_FOR_DLLSYM
-	return info.dli_sname + 1;
-#else
-	return info.dli_sname;
-#endif
-    }
-#endif
-
-    return NULL;
-}
-

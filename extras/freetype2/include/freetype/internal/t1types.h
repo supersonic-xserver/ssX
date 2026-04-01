@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1types.h                                                              */
 /*                                                                         */
 /*    Basic Type1/Type2 type definitions and interface (specification      */
 /*    only).                                                               */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -20,12 +27,13 @@
 #ifndef __T1TYPES_H__
 #define __T1TYPES_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H  <freetype/config/ftbuild.h>
-#endif
-#include   FT_BUILD_H
-#include   FT_TYPE1_TABLES_H
-#include   FT_INTERNAL_POSTSCRIPT_NAMES_H
+
+#include <ft2build.h>
+#include FT_TYPE1_TABLES_H
+#include FT_INTERNAL_POSTSCRIPT_HINTS_H
+#include FT_INTERNAL_SERVICE_H
+#include FT_SERVICE_POSTSCRIPT_CMAPS_H
+
 
 FT_BEGIN_HEADER
 
@@ -46,7 +54,7 @@ FT_BEGIN_HEADER
   /*************************************************************************/
   /*                                                                       */
   /* <Struct>                                                              */
-  /*    T1_Encoding                                                        */
+  /*    T1_EncodingRec                                                     */
   /*                                                                       */
   /* <Description>                                                         */
   /*    A structure modeling a custom encoding.                            */
@@ -63,7 +71,7 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*    char_name  :: An array of corresponding glyph names.               */
   /*                                                                       */
-  typedef struct  T1_Encoding_
+  typedef struct  T1_EncodingRecRec_
   {
     FT_Int       num_chars;
     FT_Int       code_first;
@@ -72,32 +80,28 @@ FT_BEGIN_HEADER
     FT_UShort*   char_index;
     FT_String**  char_name;
 
-  } T1_Encoding;
+  } T1_EncodingRec, *T1_Encoding;
 
 
   typedef enum  T1_EncodingType_
   {
-    t1_encoding_none = 0,
-    t1_encoding_array,
-    t1_encoding_standard,
-    t1_encoding_expert
+    T1_ENCODING_TYPE_NONE = 0,
+    T1_ENCODING_TYPE_ARRAY,
+    T1_ENCODING_TYPE_STANDARD,
+    T1_ENCODING_TYPE_ISOLATIN1,
+    T1_ENCODING_TYPE_EXPERT
 
   } T1_EncodingType;
 
 
-  typedef struct  T1_Font_
+  typedef struct  T1_FontRec_
   {
-    /* font info dictionary */
-    T1_FontInfo      font_info;
-
-    /* private dictionary */
-    T1_Private       private_dict;
-
-    /* top-level dictionary */
-    FT_String*       font_name;
+    PS_FontInfoRec   font_info;         /* font info dictionary */
+    PS_PrivateRec    private_dict;      /* private dictionary   */
+    FT_String*       font_name;         /* top-level dictionary */
 
     T1_EncodingType  encoding_type;
-    T1_Encoding      encoding;
+    T1_EncodingRec   encoding;
 
     FT_Byte*         subrs_block;
     FT_Byte*         charstrings_block;
@@ -105,12 +109,12 @@ FT_BEGIN_HEADER
 
     FT_Int           num_subrs;
     FT_Byte**        subrs;
-    FT_Int*          subrs_len;
+    FT_PtrDist*      subrs_len;
 
     FT_Int           num_glyphs;
     FT_String**      glyph_names;       /* array of glyph names       */
     FT_Byte**        charstrings;       /* array of glyph charstrings */
-    FT_Int*          charstrings_len;
+    FT_PtrDist*      charstrings_len;
 
     FT_Byte          paint_type;
     FT_Byte          font_type;
@@ -119,17 +123,17 @@ FT_BEGIN_HEADER
     FT_BBox          font_bbox;
     FT_Long          font_id;
 
-    FT_Int           stroke_width;
+    FT_Fixed         stroke_width;
 
-  } T1_Font;
+  } T1_FontRec, *T1_Font;
 
 
-  typedef struct  CID_Subrs_
+  typedef struct  CID_SubrsRec_
   {
     FT_UInt    num_subrs;
     FT_Byte**  code;
 
-  } CID_Subrs;
+  } CID_SubrsRec, *CID_Subrs;
 
 
   /*************************************************************************/
@@ -145,17 +149,6 @@ FT_BEGIN_HEADER
   /*************************************************************************/
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* This structure/class is defined here because it is common to the      */
-  /* following formats: TTF, OpenType-TT, and OpenType-CFF.                */
-  /*                                                                       */
-  /* Note, however, that the classes TT_Size, TT_GlyphSlot, and TT_CharMap */
-  /* are not shared between font drivers, and are thus defined normally in */
-  /* `ttobjs.h'.                                                           */
-  /*                                                                       */
-  /*************************************************************************/
-
   typedef struct T1_FaceRec_*   T1_Face;
   typedef struct CID_FaceRec_*  CID_Face;
 
@@ -163,28 +156,36 @@ FT_BEGIN_HEADER
   typedef struct  T1_FaceRec_
   {
     FT_FaceRec     root;
-    T1_Font        type1;
-    void*          psnames;
-    void*          psaux;
-    void*          afm_data;
+    T1_FontRec     type1;
+    const void*    psnames;
+    const void*    psaux;
+    const void*    afm_data;
     FT_CharMapRec  charmaprecs[2];
     FT_CharMap     charmaps[2];
     PS_Unicodes    unicode_map;
 
     /* support for Multiple Masters fonts */
-    T1_Blend*      blend;
+    PS_Blend       blend;
+
+    /* since FT 2.1 - interface to PostScript hinter */
+    const void*    pshinter;
 
   } T1_FaceRec;
 
 
   typedef struct  CID_FaceRec_
   {
-    FT_FaceRec  root;
-    void*       psnames;
-    void*       psaux;
-    CID_Info    cid;
-    void*       afm_data;
-    CID_Subrs*  subrs;
+    FT_FaceRec       root;
+    void*            psnames;
+    void*            psaux;
+    CID_FaceInfoRec  cid;
+    void*            afm_data;
+    FT_Byte*         binary_data; /* used if hex data has been converted */
+    FT_Stream        cid_stream;
+    CID_Subrs        subrs;
+
+    /* since FT 2.1 - interface to PostScript hinter */
+    void*            pshinter;
 
   } CID_FaceRec;
 

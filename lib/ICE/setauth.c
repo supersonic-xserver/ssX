@@ -1,3 +1,11 @@
+/* $Xorg: setauth.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -31,6 +39,7 @@ Author: Ralph Mor, X Consortium
 #include "ICElibint.h"
 #include <X11/ICE/ICEutil.h>
 
+
 /*
  * IceSetPaAuthData is not a standard part of ICElib, it is specific
  * to the sample implementation.
@@ -55,7 +64,11 @@ IceAuthDataEntry _IcePaAuthDataEntries[ICE_MAX_AUTH_DATA_ENTRIES] = {0};
 
 
 void
-IceSetPaAuthData(int numEntries, IceAuthDataEntry *entries)
+IceSetPaAuthData (numEntries, entries)
+
+int			numEntries;
+IceAuthDataEntry	*entries;
+
 {
     /*
      * _IcePaAuthDataEntries should really be a linked list.

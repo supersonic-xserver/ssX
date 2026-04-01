@@ -1,7 +1,21 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaFillPoly.c,v 1.17tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaFillPoly.c,v 1.16 2003/03/23 03:41:44 mvojkovi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright 1996-2007  The XFree86 Project
+ * Copyright 1996  The XFree86 Project
  *
  * Permission is hereby granted, free of charge, to any person obtaining a 
  * copy of this software and associated documentation files (the "Software"), 
@@ -36,7 +50,7 @@
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "xf86str.h"
@@ -127,7 +141,6 @@ XAAIsEasyPolygon(
 
     *topY = 32767;
     *bottomY = 0;
-    *topPoint = NULL;
 
     origin -= (origin & 0x8000) << 1;
     vertex1 = *((int *) &extents->x1) - origin;

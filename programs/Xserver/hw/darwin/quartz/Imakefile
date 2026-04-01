@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/darwin/quartz/Imakefile,v 1.17tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/quartz/Imakefile,v 1.13 2004/02/10 22:51:23 torrey Exp $
 
 #include <Server.tmpl>
 #define IHaveSubdirs
@@ -29,25 +29,28 @@ OBJS =  Preferences.o \
         quartzStartup.o \
         pseudoramiX.o
 
-INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
-           -I$(SERVERSRC)/render -I$(SERVERSRC)/miext/shadow \
-           -I$(SERVERSRC)/Xext -I.. -I$(APPLEWMLIBSRC)
+INCLUDES = -I. -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+           -I$(XINCLUDESRC) -I$(FONTINCSRC) -I$(SERVERSRC)/render \
+           -I$(SERVERSRC)/miext/shadow -I$(EXTINCSRC) -I$(SERVERSRC)/Xext \
+           -I.. -I$(APPLEWMLIBSRC)
 
 #if defined(XFree86CustomVersion)
 CUSTOMVERSION = XFree86CustomVersion
 CUSTOMVERDEF =  -DXF86_CUSTOM_VERSION='$(CUSTOMVERSION)'
 #endif
 
-CONFIGURATION=`if [ "\`$(PROJ_BUILD) -help 2>&1 | grep buildstyle\`" ]; then echo buildstyle; else echo configuration; fi`
-
 #if XFree86Devel
-BUILDSTYLE = -$(CONFIGURATION) Development
+BUILDSTYLE = -buildstyle Development
 DEBUGDEFINES = -DROOTLESSDEBUG
 #else
-BUILDSTYLE = -$(CONFIGURATION) Deployment
+BUILDSTYLE = -buildstyle Deployment
 #endif
 
+#if OSMajorVersion >= 7
+PROJ_TARGET = -project XDarwin.pbproj -target XDarwin
+#else
 PROJ_TARGET = -target XDarwin
+#endif
 
 #if (OSMajorVersion == 1 && OSMinorVersion >= 4) || OSMajorVersion >= 5
 QUARTZDEFINES = -DHAS_CG_MACH_PORT
@@ -88,25 +91,12 @@ install::
 	-(cd $(DESTDIR)$(BINDIR); $(RM) X; $(LN) XDarwinStartup X)
 
 AllTarget(XDarwin)
-
-/*
- * $(PROJ_BUILD) doesn't follow all symbolic links.
- */
 XDarwin:
-	cd ../bundle && $(MAKE) unsymlink
 	$(PROJ_BUILD) $(PROJ_TARGET) $(BUILDSTYLE)
-	cd ../bundle && $(MAKE) resymlink
-	$(RM) -r ../symlinks
 
-/*
- * $(PROJ_BUILD) doesn't follow all symbolic links.
- */
 install::
-	cd ../bundle && $(MAKE) unsymlink
 	$(PROJ_BUILD) install $(PROJ_TARGET) $(BUILDSTYLE) \
 		DSTROOT=$(DESTDIR)$(XDARWINROOT)
-	cd ../bundle && $(MAKE) resymlink
-	$(RM) -r ../symlinks
 
 InstallManPage(XDarwinStartup,$(MANDIR))
 

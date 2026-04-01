@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiident.h,v 1.15tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiident.h,v 1.12 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1997 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1997 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -29,12 +36,18 @@
 typedef enum
 {
     ATI_CHIPSET_ATI,
+
+#ifndef AVOID_CPIO
+
     ATI_CHIPSET_ATIVGA,
     ATI_CHIPSET_IBMVGA,
     ATI_CHIPSET_IBM8514,
     ATI_CHIPSET_VGAWONDER,
     ATI_CHIPSET_MACH8,
     ATI_CHIPSET_MACH32,
+
+#endif /* AVOID_CPIO */
+
     ATI_CHIPSET_MACH64,
     ATI_CHIPSET_RAGE128,
     ATI_CHIPSET_RADEON,

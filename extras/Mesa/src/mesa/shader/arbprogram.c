@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/shader/arbprogram.c,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  5.1
  *
@@ -473,7 +479,7 @@ _mesa_GetProgramLocalParameterdvARB(GLenum target, GLuint index,
                                     GLdouble *params)
 {
    GET_CURRENT_CONTEXT(ctx);
-   GLfloat floatParams[4] = {0.0, };
+   GLfloat floatParams[4];
    _mesa_GetProgramLocalParameterfvARB(target, index, floatParams);
    if (ctx->ErrorValue == GL_NO_ERROR) {
       COPY_4V(params, floatParams);

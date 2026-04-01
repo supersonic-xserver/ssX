@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * CG14 framebuffer driver.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg14/cg14_driver.c,v 1.15tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/suncg14/cg14_driver.c,v 1.11 2005/02/18 02:55:09 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -38,8 +45,8 @@ static const OptionInfoRec * CG14AvailableOptions(int chipid, int busid);
 static void	CG14Identify(int flags);
 static Bool	CG14Probe(DriverPtr drv, int flags);
 static Bool	CG14PreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	CG14ScreenInit(int Index, ScreenPtr pScreen,
-			       const int argc, const char **argv);
+static Bool	CG14ScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	CG14EnterVT(int scrnIndex, int flags);
 static void	CG14LeaveVT(int scrnIndex, int flags);
 static Bool	CG14CloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -107,7 +114,7 @@ static XF86ModuleVersionInfo suncg14VersRec =
 XF86ModuleData suncg14ModuleData = { &suncg14VersRec, cg14Setup, NULL };
 
 static pointer
-cg14Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+cg14Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -415,8 +422,7 @@ CG14PreInit(ScrnInfoPtr pScrn, int flags)
 /* This gets called at the start of each server generation */
 
 static Bool
-CG14ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	       const int argc, const char **argv)
+CG14ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     Cg14Ptr pCg14;
@@ -433,8 +439,9 @@ CG14ScreenInit(int scrnIndex, ScreenPtr pScreen,
 			       (psdp->width * psdp->height));
     pCg14->x32 = xf86MapSbusMem(psdp, CG14_X32_VOFF,
 				psdp->width * psdp->height);
+    pCg14->xlut = xf86MapSbusMem(psdp, CG14_XLUT_VOFF, 4096);
 
-    if (!pCg14->fb || !pCg14->x32) {
+    if (!pCg14->fb || !pCg14->x32 || !pCg14->xlut) {
 	if (pCg14->fb) {
 	    xf86UnmapSbusMem(psdp, pCg14->fb, 4 * (psdp->width * psdp->height));
 	    pCg14->fb = NULL;
@@ -443,6 +450,11 @@ CG14ScreenInit(int scrnIndex, ScreenPtr pScreen,
 	if (pCg14->x32) {
 	    xf86UnmapSbusMem(psdp, pCg14->x32, psdp->width * psdp->height);
 	    pCg14->x32 = NULL;
+	}
+
+	if (pCg14->xlut) {
+	    xf86UnmapSbusMem(psdp, pCg14->xlut, 4096);
+	    pCg14->xlut = NULL;
 	}
 
 	return FALSE;
@@ -601,6 +613,7 @@ CG14CloseScreen(int scrnIndex, ScreenPtr pScreen)
     pScrn->vtSema = FALSE;
     xf86UnmapSbusMem(psdp, pCg14->fb, psdp->width * psdp->height * 4);
     xf86UnmapSbusMem(psdp, pCg14->x32, psdp->width * psdp->height);
+    xf86UnmapSbusMem(psdp, pCg14->xlut, 4096);
 
     pScreen->CloseScreen = pCg14->CloseScreen;
     return (*pScreen->CloseScreen)(scrnIndex, pScreen);
@@ -635,11 +648,11 @@ CG14ValidMode(int scrnIndex, DisplayModePtr mode, Bool verbose, int flags)
 /* Mandatory */
 static Bool
 CG14SaveScreen(ScreenPtr pScreen, int mode)
+    /* this function should blank the screen when unblank is FALSE and
+       unblank it when unblank is TRUE -- it doesn't actually seem to be
+       used for much though */
 {
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-    Cg14Ptr pCg14 = GET_CG14_FROM_SCRN(pScrn);
-
-    return xf86SbusSaveScreen(pCg14->psdp, mode);
+    return TRUE;
 }
 
 /*
@@ -656,6 +669,7 @@ CG14InitCplane24(ScrnInfoPtr pScrn)
   ioctl(pCg14->psdp->fd, CG14_SET_PIXELMODE, &bpp);
   memset(pCg14->fb, 0, size * 4);
   memset(pCg14->x32, 0, size);
+  memset(pCg14->xlut, 0, 0x200);
 }
 
 /*

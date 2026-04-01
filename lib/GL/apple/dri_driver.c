@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/apple/dri_driver.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/lib/GL/apple/dri_driver.c,v 1.4 2004/12/10 17:47:24 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -60,16 +67,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef GLX_DIRECT_RENDERING
 
-/* These are first to ensure that Apple's GL headers are used. */
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/CGLContext.h>
-
 #include <unistd.h>
 #include <X11/Xlibint.h>
 #include <X11/extensions/Xext.h>
-
-#define GLAPIENTRYP *
-#include <X11/extensions/extutil.h>
+#include "extutil.h"
 #include "glxclient.h"
 #include "appledri.h"
 #include "dri_driver.h"
@@ -118,7 +119,7 @@ static void driMesaCreateSurface(Display *dpy, int scrn,
 static void unwrap_context(__DRIcontextPrivate *pcp);
 static void wrap_context(__DRIcontextPrivate *pcp);
 
-extern CGLContextObj XAppleDRIGetIndirectContext(void);
+extern const CGLContextObj XAppleDRIGetIndirectContext(void);
 
 /*****************************************************************/
 

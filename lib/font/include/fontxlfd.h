@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/font/include/fontxlfd.h,v 1.6tsi Exp $ */
+/* $Xorg: fontxlfd.h,v 1.4 2001/02/09 02:04:04 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1990, 1994, 1998  The Open Group
@@ -26,6 +41,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/lib/font/include/fontxlfd.h,v 1.6 2001/12/14 19:56:55 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium
@@ -34,7 +50,7 @@ from The Open Group.
 #ifndef _FONTXLFD_H_
 #define _FONTXLFD_H_
 
-#include <X11/fonts/FSproto.h>
+#include "FSproto.h"
 
 /* Constants for values_supplied bitmap */
 

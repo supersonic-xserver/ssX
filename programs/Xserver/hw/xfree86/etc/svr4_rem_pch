@@ -8,6 +8,8 @@
 # Version 1.0 - 11/18/92
 #	initial version - dwex@goblin.org, dwex@aib.com
 #
+# $XConsortium: svr4_rem_pch /main/3 1996/02/21 17:48:40 kaleb $
+#
 
 N=`basename $0`
 

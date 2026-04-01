@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/X11/xlibi18n/im/ximcp/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/lib/X11/xlibi18n/im/ximcp/Imakefile,v 1.5 2004/06/01 00:16:56 dawes Exp $
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -55,14 +55,7 @@ XCOMM $XFree86: xc/lib/X11/xlibi18n/im/ximcp/Imakefile,v 1.5tsi Exp $
 		  imRm.c imRmAttr.c \
 		  imThaiFlt.c imThaiIc.c imThaiIm.c \
 		  imTrX.c imTransR.c imTrans.c
-           OBJS = imCallbk.o imDefFlt.o imDefIc.o \
-		  imDefIm.o imDefLkup.o imDispch.o imEvToWire.o \
-		  imExten.o imImSw.o imInsClbk.o imInt.o \
-		  imLcFlt.o imLcGIc.o imLcIc.o imLcIm.o imLcLkup.o \
-		  imLcPrs.o imLcSIc.o \
-		  imRm.o imRmAttr.o \
-		  imThaiFlt.o imThaiIc.o imThaiIm.o \
-		  imTrX.o imTransR.o imTrans.o
+           OBJS = ${SRCS:.c=.o}
 
    CONN_DEFINES = ConnectionFlags
    XTRANS_XIM_DEFINES = -DXIM_t -DTRANS_CLIENT
@@ -105,4 +98,4 @@ SpecialCLibObjectRule(imTrans,$(ICONFIGFILES),$(CONN_DEFINES) $(XTRANS_XIM_DEFIN
 SpecialCLibObjectRule(imConv,$(ICONFIGFILES),$(XKB_DEFINES))
 #endif
 
-DependTarget()
+

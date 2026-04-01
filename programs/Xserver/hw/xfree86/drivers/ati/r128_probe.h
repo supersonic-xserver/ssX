@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_probe.h,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_probe.h,v 1.7 2003/10/30 17:36:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000 ATI Technologies Inc., Markham, Ontario, and
  *                VA Linux Systems Inc., Fremont, California.
@@ -41,21 +48,6 @@
 
 #include "xf86str.h"
 
-typedef struct
-{
-    Bool IsDRIEnabled;
-
-    Bool HasSecondary;
-    Bool BypassSecondary;
-    /*These two registers are used to make sure the CRTC2 is
-      retored before CRTC_EXT, otherwise it could lead to blank screen.*/
-    Bool IsSecondaryRestored;
-    Bool RestorePrimary;
-
-    ScrnInfoPtr pSecondaryScrn;    
-    ScrnInfoPtr pPrimaryScrn;
-} R128EntRec, *R128EntPtr;
-
 /* r128_probe.c */
 extern const OptionInfoRec * R128AvailableOptions
 			     FunctionPrototype((int, int));
@@ -69,12 +61,11 @@ extern PciChipsets           R128PciChipsets[];
 
 /* r128_driver.c */
 extern void                  R128LoaderRefSymLists
-			     FunctionPrototype((ModuleDescPtr));
+			     FunctionPrototype((void));
 extern Bool                  R128PreInit
 			     FunctionPrototype((ScrnInfoPtr, int));
 extern Bool                  R128ScreenInit
-			     FunctionPrototype((int, ScreenPtr, const int,
-						const char **));
+			     FunctionPrototype((int, ScreenPtr, int, char **));
 extern Bool                  R128SwitchMode
 			     FunctionPrototype((int, DisplayModePtr, int));
 extern void                  R128AdjustFrame

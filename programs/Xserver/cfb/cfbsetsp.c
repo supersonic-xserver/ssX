@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbsetsp.c,v 3.8tsi Exp $ */
+/* $Xorg: cfbsetsp.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,9 +52,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbsetsp.c,v 3.6 2003/10/29 22:44:53 tsi Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 
 #include "misc.h"
@@ -59,7 +67,7 @@ SOFTWARE.
 
 #include "cfb.h"
 #include "cfbmskbits.h"
-#include "mergerop.h"
+#include <mergerop.h>
 
 /* cfbSetScanline -- copies the bits from psrc to the drawable starting at
  * (xStart, y) and continuing to (xEnd, y).  xOrigin tells us where psrc 
@@ -67,33 +75,32 @@ SOFTWARE.
  * boxes, we may not want to start grabbing bits at psrc but at some offset
  * further on.) 
  */
-/*
-    int			xOrigin;	where this scanline starts
-    int			xStart;		first bit to use from scanline
-    int			xEnd;		last bit to use from scanline + 1
-    int			alu;		raster op
-    int			*pdstBase;	start of the drawable
-    int			widthDst;	width of drawable in words
-*/
-
 void
-cfbSetScanline(int y, int xOrigin, int xStart, int xEnd, unsigned int *psrc,
-	       int alu, int *pdstBase, int widthDst, unsigned long planemask)
+cfbSetScanline(y, xOrigin, xStart, xEnd, psrc, alu, pdstBase, widthDst, planemask)
+    int			y;
+    int			xOrigin;	/* where this scanline starts */
+    int			xStart;		/* first bit to use from scanline */
+    int			xEnd;		/* last bit to use from scanline + 1 */
+    register unsigned int *psrc;
+    register int	alu;		/* raster op */
+    int			*pdstBase;	/* start of the drawable */
+    int			widthDst;	/* width of drawable in words */
+    unsigned long	planemask;
 {
     int			w;		/* width of scanline in bits */
-    int	*pdst;		/* where to put the bits */
-    int	tmpSrc;		/* scratch buffer to collect bits in */
+    register int	*pdst;		/* where to put the bits */
+    register int	tmpSrc;		/* scratch buffer to collect bits in */
     int			offSrc;
     int			nl;
 #if PSZ == 24
-    char *psrcb, *pdstb;
-    int	xIndex;
+    register char *psrcb, *pdstb;
+    register int	xIndex;
 #else
     int			dstBit;		/* offset in bits from beginning of
 					 * word */
-    int	nstart; 	/* number of bits from first partial */
+    register int	nstart; 	/* number of bits from first partial */
 #if PSZ != 32 || PPW != 1
-    int	nend; 		/* " " last partial word */
+    register int	nend; 		/* " " last partial word */
 #endif
     int			startmask, endmask, nlMiddle;
 #endif
@@ -103,9 +110,9 @@ cfbSetScanline(int y, int xOrigin, int xStart, int xEnd, unsigned int *psrc,
 #if PSZ == 24
     pdst = pdstBase + (y * widthDst);
     xIndex = xStart;
-    pdstb = (char *)pdst + (xStart * PSZB);
+    pdstb = (char *)pdst + (xStart * 3);
     offSrc = xStart - xOrigin;
-    psrcb = (char *)psrc + (offSrc * PSZB);
+    psrcb = (char *)psrc + (offSrc * 3);
 #else
     pdst = pdstBase + (y * widthDst) + (xStart >> PWSH); 
     psrc += (xStart - xOrigin) >> PWSH;
@@ -116,14 +123,14 @@ cfbSetScanline(int y, int xOrigin, int xStart, int xEnd, unsigned int *psrc,
 #if PSZ == 24
     nl = w;
     while (nl--){
-      psrc = (unsigned int *)((unsigned long)psrcb & ~(PGSZB - 1));
+      psrc = (unsigned int *)((unsigned long)psrcb & ~0x03);
       getbits24(psrc, tmpSrc, offSrc);
-      pdst = (int *)((unsigned long)pdstb & ~(PGSZB - 1));
+      pdst = (int *)((unsigned long)pdstb & ~0x03);
       DoMergeRop24(tmpSrc, pdst, xIndex);
       offSrc++;
-      psrcb += PSZB;
+      psrcb += 3;
       xIndex++;
-      pdstb += PSZB;
+      pdstb += 3;
     } 
 #else /* PSZ == 24 */
     dstBit = xStart & PIM;
@@ -184,14 +191,20 @@ cfbSetScanline(int y, int xOrigin, int xStart, int xEnd, unsigned int *psrc,
  * on a word boundary.
  */ 
 void
-cfbSetSpans(DrawablePtr pDrawable, GCPtr pGC, char *pcharsrc, DDXPointPtr ppt,
-	    int *pwidth, int nspans, int fSorted)
+cfbSetSpans(pDrawable, pGC, pcharsrc, ppt, pwidth, nspans, fSorted)
+    DrawablePtr		pDrawable;
+    GCPtr		pGC;
+    char		*pcharsrc;
+    register DDXPointPtr ppt;
+    int			*pwidth;
+    int			nspans;
+    int			fSorted;
 {
     unsigned int	*psrc = (unsigned int *)pcharsrc;
     CfbBits	*pdstBase;	/* start of dst bitmap */
     int 		widthDst;	/* width of bitmap in words */
-    BoxPtr 	pbox, pboxLast, pboxTest;
-    DDXPointPtr pptLast;
+    register BoxPtr 	pbox, pboxLast, pboxTest;
+    register DDXPointPtr pptLast;
     int 		alu;
     RegionPtr 		prgnDst;
     int			xStart, xEnd;

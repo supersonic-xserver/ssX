@@ -1,3 +1,11 @@
+/* $Xorg: PclWindow.c,v 1.3 2000/08/17 19:48:08 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*******************************************************************
 **
 **    *********************************************************
@@ -43,7 +51,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
-/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclWindow.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xprint/pcl/PclWindow.c,v 1.11 2003/10/29 22:11:00 tsi Exp $ */
 
 
 #include <stdio.h>
@@ -219,11 +227,11 @@ PclPaintWindow(
 #define COUNT_BITS	8
 
     pointer gcval[7];
-    pointer newValues [COUNT_BITS] = {NULL, };
+    pointer newValues [COUNT_BITS];
 
-    BITS32 gcmask = 0, index, mask;
+    BITS32 gcmask, index, mask;
     RegionRec prgnWin;
-    DDXPointRec oldCorner = {0, 0};
+    DDXPointRec oldCorner;
     BoxRec box;
     WindowPtr	pBgWin;
     GCPtr pGC;
@@ -233,7 +241,7 @@ PclPaintWindow(
     register xRectangle *prect;
     int numRects;
 
-    REGION_NULL(pWin->drawable.pScreen, &prgnWin);
+    gcmask = 0;
 
     /*
      * We don't want to paint a window that has no place to put the

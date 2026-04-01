@@ -1,3 +1,11 @@
+/* $Xorg: scrnintstr.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -44,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/scrnintstr.h,v 1.14 2006/01/09 15:00:34 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/scrnintstr.h,v 1.13 2003/07/16 01:38:53 dawes Exp $ */
 
 #ifndef SCREENINTSTRUCT_H
 #define SCREENINTSTRUCT_H
@@ -726,7 +734,7 @@ extern ScreenInfo screenInfo;
 
 extern void InitOutput(
     ScreenInfo 	* /*pScreenInfo*/,
-    const int     	/*argc*/,
-    const char    	** /*argv*/);
+    int     	/*argc*/,
+    char    	** /*argv*/);
 
 #endif /* SCREENINTSTRUCT_H */

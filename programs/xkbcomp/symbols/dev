@@ -1,3 +1,4 @@
+// $XConsortium: th /main/3 1996/08/31 12:20:18 kaleb $
 // $XFree86: xc/programs/xkbcomp/symbols/dev,v 1.2 2004/04/03 13:43:42 pascal Exp $
 // Updated by David Holl <smyrph+dev_xkb@ece.wpi.edu>
 partial default alphanumeric_keys 

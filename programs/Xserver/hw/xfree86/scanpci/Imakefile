@@ -1,5 +1,5 @@
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/Imakefile,v 1.11tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/scanpci/Imakefile,v 1.11 2002/12/23 01:46:17 dawes Exp $
 
 #if DoLoadableServer
 #define IHaveSubdirs
@@ -11,7 +11,8 @@ SUBDIRS = module
 MODPATHDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
    INCLUDES =	-I$(XF86SRC)/common -I$(XF86OSSRC) -I$(XF86OSSRC)/bus \
 		-I$(SERVERSRC)/include -I$(SERVERSRC)/os \
-		-I$(SERVERSRC)/Xext -I$(SERVERSRC)/Xi \
+		-I$(XINCLUDESRC) -I$(SERVERSRC)/Xext -I$(EXTINCSRC) \
+		-I$(SERVERSRC)/Xi \
 		-I$(FONTLIBSRC)/include -I$(XF86PARSERSRC) \
 		-I$(XF86SRC)/loader $(VGAINCLUDES) -I$(XF86SRC)/rac
 

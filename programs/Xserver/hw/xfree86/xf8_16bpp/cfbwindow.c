@@ -1,12 +1,19 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (C) 1999.  The XFree86 Project Inc.
 
    Written by Mark Vojkovich (mvojkovi@ucsd.edu)
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_16bpp/cfbwindow.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_16bpp/cfbwindow.c,v 1.5 2003/11/10 18:22:42 tsi Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
 #define PSZ 8

@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  /***************************************************************************\
 |*                                                                           *|
 |*       Copyright 1993-1999 NVIDIA, Corporation.  All rights reserved.      *|
@@ -36,7 +43,7 @@
 |*     those rights set forth herein.                                        *|
 |*                                                                           *|
  \***************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_hw.c,v 1.52tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_hw.c,v 1.52 2003/11/03 05:11:26 tsi Exp $ */
 
 #include "riva_local.h"
 #include "compiler.h"
@@ -655,7 +662,7 @@ static void CalcStateExt
     int		   flags 
 )
 {
-    int pixelDepth, VClk = 0, m = 0, n = 0, p = 0;
+    int pixelDepth, VClk, m, n, p;
     /*
      * Save mode parameters.
      */

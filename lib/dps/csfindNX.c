@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * csfindNX.c  -- DPSCAP client Xlib extension hookup
  *
  * (c) Copyright 1992-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/csfindNX.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/lib/dps/csfindNX.c,v 1.8 2003/05/27 22:26:44 tsi Exp $ */
 
 #include <sys/param.h>				/* for MAXHOSTNAMELEN */
 #include <stdlib.h>
@@ -170,7 +177,7 @@ GetAgentIdList(
   oldErrorHandler = XSetErrorHandler(TmpErrorHandler);    
   current = 0;
   for (i=0; i < *nAgents; i++) {
-    unsigned long len = 0;
+    unsigned long len;
     int *agentWillingness;
     unsigned long k;
 
@@ -285,7 +292,7 @@ XDPSNXOnDisplay(
 	   (i < nAgents) && (agentList[i].willingness > 0) && (match == False);
 	   i++) {
 	Atom *licenseMethods = NULL;
-	unsigned long nMethods = 0;
+	unsigned long nMethods;
 	unsigned long j;
 	
 	if (GetProperty(dpy, agentList[i].id,

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1989-95 GROUPE BULL
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,11 +38,18 @@
 *                                                                             *
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
-/* $XFree86: xc/extras/Xpm/lib/data.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/extras/Xpm/lib/data.c,v 1.3 2001/10/28 03:32:10 tsi Exp $ */
 
 /* October 2004, source code review by Thomas Biege <thomas@suse.de> */
 
 #ifndef CXPMPROG
+#if 0
+/* Official version number */
+static char *RCS_Version = "$XpmVersion: 3.4k $";
+
+/* Internal version number */
+static char *RCS_Id = "Id: xpm.shar,v 3.71 1998/03/19 19:47:14 lehors Exp $";
+#endif
 #include "XpmI.h"
 #endif
 #include <ctype.h>
@@ -51,6 +65,7 @@ ParseComment(xpmData *data)
     if (data->type == XPMBUFFER) {
 	register char c;
 	register unsigned int n = 0;
+	unsigned int notend;
 	char *s, *s2;
 
 	s = data->Comment;
@@ -73,15 +88,12 @@ ParseComment(xpmData *data)
 	/* store comment */
 	data->Comment[0] = *s;
 	s = data->Comment;
+	notend = 1;
 	n = 0;
-	while (1) {
+	while (notend) {
 	    s2 = data->Ecmt;
 	    while (*s != *s2 && c) {
 		c = *data->cptr++;
-		if (c == '\0') {	/* unterminated comment, stop */
-		    data->cptr--;
-		    return 0;
-		}
 		if (n == XPMMAXCMTLEN - 1)  { /* forget it */
 		    s = data->Comment;
 		    n = 0;
@@ -92,10 +104,6 @@ ParseComment(xpmData *data)
 	    data->CommentLength = n;
 	    do {
 		c = *data->cptr++;
-		if (c == '\0') {
-		    data->cptr--;
-		    return 0;
-		}
 		if (n == XPMMAXCMTLEN - 1)  { /* forget it */
 		    s = data->Comment;
 		    n = 0;
@@ -103,17 +111,19 @@ ParseComment(xpmData *data)
 		*++s = c;
 		n++;
 		s2++;
-	    } while (c == *s2 && *s2 != '\0');
+	    } while (c == *s2 && *s2 != '\0' && c);
 	    if (*s2 == '\0') {
 		/* this is the end of the comment */
+		notend = 0;
 		data->cptr--;
-		return 0;
 	    }
 	}
+	return 0;
     } else {
 	FILE *file = data->stream.file;
 	register int c;
 	register unsigned int n = 0, a;
+	unsigned int notend;
 	char *s, *s2;
 
 	s = data->Comment;
@@ -138,8 +148,9 @@ ParseComment(xpmData *data)
 	/* store comment */
 	data->Comment[0] = *s;
 	s = data->Comment;
+	notend = 1;
 	n = 0;
-	while (1) {
+	while (notend) {
 	    s2 = data->Ecmt;
 	    while (*s != *s2 && c != EOF) {
 		c = Getc(data, file);
@@ -153,9 +164,6 @@ ParseComment(xpmData *data)
 	    data->CommentLength = n;
 	    do {
 		c = Getc(data, file);
-		if (c == EOF) {	/* unterminated comment, stop */
-		    return 0;
-		}
 		if (n == XPMMAXCMTLEN - 1)  { /* forget it */
 		    s = data->Comment;
 		    n = 0;
@@ -163,13 +171,14 @@ ParseComment(xpmData *data)
 		*++s = c;
 		n++;
 		s2++;
-	    } while (c == *s2 && *s2 != '\0');
+	    } while (c == *s2 && *s2 != '\0' && c != EOF);
 	    if (*s2 == '\0') {
 		/* this is the end of the comment */
+		notend = 0;
 		Ungetc(data, *s, file);
-		return 0;
 	    }
 	}
+	return 0;
     }
 }
 

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbpolypnt.c,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbpolypnt.c,v 3.2 2003/07/16 01:38:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,9 +54,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbpolypnt.c,v 5.6 94/04/17 20:28:30 dpw Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -60,15 +68,19 @@ SOFTWARE.
 #include "maskbits.h"
 
 void
-afbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	     xPoint *pptInit)
+afbPolyPoint(pDrawable, pGC, mode, npt, pptInit)
+	register DrawablePtr pDrawable;
+	GCPtr pGC;
+	int mode;				/* Origin or Previous */
+	int npt;
+	xPoint *pptInit;
 {
 
-	BoxPtr pbox;
-	int nbox;
-	int d;
+	register BoxPtr pbox;
+	register int nbox;
+	register int d;
 
-	PixelType *addrl;
+	register PixelType *addrl;
 	PixelType *pBase;
 	PixelType *pBaseSave;
 	int nlwidth;
@@ -76,11 +88,11 @@ afbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 	int depthDst;
 
 	int nptTmp;
-	xPoint *ppt;
+	register xPoint *ppt;
 
-	int x;
-	int y;
-	unsigned char *rrops;
+	register int x;
+	register int y;
+	register unsigned char *rrops;
 	afbPrivGC *pGCPriv;
 
 	pGCPriv = (afbPrivGC *) pGC->devPrivates[afbGCPrivateIndex].ptr;

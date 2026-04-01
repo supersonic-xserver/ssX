@@ -1,5 +1,16 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/vgaBitBlt.c,v 1.6 2003/11/17 22:20:42 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* GJA -- span move routines */
+
+
+
+/* $XConsortium: vgaBitBlt.c /main/8 1996/10/27 11:06:39 kaleb $ */
 
 #include "xf4bpp.h"
 #include "OScompiler.h"
@@ -112,11 +123,15 @@ static void shift_thin_rect(
     WindowPtr, int, int, int, int, int, int, int
 );
 
-static void shift_center(WindowPtr, int, int, int, int, int, int, int);
+static void shift_center(
+    WindowPtr, int, int, int, int, int, int, int
+);
 
-void
-xf4bppBitBlt(WindowPtr pWin, int alu, int writeplanes, int x0, int y0,
-	     int x1, int y1, int w, int h)
+void xf4bppBitBlt(pWin,alu,writeplanes,x0,y0,x1,y1,w,h)
+WindowPtr pWin; /* GJA */
+int alu;
+int writeplanes; /* planes */
+int x0, y0, x1, y1, w, h;
 {
     IOADDRESS REGBASE;
     int plane, bit;
@@ -158,7 +173,15 @@ xf4bppBitBlt(WindowPtr pWin, int alu, int writeplanes, int x0, int y0,
 /* Copy a span a number of places to the right.
  */
 static void
-shift(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h, int alu)
+shift(pWin,x0,x1,y0,y1,w,h,alu)
+WindowPtr pWin; /* GJA */
+int x0;  /* left edge of source */
+int x1;  /* left edge of target */
+int y0;
+int y1;
+int w; /* length of source, and of target */
+int h;
+int alu;
 {
   if ( ((x1 & WMASK) + w) <= WORDSZ ) {
      shift_thin_rect(pWin,x0,x1,y0,y1,w,h,alu);
@@ -183,8 +206,15 @@ shift(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h, int alu)
 
 /* The whole rectangle is so thin that it fits in one byte written */
 static void
-shift_thin_rect(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h,
-		int alu)
+shift_thin_rect(pWin,x0,x1,y0,y1,w,h,alu)
+WindowPtr pWin; /* GJA */
+int x0;  /* left edge of source */
+int x1;  /* left edge of target */
+int y0;
+int y1;
+int w; /* length of source, and of target */
+int h;
+int alu;
 {
   int l0 = x0 & WMASK; /* Left edge of source, as bit */
   int l1 = x1 & WMASK; /* Left edge of target, as bit */
@@ -242,8 +272,15 @@ shift_thin_rect(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h,
 }
 
 static void
-shift_center(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h,
-	     int alu)
+shift_center(pWin,x0,x1,y0,y1,w,h,alu)
+WindowPtr pWin; /* GJA */
+int x0;  /* left edge of source */
+int x1;  /* left edge of target */
+int y0;
+int y1;
+int w; /* length of source, and of target */
+int h;
+int alu;
 {
   int l1 = x1 & WMASK; /* Left edge of target, as bit */
   int r1 = (x1 + w) & WMASK; /* Right edge of target, as bit */
@@ -358,8 +395,16 @@ shift_center(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h,
 /* Copy a rectangle.
  */
 static void
-aligned_blit(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h,
-	     int alu, int planes)
+aligned_blit(pWin,x0,x1,y0,y1,w,h,alu,planes)
+WindowPtr pWin; /* GJA */
+int x0;  /* left edge of source */
+int x1;  /* left edge of target */
+int y0;
+int y1;
+int w; /* length of source, and of target */
+int h;
+int alu;
+int planes;
 {
   IOADDRESS REGBASE =
 	xf86Screens[((DrawablePtr)pWin)->pScreen->myNum]->domainIOBase + 0x300;
@@ -473,8 +518,14 @@ aligned_blit(WindowPtr pWin, int x0, int x1, int y0, int y1, int w, int h,
 }
 
 static void
-aligned_blit_center(WindowPtr pWin, int x0, int x1, int y0, int y1, int w,
-		    int h)
+aligned_blit_center(pWin,x0,x1,y0,y1,w,h)
+WindowPtr pWin; /* GJA */
+int x0;  /* left edge of source */
+int x1;  /* left edge of target */
+int y0;
+int y1;
+int w; /* length of source, and of target */
+int h;
 {
   int l1 = x1 & WMASK; /* Left edge of target, as bit */
   int r1 = (x1 + w) & WMASK; /* Right edge of target, as bit */
@@ -544,16 +595,20 @@ aligned_blit_center(WindowPtr pWin, int x0, int x1, int y0, int y1, int w,
 #else	/* PC98_EGC */
 
 static void
-egc_fast_blt(WindowPtr pWin, const int alu, const int writeplanes,
-	     int x0, int y0, int x1, int y1, int w, int h)
+egc_fast_blt (pWin, alu, writeplanes, x0, y0, x1, y1, w, h)
+WindowPtr pWin;	
+const	int alu, writeplanes ;
+register int x0, x1 ;
+int	     y0, y1 ;
+register int w, h ;
 {
-volatile unsigned char *src ;
-volatile unsigned char *dst ;
+register volatile unsigned char *src ;
+register volatile unsigned char *dst ;
 unsigned short *src_x ;
 unsigned short *dst_x ;
 int x_direction, y_interval ;
 int	src_off, dst_off ;
-int k, i ;
+register int k, i ;
 unsigned short ROP_value;
 
 src = (unsigned char *)SCREENADDRESS( pWin, 0, y0);
@@ -672,8 +727,11 @@ return;
 }
 
 void
-xf4bppBitBlt(WindowPtr pWin, int alu, int writeplanes, int x0, int y0,
-	     int x1, int y1, int w, int h)
+xf4bppBitBlt( pWin,alu, writeplanes, x0, y0, x1, y1, w, h )
+WindowPtr pWin; /* GJA */
+int alu;
+int writeplanes; /* planes */
+int x0, y0, x1, y1, w, h;
 {
 	if ( ! xf86Screens[((DrawablePtr)pWin)->pScreen->myNum]->vtSema ) {
 		xf4bppOffBitBlt( pWin, alu, writeplanes,

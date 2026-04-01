@@ -35,6 +35,8 @@
 /*
  * arc.c++
  *
+ * $Date: 2004/03/05 14:26:35 $ $Revision: 1.1.1.2 $
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/arc.cc,v 1.1.1.2 2004/03/05 14:26:35 tron Exp $
  */
 /* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/arc.cc,v 1.2 2003/10/22 19:20:56 tsi Exp $ */
 

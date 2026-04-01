@@ -1,8 +1,23 @@
-/* $XTermId: menu.h,v 1.103 2006/03/07 14:29:22 tom Exp $ */
+/* $XTermId: menu.h,v 1.87 2005/01/10 00:30:46 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $Xorg: menu.h,v 1.4 2001/02/09 02:06:03 xorgcvs Exp $ */
 /*
 
-Copyright 1999-2005,2006 by Thomas E. Dickey
+Copyright 1999-2004,2005 by Thomas E. Dickey
 
                         All Rights Reserved
 
@@ -49,12 +64,14 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xterm/menu.h,v 3.40 2006/02/13 01:14:59 dickey Exp $ */
+/* $XFree86: xc/programs/xterm/menu.h,v 3.35 2005/01/14 01:50:03 dickey Exp $ */
 
 #ifndef included_menu_h
 #define included_menu_h
 
 #include <xterm.h>
+
+#include <X11/Intrinsic.h>
 
 typedef struct _MenuEntry {
     char *name;
@@ -71,7 +88,6 @@ extern MenuEntry tekMenuEntries[];
 extern void Handle8BitControl      PROTO_XT_ACTIONS_ARGS;
 extern void HandleAllow132         PROTO_XT_ACTIONS_ARGS;
 extern void HandleAllowSends       PROTO_XT_ACTIONS_ARGS;
-extern void HandleAltEsc           PROTO_XT_ACTIONS_ARGS;
 extern void HandleAltScreen        PROTO_XT_ACTIONS_ARGS;
 extern void HandleAppCursor        PROTO_XT_ACTIONS_ARGS;
 extern void HandleAppKeypad        PROTO_XT_ACTIONS_ARGS;
@@ -106,10 +122,8 @@ extern void HandleScoFunctionKeys  PROTO_XT_ACTIONS_ARGS;
 extern void HandleScrollKey        PROTO_XT_ACTIONS_ARGS;
 extern void HandleScrollTtyOutput  PROTO_XT_ACTIONS_ARGS;
 extern void HandleScrollbar        PROTO_XT_ACTIONS_ARGS;
-extern void HandleSecure           PROTO_XT_ACTIONS_ARGS;
 extern void HandleSendSignal       PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetPopOnBell     PROTO_XT_ACTIONS_ARGS;
-extern void HandleSetSelect        PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetTekText       PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetTerminalType  PROTO_XT_ACTIONS_ARGS;
 extern void HandleSetVisualBell    PROTO_XT_ACTIONS_ARGS;
@@ -122,12 +136,13 @@ extern void HandleTekReset         PROTO_XT_ACTIONS_ARGS;
 extern void HandleTiteInhibit      PROTO_XT_ACTIONS_ARGS;
 extern void HandleToolbar          PROTO_XT_ACTIONS_ARGS;
 extern void HandleUTF8Mode         PROTO_XT_ACTIONS_ARGS;
-extern void HandleUTF8Title        PROTO_XT_ACTIONS_ARGS;
 extern void HandleVisibility       PROTO_XT_ACTIONS_ARGS;
 
-extern void SetupMenus (Widget /*shell*/, Widget */*forms*/, Widget */*menus*/, Dimension * /*menu_high*/);
+extern void DoSecureKeyboard (Time tp);
+extern void SetupMenus (Widget shell, Widget *forms, Widget *menus);
 
 #if OPT_TOOLBAR
+extern void SetupToolbar(Widget);
 extern void ShowToolbar(Bool);
 #endif
 
@@ -157,7 +172,6 @@ typedef enum {
     mainMenu_backarrow,
 #if OPT_NUM_LOCK
     mainMenu_num_lock,
-    mainMenu_alt_esc,
     mainMenu_meta_esc,
 #endif
     mainMenu_delete_del,
@@ -200,7 +214,7 @@ typedef enum {
     vtMenu_scrollkey,
     vtMenu_scrollttyoutput,
     vtMenu_allow132,
-    vtMenu_selectToClipboard,
+    vtMenu_cursesemul,
     vtMenu_visualbell,
     vtMenu_poponbell,
     vtMenu_marginbell,
@@ -261,7 +275,6 @@ typedef enum {
 #endif
 #if OPT_WIDE_CHARS
     fontMenu_wide_chars,
-    fontMenu_wide_title,
 #endif
 #endif
 
@@ -325,11 +338,9 @@ extern void update_decbkm(void);
 
 #if OPT_NUM_LOCK
 extern void update_num_lock(void);
-extern void update_alt_esc(void);
 extern void update_meta_esc(void);
 #else
 #define update_num_lock() /*nothing*/
-#define update_alt_esc()  /*nothing*/
 #define update_meta_esc() /*nothing*/
 #endif
 
@@ -362,7 +373,6 @@ extern void update_autolinefeed(void);
 extern void update_appcursor(void);
 extern void update_appkeypad(void);
 extern void update_scrollkey(void);
-extern void update_selectToClipboard(void);
 extern void update_scrollttyoutput(void);
 extern void update_allow132(void);
 extern void update_cursesemul(void);
@@ -409,10 +419,8 @@ extern void update_font_renderfont(void);
 
 #if OPT_WIDE_CHARS
 extern void update_font_utf8_mode(void);
-extern void update_font_utf8_title(void);
 #else
 #define update_font_utf8_mode() /* nothing */
-#define update_font_utf8_title() /* nothing */
 #endif
 
 #if OPT_TEK4014

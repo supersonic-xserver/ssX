@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * PSres.c
  *
  * (c) Copyright 1991-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/psres/PSres.c,v 1.6 2004/04/03 22:38:52 tsi Exp $ */
+/* $XFree86: xc/lib/psres/PSres.c,v 1.7 2004/10/23 15:29:26 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,4 +1,8 @@
-XCOMM $XFree86: xc/config/cf/hpLib.tmpl,v 1.2tsi Exp $
+XCOMM $Xorg: hpLib.tmpl,v 1.3 2000/08/17 19:41:47 cpqbld Exp $
+
+
+
+XCOMM $XFree86: xc/config/cf/hpLib.tmpl,v 1.2 2003/05/27 21:56:40 tsi Exp $
 
 /*
  * HP shared library template
@@ -12,7 +16,9 @@ XCOMM $XFree86: xc/config/cf/hpLib.tmpl,v 1.2tsi Exp $
 #define SharedXmuReqs		$(XTOOLLIB) $(XLIB)
 #define SharedXextReqs		$(XONLYLIB)
 #define SharedXiReqs		$(XLIB)
+#define SharedPexReqs		$(XONLYLIB) MathLibrary
 #define SharedXtstReqs		$(XLIB)
+#define SharedXieReqs		$(XONLYLIB)
 #define SharedSMReqs		$(ICELIB)
 #define SharedXpReqs		$(XLIB)
 

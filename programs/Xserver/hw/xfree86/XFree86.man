@@ -1,6 +1,6 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/XFree86.man,v 3.74 2006/04/18 17:07:23 dawes Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/XFree86.man,v 3.73 2005/03/16 15:31:32 dawes Exp $
 .\"
-.\" Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+.\" Copyright (c) 1994-2005 by The XFree86 Project, Inc.
 .\" All rights reserved.
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
@@ -1179,75 +1179,7 @@ David Yerger,
 Su Yong,
 Hui Yu,
 Sagi Zeevi,
-Christian Zietz.
-.RE
-.PP
-Contributors to XFree86 4.6.0 include:
-.PP
-.RS 4
-ASPEED Technologies,
-Andrew Aitchison,
-James Ascroft-Leigh,
-\('Etienne Bersac,
-Peter Breitenlohner,
-Terry Chang,
-Y. C. Chen,
-Jeff Chua,
-James Cloos,
-Alan Coopersmith,
-Miguel Gonz\('alez Cuadrado,
-David Dawes,
-Thomas Dickey,
-Stefan Dirsch,
-Bernd Ernesti,
-Jordan Frank,
-Will L G,
-Frank Giessler,
-Thorsten Glaser,
-Damian Janusz Gruszka,
-Lukas Hejtmanek,
-Evil Mr Henry,
-Jens Herden,
-Alan Hourihane,
-Nicolas Joly,
-Bang Jun-Young,
-Alexander Kabaev,
-Satoshi Kimura,
-Milos Komarcevic,
-Marc La France,
-Dejan Lesjak,
-Khong Jye Liew,
-Jong Lin,
-Michael Lorenz,
-Michael Macallan,
-Michal Maruska,
-Luke Mewburn,
-Timothy Musson,
-Newsh,
-Takaaki Nomura,
-Ivan Pascal,
-Bob Peterson,
-Pierre,
-Aaron Plattner,
-Alexander Pohoyda,
-Jeremy C. Reed,
-Conrad Schuler,
-Bruno Schwander,
-Olaf Seibert,
-Aaron Solochek,
-Helmar Spangenberg,
-Ken Stailey,
-Tobias Stoeckmann,
-Tungsten Graphics,
-James Richard Tyrer,
-Staffan Ulfberg,
-Denis Vlasenko,
-Mark Vojkovich,
-Tom Williams,
-Dave Williss,
-X-Oz Technologies,
-XGI,
-Christos Zoulas.
+Christian Zietz
 .RE
 .PP
 XFree86 source is available from the FTP server

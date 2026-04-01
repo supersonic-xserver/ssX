@@ -1,3 +1,11 @@
+/* $Xorg: Xtransutil.c,v 1.4 2001/02/09 02:04:07 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtransutil.c,v 3.29 2005/03/23 03:11:26 dawes Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtransutil.c,v 3.28 2004/04/03 22:26:22 dawes Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -383,8 +391,8 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 #if defined(IPv6) && defined(AF_INET6)
 	struct sockaddr_in6 *saddr6 = (struct sockaddr_in6 *) peer_addr;
 #endif
-	char * volatile address;
-	volatile int addresslen;
+	char *address;
+	int addresslen;
 #ifdef XTHREADS_NEEDS_BYNAMEPARAMS
 	_Xgethostbynameparams hparams;
 #endif

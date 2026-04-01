@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/vm86/linux_vm86.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/int10/vm86/linux_vm86.c,v 1.4 2005/02/07 01:15:54 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -194,8 +208,7 @@ vm86_GP_fault(xf86Int10InfoPtr pInt)
 static int
 do_vm86(xf86Int10InfoPtr pInt)
 {
-    volatile int signo;
-    int retval;
+    int retval, signo;
 
     xf86InterceptSignals(&signo);
     retval = vm86_rep(VM86S);

@@ -1,0 +1,26 @@
+/Imakefile/1.1.1.1/Fri Mar  5 14:26:12 2004//Tnetbsd-5-2-3-RELEASE
+/Makefile.in/1.1.1.1/Fri Mar  5 14:26:12 2004//Tnetbsd-5-2-3-RELEASE
+/fcatomic.c/1.1.1.1/Fri Mar  5 14:26:12 2004//Tnetbsd-5-2-3-RELEASE
+/fcblanks.c/1.1.1.1/Fri Mar  5 14:26:12 2004//Tnetbsd-5-2-3-RELEASE
+/fccache.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fccfg.c/1.2/Fri Sep 10 16:14:51 2004//Tnetbsd-5-2-3-RELEASE
+/fccharset.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcdbg.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcdefault.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcdir.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcfreetype.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcfs.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcinit.c/1.1.1.2/Fri Mar 18 13:07:10 2005//Tnetbsd-5-2-3-RELEASE
+/fcint.h/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcknownsets.h/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fclang.c/1.1.1.2/Fri Mar 18 13:07:11 2005//Tnetbsd-5-2-3-RELEASE
+/fclist.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcmatch.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcmatrix.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcname.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcpat.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcstr.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fcxml.c/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fontconfig-def.cpp/1.1.1.1/Fri Mar  5 14:26:13 2004//Tnetbsd-5-2-3-RELEASE
+/fontconfig.man/1.1.1.1/Fri Mar  5 14:26:14 2004//Tnetbsd-5-2-3-RELEASE
+D

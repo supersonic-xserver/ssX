@@ -1,8 +1,22 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfbscrinit.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/cfbscrinit.c,v 1.6 2003/09/13 21:33:09 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+#include "X.h"
+#include "Xmd.h"
 #include "misc.h"
 #include "servermd.h"
 #include "scrnintstr.h"

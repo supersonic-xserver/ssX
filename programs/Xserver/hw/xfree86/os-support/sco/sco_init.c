@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sco/sco_init.c,v 3.17 2006/01/09 15:00:24 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sco/sco_init.c,v 3.15 2004/04/03 22:26:25 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001 by J. Kean Johnston <jkj@sco.com>
  *
@@ -20,11 +27,12 @@
  * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+/* $XConsortium$ */
 
 /* Re-written May 2001 to represent the current state of reality */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 
 #include "compiler.h"
 
@@ -267,7 +275,7 @@ xf86CloseConsole()
 }
 
 int
-xf86ProcessArgument(int argc, const char *argv[], int i)
+xf86ProcessArgument(int argc, char *argv[], int i)
 {
   /*
    * Keep server from detaching from controlling tty.  This is useful

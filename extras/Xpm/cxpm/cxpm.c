@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1998 Arnaud LE HORS
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +29,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Arnaud LE HORS.
  */
-/* $XFree86: xc/extras/Xpm/cxpm/cxpm.c,v 1.3 2003/05/27 16:45:41 tsi Exp $ */
+/* $XFree86: xc/extras/Xpm/cxpm/cxpm.c,v 1.2 2001/08/01 00:44:34 tsi Exp $ */
 
 /*****************************************************************************\
 * cxpm.c:                                                                     *
@@ -47,7 +54,9 @@
  * note that 's' could stand both for "special" and "slow" ;-)
  */
 static int
-sGetc(xpmData *data, FILE *file)
+sGetc(data, file)
+    xpmData *data;
+    FILE *file;
 {
     int c = getc(data->stream.file);
     if (c == '\n') {
@@ -60,7 +69,10 @@ sGetc(xpmData *data, FILE *file)
 }
 
 static void
-sUngetc(xpmData *data, int c, FILE *file)
+sUngetc(data, c, file)
+    xpmData *data;
+    int c;
+    FILE *file;
 {
     ungetc(c, data->stream.file);
     if (c == '\n') {
@@ -80,8 +92,11 @@ sUngetc(xpmData *data, int c, FILE *file)
 #include "../lib/Attrib.c"
 #include "../lib/Image.c"
 
-static void
-ErrorMessage(int ErrorStatus, xpmData *data)
+void
+ErrorMessage(ErrorStatus, data)
+    int ErrorStatus;
+    xpmData *data;
+
 {
     char *error = NULL;
 
@@ -113,7 +128,9 @@ ErrorMessage(int ErrorStatus, xpmData *data)
 }
 
 int
-main(int argc, char **argv)
+main(argc, argv)
+    int argc;
+    char **argv;
 {
     XpmImage image;
     char *filename;

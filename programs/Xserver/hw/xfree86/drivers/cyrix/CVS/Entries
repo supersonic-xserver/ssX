@@ -1,0 +1,11 @@
+/ChangeLog/1.1.1.1/Fri Feb 28 13:20:10 2003//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.7/Fri Mar 18 13:11:40 2005//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.1/Fri Feb 28 13:20:10 2003//Tnetbsd-5-2-3-RELEASE
+/cyrix.h/1.1.1.4/Fri Feb 28 13:20:10 2003//Tnetbsd-5-2-3-RELEASE
+/cyrix.man/1.1.1.3/Fri Mar 18 13:11:40 2005//Tnetbsd-5-2-3-RELEASE
+/cyrix_accel.c/1.1.1.6/Fri Mar 18 13:11:40 2005//Tnetbsd-5-2-3-RELEASE
+/cyrix_bank.c/1.1.1.4/Fri Feb 28 13:20:10 2003//Tnetbsd-5-2-3-RELEASE
+/cyrix_driver.c/1.1.1.7/Fri Mar 18 13:11:40 2005//Tnetbsd-5-2-3-RELEASE
+/cyrix_helper.c/1.1.1.6/Fri Mar 18 13:11:40 2005//Tnetbsd-5-2-3-RELEASE
+/cyrix_shadow.c/1.1.1.1/Fri Feb 28 13:20:10 2003//Tnetbsd-5-2-3-RELEASE
+D

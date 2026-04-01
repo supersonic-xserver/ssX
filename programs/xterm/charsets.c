@@ -1,7 +1,21 @@
 /* $XTermId: charsets.c,v 1.31 2005/01/10 00:57:56 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * $XFree86: xc/programs/xterm/charsets.c,v 1.11 2003/12/31 17:12:26 dickey Exp $
+ * $XFree86: xc/programs/xterm/charsets.c,v 1.12 2005/01/14 01:50:02 dickey Exp $
  */
 
 /************************************************************

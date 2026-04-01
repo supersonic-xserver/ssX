@@ -1,31 +1,21 @@
-/* $XFree86$ */
 /* zutil.c -- target dependent utility functions for the compression library
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
+
+/* @(#) $Id: zutil.c,v 1.1.1.1 2004/03/05 14:26:27 tron Exp $ */
 
 #include "zutil.h"
 
 #ifndef STDC
 extern void exit OF((int));
-#endif
-
-#ifdef DEBUG
-#  ifndef FONTMODULE
-#    include <stdlib.h>
-#  endif
-
-#  ifndef verbose
-#    define verbose 0
-#  endif
-int z_verbose = verbose;
-
-void z_error (m)
-    char *m;
-{
-    fprintf(stderr, "%s\n", m);
-    exit(1);
-}
 #endif
 
 

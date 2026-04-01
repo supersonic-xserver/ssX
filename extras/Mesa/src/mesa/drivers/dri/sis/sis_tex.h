@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2003 Eric Anholt
 All Rights Reserved.
@@ -22,7 +36,7 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_tex.h,v 1.1.1.2 2004/06/10 14:23:16 alanh Exp $ */
 
 /*
  * Authors:
@@ -34,7 +48,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef GLX_DIRECT_RENDERING
 
-extern void sisDDInitTextureFuncs( GLcontext *ctx );
+extern void sisInitTextureFuncs( struct dd_function_table *table );
 extern void sisUpdateTextureState( GLcontext *ctx );
 
 #endif /* GLX_DIRECT_RENDERING */

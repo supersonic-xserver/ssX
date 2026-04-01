@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/oscolor.c,v 3.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/oscolor.c,v 3.11 2003/09/24 02:43:36 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,210 +52,236 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: oscolor.c,v 1.4 2001/02/09 02:05:23 xorgcvs Exp $ */
+
+#ifndef USE_RGB_TXT
+
+#ifdef NDBM
+#include <ndbm.h>
+#else
+#ifdef SVR4
+#include <rpcsvc/dbm.h>
+#else
+#include <dbm.h>
+#endif
+#endif
+#include "rgb.h"
+#include "os.h"
+#include "opaque.h"
+
+/* Note that we are assuming there is only one database for all the screens. */
+
+#ifdef NDBM
+DBM *rgb_dbm = (DBM *)NULL;
+#else
+int rgb_dbm = 0;
+#endif
+
+extern void CopyISOLatin1Lowered(
+    unsigned char * /*dest*/,
+    unsigned char * /*source*/,
+    int /*length*/);
+
+int
+OsInitColors(void)
+{
+    if (!rgb_dbm)
+    {
+#ifdef NDBM
+	rgb_dbm = dbm_open(rgbPath, 0, 0);
+#else
+	if (dbminit(rgbPath) == 0)
+	    rgb_dbm = 1;
+#endif
+	if (!rgb_dbm) {
+	    ErrorF( "Couldn't open RGB_DB '%s'\n", rgbPath );
+	    return FALSE;
+	}
+    }
+    return TRUE;
+}
+
+/*ARGSUSED*/
+int
+OsLookupColor(int screen, char *name, unsigned int len, 
+    unsigned short *pred, unsigned short *pgreen, unsigned short *pblue)
+{
+    datum		dbent;
+    RGB			rgb;
+    char		buf[64];
+    char		*lowername;
+
+    if(!rgb_dbm)
+	return(0);
+
+    /* we use xalloc here so that we can compile with cc without alloca
+     * when otherwise using gcc */
+    if (len < sizeof(buf))
+	lowername = buf;
+    else if (!(lowername = (char *)xalloc(len + 1)))
+	return(0);
+    CopyISOLatin1Lowered ((unsigned char *) lowername, (unsigned char *) name,
+			  (int)len);
+
+    dbent.dptr = lowername;
+    dbent.dsize = len;
+#ifdef NDBM
+    dbent = dbm_fetch(rgb_dbm, dbent);
+#else
+    dbent = fetch (dbent);
+#endif
+
+    if (len >= sizeof(buf))
+	xfree(lowername);
+
+    if(dbent.dptr)
+    {
+	memmove((char *) &rgb, dbent.dptr, sizeof (RGB));
+	*pred = rgb.red;
+	*pgreen = rgb.green;
+	*pblue = rgb.blue;
+	return (1);
+    }
+    return(0);
+}
+
+#else /* USE_RGB_TXT */
+
+
 /*
- * Copyright © 1995-2005 by The XFree86 Project, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject
- * to the following conditions:
- *
- *   1.  Redistributions of source code must retain the above copyright
- *       notice, this list of conditions, and the following disclaimer.
- *
- *   2.  Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer
- *       in the documentation and/or other materials provided with the
- *       distribution, and in the same place and form as other copyright,
- *       license and disclaimer information.
- *
- *   3.  The end-user documentation included with the redistribution,
- *       if any, must include the following acknowledgment: "This product
- *       includes software developed by The XFree86 Project, Inc
- *       (http://www.xfree86.org/) and its contributors", in the same
- *       place and form as other third-party acknowledgments.  Alternately,
- *       this acknowledgment may appear in the software itself, in the
- *       same form and location as other such third-party acknowledgments.
- *
- *   4.  Except as contained in this notice, the name of The XFree86
- *       Project, Inc shall not be used in advertising or otherwise to
- *       promote the sale, use or other dealings in this Software without
- *       prior written authorization from The XFree86 Project, Inc.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * The dbm routines are a porting hassle. This implementation will do
+ * the same thing by reading the rgb.txt file directly, which is much
+ * more portable.
  */
 
 #include <stdio.h>
 #include "os.h"
 #include "opaque.h"
-#include "oscolor.h"
-#include "dix.h"
-#define XK_LATIN1
-#include <X11/keysymdef.h>
 
-static dbEntryPtr *colorTab = NULL;
+#define HASHSIZE 511
+
+typedef struct _dbEntry * dbEntryPtr;
+typedef struct _dbEntry {
+  dbEntryPtr     link;
+  unsigned short red;
+  unsigned short green;
+  unsigned short blue;
+  char           name[1];	/* some compilers complain if [0] */
+} dbEntry;
+
+
+extern void CopyISOLatin1Lowered(
+    unsigned char * /*dest*/,
+    unsigned char * /*source*/,
+    int /*length*/);
+
 static dbEntryPtr hashTab[HASHSIZE];
 
-/*
- * Make a normalised copy of the colour name.  Case is lowered, and space,
- * '-' and '_' characters are removed.  Colours are matched by comparing
- * their normalised names.
- */
-
-static void
-stringCopy(char *dest, char *source, int length)
-{
-    int i;
-
-    for (i = 0; i < length; i++) {
-	unsigned char c = (unsigned char)*source++;
-
-	if ((c >= XK_A) && (c <= XK_Z))
-	    *dest++ = (char)c + (XK_a - XK_A);
-	else if ((c >= XK_Agrave) && (c <= XK_Odiaeresis))
-	    *dest++ = (char)c + (XK_agrave - XK_Agrave);
-	else if ((c >= XK_Ooblique) && (c <= XK_Thorn))
-	    *dest++ = (char)c + (XK_oslash - XK_Ooblique);
-	else if ((c != XK_space) && (c != XK_minus) && (c != XK_underscore))
-	    *dest++ = (char)c;
-    }
-
-    *dest = '\0';
-}
 
 static dbEntryPtr
 lookup(char *name, int len, Bool create)
 {
-    unsigned int h = 0, g;
-    dbEntryPtr entry, *prev = NULL;
-    char *str = name;
+  unsigned int h = 0, g;
+  dbEntryPtr   entry, *prev = NULL;
+  char         *str = name;
 
-    if (!colorTab)
-	return NULL;
+  if (!(name = (char*)ALLOCATE_LOCAL(len +1))) return NULL;
+  CopyISOLatin1Lowered((unsigned char *)name, (unsigned char *)str, len);
+  name[len] = '\0';
 
-    if (!(name = ALLOCATE_LOCAL(len + 1)))
-	return NULL;
-    stringCopy(name, str, len);
-    name[len] = '\0';
+  for(str = name; *str; str++) {
+    h = (h << 4) + *str;
+    if ((g = h) & 0xf0000000) h ^= (g >> 24);
+    h &= g;
+  }
+  h %= HASHSIZE;
 
-    for (str = name; *str; str++) {
-	h = (h << 4) + *str;
-	if ((g = h) & 0xf0000000)
-	    h ^= (g >> 24);
-	h &= g;
+  if ( (entry = hashTab[h]) )
+    {
+      for( ; entry; prev = (dbEntryPtr*)entry, entry = entry->link )
+	if (! strcmp(name, entry->name) ) break;
     }
-    h %= HASHSIZE;
+  else
+    prev = &(hashTab[h]);
 
-    if ((entry = colorTab[h])) {
-	for (; entry; prev = &entry->link, entry = entry->link) {
-	    if (!strcmp(name, entry->name))
-		break;
-	}
-    } else
-	prev = &(colorTab[h]);
-
-    if (!entry && create && (entry = xalloc(sizeof(dbEntry)))) {
-	*prev = entry;
-	entry->link = NULL;
-	entry->name = xstrdup(name);
+  if (!entry && create && (entry = (dbEntryPtr)xalloc(sizeof(dbEntry) +len)))
+    {
+      *prev = entry;
+      entry->link = NULL;
+      strcpy( entry->name, name );
     }
 
-    DEALLOCATE_LOCAL(name);
+  DEALLOCATE_LOCAL(name);
 
-    return entry;
+  return entry;
 }
 
-#ifndef __UNIXOS2__
-#define RGB_SCANF_FMT "%d %d %d %[^\n]\n"
-#else
-#define RGB_SCANF_FMT "%d %d %d %[^\n\r]\n"
-#endif
-#define RGB_SCALE_FACTOR (65535 / 255)
 
 Bool
 OsInitColors(void)
 {
-    FILE *rgb;
-    char *path;
-    const char *fullpath;
-    char line[BUFSIZ];
-    char name[BUFSIZ];
-    int red, green, blue, lineno = 0;
-    dbEntryPtr entry;
+  FILE       *rgb;
+  char       *path;
+  char       line[BUFSIZ];
+  char       name[BUFSIZ];
+  int        red, green, blue, lineno = 0;
+  dbEntryPtr entry;
 
-    if (serverGeneration != 1)
-	return TRUE;
+  static Bool was_here = FALSE;
 
+  if (!was_here)
+    {
 #ifndef __UNIXOS2__
-    fullpath = rgbPath;
+      path = (char*)ALLOCATE_LOCAL(strlen(rgbPath) +5);
+      strcpy(path, rgbPath);
+      strcat(path, ".txt");
 #else
-    fullpath = __XOS2RedirRoot(rgbPath);
+      char *tmp = (char*)__XOS2RedirRoot(rgbPath);
+      path = (char*)ALLOCATE_LOCAL(strlen(tmp) +5);
+      strcpy(path, tmp);
+      strcat(path, ".txt");
 #endif
-    xasprintf(&path, "%s.txt", fullpath);
-    if (!path)
-	return FALSE;
-
-    if (!(rgb = fopen(path, "r"))) {
-#ifdef BUILTIN_RGB
-	LogMessageVerb(X_WARNING, 0,
-			"Could not open RGB file \"%s\"; "
-			"will use built-in copy.\n", path);
-	xfree(path);
-	colorTab = builtinRGBhashTab;
-	return TRUE;
-#else
-	LogMessage(X_ERROR, "Could not open RGB_DB '%s'.\n", path);
-	xfree(path);
-	return FALSE;
-#endif
-    }
-
-    colorTab = hashTab;
-    while (fgets(line, sizeof(line), rgb)) {
-	lineno++;
-	if (sscanf(line, RGB_SCANF_FMT, &red, &green, &blue, name) == 4) {
-	    if (red >= 0   && red <= 0xff &&
-		green >= 0 && green <= 0xff &&
-		blue >= 0  && blue <= 0xff) {
-		if ((entry = lookup(name, strlen(name), TRUE))) {
-		    entry->red = red * RGB_SCALE_FACTOR;
-		    entry->green = green * RGB_SCALE_FACTOR;
-		    entry->blue = blue * RGB_SCALE_FACTOR;
-		}
-	    } else {
-		LogMessageVerb(X_WARNING, 0,
-			       "OsInitColors: %s:%d: Bad rgb value: "
-			       "(%d:%d:%d).\n",
-			       path, lineno, red, green, blue);
-	    }
-	} else if (*line && *line != '#' && *line != '!') {
-	    LogMessageVerb(X_WARNING, 0,
-			   "OsInitColors: %s:%d: Syntax error:\n",
-			   path, lineno);
-	    LogMessageVerb(X_WARNING, 0, "\t\"%.*s\"\n",
-			   (int)strlen(line) - 1, line);
+      if (!(rgb = fopen(path, "r")))
+        {
+	   ErrorF( "Couldn't open RGB_DB '%s'\n", rgbPath );
+	   DEALLOCATE_LOCAL(path);
+	   return FALSE;
 	}
+
+      while(fgets(line, sizeof(line), rgb))
+	{
+	  lineno++;
+#ifndef __UNIXOS2__
+	  if (sscanf(line,"%d %d %d %[^\n]\n", &red, &green, &blue, name) == 4)
+#else
+	  if (sscanf(line,"%d %d %d %[^\n\r]\n", &red, &green, &blue, name) == 4)
+#endif
+	    {
+	      if (red >= 0   && red <= 0xff &&
+		  green >= 0 && green <= 0xff &&
+		  blue >= 0  && blue <= 0xff)
+		{
+		  if ((entry = lookup(name, strlen(name), TRUE)))
+		    {
+		      entry->red   = (red * 65535)   / 255;
+		      entry->green = (green * 65535) / 255;
+		      entry->blue  = (blue  * 65535) / 255;
+		    }
+		}
+	      else
+		ErrorF("Value out of range: %s:%d\n", path, lineno);
+	    }
+	  else if (*line && *line != '#' && *line != '!')
+	    ErrorF("Syntax Error: %s:%d\n", path, lineno);
+	}
+      
+      fclose(rgb);
+      DEALLOCATE_LOCAL(path);
+
+      was_here = TRUE;
     }
 
-    fclose(rgb);
-    xfree(path);
-
-    return TRUE;
+  return TRUE;
 }
 
 
@@ -257,15 +290,17 @@ Bool
 OsLookupColor(int screen, char *name, unsigned int len, 
     unsigned short *pred, unsigned short *pgreen, unsigned short *pblue)
 {
-    dbEntryPtr entry;
+  dbEntryPtr entry;
 
-    if ((entry = lookup(name, len, FALSE))) {
-	*pred   = entry->red;
-	*pgreen = entry->green;
-	*pblue  = entry->blue;
-	return TRUE;
+  if ((entry = lookup(name, len, FALSE)))
+    {
+      *pred   = entry->red;
+      *pgreen = entry->green;
+      *pblue  = entry->blue;
+      return TRUE;
     }
 
-    return FALSE;
+  return FALSE;
 }
 
+#endif /* USE_RGB_TXT */

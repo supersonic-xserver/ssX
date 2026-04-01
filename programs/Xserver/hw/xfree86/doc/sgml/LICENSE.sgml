@@ -5,10 +5,10 @@
 <article>
 <title>Licenses</title>
 <author>Compiled by The XFree86 Project</author>
-<date>April 2006</date>
+<date>9 March 2005</date>
 
 <ident>
-$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LICENSE.sgml,v 1.45tsi Exp $
+$XFree86: xc/programs/Xserver/hw/xfree86/doc/sgml/LICENSE.sgml,v 1.41 2005/03/10 02:35:07 dawes Exp $
 </ident>
 
 <sect>Introduction
@@ -83,7 +83,7 @@ The text of the XFree86 1.1 license is included below.  A FAQ for this
 licence can be found at the <url name="XFree86 web site"
 url="http://www.xfree86.org/legal/licenses.html">
 
-Copyright (C) 1994-2006 The XFree86 Project, Inc.<newline>
+Copyright (C) 1994-2005 The XFree86 Project, Inc.<newline>
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -148,7 +148,6 @@ Copyright (C) <it>&lt;date&gt;</it> <it>&lt;Copyright Holder&gt;</it>
 Copyright (C) 1984-1989, 1994 Adobe Systems Incorporated.<newline>
 Copyright (C) 2003 Eric Anholt<newline>
 Copyright (C) 2002 Apple Computer, Inc. All Rights Reserved.<newline>
-Copyright (C) 2005 ASPEED Technology Inc.<newline>
 Copyright (C) 1988 AT&amp;T.  All Rights Reserved.<newline>
 Copyright (C) 1992 by Robert Baron<newline>
 Copyright (C) 1996-1998 by David Bateman &lt;dbateman@ee.uts.edu.au&gt;<newline>
@@ -176,7 +175,7 @@ Copyright (C) 2001 by J. Kean Johnston<newline>
 Copyright (C) 2000, 2001 Ani Joshi<newline>
 Copyright (C) 2000 by Rainer Keller<newline>
 Copyright (C) 1999-2003 by Peter Kunzmann, Citron GmbH, Germany.<newline>
-Copyright (C) 1994 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org<newline>
+Copyright (C) 1994 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org<newline>
 Copyright (C) 1996 by Steven Lang<newline>
 Copyright (C) 1995, 1999 by Patrick Lecoanet, France.<newline>
 Copyright (C) 2001 by Patrick LERDA<newline>
@@ -710,6 +709,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Copyright (c) 2003 The NetBSD Foundation, Inc.
 All rights reserved.
 
+This code is derived from software contributed to The NetBSD Foundation
+by Ben Collver &lt;collver1@attbi.com&gt;
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -719,6 +721,10 @@ All rights reserved.
 <item> Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in the
     documentation and/or other materials provided with the distribution.
+<item> All advertising materials mentioning features or use of this software
+    must display the following acknowledgement:
+        This product includes software developed by the NetBSD
+        Foundation, Inc. and its contributors.
 <item> Neither the name of The NetBSD Foundation nor the names of its
     contributors may be used to endorse or promote products derived
     from this software without specific prior written permission.
@@ -739,8 +745,8 @@ All rights reserved.
 <sect1>X-Oz Technologies
 <p>
 
-Copyright 2003-2006 by David H. Dawes.<newline>
-Copyright 2003-2006 by X-Oz Technologies.<newline>
+Copyright 2003, 2004, 2005 by David H. Dawes.<newline>
+Copyright 2003, 2004, 2005 by X-Oz Technologies.<newline>
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a

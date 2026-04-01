@@ -1,4 +1,10 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.h,v 3.39 2006/01/09 14:59:52 dawes Exp $ */
+/* $XConsortium: xf86Xinput.h /main/11 1996/10/27 11:05:29 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1995-1999 by Frederic Lepied, France. <Lepied@XFree86.org>
@@ -24,7 +30,7 @@
  */
 
 /*
- * Copyright (c) 2000-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 2000-2002 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -70,6 +76,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Xinput.h,v 3.37 2004/02/13 23:58:39 dawes Exp $ */
+
 #ifndef _xf86Xinput_h
 #define _xf86Xinput_h
 
@@ -79,8 +87,8 @@
 #include "xf86str.h"
 #include "inputstr.h"
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "extensions/XI.h"
+#include "extensions/XIproto.h"
 #include "XIstubs.h"
 #endif
 
@@ -127,7 +135,7 @@ typedef struct _InputDriverRec {
     void		    (*UnInit)(struct _InputDriverRec *drv,
 				      struct _LocalDeviceRec *pInfo,
 				      int flags);
-    ModuleDescPtr	    module;
+    pointer		    module;
     int			    refCount;
 } InputDriverRec, *InputDriverPtr;
 #endif
@@ -172,7 +180,7 @@ typedef struct _LocalDeviceRec {
     IntegerFeedbackPtr	    always_core_feedback;
     IDevPtr		    conf_idev;
     InputDriverPtr	    drv;
-    ModuleDescPtr	    module;
+    pointer		    module;
     pointer		    options;
 } LocalDeviceRec, *LocalDevicePtr, InputInfoRec, *InputInfoPtr;
 
@@ -227,7 +235,7 @@ void xf86AddEnabledDevice(InputInfoPtr pInfo);
 void xf86RemoveEnabledDevice(InputInfoPtr pInfo);
 
 /* xf86Helper.c */
-void xf86AddInputDriver(InputDriverPtr driver, ModuleDescPtr module, int flags);
+void xf86AddInputDriver(InputDriverPtr driver, pointer module, int flags);
 void xf86DeleteInputDriver(int drvIndex);
 InputInfoPtr xf86AllocateInput(InputDriverPtr drv, int flags);
 void xf86DeleteInput(InputInfoPtr pInp, int flags);

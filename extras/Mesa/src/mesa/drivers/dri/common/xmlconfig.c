@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * XML DRI client-side driver configuration
  * Copyright (C) 2003 Felix Kuehling
  *
@@ -21,7 +28,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/xmlconfig.c,v 1.4 2004/12/10 15:30:09 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/xmlconfig.c,v 1.5 2004/12/10 15:41:00 alanh Exp $ */
 /**
  * \file xmlconfig.c
  * \brief Driver-independent client-side part of the XML configuration

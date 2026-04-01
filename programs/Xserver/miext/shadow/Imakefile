@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/miext/shadow/Imakefile,v 1.11tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/miext/shadow/Imakefile,v 1.10 2004/06/02 22:43:05 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -97,8 +97,9 @@ OBJS =  $(XFMODOBJ) \
 	shrot32pack_270.o
 
    INCLUDES = -I$(SERVERSRC)/miext/shadow -I$(SERVERSRC)/mi -I$(SERVERSRC)/fb \
-	      -I$(SERVERSRC)/include -I$(XF86SRC)/common $(EXTRAINCLUDES) \
-	      -I$(SERVERSRC)/render
+	      -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	      -I$(FONTINCSRC) -I$(XF86SRC)/common $(EXTRAINCLUDES) \
+	      -I$(SERVERSRC)/render -I$(EXTINCSRC)
    LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln \
 	     $(SERVERSRC)/mi/llib-lmi.ln
 
@@ -115,7 +116,6 @@ NormalLintTarget($(SRCS))
 
 #ifdef IHaveModules
 InstallLibraryModule(shadow,$(MODULEDIR),.)
-InstallDriverSDKLibraryModule(shadow,$(DRIVERSDKMODULEDIR),.)
 #endif
 
 DependTarget()
@@ -144,6 +144,5 @@ LinkSourceFile(shrot32pack_180.c,LinkDirectory)
 LinkSourceFile(shrot32pack_270.c,LinkDirectory)
 #endif
 
-#if !defined(IHaveModules) || !BuildModuleInSubdir
+InstallDriverSDKLibraryModule(shadow,$(DRIVERSDKMODULEDIR),.)
 InstallDriverSDKNonExecFile(shadow.h,$(DRIVERSDKINCLUDEDIR))
-#endif

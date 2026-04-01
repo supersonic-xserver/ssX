@@ -1,4 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: Tree.h,v 1.4 2001/02/09 02:03:47 xorgcvs Exp $
+ *
 
 Copyright 1990, 1994, 1998  The Open Group
 
@@ -46,7 +55,7 @@ in this Software without prior written authorization from The Open Group.
  * additional blank space to make the structure of the graph easier to see
  * as well as to support vertical trees.
  */
-/* $XFree86: xc/lib/Xaw/Tree.h,v 1.10 2006/01/12 00:58:01 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Tree.h,v 1.7 2001/12/14 19:54:45 dawes Exp $ */
 
 
 #ifndef _XawTree_h
@@ -72,7 +81,6 @@ in this Software without prior written authorization from The Open Group.
  *  hSpace              HSpace             Dimension       20
  *  lineWidth           LineWidth          Dimension       0
  *  vSpace              VSpace             Dimension       6
- *  connectionType      ConnectionType     XawTreeConnType XawTreeK
  * 
  * 
  * Constraint Resources attached to children:
@@ -118,37 +126,7 @@ in this Software without prior written authorization from The Open Group.
 #ifndef XawRDisplayList
 #define XawRDisplayList "XawDisplayList"
 #endif
-
-#define XawNtreeConnType "connectionType"
-#define XawCTreeConnType "ConnectionType"
-
-#endif /* OLDXAW */
-
-
-typedef enum {
-    /*
-     * K-type:
-     *
-     *         -[node]---[node]
-     *        /
-     * [node]<--[node]
-     *        \
-     *         -[node]
-     */
-    XawTreeK,
-
-    /*
-     * E-type:
-     * 
-     *        +-[node]---[node]
-     *        |
-     * [node]-+-[node]
-     *        |
-     *        +-[node]
-     */
-    XawTreeE
-} XawTreeConnType;
-
+#endif
                                         /* external declarations */
 extern WidgetClass treeWidgetClass;
 

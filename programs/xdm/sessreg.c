@@ -1,4 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: sessreg.c,v 1.5 2000/08/17 19:54:15 cpqbld Exp $
+ *
  * Copyright 1990, 1998  The Open Group
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -28,7 +37,7 @@
  *   by Andreas Stolcke <stolcke@icsi.berkeley.edu>
  */
 
-/* $XFree86: xc/programs/xdm/sessreg.c,v 3.22 2006/01/09 15:01:04 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/sessreg.c,v 3.21 2005/01/26 04:18:53 dawes Exp $ */
 
 /*
  * sessreg
@@ -200,7 +209,7 @@ getstring (char ***avp, int *flagp)
 	return *a;
 }
 
-#if !defined(SYSV) && !defined(BSD_UTMPX)
+#ifndef SYSV
 static int
 syserr (int x, char *s)
 {
@@ -225,7 +234,7 @@ sysnerr (int x, char *s)
 int
 main (int argc, char **argv)
 {
-#if !defined(SYSV) && !defined(BSD_UTMPX)
+#ifndef SYSV
 	int		utmp;
 #endif
 	char		*line_tmp;
@@ -354,14 +363,12 @@ main (int argc, char **argv)
 	}
 #ifndef NO_LASTLOG
 	if (aflag && !llog_none) {
-# ifndef BSD_UTMPX
 	        int llog;
-# endif
 	        struct passwd *pwd = getpwnam(user_name);
 
 	        sysnerr( pwd != NULL, "get user id");
 # ifdef BSD_UTMPX
-		{
+		if (llog != -1) {
 			struct lastlogx ll;
 
 			bzero((char *)&ll, sizeof(ll));

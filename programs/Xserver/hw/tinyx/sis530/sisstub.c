@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,7 +27,7 @@
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/sis530/sisstub.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/sis530/sisstub.c,v 1.1 2004/06/02 22:43:02 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -76,31 +83,30 @@ static const int   sisCards[] = { 0x6306, 0x0200 };
 #define numSisCards (sizeof (sisCards) / sizeof (sisCards[0]))
 
 void
-InitCard (const char *name)
+InitCard (char *name)
 {
     KdCardAttr	attr;
     int		i;
 
     for (i = 0; i < numSisCards; i++)
 	if (LinuxFindPci (0x1039, sisCards[i], 0, &attr))
-	    KdCardInfoAdd (&sisFuncs, &attr,
-			   (void *)(unsigned long) sisCards[i]);
+	    KdCardInfoAdd (&sisFuncs, &attr, (void *) sisCards[i]);
 }
 
 void
-InitOutput (ScreenInfo *pScreenInfo, const int argc, const char **argv)
+InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     KdInitOutput (pScreenInfo, argc, argv);
 }
 
 void
-InitInput (const int argc, const char **argv)
+InitInput (int argc, char **argv)
 {
     KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
 }
 
 int
-ddxProcessArgument (int argc, const char **argv, int i)
+ddxProcessArgument (int argc, char **argv, int i)
 {
     return KdProcessArgument (argc, argv, i);
 }

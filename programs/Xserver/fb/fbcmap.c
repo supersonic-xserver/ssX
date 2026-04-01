@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/fb/fbcmap.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/fb/fbcmap.c,v 1.7 2004/06/02 22:42:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -75,20 +82,14 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "colormapst.h"
 #include "resource.h"
 #include "fb.h"
 
-#if 0
-
-/*
- * Old version.  This isn't GLX-aware and doesn't respect Xvfb's specification
- * of rootDepth.
- */
-
+#ifndef XFree86Server
 ColormapPtr FbInstalledMaps[MAXSCREENS];
 
 int
@@ -633,7 +634,6 @@ fbInitVisuals (VisualPtr    *visualp,
     *defaultVisp = depth[i].vids[j];
     return TRUE;
 }
-
 #else
 
 #include "micmap.h"

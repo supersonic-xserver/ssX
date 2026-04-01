@@ -1,9 +1,9 @@
 XCOMM
 XCOMM This is an Imakefile for the glide driver.  
 XCOMM
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glide/Imakefile,v 1.13tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glide/Imakefile,v 1.9 2004/06/01 00:17:00 dawes Exp $
 /*
- * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -52,16 +52,30 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glide/Imakefile,v 1.13tsi
 #define IHaveModules
 #include <Server.tmpl>
 
+#if !HasGlide2 || !defined(Glide2IncDir)
+all::
+	@echo "This driver requires that you define HasGlide2 and Glide2IncDir in host.def"
+	@exit 1
+install::
+	@echo "This driver requires that you define HasGlide2 and Glide2IncDir in host.def"
+	@exit 1
+#endif
+
 SRCS = glide_driver.c
 OBJS = glide_driver.o
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi \
-           -I$(XF86SRC)/ramdac -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
-           -I$(SERVERSRC)/Xext -I$(SERVERSRC)/include -I$(XF86SRC)/shadowfb \
-           -I$(SERVERSRC)/render
+INCLUDES = -I. -I$(GLIDE2INCDIR) -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi \
+           -I$(XF86SRC)/xaa \
+           -I$(XF86SRC)/vgahw -I$(XF86SRC)/ramdac \
+           -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
+           -I$(SERVERSRC)/Xext -I$(XF86SRC)/xf8_32bpp\
+           -I$(FONTINCSRC) -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+           -I$(XF86SRC)/xf24_32bpp -I$(XF86SRC)/shadowfb \
+           -I$(EXTINCSRC) -I$(SERVERSRC)/render
 #endif
 
 #if MakeHasPosixVariableSubstitutions

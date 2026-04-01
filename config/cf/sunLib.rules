@@ -2,7 +2,7 @@
  * SunOS shared library rules
  */
 
-XCOMM $XFree86: xc/config/cf/sunLib.rules,v 1.6 2004/04/08 01:40:20 dawes Exp $
+XCOMM $XFree86: xc/config/cf/sunLib.rules,v 1.7 2004/06/01 00:16:53 dawes Exp $
 
 #ifndef HasSharedLibraries
 #define HasSharedLibraries YES

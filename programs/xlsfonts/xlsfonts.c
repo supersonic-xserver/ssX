@@ -1,4 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: xlsfonts.c,v 1.4 2001/02/09 02:05:54 xorgcvs Exp $
+ *
  * 
 Copyright 1989, 1998  The Open Group
 
@@ -66,7 +75,7 @@ static int max(int, int);
 static int IgnoreError(Display *, XErrorEvent *);
 static void PrintProperty(XFontProp *);
 static void ComputeFontType(XFontStruct *);
-static void print_character_metrics(XFontStruct *);
+static void print_character_metrics(register XFontStruct *);
 
 
 void
@@ -98,7 +107,9 @@ usage()
 }
 
 int
-main(int argc, char **argv)
+main(argc, argv)
+int argc;
+char **argv;    
 {
 	int	argcnt = 0, i;
 
@@ -164,7 +175,8 @@ main(int argc, char **argv)
 }
 
 void
-get_list(char *pattern)
+get_list(pattern)
+	char	*pattern;
 {
 	int	available = nnames+1,
 		i;
@@ -219,7 +231,9 @@ get_list(char *pattern)
 }
 
 static int
-compare(const void *arg1, const void *arg2)
+compare(arg1, arg2)
+    const void *arg1;
+    const void *arg2;
 {
 	const FontList *f1 = arg1;
 	const FontList *f2 = arg2;
@@ -390,7 +404,8 @@ show_fonts()
 
 #ifndef max
 static int
-max(int i, int j)
+max(i, j)
+	int	i, j;
 {
 	if (i > j)
 		return (i);
@@ -399,7 +414,9 @@ max(int i, int j)
 #endif
 
 void
-copy_number(char **pp1, char **pp2, int n1, int n2)
+copy_number(pp1, pp2, n1, n2)
+	char	**pp1, **pp2;
+	int	n1, n2;
 {
 	char	*p1 = *pp1;
 	char	*p2 = *pp2;
@@ -419,8 +436,9 @@ copy_number(char **pp1, char **pp2, int n1, int n2)
 
 
 /* ARGSUSED */
-static int
-IgnoreError(Display *disp, XErrorEvent *event)
+static int IgnoreError(disp, event)
+    Display *disp;
+    XErrorEvent *event;
 {
     return 0;
 }
@@ -434,7 +452,7 @@ static char *bounds_metrics_fmt =
 
 
 #define PrintBounds(_what,_ptr) \
-{   XCharStruct *p = (_ptr); \
+{   register XCharStruct *p = (_ptr); \
     printf (bounds_metrics_fmt, _what, p->width, p->lbearing, \
 	  p->rbearing, p->ascent, p->descent, p->attributes); }
 
@@ -477,8 +495,8 @@ static char* stringValued [] = { /* values are atoms */
      NULL
     };
 
-static void
-PrintProperty(XFontProp *prop)
+static void PrintProperty (prop)
+    XFontProp *prop;
 {
     char *atom, *value;
     char nosuch[40];
@@ -520,7 +538,8 @@ PrintProperty(XFontProp *prop)
 
 
 static void
-ComputeFontType(XFontStruct *fs)
+ComputeFontType (fs)
+    XFontStruct *fs;
 {
     int i;
     Bool char_cell = True;
@@ -588,10 +607,11 @@ ComputeFontType(XFontStruct *fs)
 
 
 static void
-print_character_metrics(XFontStruct *info)
+print_character_metrics (info)
+    register XFontStruct *info;
 {
-    XCharStruct *pc = info->per_char;
-    int i, j;
+    register XCharStruct *pc = info->per_char;
+    register int i, j;
     unsigned n, saven;
 
     printf ("  character metrics:\n");
@@ -612,10 +632,12 @@ print_character_metrics(XFontStruct *info)
 
 
 void
-do_query_font(Display *dpy, char *name)
+do_query_font (dpy, name)
+    Display *dpy;
+    char *name;
 {
-    int i;
-    XFontStruct *info = XLoadQueryFont (dpy, name);
+    register int i;
+    register XFontStruct *info = XLoadQueryFont (dpy, name);
 
     if (!info) {
 	fprintf (stderr, "%s:  unable to get info about font \"%s\"\n",

@@ -1,0 +1,18 @@
+/ascii.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/asciitab.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/expat.h/1.1.1.1/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/iasciitab.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/internal.h/1.2/Sat Mar  6 13:51:17 2004//Tnetbsd-5-2-3-RELEASE
+/latin1tab.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/nametab.h/1.1.1.1/Fri Feb 28 13:19:12 2003//Tnetbsd-5-2-3-RELEASE
+/utf8tab.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/winconfig.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/xmlparse.c/1.1.1.2.20.1/Wed Jan 27 20:44:22 2010//Tnetbsd-5-2-3-RELEASE
+/xmlrole.c/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/xmlrole.h/1.1.1.2/Fri Mar  5 14:26:08 2004//Tnetbsd-5-2-3-RELEASE
+/xmltok.c/1.1.1.2/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/xmltok.h/1.1.1.2/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+/xmltok_impl.c/1.1.1.2.20.1/Fri Sep 11 23:00:48 2009//Tnetbsd-5-2-3-RELEASE
+/xmltok_impl.h/1.1.1.1/Fri Feb 28 13:19:12 2003//Tnetbsd-5-2-3-RELEASE
+/xmltok_ns.c/1.1.1.2/Fri Mar  5 14:26:09 2004//Tnetbsd-5-2-3-RELEASE
+D

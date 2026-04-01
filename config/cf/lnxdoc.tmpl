@@ -64,7 +64,10 @@ XCOMM
      DVIPSOPTIONS = DvipsOptions
        SGMLFMTCMD = SgmlFmtCmd
 
-/* Some extra things to clean */
-#undef  DocFilesToClean
+XCOMM Some extra things to clean
+
+#ifdef DocFilesToClean
+#undef DocFilesToClean
+#endif
 #define DocFilesToClean *.aux *.dvi *.log *.tex *.toc *.html *.ps *.latin1
 

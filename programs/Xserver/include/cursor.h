@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/cursor.h,v 1.8 2006/01/09 15:00:33 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/include/cursor.h,v 1.7 2003/04/27 21:31:04 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $Xorg: cursor.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
 #ifndef CURSOR_H
 #define CURSOR_H 
 
@@ -112,7 +119,7 @@ extern int AllocGlyphCursor(
     ClientPtr /*client*/);
 
 extern CursorPtr CreateRootCursor(
-    const char* /*pfilename*/,
+    char* /*pfilename*/,
     unsigned int /*glyph*/);
 
 extern int ServerBitsFromGlyph(

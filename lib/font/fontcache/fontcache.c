@@ -1,4 +1,11 @@
 /*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998-1999 Shunsuke Akiyama <akiyama@jp.FreeBSD.org>.
  * All rights reserved.
  * Copyright (c) 1998-1999 X-TrueType Server Project, All rights reserved.
@@ -24,6 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ *	Id: fontcache.c,v 1.19 1999/01/31 13:06:00 akiyama Exp $
  */
 /* $XFree86: xc/lib/font/fontcache/fontcache.c,v 1.5 2001/10/28 03:32:45 tsi Exp $ */
 

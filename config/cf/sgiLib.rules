@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/sgiLib.rules,v 1.7tsi Exp $
+XCOMM $XFree86: xc/config/cf/sgiLib.rules,v 1.7 2004/06/01 00:16:53 dawes Exp $
 
 #ifndef HasSharedLibraries
 #define HasSharedLibraries YES
@@ -203,22 +203,5 @@ clean::									@@\
 	$(RM) Concat(lib,libname.so.rev) Concat(lib,libname.so) so_locations
 
 #endif /* SharedDepLibraryTarget */
-
-#ifndef SharedDriModuleTarget
-#define SharedDriModuleTarget(name,deps,solist)				@@\
-AllTarget(name)								@@\
-									@@\
-name: deps								@@\
-	$(RM) $@~							@@\
-	$(CC) -o $@~ $(SHLIBLDFLAGS) solist $(REQUIREDLIBS) BaseShLibReqs @@\
-	$(RM) $@							@@\
-	$(MV) $@~ $@							@@\
-	LinkBuildModule($@,dri)						@@\
-									@@\
-clean::									@@\
-	$(RM) name							@@\
-	$(RM) name.map
-
-#endif /* SharedDriModuleTarget */
 
 #endif /* OsMajorVersion < 5 else */

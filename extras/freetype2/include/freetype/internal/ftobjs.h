@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftobjs.h                                                               */
 /*                                                                         */
 /*    The FreeType private base classes (specification).                   */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -26,17 +33,23 @@
 #ifndef __FTOBJS_H__
 #define __FTOBJS_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
-#endif
-
-#include FT_BUILD_H
+#include <ft2build.h>
+#include FT_CONFIG_STANDARD_LIBRARY_H   /* for ft_setjmp and ft_longjmp */
 #include FT_RENDER_H
+#include FT_SIZES_H
 #include FT_INTERNAL_MEMORY_H
+#include FT_INTERNAL_GLYPH_LOADER_H
 #include FT_INTERNAL_DRIVER_H
 #include FT_INTERNAL_AUTOHINT_H
+#include FT_INTERNAL_SERVICE_H
+
+#ifdef FT_CONFIG_OPTION_INCREMENTAL
+#include FT_INCREMENTAL_H
+#endif
+
 
 FT_BEGIN_HEADER
+
 
   /*************************************************************************/
   /*                                                                       */
@@ -54,43 +67,206 @@ FT_BEGIN_HEADER
 #define NULL  (void*)0
 #endif
 
-#ifndef UNUSED
-#define UNUSED( arg )  ( (arg)=(arg) )
-#endif
-
 
   /*************************************************************************/
   /*                                                                       */
   /* The min and max functions missing in C.  As usual, be careful not to  */
-  /* write things like MIN( a++, b++ ) to avoid side effects.              */
+  /* write things like FT_MIN( a++, b++ ) to avoid side effects.           */
   /*                                                                       */
-#ifndef MIN
-#define MIN( a, b )  ( (a) < (b) ? (a) : (b) )
-#endif
+#define FT_MIN( a, b )  ( (a) < (b) ? (a) : (b) )
+#define FT_MAX( a, b )  ( (a) > (b) ? (a) : (b) )
 
-#ifndef MAX
-#define MAX( a, b )  ( (a) > (b) ? (a) : (b) )
-#endif
+#define FT_ABS( a )     ( (a) < 0 ? -(a) : (a) )
 
-#ifndef ABS
-#define ABS( a )     ( (a) < 0 ? -(a) : (a) )
-#endif
+
+#define FT_PAD_FLOOR( x, n )  ( (x) & ~((n)-1) )
+#define FT_PAD_ROUND( x, n )  FT_PAD_FLOOR( (x) + ((n)/2), n )
+#define FT_PAD_CEIL( x, n )   FT_PAD_FLOOR( (x) + ((n)-1), n )
+
+#define FT_PIX_FLOOR( x )     ( (x) & ~63 )
+#define FT_PIX_ROUND( x )     FT_PIX_FLOOR( (x) + 32 )
+#define FT_PIX_CEIL( x )      FT_PIX_FLOOR( (x) + 63 )
+
+
+  /*************************************************************************/
+  /*************************************************************************/
+  /*************************************************************************/
+  /****                                                                 ****/
+  /****                                                                 ****/
+  /****                    V A L I D A T I O N                          ****/
+  /****                                                                 ****/
+  /****                                                                 ****/
+  /*************************************************************************/
+  /*************************************************************************/
+  /*************************************************************************/
+
+  /* handle to a validation object */
+  typedef struct FT_ValidatorRec_*  FT_Validator;
 
 
   /*************************************************************************/
   /*                                                                       */
-  /* <Struct>                                                              */
-  /*    FT_GlyphLoader                                                     */
+  /* There are three distinct validation levels defined here:              */
   /*                                                                       */
-  /* <Description>                                                         */
-  /*    The glyph loader is an internal object used to load several glyphs */
-  /*    together (for example, in the case of composites).                 */
+  /* FT_VALIDATE_DEFAULT ::                                                */
+  /*   A table that passes this validation level can be used reliably by   */
+  /*   FreeType.  It generally means that all offsets have been checked to */
+  /*   prevent out-of-bound reads, array counts are correct, etc.          */
   /*                                                                       */
-  /* <Note>                                                                */
-  /*    The glyph loader implementation is not part of the high-level API, */
-  /*    hence the forward structure declaration.                           */
+  /* FT_VALIDATE_TIGHT ::                                                  */
+  /*   A table that passes this validation level can be used reliably and  */
+  /*   doesn't contain invalid data.  For example, a charmap table that    */
+  /*   returns invalid glyph indices will not pass, even though it can     */
+  /*   be used with FreeType in default mode (the library will simply      */
+  /*   return an error later when trying to load the glyph).               */
   /*                                                                       */
-  typedef struct FT_GlyphLoader_  FT_GlyphLoader;
+  /*   It also check that fields that must be a multiple of 2, 4, or 8     */
+  /*   don't have incorrect values, etc.                                   */
+  /*                                                                       */
+  /* FT_VALIDATE_PARANOID ::                                               */
+  /*   Only for font debugging.  Checks that a table follows the           */
+  /*   specification by 100%.  Very few fonts will be able to pass this    */
+  /*   level anyway but it can be useful for certain tools like font       */
+  /*   editors/converters.                                                 */
+  /*                                                                       */
+  typedef enum  FT_ValidationLevel_
+  {
+    FT_VALIDATE_DEFAULT = 0,
+    FT_VALIDATE_TIGHT,
+    FT_VALIDATE_PARANOID
+
+  } FT_ValidationLevel;
+
+
+  /* validator structure */
+  typedef struct  FT_ValidatorRec_
+  {
+    const FT_Byte*      base;        /* address of table in memory       */
+    const FT_Byte*      limit;       /* `base' + sizeof(table) in memory */
+    FT_ValidationLevel  level;       /* validation level                 */
+    FT_Error            error;       /* error returned. 0 means success  */
+
+    ft_jmp_buf          jump_buffer; /* used for exception handling      */
+
+  } FT_ValidatorRec;
+
+
+#define FT_VALIDATOR( x )  ((FT_Validator)( x ))
+
+
+  FT_BASE( void )
+  ft_validator_init( FT_Validator        valid,
+                     const FT_Byte*      base,
+                     const FT_Byte*      limit,
+                     FT_ValidationLevel  level );
+
+  FT_BASE( FT_Int )
+  ft_validator_run( FT_Validator  valid );
+
+  /* Sets the error field in a validator, then calls `longjmp' to return */
+  /* to high-level caller.  Using `setjmp/longjmp' avoids many stupid    */
+  /* error checks within the validation routines.                        */
+  /*                                                                     */
+  FT_BASE( void )
+  ft_validator_error( FT_Validator  valid,
+                      FT_Error      error );
+
+
+  /* Calls ft_validate_error.  Assumes that the `valid' local variable */
+  /* holds a pointer to the current validator object.                  */
+  /*                                                                   */
+#define FT_INVALID( _error )  ft_validator_error( valid, _error )
+
+  /* called when a broken table is detected */
+#define FT_INVALID_TOO_SHORT  FT_INVALID( FT_Err_Invalid_Table )
+
+  /* called when an invalid offset is detected */
+#define FT_INVALID_OFFSET     FT_INVALID( FT_Err_Invalid_Offset )
+
+  /* called when an invalid format/value is detected */
+#define FT_INVALID_FORMAT     FT_INVALID( FT_Err_Invalid_Table )
+
+  /* called when an invalid glyph index is detected */
+#define FT_INVALID_GLYPH_ID   FT_INVALID( FT_Err_Invalid_Glyph_Index )
+
+  /* called when an invalid field value is detected */
+#define FT_INVALID_DATA       FT_INVALID( FT_Err_Invalid_Table )
+
+
+  /*************************************************************************/
+  /*************************************************************************/
+  /*************************************************************************/
+  /****                                                                 ****/
+  /****                                                                 ****/
+  /****                       C H A R M A P S                           ****/
+  /****                                                                 ****/
+  /****                                                                 ****/
+  /*************************************************************************/
+  /*************************************************************************/
+  /*************************************************************************/
+
+  /* handle to internal charmap object */
+  typedef struct FT_CMapRec_*              FT_CMap;
+
+  /* handle to charmap class structure */
+  typedef const struct FT_CMap_ClassRec_*  FT_CMap_Class;
+
+  /* internal charmap object structure */
+  typedef struct  FT_CMapRec_
+  {
+    FT_CharMapRec  charmap;
+    FT_CMap_Class  clazz;
+
+  } FT_CMapRec;
+
+  /* typecase any pointer to a charmap handle */
+#define FT_CMAP( x )              ((FT_CMap)( x ))
+
+  /* obvious macros */
+#define FT_CMAP_PLATFORM_ID( x )  FT_CMAP( x )->charmap.platform_id
+#define FT_CMAP_ENCODING_ID( x )  FT_CMAP( x )->charmap.encoding_id
+#define FT_CMAP_ENCODING( x )     FT_CMAP( x )->charmap.encoding
+#define FT_CMAP_FACE( x )         FT_CMAP( x )->charmap.face
+
+
+  /* class method definitions */
+  typedef FT_Error
+  (*FT_CMap_InitFunc)( FT_CMap     cmap,
+                       FT_Pointer  init_data );
+
+  typedef void
+  (*FT_CMap_DoneFunc)( FT_CMap  cmap );
+
+  typedef FT_UInt
+  (*FT_CMap_CharIndexFunc)( FT_CMap    cmap,
+                            FT_UInt32  char_code );
+
+  typedef FT_UInt
+  (*FT_CMap_CharNextFunc)( FT_CMap     cmap,
+                           FT_UInt32  *achar_code );
+
+
+  typedef struct  FT_CMap_ClassRec_
+  {
+    FT_ULong               size;
+    FT_CMap_InitFunc       init;
+    FT_CMap_DoneFunc       done;
+    FT_CMap_CharIndexFunc  char_index;
+    FT_CMap_CharNextFunc   char_next;
+
+  } FT_CMap_ClassRec;
+
+
+  /* create a new charmap and add it to charmap->face */
+  FT_BASE( FT_Error )
+  FT_CMap_New( FT_CMap_Class  clazz,
+               FT_Pointer     init_data,
+               FT_CharMap     charmap,
+               FT_CMap       *acmap );
+
+  /* destroy a charmap (don't remove it from face's list though) */
+  FT_BASE( void )
+  FT_CMap_Done( FT_CMap  cmap );
 
 
   /*************************************************************************/
@@ -104,40 +280,57 @@ FT_BEGIN_HEADER
   /*    FreeType.                                                          */
   /*                                                                       */
   /* <Fields>                                                              */
-  /*    max_points       :: The maximal number of points used to store the */
-  /*                        vectorial outline of any glyph in this face.   */
-  /*                        If this value cannot be known in advance, or   */
-  /*                        if the face isn't scalable, this should be set */
-  /*                        to 0.  Only relevant for scalable formats.     */
+  /*    max_points ::                                                      */
+  /*      The maximal number of points used to store the vectorial outline */
+  /*      of any glyph in this face.  If this value cannot be known in     */
+  /*      advance, or if the face isn't scalable, this should be set to 0. */
+  /*      Only relevant for scalable formats.                              */
   /*                                                                       */
-  /*    max_contours     :: The maximal number of contours used to store   */
-  /*                        the vectorial outline of any glyph in this     */
-  /*                        face.  If this value cannot be known in        */
-  /*                        advance, or if the face isn't scalable, this   */
-  /*                        should be set to 0.  Only relevant for         */
-  /*                        scalable formats.                              */
+  /*    max_contours ::                                                    */
+  /*      The maximal number of contours used to store the vectorial       */
+  /*      outline of any glyph in this face.  If this value cannot be      */
+  /*      known in advance, or if the face isn't scalable, this should be  */
+  /*      set to 0.  Only relevant for scalable formats.                   */
   /*                                                                       */
-  /*    transform_matrix :: A 2x2 matrix of 16.16 coefficients used to     */
-  /*                        transform glyph outlines after they are loaded */
-  /*                        from the font.  Only used by the convenience   */
-  /*                        functions.                                     */
+  /*    transform_matrix ::                                                */
+  /*      A 2x2 matrix of 16.16 coefficients used to transform glyph       */
+  /*      outlines after they are loaded from the font.  Only used by the  */
+  /*      convenience functions.                                           */
   /*                                                                       */
-  /*    transform_delta  :: A translation vector used to transform glyph   */
-  /*                        outlines after they are loaded from the font.  */
-  /*                        Only used by the convenience functions.        */
+  /*    transform_delta ::                                                 */
+  /*      A translation vector used to transform glyph outlines after they */
+  /*      are loaded from the font.  Only used by the convenience          */
+  /*      functions.                                                       */
   /*                                                                       */
-  /*    transform_flags  :: Some flags used to classify the transform.     */
-  /*                        Only used by the convenience functions.        */
+  /*    transform_flags ::                                                 */
+  /*      Some flags used to classify the transform.  Only used by the     */
+  /*      convenience functions.                                           */
+  /*                                                                       */
+  /*    services ::                                                        */
+  /*      A cache for frequently used services.  It should be only         */
+  /*      accessed with the macro `FT_FACE_LOOKUP_SERVICE'.                */
+  /*                                                                       */
+  /*    incremental_interface ::                                           */
+  /*      If non-null, the interface through which glyph data and metrics  */
+  /*      are loaded incrementally for faces that do not provide all of    */
+  /*      this data when first opened.  This field exists only if          */
+  /*      @FT_CONFIG_OPTION_INCREMENTAL is defined.                        */
   /*                                                                       */
   typedef struct  FT_Face_InternalRec_
   {
-    FT_UShort  max_points;
-    FT_Short   max_contours;
+    FT_UShort           max_points;
+    FT_Short            max_contours;
 
-    FT_Matrix  transform_matrix;
-    FT_Vector  transform_delta;
-    FT_Int     transform_flags;
-  
+    FT_Matrix           transform_matrix;
+    FT_Vector           transform_delta;
+    FT_Int              transform_flags;
+
+    FT_ServiceCacheRec  services;
+
+#ifdef FT_CONFIG_OPTION_INCREMENTAL
+    FT_Incremental_InterfaceRec*  incremental_interface;
+#endif
+
   } FT_Face_InternalRec;
 
 
@@ -155,6 +348,11 @@ FT_BEGIN_HEADER
   /*    loader            :: The glyph loader object used to load outlines */
   /*                         into the glyph slot.                          */
   /*                                                                       */
+  /*    flags             :: Possible values are zero or                   */
+  /*                         FT_GLYPH_OWN_BITMAP.  The latter indicates    */
+  /*                         that the FT_GlyphSlot structure owns the      */
+  /*                         bitmap buffer.                                */
+  /*                                                                       */
   /*    glyph_transformed :: Boolean.  Set to TRUE when the loaded glyph   */
   /*                         must be transformed through a specific        */
   /*                         font transformation.  This is _not_ the same  */
@@ -167,14 +365,22 @@ FT_BEGIN_HEADER
   /*    glyph_delta       :: The 2d translation vector corresponding to    */
   /*                         the glyph transformation, if necessary.       */
   /*                                                                       */
-  typedef struct FT_Slot_InternalRec_
+  /*    glyph_hints       :: Format-specific glyph hints management.       */
+  /*                                                                       */
+
+#define FT_GLYPH_OWN_BITMAP  0x1
+
+  typedef struct  FT_Slot_InternalRec_
   {
-    FT_GlyphLoader*   loader;
-    FT_Bool           glyph_transformed;
-    FT_Matrix         glyph_matrix;
-    FT_Vector         glyph_delta;
-  
+    FT_GlyphLoader  loader;
+    FT_UInt         flags;
+    FT_Bool         glyph_transformed;
+    FT_Matrix       glyph_matrix;
+    FT_Vector       glyph_delta;
+    void*           glyph_hints;
+
   } FT_GlyphSlot_InternalRec;
+
 
   /*************************************************************************/
   /*************************************************************************/
@@ -217,31 +423,32 @@ FT_BEGIN_HEADER
 
 
   /* typecast an object to a FT_Module */
-#define FT_MODULE( x )          ((FT_Module)(x))
-#define FT_MODULE_CLASS( x )    FT_MODULE(x)->clazz
-#define FT_MODULE_LIBRARY( x )  FT_MODULE(x)->library
-#define FT_MODULE_MEMORY( x )   FT_MODULE(x)->memory
+#define FT_MODULE( x )          ((FT_Module)( x ))
+#define FT_MODULE_CLASS( x )    FT_MODULE( x )->clazz
+#define FT_MODULE_LIBRARY( x )  FT_MODULE( x )->library
+#define FT_MODULE_MEMORY( x )   FT_MODULE( x )->memory
+
 
 #define FT_MODULE_IS_DRIVER( x )  ( FT_MODULE_CLASS( x )->module_flags & \
-                                    ft_module_font_driver )
+                                    FT_MODULE_FONT_DRIVER )
 
 #define FT_MODULE_IS_RENDERER( x )  ( FT_MODULE_CLASS( x )->module_flags & \
-                                      ft_module_renderer )
+                                      FT_MODULE_RENDERER )
 
 #define FT_MODULE_IS_HINTER( x )  ( FT_MODULE_CLASS( x )->module_flags & \
-                                    ft_module_hinter )
+                                    FT_MODULE_HINTER )
 
 #define FT_MODULE_IS_STYLER( x )  ( FT_MODULE_CLASS( x )->module_flags & \
-                                    ft_module_styler )
+                                    FT_MODULE_STYLER )
 
-#define FT_DRIVER_IS_SCALABLE( x )  ( FT_MODULE_CLASS(x)->module_flags & \
-                                      ft_module_driver_scalable )
+#define FT_DRIVER_IS_SCALABLE( x )  ( FT_MODULE_CLASS( x )->module_flags & \
+                                      FT_MODULE_DRIVER_SCALABLE )
 
-#define FT_DRIVER_USES_OUTLINES( x )  !( FT_MODULE_CLASS(x)->module_flags & \
-                                         ft_module_driver_no_outlines )
+#define FT_DRIVER_USES_OUTLINES( x )  !( FT_MODULE_CLASS( x )->module_flags & \
+                                         FT_MODULE_DRIVER_NO_OUTLINES )
 
-#define FT_DRIVER_HAS_HINTER( x )  ( FT_MODULE_CLASS(x)->module_flags & \
-                                     ft_module_driver_has_hinter )
+#define FT_DRIVER_HAS_HINTER( x )  ( FT_MODULE_CLASS( x )->module_flags & \
+                                     FT_MODULE_DRIVER_HAS_HINTER )
 
 
   /*************************************************************************/
@@ -265,8 +472,15 @@ FT_BEGIN_HEADER
   /*    You should better be familiar with FreeType internals to know      */
   /*    which module to look for, and what its interface is :-)            */
   /*                                                                       */
-  FT_BASE( const void* )  FT_Get_Module_Interface( FT_Library   library,
-                                                   const char*  mod_name );
+  FT_BASE( const void* )
+  FT_Get_Module_Interface( FT_Library   library,
+                           const char*  mod_name );
+
+  FT_BASE( FT_Pointer )
+  ft_module_get_service( FT_Module    module,
+                         const char*  service_id );
+
+ /* */
 
 
   /*************************************************************************/
@@ -290,53 +504,13 @@ FT_BEGIN_HEADER
 #define FT_FACE_DRIVER( x )   FT_FACE( x )->driver
 #define FT_FACE_LIBRARY( x )  FT_FACE_DRIVER( x )->root.library
 #define FT_FACE_MEMORY( x )   FT_FACE( x )->memory
+#define FT_FACE_STREAM( x )   FT_FACE( x )->stream
 
 #define FT_SIZE_FACE( x )     FT_SIZE( x )->face
 #define FT_SLOT_FACE( x )     FT_SLOT( x )->face
 
 #define FT_FACE_SLOT( x )     FT_FACE( x )->glyph
 #define FT_FACE_SIZE( x )     FT_FACE( x )->size
-
-
-  /* this must be kept exported -- it is used by the cache manager */
-  /* even though it shouldn't be considered public for now         */
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    FT_New_Size                                                        */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Creates a new size object from a given face object.                */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    face :: A handle to a parent face object.                          */
-  /*                                                                       */
-  /* <Output>                                                              */
-  /*    asize :: A handle to a new size object.                            */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    FreeType error code.  0 means success.                             */
-  /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_New_Size( FT_Face   face,
-                                      FT_Size*  size );
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    FT_Done_Size                                                       */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Discards a given size object.                                      */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    size :: A handle to a target size object.                          */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    FreeType error code.  0 means success.                             */
-  /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Done_Size( FT_Size  size );
 
 
   /*************************************************************************/
@@ -359,8 +533,9 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  FT_BASE( FT_Error )    FT_New_GlyphSlot( FT_Face        face,
-                                           FT_GlyphSlot  *aslot );
+  FT_BASE( FT_Error )
+  FT_New_GlyphSlot( FT_Face        face,
+                    FT_GlyphSlot  *aslot );
 
 
   /*************************************************************************/
@@ -376,100 +551,34 @@ FT_BEGIN_HEADER
   /* <Input>                                                               */
   /*    slot :: A handle to a target glyph slot.                           */
   /*                                                                       */
-  FT_BASE( void )  FT_Done_GlyphSlot( FT_GlyphSlot  slot );
+  FT_BASE( void )
+  FT_Done_GlyphSlot( FT_GlyphSlot  slot );
+
+ /* */
+
+ /*
+  * Free the bitmap of a given glyphslot when needed
+  * (i.e., only when it was allocated with ft_glyphslot_alloc_bitmap).
+  */
+  FT_BASE( void )
+  ft_glyphslot_free_bitmap( FT_GlyphSlot  slot );
 
 
-  /*************************************************************************/
-  /*************************************************************************/
-  /*************************************************************************/
-  /****                                                                 ****/
-  /****                                                                 ****/
-  /****                   G L Y P H   L O A D E R                       ****/
-  /****                                                                 ****/
-  /****                                                                 ****/
-  /*************************************************************************/
-  /*************************************************************************/
-  /*************************************************************************/
+ /*
+  * Allocate a new bitmap buffer in a glyph slot.
+  */
+  FT_BASE( FT_Error )
+  ft_glyphslot_alloc_bitmap( FT_GlyphSlot  slot,
+                             FT_ULong      size );
 
 
-#define FT_SUBGLYPH_FLAG_ARGS_ARE_WORDS          1
-#define FT_SUBGLYPH_FLAG_ARGS_ARE_XY_VALUES      2
-#define FT_SUBGLYPH_FLAG_ROUND_XY_TO_GRID        4
-#define FT_SUBGLYPH_FLAG_SCALE                   8
-#define FT_SUBGLYPH_FLAG_XY_SCALE             0x40
-#define FT_SUBGLYPH_FLAG_2X2                  0x80
-#define FT_SUBGLYPH_FLAG_USE_MY_METRICS      0x200
-
-
-  enum
-  {
-    ft_glyph_own_bitmap = 1
-  };
-
-
-  struct  FT_SubGlyph_
-  {
-    FT_Int     index;
-    FT_UShort  flags;
-    FT_Int     arg1;
-    FT_Int     arg2;
-    FT_Matrix  transform;
-  };
-
-
-  typedef struct  FT_GlyphLoad_
-  {
-    FT_Outline    outline;       /* outline             */
-    FT_UInt       num_subglyphs; /* number of subglyphs */
-    FT_SubGlyph*  subglyphs;     /* subglyphs           */
-    FT_Vector*    extra_points;  /* extra points table  */
-
-  } FT_GlyphLoad;
-
-
-  struct  FT_GlyphLoader_
-  {
-    FT_Memory     memory;
-    FT_UInt       max_points;
-    FT_UInt       max_contours;
-    FT_UInt       max_subglyphs;
-    FT_Bool       use_extra;
-
-    FT_GlyphLoad  base;
-    FT_GlyphLoad  current;
-
-    void*         other;            /* for possible future extension? */
-
-  };
-
-
-  FT_BASE( FT_Error )  FT_GlyphLoader_New( FT_Memory         memory,
-                                           FT_GlyphLoader*  *aloader );
-
-  FT_BASE( FT_Error )  FT_GlyphLoader_Create_Extra(
-                         FT_GlyphLoader*  loader );
-
-  FT_BASE( void )      FT_GlyphLoader_Done( FT_GlyphLoader*  loader );
-
-  FT_BASE( void )      FT_GlyphLoader_Reset( FT_GlyphLoader*  loader );
-
-  FT_BASE( void )      FT_GlyphLoader_Rewind( FT_GlyphLoader*  loader );
-
-  FT_BASE( FT_Error )  FT_GlyphLoader_Check_Points(
-                         FT_GlyphLoader*  loader,
-                         FT_UInt          n_points,
-                         FT_UInt          n_contours );
-
-  FT_BASE( FT_Error )  FT_GlyphLoader_Check_Subglyphs(
-                         FT_GlyphLoader*  loader,
-                         FT_UInt          n_subs );
-
-  FT_BASE( void )      FT_GlyphLoader_Prepare( FT_GlyphLoader*  loader );
-
-  FT_BASE( void )      FT_GlyphLoader_Add( FT_GlyphLoader*  loader );
-
-  FT_BASE( FT_Error )  FT_GlyphLoader_Copy_Points( FT_GlyphLoader*  target,
-                                                   FT_GlyphLoader*  source );
+ /*
+  * Set the bitmap buffer in a glyph slot to a given pointer.
+  * The buffer will not be freed by a later call to ft_glyphslot_free_bitmap.
+  */
+  FT_BASE( void )
+  ft_glyphslot_set_bitmap( FT_GlyphSlot  slot,
+                           FT_Byte*      buffer );
 
 
   /*************************************************************************/
@@ -493,14 +602,14 @@ FT_BEGIN_HEADER
 
   typedef struct  FT_RendererRec_
   {
-    FT_ModuleRec           root;
-    FT_Renderer_Class*     clazz;
-    FT_Glyph_Format        glyph_format;
-    FT_Glyph_Class         glyph_class;
+    FT_ModuleRec            root;
+    FT_Renderer_Class*      clazz;
+    FT_Glyph_Format         glyph_format;
+    FT_Glyph_Class          glyph_class;
 
-    FT_Raster              raster;
-    FT_Raster_Render_Func  raster_render;
-    FTRenderer_render      render;
+    FT_Raster               raster;
+    FT_Raster_Render_Func   raster_render;
+    FT_Renderer_RenderFunc  render;
 
   } FT_RendererRec;
 
@@ -554,13 +663,13 @@ FT_BEGIN_HEADER
   /*                                                                       */
   typedef struct  FT_DriverRec_
   {
-    FT_ModuleRec      root;
-    FT_Driver_Class*  clazz;
+    FT_ModuleRec     root;
+    FT_Driver_Class  clazz;
 
-    FT_ListRec        faces_list;
-    void*             extensions;
+    FT_ListRec       faces_list;
+    void*            extensions;
 
-    FT_GlyphLoader*   glyph_loader;
+    FT_GlyphLoader   glyph_loader;
 
   } FT_DriverRec;
 
@@ -578,8 +687,18 @@ FT_BEGIN_HEADER
   /*************************************************************************/
 
 
-#define FT_DEBUG_HOOK_TRUETYPE   0
-#define FT_DEBUG_HOOK_TYPE1      1
+/* this hook is used by the TrueType debugger. It must be set to an alternate
+ * truetype bytecode interpreter function
+ */
+#define FT_DEBUG_HOOK_TRUETYPE            0
+
+
+/* set this debug hook to a non-null pointer to force unpatented hinting
+ * for all faces when both TT_CONFIG_OPTION_BYTECODE_INTERPRETER and
+ * TT_CONFIG_OPTION_UNPATENTED_HINTING are defined. this is only used
+ * during debugging
+ */
+#define FT_DEBUG_HOOK_UNPATENTED_HINTING  1
 
 
   /*************************************************************************/
@@ -599,6 +718,12 @@ FT_BEGIN_HEADER
   /*    generic          :: Client data variable.  Used to extend the      */
   /*                        Library class by higher levels and clients.    */
   /*                                                                       */
+  /*    version_major    :: The major version number of the library.       */
+  /*                                                                       */
+  /*    version_minor    :: The minor version number of the library.       */
+  /*                                                                       */
+  /*    version_patch    :: The current patch level of the library.        */
+  /*                                                                       */
   /*    num_modules      :: The number of modules currently registered     */
   /*                        within this library.  This is set to 0 for new */
   /*                        libraries.  New modules are added through the  */
@@ -615,7 +740,7 @@ FT_BEGIN_HEADER
   /*                        shortcut used to avoid parsing the list on     */
   /*                        each call to FT_Outline_Render().  It is a     */
   /*                        handle to the current renderer for the         */
-  /*                        ft_glyph_format_outline format.                */
+  /*                        FT_GLYPH_FORMAT_OUTLINE format.                */
   /*                                                                       */
   /*    auto_hinter      :: XXX                                            */
   /*                                                                       */
@@ -632,6 +757,10 @@ FT_BEGIN_HEADER
 
     FT_Generic         generic;
 
+    FT_Int             version_major;
+    FT_Int             version_minor;
+    FT_Int             version_patch;
+
     FT_UInt            num_modules;
     FT_Module          modules[FT_MAX_MODULES];  /* module objects  */
 
@@ -640,7 +769,7 @@ FT_BEGIN_HEADER
     FT_Module          auto_hinter;
 
     FT_Byte*           raster_pool;      /* scan-line conversion */
-                                          /* render pool          */
+                                         /* render pool          */
     FT_ULong           raster_pool_size; /* size of render pool in bytes */
 
     FT_DebugHook_Func  debug_hooks[4];
@@ -648,56 +777,31 @@ FT_BEGIN_HEADER
   } FT_LibraryRec;
 
 
-  FT_BASE( FT_Renderer )  FT_Lookup_Renderer( FT_Library       library,
-                                              FT_Glyph_Format  format,
-                                              FT_ListNode*     node );
+  FT_BASE( FT_Renderer )
+  FT_Lookup_Renderer( FT_Library       library,
+                      FT_Glyph_Format  format,
+                      FT_ListNode*     node );
 
-  FT_BASE( FT_Error )  FT_Render_Glyph_Internal( FT_Library    library,
-                                                 FT_GlyphSlot  slot,
-                                                 FT_UInt       render_mode );
+  FT_BASE( FT_Error )
+  FT_Render_Glyph_Internal( FT_Library      library,
+                            FT_GlyphSlot    slot,
+                            FT_Render_Mode  render_mode );
 
-  typedef FT_Error  (*FT_Glyph_Name_Requester)( FT_Face     face,
-                                                FT_UInt     glyph_index,
-                                                FT_Pointer  buffer,
-                                                FT_UInt     buffer_max );
+  typedef const char*
+  (*FT_Face_GetPostscriptNameFunc)( FT_Face  face );
+
+  typedef FT_Error
+  (*FT_Face_GetGlyphNameFunc)( FT_Face     face,
+                               FT_UInt     glyph_index,
+                               FT_Pointer  buffer,
+                               FT_UInt     buffer_max );
+
+  typedef FT_UInt
+  (*FT_Face_GetGlyphNameIndexFunc)( FT_Face     face,
+                                    FT_String*  glyph_name );
 
 
 #ifndef FT_CONFIG_OPTION_NO_DEFAULT_SYSTEM
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    FT_New_Stream                                                      */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Creates a new stream object.                                       */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    filepathname :: The name of the stream (usually a file) to be      */
-  /*                    opened.                                            */
-  /*                                                                       */
-  /*    stream       :: A pointer to the stream object.                    */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    FreeType error code.  0 means success.                             */
-  /*                                                                       */
-  FT_EXPORT( FT_Error )   FT_New_Stream( const char*  filepathname,
-                                         FT_Stream    astream );
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    FT_Done_Stream                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Closes and destroys a stream object.                               */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    stream :: The stream to be closed and destroyed.                   */
-  /*                                                                       */
-  FT_EXPORT( void )       FT_Done_Stream( FT_Stream  stream );
-
 
   /*************************************************************************/
   /*                                                                       */
@@ -710,7 +814,8 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    A pointer to the new memory object.  0 in case of error.           */
   /*                                                                       */
-  FT_EXPORT( FT_Memory )  FT_New_Memory( void );
+  FT_EXPORT( FT_Memory )
+  FT_New_Memory( void );
 
 
   /*************************************************************************/
@@ -724,7 +829,8 @@ FT_BEGIN_HEADER
   /* <Input>                                                               */
   /*    memory :: A handle to the memory manager.                          */
   /*                                                                       */
-  FT_EXPORT( void )       FT_Done_Memory( FT_Memory  memory );
+  FT_EXPORT( void )
+  FT_Done_Memory( FT_Memory  memory );
 
 #endif /* !FT_CONFIG_OPTION_NO_DEFAULT_SYSTEM */
 

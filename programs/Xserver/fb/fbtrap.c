@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fbtrap.c,v 1.10tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/fb/fbtrap.c,v 1.10 2002/09/27 00:31:24 keithp Exp $
  *
  * Copyright © 2000 University of Southern California
  *
@@ -35,10 +42,7 @@
 #include "fbpict.h"
 
 #ifdef DEBUG
-#ifndef IN_MODULE
-#include <stdio.h>
 #include <assert.h>
-#endif
 
 #define ASSERT(e)   assert(e)
 
@@ -942,8 +946,8 @@ PixelAlpha(xFixed	pixel_x,
 
 #ifdef DEBUG
     fprintf(stderr, "alpha (%f, %f) - (%f, %f) = ",
-	    (double) pw->p_trap_top.x / (1 << 16),
-	    (double) pw->p_trap_top.y / (1 << 16),
+	    (double) pw->p_pixel_top.x / (1 << 16),
+	    (double) pw->p_pixel_top.y / (1 << 16),
 	    (double) pw->p_trap_bottom.x / (1 << 16),
 	    (double) pw->p_trap_bottom.y / (1 << 16));
     fflush(stderr);

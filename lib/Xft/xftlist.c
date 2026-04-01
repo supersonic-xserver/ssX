@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/Xft/xftlist.c,v 1.2 2000/12/07 23:57:28 keithp Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/Xft/xftlist.c,v 1.4 2003/08/06 14:03:59 eich Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *

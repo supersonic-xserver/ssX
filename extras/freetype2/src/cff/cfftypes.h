@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/cff/cfftypes.h,v 1.0tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cfftypes.h                                                             */
 /*                                                                         */
@@ -85,7 +91,7 @@ FT_BEGIN_HEADER
     FT_UShort*  sids;
     FT_UShort*  cids;       /* the inverse mapping of `sids'; only needed */
                             /* for CID-keyed fonts                        */
-    FT_UInt     max_cid;
+    FT_UInt	max_cid;
   } CFF_CharsetRec, *CFF_Charset;
 
 

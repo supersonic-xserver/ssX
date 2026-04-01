@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mipoly.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mipoly.c,v 1.3 2003/07/16 01:38:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $Xorg: mipoly.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
 /*
  *  mipoly.c
  *
@@ -56,7 +63,7 @@ SOFTWARE.
  *  to the appropriate routine to actually scan convert the
  *  polygon.
  */
-#include <X11/X.h>
+#include "X.h"
 #include "windowstr.h"
 #include "gcstruct.h"
 #include "pixmapstr.h"
@@ -65,12 +72,16 @@ SOFTWARE.
 
 
 void
-miFillPolygon(DrawablePtr dst, GCPtr pgc, int shape, int mode, int count,
-	      DDXPointPtr pPts)
+miFillPolygon(dst, pgc, shape, mode, count, pPts)
+    DrawablePtr		dst;
+    register GCPtr	pgc;
+    int			shape, mode;
+    register int	count;
+    DDXPointPtr		pPts;
 {
     int			i;
-    int	xorg, yorg;
-    DDXPointPtr ppt;
+    register int	xorg, yorg;
+    register DDXPointPtr ppt;
 
     if (count == 0)
 	return;

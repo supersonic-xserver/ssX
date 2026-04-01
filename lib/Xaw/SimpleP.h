@@ -1,4 +1,21 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ $Xorg: SimpleP.h,v 1.4 2001/02/09 02:03:45 xorgcvs Exp $
+
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
 
@@ -44,7 +61,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/SimpleP.h,v 1.15 2006/01/25 04:32:09 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/SimpleP.h,v 1.13 2001/12/19 21:37:31 dawes Exp $ */
 
 #ifndef _SimpleP_h
 #define _SimpleP_h
@@ -85,12 +102,7 @@ typedef struct {
 #ifndef OLDXAW
     XawDisplayList *display_list;
     String tip;
-    XtCallbackList tipCallback;
-    unsigned char encoding;
-    XtPointer user_data;
-
-    char pad[sizeof(XtPointer) -	/* for future use and keep */
-	     sizeof(unsigned char)];	/* binary compatability */
+    XtPointer pad[3];	/* for future use and keep binary compatability */
 #endif
 } SimplePart;
 

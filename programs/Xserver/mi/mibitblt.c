@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mibitblt.c,v 3.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mibitblt.c,v 3.11 2001/12/14 20:00:20 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,11 +52,11 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $Xorg: mibitblt.c,v 1.5 2001/02/09 02:05:20 xorgcvs Exp $ */
 /* Author: Todd Newman  (aided and abetted by Mr. Drewry) */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 
 #include "misc.h"
 #include "gcstruct.h"
@@ -58,7 +65,7 @@ SOFTWARE.
 #include "scrnintstr.h"
 #include "mi.h"
 #include "regionstr.h"
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "servermd.h"
 
 /* MICOPYAREA -- public entry for the CopyArea request 
@@ -68,9 +75,14 @@ SOFTWARE.
  * We let SetSpans worry about clipping to the destination.
  */
 RegionPtr
-miCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
-	   GCPtr pGC, int xIn, int yIn, int widthSrc, int heightSrc,
-	   int xOut, int yOut)
+miCopyArea(pSrcDrawable, pDstDrawable,
+	    pGC, xIn, yIn, widthSrc, heightSrc, xOut, yOut)
+    register DrawablePtr 	pSrcDrawable;
+    register DrawablePtr 	pDstDrawable;
+    GCPtr 			pGC;
+    int 			xIn, yIn;
+    int 			widthSrc, heightSrc;
+    int 			xOut, yOut;
 {
     DDXPointPtr		ppt, pptFirst;
     unsigned int	*pwidthFirst, *pwidth, *pbits;
@@ -390,8 +402,12 @@ miGetPlane(
  * color so that the stipple never causes FillRect to draw them.
  */
 void
-miOpqStipDrawable(DrawablePtr pDraw, GCPtr pGC, RegionPtr prgnSrc,
-		  MiBits *pbits, int srcx, int w, int h, int dstx, int dsty)
+miOpqStipDrawable(pDraw, pGC, prgnSrc, pbits, srcx, w, h, dstx, dsty)
+    DrawablePtr pDraw;
+    GCPtr	pGC;
+    RegionPtr	prgnSrc;
+    MiBits	*pbits;
+    int		srcx, w, h, dstx, dsty;
 {
     int		oldfill, i;
     unsigned long oldfg;
@@ -537,9 +553,15 @@ miOpqStipDrawable(DrawablePtr pDraw, GCPtr pGC, RegionPtr prgnSrc,
  * Use the bitmap we've built up as a Stipple for the destination 
  */
 RegionPtr
-miCopyPlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
-	    GCPtr pGC, int srcx, int srcy, int width, int height,
-	    int dstx, int dsty, unsigned long bitPlane)
+miCopyPlane(pSrcDrawable, pDstDrawable,
+	    pGC, srcx, srcy, width, height, dstx, dsty, bitPlane)
+    DrawablePtr 	pSrcDrawable;
+    DrawablePtr		pDstDrawable;
+    GCPtr		pGC;
+    int 		srcx, srcy;
+    int 		width, height;
+    int 		dstx, dsty;
+    unsigned long	bitPlane;
 {
     MiBits	*ptile;
     BoxRec 		box;
@@ -625,8 +647,12 @@ miCopyPlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
  * get the single plane specified in planemask
  */
 void
-miGetImage(DrawablePtr pDraw, int sx, int sy, int w, int h,
-	   unsigned int format, unsigned long planeMask, char *pDst)
+miGetImage(pDraw, sx, sy, w, h, format, planeMask, pDst)
+    DrawablePtr 	pDraw;
+    int			sx, sy, w, h;
+    unsigned int 	format;
+    unsigned long 	planeMask;
+    char *              pDst;
 {
     unsigned char	depth;
     int			i, linelength, width, srcx, srcy;
@@ -722,8 +748,12 @@ miGetImage(DrawablePtr pDraw, int sx, int sy, int w, int h,
  *	This part is simple, just call SetSpans
  */
 void
-miPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y, int w, int h,
-	   int leftPad, int format, char *pImage)
+miPutImage(pDraw, pGC, depth, x, y, w, h, leftPad, format, pImage)
+    DrawablePtr		pDraw;
+    GCPtr		pGC;
+    int 		depth, x, y, w, h, leftPad;
+    int			format;
+    char		*pImage;
 {
     DDXPointPtr		pptFirst, ppt;
     int			*pwidthFirst, *pwidth;

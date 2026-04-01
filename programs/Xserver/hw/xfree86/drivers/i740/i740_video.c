@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2001 by Patrick LERDA
  * Portions Copyright by Stephen Blackheath
  *
@@ -44,7 +51,7 @@
  *   12 September 2002 - Better software scaling with some averaging, giving a
  *     nicer picture.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i740/i740_video.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i740/i740_video.c,v 1.7 2004/03/29 16:25:17 tsi Exp $ */
 
 
 /*
@@ -62,7 +69,7 @@
 #include "regionstr.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "xaa.h"
 #include "dixstruct.h"
 #include "fourcc.h"

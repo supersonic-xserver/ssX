@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * header file for transformed coordinate system.  No rotations
  * supported, as elipses cannot be rotated in X.
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/xeyes/transform.h,v 1.3 2000/02/17 14:00:35 dawes Exp $ */
 
 typedef struct _transform {
 	double	mx, bx;

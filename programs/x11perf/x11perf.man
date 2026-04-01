@@ -1,3 +1,4 @@
+.\" $Xorg: x11perf.man,v 1.4 2001/02/09 02:05:38 xorgcvs Exp $
 .\" Copyright 1988, 1989 Digital Equipment Corporation.
 .\" Copyright 1989, 1994, 1998  The Open Group
 .\" 

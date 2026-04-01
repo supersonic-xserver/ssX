@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/difsutils.c,v 1.9tsi Exp $ */
+/* $Xorg: difsutils.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * misc utility routines
  */
@@ -46,19 +53,19 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/difsutils.c,v 1.8 2005/01/22 16:38:41 tsi Exp $ */
 
 #define	XK_LATIN1
 
 #include	<difsutils.h>
 
 #include	<stdio.h>
-#include	<stdlib.h>
 #include	<ctype.h>
 #include	"misc.h"
 #include	"globals.h"
 #include	"clientstr.h"
 #include	"accstr.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	<X11/keysymdef.h>
 
 #include	"authstr.h"

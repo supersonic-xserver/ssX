@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/mesa/X/Imakefile,v 1.9 2005/10/17 15:35:55 tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/mesa/X/Imakefile,v 1.6 2005/03/01 03:48:50 dawes Exp $
 
 #if DoLoadableServer
 #if !BuildModuleInSubdir
@@ -30,11 +30,7 @@ LinkSourceFile(compsize.c,$(LIBSRC)/GL/glx)
   COMMON_SRCS = driverfuncs.c
   COMMON_OBJS = driverfuncs.o
 
-#ifdef XFree86Version
-
-        X_INCS = -I$(XF86OSSRC)
-
-#else
+#ifndef XFree86Version
 
 /* This appears to be the quickest way to build a non-XFree86 server */
 GLXSRV_DEFINES = -DXFree86Server -DXFree86FakeServer
@@ -47,20 +43,19 @@ GLXSRV_DEFINES = -DXFree86Server -DXFree86FakeServer
          SRCS = $(DRIVER_SRCS) $(GLX_SRCS) $(COMMON_SRCS)
          OBJS = $(DRIVER_OBJS) $(GLX_OBJS) $(COMMON_OBJS)
 
-     INCLUDES = -I$(SERVERSRC)/GL/mesa/X \
+     INCLUDES = -I$(SERVERSRC)/GL/mesa/X -I$(XINCLUDESRC) \
+		-I$(EXTINCSRC) \
 		-I$(MESASRCDIR)/src/mesa \
 		-I$(MESASRCDIR)/src/mesa/main \
 		-I$(MESASRCDIR)/src/mesa/glapi \
 		-I$(MESASRCDIR)/src/mesa/shader \
-		-I$(MESASRCDIR)/src \
-		-I$(MESASRCDIR)/src/mesa/drivers/x11 \
+		-I$(MESASRCDIR)/src -I$(MESASRCDIR)/src/mesa/drivers/x11 \
 		-I$(MESASRCDIR)/include \
-		-I$(LIBSRC)/GL/glx \
-		-I$(LIBSRC)/GL/include \
-		-I$(SERVERSRC)/include \
-		-I$(SERVERSRC)/GL/include \
+		-I$(LIBSRC)/GL/glx -I$(LIBSRC)/GL/include \
+		-I$(SERVERSRC)/include -I$(SERVERSRC)/GL/include \
 		-I$(SERVERSRC)/GL/glx \
-		-I$(DRMINCLUDESDIR) $(X_INCS)
+		-I$(XF86OSSRC) \
+		-I$(DRMINCLUDESDIR)
 
       DEFINES = $(GLX_DEFINES) $(GLXSRV_DEFINES) /*-DUSE_X86_ASM*/ /*-DUSE_SPARC_ASM*/
 
@@ -74,10 +69,6 @@ SubdirLibraryRule($(OBJS))
 
 LintLibraryTarget(dri,$(SRCS))
 NormalLintTarget($(SRCS))
-
-#if defined(SparcArchitecture) && HasGcc
-SpecialCObjectRule(xm_api,NullParameter,-O0)
-#endif
 
 DependTarget()
 

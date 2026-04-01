@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_dac3026.c,v 1.61tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_dac3026.c,v 1.61 2004/11/26 11:48:47 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1994 by Robin Cutshaw <robin@XFree86.org>
  *
@@ -715,10 +722,8 @@ MGA3026Init(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	MGA_NOT_HAL(MGATi3026SetMCLK(pScrn, MGAdac->MemoryClock));
 
 #ifdef DEBUG		
-	ErrorF("%6d: %02X %02X %02X	%02X %02X %02X	%08lX\n", mode->Clock,
-		pReg->DacClk[0], pReg->DacClk[1], pReg->DacClk[2],
-		pReg->DacClk[3], pReg->DacClk[4], pReg->DacClk[5],
-		(unsigned long)pReg->Option);
+	ErrorF("%6ld: %02X %02X %02X	%02X %02X %02X	%08lX\n", mode->Clock,
+		pReg->DacClk[0], pReg->DacClk[1], pReg->DacClk[2], pReg->DacClk[3], pReg->DacClk[4], pReg->DacClk[5], pReg->Option);
 	for (i=0; i<sizeof(MGADACregs); i++) ErrorF("%02X ", pReg->DacRegs[i]);
 	for (i=0; i<6; i++) ErrorF(" %02X", pReg->ExtVga[i]);
 	ErrorF("\n");
@@ -873,9 +878,7 @@ MGA3026Save(ScrnInfoPtr pScrn, vgaRegPtr vgaReg, MGARegPtr mgaReg,
 	
 #ifdef DEBUG		
 	ErrorF("read: %02X %02X %02X	%02X %02X %02X	%08lX\n",
-		mgaReg->DacClk[0], mgaReg->DacClk[1], mgaReg->DacClk[2],
-		mgaReg->DacClk[3], mgaReg->DacClk[4], mgaReg->DacClk[5],
-		(unsigned long)mgaReg->Option);
+		mgaReg->DacClk[0], mgaReg->DacClk[1], mgaReg->DacClk[2], mgaReg->DacClk[3], mgaReg->DacClk[4], mgaReg->DacClk[5], mgaReg->Option);
 	for (i=0; i<sizeof(MGADACregs); i++) ErrorF("%02X ", mgaReg->DacRegs[i]);
 	for (i=0; i<6; i++) ErrorF(" %02X", mgaReg->ExtVga[i]);
 	ErrorF("\n");

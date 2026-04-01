@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/include/os.h,v 3.16 2005/10/14 15:17:33 tsi Exp $ */
+/* $Xorg: os.h,v 1.5 2001/02/09 02:05:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -44,7 +51,10 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
+ * $NCDXorg: @(#)os.h,v 4.2 1991/05/10 07:59:16 lemke Exp $
+ *
  */
+/* $XFree86: xc/programs/xfs/include/os.h,v 3.15 2004/01/07 03:47:35 dawes Exp $ */
 
 #ifndef	_OS_H_
 #define	_OS_H_
@@ -53,7 +63,7 @@ typedef struct _FontPathRec *FontPathPtr;
 typedef struct _alt_server *AlternateServerPtr;
 typedef struct _auth *AuthPtr;
 
-#include <X11/fonts/FSproto.h>
+#include "FSproto.h"
 #include "client.h"
 #include "misc.h"
 

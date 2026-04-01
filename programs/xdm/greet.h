@@ -1,3 +1,11 @@
+/* $Xorg: greet.h,v 1.4 2001/02/09 02:05:40 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/greet.h,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/xdm/greet.h,v 1.10 2003/09/21 13:03:03 herrb Exp $ */
 
 /*
  * greet.h - interface to xdm's dynamically-loadable modular greeter
@@ -46,10 +54,7 @@ from The Open Group.
 #define GETPWNAM_ARGS /*unknown*/
 #endif
 
-#if defined(__FreeBSD__) || \
-    defined(__bsdi__) || \
-    defined(__osf__) || \
-    defined(__DARWIN__)
+#if defined(__FreeBSD__) || defined(__bsdi__) || defined(__osf__)
 #define SETGRENT_TYPE int
 #else
 #define SETGRENT_TYPE void
@@ -157,7 +162,7 @@ extern	char    **(*__xdm_parseArgs)(char **argv, char *string);
 extern	void    (*__xdm_printEnv)(char **e);
 extern	char    **(*__xdm_systemEnv)(struct display *d, char *user, char *home);
 extern	void    (*__xdm_LogOutOfMem)(char * fmt, ...);
-extern	SETGRENT_TYPE    (*__xdm_setgrent)(void);
+extern	void    (*__xdm_setgrent)(void);
 extern	struct group    *(*__xdm_getgrent)(void);
 extern	void    (*__xdm_endgrent)(void);
 #ifdef USESHADOW

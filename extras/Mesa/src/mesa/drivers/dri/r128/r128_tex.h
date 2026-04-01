@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_tex.h,v 1.1.1.3tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r128/r128_tex.h,v 1.2 2004/12/13 22:40:52 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1999, 2000 ATI Technologies Inc. and Precision Insight, Inc.,

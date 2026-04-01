@@ -1,18 +1,22 @@
-#!/usr/bin/perl -w
-# $XTermId: tcapquery.pl,v 1.6 2006/03/08 01:18:05 tom Exp $
-# $XFree86: xc/programs/xterm/vttests/tcapquery.pl,v 1.2 2005/09/18 23:48:14 dickey Exp $
+#!/usr/bin/perl
+# $XFree86: xc/programs/xterm/vttests/tcapquery.pl,v 1.1 2004/03/04 02:21:58 dickey Exp $
 #
 # -- Thomas Dickey (2004/3/3)
 # Test the tcap-query option of xterm.
 
-use strict;
-
 use IO::Handle;
 
-sub get_reply($) {
+sub write_tty {
 	open TTY, "+</dev/tty" or die("Cannot open /dev/tty\n");
 	autoflush TTY 1;
-	my $old=`stty -g`;
+	print TTY @_;
+	close TTY;
+}
+
+sub get_reply {
+	open TTY, "+</dev/tty" or die("Cannot open /dev/tty\n");
+	autoflush TTY 1;
+	$old=`stty -g`;
 	system "stty raw -echo min 0 time 5";
 
 	print TTY @_;
@@ -22,62 +26,63 @@ sub get_reply($) {
 	return $reply;
 }
 
-sub hexified($) {
-	my $value = $_[0];
-	my $result = "";
-	my $n;
+sub csi_field {
+	my $first = @_[0];
+	my $second = @_[1];
+	$first =~ s/^[^0-9]+//;
+	while ( --$second > 0 ) {
+		$first =~ s/^[\d]+//;
+		$first =~ s/^[^\d]+//;
+	}
+	$first =~ s/[^\d]+.*$//;
+	return $first;
+}
 
+sub hexified {
+	my $value = @_[0];
+	my $result = "";
 	for ( $n = 0; $n < length($value); ++$n) {
 		$result .= sprintf("%02X", ord substr($value,$n,1));
 	}
 	return $result;
 }
 
-sub query_tcap($$) {
-	my $tcap = $_[0];
-	my $tinfo = $_[1];
+sub query_tcap {
+	my $tcap = @_[0];
+	my $tinfo = @_[1];
 	my $param1 = hexified($tcap);
 	my $param2 = hexified($tinfo);
 
-	# uncomment one of the following lines
-	my $reply=get_reply("\x1bP+q" . $param1 . ";" . $param2 . "\x1b\\");
-	#my $reply=get_reply("\x1bP+q" . $param2 . "\x1b\\");
+	#FIXME: should be able to do both at once
+	#$reply=get_reply("\x1bP+q" . $param1 . ";" . $param2 . "\x1b\\");
+	$reply=get_reply("\x1bP+q" . $param1 . "\x1b\\");
 
 	if ( $reply =~ /\x1bP1\+r[[:xdigit:]]+=[[:xdigit:]]*.*/ ) {
 		my $value = $reply;
-		my $n;
 
-		$value =~ s/^\x1bP1\+r//;
-		$value =~ s/\x1b\\//;
+		$value =~ s/^.*=//;
+		$value =~ s/[^[:xdigit:]]*//;	# FIXME: should work, but doesn't
+		$value =~ s/\x1b.*//;		# ...do this anyway
 
 		my $result = "";
-		for ( $n = 0; $n < length($value); ) {
-			my $c = substr($value,$n,1);
-			# handle semicolon and equals
-			if ( $c =~ /[[:punct:]]/ ) {
-				$n += 1;
-				$result .= $c;
+		for ( $n = 0; $n < length($value); $n += 2) {
+			my $k = hex substr($value,$n,2);
+			if ( $k == 0x1b ) {
+				$result .= "\\E";
+			} elsif ( $k == 0x7f ) {
+				$result .= "^?";
+			} elsif ( $k == 32 ) {
+				$result .= "\\s";
+			} elsif ( $k < 32 ) {
+				$result .= sprintf("^%c", $k + 64);
+			} elsif ( $k > 128 ) {
+				$result .= sprintf("\\%03o", $k);
 			} else {
-				# handle hex-data
-				my $k = hex substr($value,$n,2);
-				if ( $k == 0x1b ) {
-					$result .= "\\E";
-				} elsif ( $k == 0x7f ) {
-					$result .= "^?";
-				} elsif ( $k == 32 ) {
-					$result .= "\\s";
-				} elsif ( $k < 32 ) {
-					$result .= sprintf("^%c", $k + 64);
-				} elsif ( $k > 128 ) {
-					$result .= sprintf("\\%03o", $k);
-				} else {
-					$result .= chr($k);
-				}
-				$n += 2;
+				$result .= chr($k);
 			}
 		}
 
-		printf "%s\n", $result;
+		printf "$tcap=$result\n";
 	}
 }
 
@@ -88,8 +93,8 @@ query_tcap(	"%1",	"khlp");
 query_tcap(	"%i",	"kRIT");
 query_tcap(	"*6",	"kslt");
 query_tcap(	"*7",	"kEND");
-query_tcap(	"\@0",	"kfnd");
-query_tcap(	"\@7",	"kend");
+query_tcap(	"@0",	"kfnd");
+query_tcap(	"@7",	"kend");
 query_tcap(	"F1",	"kf11");
 query_tcap(	"F2",	"kf12");
 query_tcap(	"F3",	"kf13");

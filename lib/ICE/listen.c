@@ -1,3 +1,11 @@
+/* $Xorg: listen.c,v 1.5 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -25,16 +33,21 @@ in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor,  X Consortium
 ******************************************************************************/
-/* $XFree86$ */
 
 #include <X11/ICE/ICElib.h>
 #include "ICElibint.h"
 #include <X11/Xtrans.h>
 #include <stdio.h>
 
+
 Status
-IceListenForConnections(int *countRet, IceListenObj **listenObjsRet,
-			int errorLength, char *errorStringRet)
+IceListenForConnections (countRet, listenObjsRet, errorLength, errorStringRet)
+
+int		*countRet;
+IceListenObj	**listenObjsRet;
+int		errorLength;
+char		*errorStringRet;
+
 {
     struct _IceListenObj	*listenObjs;
     char			*networkId;
@@ -148,15 +161,23 @@ IceListenForConnections(int *countRet, IceListenObj **listenObjsRet,
 }
 
 
+
 int
-IceGetListenConnectionNumber(IceListenObj listenObj)
+IceGetListenConnectionNumber (listenObj)
+
+IceListenObj listenObj;
+
 {
     return (_IceTransGetConnectionNumber (listenObj->trans_conn));
 }
 
 
+
 char *
-IceGetListenConnectionString(IceListenObj listenObj)
+IceGetListenConnectionString (listenObj)
+
+IceListenObj listenObj;
+
 {
     char *networkId;
 
@@ -169,8 +190,13 @@ IceGetListenConnectionString(IceListenObj listenObj)
 }
 
 
+
 char *
-IceComposeNetworkIdList(int count, IceListenObj *listenObjs)
+IceComposeNetworkIdList (count, listenObjs)
+
+int		count;
+IceListenObj	*listenObjs;
+
 {
     char *list;
     int len = 0;
@@ -222,8 +248,13 @@ IceComposeNetworkIdList(int count, IceListenObj *listenObjs)
 }
 
 
+
 void
-IceFreeListenObjs(int count, IceListenObj *listenObjs)
+IceFreeListenObjs (count, listenObjs)
+
+int	     count;
+IceListenObj *listenObjs;
+
 {
     int i;
 
@@ -238,6 +269,7 @@ IceFreeListenObjs(int count, IceListenObj *listenObjs)
 }
 
 
+
 /*
  * Allow host based authentication for the ICE Connection Setup.
  * Do not confuse with the host based authentication callbacks that
@@ -245,8 +277,11 @@ IceFreeListenObjs(int count, IceListenObj *listenObjs)
  */
 
 void
-IceSetHostBasedAuthProc(IceListenObj listenObj,
-			IceHostBasedAuthProc hostBasedAuthProc)
+IceSetHostBasedAuthProc (listenObj, hostBasedAuthProc)
+
+IceListenObj		listenObj;
+IceHostBasedAuthProc	hostBasedAuthProc;
+
 {
     listenObj->host_based_auth_proc = hostBasedAuthProc;
 }

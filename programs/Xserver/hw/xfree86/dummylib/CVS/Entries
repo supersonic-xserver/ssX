@@ -1,0 +1,25 @@
+/Imakefile/1.1.1.6/Fri Mar 18 13:12:21 2005//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/dummylib.h/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/fatalerror.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/getvalidbios.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/logvwrite.c/1.1.1.1/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/pcitestmulti.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/verrorf.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xalloc.c/1.1.1.5/Fri Mar 18 13:12:21 2005//Tnetbsd-5-2-3-RELEASE
+/xf86addrestolist.c/1.1.1.2/Fri Feb 28 13:20:17 2003//Tnetbsd-5-2-3-RELEASE
+/xf86allocscripi.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86drvmsg.c/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/xf86drvmsgverb.c/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/xf86errorf.c/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/xf86errorfverb.c/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/xf86getpagesize.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86getverb.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86info.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86msg.c/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/xf86msgverb.c/1.1.1.4/Fri Mar  5 14:29:07 2004//Tnetbsd-5-2-3-RELEASE
+/xf86opt.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86screens.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86servisinit.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+/xf86verbose.c/1.1.1.3/Sat Jun  9 15:07:40 2001//Tnetbsd-5-2-3-RELEASE
+D

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/miwindow.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/miwindow.c,v 1.10 2003/11/10 18:22:49 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: miwindow.c,v 1.4 2001/02/09 02:05:22 xorgcvs Exp $ */
+#include "X.h"
 #include "regionstr.h"
 #include "region.h"
 #include "mi.h"
@@ -56,8 +63,11 @@ SOFTWARE.
 #include "mivalidate.h"
 
 void 
-miClearToBackground(WindowPtr pWin, int x, int y, int w, int h,
-		    Bool generateExposures)
+miClearToBackground(pWin, x, y, w, h, generateExposures)
+    WindowPtr pWin;
+    int x,y;
+    int w,h;
+    Bool generateExposures;
 {
     BoxRec box;
     RegionRec	reg;
@@ -138,7 +148,7 @@ miClearToBackground(WindowPtr pWin, int x, int y, int w, int h,
  * The backing-store code must be written to allow for this
  */
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * miCheckSubSaveUnder --
  *	Check all the inferiors of a window for coverage by saveUnder
@@ -155,12 +165,12 @@ miClearToBackground(WindowPtr pWin, int x, int y, int w, int h,
  */
 static Bool
 miCheckSubSaveUnder(
-    WindowPtr		pParent,	/* Parent to check */
+    register WindowPtr	pParent,	/* Parent to check */
     WindowPtr		pFirst,		/* first reconfigured window */
     RegionPtr		pRegion)	/* Initial area obscured by saveUnder */
 {
-    WindowPtr		pChild;		/* Current child */
-    ScreenPtr		pScreen;	/* Screen to use */
+    register WindowPtr	pChild;		/* Current child */
+    register ScreenPtr	pScreen;	/* Screen to use */
     RegionRec		SubRegion;	/* Area of children obscured */
     Bool		res = FALSE;	/* result */
     Bool		subInited=FALSE;/* SubRegion initialized */
@@ -245,7 +255,7 @@ miCheckSubSaveUnder(
 }
 
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * miChangeSaveUnder --
  *	Change the save-under state of a tree of windows. Called when
@@ -262,13 +272,13 @@ miCheckSubSaveUnder(
  *-----------------------------------------------------------------------
  */
 Bool
-miChangeSaveUnder(
-    WindowPtr	pWin,
-    WindowPtr	first)		/* First window to check.
-				 * Used when pWin was restacked */
+miChangeSaveUnder(pWin, first)
+    register WindowPtr	pWin;
+    WindowPtr		first;		/* First window to check.
+					 * Used when pWin was restacked */
 {
     RegionRec	rgn;	/* Area obscured by saveUnder windows */
-    ScreenPtr pScreen;
+    register ScreenPtr pScreen;
     Bool	res;
 
     if (!deltaSaveUndersViewable && !numSaveUndersViewable)
@@ -284,7 +294,7 @@ miChangeSaveUnder(
     return res;
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * miPostChangeSaveUnder --
  *	Actually turn backing-store off for those windows that no longer
@@ -300,9 +310,11 @@ miChangeSaveUnder(
  *-----------------------------------------------------------------------
  */
 void
-miPostChangeSaveUnder(WindowPtr pWin, WindowPtr pFirst)
+miPostChangeSaveUnder(pWin, pFirst)
+    WindowPtr		pWin;
+    WindowPtr		pFirst;
 {
-    WindowPtr pParent, pChild;
+    register WindowPtr pParent, pChild;
     ChangeWindowAttributesProcPtr ChangeWindowAttributes;
 
     if (!(pParent = pWin->parent))
@@ -334,9 +346,10 @@ miPostChangeSaveUnder(WindowPtr pWin, WindowPtr pFirst)
 }
 
 void
-miMarkWindow(WindowPtr pWin)
+miMarkWindow(pWin)
+    register WindowPtr pWin;
 {
-    ValidatePtr val;
+    register ValidatePtr val;
 
     if (pWin->valdata)
 	return;
@@ -349,10 +362,13 @@ miMarkWindow(WindowPtr pWin)
 }
 
 Bool
-miMarkOverlappedWindows(WindowPtr pWin, WindowPtr pFirst, WindowPtr *ppLayerWin)
+miMarkOverlappedWindows(pWin, pFirst, ppLayerWin)
+    WindowPtr pWin;
+    WindowPtr pFirst;
+    WindowPtr *ppLayerWin;
 {
-    BoxPtr box;
-    WindowPtr pChild, pLast;
+    register BoxPtr box;
+    register WindowPtr pChild, pLast;
     Bool anyMarked = FALSE;
     MarkWindowProcPtr MarkWindow = pWin->drawable.pScreen->MarkWindow;
     ScreenPtr pScreen;
@@ -435,10 +451,11 @@ miMarkOverlappedWindows(WindowPtr pWin, WindowPtr pFirst, WindowPtr *ppLayerWin)
  *    and then send any regions still exposed to the client
  *****/
 void
-miHandleValidateExposures(WindowPtr pWin)
+miHandleValidateExposures(pWin)
+    WindowPtr pWin;
 {
-    WindowPtr pChild;
-    ValidatePtr val;
+    register WindowPtr pChild;
+    register ValidatePtr val;
     ScreenPtr pScreen;
     WindowExposuresProcPtr WindowExposures;
 
@@ -474,7 +491,11 @@ miHandleValidateExposures(WindowPtr pWin)
 }
 
 void
-miMoveWindow(WindowPtr pWin, int x, int y, WindowPtr pNextSib, VTKind kind)
+miMoveWindow(pWin, x, y, pNextSib, kind)
+    register WindowPtr pWin;
+    int x,y;
+    WindowPtr pNextSib;
+    VTKind kind;
 {
     WindowPtr pParent;
     Bool WasViewable = (Bool)(pWin->viewable);
@@ -482,7 +503,7 @@ miMoveWindow(WindowPtr pWin, int x, int y, WindowPtr pNextSib, VTKind kind)
     RegionPtr oldRegion = NULL;
     DDXPointRec oldpt;
     Bool anyMarked = FALSE;
-    ScreenPtr pScreen;
+    register ScreenPtr pScreen;
     WindowPtr windowToValidate;
 #ifdef DO_SAVE_UNDERS
     Bool dosave = FALSE;
@@ -560,10 +581,10 @@ miMoveWindow(WindowPtr pWin, int x, int y, WindowPtr pNextSib, VTKind kind)
 
 static int
 miRecomputeExposures (
-    WindowPtr		pWin,
+    register WindowPtr	pWin,
     pointer		value) /* must conform to VisitWindowProcPtr */
 {
-    ScreenPtr	pScreen;
+    register ScreenPtr	pScreen;
     RegionPtr	pValid = (RegionPtr)value;
 
     if (pWin->valdata)
@@ -587,8 +608,11 @@ miRecomputeExposures (
 }
 
 void
-miSlideAndSizeWindow(WindowPtr pWin, int x, int y,
-		     unsigned int w, unsigned int h, WindowPtr pSib)
+miSlideAndSizeWindow(pWin, x, y, w, h, pSib)
+    register WindowPtr pWin;
+    int x,y;
+    unsigned int w, h;
+    WindowPtr pSib;
 {
     WindowPtr pParent;
     Bool WasViewable = (Bool)(pWin->viewable);
@@ -601,11 +625,11 @@ miSlideAndSizeWindow(WindowPtr pWin, int x, int y,
     DDXPointRec oldpt;
     RegionPtr oldRegion = NULL;
     Bool anyMarked = FALSE;
-    ScreenPtr	pScreen;
-    WindowPtr	pFirstChange;
-    WindowPtr	pChild;
+    register ScreenPtr pScreen;
+    WindowPtr pFirstChange;
+    register WindowPtr pChild;
     RegionPtr	gravitate[StaticGravity + 1];
-    unsigned	g;
+    register unsigned g;
     int		nx, ny;		/* destination x,y */
     int		newx, newy;	/* new inner window position */
     RegionPtr	pRegion = NULL;
@@ -940,7 +964,8 @@ miSlideAndSizeWindow(WindowPtr pWin, int x, int y,
 }
 
 WindowPtr
-miGetLayerWindow(WindowPtr pWin)
+miGetLayerWindow(pWin)
+    WindowPtr pWin;
 {
     return pWin->firstChild;
 }
@@ -954,10 +979,11 @@ miGetLayerWindow(WindowPtr pWin)
  */
 
 void
-miSetShape(WindowPtr pWin)
+miSetShape(pWin)
+    register WindowPtr	pWin;
 {
     Bool	WasViewable = (Bool)(pWin->viewable);
-    ScreenPtr	pScreen = pWin->drawable.pScreen;
+    register ScreenPtr pScreen = pWin->drawable.pScreen;
     Bool	anyMarked = FALSE;
     RegionPtr	pOldClip = NULL, bsExposed;
 #ifdef DO_SAVE_UNDERS
@@ -1053,11 +1079,13 @@ miSetShape(WindowPtr pWin)
 /* Keeps the same inside(!) origin */
 
 void
-miChangeBorderWidth(WindowPtr pWin, unsigned int width)
+miChangeBorderWidth(pWin, width)
+    register WindowPtr pWin;
+    unsigned int width;
 {
     int oldwidth;
     Bool anyMarked = FALSE;
-    ScreenPtr pScreen;
+    register ScreenPtr pScreen;
     Bool WasViewable = (Bool)(pWin->viewable);
     Bool HadBorder;
 #ifdef DO_SAVE_UNDERS
@@ -1120,7 +1148,10 @@ miChangeBorderWidth(WindowPtr pWin, unsigned int width)
 }
 
 void
-miMarkUnrealizedWindow(WindowPtr pChild, WindowPtr pWin, Bool fromConfigure)
+miMarkUnrealizedWindow(pChild, pWin, fromConfigure)
+    WindowPtr pChild;
+    WindowPtr pWin;
+    Bool fromConfigure;
 {
     if ((pChild != pWin) || fromConfigure)
     {

@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/record/recordmod.c,v 1.6 2000/01/25 18:37:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "xf86Module.h"
 
@@ -32,7 +46,7 @@ static XF86ModuleVersionInfo VersRec = {
 XF86ModuleData recordModuleData = { &VersRec, recordSetup, NULL };
 
 static pointer
-recordSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+recordSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     LoadExtension(&recordExt, FALSE);
 

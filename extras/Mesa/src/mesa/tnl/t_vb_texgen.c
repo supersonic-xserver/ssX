@@ -1,6 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  6.0
+ * Version:  6.1
  *
  * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
@@ -593,7 +600,7 @@ static void check_texgen( GLcontext *ctx, struct tnl_pipeline_stage *stage )
    GLuint i;
    stage->active = 0;
 
-   if (ctx->Texture._TexGenEnabled && !ctx->VertexProgram.Enabled) {
+   if (ctx->Texture._TexGenEnabled && !ctx->VertexProgram._Enabled) {
       GLuint inputs = 0;
       GLuint outputs = 0;
 
@@ -678,7 +685,7 @@ static void free_texgen_data( struct tnl_pipeline_stage *stage )
 const struct tnl_pipeline_stage _tnl_texgen_stage =
 {
    "texgen",			/* name */
-   _NEW_TEXTURE,		/* when to call check() */
+   _NEW_TEXTURE|_NEW_PROGRAM,	/* when to call check() */
    _NEW_TEXTURE,		/* when to invalidate stored data */
    GL_FALSE,			/* active? */
    0,				/* inputs */

@@ -1,3 +1,4 @@
+XCOMM $XConsortium: Imakefile,v 1.22 91/09/09 16:02:18 rws Exp $
 XCOMM $XFree86: xc/programs/xman/Imakefile,v 1.10 2003/08/02 17:35:48 herrb Exp $
 
 #ifdef XmanSearchPath

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997 Metro Link, Inc.
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,32 +26,14 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dlloader.h,v 1.7 2006/04/04 00:30:36 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dlloader.h,v 1.3 1998/09/20 14:41:04 dawes Exp $ */
 
 #ifndef _DLLOADER_H
 #define _DLLOADER_H
-
-#ifdef __OpenBSD__
-/* Get OpenBSD macro.  dladdr support starts with 3.6 (200411) */
-#include <sys/param.h>
-#endif
-
-#ifdef linux
-#include <features.h>
-#endif
-
-#if (defined(linux) && defined(__GLIBC__)) || \
-    (defined(__FreeBSD__) && defined(__ELF__)) || \
-    defined(__NetBSD__) || \
-    (defined(__OpenBSD__) && defined(OpenBSD) && OpenBSD >= 200411) || \
-    (defined(sun) && defined(SVR4)) || \
-    defined(sgi)
-#define HAVE_DLADDR
-#endif
-
 extern void *DLLoadModule(loaderPtr, int, LOOKUP **);
+extern void DLResolveSymbols(void *);
+extern int DLCheckForUnresolved(void *);
 extern void DLUnloadModule(void *);
 extern void *DLFindSymbol(const char *name);
-extern const char *DLAddressToSymbol(void *, unsigned long, unsigned long *,
-				     const char **, int);
+
 #endif

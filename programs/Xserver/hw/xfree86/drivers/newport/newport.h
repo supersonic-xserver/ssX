@@ -1,4 +1,14 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport.h,v 1.11 2005/08/28 17:48:01 tsi Exp $ */
+/* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: newport.h,v 1.4 2000/11/29 20:58:10 agx Exp $
+ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport.h,v 1.10 2002/12/10 04:03:00 dawes Exp $ */
 
 #ifndef __NEWPORT_H__
 #define __NEWPORT_H__
@@ -14,13 +24,15 @@
 
 #include "xf86cmap.h"
 
-/* hardware cursor */
+/* xaa & hardware cursor */
+#include "xaa.h"
 #include "xf86Cursor.h"
 
 /* register definitions of the Newport card */
 #include "newport_regs.h"
 
-#define NEWPORT_BASE_ADDR0  0x1f0f0000
+#define NEWPORT_REGISTERS   0xf0000
+#define NEWPORT_BASE_ADDR0  (0x1f000000 + NEWPORT_REGISTERS)
 #define NEWPORT_BASE_OFFSET 0x00400000
 #define NEWPORT_MAX_BOARDS 4
 

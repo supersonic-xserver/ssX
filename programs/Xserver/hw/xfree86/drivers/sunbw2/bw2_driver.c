@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * BW2 framebuffer driver.
  *
  * Copyright (C) 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,7 +27,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunbw2/bw2_driver.c,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunbw2/bw2_driver.c,v 1.7 2005/02/18 02:55:09 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -38,8 +45,8 @@ static const OptionInfoRec * BW2AvailableOptions(int chipid, int busid);
 static void	BW2Identify(int flags);
 static Bool	BW2Probe(DriverPtr drv, int flags);
 static Bool	BW2PreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	BW2ScreenInit(int Index, ScreenPtr pScreen,
-			      const int argc, const char **argv);
+static Bool	BW2ScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	BW2EnterVT(int scrnIndex, int flags);
 static void	BW2LeaveVT(int scrnIndex, int flags);
 static Bool	BW2CloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -105,7 +112,7 @@ static XF86ModuleVersionInfo sunbw2VersRec =
 XF86ModuleData sunbw2ModuleData = { &sunbw2VersRec, bw2Setup, NULL };
 
 static pointer
-bw2Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+bw2Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -386,8 +393,7 @@ BW2PreInit(ScrnInfoPtr pScrn, int flags)
 /* This gets called at the start of each server generation */
 
 static Bool
-BW2ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	      const int argc, const char **argv)
+BW2ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     Bw2Ptr pBw2;
@@ -568,9 +574,9 @@ BW2ValidMode(int scrnIndex, DisplayModePtr mode, Bool verbose, int flags)
 /* Mandatory */
 static Bool
 BW2SaveScreen(ScreenPtr pScreen, int mode)
+    /* this function should blank the screen when unblank is FALSE and
+       unblank it when unblank is TRUE -- it doesn't actually seem to be
+       used for much though */
 {
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
-    Bw2Ptr pBw2 = GET_BW2_FROM_SCRN(pScrn);
-
-    return xf86SbusSaveScreen(pBw2->psdp, mode);
+    return TRUE;
 }

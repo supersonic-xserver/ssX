@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/Oid.h,v 1.4tsi Exp $ */
+/* $Xorg: Oid.h,v 1.3 2000/08/17 19:48:06 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -30,11 +37,12 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/Oid.h,v 1.4 2001/01/17 22:36:28 dawes Exp $ */
 
 #ifndef _Xp_Oid_h
 #define _Xp_Oid_h
 
-#include <X11/Xproto.h>
+#include <Xproto.h>
 
 /*
  * include the auto-generated XpOid enum definition

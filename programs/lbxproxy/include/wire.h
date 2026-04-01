@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/include/wire.h,v 1.9tsi Exp $ */
+/* $Xorg: wire.h,v 1.4 2001/02/09 02:05:32 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1998  The Open Group
@@ -45,6 +52,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/lbxproxy/include/wire.h,v 1.9 2004/04/03 22:38:54 tsi Exp $ */
 
 #ifdef DEBUG 		/* Need this here because lbx.h undef's DEBUG */
 #define LBX_DEBUG
@@ -53,8 +61,8 @@ extern int lbxDebug;
 
 #include "misc.h"
 #include "lbx.h"
-#include <X11/extensions/lbxdeltastr.h>
-#include <X11/extensions/lbximage.h>
+#include "lbxdeltastr.h"
+#include "lbximage.h"
 #include "proxyopts.h"
 #include "colormap.h"
 #include "atomcache.h"

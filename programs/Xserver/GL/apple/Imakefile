@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/apple/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/apple/Imakefile,v 1.5 2004/12/10 17:52:46 alanh Exp $
 
 #include <Server.tmpl>
 
@@ -29,8 +29,9 @@ LinkSourceFile(compsize.c,$(LIBSRC)/GL/glx)
          SRCS = $(BASE_SRCS) $(AGL_SRCS) $(GL_SRCS)
          OBJS = $(BASE_OBJS) $(AGL_OBJS) $(GL_OBJS)
 
-     INCLUDES = -I$(LIBSRC)/GL/glx -I$(LIBSRC)/GL/include \
-                -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+     INCLUDES = -I. -I$(INCLUDESRC) -I$(XINCLUDESRC) -I$(EXTINCSRC) \
+                -I$(LIBSRC)/GL/glx -I$(LIBSRC)/GL/include \
+                -I$(SERVERSRC)/mi -I$(SERVERSRC)/include -I$(FONTINCSRC) \
                 -I$(SERVERSRC)/render -I$(SERVERSRC)/GL/include \
                 -I$(SERVERSRC)/GL/glx -I$(SERVERSRC)/hw/darwin/quartz/cr \
                 -I$(SERVERSRC)/hw/darwin/quartz $(GL_INCLUDES) \

@@ -1,0 +1,21 @@
+/BT.c/1.1.1.4/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+/BT.h/1.1.1.3/Sat Jun  9 15:08:50 2001//Tnetbsd-5-2-3-RELEASE
+/BTPriv.h/1.1.1.3/Sat Jun  9 15:08:50 2001//Tnetbsd-5-2-3-RELEASE
+/CURSOR.NOTES/1.1.1.4/Fri Feb 28 13:20:22 2003//Tnetbsd-5-2-3-RELEASE
+/IBM.c/1.1.1.6/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/IBM.h/1.1.1.5/Fri Mar 18 13:12:43 2005//Tnetbsd-5-2-3-RELEASE
+/IBMPriv.h/1.1.1.3/Sat Jun  9 15:08:51 2001//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.5/Fri Mar 18 13:12:43 2005//Tnetbsd-5-2-3-RELEASE
+/TI.c/1.1.1.5/Fri Mar  5 14:29:24 2004//Tnetbsd-5-2-3-RELEASE
+/TI.h/1.1.1.4/Fri Feb 28 13:20:22 2003//Tnetbsd-5-2-3-RELEASE
+/TIPriv.h/1.1.1.3/Sat Jun  9 15:08:51 2001//Tnetbsd-5-2-3-RELEASE
+/xf86Cursor.c/1.1.1.5/Fri Feb 28 13:20:22 2003//Tnetbsd-5-2-3-RELEASE
+/xf86Cursor.h/1.1.1.4/Fri Feb 28 13:20:22 2003//Tnetbsd-5-2-3-RELEASE
+/xf86CursorPriv.h/1.1.1.4/Fri Feb 28 13:20:22 2003//Tnetbsd-5-2-3-RELEASE
+/xf86HWCurs.c/1.1.1.5/Fri Mar  5 14:29:24 2004//Tnetbsd-5-2-3-RELEASE
+/xf86RamDac.c/1.1.1.4/Fri Mar  5 14:29:24 2004//Tnetbsd-5-2-3-RELEASE
+/xf86RamDac.h/1.1.1.3/Sat Jun  9 15:08:51 2001//Tnetbsd-5-2-3-RELEASE
+/xf86RamDacCmap.c/1.1.1.3/Sat Jun  9 15:08:52 2001//Tnetbsd-5-2-3-RELEASE
+/xf86RamDacMod.c/1.1.1.3/Sat Jun  9 15:08:52 2001//Tnetbsd-5-2-3-RELEASE
+/xf86RamDacPriv.h/1.1.1.3/Sat Jun  9 15:08:52 2001//Tnetbsd-5-2-3-RELEASE
+D

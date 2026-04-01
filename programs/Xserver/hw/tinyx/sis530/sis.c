@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,7 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/sis530/sis.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/sis530/sis.c,v 1.2 2004/08/04 16:33:35 tsi Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -68,6 +75,9 @@
  */
 
 #include "sis.h"
+#ifdef __GLIBC__
+#include <sys/perm.h>
+#endif
 
 #define MAX_FB_SIZE	(4096 * 1024)
 

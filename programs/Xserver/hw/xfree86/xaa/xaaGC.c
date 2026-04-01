@@ -1,11 +1,25 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaGC.c,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaGC.c,v 1.19 2001/02/19 22:19:50 mvojkovi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "misc.h"
 #include "xf86.h"
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "xf86str.h"
 #include "xaa.h"
@@ -76,11 +90,10 @@ XAAValidateGC(
     }
 
     if(pGC->depth != 32) {
-	/* (unsigned int)(-1) is reserved for transparency */
-	if(pGC->bgPixel == (unsigned int)(-1))
-	    pGC->bgPixel = (unsigned int)(-1) >> 1; 
-	if(pGC->fgPixel == (unsigned int)(-1))
-	    pGC->fgPixel = (unsigned int)(-1) >> 1; 
+	if(pGC->bgPixel == -1) /* -1 is reserved for transparency */
+	    pGC->bgPixel = 0x7fffffff; 
+	if(pGC->fgPixel == -1) /* -1 is reserved for transparency */
+	    pGC->fgPixel = 0x7fffffff; 
     }
 
     if((pDraw->type == DRAWABLE_PIXMAP) && !IS_OFFSCREEN_PIXMAP(pDraw)){

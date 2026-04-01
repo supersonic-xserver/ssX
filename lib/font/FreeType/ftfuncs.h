@@ -1,5 +1,11 @@
-/* $XFree86: xc/lib/font/FreeType/ftfuncs.h,v 1.19tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1998-2002 by Juliusz Chroboczek
 Copyright (c) 2003 After X-TT Project, All rights reserved.
 
@@ -21,6 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+/* $XFree86: xc/lib/font/FreeType/ftfuncs.h,v 1.19 2004/04/14 15:32:43 dawes Exp $ */
 
 /* Number of buckets in the hashtable holding faces */
 #define NUMFACEBUCKETS 32
@@ -47,7 +54,6 @@ typedef struct _FTFace {
     char *filename;
     FT_Face face;
     int bitmap;
-    FT_UInt num_hmetrics;
     struct _FTInstance *instances;
     struct _FTInstance *active_instance;
     struct _FTFace *next;       /* link to next face in bucket */

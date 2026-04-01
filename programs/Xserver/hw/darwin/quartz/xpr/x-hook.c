@@ -1,4 +1,12 @@
 /* x-hook.c
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   $Id: x-hook.c,v 1.1.1.1 2004/03/05 14:28:16 tron Exp $
 
    Copyright (c) 2003 Apple Computer, Inc. All rights reserved.
 
@@ -26,7 +34,7 @@
    copyright holders shall not be used in advertising or otherwise to
    promote the sale, use or other dealings in this Software without
    prior written authorization. */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/x-hook.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/x-hook.c,v 1.1 2003/06/30 01:45:13 torrey Exp $ */
 
 #include "x-hook.h"
 #include <stdlib.h>
@@ -64,8 +72,6 @@ X_PFX (hook_remove) (x_list *lst, x_hook_function *fun, void *data)
     }
 
     X_PFX (list_free) (to_delete);
-
-    return lst;
 }
 
 X_EXTERN void

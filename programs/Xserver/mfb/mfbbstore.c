@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbbstore.c,v 1.3tsi Exp $ */
+/* $Xorg: mfbbstore.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /*
 
@@ -29,14 +36,14 @@ from The Open Group.
 */
 
 #include    "mfb.h"
-#include    <X11/X.h>
+#include    "X.h"
 #include    "mibstore.h"
 #include    "regionstr.h"
 #include    "scrnintstr.h"
 #include    "pixmapstr.h"
 #include    "windowstr.h"
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * mfbSaveAreas --
  *	Function called by miSaveAreas to actually fetch the areas to be
@@ -57,13 +64,17 @@ from The Open Group.
  *-----------------------------------------------------------------------
  */
 void
-mfbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
-	     WindowPtr pWin)
+mfbSaveAreas(pPixmap, prgnSave, xorg, yorg, pWin)
+    PixmapPtr	  	pPixmap;  	/* Backing pixmap */
+    RegionPtr	  	prgnSave; 	/* Region to save (pixmap-relative) */
+    int	    	  	xorg;	    	/* X origin of region */
+    int	    	  	yorg;	    	/* Y origin of region */
+    WindowPtr		pWin;
 {
-    DDXPointPtr pPt;
+    register DDXPointPtr pPt;
     DDXPointPtr		pPtsInit;
-    BoxPtr	pBox;
-    int	numRects;
+    register BoxPtr	pBox;
+    register int	numRects;
     
     numRects = REGION_NUM_RECTS(prgnSave);
     pPtsInit = (DDXPointPtr)ALLOCATE_LOCAL(numRects * sizeof(DDXPointRec));
@@ -89,7 +100,7 @@ mfbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
     DEALLOCATE_LOCAL(pPtsInit);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * mfbRestoreAreas --
  *	Function called by miRestoreAreas to actually fetch the areas to be
@@ -110,13 +121,17 @@ mfbSaveAreas(PixmapPtr pPixmap, RegionPtr prgnSave, int xorg, int yorg,
  *-----------------------------------------------------------------------
  */
 void
-mfbRestoreAreas(PixmapPtr pPixmap, RegionPtr prgnRestore, int xorg, int yorg,
-		WindowPtr pWin)
+mfbRestoreAreas(pPixmap, prgnRestore, xorg, yorg, pWin)
+    PixmapPtr	  	pPixmap;  	/* Backing pixmap */
+    RegionPtr	  	prgnRestore; 	/* Region to restore (screen-relative)*/
+    int	    	  	xorg;	    	/* X origin of window */
+    int	    	  	yorg;	    	/* Y origin of window */
+    WindowPtr		pWin;
 {
-    DDXPointPtr pPt;
+    register DDXPointPtr pPt;
     DDXPointPtr		pPtsInit;
-    BoxPtr	pBox;
-    int	numRects;
+    register BoxPtr	pBox;
+    register int	numRects;
     
     numRects = REGION_NUM_RECTS(prgnRestore);
     pPtsInit = (DDXPointPtr)ALLOCATE_LOCAL(numRects*sizeof(DDXPointRec));

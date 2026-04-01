@@ -1,3 +1,11 @@
+/* $Xorg: xkbSwap.c,v 1.3 2000/08/17 19:53:48 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,17 +31,17 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbSwap.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/xkbSwap.c,v 3.5 2003/11/17 22:20:46 dawes Exp $ */
 
 #include "stdio.h"
-#include <X11/X.h>
+#include "X.h"
 #define	NEED_EVENTS
 #define	NEED_REPLIES
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "misc.h"
 #include "inputstr.h"
-#include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XKBstr.h>
+#include "XKBsrv.h"
+#include "XKBstr.h"
 #include "extnsionst.h"
 #include "xkb.h"
 
@@ -43,7 +51,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 static int
 SProcXkbUseExtension(ClientPtr client)
 {
-int n;
+register int n;
 
     REQUEST(xkbUseExtensionReq);
 
@@ -57,7 +65,7 @@ int n;
 static int
 SProcXkbSelectEvents(ClientPtr client)
 {
-int n;
+register int n;
 
     REQUEST(xkbSelectEventsReq);
 
@@ -76,7 +84,7 @@ int n;
 	    CARD16	*c16;
 	    CARD32	*c32;
 	} from;
-	unsigned bit,ndx,maskLeft,dataLeft,size;
+	register unsigned bit,ndx,maskLeft,dataLeft,size;
 
 	from.c8= (CARD8 *)&stuff[1];
 	dataLeft= (stuff->length*4)-SIZEOF(xkbSelectEventsReq);
@@ -136,7 +144,7 @@ int n;
 static int
 SProcXkbBell(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbBellReq);
 
@@ -155,7 +163,7 @@ int	n;
 static int
 SProcXkbGetState(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetStateReq);
 
@@ -168,7 +176,7 @@ int	n;
 static int
 SProcXkbLatchLockState(ClientPtr client)
 {
-int 	n;
+register int 	n;
 
     REQUEST(xkbLatchLockStateReq);
 
@@ -182,7 +190,7 @@ int 	n;
 static int
 SProcXkbGetControls(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetControlsReq);
 
@@ -195,7 +203,7 @@ int	n;
 static int
 SProcXkbSetControls(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetControlsReq);
 
@@ -230,7 +238,7 @@ int	n;
 static int
 SProcXkbGetMap(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetMapReq);
 
@@ -246,7 +254,7 @@ int	n;
 static int
 SProcXkbSetMap(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetMapReq);
 
@@ -265,7 +273,7 @@ int	n;
 static int
 SProcXkbGetCompatMap(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetCompatMapReq);
 
@@ -280,7 +288,7 @@ int	n;
 static int
 SProcXkbSetCompatMap(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetCompatMapReq);
 
@@ -295,7 +303,7 @@ int	n;
 static int
 SProcXkbGetIndicatorState(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetIndicatorStateReq);
 
@@ -308,7 +316,7 @@ int	n;
 static int
 SProcXkbGetIndicatorMap(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetIndicatorMapReq);
 
@@ -322,7 +330,7 @@ int	n;
 static int
 SProcXkbSetIndicatorMap(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetIndicatorMapReq);
 
@@ -336,7 +344,7 @@ int	n;
 static int
 SProcXkbGetNamedIndicator(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetNamedIndicatorReq);
 
@@ -352,7 +360,7 @@ int	n;
 static int
 SProcXkbSetNamedIndicator(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetNamedIndicatorReq);
 
@@ -371,7 +379,7 @@ int	n;
 static int
 SProcXkbGetNames(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetNamesReq);
 
@@ -385,7 +393,7 @@ int	n;
 static int
 SProcXkbSetNames(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetNamesReq);
 
@@ -402,7 +410,7 @@ int	n;
 static int
 SProcXkbGetGeometry(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetGeometryReq);
 
@@ -416,7 +424,7 @@ int	n;
 static int
 SProcXkbSetGeometry(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetGeometryReq);
 
@@ -436,7 +444,7 @@ int	n;
 static int
 SProcXkbPerClientFlags(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbPerClientFlagsReq);
 
@@ -454,7 +462,7 @@ int	n;
 static int
 SProcXkbListComponents(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbListComponentsReq);
 
@@ -468,7 +476,7 @@ int	n;
 static int
 SProcXkbGetKbdByName(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetKbdByNameReq);
 
@@ -483,7 +491,7 @@ int	n;
 static int
 SProcXkbGetDeviceInfo(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbGetDeviceInfoReq);
 
@@ -499,7 +507,7 @@ int	n;
 static int
 SProcXkbSetDeviceInfo(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetDeviceInfoReq);
 
@@ -514,7 +522,7 @@ int	n;
 static int
 SProcXkbSetDebuggingFlags(ClientPtr client)
 {
-int	n;
+register int	n;
 
     REQUEST(xkbSetDebuggingFlagsReq);
 

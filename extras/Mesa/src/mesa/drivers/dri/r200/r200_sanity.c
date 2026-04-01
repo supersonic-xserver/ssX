@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_sanity.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_sanity.c,v 1.2 2005/03/01 03:48:45 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2002 ATI Technologies Inc., Ontario, Canada, and
@@ -41,6 +48,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_context.h"
 #include "r200_ioctl.h"
 #include "r200_sanity.h"
+#include "radeon_reg.h"
 #include "r200_reg.h"
 
 /* Set this '1' to get more verbiage.

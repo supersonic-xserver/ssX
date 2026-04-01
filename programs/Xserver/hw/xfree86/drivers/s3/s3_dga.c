@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *      Copyright 2001  Ani Joshi <ajoshi@unixbox.com>
  * 
  *      XFree86 4.x driver for S3 chipsets
@@ -24,7 +31,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_dga.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_dga.c,v 1.2 2004/12/07 15:59:20 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

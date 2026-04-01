@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/windowstr.h,v 1.9tsi Exp $ */
+/* $Xorg: windowstr.h,v 1.4 2001/02/09 02:05:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/include/windowstr.h,v 1.7 2003/04/27 21:31:05 herrb Exp $ */
 
 #ifndef WINDOWSTRUCT_H
 #define WINDOWSTRUCT_H
@@ -85,7 +93,6 @@ typedef struct _WindowOpt {
 #ifdef SHAPE
     RegionPtr		boundingShape;	   /* default: NULL */
     RegionPtr		clipShape;	   /* default: NULL */
-    RegionPtr		inputShape;	   /* default: NULL */
 #endif
 #ifdef XINPUT
     struct _OtherInputMasks *inputMasks;   /* default: NULL */
@@ -130,17 +137,12 @@ typedef struct _Window {
     unsigned		viewable:1;	/* realized && InputOutput */
     unsigned		dontPropagate:3;/* index into DontPropagateMasks */
     unsigned		forcedBS:1;	/* system-supplied backingStore */
-
-#if defined(DBE) && defined(NEED_DBE_BUF_BITS)
-
+#ifdef NEED_DBE_BUF_BITS
 #define DBE_FRONT_BUFFER 1
 #define DBE_BACK_BUFFER  0
-
     unsigned		dstBuffer:1;	/* destination buffer for rendering */
     unsigned		srcBuffer:1;	/* source buffer for rendering */
-
-#endif /* NEED_DBE_BUF_BITS */
-
+#endif
     DevUnion		*devPrivates;
 } WindowRec;
 
@@ -176,7 +178,6 @@ extern Mask	    DontPropagateMasks[];
 #ifdef SHAPE
 #define wBoundingShape(w)	wUseDefault(w, boundingShape, NULL)
 #define wClipShape(w)		wUseDefault(w, clipShape, NULL)
-#define wInputShape(w)		wUseDefault(w, inputShape, NULL)
 #endif
 #define wClient(w)		(clients[CLIENT_ID((w)->drawable.id)])
 #define wBorderWidth(w)		((int) (w)->borderWidth)

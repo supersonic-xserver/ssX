@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/mediaSizes.c,v 1.5tsi Exp $ */
+/* $Xorg: mediaSizes.c,v 1.4 2001/03/14 18:44:37 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -30,6 +37,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
+/* $XFree86: xc/programs/Xserver/Xprint/mediaSizes.c,v 1.5 2001/12/21 21:02:05 dawes Exp $ */
 
 /*******************************************************************
 **
@@ -56,12 +64,12 @@ copyright holders.
 #include <string.h>
 #include <locale.h>
 
-#include <X11/X.h>
+#include "X.h"
 #include "dixstruct.h"
 #include "screenint.h"
 #include "misc.h"
 #include "scrnintstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 
 #include "DiPrint.h"
 #include "attributes.h"

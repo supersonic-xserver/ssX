@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/X11/xlibi18n/lc/Utf8/Imakefile,v 1.5tsi Exp $
+XCOMM $XFree86: xc/lib/X11/xlibi18n/lc/Utf8/Imakefile,v 1.5 2004/06/01 00:16:56 dawes Exp $
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -49,7 +49,7 @@ XCOMM $XFree86: xc/lib/X11/xlibi18n/lc/Utf8/Imakefile,v 1.5tsi Exp $
  EXTRA_INCLUDES = -I../../..
       XI18NLIBNAME = xlibi18n
            SRCS = lcUTF8Load.c
-           OBJS = lcUTF8Load.o
+           OBJS = ${SRCS:.c=.o}
    REQUIREDLIBS = SharedXlibi18nReqs
 
 LinkSourceFile(lcUTF8Load.c, ../../..)
@@ -58,4 +58,3 @@ LinkSourceFile(lcUTF8Load.c, ../../..)
 
 #include "../../Xi18nLib.conf"
 
-DependTarget()

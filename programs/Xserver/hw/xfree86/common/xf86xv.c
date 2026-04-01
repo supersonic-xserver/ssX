@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * XFree86 Xv DDX written by Mark Vojkovich (markv@valinux.com)
  */
 /*
@@ -28,14 +35,14 @@
  * authorization from the copyright holder(s) and author(s).
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86xv.c,v 1.38tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86xv.c,v 1.38 2004/02/19 22:38:12 tsi Exp $ */
 
 #include "misc.h"
 #include "xf86.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "regionstr.h"
 #include "windowstr.h"
@@ -46,8 +53,8 @@
 #include "gcstruct.h"
 #include "dixstruct.h"
 
-#include <X11/extensions/Xv.h>
-#include <X11/extensions/Xvproto.h>
+#include "Xv.h"
+#include "Xvproto.h"
 #include "xvdix.h"
 #ifdef XFree86LOADER
 #include "xvmodproc.h"

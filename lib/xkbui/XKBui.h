@@ -1,5 +1,13 @@
 #ifndef XKBUI_H
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #define	XKBUI_H 1
+/* $XConsortium: XKBui.h /main/2 1995/12/07 21:18:19 kaleb $ */
 /************************************************************
  Copyright (c) 1996 by Silicon Graphics Computer Systems, Inc.
 

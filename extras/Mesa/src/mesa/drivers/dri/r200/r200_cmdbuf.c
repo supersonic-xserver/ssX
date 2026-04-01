@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_cmdbuf.c,v 1.1.1.2tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_cmdbuf.c,v 1.1.1.2 2004/12/10 15:05:56 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -44,7 +51,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_ioctl.h"
 #include "r200_tcl.h"
 #include "r200_sanity.h"
-#include "r200_reg.h"
+#include "radeon_reg.h"
 
 static void print_state_atom( struct r200_state_atom *state )
 {

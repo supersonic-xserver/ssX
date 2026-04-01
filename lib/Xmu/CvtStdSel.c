@@ -1,3 +1,19 @@
+/* $Xorg: CvtStdSel.c,v 1.4 2001/02/09 02:03:52 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  
 Copyright 1988, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xmu/CvtStdSel.c,v 3.21tsi Exp $ */
+/* $XFree86: xc/lib/Xmu/CvtStdSel.c,v 3.20 2001/12/14 19:55:39 dawes Exp $ */
 
 /*
  * This file contains routines to handle common selection targets.
@@ -112,7 +128,7 @@ get_os_name(void)
 #ifdef USE_UNAME
 	struct utsname utss;
 
-	if (uname(&utss) >= 0) {
+	if (uname (&utss) == 0) {
 	    char *os_name;
 	    int len = strlen(utss.sysname) + 1;
 #ifndef hpux				/* because of hostname length crock */

@@ -1,5 +1,5 @@
 XCOMM!/bin/sh
-XCOMM $XFree86$
+XCOMM $Xorg: elistgen.ibm,v 1.3 2000/08/17 19:41:52 cpqbld Exp $
 XCOMM
 XCOMM #########################################################################
 XCOMM Construct shared-library export lists for IBM-AIX based on standardized

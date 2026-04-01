@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcClip.c,v 1.5 1999/09/25 14:38:16 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987  X Consortium
@@ -68,6 +75,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
+/* $XConsortium: ppcClip.c /main/4 1996/02/21 17:57:21 kaleb $ */
 
 #include "xf4bpp.h"
 #include "mfbmap.h"
@@ -75,7 +83,8 @@ SOFTWARE.
 #include "scrnintstr.h"
 
 void
-xf4bppDestroyClip(GCPtr pGC)
+xf4bppDestroyClip(pGC)
+    GCPtr	pGC;
 {
     if(pGC->clientClipType == CT_NONE)
 	return;
@@ -95,7 +104,11 @@ xf4bppDestroyClip(GCPtr pGC)
 }
 
 void
-xf4bppChangeClip(GCPtr pGC, int type, pointer pvalue, int nrects)
+xf4bppChangeClip(pGC, type, pvalue, nrects)
+    GCPtr	    pGC;
+    int		    type;
+    pointer	    pvalue;
+    int		    nrects;
 {
     xf4bppDestroyClip(pGC);
     if(type == CT_PIXMAP)
@@ -125,7 +138,8 @@ xf4bppChangeClip(GCPtr pGC, int type, pointer pvalue, int nrects)
 }
 
 void
-xf4bppCopyClip(GCPtr pgcDst, GCPtr pgcSrc)
+xf4bppCopyClip (pgcDst, pgcSrc)
+    GCPtr pgcDst, pgcSrc;
 {
     RegionPtr prgnNew;
 

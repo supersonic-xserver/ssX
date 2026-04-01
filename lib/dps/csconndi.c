@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * csconndi.c -- low level connection maker for CSDPS
  * 
  * (c) Copyright 1990-1994 Adobe Systems Incorporated.
@@ -47,7 +54,7 @@
  *  
  * Author:  Adobe Systems Incorporated and MIT X Consortium
  */
-/* $XFree86: xc/lib/dps/csconndi.c,v 1.12 2003/05/27 22:26:43 tsi Exp $ */
+/* $XFree86: xc/lib/dps/csconndi.c,v 1.13 2004/07/25 20:17:02 dawes Exp $ */
 
 #if defined(sun) && !defined(SVR4)
 #define memmove(t,f,c) bcopy(f,t,c)

@@ -1,6 +1,6 @@
 XCOMM $XFree86: xc/fonts/bdf/misc/Imakefile,v 1.31 2004/06/01 00:16:55 dawes Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -1297,5 +1297,4 @@ MakeBdfFontFromUCSMaster(7x14,JISX0201.1976-0)
 InstallFonts($(FONTINSTDIR))
 InstallFontAliases($(FONTINSTDIR))
 InstallEncodingsDir($(ENCODINGSSRC),$(FONTINSTDIR))
-InstallFcCache($(FONTINSTDIR))
 

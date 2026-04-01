@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/randr/randr.c,v 1.24tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/randr/randr.c,v 1.22 2003/11/06 18:38:15 tsi Exp $
  *
  * Copyright © 2000, Compaq Computer Corporation, 
  * Copyright © 2002, Hewlett Packard, Inc.
@@ -27,8 +34,8 @@
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -38,14 +45,14 @@
 #include "pixmapstr.h"
 #include "extnsionst.h"
 #include "servermd.h"
-#include <X11/extensions/randr.h>
-#include <X11/extensions/randrproto.h>
+#include "randr.h"
+#include "randrproto.h"
 #include "randrstr.h"
 #ifdef RENDER
-#include <X11/extensions/render.h> /* we share subpixel order information */
+#include "render.h" 	/* we share subpixel order information */
 #include "picturestr.h"
 #endif
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 #ifdef EXTMODULE
 #include "xf86_ansic.h"
 #endif
@@ -276,7 +283,7 @@ RRFreeEvents (pointer data, XID id)
 }
 
 void
-RRExtensionInit (INITARGS)
+RRExtensionInit (void)
 {
     ExtensionEntry *extEntry;
 
@@ -1147,7 +1154,6 @@ RRRegisterSize (ScreenPtr	    pScreen,
     tmp.nRatesInUse = 0;
     tmp.referenced = TRUE;
     tmp.oldReferenced = FALSE;
-    tmp.id = 0;
     for (i = 0; i < pScrPriv->nSizes; i++)
 	if (RRScreenSizeMatches (&tmp, &pScrPriv->pSizes[i]))
 	{

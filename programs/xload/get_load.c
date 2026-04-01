@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/xload/get_load.c,v 1.23tsi Exp $ */
+/* $XConsortium: get_load.c /main/37 1996/03/09 09:38:04 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XFree86: xc/programs/xload/get_load.c,v 1.22 2003/12/22 17:48:13 tsi Exp $ */
 /*
 
 Copyright (c) 1989  X Consortium
@@ -464,7 +472,7 @@ void GetLoadPoint( w, closure, call_data )
     double *loadavg = (double *)call_data;
 
     struct host_load_info load_data;
-    unsigned int host_count;
+    int host_count;
     kern_return_t kr;
 
     host_count = sizeof(load_data)/sizeof(integer_t);

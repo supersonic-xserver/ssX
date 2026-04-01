@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/mesa/swrast/Imakefile,v 1.3tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/mesa/swrast/Imakefile,v 1.2 2004/12/10 16:07:00 alanh Exp $
 
 #if DoLoadableServer
 #if !BuildModuleInSubdir
@@ -31,10 +31,10 @@ SUBDIRS = module
 		-I$(MESASRCDIR)/src/mesa/swrast \
 		-I$(MESASRCDIR)/src/mesa/swrast_setup \
 		-I$(MESASRCDIR)/include \
-		-I$(SERVERSRC)/include \
-		-I$(SERVERSRC)/GL/include \
-		-I$(SERVERSRC)/GL/glx \
-		-I$(LIBSRC)/GL/include
+                -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+                -I$(SERVERSRC)/GL/include -I$(SERVERSRC)/GL/glx \
+                -I$(LIBSRC)/GL/include \
+                -I$(XF86SRC) -I$(INCLUDESRC)
 
       DEFINES = $(GLX_DEFINES) /*-DUSE_X86_ASM*/ /*-DUSE_SPARC_ASM*/
 

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffparse.c                                                             */
 /*                                                                         */
 /*    CFF token stream parser (body)                                       */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,8 +25,9 @@
 
 #include <ft2build.h>
 #include "cffparse.h"
-#include FT_INTERNAL_CFF_ERRORS_H
 #include FT_INTERNAL_STREAM_H
+
+#include "cfferrs.h"
 
 
   /*************************************************************************/
@@ -32,15 +40,12 @@
 #define FT_COMPONENT  trace_cffparse
 
 
-#define CFF_Err_Stack_Underflow  FT_Err_Invalid_Argument
-#define CFF_Err_Syntax_Error     FT_Err_Invalid_Argument
-
-
   enum
   {
     cff_kind_none = 0,
     cff_kind_num,
     cff_kind_fixed,
+    cff_kind_fixed_thousand,
     cff_kind_string,
     cff_kind_bool,
     cff_kind_delta,
@@ -51,7 +56,7 @@
 
 
   /* now generate handlers for the most simple fields */
-  typedef FT_Error  (*CFF_Field_Reader)( CFF_Parser*  parser );
+  typedef FT_Error  (*CFF_Field_Reader)( CFF_Parser  parser );
 
   typedef struct  CFF_Field_Handler_
   {
@@ -66,12 +71,12 @@
   } CFF_Field_Handler;
 
 
-  FT_LOCAL_DEF
-  void  CFF_Parser_Init( CFF_Parser*  parser,
-                         FT_UInt      code,
-                         void*        object )
+  FT_LOCAL_DEF( void )
+  cff_parser_init( CFF_Parser  parser,
+                   FT_UInt     code,
+                   void*       object )
   {
-    MEM_Set( parser, 0, sizeof ( *parser ) );
+    FT_MEM_ZERO( parser, sizeof ( *parser ) );
 
     parser->top         = parser->stack;
     parser->object_code = code;
@@ -80,9 +85,9 @@
 
 
   /* read an integer */
-  static
-  FT_Long  cff_parse_integer( FT_Byte*  start,
-                              FT_Byte*  limit )
+  static FT_Long
+  cff_parse_integer( FT_Byte*  start,
+                     FT_Byte*  limit )
   {
     FT_Byte*  p   = start;
     FT_Int    v   = *p++;
@@ -139,16 +144,16 @@
 
 
   /* read a real */
-  static
-  FT_Fixed  cff_parse_real( FT_Byte*  start,
-                            FT_Byte*  limit,
-                            FT_Int    power_ten )
+  static FT_Fixed
+  cff_parse_real( FT_Byte*  start,
+                  FT_Byte*  limit,
+                  FT_Int    power_ten )
   {
     FT_Byte*  p    = start;
     FT_Long   num, divider, result, exp;
     FT_Int    sign = 0, exp_sign = 0;
-    FT_Byte   nib;
-    FT_Byte   phase;
+    FT_UInt   nib;
+    FT_UInt   phase;
 
 
     result  = 0;
@@ -247,7 +252,7 @@
       if ( exp_sign )
         exp = -exp;
 
-      power_ten += exp;
+      power_ten += (FT_Int)exp;
     }
 
     /* raise to power of ten if needed */
@@ -287,8 +292,8 @@
 
 
   /* read a number, either integer or real */
-  static
-  FT_Long  cff_parse_num( FT_Byte**  d )
+  static FT_Long
+  cff_parse_num( FT_Byte**  d )
   {
     return ( **d == 30 ? ( cff_parse_real   ( d[0], d[1], 0 ) >> 16 )
                        :   cff_parse_integer( d[0], d[1] ) );
@@ -296,8 +301,8 @@
 
 
   /* read a floating point number, either integer or real */
-  static
-  FT_Fixed  cff_parse_fixed( FT_Byte**  d )
+  static FT_Fixed
+  cff_parse_fixed( FT_Byte**  d )
   {
     return ( **d == 30 ? cff_parse_real   ( d[0], d[1], 0 )
                        : cff_parse_integer( d[0], d[1] ) << 16 );
@@ -305,24 +310,24 @@
 
   /* read a floating point number, either integer or real, */
   /* but return 1000 times the number read in.             */
-  static
-  FT_Fixed  cff_parse_fixed_thousand( FT_Byte**  d )
+  static FT_Fixed
+  cff_parse_fixed_thousand( FT_Byte**  d )
   {
     return **d ==
       30 ? cff_parse_real     ( d[0], d[1], 3 )
          : (FT_Fixed)FT_MulFix( cff_parse_integer( d[0], d[1] ) << 16, 1000 );
   }
 
-  static
-  FT_Error  cff_parse_font_matrix( CFF_Parser*  parser )
+  static FT_Error
+  cff_parse_font_matrix( CFF_Parser  parser )
   {
-    CFF_Font_Dict*  dict   = (CFF_Font_Dict*)parser->object;
-    FT_Matrix*      matrix = &dict->font_matrix;
-    FT_Vector*      offset = &dict->font_offset;
-    FT_UShort*      upm    = &dict->units_per_em;
-    FT_Byte**       data   = parser->stack;
-    FT_Error        error;
-    FT_Fixed        temp;
+    CFF_FontRecDict  dict   = (CFF_FontRecDict)parser->object;
+    FT_Matrix*       matrix = &dict->font_matrix;
+    FT_Vector*       offset = &dict->font_offset;
+    FT_UShort*       upm    = &dict->units_per_em;
+    FT_Byte**        data   = parser->stack;
+    FT_Error         error;
+    FT_Fixed         temp;
 
 
     error = CFF_Err_Stack_Underflow;
@@ -336,10 +341,9 @@
       offset->x  = cff_parse_fixed_thousand( data++ );
       offset->y  = cff_parse_fixed_thousand( data   );
 
-      temp = ABS( matrix->yy );
+      temp = FT_ABS( matrix->yy );
 
-      *upm = (FT_UShort)( FT_DivFix( 0x10000L,
-                          FT_DivFix( temp, 1000 ) ) >> 16 );
+      *upm = (FT_UShort)FT_DivFix( 0x10000L, FT_DivFix( temp, 1000 ) );
 
       if ( temp != 0x10000L )
       {
@@ -362,13 +366,13 @@
   }
 
 
-  static
-  FT_Error  cff_parse_font_bbox( CFF_Parser*  parser )
+  static FT_Error
+  cff_parse_font_bbox( CFF_Parser  parser )
   {
-    CFF_Font_Dict*  dict = (CFF_Font_Dict*)parser->object;
-    FT_BBox*        bbox = &dict->font_bbox;
-    FT_Byte**       data = parser->stack;
-    FT_Error        error;
+    CFF_FontRecDict  dict = (CFF_FontRecDict)parser->object;
+    FT_BBox*         bbox = &dict->font_bbox;
+    FT_Byte**        data = parser->stack;
+    FT_Error         error;
 
 
     error = CFF_Err_Stack_Underflow;
@@ -386,12 +390,12 @@
   }
 
 
-  static
-  FT_Error  cff_parse_private_dict( CFF_Parser*  parser )
+  static FT_Error
+  cff_parse_private_dict( CFF_Parser  parser )
   {
-    CFF_Font_Dict*  dict = (CFF_Font_Dict*)parser->object;
-    FT_Byte**       data = parser->stack;
-    FT_Error        error;
+    CFF_FontRecDict  dict = (CFF_FontRecDict)parser->object;
+    FT_Byte**        data = parser->stack;
+    FT_Error         error;
 
 
     error = CFF_Err_Stack_Underflow;
@@ -407,12 +411,12 @@
   }
 
 
-  static
-  FT_Error  cff_parse_cid_ros( CFF_Parser*  parser )
+  static FT_Error
+  cff_parse_cid_ros( CFF_Parser  parser )
   {
-    CFF_Font_Dict*  dict = (CFF_Font_Dict*)parser->object;
-    FT_Byte**       data = parser->stack;
-    FT_Error        error;
+    CFF_FontRecDict  dict = (CFF_FontRecDict)parser->object;
+    FT_Byte**        data = parser->stack;
+    FT_Error         error;
 
 
     error = CFF_Err_Stack_Underflow;
@@ -433,6 +437,8 @@
           CFF_FIELD( code, name, cff_kind_num )
 #define CFF_FIELD_FIXED( code, name ) \
           CFF_FIELD( code, name, cff_kind_fixed )
+#define CFF_FIELD_FIXED_1000( code, name ) \
+          CFF_FIELD( code, name, cff_kind_fixed_thousand )
 #define CFF_FIELD_STRING( code, name ) \
           CFF_FIELD( code, name, cff_kind_string )
 #define CFF_FIELD_BOOL( code, name ) \
@@ -483,10 +489,10 @@
   };
 
 
-  FT_LOCAL_DEF
-  FT_Error  CFF_Parser_Run( CFF_Parser*  parser,
-                            FT_Byte*     start,
-                            FT_Byte*     limit )
+  FT_LOCAL_DEF( FT_Error )
+  cff_parser_run( CFF_Parser  parser,
+                  FT_Byte*    start,
+                  FT_Byte*    limit )
   {
     FT_Byte*  p     = start;
     FT_Error  error = CFF_Err_Ok;
@@ -499,7 +505,7 @@
 
     while ( p < limit )
     {
-      FT_Byte  v = *p;
+      FT_UInt  v = *p;
 
 
       if ( v >= 27 && v != 31 )
@@ -546,16 +552,15 @@
         const CFF_Field_Handler*  field;
 
 
-        /* first of all, a trivial check */
-        if ( num_args < 1 )
-          goto Stack_Underflow;
-
         *parser->top = p;
         code = v;
         if ( v == 12 )
         {
           /* two byte operator */
           p++;
+          if ( p >= limit )
+            goto Syntax_Error;
+
           code = 0x100 | p[0];
         }
         code = code | parser->object_code;
@@ -569,6 +574,11 @@
             FT_Byte*  q = (FT_Byte*)parser->object + field->offset;
 
 
+            /* check that we have enough arguments -- except for */
+            /* delta encoded arrays, which can be empty          */
+            if ( field->kind != cff_kind_delta && num_args < 1 )
+              goto Stack_Underflow;
+
             switch ( field->kind )
             {
             case cff_kind_bool:
@@ -579,6 +589,10 @@
 
             case cff_kind_fixed:
               val = cff_parse_fixed( parser->stack );
+              goto Store_Number;
+
+            case cff_kind_fixed_thousand:
+              val = cff_parse_fixed_thousand( parser->stack );
 
             Store_Number:
               switch ( field->size )

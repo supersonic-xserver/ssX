@@ -5,7 +5,7 @@
 #
 
 
-# Copyright 1996-2000 by
+# Copyright 1996-2000, 2003 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -19,17 +19,17 @@
 #       Shell (_not_ Cygwin BASH)!
 #
 
-ifndef TOP
-  TOP := .
+ifndef TOP_DIR
+  TOP_DIR := .
 endif
 
-SEP   := /
-BUILD := $(TOP)/builds/win32/devel
+include $(TOP_DIR)/builds/win32/win32-def.mk
+BUILD_DIR := $(TOP_DIR)/devel
 
-include $(TOP)/builds/win32/win32-def.mk
-include $(TOP)/builds/compiler/gcc-dev.mk
+include $(TOP_DIR)/builds/compiler/gcc-dev.mk
 
 # include linking instructions
-include $(TOP)/builds/link_dos.mk
+include $(TOP_DIR)/builds/link_dos.mk
+
 
 # EOF

@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/tinyx.c,v 1.3tsi Exp $ 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/tinyx.c,v 1.1 2004/06/02 22:43:00 dawes Exp $ 
  *
  * Copyright © 1999 Keith Packard
  *
@@ -22,7 +29,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 /*
- * Copyright (c) 2004-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -82,6 +89,10 @@
 #include "txxv.h"
 #endif
 
+#ifdef DPMSExtension
+#include "dpmsproc.h"
+#endif
+
 CARD8	kdBpp[] = { 1, 4, 8, 16, 24, 32 };
 
 #define NUM_KD_BPP (sizeof (kdBpp) / sizeof (kdBpp[0]))
@@ -98,7 +109,6 @@ int		    kdSubpixelOrder;
 int		    kdVirtualTerminal = -1;
 Bool		    kdSwitchPending;
 DDXPointRec	    kdOrigin;
-Bool		    kdNoSerialMouse = FALSE;
 
 /*
  * Carry arguments from InitOutput through driver initialization
@@ -382,7 +392,6 @@ KdUseMsg()
   ErrorF("-videoTest	Start the server, pause momentarily and exit\n");
   ErrorF("-origin X,Y	Locates the next screen in the the virtual screen (Xinerama)\n");
   ErrorF("-mouse path[,n]	Filename of mouse device, n is number of buttons\n");
-  ErrorF("-noserialmouse	Don't probe for a serial mouse\n");
   ErrorF("vtxx		Use virtual terminal xx instead of the next available\n");
   ErrorF("\n");
 }
@@ -396,8 +405,8 @@ ddxGiveUp ()
 Bool	kdDumbDriver;
 Bool	kdSoftCursor;
 
-static const char *
-KdParseFindNext (const char *cur, const char *delim, char *save, char *last)
+static char *
+KdParseFindNext (char *cur, char *delim, char *save, char *last)
 {
     while (*cur && !strchr (delim, *cur))
     {
@@ -434,7 +443,7 @@ KdSubRotation (Rotation a, Rotation b)
 
 void
 KdParseScreen (KdScreenInfo *screen,
-	       const char    *arg)
+	       char	    *arg)
 {
     char    delim;
     char    save[1024];
@@ -588,7 +597,7 @@ KdSaveString (char *str)
  */
 
 void
-KdParseMouse (const char *arg)
+KdParseMouse (char *arg)
 {
     char	save[1024];
     char	delim;
@@ -664,7 +673,7 @@ KdParseMouse (const char *arg)
 }
 
 static void
-KdParseRgba (const char *rgba)
+KdParseRgba (char *rgba)
 {
     if (!strcmp (rgba, "rgb"))
 	kdSubpixelOrder = SubPixelHorizontalRGB;
@@ -681,7 +690,7 @@ KdParseRgba (const char *rgba)
 }
 
 int
-KdProcessArgument (int argc, const char **argv, int i)
+KdProcessArgument (int argc, char **argv, int i)
 {
     KdCardInfo	    *card;
     KdScreenInfo    *screen;
@@ -748,7 +757,7 @@ KdProcessArgument (int argc, const char **argv, int i)
     {
 	if ((i+1) < argc)
 	{
-	    const char    *x = argv[i+1];
+	    char    *x = argv[i+1];
 	    char    *y = strchr (x, ',');
 	    if (x)
 		kdOrigin.x = atoi (x);
@@ -770,11 +779,6 @@ KdProcessArgument (int argc, const char **argv, int i)
 	else
 	    UseMsg ();
 	return 2;
-    }
-    if (!strcmp (argv[i], "-noserialmouse"))
-    {
-	kdNoSerialMouse = TRUE;
-	return 1;
     }
     if (!strcmp (argv[i], "-rgba"))
     {
@@ -1004,7 +1008,7 @@ KdSetSubpixelOrder (ScreenPtr pScreen, Rotation randr)
 static KdScreenInfo *kdCurrentScreen;
 
 Bool
-KdScreenInit(int index, ScreenPtr pScreen, int argc, const char **argv)
+KdScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
 {
     KdScreenInfo	*screen = kdCurrentScreen;
     KdCardInfo		*card = screen->card;
@@ -1021,6 +1025,9 @@ KdScreenInit(int index, ScreenPtr pScreen, int argc, const char **argv)
     for (fb = 0; fb < KD_MAX_FB && screen->fb[fb].depth; fb++)
 	pScreenPriv->bytesPerPixel[fb] = screen->fb[fb].bitsPerPixel >> 3;
     pScreenPriv->dpmsState = KD_DPMS_NORMAL;
+#ifdef PANORAMIX
+    dixScreenOrigins[pScreen->myNum] = screen->origin;
+#endif
 
     if (!monitorResolution)
 	monitorResolution = 75;
@@ -1199,7 +1206,7 @@ void
 KdInitScreen (ScreenInfo    *pScreenInfo,
 	      KdScreenInfo  *screen,
 	      int	    argc,
-	      const char	    **argv)
+	      char	    **argv)
 {
     KdCardInfo	*card = screen->card;
     
@@ -1281,7 +1288,7 @@ static void
 KdAddScreen (ScreenInfo	    *pScreenInfo,
 	     KdScreenInfo   *screen,
 	     int	    argc,
-	     const char	    **argv)
+	     char	    **argv)
 {
     int	    i;
     /*
@@ -1335,7 +1342,7 @@ KdDepthToFb (ScreenPtr	pScreen, int depth)
 void
 KdInitOutput (ScreenInfo    *pScreenInfo,
 	      int	    argc,
-	      const char	    **argv)
+	      char	    **argv)
 {
     KdCardInfo	    *card;
     KdScreenInfo    *screen;
@@ -1379,3 +1386,48 @@ void
 OsVendorFatalError()
 {
 }
+
+#ifdef XTESTEXT1
+void
+XTestGenerateEvent(dev_type, keycode, keystate, mousex, mousey)
+	int	dev_type;
+	int	keycode;
+	int	keystate;
+	int	mousex;
+	int	mousey;
+{
+}
+
+void
+XTestGetPointerPos(fmousex, fmousey)
+	short *fmousex, *fmousey;
+{
+}
+
+void
+XTestJumpPointer(jx, jy, dev_type)
+	int	jx;
+	int	jy;
+	int	dev_type;
+{
+}
+#endif
+
+#ifdef DPMSExtension
+void
+DPMSSet(int level)
+{
+}
+
+int
+DPMSGet (int *level)
+{
+    return -1;
+}
+
+Bool
+DPMSSupported (void)
+{
+    return FALSE;
+}
+#endif

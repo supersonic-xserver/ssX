@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1999 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +34,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/hook.c,v 1.9 2003/01/08 05:07:40 paulo Exp $ */
+/* $XFree86: xc/programs/xedit/hook.c,v 1.10 2003/01/09 03:36:29 paulo Exp $ */
 
 /*
  * This file is intended to be used to add all the necessary hooks to xedit

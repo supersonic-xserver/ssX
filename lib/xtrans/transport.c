@@ -1,3 +1,11 @@
+/* $Xorg: transport.c,v 1.4 2001/02/09 02:04:07 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -62,9 +70,6 @@ from The Open Group.
 #define xcalloc(_num,_size)	calloc(_num,_size)
 #define xrealloc(_ptr,_size)	realloc(_ptr,_size)
 #define xfree(_ptr)		free(_ptr)
-#endif
-#ifdef FONT_t
-extern void ErrorF(const char *f, ...);
 #endif
 
 #include "Xtransint.h"

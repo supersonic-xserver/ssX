@@ -1,68 +1,26 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/Imakefile,v 1.4tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:48:20 cpqbld Exp $
+XCOMM This is only used on NT where we do not know how to jump over this dir
 
+#ifdef Win32Architecture
+
+#define IHaveSubdirs
 #define PassCDebugFlags CDEBUGFLAGS="$(CDEBUGFLAGS)"
 
-#if defined(XF86Server) && XF86Server
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-XFREE86DIR = xfree86
-#endif
-
-#if (defined(XsunServer) && XsunServer) || \
-    (defined(Xsun24Server) && Xsun24Server) || \
-    (defined(XsunMonoServer) && XsunMonoServer)
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-SUNDIR = sun
-#endif
-
-#if (defined(XsunLynxServer) && XsunLynxServer) || \
-    (defined(XsunLynxMonoServer) && XsunLynxMonoServer)
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-LYNXDIR = sunLynx
-#endif
-
-#if defined(TinyXServer) && TinyXServer
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-TINYDIR = tinyx
-#endif
-
-#if defined(XnestServer) && XnestServer
-#undef  IHaveSubdirs
-#define IHaveSubdirs
+#if XnestServer
 XNESTDIR = xnest
 #endif
 
-#if defined(XVirtualFramebufferServer) && XVirtualFramebufferServer
-#undef  IHaveSubdirs
-#define IHaveSubdirs
+#if XVirtualFramebufferServer
 XVFBDIR = vfb
 #endif
 
-#if defined(XdmxServer) && XdmxServer
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-XDMXDIR = dmx
+#if XdmxServer
+XDMXDIR = xdmx
 #endif
 
-#if defined(XWinServer) && XWinServer
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-WINDIR = xwin
-#endif
-
-#if defined(XDarwinServer) && XDarwinServer
-#undef  IHaveSubdirs
-#define IHaveSubdirs
-DARWINDIR = darwin
-#endif
-
-#ifdef IHaveSubdirs
-SUBDIRS= $(XFREE86DIR) $(SUNDIR) $(LYNXDIR) $(TINYDIR) $(XNESTDIR) $(XVFBDIR) \
-	 $(XDMXDIR) $(WINDIR) $(DARWINDIR)
+SUBDIRS= $(XNESTDIR) $(XVFBDIR) $(XDMXDIR)
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
+
 #endif

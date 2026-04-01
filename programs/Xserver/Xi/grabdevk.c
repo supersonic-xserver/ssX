@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/Xserver/Xi/grabdevk.c,v 3.4tsi Exp $ */
+/* $Xorg: grabdevk.c,v 1.4 2001/02/09 02:04:34 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -44,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/grabdevk.c,v 3.3 2001/12/14 19:58:57 dawes Exp $ */
 
 /***********************************************************************
  *
@@ -53,12 +69,12 @@ SOFTWARE.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
 #include "windowstr.h"			/* window structure  */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "exevents.h"
 #include "extnsionst.h"
 #include "extinit.h"			/* LookupDeviceIntRec */
@@ -77,7 +93,9 @@ int
 SProcXGrabDeviceKey(client)
     register ClientPtr client;
     {
-    char n;
+    register char n;
+    register long *p;
+    register int i;
 
     REQUEST(xGrabDeviceKeyReq);
     swaps(&stuff->length, n);
@@ -85,8 +103,12 @@ SProcXGrabDeviceKey(client)
     swapl(&stuff->grabWindow, n);
     swaps(&stuff->modifiers, n);
     swaps(&stuff->event_count, n);
-    REQUEST_FIXED_SIZE(xGrabDeviceKeyReq, stuff->event_count * sizeof(CARD32));
-    SwapLongs((CARD32 *)(&stuff[1]), stuff->event_count);
+    p = (long *) &stuff[1];
+    for (i=0; i<stuff->event_count; i++)
+        {
+        swapl(p, n);
+	p++;
+        }
     return(ProcXGrabDeviceKey(client));
     }
 

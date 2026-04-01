@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/cff/cffgload.h,v 1.0tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffgload.h                                                             */
 /*                                                                         */
@@ -201,7 +207,7 @@ FT_BEGIN_HEADER
   FT_LOCAL( FT_Error )
   cff_slot_load( CFF_GlyphSlot  glyph,
                  CFF_Size       size,
-                 FT_UInt        glyph_index,
+                 FT_UInt         glyph_index,
                  FT_Int32       load_flags );
 
 

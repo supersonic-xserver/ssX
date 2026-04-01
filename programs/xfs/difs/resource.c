@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/resource.c,v 3.9tsi Exp $ */
+/* $Xorg: resource.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -47,6 +54,7 @@ in this Software without prior written authorization from The Open Group.
  * %W%	%G%
  *
  */
+/* $XFree86: xc/programs/xfs/difs/resource.c,v 3.9 2003/05/27 22:27:06 tsi Exp $ */
 /*
  *      a resource is a 32 bit quantity.  the upper 12 bits are client id.
  *      client provides a 19 bit resource id. this is "hashed" by me by
@@ -64,7 +72,7 @@ in this Software without prior written authorization from The Open Group.
  *      1 - allocated color to be freed when the client dies
  */
 
-#include <X11/fonts/FS.h>
+#include "FS.h"
 #include "misc.h"
 #include "os.h"
 #include "fsresource.h"

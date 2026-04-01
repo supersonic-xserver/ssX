@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/include/assert.h,v 1.2tsi Exp $ */
+/* $Xorg: assert.h,v 1.3 2000/08/17 19:53:57 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1994 Network Computing Devices, Inc.
  *
@@ -20,14 +27,10 @@
  * WHETHER IN AN ACTION IN CONTRACT, TORT OR NEGLIGENCE, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
+ * $NCDId$
  */
-
-#ifndef _LBX_ASSERT_H_
-#define _LBX_ASSERT_H_
-
 #ifdef DEBUG
 #include	<stdio.h>
-#include	<stdlib.h>
 #ifdef SABER
 #define assert(ex)	{if (!(ex)){(void)fprintf(stderr,"Assertion \"ex\" failed: file \"%s\", line %d\n", __FILE__, __LINE__);saber_stop();}}
 #else
@@ -35,6 +38,4 @@
 #endif
 #else
 #define assert(ex)
-#endif
-
 #endif

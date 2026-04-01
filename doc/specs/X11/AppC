@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -48,14 +48,12 @@
 \s+1\fBExtensions\fP\s-1
 .sp 2
 .na
-.EF ''\fB % \fP''
-.OF ''\fB % \fP''
 .LP
 .XS
 Appendix C: Extensions
 .XE
 Because X can evolve by extensions to the core protocol, 
-it is important that extensions not be perceived as second class citizens.
+it is important that extensions not be perceived as second-class citizens.
 At some point, 
 your favorite extensions may be adopted as additional parts of the 
 X Standard.
@@ -71,7 +69,7 @@ run at essentially the same performance as the core protocol requests.
 .NT
 It is expected that a given extension to X consists of multiple
 requests.
-Defining ten new features as ten separate extensions is a bad practice.
+Defining 10 new features as 10 separate extensions is a bad practice.
 Rather, they should be packaged into a single extension
 and should use minor opcodes to distinguish the requests.
 .NE
@@ -109,8 +107,8 @@ Specifies the extension name.
 Returns the major opcode.
 .IP \fIfirst_event_return\fP 1i
 Returns the first event code, if any.
-.IP \fI\fP 1i
-Specifies the extension list.
+.IP \fIfirst_error_return\fP 1i
+Returns the first error code, if any.
 .LP
 .eM
 The
@@ -143,7 +141,7 @@ it returns zero.
 The format of additional data in the errors is specific to the extension.
 .LP
 If the extension name is not in the Host Portable Character Encoding
-the result is implementation dependent.
+the result is implementation-dependent.
 Uppercase and lowercase matter;
 the strings ``thing'', ``Thing'', and ``thinG'' 
 are all considered different names.
@@ -167,7 +165,7 @@ The
 function returns a list of all extensions supported by the server.
 If the data returned by the server is in the Latin Portable Character Encoding,
 then the returned strings are in the Host Portable Character Encoding.
-Otherwise, the result is implementation dependent.
+Otherwise, the result is implementation-dependent.
 .IN "XFreeExtensionList" "" "@DEF@"
 .sM
 .FD 0
@@ -253,7 +251,7 @@ If the extension does not exist,
 returns NULL.
 .LP
 If the extension name is not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 Uppercase and lowercase matter;
 the strings ``thing'', ``Thing'', and ``thinG'' 
 are all considered different names.
@@ -1016,7 +1014,7 @@ void (*\fIproc\fP\^)(\^\fIdisplay\fP, \fIcodes\fP, \fIdata\fP, \fIlen\fP\^)
 .eM
 The data argument specifies a portion of the outgoing data buffer,
 and its length in bytes is specified by the len argument.
-Your procedure must not alter the contents of the data, and must not
+Your procedure must not alter the contents of the data and must not
 do additional protocol requests to the same display.
 .SH
 Hooks onto Xlib Data Structures
@@ -1379,8 +1377,8 @@ instead of a major opcode.
 Request Format
 .LP
 Every request contains an 8-bit major opcode and a 16-bit length field
-expressed in units of four bytes.  
-Every request consists of four bytes of header
+expressed in units of 4 bytes.  
+Every request consists of 4 bytes of header
 (containing the major opcode, the length field, and a data byte) followed by
 zero or more additional bytes of data. 
 The length field defines the total length of the request, including the header.
@@ -1476,7 +1474,7 @@ X_MapWindow or X_CreatePixmap).
 The length field tells how long the request is
 in units of 4-byte longwords. 
 This length includes both the request structure itself and any
-variable length data, such as strings or lists, that follow the
+variable-length data, such as strings or lists, that follow the
 request structure.  
 Request structures come in different sizes, 
 but all requests are padded to be multiples of four bytes long.
@@ -1518,8 +1516,8 @@ The length field is the total number of bytes in the request minus 32,
 divided by 4.  
 This length will be nonzero only if:
 .IP \(bu 5
-The reply structure is followed by variable length
-data such as a list or string.
+The reply structure is followed by variable-length data,
+such as a list or string.
 .IP \(bu 5
 The reply structure is longer than 32 bytes.
 .LP
@@ -1676,7 +1674,7 @@ rid = req->rid = XAllocID();
 \^...
 return (rid);
 .De
-Finally, some stub procedures transmit a fixed amount of variable length
+Finally, some stub procedures transmit a fixed amount of variable-length
 data after the request.  
 Typically, these procedures (such as
 .PN XMoveWindow 
@@ -1696,7 +1694,7 @@ This number should always be a multiple of four.
 .SH
 Variable Length Arguments
 .LP
-Some protocol requests take additional variable length data that
+Some protocol requests take additional variable-length data that
 follow the 
 .PN xDoSomethingReq 
 structure.    
@@ -1705,7 +1703,7 @@ Some requests require a sequence of 8-bit bytes,
 others a sequence of 16-bit or 32-bit entities, 
 and still others a sequence of structures.
 .LP
-It is necessary to add the length of any variable length data to the
+It is necessary to add the length of any variable-length data to the
 length field of the request structure.  
 That length field is in units of 32-bit longwords.  
 If the data is a string or other sequence of 8-bit bytes, 
@@ -1715,7 +1713,7 @@ then you must round the length up and shift it before adding:
 .R
 req->length += (nbytes+3)>>2;
 .De
-To transmit variable length data, use the 
+To transmit variable-length data, use the 
 .PN Data 
 macros.
 If the data fits into the output buffer, 
@@ -1771,7 +1769,7 @@ If the protocol request has a reply,
 then call 
 .PN _XReply 
 after you have finished dealing with 
-all the fixed and variable length arguments.  
+all the fixed-length and variable-length arguments.  
 .PN _XReply 
 flushes the output buffer and waits for an 
 .PN xReply 
@@ -1843,10 +1841,10 @@ which have longer replies.
 The last argument should be 
 .PN False 
 if the reply structure is followed
-by additional variable length data (such as a list or string).  
+by additional variable-length data (such as a list or string).  
 It should be 
 .PN True 
-if there is not any variable length data.
+if there is not any variable-length data.
 .NT
 This last argument is provided for upward-compatibility reasons
 to allow a client to communicate properly with a hypothetical later
@@ -1865,7 +1863,7 @@ if it received a reply successfully or
 .PN False 
 if it received any sort of error. 
 .LP
-For a request with a reply that is not followed by variable length
+For a request with a reply that is not followed by variable-length
 data, you write something like:
 .LP
 .Ds 
@@ -1880,14 +1878,14 @@ SyncHandle();
 return (rep.ret4);
 }
 .De
-If there is variable length data after the reply, 
+If there is variable-length data after the reply, 
 change the 
 .PN True 
 to 
 .PN False , 
 and use the appropriate
 .PN _XRead 
-function to read the variable length data.
+function to read the variable-length data.
 .LP
 .sM
 .FD 0

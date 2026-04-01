@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  5.1
  *
@@ -93,7 +100,7 @@ GLboolean *_tnl_import_current_edgeflag( GLcontext *ctx,
    return ef;
 }
 
-static GLint get_size( const GLfloat *f )
+static INLINE GLint get_size( const GLfloat *f )
 {
    if (f[3] != 1.0) return 4;
    if (f[2] != 0.0) return 3;

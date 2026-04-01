@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * dpsXclient.c -- Implementation of the Display PostScript Client Library.
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/dpsXclient.c,v 1.3 2000/09/26 15:56:59 tsi Exp $ */
+/* $XFree86: xc/lib/dps/dpsXclient.c,v 1.4 2004/10/23 15:29:26 dawes Exp $ */
 
 #include <stdlib.h>
 #include <unistd.h>	/* sleep() */

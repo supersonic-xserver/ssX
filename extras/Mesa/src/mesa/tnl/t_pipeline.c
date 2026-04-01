@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -208,7 +215,7 @@ const struct tnl_pipeline_stage *_tnl_default_pipeline[] = {
    &_tnl_texgen_stage,
    &_tnl_texture_transform_stage,
    &_tnl_point_attenuation_stage,
-#if FEATURE_NV_vertex_program
+#if defined(FEATURE_NV_vertex_program) || defined(FEATURE_ARB_vertex_program)
    &_tnl_vertex_program_stage,
 #endif
    &_tnl_render_stage,

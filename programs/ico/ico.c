@@ -1,3 +1,11 @@
+/* $XConsortium: ico.c,v 1.47 94/04/17 20:45:15 gildea Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -45,7 +53,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/ico/ico.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/ico/ico.c,v 1.11 2004/04/03 22:38:53 tsi Exp $ */
 
 /******************************************************************************
  * Description
@@ -830,7 +838,7 @@ do_ico_window(void *ptr)
 #endif
 
 #ifdef DEBUG
-	printf("thread %lx starting\n", (unsigned long)xthread_self());
+	printf("thread %x starting\n", xthread_self());
 #endif
 	closure->cmap = XDefaultColormap(dpy,DefaultScreen(dpy));
 	if (!closure->cmap) {
@@ -906,7 +914,7 @@ do_ico_window(void *ptr)
 					&wm_delete_window, 1);
 		XMapWindow(dpy, closure->draw_window);
 #ifdef DEBUG
-		printf("thread %lx waiting for Expose\n", (unsigned long)xthread_self());
+		printf("thread %x waiting for Expose\n", xthread_self());
 #endif
 		for (;;) {
 		    XNextEvent(dpy, &xev);
@@ -914,7 +922,7 @@ do_ico_window(void *ptr)
 			break;
 		}
 #ifdef DEBUG
-		printf("thread %lx got Expose\n", (unsigned long)xthread_self());
+		printf("thread %x got Expose\n", xthread_self());
 #endif
 		if (XGetWindowAttributes(dpy,closure->draw_window,&xwa)==0) {
 			icoFatal("cannot get window attributes (size)", NULL);
@@ -1033,7 +1041,7 @@ do_ico_window(void *ptr)
 		    switch (xev.type) {
 		      case ConfigureNotify:
 #ifdef DEBUG
-			printf("thread %lx configure\n", (unsigned long)xthread_self());
+			printf("thread %x configure\n", xthread_self());
 #endif
 			if (xev.xconfigure.width != closure->winW ||
 			    xev.xconfigure.height != closure->winH)
@@ -1043,7 +1051,7 @@ do_ico_window(void *ptr)
 			break;
 		      case KeyPress:
 #ifdef DEBUG
-			printf("thread %lx keypress\n", (unsigned long)xthread_self());
+			printf("thread %x keypress\n", xthread_self());
 #endif
 			XLookupString(&xev.xkey, buf, 10, &ksym, NULL);
 			do_it = ((ksym != XK_Q) && ksym != XK_q);
@@ -1051,18 +1059,18 @@ do_ico_window(void *ptr)
 		      case MapNotify:
 			blocking = False;
 #ifdef DEBUG
-			printf("thread %lx unblocking\n", (unsigned long)xthread_self());
+			printf("thread %x unblocking\n", xthread_self());
 #endif
 			break;
 		      case UnmapNotify:
 			blocking = True;
 #ifdef DEBUG
-			printf("thread %lx blocking\n", (unsigned long)xthread_self());
+			printf("thread %x blocking\n", xthread_self());
 #endif
 			break;
 		      case ClientMessage:
 #ifdef DEBUG
-			printf("thread %lx message\n", (unsigned long)xthread_self());
+			printf("thread %x message\n", xthread_self());
 #endif
 			if (xev.xclient.data.l[0] == wm_delete_window)
 			    do_it = False;

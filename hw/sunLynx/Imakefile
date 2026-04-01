@@ -1,0 +1,90 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/sunLynx/Imakefile,v 3.6 2006/02/19 15:51:21 tsi Exp $
+
+#include <Server.tmpl>
+
+#define IHaveSubdirs
+
+#if BuildXKB
+XKBDIRS = xkb
+#endif
+
+#if BuildRender
+RENDERDIRS = render
+#endif
+
+#if BuildRandR
+RANDRDIRS = randr
+#endif
+
+#if BuildRECORD
+RECORDDIRS = record
+#endif
+
+#if BuildDBE
+DBEDIRS = dbe
+#endif
+
+#if BuildXTrap
+XTRAPDIRS = XTrap
+#endif
+
+SUBDIRS = dix os Xext $(XKBDIRS) $(RENDERDIRS) $(RANDRDIRS) $(RECORDDIRS) \
+	  $(DBEDIRS) $(XTRAPDIRS)
+
+SRCS1 = sunLyInit.c sunInitExt.c sunLyIo.c sunLyUtil.c sunLyMouse.c sunLyCfb.c \
+       sunLyFbs.c sunLyKbd.c sunCursor.c sunMfb.c sunGX.c sunKeyMap.c
+
+OBJS1 = sunLyIo.o sunLyUtil.o sunLyMouse.o sunLyCfb.o sunLyFbs.o \
+      sunLyKbd.o sunCursor.o sunMfb.o sunGX.o sunKeyMap.o
+
+SRCS2 = sunLyInit.c sunInitExt.c
+OBJS2 = sunLyInit.o sunInitExt.o
+
+#if XsunLynxMonoServer
+SRCS3 = sunInitMono.c sunInExMono.c
+OBJS3 = sunInitMono.o sunInExMono.o
+#endif
+
+SRCS = $(SRCS1) $(SRCS2) $(SRCS3)
+OBJS = $(OBJS1)
+
+#ifdef XsunLynxExcludedExtensions
+LYNX_DEFINES = XsunLynxExcludedExtensions
+#endif
+
+   INCLUDES = -I$(SERVERSRC)/mi -I$(SERVERSRC)/mfb \
+	      -I$(SERVERSRC)/cfb -I$(SERVERSRC)/cfb32 \
+	      -I$(SERVERSRC)/dbe -I$(SERVERSRC)/record \
+	      -I$(SERVERSRC)/include -I$(SERVERSRC)/os \
+	      -I$(SERVERSRC)/hw/sun -I$(SERVERSRC)
+   LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln \
+	      $(SERVERSRC)/mfb/llib-lmfb.ln $(SERVERSRC)/mi/llib-lmi.ln \
+	      $(SERVERSRC)/cfb/llib-lcfb.ln
+
+    DEFINES = $(EXT_DEFINES) $(LYNX_DEFINES)
+
+Makefiles::
+	RemoveFiles(sunGX.h circleset.h)
+
+NormalLibraryObjectRule()
+
+all:: $(OBJS2) $(OBJS3)
+
+NormalLibraryTarget(sun,$(OBJS))
+NormalLintTarget($(SRCS))
+
+sunInitExt.o: $(ICONFIGFILES)
+ObjectFromSpecialSource(sunInitExt,$(SERVERSRC)/mi/miinitext,NullParameter)
+sunInExMono.o: $(ICONFIGFILES)
+ObjectFromSpecialSource(sunInExMono,$(SERVERSRC)/mi/miinitext,-UGLXEXT -URENDER)
+ObjectFromSpecialSource(sunInitMono,sunLyInit,-DSUNMAXDEPTH=1)
+
+ObjectFromSpecialSource(sunKeyMap,$(SERVERSRC)/hw/sun/sunKeyMap,/**/)
+ObjectFromSpecialSource(sunMfb,$(SERVERSRC)/hw/sun/sunMfb,/**/)
+ObjectFromSpecialSource(sunGX,$(SERVERSRC)/hw/sun/sunGX,/**/)
+ObjectFromSpecialSource(sunCursor,$(SERVERSRC)/hw/sun/sunCursor,/**/)
+
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

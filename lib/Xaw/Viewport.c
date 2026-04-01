@@ -1,3 +1,19 @@
+/* $Xorg: Viewport.c,v 1.4 2001/02/09 02:03:47 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Viewport.c,v 1.14 2006/01/25 04:32:09 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Viewport.c,v 1.11 2001/12/14 19:54:45 dawes Exp $ */
 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
@@ -328,7 +344,7 @@ XawViewportInitialize(Widget request, Widget cnew,
     clip_width = XtWidth(w);
     clip_height = XtHeight(w);
 
-    if (h_bar != NULL && XtWidth(w) > XtWidth(h_bar) + XtBorderWidth(h_bar))
+    if (h_bar != NULL &&  XtWidth(w) > XtWidth(h_bar) + XtBorderWidth(h_bar))
 	clip_width -= XtWidth(h_bar) + XtBorderWidth(h_bar);
 
     if (v_bar != NULL && XtHeight(w) > XtHeight(v_bar) + XtBorderWidth(v_bar))
@@ -571,7 +587,6 @@ ComputeLayout(Widget widget, Bool query, Bool destroy_scrollbars)
 	    preferred.width = XtWidth(child);
 	    preferred.height = XtHeight(child);
 	}
-
 	do { /* while intended != prev  */
 	    if (query) {
 		(void)XtQueryGeometry(child, &intended, &preferred);
@@ -593,13 +608,13 @@ ComputeLayout(Widget widget, Bool query, Bool destroy_scrollbars)
 		preferred.width > clip_width) {				\
 		if (!needshoriz) {					\
 		    Widget bar;						\
+									\
 		    needshoriz = True;					\
 		    if ((bar = w->viewport.horiz_bar) == NULL)		\
 			bar = CreateScrollbar(w, True);			\
 		    clip_height -= XtHeight(bar) + XtBorderWidth(bar);	\
 		    if (clip_height < 1)				\
 			clip_height = 1;				\
-		    intended.height = clip_height;			\
 		}							\
 		intended.width = preferred.width;			\
 	    }
@@ -614,12 +629,10 @@ ComputeLayout(Widget widget, Bool query, Bool destroy_scrollbars)
 		    clip_width -= XtWidth(bar) + XtBorderWidth(bar);
 		    if (clip_width < 1)
 			clip_width = 1;
-		    intended.width = clip_width;
 		    CheckHoriz();
 		}
 		intended.height = preferred.height;
 	    }
-
 	    if (!w->viewport.allowhoriz || preferred.width < clip_width) {
 		intended.width = clip_width;
 		intended.request_mode |= CWWidth;
@@ -681,22 +694,21 @@ ComputeLayout(Widget widget, Bool query, Bool destroy_scrollbars)
 	    }
 	}
 	else {
-	    int bw = XtBorderWidth(bar);
+	    int bw = bar->core.border_width;
 
 	    XtResizeWidget(bar, XtWidth(bar), clip_height, bw);
 	    XtMoveWidget(bar,
-			 w->viewport.useright
-			 ? XtWidth(w) - XtWidth(bar) - bw : -bw,
-			 needshoriz && !w->viewport.usebottom
-			 ? XtHeight(w->viewport.horiz_bar) : -bw);
-	    XtSetMappedWhenManaged(bar, True);
+			w->viewport.useright
+			? XtWidth(w) - XtWidth(bar) - bw : -bw,
+			needshoriz && !w->viewport.usebottom
+			? XtHeight(w->viewport.horiz_bar) : -bw);
+	   XtSetMappedWhenManaged(bar, True);
 	}
     }
 
     if (child != NULL) {
 	XtResizeWidget(child, intended.width, intended.height, 0);
-	MoveChild(w, needshoriz ? XtX(child) : 0,
-		  needsvert ? XtY(child) : 0);
+	MoveChild(w, needshoriz ? XtX(child) : 0,	needsvert ? XtY(child) : 0);
     }
 
     SendReport (w, XawPRAll);
@@ -966,7 +978,7 @@ XawViewportGeometryManager(Widget child, XtWidgetGeometry *request,
 		    allowed.width = XtWidth(w);
 		    allowed.request_mode |= CWWidth;
 		}
-		if (allowed.width > XtWidth(bar) + XtBorderWidth(bar))
+		if (allowed.width  >  XtWidth(bar) + XtBorderWidth(bar))
 		    allowed.width -= XtWidth(bar) + XtBorderWidth(bar);
 		else
 		    allowed.width = 1;
@@ -1098,28 +1110,4 @@ XawViewportSetCoordinates(Widget gw,
 	y = XtY(child);
 
     MoveChild (w, -x, -y);
-}
-
-void
-XawViewportScrollHoriz(Widget gw, float percent)
-{
-    ViewportWidget w = (ViewportWidget) gw;
-    Widget child = w->viewport.child;
-
-    if (child == NULL)
-	return;
-
-    MoveChild(w, XtX(child) + percent * XtWidth(child), XtY(child));
-}
-
-void
-XawViewportScrollVert(Widget gw, float percent)
-{
-    ViewportWidget w = (ViewportWidget) gw;
-    Widget child = w->viewport.child;
-
-    if (child == NULL)
-	return;
-
-    MoveChild(w, XtX(child), XtY(child) + percent * XtHeight(child));
 }

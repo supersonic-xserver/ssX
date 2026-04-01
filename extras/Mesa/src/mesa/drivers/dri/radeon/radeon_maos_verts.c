@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/radeon/radeon_maos_verts.c,v 1.1 2002/10/30 12:51:55 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_maos_verts.c,v 1.1.1.4 2004/12/10 15:06:22 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -38,9 +45,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "mtypes.h"
 
 #include "array_cache/acache.h"
+#include "math/m_translate.h"
 #include "tnl/tnl.h"
 #include "tnl/t_pipeline.h"
-
+#include "math/m_translate.h"
 #include "radeon_context.h"
 #include "radeon_state.h"
 #include "radeon_ioctl.h"

@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $Xorg: mkshadow.c,v 1.3 2000/08/17 19:41:53 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* mkshadow.c - make a "shadow copy" of a directory tree with symlinks.
    Copyright 1990, 1993 Free Software Foundation, Inc.
 

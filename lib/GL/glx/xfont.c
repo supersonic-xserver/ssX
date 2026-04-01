@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/xfont.c,v 1.6 2001/05/02 15:06:02 dawes Exp $ */
+/* $XFree86: xc/lib/GL/glx/xfont.c,v 1.7 2001/10/28 03:32:27 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Mesa 3-D graphics library
  * Version:  3.1

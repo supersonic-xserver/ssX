@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/init301.c,v 1.81tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/init301.c,v 1.80 2005/02/19 01:03:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Mode initializing code (CRT2 section)
  * for SiS 300/305/540/630/730 and
@@ -6737,7 +6745,7 @@ SiS_SetGroup2(SiS_Private *SiS_Pr, USHORT ModeNo, USHORT ModeIdIndex,USHORT Refr
   const       UCHAR *PhasePoint;
   const       UCHAR *TimingPoint;
 #ifdef SIS315H
-  USHORT      resindex = 0, CRT2Index = 0;
+  USHORT      resindex, CRT2Index;
   const       SiS_Part2PortTblStruct *CRT2Part2Ptr = NULL;
 
   if(SiS_Pr->SiS_VBInfo & SetCRT2ToLCDA) return;
@@ -7793,7 +7801,7 @@ SiS_ModCRT1CRTC(SiS_Private *SiS_Pr, USHORT ModeNo, USHORT ModeIdIndex,
                 USHORT RefreshRateTableIndex, PSIS_HW_INFO HwInfo)
 {
   USHORT tempah,i,modeflag,j;
-  USHORT ResIndex = 0, DisplayType = 0;
+  USHORT ResIndex,DisplayType;
   const SiS_LVDSCRT1DataStruct *LVDSCRT1Ptr=NULL;
 
   if(ModeNo <= 0x13) modeflag = SiS_Pr->SiS_SModeIDTable[ModeIdIndex].St_ModeFlag;

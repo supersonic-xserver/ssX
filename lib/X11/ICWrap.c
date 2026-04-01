@@ -1,4 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: ICWrap.c,v 1.4 2001/02/09 02:03:33 xorgcvs Exp $
+ */
+
+/*
  * Copyright 1990, 1991 by OMRON Corporation, NTT Software Corporation,
  *                      and Nippon Telegraph and Telephone Corporation
  * Copyright 1991 by the Open Software Foundation

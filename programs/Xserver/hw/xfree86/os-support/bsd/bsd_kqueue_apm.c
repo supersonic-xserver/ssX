@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kqueue_apm.c,v 1.7 2005/10/14 15:17:00 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_kqueue_apm.c,v 1.6 2004/02/13 23:58:46 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 2001 The XFree86 Project, Inc.
  * All rights reserved.
@@ -45,8 +52,9 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/* $OpenBSD: bsd_kqueue_apm.c,v 1.5 2002/07/30 23:07:42 matthieu Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"

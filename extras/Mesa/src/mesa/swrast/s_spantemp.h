@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -47,6 +54,7 @@
  *   FETCH_CI_PIXEL(CI, P)  to fetch a pixel index from pixel P
  */
 
+#include "macros.h"
 
 #ifdef STORE_RGBA_PIXEL
 

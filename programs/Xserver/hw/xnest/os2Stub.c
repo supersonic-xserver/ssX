@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (c) Copyright 1996 by Sebastien Marineau
  *			<marineau@genie.uottawa.ca>
  *
@@ -26,14 +33,14 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xnest/os2Stub.c,v 3.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xnest/os2Stub.c,v 3.2 2003/11/06 03:25:46 dawes Exp $ */
 
 /* This below implements select() for calls in xnest. It has been         */
 /* somewhat optimized for improved performance, but assumes a few */
 /* things so it cannot be used as a general select.                             */
 
 #define I_NEED_OS2_H
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include <stdio.h>
 #include <sys/select.h>
 #include <sys/errno.h>

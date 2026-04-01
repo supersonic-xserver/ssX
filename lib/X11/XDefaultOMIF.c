@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1985, 1986, 1987, 1991, 1998  The Open Group
 
 Portions Copyright 2000 Sun Microsystems, Inc. All Rights Reserved.
@@ -41,7 +48,7 @@ interest in or to any trademark, service mark, logo or trade name of
 Sun Microsystems, Inc. or its licensors is granted.
 
 */
-/* $XFree86: xc/lib/X11/XDefaultOMIF.c,v 1.5 2003/04/17 02:39:56 dawes Exp $ */
+/* $XFree86: xc/lib/X11/XDefaultOMIF.c,v 1.6 2003/11/17 22:20:09 dawes Exp $ */
 
 #include "Xlibint.h"
 #include "Xlcint.h"

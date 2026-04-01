@@ -1,3 +1,19 @@
+/* $Xorg: TMparse.c,v 1.6 2001/02/09 02:03:58 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts,
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -30,7 +46,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/TMparse.c,v 3.13 2005/11/13 21:25:00 dickey Exp $ */
+/* $XFree86: xc/lib/Xt/TMparse.c,v 3.12 2004/05/05 00:07:03 dickey Exp $ */
 
 /*
 
@@ -1525,7 +1541,6 @@ static String ParseEventSeq(
     EventSeqPtr *nextEvent = eventSeqP;
 
     *eventSeqP = NULL;
-    *actionsP = NULL;
 
     while ( *str != '\0' && !IsNewline(*str)) {
 	static Event	nullEvent =
@@ -1611,7 +1626,6 @@ static String ParseActionProc(
     if (str-start >= 199) {
 	Syntax("Action procedure name is longer than 199 chars","");
 	*error = TRUE;
-	*actionProcNameP = 0;
 	return str;
     }
     (void) memmove(procName, start, str-start);

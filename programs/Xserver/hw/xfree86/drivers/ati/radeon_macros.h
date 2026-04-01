@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_macros.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/radeon_macros.h,v 1.4 2004/03/29 15:15:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000 ATI Technologies Inc., Markham, Ontario, and
  *                VA Linux Systems Inc., Fremont, California.
@@ -55,14 +62,6 @@
 #endif
 #include "compiler.h"
 
-#define RADEON_BIOS8(v)  (info->VBIOS[v])
-#define RADEON_BIOS16(v) (info->VBIOS[v] | \
-                          (info->VBIOS[(v) + 1] << 8))
-#define RADEON_BIOS32(v) (info->VBIOS[v] | \
-                          (info->VBIOS[(v) + 1] << 8) | \
-                          (info->VBIOS[(v) + 2] << 16) | \
-                          (info->VBIOS[(v) + 3] << 24))
-
 				/* Memory mapped register access macros */
 #define INREG8(addr)        MMIO_IN8(RADEONMMIO, addr)
 #define INREG16(addr)       MMIO_IN16(RADEONMMIO, addr)
@@ -78,20 +77,25 @@
 do {									\
     CARD32 tmp = INREG(addr);						\
     tmp &= (mask);							\
-    tmp |= ((val) & ~(mask));						\
+    tmp |= (val);							\
     OUTREG(addr, tmp);							\
 } while (0)
 
 #define INPLL(pScrn, addr) RADEONINPLL(pScrn, addr)
 
-#define OUTPLL(pScrn, addr, val) RADEONOUTPLL(pScrn, addr, val)
+#define OUTPLL(addr, val)						\
+do {									\
+    OUTREG8(RADEON_CLOCK_CNTL_INDEX, (((addr) & 0x3f) |			\
+				      RADEON_PLL_WR_EN));		\
+    OUTREG(RADEON_CLOCK_CNTL_DATA, val);				\
+} while (0)
 
 #define OUTPLLP(pScrn, addr, val, mask)					\
 do {									\
     CARD32 tmp_ = INPLL(pScrn, addr);					\
     tmp_ &= (mask);							\
-    tmp_ |= ((val) & ~(mask));						\
-    OUTPLL(pScrn, addr, tmp_);						\
+    tmp_ |= (val);							\
+    OUTPLL(addr, tmp_);							\
 } while (0)
 
 #define OUTPAL_START(idx)						\

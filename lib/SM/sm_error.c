@@ -1,3 +1,19 @@
+/* $Xorg: sm_error.c,v 1.4 2001/02/09 02:03:30 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -34,14 +50,24 @@ in this Software without prior written authorization from The Open Group.
 #include <stdio.h>
 
 
+
 /*
  * Default Smc error handler.
  */
 
 void
-_SmcDefaultErrorHandler(SmcConn smcConn, Bool swap, int offendingMinorOpcode,
-			unsigned long offendingSequence, int errorClass,
-			int severity, SmPointer values)
+_SmcDefaultErrorHandler (smcConn, swap,
+    offendingMinorOpcode, offendingSequence,
+    errorClass, severity, values)
+
+SmcConn		smcConn;
+Bool		swap;
+int 		offendingMinorOpcode;
+unsigned long 	offendingSequence;
+int 		errorClass;
+int 		severity;
+SmPointer 	values;
+
 {
     char *pData = (char *) values;
     char *str;
@@ -156,14 +182,24 @@ _SmcDefaultErrorHandler(SmcConn smcConn, Bool swap, int offendingMinorOpcode,
 }
 
 
+
 /*
  * Default Sms error handler.
  */
 
 void
-_SmsDefaultErrorHandler(SmsConn smsConn, Bool swap, int offendingMinorOpcode,
-			unsigned long offendingSequence, int errorClass,
-			int severity, SmPointer values)
+_SmsDefaultErrorHandler (smsConn, swap,
+    offendingMinorOpcode, offendingSequence,
+    errorClass, severity, values)
+
+SmsConn		smsConn;
+Bool		swap;
+int 		offendingMinorOpcode;
+unsigned long 	offendingSequence;
+int 		errorClass;
+int 		severity;
+SmPointer 	values;
+
 {
     char *pData = (char *) values;
     char *str;
@@ -268,6 +304,7 @@ _SmsDefaultErrorHandler(SmsConn smsConn, Bool swap, int offendingMinorOpcode,
 }
 
 
+
 /* 
  * This procedure sets the Smc error handler to be the specified
  * routine.  If NULL is passed in the default error handler is restored.
@@ -275,7 +312,10 @@ _SmsDefaultErrorHandler(SmsConn smsConn, Bool swap, int offendingMinorOpcode,
  */
  
 SmcErrorHandler
-SmcSetErrorHandler(SmcErrorHandler handler)
+SmcSetErrorHandler (handler)
+
+SmcErrorHandler handler;
+
 {
     SmcErrorHandler oldHandler = _SmcErrorHandler;
 
@@ -288,6 +328,7 @@ SmcSetErrorHandler(SmcErrorHandler handler)
 }
 
 
+
 /* 
  * This procedure sets the Sms error handler to be the specified
  * routine.  If NULL is passed in the default error handler is restored.
@@ -295,7 +336,10 @@ SmcSetErrorHandler(SmcErrorHandler handler)
  */
  
 SmsErrorHandler
-SmsSetErrorHandler(SmsErrorHandler handler)
+SmsSetErrorHandler (handler)
+
+SmsErrorHandler handler;
+
 {
     SmsErrorHandler oldHandler = _SmsErrorHandler;
 

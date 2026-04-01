@@ -1,4 +1,4 @@
-# $XFree86$
+# $FreeBSD$
 
 .PATH:	${.CURDIR}/..
 KMOD=	tdfx

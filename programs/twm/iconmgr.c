@@ -1,6 +1,12 @@
-/* $XFree86: xc/programs/twm/iconmgr.c,v 1.7tsi Exp $ */
 /*
- *
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * 
 Copyright 1989,1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,14 +29,18 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  * */
+/* $XFree86: xc/programs/twm/iconmgr.c,v 1.6 2001/12/14 20:01:08 dawes Exp $ */
 
 /***********************************************************************
+ *
+ * $Xorg: iconmgr.c,v 1.4 2001/02/09 02:05:36 xorgcvs Exp $
  *
  * Icon Manager routines
  *
  * 09-Mar-89 Tom LaStrange		File Created
  *
  ***********************************************************************/
+/* $XFree86: xc/programs/twm/iconmgr.c,v 1.6 2001/12/14 20:01:08 dawes Exp $ */
 
 #include <stdio.h>
 #include "twm.h"
@@ -67,8 +77,7 @@ int iconifybox_height = siconify_height;
  ***********************************************************************
  */
 
-void
-CreateIconManagers(void)
+void CreateIconManagers()
 {
     IconMgr *p;
     int mask;
@@ -92,7 +101,7 @@ CreateIconManagers(void)
 			      (unsigned int *) &p->width, (unsigned int *)&p->height);
 
 	if (mask & XNegative)
-	    JunkX = Scr->MyDisplayWidth - p->width -
+	    JunkX = Scr->MyDisplayWidth - p->width - 
 	      (2 * Scr->BorderWidth) + JunkX;
 
 	if (mask & YNegative)
@@ -107,8 +116,8 @@ CreateIconManagers(void)
 	    JunkX, JunkY, p->width, p->height, 1,
 	    Scr->Black, background);
 
-	sprintf(str, "%s Icon Manager", p->name);
-	sprintf(str1, "%s Icons", p->name);
+	snprintf(str, sizeof(str), "%s Icon Manager", p->name);
+	snprintf(str1, sizeof(str1), "%s Icons", p->name);
 	if (p->icon_name)
 	    icon_name = p->icon_name;
 	else
@@ -140,8 +149,11 @@ CreateIconManagers(void)
  ***********************************************************************
  */
 
-IconMgr *
-AllocateIconManager(char *name, char *geom, char *icon_name, int columns)
+IconMgr *AllocateIconManager(name, icon_name, geom, columns)
+    char *name;
+    char *geom;
+    char *icon_name;
+    int columns;
 {
     IconMgr *p;
 
@@ -155,6 +167,9 @@ AllocateIconManager(char *name, char *geom, char *icon_name, int columns)
 	return NULL;
 
     p = (IconMgr *)malloc(sizeof(IconMgr));
+    if (!p)
+	return NULL;
+    memset(p, 0, sizeof(IconMgr));
     p->name = name;
     p->icon_name = icon_name;
     p->geometry = geom;
@@ -197,8 +212,8 @@ AllocateIconManager(char *name, char *geom, char *icon_name, int columns)
  ***********************************************************************
  */
 
-void
-MoveIconManager(int dir)
+void MoveIconManager(dir)
+    int dir;
 {
     IconMgr *ip;
     WList *tmp = NULL;
@@ -266,7 +281,7 @@ MoveIconManager(int dir)
 	    new_row = 0;
 	if (new_col >= ip->cur_columns)
 	    new_col = 0;
-
+	    
 	/* Now let's go through the list to see if there is an entry with this
 	 * new position
 	 */
@@ -282,8 +297,8 @@ MoveIconManager(int dir)
 
     if (!got_it)
     {
-	fprintf (stderr,
-		 "%s:  unable to find window (%d, %d) in icon manager\n",
+	fprintf (stderr, 
+		 "%s:  unable to find window (%d, %d) in icon manager\n", 
 		 ProgramName, new_row, new_col);
 	return;
     }
@@ -316,14 +331,14 @@ MoveIconManager(int dir)
  *
  *  Inputs:
  *	dir	- one of the following:
- *			F_NEXTICONMGR	- go to the next icon manager
+ *			F_NEXTICONMGR	- go to the next icon manager 
  *			F_PREVICONMGR	- go to the previous one
  *
  ***********************************************************************
  */
 
-void
-JumpIconManager(int dir)
+void JumpIconManager(dir)
+    register int dir;
 {
     IconMgr *ip, *tmp_ip = NULL;
     int got_it = FALSE;
@@ -391,8 +406,8 @@ JumpIconManager(int dir)
  ***********************************************************************
  */
 
-WList *
-AddIconManager(TwmWindow *tmp_win)
+WList *AddIconManager(tmp_win)
+    TwmWindow *tmp_win;
 {
     WList *tmp;
     int h;
@@ -415,6 +430,9 @@ AddIconManager(TwmWindow *tmp_win)
 	ip = &Scr->iconmgr;
 
     tmp = (WList *) malloc(sizeof(WList));
+    if (!tmp)
+	return NULL;
+    memset(tmp, 0, sizeof(WList));
     tmp->iconmgr = ip;
     tmp->next = NULL;
     tmp->active = FALSE;
@@ -443,7 +461,7 @@ AddIconManager(TwmWindow *tmp_win)
     tmp->me = ip->count;
     tmp->x = -1;
     tmp->y = -1;
-
+    
     valuemask = (CWBackPixel | CWBorderPixel | CWEventMask | CWCursor);
     attributes.background_pixel = tmp->back;
     attributes.border_pixel = tmp->back;
@@ -451,8 +469,8 @@ AddIconManager(TwmWindow *tmp_win)
 			     ButtonReleaseMask | ExposureMask |
 			     EnterWindowMask | LeaveWindowMask);
     attributes.cursor = Scr->IconMgrCursor;
-    tmp->w = XCreateWindow (dpy, ip->w, 0, 0, (unsigned int) 1,
-			    (unsigned int) h, (unsigned int) 0,
+    tmp->w = XCreateWindow (dpy, ip->w, 0, 0, (unsigned int) 1, 
+			    (unsigned int) h, (unsigned int) 0, 
 			    CopyFromParent, (unsigned int) CopyFromParent,
 			    (Visual *) CopyFromParent, valuemask, &attributes);
 
@@ -496,7 +514,7 @@ AddIconManager(TwmWindow *tmp_win)
 /***********************************************************************
  *
  *  Procedure:
- *	InsertInIconManager - put an allocated entry into an icon
+ *	InsertInIconManager - put an allocated entry into an icon 
  *		manager
  *
  *  Inputs:
@@ -506,12 +524,14 @@ AddIconManager(TwmWindow *tmp_win)
  ***********************************************************************
  */
 
-void
-InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win)
+void InsertInIconManager(ip, tmp, tmp_win)
+    IconMgr *ip;
+    WList *tmp;
+    TwmWindow *tmp_win;
 {
     WList *tmp1;
     int added;
-    int (*compar)(const char *, const char *)
+    int (*compar)(const char *, const char *) 
 	= (Scr->CaseSensitive ? strcmp : XmuCompareISOLatin1);
 
     added = FALSE;
@@ -549,8 +569,9 @@ InsertInIconManager(IconMgr *ip, WList *tmp, TwmWindow *tmp_win)
     }
 }
 
-void
-RemoveFromIconManager(IconMgr *ip, WList *tmp)
+void RemoveFromIconManager(ip, tmp)
+    IconMgr *ip;
+    WList *tmp;
 {
     if (tmp->prev == NULL)
 	ip->first = tmp->next;
@@ -574,8 +595,8 @@ RemoveFromIconManager(IconMgr *ip, WList *tmp)
  ***********************************************************************
  */
 
-void
-RemoveIconManager(TwmWindow *tmp_win)
+void RemoveIconManager(tmp_win)
+    TwmWindow *tmp_win;
 {
     IconMgr *ip;
     WList *tmp;
@@ -588,7 +609,7 @@ RemoveIconManager(TwmWindow *tmp_win)
     ip = tmp->iconmgr;
 
     RemoveFromIconManager(ip, tmp);
-
+    
     XDeleteContext(dpy, tmp->icon, TwmContext);
     XDeleteContext(dpy, tmp->icon, ScreenContext);
     XDestroyWindow(dpy, tmp->icon);
@@ -608,8 +629,8 @@ RemoveIconManager(TwmWindow *tmp_win)
 
 }
 
-void
-ActiveIconManager(WList *active)
+void ActiveIconManager(active)
+    WList *active;
 {
     active->active = TRUE;
     Active = active;
@@ -617,29 +638,31 @@ ActiveIconManager(WList *active)
     DrawIconManagerBorder(active);
 }
 
-void
-NotActiveIconManager(WList *active)
+void NotActiveIconManager(active)
+    WList *active;
 {
     active->active = FALSE;
     DrawIconManagerBorder(active);
 }
 
-void
-DrawIconManagerBorder(WList *tmp)
+void DrawIconManagerBorder(tmp)
+    WList *tmp;
 {
-    XSetForeground(dpy, Scr->NormalGC, tmp->fore);
-    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 2, 2,
-		   tmp->width-5, tmp->height-5);
+    {
+	XSetForeground(dpy, Scr->NormalGC, tmp->fore);
+	    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 2, 2,
+		tmp->width-5, tmp->height-5);
 
-    if (tmp->active && Scr->Highlight)
-	XSetForeground(dpy, Scr->NormalGC, tmp->highlight);
-    else
-	XSetForeground(dpy, Scr->NormalGC, tmp->back);
+	if (tmp->active && Scr->Highlight)
+	    XSetForeground(dpy, Scr->NormalGC, tmp->highlight);
+	else
+	    XSetForeground(dpy, Scr->NormalGC, tmp->back);
 
-    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 0, 0,
-		   tmp->width-1, tmp->height-1);
-    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 1, 1,
-		   tmp->width-3, tmp->height-3);
+	XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 0, 0,
+	    tmp->width-1, tmp->height-1);
+	XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 1, 1,
+	    tmp->width-3, tmp->height-3);
+    }
 }
 
 /***********************************************************************
@@ -653,12 +676,12 @@ DrawIconManagerBorder(WList *tmp)
  ***********************************************************************
  */
 
-void
-SortIconManager(IconMgr *ip)
+void SortIconManager(ip)
+    IconMgr *ip;
 {
     WList *tmp1, *tmp2;
     int done;
-    int (*compar)(const char *, const char *)
+    int (*compar)(const char *, const char *) 
 	= (Scr->CaseSensitive ? strcmp : XmuCompareISOLatin1);
 
     if (ip == NULL)
@@ -699,8 +722,8 @@ SortIconManager(IconMgr *ip)
  ***********************************************************************
  */
 
-void
-PackIconManager(IconMgr *ip)
+void PackIconManager(ip)
+    IconMgr *ip;
 {
     int newwidth, i, row, col, maxcol,  colinc, rowinc, wheight, wwidth;
     int new_x, new_y;
@@ -753,7 +776,7 @@ PackIconManager(IconMgr *ip)
     ip->cur_columns = maxcol;
     ip->height = row * rowinc;
     if (ip->height == 0)
-	ip->height = rowinc;
+    	ip->height = rowinc;
     newwidth = maxcol * colinc;
     if (newwidth == 0)
 	newwidth = colinc;

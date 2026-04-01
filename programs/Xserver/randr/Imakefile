@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/Xserver/randr/Imakefile,v 1.4tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/randr/Imakefile,v 1.3 2004/06/02 22:43:06 dawes Exp $
 /*
- * Copyright (c) 2002-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 2002-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -46,6 +46,11 @@ XCOMM $XFree86: xc/programs/Xserver/randr/Imakefile,v 1.4tsi Exp $
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if BuildSeparateTinyDIX && !BuildTinyDIX
+#define IHaveSubdirs
+SUBDIRS = tiny
+#endif
+
 #include <Server.tmpl>
 
        SRCS =	randr.c mirandr.c
@@ -53,14 +58,15 @@ XCOMM $XFree86: xc/programs/Xserver/randr/Imakefile,v 1.4tsi Exp $
        OBJS =	randr.o mirandr.o
 
    INCLUDES = -I$(SERVERSRC)/randr -I$(SERVERSRC)/include -I$(SERVERSRC)/mi \
-		-I$(SERVERSRC)/fb -I$(SERVERSRC)/render
+		-I$(SERVERSRC)/fb -I$(EXTINCSRC) -I$(XINCLUDESRC) \
+		-I$(FONTINCSRC) -I$(SERVERSRC)/render
    LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln
 
-#ifndef LinkDefines
-#define LinkDefines /**/
+#if BuildTinyDIX
+TINY_DEFINES = TinyDIXDefines
 #endif
 
-DEFINES = $(EXT_DEFINES) LinkDefines
+DEFINES = $(TINY_DEFINES)
 
 NormalLibraryTarget(randr,$(OBJS))
 NormalLibraryObjectRule()
@@ -68,6 +74,11 @@ LintLibraryTarget(randr,$(SRCS))
 NormalLintTarget($(SRCS))
 
 DependTarget()
+
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif
 
 #ifdef LinkDirectory
 LinkSourceFile(mirandr.c,LinkDirectory)

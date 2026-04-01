@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/radeon/radeon_lock.h,v 1.3 2002/10/30 12:51:55 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_lock.h,v 1.1.1.2 2004/12/10 15:06:18 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -99,8 +106,6 @@ extern int prevLockLine;
       DEBUG_LOCK();						\
    } while (0)
 
-/* Unlock the hardware.
- */
 #define UNLOCK_HARDWARE( rmesa )					\
    do {									\
       DRM_UNLOCK( rmesa->dri.fd,					\

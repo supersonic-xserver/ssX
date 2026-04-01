@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbpixmap.c,v 1.7tsi Exp $ */
+/* $Xorg: cfbpixmap.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,13 +52,14 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbpixmap.c,v 1.5 2001/12/14 19:59:23 dawes Exp $ */
 /* pixmap management
    written by drewry, september 1986
 
    on a monchrome device, a pixmap is a bitmap.
 */
 
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "servermd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -62,7 +70,11 @@ SOFTWARE.
 extern CfbBits endtab[];
 
 PixmapPtr
-cfbCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
+cfbCreatePixmap (pScreen, width, height, depth)
+    ScreenPtr	pScreen;
+    int		width;
+    int		height;
+    int		depth;
 {
     PixmapPtr pPixmap;
     int datasize;
@@ -99,7 +111,8 @@ cfbCreatePixmap(ScreenPtr pScreen, int width, int height, int depth)
 }
 
 Bool
-cfbDestroyPixmap(PixmapPtr pPixmap)
+cfbDestroyPixmap(pPixmap)
+    PixmapPtr pPixmap;
 {
     if(--pPixmap->refcnt)
 	return TRUE;
@@ -108,9 +121,10 @@ cfbDestroyPixmap(PixmapPtr pPixmap)
 }
 
 PixmapPtr
-cfbCopyPixmap(PixmapPtr pSrc)
+cfbCopyPixmap(pSrc)
+    register PixmapPtr	pSrc;
 {
-    PixmapPtr	pDst;
+    register PixmapPtr	pDst;
     int		size;
     ScreenPtr pScreen;
 
@@ -138,14 +152,15 @@ cfbCopyPixmap(PixmapPtr pSrc)
       left shift and or in original as many times as needed
 */
 void
-cfbPadPixmap(PixmapPtr pPixmap)
+cfbPadPixmap(pPixmap)
+    PixmapPtr pPixmap;
 {
-    int width = (pPixmap->drawable.width) * (pPixmap->drawable.bitsPerPixel);
-    int h;
-    CfbBits mask;
-    CfbBits *p;
-    CfbBits bits; /* real pattern bits */
-    int i;
+    register int width = (pPixmap->drawable.width) * (pPixmap->drawable.bitsPerPixel);
+    register int h;
+    register CfbBits mask;
+    register CfbBits *p;
+    register CfbBits bits; /* real pattern bits */
+    register int i;
     int rep;                    /* repeat count for pattern */
  
     if (width >= PGSZ)
@@ -181,8 +196,8 @@ cfbPadPixmap(PixmapPtr pPixmap)
 /*
  * cfb debugging routine -- assumes pixmap is 1 byte deep 
  */
-static void
-cfbdumppixmap(PixmapPtr pPix)
+static cfbdumppixmap(pPix)
+    PixmapPtr	pPix;
 {
     unsigned int *pw;
     char *psrc, *pdst;
@@ -222,10 +237,12 @@ cfbdumppixmap(PixmapPtr pPix)
  * left.
  */
 void
-cfbXRotatePixmap(PixmapPtr pPix, int rw)
+cfbXRotatePixmap(pPix, rw)
+    PixmapPtr	pPix;
+    register int rw;
 {
-    CfbBits	*pw, *pwFinal;
-    CfbBits	t;
+    register CfbBits	*pw, *pwFinal;
+    register CfbBits	t;
     int				rot;
 
     if (pPix == NullPixmap)
@@ -257,7 +274,7 @@ cfbXRotatePixmap(PixmapPtr pPix, int rw)
     {
         ErrorF("cfb internal error: trying to rotate odd-sized pixmap.\n");
 #ifdef notdef
-	CfbBits *pwTmp;
+	register CfbBits *pwTmp;
 	int size, tsize;
 
 	tsize = PixmapBytePad(pPix->drawable.width - rot, pPix->drawable.depth);
@@ -289,7 +306,9 @@ cfbXRotatePixmap(PixmapPtr pPix, int rw)
    works on any width.
  */
 void
-cfbYRotatePixmap(PixmapPtr pPix, int rh)
+cfbYRotatePixmap(pPix, rh)
+    register PixmapPtr	pPix;
+    int	rh;
 {
     int nbyDown;	/* bytes to move down to row 0; also offset of
 			   row rh */
@@ -327,9 +346,11 @@ cfbYRotatePixmap(PixmapPtr pPix, int rh)
 }
 
 void
-cfbCopyRotatePixmap(PixmapPtr psrcPix, PixmapPtr *ppdstPix, int xrot, int yrot)
+cfbCopyRotatePixmap(psrcPix, ppdstPix, xrot, yrot)
+    register PixmapPtr psrcPix, *ppdstPix;
+    int	xrot, yrot;
 {
-    PixmapPtr pdstPix;
+    register PixmapPtr pdstPix;
 
     if ((pdstPix = *ppdstPix) &&
 	(pdstPix->devKind == psrcPix->devKind) &&

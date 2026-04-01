@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __LG_XAA_H
 #define __LG_XAA_H
 
@@ -13,7 +20,7 @@
  * This header file draws much from the file cir_blitLG.h in version 3.3.3
  * of XFree86.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg_xaa.h,v 1.1 1998/11/22 10:37:21 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg_xaa.h,v 1.3 2000/02/08 13:13:15 eich Exp $ */
 
 /* This header file defines the necessary structures, contstants, and
    variables for using the bitBLT engine on a Laguna family graphics

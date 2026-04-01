@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/gamma/gamma_xmesa.c,v 1.14 2002/10/30 12:51:30 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/gamma/gamma_xmesa.c,v 1.1.1.2 2004/12/10 15:06:07 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001 by Alan Hourihane.
  *
@@ -127,7 +134,7 @@ gammaSwapBuffers( __DRIdrawablePrivate *dPriv )
 	int src, dst, x0, y0, x1, h;
 	int i;
 	int nRect = dPriv->numClipRects;
-	XF86DRIClipRectPtr pRect = dPriv->pClipRects;
+	drm_clip_rect_t *pRect = dPriv->pClipRects;
 	__DRIscreenPrivate *driScrnPriv = gmesa->driScreen;
    	GLINTDRIPtr gDRIPriv = (GLINTDRIPtr)driScrnPriv->pDevPriv;
 
@@ -243,19 +250,6 @@ gammaUnbindContext( __DRIcontextPrivate *driContextPriv )
    return GL_TRUE;
 }
 
-static GLboolean
-gammaOpenFullScreen(__DRIcontextPrivate *driContextPriv)
-{
-    return GL_TRUE;
-}
-
-static GLboolean
-gammaCloseFullScreen(__DRIcontextPrivate *driContextPriv)
-{
-    return GL_TRUE;
-}
-
-
 static struct __DriverAPIRec gammaAPI = {
    gammaInitDriver,
    gammaDestroyScreen,
@@ -265,9 +259,7 @@ static struct __DriverAPIRec gammaAPI = {
    gammaDestroyBuffer,
    gammaSwapBuffers,
    gammaMakeCurrent,
-   gammaUnbindContext,
-   gammaOpenFullScreen,
-   gammaCloseFullScreen
+   gammaUnbindContext
 };
 
 
@@ -277,7 +269,6 @@ static struct __DriverAPIRec gammaAPI = {
  * The __driCreateScreen name is the symbol that libGL.so fetches.
  * Return:  pointer to a __DRIscreenPrivate.
  */
-#ifndef _SOLO
 void *__driCreateScreen(Display *dpy, int scrn, __DRIscreen *psc,
                         int numConfigs, __GLXvisualConfig *config)
 {
@@ -285,12 +276,3 @@ void *__driCreateScreen(Display *dpy, int scrn, __DRIscreen *psc,
    psp = __driUtilCreateScreen(dpy, scrn, psc, numConfigs, config, &gammaAPI);
    return (void *) psp;
 }
-#else
-void *__driCreateScreen(struct DRIDriverRec *driver,
-                        struct DRIDriverContextRec *driverContext)
-{
-   __DRIscreenPrivate *psp;
-   psp = __driUtilCreateScreen(driver, driverContext, &gammaAPI);
-   return (void *) psp;
-}
-#endif

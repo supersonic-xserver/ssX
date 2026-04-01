@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbplygblt.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbplygblt.c,v 3.5 2003/11/03 05:12:00 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,12 +52,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mfbplygblt.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "mfb.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -87,6 +95,10 @@ one wouldn't.  the code below deals with this.)
 swaps in the right routine after looking at the reduced ratserop
 in the private field of the GC.  
 
+   the register allocations are provisional; in particualr startmask and
+endmask might not be the right things.  pglyph, xoff, pdst, and tmpSrc
+are fairly obvious, though.
+
    to avoid source proliferation, this file is compiled
 three times:
 	MFBPOLYGLYPHBLT		OPEQ
@@ -96,8 +108,13 @@ three times:
 */
 
 void
-MFBPOLYGLYPHBLT(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
-		unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+MFBPOLYGLYPHBLT(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int 	x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer	pglyphBase;	/* start of array of glyphs (unused in R5) */
 {
     ExtentInfoRec info;	/* used by QueryGlyphExtents() */
     BoxRec bbox;		/* string's bounding box */
@@ -112,22 +129,22 @@ MFBPOLYGLYPHBLT(DrawablePtr pDrawable, GCPtr pGC, int x, int y,
     int xchar;		/* xorigin of char (mod 32) */
 
 			/* these are used for placing the glyph */
-    int xoff;	/* x offset of left edge of glyph (mod 32) */
-    PixelType *pdst;
+    register int xoff;	/* x offset of left edge of glyph (mod 32) */
+    register PixelType *pdst;
 			/* pointer to current longword in dst */
 
     int w;		/* width of glyph in bits */
     int h;		/* height of glyph */
     int widthGlyph;	/* width of glyph, in bytes */
-    unsigned char *pglyph;
+    register unsigned char *pglyph;
 			/* pointer to current row of glyph */
 
 			/* used for putting down glyph */
-    PixelType tmpSrc;
+    register PixelType tmpSrc;
 			/* for getting bits from glyph */
-    PixelType startmask;
-    PixelType endmask;
-    int nFirst;/* bits of glyph in current longword */
+    register PixelType startmask;
+    register PixelType endmask;
+    register int nFirst;/* bits of glyph in current longword */
 
     if (!(pGC->planemask & 1))
 	return;

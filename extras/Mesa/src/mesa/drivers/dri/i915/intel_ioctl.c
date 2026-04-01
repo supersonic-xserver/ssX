@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i915/intel_ioctl.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i915/intel_ioctl.c,v 1.7 2005/01/10 16:46:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
  * 
  * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.

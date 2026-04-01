@@ -1,12 +1,13 @@
-/* $XFree86: xc/include/extensions/xf86bigfont.h,v 1.2tsi Exp $ */
 /*
- * Declarations for the BIGFONT extension.
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
  *
- * Copyright (c) 1999-2000  Bruno Haible
- * Copyright (c) 1999-2000  The XFree86 Project, Inc.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-/* THIS IS NOT AN X CONSORTIUM STANDARD */
 
 #ifndef _XF86BIGFONT_H_
 #define _XF86BIGFONT_H_
@@ -24,7 +25,7 @@
 
 _XFUNCPROTOBEGIN
 
-#include <X11/fonts/font.h>
+#include "font.h"
 
 extern void XFree86BigfontExtensionInit(void);
 extern void XF86BigfontFreeFontShm(FontPtr);

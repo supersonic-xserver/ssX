@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/di/gfx.c,v 1.7tsi Exp $ */
+/* $Xorg: gfx.c,v 1.4 2001/02/09 02:05:31 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1998  The Open Group
@@ -46,6 +53,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/lbxproxy/di/gfx.c,v 1.7 2004/04/03 22:38:53 tsi Exp $ */
 
 /*
  * graphics acceleration
@@ -58,7 +66,7 @@ in this Software without prior written authorization from The Open Group.
 #include	"util.h"
 #include	"resource.h"
 #include	"wire.h"
-#include        <X11/extensions/lbximage.h>
+#include        "lbximage.h"
 #include	"proxyopts.h"
 #include	"swap.h"
 #include        "gfx.h"

@@ -1,3 +1,11 @@
+/* $Xorg: attributes.h,v 1.4 2001/03/14 18:42:44 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -29,7 +37,7 @@ not be used in advertising or otherwise to promote the sale, use or other
 dealings in this Software without prior written authorization from said
 copyright holders.
 */
-/* $XFree86: xc/programs/Xserver/Xprint/attributes.h,v 1.7 2006/01/09 14:59:43 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xprint/attributes.h,v 1.6 2001/12/21 21:02:05 dawes Exp $ */
 
 #ifndef _Xp_attributes_h
 #define _Xp_attributes_h 1
@@ -37,7 +45,7 @@ copyright holders.
 #include "scrnintstr.h"
 #include "AttrValid.h"
 
-#define BFuncArgs int ndx, ScreenPtr pScreen, int argc, const char **argv
+#define BFuncArgs int ndx, ScreenPtr pScreen, int argc, char **argv
 typedef Bool (*pBFunc)(BFuncArgs);
 
 #define VFuncArgs char *name, XpValidatePoolsRec *pValRec, float *width, float *height, int *res

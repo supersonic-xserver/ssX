@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/alpha_video.c,v 1.9 2005/10/14 15:17:00 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/alpha_video.c,v 1.8 2005/01/26 03:17:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -24,7 +31,9 @@
  *
  */
 
-#include <X11/X.h>
+/* $XConsortium: bsd_video.c /main/10 1996/10/25 11:37:57 kaleb $ */
+
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 
@@ -412,7 +421,7 @@ xf86DisableIO()
 
 #endif /* __FreeBSD__ || __OpenBSD__ */
 
-#ifdef USE_ALPHA_PIO
+#ifdef __NetBSD__
 
 void
 xf86EnableIO()
@@ -426,7 +435,44 @@ xf86DisableIO()
 	alpha_pci_io_enable(0);
 }
 
-#endif /* USE_ALPHA_PIO */
+void
+netbsd_alpha_outb(unsigned long port, unsigned char val)
+{
+	outb(port, val);
+}
+
+void
+netbsd_alpha_outw(unsigned long port, unsigned short val)
+{
+	outw(port, val);
+}
+
+void
+netbsd_alpha_outl(unsigned long port, unsigned int val)
+{
+	outl(port, val);
+}
+
+unsigned char
+netbsd_alpha_inb(unsigned long port)
+{
+	return inb(port);
+}
+
+unsigned short
+netbsd_alpha_inw(unsigned long port)
+{
+	return inw(port);
+}
+
+unsigned int
+netbsd_alpha_inl(unsigned long port)
+{
+	return inl(port);
+}
+
+
+#endif /* __NetBSD__ */
 
 /***************************************************************************/
 /* Interrupt Handling section                                              */

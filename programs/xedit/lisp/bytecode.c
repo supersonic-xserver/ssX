@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2002 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +34,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/bytecode.c,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/bytecode.c,v 1.19 2004/03/14 00:05:05 tsi Exp $ */
 
 
 /*
@@ -375,7 +382,7 @@ Lisp_Compile(LispBuiltin *builtin)
  */
 {
     GC_ENTER();
-    LispObj * volatile result, * volatile warnings_p, * volatile failure_p;
+    LispObj *result, *warnings_p, *failure_p;
 
     LispObj *name, *definition;
 
@@ -395,10 +402,10 @@ Lisp_Compile(LispBuiltin *builtin)
 	    goto finished_compilation;
 	else if (atom->a_function) {
 	    LispCom com;
-	    volatile int failed;
-	    volatile int lex = 0, base;
+	    int failed;
+	    int lex = 0, base;
 	    LispArgList *alist;
-	    LispObj *lambda, * volatile form, * volatile arguments;
+	    LispObj *lambda, *form, *arguments;
 
 	    lambda = atom->property->fun.function;
 	    if (definition != UNSPEC || lambda->funtype != LispFunction)
@@ -1186,12 +1193,11 @@ predicate:
 
 
 LispObj *
-LispCompileForm(LispObj *f)
+LispCompileForm(LispObj *form)
 {
     GC_ENTER();
-    volatile int failed;
+    int failed;
     LispCom com;
-    LispObj * volatile form = f;
 
     if (!CONSP(form))
 	/* Incorrect call or NIL */

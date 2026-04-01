@@ -1,3 +1,19 @@
+/* $Xorg: Simple.c,v 1.4 2001/02/09 02:03:45 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -45,7 +61,7 @@ SOFTWARE.
 
 ******************************************************************/
 
-/* $XFree86: xc/lib/Xaw/Simple.c,v 1.20 2006/02/07 22:02:25 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Simple.c,v 1.17 2001/12/14 19:54:42 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/IntrinsicP.h>
@@ -157,38 +173,11 @@ static XtResource resources[] = {
     NULL
   },
   {
-    XtNencoding,
-    XtCEncoding,
-    XtRUnsignedChar,
-    sizeof(unsigned char),
-    offset(encoding),
-    XtRImmediate,
-    (XtPointer)XtTextEncoding8bit
-  },
-  {
     XtNtip,
     XtCTip,
     XtRString,
     sizeof(String),
     offset(tip),
-    XtRImmediate,
-    NULL
-  },
-  {
-    XtNtipCallback,
-    XtCTipCallback,
-    XawRTipCallback,
-    sizeof(XtCallbackList),
-    offset(tipCallback),
-    XtRImmediate,
-    NULL
-  },
-  {
-    XtNuserData,
-    XtCuserData,
-    XtRPointer,
-    sizeof(XtPointer),
-    offset(user_data),
     XtRImmediate,
     NULL
   },
@@ -316,44 +305,43 @@ static void
 XawSimpleInitialize(Widget request, Widget cnew,
 		    ArgList args, Cardinal *num_args)
 {
-    SimpleWidget sw = (SimpleWidget) cnew;
+    SimpleWidget simple = (SimpleWidget)cnew;
 
-    if (sw->simple.tip)
-	sw->simple.tip = XtNewStringEx(sw->simple.encoding, sw->simple.tip);
+    if (simple->simple.tip)
+	simple->simple.tip = XtNewString(simple->simple.tip);
 }
 
 static void
 XawSimpleDestroy(Widget w)
 {
-    SimpleWidget sw = (SimpleWidget) w;
+    SimpleWidget simple = (SimpleWidget)w;
 
-    if (sw->simple.tip)
-	XtFree((XtPointer)sw->simple.tip);
+    if (simple->simple.tip)
+	XtFree((XtPointer)simple->simple.tip);
 }
 #endif
 
 static void
 XawSimpleRealize(Widget w, Mask *valueMask, XSetWindowAttributes *attributes)
 {
-    SimpleWidget sw = (SimpleWidget) w;
 #ifndef OLDXAW
     XawPixmap *pixmap;
 #endif
     Pixmap border_pixmap = CopyFromParent;
 
-    if (!XtIsSensitive(w))
+  if (!XtIsSensitive(w))
     {
 	/* change border to gray; have to remember the old one,
 	 * so XtDestroyWidget deletes the proper one */
-	if (sw->simple.insensitive_border == None)
-	    sw->simple.insensitive_border =
+	if (((SimpleWidget)w)->simple.insensitive_border == None)
+	    ((SimpleWidget)w)->simple.insensitive_border =
 		XmuCreateStippledPixmap(XtScreen(w),
 					w->core.border_pixel, 
 					w->core.background_pixel,
 					w->core.depth);
-	border_pixmap = w->core.border_pixmap;
+        border_pixmap = w->core.border_pixmap;
 	attributes->border_pixmap =
-	    w->core.border_pixmap = sw->simple.insensitive_border;
+	  w->core.border_pixmap = ((SimpleWidget)w)->simple.insensitive_border;
 
 	*valueMask |= CWBorderPixmap;
 	*valueMask &= ~CWBorderPixel;
@@ -361,11 +349,11 @@ XawSimpleRealize(Widget w, Mask *valueMask, XSetWindowAttributes *attributes)
 
     ConvertCursor(w);
 
-    if ((attributes->cursor = sw->simple.cursor) != None)
+    if ((attributes->cursor = ((SimpleWidget)w)->simple.cursor) != None)
 	*valueMask |= CWCursor;
 
-    XtCreateWindow(w, InputOutput, (Visual *)CopyFromParent,
-		   *valueMask, attributes);
+  XtCreateWindow(w, InputOutput, (Visual *)CopyFromParent,
+		 *valueMask, attributes);
 
     if (!XtIsSensitive(w))
 	w->core.border_pixmap = border_pixmap;
@@ -378,7 +366,7 @@ XawSimpleRealize(Widget w, Mask *valueMask, XSetWindowAttributes *attributes)
 	    XawReshapeWidget(w, pixmap);
     }
 
-    if (sw->simple.tip || sw->simple.tipCallback)
+    if (((SimpleWidget)w)->simple.tip)
 	XawTipEnable(w);
 #endif
 }
@@ -396,21 +384,21 @@ XawSimpleRealize(Widget w, Mask *valueMask, XSetWindowAttributes *attributes)
 static void
 ConvertCursor(Widget w)
 {
-    SimpleWidget sw = (SimpleWidget) w;
+    SimpleWidget simple = (SimpleWidget) w;
     XrmValue from, to;
     Cursor cursor = None;
    
-    if (sw->simple.cursor_name == NULL)
+    if (simple->simple.cursor_name == NULL)
 	return;
 
-    from.addr = (XPointer)sw->simple.cursor_name;
+    from.addr = (XPointer)simple->simple.cursor_name;
     from.size = strlen((char *)from.addr) + 1;
 
     to.size = sizeof(Cursor);
     to.addr = (XPointer)&cursor;
 
     if (XtConvertAndStore(w, XtRString, &from, XtRColorCursor, &to))
-	sw->simple.cursor = cursor;
+      simple->simple.cursor = cursor;
     else
 	XtAppErrorMsg(XtWidgetToApplicationContext(w),
 		      "convertFailed","ConvertCursor","XawError",
@@ -424,17 +412,12 @@ static Boolean
 XawSimpleSetValues(Widget current, Widget request, Widget cnew,
 		   ArgList args, Cardinal *num_args)
 {
-    SimpleWidget s_old = (SimpleWidget) current;
-    SimpleWidget s_new = (SimpleWidget) cnew;
+    SimpleWidget s_old = (SimpleWidget)current;
+    SimpleWidget s_new = (SimpleWidget)cnew;
     Bool new_cursor = False;
 
     /* this disables user changes after creation */
     s_new->simple.international = s_old->simple.international;
-
-#ifndef OLDXAW
-    if (s_new->simple.international == True)
-	s_new->simple.encoding = XtTextEncodingMixed;
-#endif
 
     if (XtIsSensitive(current) != XtIsSensitive(cnew))
 	(*((SimpleWidgetClass)XtClass(cnew))->simple_class.change_sensitive)
@@ -479,15 +462,12 @@ XawSimpleSetValues(Widget current, Widget request, Widget cnew,
 	if (s_old->simple.tip)
 	    XtFree((XtPointer)s_old->simple.tip);
 	if (s_new->simple.tip)
-	    s_new->simple.tip =
-		XtNewStringEx(s_new->simple.encoding, s_new->simple.tip);
+	    s_new->simple.tip = XtNewString(s_new->simple.tip);
     }
 
-    if ((s_old->simple.tip && !s_new->simple.tip) ||
-	(s_old->simple.tipCallback && !s_new->simple.tipCallback))
+    if (s_old->simple.tip && !s_new->simple.tip)
 	XawTipDisable(cnew);
-    else if ((!s_old->simple.tip && s_new->simple.tip) ||
-	     (!s_old->simple.tipCallback && s_new->simple.tipCallback))
+    else if (!s_old->simple.tip && s_new->simple.tip)
 	XawTipEnable(cnew);
 
     if (s_old->simple.display_list != s_new->simple.display_list)
@@ -501,18 +481,16 @@ XawSimpleSetValues(Widget current, Widget request, Widget cnew,
 static void
 XawSimpleExpose(Widget w, XEvent *event, Region region)
 {
-    SimpleWidget sw = (SimpleWidget) w;
+    SimpleWidget xaw = (SimpleWidget)w;
 
-    if (sw->simple.display_list)
-	XawRunDisplayList(w, sw->simple.display_list, event, region);
+    if (xaw->simple.display_list)
+	XawRunDisplayList(w, xaw->simple.display_list, event, region);
 }
 #endif
 
 static Bool
 ChangeSensitive(Widget w)
 {
-    SimpleWidget sw = (SimpleWidget) w;
-
     if (XtIsRealized(w)) {
 	if (XtIsSensitive(w))
 	    if (w->core.border_pixmap != XtUnspecifiedPixmap)
@@ -522,14 +500,14 @@ ChangeSensitive(Widget w)
 		XSetWindowBorder(XtDisplay(w), XtWindow(w),
 				 w->core.border_pixel);
 	else {
-	    if (sw->simple.insensitive_border == None)
-		sw->simple.insensitive_border =
+	    if (((SimpleWidget)w)->simple.insensitive_border == None)
+		((SimpleWidget)w)->simple.insensitive_border =
 		    XmuCreateStippledPixmap(XtScreen(w),
 					    w->core.border_pixel, 
 					    w->core.background_pixel,
 					    w->core.depth);
 	    XSetWindowBorderPixmap(XtDisplay(w), XtWindow(w),
-				   sw->simple.insensitive_border);
+				   ((SimpleWidget)w)->simple.insensitive_border);
 	}
     }
 

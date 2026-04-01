@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/lbxproxy/include/misc.h,v 1.7tsi Exp $ */
+/* $Xorg: misc.h,v 1.4 2001/02/09 02:05:32 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1995, 1998  The Open Group
@@ -26,6 +41,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/lbxproxy/include/misc.h,v 1.7 2001/12/14 20:00:55 dawes Exp $ */
 
 #ifndef MISC_H
 #define MISC_H 1
@@ -35,13 +51,13 @@ from The Open Group.
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/Xmd.h>
-#include <X11/Xos.h>
+#include "Xos.h"
 #define ALLOCATE_LOCAL_FALLBACK(_size) Xalloc(_size)
 #define DEALLOCATE_LOCAL_FALLBACK(_ptr) Xfree(_ptr)
-#include <X11/Xalloca.h>
-#include <X11/Xfuncs.h>
-#include <X11/Xfuncproto.h>
-#include <X11/extensions/lbxstr.h>
+#include "Xalloca.h"
+#include "Xfuncs.h"
+#include "Xfuncproto.h"
+#include "lbxstr.h"
 
 #ifndef TRUE
 #define FALSE 0

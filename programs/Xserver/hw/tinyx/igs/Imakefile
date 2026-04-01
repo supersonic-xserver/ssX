@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/igs/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/igs/Imakefile,v 1.1 2004/06/02 22:43:01 dawes Exp $
 
 #include "../TinyX.tmpl"
 
@@ -6,7 +6,7 @@ SRCS = 	igs.c igscmap.c igscurs.c igsdraw.c igsreg.c igsstub.c
 
 OBJS = 	igs.o igscmap.o igscurs.o igsdraw.o igsreg.o igsstub.o
 
-INCLUDES = $(TINYXINCLUDES)
+INCLUDES = -I. $(TINYXINCLUDES)
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(igs,$(OBJS))

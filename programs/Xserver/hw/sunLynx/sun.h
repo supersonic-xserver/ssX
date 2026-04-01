@@ -1,8 +1,22 @@
-/* $XFree86: xc/programs/Xserver/hw/sunLynx/sun.h,v 3.9tsi Exp $ */
+/* $Xorg: sun.h,v 1.3 2000/08/17 19:48:36 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* This is sun.h modified for LynxOS */
 
-/*
+/*-
  * Copyright (c) 1987 by the Regents of the University of California
  *
  * Permission to use, copy, modify, and distribute this
@@ -13,15 +27,16 @@
  * software for any purpose.  It is provided "as is" without
  * express or implied warranty.
  */
+/* $XFree86: xc/programs/Xserver/hw/sunLynx/sun.h,v 3.8 2003/11/17 22:20:37 dawes Exp $ */
 
 #ifndef _SUN_H_ 
 #define _SUN_H_
 
 /* X headers */
-#include <X11/Xos.h>
+#include "Xos.h"
 #undef index /* don't mangle silly Sun structure member names */
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 
 /* general system headers */
 #ifndef NOSTDHDRS
@@ -295,7 +310,7 @@ typedef Bool (*sunFbInitProc)(
     int /* screen */,
     ScreenPtr /* pScreen */,
     int /* argc */,
-    const char** /* argv */
+    char** /* argv */
 );
 
 typedef struct {
@@ -430,7 +445,7 @@ extern void sunKbdWait(
     void
 );
 
-/*
+/*-
  * TVTOMILLI(tv)
  *	Given a struct timeval, convert its time into milliseconds...
  */

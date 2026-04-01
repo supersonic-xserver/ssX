@@ -1,4 +1,4 @@
-XCOMM $XFree86$
+XCOMM $XConsortium: Imakefile /main/31 1996/09/28 17:18:46 rws $
 
 #if HasVFork
   VFORK_DEFINES = -DHAS_VFORK

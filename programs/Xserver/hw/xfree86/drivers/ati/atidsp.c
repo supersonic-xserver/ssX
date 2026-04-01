@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atidsp.c,v 1.27tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atidsp.c,v 1.23 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1997 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1997 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -220,13 +227,25 @@ ATIDSPCalculate
         pATI->ClockDescriptor.PostDividers[pATIHW->PostDivider];
     Divider = pATIHW->FeedbackDivider * pATI->XCLKReferenceDivider;
 
+#ifndef AVOID_CPIO
+
     if (pATI->depth >= 8)
+
+#endif /* AVOID_CPIO */
+
+    {
         Divider *= pATI->bitsPerPixel / 4;
+    }
 
     /* Start by assuming a display FIFO width of 64 bits */
     vshift = (6 - 2) - pATI->XCLKPostDivider;
+
+#ifndef AVOID_CPIO
+
     if (pATIHW->crtc == ATI_CRTC_VGA)
         vshift--;               /* Nope, it's 32 bits wide */
+
+#endif /* AVOID_CPIO */
 
     if (pATI->OptionPanelDisplay && (pATI->LCDPanelID >= 0))
     {
@@ -255,6 +274,9 @@ ATIDSPCalculate
         vshift, -1) - ATIDivide(1, 1, vshift - xshift, 1);
 
     /* Next is dsp_on */
+
+#ifndef AVOID_CPIO
+
     if ((pATIHW->crtc == ATI_CRTC_VGA) /* && (dsp_precision < 3) */)
     {
         /*
@@ -264,6 +286,9 @@ ATIDSPCalculate
         dsp_on = ATIDivide(Multiplier * 5, Divider, vshift + 2, 1);
     }
     else
+
+#endif /* AVOID_CPIO */
+
     {
         dsp_on = ATIDivide(Multiplier, Divider, vshift, 1);
         tmp = ATIDivide(RASMultiplier, RASDivider, xshift, 1);
@@ -279,17 +304,8 @@ ATIDSPCalculate
 
     if (dsp_on >= ((dsp_off / (tmp + 1)) * (tmp + 1)))
     {
-        /*
-         * dsp_on represents somewhat of a minimum, so first try moving dsp_off
-         * forward.
-         */
-        dsp_off = ATIDivide(Multiplier * (pATI->DisplayFIFODepth - 1), Divider,
-            vshift, 1);
-        if (dsp_on >= ((dsp_off / (tmp + 1)) * (tmp + 1)))
-        {
-            dsp_on = dsp_off - ATIDivide(Multiplier, Divider, vshift, -1);
-            dsp_on = (dsp_on / (tmp + 1)) * (tmp + 1);
-        }
+        dsp_on = dsp_off - ATIDivide(Multiplier, Divider, vshift, -1);
+        dsp_on = (dsp_on / (tmp + 1)) * (tmp + 1);
     }
 
     /* Last but not least:  dsp_xclks */

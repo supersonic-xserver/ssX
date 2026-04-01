@@ -1,3 +1,11 @@
+/* $Xorg: utils.c,v 1.4 2001/02/09 02:05:45 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * misc os utilities
  */
@@ -45,7 +53,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/os/utils.c,v 3.23tsi Exp $ */
+/* $XFree86: xc/programs/xfs/os/utils.c,v 3.22 2004/04/03 10:50:36 herrb Exp $ */
 
 #include	<stdio.h>
 #include	<X11/Xos.h>
@@ -106,12 +114,10 @@ Bool        portFromCmdline = FALSE;
 OldListenRec *OldListen = NULL;
 int 	     OldListenCount = 0;
 
-#ifdef DEBUG
 #ifdef STDERR_FILENO
-# define WRITES(s) write(STDERR_FILENO, s, strlen(s))
+# define WRITES write(STDERR_FILENO, s, strlen(s))
 #else
-# define WRITES(s) write(fileno(stderr), s, strlen(s))
-#endif
+# define WRITES write(fileno(stderr), s, strlen(s))
 #endif
 
 static char *pidFile = XFSPIDDIR "/xfs.pid";

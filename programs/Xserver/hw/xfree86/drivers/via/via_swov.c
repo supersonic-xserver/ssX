@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_swov.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/via_swov.c,v 1.12 2004/12/15 01:26:50 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998-2003 VIA Technologies, Inc. All Rights Reserved.
  * Copyright 2001-2003 S3 Graphics, Inc. All Rights Reserved.
@@ -254,7 +261,7 @@ unsigned long VIAVidCreateSurface(ScrnInfoPtr pScrn, LPDDSURFACEDESC lpDDSurface
 	    	return retCode;
 	    dwAddr = pVia->swov.SWfbMem.base;
 	    
-	    DEBUG(ErrorF("dwAddr for SWfbMem is %lu\n", dwAddr));
+	    DEBUGX(ErrorF("dwAddr for SWfbMem is %lu\n", dwAddr));
             /* fill in the SW buffer with 0x8000 (YUY2-black color) to clear FB buffer
              */
             lpTmpAddr = pVia->FBBase + dwAddr;
@@ -317,7 +324,7 @@ if (!(pVia->swov.gdwVideoFlagSW & SW_USE_HQV))
 	    	return retCode;
             
             dwAddr = pVia->swov.HQVMem.base;
-	    DEBUG(ErrorF("dwAddr for HQV is %lu\n", dwAddr));
+	    DEBUGX(ErrorF("dwAddr for HQV is %lu\n", dwAddr));
             DBG_DD(ErrorF("HQV dwAddr = 0x%x!!!! \n",dwAddr));
 
             pVia->swov.overlayRecordV1.dwHQVAddr[0] = dwAddr;

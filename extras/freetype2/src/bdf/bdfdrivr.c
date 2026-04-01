@@ -1,4 +1,18 @@
 /*  bdfdrivr.c
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
     FreeType font driver for bdf files
 
@@ -23,7 +37,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/extras/freetype2/src/bdf/bdfdrivr.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/extras/freetype2/src/bdf/bdfdrivr.c,v 1.3 2004/04/26 16:15:54 dawes Exp $ */
 
 #include <ft2build.h>
 
@@ -319,7 +333,7 @@ THE SOFTWARE.
     FT_Error       error  = BDF_Err_Ok;
     FT_Memory      memory = FT_FACE_MEMORY( face );
 
-    bdf_font_t*    font = NULL;
+    bdf_font_t*    font;
     bdf_options_t  options;
 
     FT_UNUSED( num_params );

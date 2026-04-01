@@ -19,3 +19,4 @@ Video cards database
 XFree86(1), XF86Config(__filemansuffix__), reconfig(1)
 .SH AUTHOR
 Harm Hanemaayer.
+.\" $TOG: xf86conf.man /main/9 1997/07/19 10:53:08 kaleb $

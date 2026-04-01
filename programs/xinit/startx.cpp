@@ -1,5 +1,6 @@
 XCOMM!/bin/sh
 
+XCOMM $Xorg: startx.cpp,v 1.3 2000/08/17 19:54:29 cpqbld Exp $
 XCOMM
 XCOMM This is just a sample implementation of a slightly less primitive
 XCOMM interface than xinit.  It looks for user .xinitrc and .xserverrc
@@ -81,7 +82,7 @@ fi
 whoseargs="client"
 while [ x"$1" != x ]; do
     case "$1" in
-    XCOMM '' required to prevent cpp from treating "/*" as a C comment.
+XCOMM '' required to prevent cpp from treating "/*" as a C comment.
     /''*|\./''*)
 	if [ "$whoseargs" = "client" ]; then
 	    if [ x"$clientargs" = x ]; then
@@ -104,7 +105,7 @@ while [ x"$1" != x ]; do
 	if [ "$whoseargs" = "client" ]; then
 	    clientargs="$clientargs $1"
 	else
-	    XCOMM display must be the FIRST server argument
+XCOMM display must be the FIRST server argument
 	    if [ x"$serverargs" = x ] && @@
 		 expr "$1" : ':[0-9][0-9]*$' > /dev/null 2>&1; then
 		display="$1"
@@ -119,7 +120,7 @@ done
 
 XCOMM process client arguments
 if [ x"$client" = x ]; then
-    XCOMM if no client arguments either, use rc file instead
+XCOMM if no client arguments either, use rc file instead
     if [ x"$clientargs" = x ]; then
 	client="$defaultclientargs"
     else
@@ -129,7 +130,7 @@ fi
 
 XCOMM process server arguments
 if [ x"$server" = x ]; then
-    XCOMM if no server arguments or display either, use rc file instead
+XCOMM if no server arguments or display either, use rc file instead
     if [ x"$serverargs" = x -a x"$display" = x ]; then
 	server="$defaultserverargs"
     else

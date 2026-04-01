@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/mbuf.c,v 3.18 2005/10/14 15:16:11 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/mbuf.c,v 3.16 2003/11/17 22:20:26 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -25,10 +32,11 @@ in this Software without prior written authorization from The Open Group.
 
 ********************************************************/
 
+/* $Xorg: mbuf.c,v 1.4 2001/02/09 02:04:32 xorgcvs Exp $ */
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "window.h"
 #include "os.h"
 #include "windowstr.h"
@@ -40,10 +48,8 @@ in this Software without prior written authorization from The Open Group.
 #include "resource.h"
 #include "opaque.h"
 #include "sleepuntil.h"
-#include "modinit.h"
 #define _MULTIBUF_SERVER_	/* don't want Xlib structures */
-#include <X11/extensions/multibufst.h>
-#include "mbufproc.h"
+#include "multibufst.h"
 
 #ifdef EXTMODULE
 #include "xf86_ansic.h"
@@ -54,7 +60,6 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #endif
 
-#ifdef MULTIBUFFER
 /* given an OtherClientPtr obj, get the ClientPtr */
 #define rClient(obj) (clients[CLIENT_ID((obj)->resource)])
 
@@ -200,7 +205,7 @@ static int		DeliverEventsToMultibuffer (
 				);
 
 void
-MultibufferExtensionInit(INITARGS)
+MultibufferExtensionInit()
 {
     ExtensionEntry	    *extEntry;
     int			    i, j;
@@ -263,7 +268,8 @@ MultibufferExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-MultibufferResetProc(ExtensionEntry *extEntry)
+MultibufferResetProc (extEntry)
+ExtensionEntry	*extEntry;
 {
     int			    i;
     ScreenPtr		    pScreen;
@@ -284,10 +290,11 @@ MultibufferResetProc(ExtensionEntry *extEntry)
 }
 
 static int
-ProcGetBufferVersion(ClientPtr client)
+ProcGetBufferVersion (client)
+    register ClientPtr	client;
 {
     xMbufGetBufferVersionReply	rep;
-    int		n;
+    register int		n;
 
     REQUEST_SIZE_MATCH (xMbufGetBufferVersionReq);
     rep.type = X_Reply;
@@ -304,7 +311,9 @@ ProcGetBufferVersion(ClientPtr client)
 }
 
 static void
-SetupBackgroundPainter(WindowPtr pWin, GCPtr pGC)
+SetupBackgroundPainter (pWin, pGC)
+    WindowPtr	pWin;
+    GCPtr	pGC;
 {
     pointer	    gcvalues[4];
     int		    ts_x_origin, ts_y_origin;
@@ -352,7 +361,12 @@ SetupBackgroundPainter(WindowPtr pWin, GCPtr pGC)
 }
 
 int
-CreateImageBuffers(WindowPtr pWin, int nbuf, XID *ids, int action, int hint)
+CreateImageBuffers (pWin, nbuf, ids, action, hint)
+    WindowPtr	pWin;
+    int		nbuf;
+    XID		*ids;
+    int		action;
+    int		hint;
 {
     MultibuffersPtr	pMultibuffers;
     MultibufferPtr	pMultibuffer;
@@ -435,11 +449,12 @@ CreateImageBuffers(WindowPtr pWin, int nbuf, XID *ids, int action, int hint)
 
 
 static int
-ProcCreateImageBuffers(ClientPtr client)
+ProcCreateImageBuffers (client)
+    register ClientPtr	client;
 {
     REQUEST(xMbufCreateImageBuffersReq);
     xMbufCreateImageBuffersReply	rep;
-    int		n;
+    register int		n;
     WindowPtr			pWin;
     XID				*ids;
     int				len, nbuf;
@@ -500,7 +515,8 @@ ProcCreateImageBuffers(ClientPtr client)
 }
 
 static int
-ProcDisplayImageBuffers(ClientPtr client)
+ProcDisplayImageBuffers (client)
+    register ClientPtr	client;
 {
     REQUEST(xMbufDisplayImageBuffersReq);
     MultibufferPtr	    *pMultibuffer;
@@ -572,7 +588,8 @@ MultibufferResType);
 
 
 static int
-ProcDestroyImageBuffers(ClientPtr client)
+ProcDestroyImageBuffers (client)
+    register ClientPtr	client;
 {
     REQUEST (xMbufDestroyImageBuffersReq);
     WindowPtr	pWin;
@@ -585,7 +602,8 @@ ProcDestroyImageBuffers(ClientPtr client)
 }
 
 static int
-ProcSetMBufferAttributes(ClientPtr client)
+ProcSetMBufferAttributes (client)
+    register ClientPtr	client;
 {
     REQUEST (xMbufSetMBufferAttributesReq);
     WindowPtr	pWin;
@@ -638,7 +656,8 @@ ProcSetMBufferAttributes(ClientPtr client)
 }
 
 static int
-ProcGetMBufferAttributes(ClientPtr client)
+ProcGetMBufferAttributes (client)
+    ClientPtr	client;
 {
     REQUEST (xMbufGetMBufferAttributesReq);
     WindowPtr	pWin;
@@ -682,7 +701,8 @@ ProcGetMBufferAttributes(ClientPtr client)
 }
 
 static int
-ProcSetBufferAttributes(ClientPtr client)
+ProcSetBufferAttributes (client)
+    register ClientPtr	client;
 {
     REQUEST(xMbufSetBufferAttributesReq);
     MultibufferPtr	pMultibuffer;
@@ -723,7 +743,8 @@ ProcSetBufferAttributes(ClientPtr client)
 }
 
 int
-ProcGetBufferAttributes(ClientPtr client)
+ProcGetBufferAttributes (client)
+    register ClientPtr	client;
 {
     REQUEST(xMbufGetBufferAttributesReq);
     MultibufferPtr	pMultibuffer;
@@ -766,7 +787,8 @@ ProcGetBufferAttributes(ClientPtr client)
 }
 
 static int
-ProcGetBufferInfo(ClientPtr client)
+ProcGetBufferInfo (client)
+    register ClientPtr	client;
 {
     REQUEST (xMbufGetBufferInfoReq);
     DrawablePtr		    pDrawable;
@@ -830,7 +852,8 @@ ProcGetBufferInfo(ClientPtr client)
 }
 
 static int
-ProcClearImageBufferArea(ClientPtr client)
+ProcClearImageBufferArea (client)
+    register ClientPtr	client;
 {
     REQUEST (xMbufClearImageBufferAreaReq);
     MultibufferPtr	pMultibuffer;
@@ -891,7 +914,8 @@ ProcClearImageBufferArea(ClientPtr client)
 }
 
 static int
-ProcMultibufferDispatch(ClientPtr client)
+ProcMultibufferDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data) {
@@ -921,9 +945,10 @@ ProcMultibufferDispatch(ClientPtr client)
 }
 
 static int
-SProcGetBufferVersion(ClientPtr client)
+SProcGetBufferVersion (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufGetBufferVersionReq);
 
     swaps (&stuff->length, n);
@@ -931,9 +956,10 @@ SProcGetBufferVersion(ClientPtr client)
 }
 
 static int
-SProcCreateImageBuffers(ClientPtr client)
+SProcCreateImageBuffers (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufCreateImageBuffersReq);
 
     swaps (&stuff->length, n);
@@ -944,9 +970,10 @@ SProcCreateImageBuffers(ClientPtr client)
 }
 
 static int
-SProcDisplayImageBuffers(ClientPtr client)
+SProcDisplayImageBuffers (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufDisplayImageBuffersReq);
     
     swaps (&stuff->length, n);
@@ -958,9 +985,10 @@ SProcDisplayImageBuffers(ClientPtr client)
 }
 
 static int
-SProcDestroyImageBuffers(ClientPtr client)
+SProcDestroyImageBuffers (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufDestroyImageBuffersReq);
     
     swaps (&stuff->length, n);
@@ -970,9 +998,10 @@ SProcDestroyImageBuffers(ClientPtr client)
 }
 
 static int
-SProcSetMBufferAttributes(ClientPtr client)
+SProcSetMBufferAttributes (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufSetMBufferAttributesReq);
 
     swaps (&stuff->length, n);
@@ -984,9 +1013,10 @@ SProcSetMBufferAttributes(ClientPtr client)
 }
 
 static int
-SProcGetMBufferAttributes(ClientPtr client)
+SProcGetMBufferAttributes (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufGetMBufferAttributesReq);
 
     swaps (&stuff->length, n);
@@ -996,9 +1026,10 @@ SProcGetMBufferAttributes(ClientPtr client)
 }
 
 static int
-SProcSetBufferAttributes(ClientPtr client)
+SProcSetBufferAttributes (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufSetBufferAttributesReq);
 
     swaps (&stuff->length, n);
@@ -1010,9 +1041,10 @@ SProcSetBufferAttributes(ClientPtr client)
 }
 
 static int
-SProcGetBufferAttributes(ClientPtr client)
+SProcGetBufferAttributes (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufGetBufferAttributesReq);
 
     swaps (&stuff->length, n);
@@ -1022,9 +1054,10 @@ SProcGetBufferAttributes(ClientPtr client)
 }
 
 static int
-SProcGetBufferInfo(ClientPtr client)
+SProcGetBufferInfo (client)
+    register ClientPtr	client;
 {
-    int    n;
+    register int    n;
     REQUEST (xMbufGetBufferInfoReq);
 
     swaps (&stuff->length, n);
@@ -1034,9 +1067,10 @@ SProcGetBufferInfo(ClientPtr client)
 }
 
 static int
-SProcClearImageBufferArea(ClientPtr client)
+SProcClearImageBufferArea(client)
+    register ClientPtr client;
 {
-    char n;
+    register char n;
     REQUEST(xMbufClearImageBufferAreaReq);
 
     swaps(&stuff->length, n);
@@ -1050,7 +1084,8 @@ SProcClearImageBufferArea(ClientPtr client)
 }
 
 static int
-SProcMultibufferDispatch(ClientPtr client)
+SProcMultibufferDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data) {
@@ -1080,7 +1115,8 @@ SProcMultibufferDispatch(ClientPtr client)
 }
 
 static void
-SUpdateNotifyEvent(xMbufUpdateNotifyEvent *from, xMbufUpdateNotifyEvent *to)
+SUpdateNotifyEvent (from, to)
+    xMbufUpdateNotifyEvent	*from, *to;
 {
     to->type = from->type;
     cpswaps (from->sequenceNumber, to->sequenceNumber);
@@ -1089,7 +1125,8 @@ SUpdateNotifyEvent(xMbufUpdateNotifyEvent *from, xMbufUpdateNotifyEvent *to)
 }
 
 static void
-SClobberNotifyEvent(xMbufClobberNotifyEvent *from, xMbufClobberNotifyEvent *to)
+SClobberNotifyEvent (from, to)
+    xMbufClobberNotifyEvent	*from, *to;
 {
     to->type = from->type;
     cpswaps (from->sequenceNumber, to->sequenceNumber);
@@ -1098,8 +1135,10 @@ SClobberNotifyEvent(xMbufClobberNotifyEvent *from, xMbufClobberNotifyEvent *to)
 }
 
 static void
-PerformDisplayRequest(MultibuffersPtr *ppMultibuffers,
-		      MultibufferPtr *pMultibuffer, int nbuf)
+PerformDisplayRequest (ppMultibuffers, pMultibuffer, nbuf)
+    MultibufferPtr	    *pMultibuffer;
+    MultibuffersPtr	    *ppMultibuffers;
+    int		    nbuf;
 {
     GCPtr	    pGC;
     PixmapPtr	    pPrevPixmap, pNewPixmap;
@@ -1205,7 +1244,9 @@ PerformDisplayRequest(MultibuffersPtr *ppMultibuffers,
 }
 
 DrawablePtr
-GetBufferPointer(WindowPtr pWin, int i)
+GetBufferPointer (pWin, i)
+    WindowPtr	pWin;
+    int		i;
 {
     MultibuffersPtr pMultibuffers;
 
@@ -1215,7 +1256,9 @@ GetBufferPointer(WindowPtr pWin, int i)
 }
 
 int
-DisplayImageBuffers(XID *ids, int nbuf)
+DisplayImageBuffers (ids, nbuf)
+    XID	    *ids;
+    int	    nbuf;
 {
     MultibufferPtr  *pMultibuffer;
     MultibuffersPtr *pMultibuffers;
@@ -1249,7 +1292,9 @@ DisplayImageBuffers(XID *ids, int nbuf)
 
 
 static Bool
-QueueDisplayRequest(ClientPtr client, TimeStamp activateTime)
+QueueDisplayRequest (client, activateTime)
+    ClientPtr	    client;
+    TimeStamp	    activateTime;
 {
     /* see xtest.c:ProcXTestFakeInput for code similar to this */
 
@@ -1260,7 +1305,7 @@ QueueDisplayRequest(ClientPtr client, TimeStamp activateTime)
     /* swap the request back so we can simply re-execute it */
     if (client->swapped)
     {
-    	int    n;
+    	register int    n;
     	REQUEST (xMbufDisplayImageBuffersReq);
     	
     	SwapRestL(stuff);
@@ -1279,8 +1324,11 @@ QueueDisplayRequest(ClientPtr client, TimeStamp activateTime)
  */
 
 static int
-DeliverEventsToMultibuffer(MultibufferPtr pMultibuffer, xEvent *pEvents,
-			   int count, Mask filter)
+DeliverEventsToMultibuffer (pMultibuffer, pEvents, count, filter)
+    MultibufferPtr	pMultibuffer;
+    xEvent	*pEvents;
+    int		count;
+    Mask	filter;
 {
     int deliveries = 0, nondeliveries = 0;
     int attempt;
@@ -1322,15 +1370,17 @@ DeliverEventsToMultibuffer(MultibufferPtr pMultibuffer, xEvent *pEvents,
  */
 
 void
-MultibufferExpose(MultibufferPtr pMultibuffer, RegionPtr pRegion)
+MultibufferExpose (pMultibuffer, pRegion)
+    MultibufferPtr	pMultibuffer;
+    RegionPtr	pRegion;
 {
     if (pRegion && !REGION_NIL(pRegion))
     {
 	xEvent *pEvent;
 	PixmapPtr   pPixmap;
-	xEvent *pe;
-	BoxPtr pBox;
-	int i;
+	register xEvent *pe;
+	register BoxPtr pBox;
+	register int i;
 	int numRects;
 
 	pPixmap = pMultibuffer->pPixmap;
@@ -1363,7 +1413,9 @@ MultibufferExpose(MultibufferPtr pMultibuffer, RegionPtr pRegion)
 
 /* send UpdateNotify event */
 void
-MultibufferUpdate(MultibufferPtr pMultibuffer, CARD32 time2)
+MultibufferUpdate (pMultibuffer, time2)
+    MultibufferPtr	pMultibuffer;
+    CARD32	time2;
 {
     xMbufUpdateNotifyEvent	event;
 
@@ -1380,7 +1432,8 @@ MultibufferUpdate(MultibufferPtr pMultibuffer, CARD32 time2)
  */
 
 void
-MultibufferClobber(MultibufferPtr pMultibuffer)
+MultibufferClobber (pMultibuffer)
+    MultibufferPtr	pMultibuffer;
 {
     xMbufClobberNotifyEvent	event;
 
@@ -1397,7 +1450,9 @@ MultibufferClobber(MultibufferPtr pMultibuffer)
  */
 
 static void
-AliasMultibuffer(MultibuffersPtr pMultibuffers, int i)
+AliasMultibuffer (pMultibuffers, i)
+    MultibuffersPtr	pMultibuffers;
+    int		i;
 {
     MultibufferPtr	pMultibuffer;
 
@@ -1429,7 +1484,8 @@ AliasMultibuffer(MultibuffersPtr pMultibuffers, int i)
  */
 
 void
-DestroyImageBuffers(WindowPtr pWin)
+DestroyImageBuffers (pWin)
+    WindowPtr	pWin;
 {
     FreeResourceByType (pWin->drawable.id, MultibuffersResType, FALSE);
     /* Zero out the window's pointer to the buffers so they won't be reused */
@@ -1441,7 +1497,9 @@ DestroyImageBuffers(WindowPtr pWin)
  */ 
 
 static Bool
-MultibufferPositionWindow(WindowPtr pWin, int x, int y)
+MultibufferPositionWindow (pWin, x, y)
+    WindowPtr	pWin;
+    int		x, y;
 {
     ScreenPtr	    pScreen;
     MultibufferScreenPtr pMultibufferScreen;
@@ -1563,7 +1621,9 @@ MultibufferPositionWindow(WindowPtr pWin, int x, int y)
 /* Resource delete func for MultibufferDrawableResType */
 /*ARGSUSED*/
 static int
-MultibufferDrawableDelete(pointer value, XID id)
+MultibufferDrawableDelete (value, id)
+    pointer	value;
+    XID		id;
 {
     DrawablePtr	pDrawable = (DrawablePtr)value;
     WindowPtr	pWin;
@@ -1587,7 +1647,9 @@ MultibufferDrawableDelete(pointer value, XID id)
 /* Resource delete func for MultibufferResType */
 /*ARGSUSED*/
 static int
-MultibufferDelete(pointer value, XID id)
+MultibufferDelete (value, id)
+    pointer	value;
+    XID		id;
 {
     MultibufferPtr	pMultibuffer = (MultibufferPtr)value;
     MultibuffersPtr	pMultibuffers;
@@ -1605,7 +1667,9 @@ MultibufferDelete(pointer value, XID id)
 /* Resource delete func for MultibuffersResType */
 /*ARGSUSED*/
 static int
-MultibuffersDelete(pointer value, XID id)
+MultibuffersDelete (value, id)
+    pointer	value;
+    XID		id;
 {
     MultibuffersPtr	pMultibuffers = (MultibuffersPtr)value;
     int	i;
@@ -1620,10 +1684,12 @@ MultibuffersDelete(pointer value, XID id)
 
 /* Resource delete func for OtherClientResType */
 static int
-OtherClientDelete(pointer value, XID id)
+OtherClientDelete (value, id)
+    pointer	value;
+    XID		id;
 {
     MultibufferPtr	pMultibuffer = (MultibufferPtr)value;
-    OtherClientsPtr	other, prev;
+    register OtherClientsPtr	other, prev;
 
     prev = 0;
     for (other = pMultibuffer->otherClients; other; other = other->next)
@@ -1644,8 +1710,10 @@ OtherClientDelete(pointer value, XID id)
 }
 
 static int
-EventSelectForMultibuffer(MultibufferPtr pMultibuffer, ClientPtr client,
-			  Mask mask)
+EventSelectForMultibuffer (pMultibuffer, client, mask)
+    MultibufferPtr	pMultibuffer;
+    ClientPtr	client;
+    Mask	mask;
 {
     OtherClientsPtr	other;
 
@@ -1695,7 +1763,8 @@ EventSelectForMultibuffer(MultibufferPtr pMultibuffer, ClientPtr client,
 
 /* or together all the otherClients event masks */
 static void
-RecalculateMultibufferOtherEvents(MultibufferPtr pMultibuffer)
+RecalculateMultibufferOtherEvents (pMultibuffer)
+    MultibufferPtr	pMultibuffer;
 {
     Mask	    otherEventMask;
     OtherClients    *other;
@@ -1708,7 +1777,9 @@ RecalculateMultibufferOtherEvents(MultibufferPtr pMultibuffer)
 
 /* add milliseconds to a timestamp, handling overflow */
 static void
-BumpTimeStamp(TimeStamp *ts, CARD32 inc)
+BumpTimeStamp (ts, inc)
+TimeStamp   *ts;
+CARD32	    inc;
 {
     CARD32  newms;
 
@@ -1717,5 +1788,3 @@ BumpTimeStamp(TimeStamp *ts, CARD32 inc)
 	ts->months++;
     ts->milliseconds = newms;
 }
-
-#endif

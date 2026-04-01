@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbpushpxl.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbpushpxl.c,v 1.7 2003/02/18 21:30:01 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mfbpushpxl.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "gcstruct.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -93,15 +101,18 @@ For src=1: newRop = 0x4|(rop&3)
  * has a zero bit or outside the area covered by the stencil.
  */
 void
-mfbSolidPP(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable, int dx, int dy,
-	   int xOrg, int yOrg)
+mfbSolidPP(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
+    GCPtr	pGC;
+    PixmapPtr	pBitMap;
+    DrawablePtr pDrawable;
+    int		dx, dy, xOrg, yOrg;
 {
     unsigned char alu;
     RegionRec rgnDst;
     DDXPointPtr pptSrc;
     BoxRec srcBox;
-    DDXPointPtr ppt;
-    BoxPtr pbox;
+    register DDXPointPtr ppt;
+    register BoxPtr pbox;
     int i;
 
     if (!(pGC->planemask & 1)) return;
@@ -151,16 +162,19 @@ mfbSolidPP(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable, int dx, int dy,
  * has a zero bit or outside the area covered by the stencil.
  */
 void
-mfbPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
-	      int dx, int dy, int xOrg, int yOrg)
+mfbPushPixels(pGC, pBitMap, pDrawable, dx, dy, xOrg, yOrg)
+    GCPtr	pGC;
+    PixmapPtr	pBitMap;
+    DrawablePtr pDrawable;
+    int		dx, dy, xOrg, yOrg;
 {
     int		h, dxDivPPW, ibEnd;
     PixelType *pwLineStart;
-    PixelType	*pw, *pwEnd;
-    PixelType mask;
-    int ib;
-    PixelType w;
-    int ipt;		/* index into above arrays */
+    register PixelType	*pw, *pwEnd;
+    register PixelType mask;
+    register int ib;
+    register PixelType w;
+    register int ipt;		/* index into above arrays */
     Bool 	fInBox;
     DDXPointRec	pt[NPT];
     int		width[NPT];

@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -164,10 +171,10 @@
 #ifdef DO_INDEX
    if (ctx->Light.ShadeModel == GL_SMOOTH) {
       compute_plane(p0, p1, p2, (GLfloat) v0->index,
-                    (GLfloat) v1->index, (GLfloat) v2->index, iPlane);
+                    v1->index, v2->index, iPlane);
    }
    else {
-      constant_plane((GLfloat) v2->index, iPlane);
+      constant_plane(v2->index, iPlane);
    }
    span.arrayMask |= SPAN_INDEX;
 #endif
@@ -187,7 +194,7 @@
 #ifdef DO_TEX
    {
       const struct gl_texture_object *obj = ctx->Texture.Unit[0]._Current;
-      const struct gl_texture_image *texImage = obj->Image[obj->BaseLevel];
+      const struct gl_texture_image *texImage = obj->Image[0][obj->BaseLevel];
       const GLfloat invW0 = v0->win[3];
       const GLfloat invW1 = v1->win[3];
       const GLfloat invW2 = v2->win[3];
@@ -217,7 +224,7 @@
       for (u = 0; u < ctx->Const.MaxTextureUnits; u++) {
          if (ctx->Texture.Unit[u]._ReallyEnabled) {
             const struct gl_texture_object *obj = ctx->Texture.Unit[u]._Current;
-            const struct gl_texture_image *texImage = obj->Image[obj->BaseLevel];
+            const struct gl_texture_image *texImage = obj->Image[0][obj->BaseLevel];
             const GLfloat invW0 = v0->win[3];
             const GLfloat invW1 = v1->win[3];
             const GLfloat invW2 = v2->win[3];

@@ -1,3 +1,11 @@
+/* $Xorg: Xtransint.h,v 1.4 2001/02/09 02:04:06 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtransint.h,v 3.44tsi Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtransint.h,v 3.43 2004/04/03 22:26:21 dawes Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -83,7 +91,7 @@ from The Open Group.
 # define _WILLWINSOCK_
 #endif
 
-#include <X11/Xtrans.h>
+#include "Xtrans.h"
 
 #ifdef XTRANSDEBUG
 # include <stdio.h>
@@ -435,7 +443,7 @@ static int trans_mkdir (
  * to fprintf.
  */
 #ifdef XTRANSDEBUGTIMESTAMP
-#if (defined(XSERV_t) || defined(FONT_t)) && defined(TRANS_SERVER)
+#if defined(XSERV_t) && defined(TRANS_SERVER)
 /* Use ErrorF() for the X server */
 #define PRMSG(lvl,x,a,b,c)	if (lvl <= XTRANSDEBUG){ \
 			int hack= 0, saveerrno=errno; \
@@ -459,7 +467,7 @@ static int trans_mkdir (
 			} else ((void)0)
 #endif /* XSERV_t && TRANS_SERVER */
 #else /* XTRANSDEBUGTIMESTAMP */
-#if (defined(XSERV_t) || defined(FONT_t)) && defined(TRANS_SERVER)
+#if defined(XSERV_t) && defined(TRANS_SERVER)
 /* Use ErrorF() for the X server */
 #define PRMSG(lvl,x,a,b,c)	if (lvl <= XTRANSDEBUG){ \
 			int hack= 0, saveerrno=errno; \

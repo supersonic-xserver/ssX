@@ -1,3 +1,11 @@
+/* $XConsortium: man.c,v 1.30 94/04/17 20:43:56 rws Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987, 1988  X Consortium
@@ -27,7 +35,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xman/man.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/xman/man.c,v 1.11 2004/04/03 22:26:26 dawes Exp $ */
 
 
 #include "globals.h"
@@ -409,7 +417,7 @@ AddToCurrentSection(Manual * local_manual, char * path)
   /* XXX: No way to deal w. error here so just move on. */
   if (uname(&uts) == 0) {
     sprintf(temp_path, "%s/%s", path, uts.machine);
-  ReadCurrentSection(local_manual, temp_path);
+    ReadCurrentSection(local_manual, temp_path);
   }
 #endif
   ReadCurrentSection(local_manual, path);

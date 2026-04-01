@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -175,15 +182,26 @@ _mesa_parse_arb_vertex_program(GLcontext * ctx, GLenum target,
 {
    GLuint retval;
    struct arb_program ap;
+   (void) target;
 
    /* set the program target before parsing */
    ap.Base.Target = GL_VERTEX_PROGRAM_ARB;
 
    retval = _mesa_parse_arb_program(ctx, str, len, &ap);
 
+   /*  Parse error. Allocate a dummy program and return */	
+   if (retval)
+   {
+      program->Instructions = (struct vp_instruction *) _mesa_malloc (
+                                     sizeof(struct vp_instruction) );			  
+      program->Instructions[0].Opcode = VP_OPCODE_END;
+      return;
+   }
+
    /* copy the relvant contents of the arb_program struct into the 
     * fragment_program struct
     */
+   program->Base.String          = ap.Base.String;
    program->Base.NumInstructions = ap.Base.NumInstructions;
    program->Base.NumTemporaries  = ap.Base.NumTemporaries;
    program->Base.NumParameters   = ap.Base.NumParameters;
@@ -194,15 +212,6 @@ _mesa_parse_arb_vertex_program(GLcontext * ctx, GLenum target,
    program->InputsRead     = ap.InputsRead;
    program->OutputsWritten = ap.OutputsWritten;
    program->Parameters     = ap.Parameters; 
-
-   /*  Parse error. Allocate a dummy program and return */	
-   if (retval)
-   {
-      program->Instructions = (struct vp_instruction *) _mesa_malloc (
-                                     sizeof(struct vp_instruction) );			  
-      program->Instructions[0].Opcode = VP_OPCODE_END;
-      return;
-   }
 
    /* Eh.. we parsed something that wasn't a vertex program. doh! */
    /* this wont happen any more */

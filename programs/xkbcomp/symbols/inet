@@ -500,19 +500,12 @@ xkb_symbols "dell" {
 
 partial alphanumeric_keys
 xkb_symbols "inspiron" {
-    name[Group1]= "Laptop/notebook Dell Inspiron 6xxx, 8xxx";
+    name[Group1]= "Laptop/notebook Dell Inspiron 8xxx";
 
-    // 8xxx
     key <XFER>	{	[ XF86AudioPlay, XF86AudioPause ] };
     key <NFER>	{	[ XF86AudioPrev		]	};
     key <I04>	{	[ XF86AudioNext		]	};
     key <I02>	{	[ XF86AudioStop		]	};
-    // 6xxx
-    key <I22>	{	[ XF86AudioPlay, XF86AudioPause ] };
-    key <I10>	{	[ XF86AudioPrev		]	};
-    key <I19>	{	[ XF86AudioNext		]	};
-    key <I24>	{	[ XF86AudioStop		]	};
-    // 6xxx, 8xxx
     key <I30>	{	[ XF86AudioRaiseVolume	]	};
     key <I2E>	{	[ XF86AudioLowerVolume	]	};
     key <I20>	{	[ XF86AudioMute		]	};

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * XML DRI client-side driver configuration
  * Copyright (C) 2003 Felix Kuehling
  *
@@ -99,7 +106,7 @@ void driParseOptionInfo (driOptionCache *info,
  *
  * To be called in <driver>CreateContext. screenNum and driverName select
  * device sections. */
-void driParseConfigFiles (driOptionCache *cache, driOptionCache *info,
+void driParseConfigFiles (driOptionCache *cache, const driOptionCache *info,
 			  GLint screenNum, const char *driverName);
 /** \brief Destroy option info
  *

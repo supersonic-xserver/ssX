@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcFillRct.c,v 1.6 2003/11/03 05:11:57 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,6 +54,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ppcFillRct.c /main/5 1996/02/21 17:57:35 kaleb $ */
 
 #include "xf4bpp.h"
 #include "mfbmap.h"
@@ -65,13 +73,16 @@ helper function in the GC.
 #define NUM_STACK_RECTS	1024
 
 void
-xf4bppPolyFillRect(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
-		   xRectangle *prectInit)
+xf4bppPolyFillRect(pDrawable, pGC, nrectFill, prectInit)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int		nrectFill; 	/* number of rectangles to fill */
+    xRectangle	*prectInit;  	/* Pointer to first rectangle to fill */
 {
     xRectangle	    *prect;
     RegionPtr	    prgnClip;
-    BoxPtr pbox;
-    BoxPtr pboxClipped;
+    register BoxPtr pbox;
+    register BoxPtr pboxClipped;
     BoxPtr	    pboxClippedBase;
     BoxPtr	    pextent;
     BoxRec	    stackRects[NUM_STACK_RECTS];

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/dbe/midbestr.h,v 3.2tsi Exp $ */
+/* $Xorg: midbestr.h,v 1.3 2000/08/17 19:48:16 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  * 
  * Copyright (c) 1994, 1995  Hewlett-Packard Company
@@ -35,9 +42,6 @@
 #ifndef MIDBE_STRUCT_H
 #define MIDBE_STRUCT_H
 
-/* INCLUDES */
-
-#include "dbestruct.h"
 
 /* DEFINES */
 

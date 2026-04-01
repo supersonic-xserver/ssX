@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/tinyx/linux/mouse.c,v 1.2 2005/10/14 15:16:28 tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/hw/tinyx/linux/mouse.c,v 1.1 2004/06/02 22:43:02 dawes Exp $
  *
  * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -69,12 +76,12 @@
  */
 
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "tinyx.h"
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include <errno.h>
 #include <termios.h>
 
@@ -977,8 +984,6 @@ MouseInit (void)
 	{
 	    for (i = 0; i < NUM_DEFAULT_MOUSE; i++)
 	    {
-		if (kdNoSerialMouse && strstr(kdefaultMouse[i], "/dev/ttyS"))
-		    continue;
 		fd = open (kdefaultMouse[i], 2);
 		if (fd >= 0)
 		{

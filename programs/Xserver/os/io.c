@@ -1,4 +1,18 @@
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1989, 1998  The Open Group
 
@@ -45,7 +59,7 @@ SOFTWARE.
 
 
 ******************************************************************/
-
+/* $Xorg: io.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
 /*****************************************************************
  * i/o functions
  *
@@ -53,7 +67,7 @@ SOFTWARE.
  *   InsertFakeRequest, ResetCurrentRequest
  *
  *****************************************************************/
-/* $XFree86: xc/programs/Xserver/os/io.c,v 3.37tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/io.c,v 3.36 2004/06/08 00:21:47 dawes Exp $ */
 
 #if 0
 #define DEBUG_COMMUNICATION
@@ -63,7 +77,7 @@ SOFTWARE.
 #endif
 #include <stdio.h>
 #include <X11/Xtrans.h>
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include <errno.h>
 #if !defined(__UNIXOS2__) && !defined(WIN32)
 #ifndef Lynx
@@ -72,12 +86,12 @@ SOFTWARE.
 #include <uio.h>
 #endif
 #endif
-#include <X11/X.h>
+#include "X.h"
 #define NEED_REPLIES
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "os.h"
 #include "osdep.h"
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include "opaque.h"
 #include "dixstruct.h"
 #include "misc.h"
@@ -117,7 +131,7 @@ OsCommPtr AvailableInput = (OsCommPtr)NULL;
 			      lswaps((req)->length) : (req)->length)
 
 #ifdef BIGREQS
-#include <X11/extensions/bigreqstr.h>
+#include "bigreqstr.h"
 
 #define get_big_req_len(req,cli) ((cli)->swapped ? \
 				  lswapl(((xBigReq *)(req))->length) : \
@@ -217,7 +231,7 @@ ReadRequestFromClient(ClientPtr client)
     int fd = oc->fd;
     unsigned int gotnow, needed;
     int result;
-    xReq *request;
+    register xReq *request;
     Bool need_header;
 #ifdef BIGREQS
     Bool move_header;
@@ -233,7 +247,7 @@ ReadRequestFromClient(ClientPtr client)
     {
 	if (AvailableInput != oc)
 	{
-	    ConnectionInputPtr aci = AvailableInput->input;
+	    register ConnectionInputPtr aci = AvailableInput->input;
 	    if (aci->size > BUFWATERMARK)
 	    {
 		xfree(aci->buffer);
@@ -601,9 +615,9 @@ void
 ResetCurrentRequest(ClientPtr client)
 {
     OsCommPtr oc = (OsCommPtr)client->osPrivate;
-    ConnectionInputPtr oci = oc->input;
+    register ConnectionInputPtr oci = oc->input;
     int fd = oc->fd;
-    xReq *request;
+    register xReq *request;
     int gotnow, needed;
 #ifdef LBX
     LbxClientPtr lbxClient = LbxClient(client);
@@ -686,7 +700,7 @@ PeekNextRequest(
     ClientPtr client,	/* client whose requests we're skipping */
     Bool readmore)	/* attempt to read more if next request isn't there? */
 {
-    ConnectionInputPtr oci = ((OsCommPtr)client->osPrivate)->input;
+    register ConnectionInputPtr oci = ((OsCommPtr)client->osPrivate)->input;
     xReqPtr pnextreq;
     int needed, gotnow, reqlen;
 
@@ -749,7 +763,7 @@ SkipRequests(
     int numskipped)	/* how many requests we're skipping */
 {
     OsCommPtr oc = (OsCommPtr)client->osPrivate;
-    ConnectionInputPtr oci = oc->input;
+    register ConnectionInputPtr oci = oc->input;
     int reqlen;
 
     /* see if anyone wants to snoop the skipped requests */
@@ -807,10 +821,10 @@ static int padlength[4] = {0, 3, 2, 1};
 void
 FlushAllOutput(void)
 {
-    int index, base;
-    fd_mask mask; /* raphael */
+    register int index, base;
+    register fd_mask mask; /* raphael */
     OsCommPtr oc;
-    ClientPtr client;
+    register ClientPtr client;
     Bool newoutput = NewOutputPending;
 #if defined(WIN32)
     fd_set newOutputPending;

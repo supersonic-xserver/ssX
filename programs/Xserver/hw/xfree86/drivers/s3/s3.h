@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *      Copyright 2001  Ani Joshi <ajoshi@unixbox.com>
  *
  *      XFree86 4.x driver for S3 chipsets
@@ -24,7 +31,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3.h,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3.h,v 1.19 2004/11/26 12:08:49 tsi Exp $ */
 
 
 #ifndef _S3_H
@@ -35,11 +42,12 @@
 #include "xf86PciInfo.h"
 #include "xf86RamDac.h"
 #include "xaa.h"
+#include "vbe.h"
 #include "xf86_ansic.h"
 #include "vgaHW.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "fourcc.h"
 
 
@@ -59,15 +67,15 @@ typedef struct _S3RegRec {
 
 
 typedef struct {
-	unsigned char brightness;
-	unsigned char contrast;
-	FBAreaPtr     area;
-	RegionRec     clip;
-	CARD32        colorKey;
-	CARD32        videoStatus;
-	Time          offTime;
-	Time          freeTime;
-	int           lastPort;
+        unsigned char brightness;
+        unsigned char contrast;
+        FBAreaPtr     area;
+        RegionRec     clip;
+        CARD32        colorKey;
+        CARD32        videoStatus;
+        Time          offTime;
+        Time          freeTime;
+        int           lastPort;
 } S3PortPrivRec, *S3PortPrivPtr;
 
 
@@ -82,17 +90,17 @@ typedef struct {
 
 
 typedef struct _S3Rec {
-	pciVideoPtr             PciInfo;
-	PCITAG                  PciTag;
-	EntityInfoPtr           pEnt;
-	unsigned long           IOAddress;
-	unsigned long           FBAddress;
-	unsigned char *         FBBase;
-	unsigned char *         MMIOBase;
-	unsigned long           videoRam;
-	OptionInfoPtr           Options;
-	unsigned int            Flags;
-	Bool                    NoAccel;
+        pciVideoPtr             PciInfo;
+        PCITAG                  PciTag;
+        EntityInfoPtr           pEnt;
+        unsigned long           IOAddress;
+        unsigned long           FBAddress;
+        unsigned char *         FBBase;
+        unsigned char *         MMIOBase;
+        unsigned long           videoRam;
+        OptionInfoPtr           Options;
+        unsigned int            Flags;
+        Bool                    NoAccel;
 	Bool			SWCursor;
 	Bool			SlowDRAMRefresh;
 	Bool			SlowDRAM;
@@ -102,10 +110,12 @@ typedef struct _S3Rec {
 	Bool			PCIRetry;
 	Bool			ColorExpandBug;
 
-	XAAInfoRecPtr           pXAA;
+        XAAInfoRecPtr           pXAA;
 	xf86CursorInfoPtr	pCurs;
-	XF86VideoAdaptorPtr     adaptor;
-	S3PortPrivPtr           portPrivate;
+	xf86Int10InfoPtr	pInt10;
+	vbeInfoPtr		pVBE;
+        XF86VideoAdaptorPtr     adaptor;
+        S3PortPrivPtr           portPrivate;
 
 	DGAModePtr		DGAModes;
 	int			numDGAModes;
@@ -123,7 +133,7 @@ typedef struct _S3Rec {
 	int			mclk, MaxClock;
 	int			pixMuxShift;
 
-	int                     Chipset, ChipRev;
+        int                     Chipset, ChipRev;
 	int			RefClock;
 
 	int			s3ScissB, s3ScissR;
@@ -147,7 +157,7 @@ typedef struct _S3Rec {
 					       int *indicies, LOCO *colors,
 					       VisualPtr pVisual);
 
-	Bool                    (*CloseScreen)(int, ScreenPtr);
+        Bool                    (*CloseScreen)(int, ScreenPtr);
 
 	unsigned char		*imageBuffer;
 	int			imageWidth;
@@ -164,7 +174,7 @@ typedef struct _S3Rec {
 #define VERSION_MINOR   3
 #define PATCHLEVEL      5
 #define S3_VERSION     ((VERSION_MAJOR << 24) | \
-			(VERSION_MINOR << 16) | PATCHLEVEL)
+                        (VERSION_MINOR << 16) | PATCHLEVEL)
 
 
 
@@ -226,9 +236,9 @@ Bool S3_CursorInit(ScreenPtr pScreen);
  */
 
 #define S3_964_SERIES()		((pS3->Chipset == PCI_CHIP_964_0) ||	\
-				 (pS3->Chipset == PCI_CHIP_964_1))
+			 	 (pS3->Chipset == PCI_CHIP_964_1))
 #define	S3_TRIO_SERIES()	((pS3->Chipset == PCI_CHIP_TRIO) ||	\
-				 (pS3->Chipset == PCI_CHIP_AURORA64VP) || \
+			 	 (pS3->Chipset == PCI_CHIP_AURORA64VP) || \
 				 (pS3->Chipset == PCI_CHIP_TRIO64UVP) || \
 				 (pS3->Chipset == PCI_CHIP_TRIO64V2_DXGX))
 

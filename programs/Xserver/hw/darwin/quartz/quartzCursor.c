@@ -1,4 +1,11 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Support for using the Quartz Window Manager cursor
  *
@@ -29,7 +36,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzCursor.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzCursor.c,v 1.5 2003/01/23 00:34:26 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "quartzCursor.h"
@@ -65,24 +72,23 @@ static CCrsrHandle currentCursor = NULL;
 static pthread_mutex_t cursorMutex;
 static pthread_cond_t cursorCondition;
 
-#define CURSOR_PRIV(pScreen) pScreen->devPrivates[darwinCursorScreenIndex].ptr
+#define CURSOR_PRIV(pScreen) \
+    ((QuartzCursorScreenPtr)pScreen->devPrivates[darwinCursorScreenIndex].ptr)
 
 #define HIDE_QD_CURSOR(pScreen, visible)                                \
     if (visible) {                                                      \
-        QuartzScreenPtr pQuartzScreen = QUARTZ_PRIV(pScreen);           \
         int ix;                                                         \
-        for (ix = 0; ix < pQuartzScreen->displayCount; ix++) {          \
-            CGDisplayHideCursor(pQuartzScreen->displayIDs[ix]);         \
+        for (ix = 0; ix < QUARTZ_PRIV(pScreen)->displayCount; ix++) {   \
+            CGDisplayHideCursor(QUARTZ_PRIV(pScreen)->displayIDs[ix]);  \
         }                                                               \
         visible = FALSE;                                                \
     } ((void)0)
 
 #define SHOW_QD_CURSOR(pScreen, visible)                                \
     {                                                                   \
-        QuartzScreenPtr pQuartzScreen = QUARTZ_PRIV(pScreen);           \
         int ix;                                                         \
-        for (ix = 0; ix < pQuartzScreen->displayCount; ix++) {          \
-            CGDisplayShowCursor(pQuartzScreen->displayIDs[ix]);         \
+        for (ix = 0; ix < QUARTZ_PRIV(pScreen)->displayCount; ix++) {   \
+            CGDisplayShowCursor(QUARTZ_PRIV(pScreen)->displayIDs[ix]);  \
         }                                                               \
         visible = TRUE;                                                 \
     } ((void)0)
@@ -504,11 +510,10 @@ QuartzWarpCursor(
     }
 
     if (quartzServerVisible) {
-        QuartzScreenPtr     pQuartzScreen = QUARTZ_PRIV(pScreen);
         CGDisplayErr        cgErr;
         CGPoint             cgPoint;
         // Only need to do this for one display. Any display will do.
-        CGDirectDisplayID   cgID = pQuartzScreen->displayIDs[0];
+        CGDirectDisplayID   cgID = QUARTZ_PRIV(pScreen)->displayIDs[0];
         CGRect              cgRect = CGDisplayBounds(cgID);
 
         // Convert (x,y) to CoreGraphics screen-local CG coordinates.

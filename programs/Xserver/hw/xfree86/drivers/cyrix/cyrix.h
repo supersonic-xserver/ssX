@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000 by Richard A. Hecker, California, United States
  * Copyright 2002 by Red Hat Inc.
  *
@@ -166,10 +173,6 @@ extern void	CYRIXRefreshArea16(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
 
 extern void CYRIXsetBlitBuffers(void);
 extern void CYRIXsetBlitBuffersOnOldChip(void);
-
-extern int	CYRIXSetRead(ScreenPtr pScreen, int bank);
-extern int	CYRIXSetReadWrite(ScreenPtr pScreen, int bank);
-extern int	CYRIXSetWrite(ScreenPtr pScreen, int bank);
 
 /* 32 bit access to GX registers */
 #define GX_REG(a) (*(volatile CARD32*)(pCyrix->GXregisters + (a)))

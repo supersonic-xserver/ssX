@@ -1,3 +1,11 @@
+/* $TOG: InitInput.c /main/12 1998/02/10 13:23:52 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
   Copyright 1993, 1998  The Open Group
@@ -25,10 +33,10 @@
   from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xwin/InitInput.c,v 1.15tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/InitInput.c,v 1.13 2003/07/29 21:25:15 dawes Exp $ */
 
 #include "win.h"
-#include "xf86miscproc.h"
+#include "../../Xext/xf86miscproc.h"
 
 CARD32		g_c32LastInputEventTime = 0;
 
@@ -81,7 +89,7 @@ TimeSinceLastInputEvent ()
 
 /* See Porting Layer Definition - p. 17 */
 void
-InitInput (const int argc, const char *argv[])
+InitInput (int argc, char *argv[])
 {
   DeviceIntPtr		pMouse, pKeyboard;
 

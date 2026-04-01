@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/cygwin.rules,v 3.28tsi Exp $
+XCOMM $XFree86: xc/config/cf/cygwin.rules,v 3.28 2003/12/24 18:58:41 dickey Exp $
 
 /*
  * Cygwin shared library rules (DLL versions)
@@ -15,7 +15,9 @@ XCOMM $XFree86: xc/config/cf/cygwin.rules,v 3.28tsi Exp $
 #define SharedLibSM		YES
 #define SharedLibICE		YES
 #define SharedLibXext		YES
+#define SharedLibXie		YES
 #define SharedLibXi		YES
+#define SharedLibPex		YES
 #define SharedLibXtst		YES
 #define SharedOldX		YES
 #define SharedLibXp		YES

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Rootless window management
  */
 /*
@@ -26,7 +33,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessWindow.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/miext/rootless/rootlessWindow.h,v 1.2 2003/06/30 01:45:13 torrey Exp $ */
 
 #ifndef _ROOTLESSWINDOW_H
 #define _ROOTLESSWINDOW_H
@@ -39,7 +46,7 @@ Bool RootlessDestroyWindow(WindowPtr pWin);
 
 #ifdef SHAPE
 void RootlessSetShape(WindowPtr pWin);
-#endif /* SHAPE */
+#endif // SHAPE
 
 Bool RootlessChangeWindowAttributes(WindowPtr pWin, unsigned long vmask);
 Bool RootlessPositionWindow(WindowPtr pWin, int x, int y);

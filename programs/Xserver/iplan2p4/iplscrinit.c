@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/iplan2p4/iplscrinit.c,v 3.4 2005/10/14 15:17:18 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/iplscrinit.c,v 3.3 1998/11/22 10:37:41 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -27,12 +34,13 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XConsortium: iplscrinit.c,v 5.32 94/04/17 20:29:00 dpw Exp $ */
 
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
@@ -209,7 +217,7 @@ iplGetScreenPixmap(pScreen)
 #ifdef CFB_NEED_SCREEN_PRIVATE
     return (PixmapPtr)(pScreen->devPrivates[iplScreenPrivateIndex].ptr);
 #else
-    return (PixmapPtr)(pScreen->devPrivate.ptr);
+    return (PixmapPtr)(pScreen->devPrivate);
 #endif
 }
 
@@ -223,6 +231,6 @@ iplSetScreenPixmap(pPix)
 	    (pointer)pPix;
 #else
     if (pPix)
-	pPix->drawable.pScreen->devPrivate.ptr = (pointer)pPix;
+	pPix->drawable.pScreen->devPrivate = (pointer)pPix;
 #endif
 }

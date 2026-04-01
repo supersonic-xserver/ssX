@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Creator and Creator3D framebuffer - Plane copies.
  *
  * Copyright (C) 1998,1999 Jakub Jelinek (jakub@redhat.com)
@@ -28,7 +35,6 @@
 #include "ffb_regs.h"
 #include "ffb_rcache.h"
 #include "ffb_fifo.h"
-#include "ffb_gc.h"
 
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -89,6 +95,9 @@ CreatorCopyPlane32to1(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, int ro
 	int			nbox;
 	BoxPtr			pbox;
 	int result;
+
+	extern int starttab[32], endtab[32];
+	extern unsigned int partmasks[32][32];
 
 	if (!(planemask & 1))
 		return;
@@ -328,6 +337,7 @@ RegionPtr CreatorCopyPlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable,
 						pGC, srcx, srcy, width, height, dstx, dsty, bitPlane);
 	} else if ((pSrcDrawable->bitsPerPixel == 32 || pSrcDrawable->bitsPerPixel == 8)
 		   && pDstDrawable->bitsPerPixel == 1) {
+		extern int InverseAlu[16];
 		int oldalu;
 
 		oldalu = pGC->alu;

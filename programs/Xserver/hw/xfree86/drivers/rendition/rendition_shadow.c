@@ -1,10 +1,17 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * file rendition_shadow.h
  *
  * The functions used by ShadowFB
  * Based on code written by Mark Vojkovich <markv@valinux.com>
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/rendition_shadow.c,v 1.1 2000/03/01 00:25:25 dawes Exp $ */
 
 #include "rendition.h"
 #include "vtypes.h"

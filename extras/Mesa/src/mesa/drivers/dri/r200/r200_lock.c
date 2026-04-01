@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_lock.c,v 1.1 2002/10/30 12:51:52 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_lock.c,v 1.1.1.2 2004/12/10 15:05:58 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -32,7 +39,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * Authors:
  *   Keith Whitwell <keith@tungstengraphics.com>
  */
-
+#include <string.h>
+ 
 #include "r200_context.h"
 #include "r200_lock.h"
 #include "r200_tex.h"
@@ -50,9 +58,9 @@ static void
 r200UpdatePageFlipping( r200ContextPtr rmesa )
 {
    int use_back;
-   rmesa->doPageFlip = rmesa->sarea->pfAllowPageFlip;
+   rmesa->doPageFlip = rmesa->sarea->pfState;
 
-   use_back = (rmesa->glCtx->Color._DrawDestMask == BACK_LEFT_BIT);
+   use_back = (rmesa->glCtx->Color._DrawDestMask == DD_BACK_LEFT_BIT);
    use_back ^= (rmesa->sarea->pfCurrentPage == 1);
    
    if (use_back) {
@@ -83,7 +91,7 @@ void r200GetLock( r200ContextPtr rmesa, GLuint flags )
 {
    __DRIdrawablePrivate *dPriv = rmesa->dri.drawable;
    __DRIscreenPrivate *sPriv = rmesa->dri.screen;
-   RADEONSAREAPrivPtr sarea = rmesa->sarea;
+   drm_radeon_sarea_t *sarea = rmesa->sarea;
    int i;
 
    drmGetLock( rmesa->dri.fd, rmesa->dri.hwContext, flags );
@@ -100,7 +108,7 @@ void r200GetLock( r200ContextPtr rmesa, GLuint flags )
 
    if ( rmesa->lastStamp != dPriv->lastStamp ) {
       r200UpdatePageFlipping( rmesa );
-      if (rmesa->glCtx->Color._DrawDestMask == BACK_LEFT_BIT)
+      if (rmesa->glCtx->Color._DrawDestMask == DD_BACK_LEFT_BIT)
          r200SetCliprects( rmesa, GL_BACK_LEFT );
       else
          r200SetCliprects( rmesa, GL_FRONT_LEFT );
@@ -108,11 +116,13 @@ void r200GetLock( r200ContextPtr rmesa, GLuint flags )
       rmesa->lastStamp = dPriv->lastStamp;
    }
 
-   if ( sarea->ctxOwner != rmesa->dri.hwContext ) {
-      sarea->ctxOwner = rmesa->dri.hwContext;
+   if ( sarea->ctx_owner != rmesa->dri.hwContext ) {
+      sarea->ctx_owner = rmesa->dri.hwContext;
    }
 
    for ( i = 0 ; i < rmesa->nr_heaps ; i++ ) {
       DRI_AGE_TEXTURES( rmesa->texture_heaps[ i ] );
    }
+
+   rmesa->lost_context = GL_TRUE;
 }

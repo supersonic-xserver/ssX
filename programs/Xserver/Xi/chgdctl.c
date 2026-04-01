@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/Xi/chgdctl.c,v 3.4tsi Exp $ */
+/* $Xorg: chgdctl.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /************************************************************
 
@@ -45,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/chgdctl.c,v 3.4 2001/12/14 19:58:54 dawes Exp $ */
 
 /********************************************************************
  *
@@ -54,11 +69,11 @@ SOFTWARE.
 
 #define	 NEED_EVENTS			/* for inputstr.h    */
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>			/* control constants */
+#include "XI.h"
+#include "XIproto.h"			/* control constants */
 #include "XIstubs.h"
 
 #include "extnsionst.h"

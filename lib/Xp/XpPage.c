@@ -1,3 +1,11 @@
+/* $Xorg: XpPage.c,v 1.4 2001/03/06 13:59:02 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -45,8 +53,7 @@ typedef struct {
     XPContext context;
 } _XpDiscardPageRec;
 
-static Bool
-_XpDiscardPage(Display *dpy, XEvent *event, XPointer arg)
+static Bool _XpDiscardPage(Display *dpy, XEvent *event, XPointer arg)
 {
     _XpDiscardPageRec *disrec = (_XpDiscardPageRec *) arg;
 

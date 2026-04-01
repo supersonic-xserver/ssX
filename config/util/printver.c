@@ -1,8 +1,14 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * A simple program to make it possible to print the XFree86 version and
- * date info as defined in xf86Version.h and xf86Date.h, as well as
- * XFree86CustomVersion as defined in site.def very early in the
+ * date info as defined in xf86Version.h and xf86Date.h very early in the
  * build process.
  */
 
@@ -12,10 +18,9 @@
 #include <stdlib.h>
 #include "xf86Version.h"
 #include "xf86Date.h"
-#include "site.h"
 
 int
-main(int argc, char *argv[])
+main()
 {
 #ifdef XF86_VERSION_MAJOR
 	printf(" version %d.%d.%d", XF86_VERSION_MAJOR, XF86_VERSION_MINOR,
@@ -25,9 +30,6 @@ main(int argc, char *argv[])
 #ifdef XF86_DATE
 	printf(" (%s)", XF86_DATE);
 #endif
-#endif
-#ifdef XFree86CustomVersion
-	printf(" (%s)", XFree86CustomVersion);
 #endif
 	exit(0);
 }

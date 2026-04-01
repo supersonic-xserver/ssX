@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/objects.c,v 1.12tsi Exp $ */
+/* $Xorg: objects.c,v 1.3 2000/08/17 19:46:30 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines, Corp. 1991
  * All Rights Reserved
  * Copyright Lexmark International, Inc. 1991
@@ -26,6 +33,7 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/lib/font/Type1/objects.c,v 1.11 2003/05/27 22:26:45 tsi Exp $ */
  /* OBJECTS  CWEB         V0025 ********                             */
 /*
 :h1.OBJECTS Module - TYPE1IMAGER Objects Common Routines
@@ -59,8 +67,8 @@ you do do not need to include these header files.
 #include  <stdarg.h>
 #include  "os.h"
 #else
-#include <X11/Xdefs.h>	/* Bool declaration */
-#include <X11/Xmd.h>	/* INT32 declaration */
+#include "Xdefs.h"	/* Bool declaration */
+#include "Xmd.h"	/* INT32 declaration */
 #include  "os.h"
 #include "xf86_ansic.h"
 #endif
@@ -298,24 +306,21 @@ t1_Allocate(int size,     /* number of bytes to allocate & initialize     */
 {
        register struct xobject *template = (struct xobject *)ptr;
        register struct xobject *r;
-       int sizer, extrar;
  
        /*
        * round up 'size' and 'extra' to be an integer number of 'long's:
        */
-       sizer = (size + sizeof(long) - 1) & -(int)sizeof(long);
-       extrar = (extra + sizeof(long) - 1) & -(int)sizeof(long);
-       if ((size < 0) || (sizer < size) ||
-           (extra < 0) ||  (extrar < extra) ||
-           (sizer + extrar <= 0))
+       size = (size + sizeof(long) - 1) & -(int)sizeof(long);
+       extra = (extra + sizeof(long) - 1) & -(int)sizeof(long);
+       if (size + extra <= 0)
                Abort("Non-positive allocate?");
-       r = (struct xobject *) xiMalloc(sizer + extrar);
+       r = (struct xobject *) xiMalloc(size + extra);
  
        while (r == NULL) {
                if (!GimeSpace()) {
                        Abort("We have REALLY run out of memory");
                }
-               r = (struct xobject *) xiMalloc(sizer + extrar);
+               r = (struct xobject *) xiMalloc(size + extra);
        }
  
        /*
@@ -327,7 +332,7 @@ t1_Allocate(int size,     /* number of bytes to allocate & initialize     */
           function, which was in turn called by Unique(). (PNM)        */
                if (!ISPERMANENT(template->flag))
                    --template->references;
-               LONGCOPY(r, template, sizer);
+               LONGCOPY(r, template, size);
                r->flag &= ~(ISPERMANENT(ON) | ISIMMORTAL(ON));
        /* added reference field 3-2-6-91 PNM */
                r->references = 1;
@@ -335,7 +340,7 @@ t1_Allocate(int size,     /* number of bytes to allocate & initialize     */
        else {
                register char **p1;
  
-               for (p1=(char **)r; sizer > 0; sizer -= sizeof(char *))
+               for (p1=(char **)r; size > 0; size -= sizeof(char *))
                        *p1++ = NULL;
        }
  

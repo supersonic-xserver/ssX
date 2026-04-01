@@ -1,32 +1,19 @@
-/* $XFree86: xc/include/fonts/fontstruct.h,v 3.4tsi Exp $ */
-/***********************************************************
-Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
+/*
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
+ *
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-                        All Rights Reserved
-
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
-provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
-supporting documentation, and that the name of Digital not be
-used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
-
-DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
-ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
-DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
-ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
-ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
-SOFTWARE.
-
-******************************************************************/
 
 #ifndef FONTSTR_H
 #define FONTSTR_H
 
 #include <X11/Xproto.h>
-#include <X11/fonts/font.h>
+#include "font.h"
 #include <X11/Xfuncproto.h>
 #include <X11/Xdefs.h>
 
@@ -289,6 +276,6 @@ typedef struct _FPEFunctions {
 				(pi)->ink_maxbounds.characterWidth)
 #define FONT_MAX_WIDTH(pi)	(FONT_MAX_RIGHT(pi) - FONT_MIN_LEFT(pi))
 
-#include <X11/fonts/fontproto.h>
+#include "fontproto.h"
 
 #endif				/* FONTSTR_H */

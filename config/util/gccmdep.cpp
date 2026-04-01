@@ -3,7 +3,7 @@ XCOMM!/bin/sh
 XCOMM
 XCOMM makedepend which uses 'gcc -M'
 XCOMM
-XCOMM $XFree86: xc/config/util/gccmdep.cpp,v 3.12tsi Exp $
+XCOMM $XFree86: xc/config/util/gccmdep.cpp,v 3.11 2003/06/15 16:53:11 tsi Exp $
 XCOMM
 XCOMM Based on mdepend.cpp and code supplied by Hongjiu Lu <hjl@nynexst.com>
 XCOMM
@@ -31,14 +31,8 @@ while [ $# != 0 ]; do
 	endmarker=
     else
 	case "$1" in
-#ifdef __DARWIN__
-	    -D*|-F*|-I*|-U*)
-#else
 	    -D*|-I*|-U*)
-#endif
-XCOMM allow single quotes in args
-		qarg=`echo "$1" | sed "s/'/'\\\\\\\\''/g"`
-		args="$args '$qarg'"
+		args="$args '$1'"
 		;;
 	    -g*|-O*)
 		;;
@@ -80,9 +74,7 @@ XCOMM ignore these flags
 			    echo "Unknown option '$1' ignored" 1>&2
 			    ;;
 			*)
-XCOMM allow single quotes and blanks in filenames
-			    file=`echo "$1" | sed "s/'/'\\\\\\\\''/g"`
-			    files="$files '$file'"
+			    files="$files $1"
 			    ;;
 		    esac
 		fi
@@ -123,9 +115,7 @@ CMD="$CC -M $args $files"
 if [ X"$makefile" != X- ]; then
     CMD="$CMD >> $TMP"
 fi
-
-XCOMM Disable filename expansion in CMD
-eval "$CMD"
+eval $CMD
 if [ X"$makefile" != X- ]; then
     $RM ${makefile}.bak
     $MV $makefile ${makefile}.bak

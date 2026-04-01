@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright (c) 1988  X Consortium
 
@@ -27,7 +41,7 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
-/* $XFree86: xc/programs/xfs/os/daemon.c,v 1.12 2002/10/20 21:42:50 tsi Exp $ */
+/* $XFree86: xc/programs/xfs/os/daemon.c,v 1.13 2004/01/07 03:47:36 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <sys/types.h>

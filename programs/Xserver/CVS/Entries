@@ -1,0 +1,36 @@
+/Imakefile/1.19/Thu Dec 29 15:45:44 2005//Tnetbsd-5-2-3-RELEASE
+/XFree86.def/1.1.1.4/Fri Mar 18 13:09:53 2005//Tnetbsd-5-2-3-RELEASE
+/Xdmx.def/1.1.1.1/Fri Mar 18 13:09:53 2005//Tnetbsd-5-2-3-RELEASE
+/Xnest.def/1.1.1.4/Fri Mar 18 13:09:53 2005//Tnetbsd-5-2-3-RELEASE
+/Xserver.man/1.1.1.5/Fri Mar 18 13:09:53 2005//Tnetbsd-5-2-3-RELEASE
+/Xvfb.def/1.1.1.4/Fri Mar 18 13:09:53 2005//Tnetbsd-5-2-3-RELEASE
+D/GL////
+D/XTrap////
+D/Xext////
+D/Xi////
+D/XpConfig////
+D/Xprint////
+D/afb////
+D/cfb////
+D/cfb16////
+D/cfb24////
+D/cfb32////
+D/dbe////
+D/dix////
+D/fb////
+D/hw////
+D/ilbm////
+D/include////
+D/iplan2p2////
+D/iplan2p4////
+D/iplan2p8////
+D/lbx////
+D/lmfcfb////
+D/mfb////
+D/mi////
+D/miext////
+D/os////
+D/randr////
+D/record////
+D/render////
+D/xkb////

@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #define USE_INT10 1
 #define USE_PCIVGAIO 1
 
@@ -27,7 +34,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_driver.c,v 1.115tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_driver.c,v 1.109 2005/02/18 02:55:10 dawes Exp $ */
 
 /*
  * Authors:
@@ -81,7 +88,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* !!! These need to be checked !!! */
 #if 0
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 #endif
 
 /* The driver's own header file: */
@@ -92,7 +99,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "dixstruct.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 #ifdef XF86DRI
 #include "dri.h"
@@ -111,7 +118,7 @@ static Bool TDFXProbe(DriverPtr drv, int flags);
 static Bool TDFXPreInit(ScrnInfoPtr pScrn, int flags);
 
 /* Initialize a screen */
-static Bool TDFXScreenInit(int Index, ScreenPtr pScreen, const int argc, const char **argv);
+static Bool TDFXScreenInit(int Index, ScreenPtr pScreen, int argc, char **argv);
 
 /* Enter from a virtual terminal */
 static Bool TDFXEnterVT(int scrnIndex, int flags);
@@ -137,7 +144,7 @@ static void TDFXBlockHandler(int, pointer, pointer, pointer);
 /* Switch to various Display Power Management System levels */
 static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn, 
 					int PowerManagermentMode, int flags);
-
+					
 static xf86MonPtr doTDFXDDC(ScrnInfoPtr pScrn);
 
 DriverRec TDFX = {
@@ -220,11 +227,10 @@ static const char *ddcSymbols[] = {
     NULL
 };
 
-
 static const char *i2cSymbols[] = {
-    "xf86CreateI2CBusRec",
+	"xf86CreateI2CBusRec",
     "xf86I2CBusInit",
-    NULL
+	NULL
 };
 
 static const char *fbSymbols[] = {
@@ -301,7 +307,7 @@ static XF86ModuleVersionInfo tdfxVersRec =
 XF86ModuleData tdfxModuleData = {&tdfxVersRec, tdfxSetup, 0};
 
 static pointer
-tdfxSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -320,12 +326,12 @@ tdfxSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, xaaSymbols, 
-			     ramdacSymbols, vbeSymbols, int10Symbols,
+	LoaderRefSymLists(vgahwSymbols, fbSymbols, xaaSymbols, 
+			  ramdacSymbols, vbeSymbols, int10Symbols,
 #ifdef XF86DRI
-			     drmSymbols, driSymbols,
+			  drmSymbols, driSymbols,
 #endif
-			     NULL);
+			  NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -385,14 +391,11 @@ static void
 TDFXProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-    if ((pMod = xf86LoadVBEModule(pScrn)))
+    if (xf86LoadSubModule(pScrn, "vbe"))
     {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
 	pVbe =  VBEInit(NULL,index);
 	ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 
@@ -694,7 +697,6 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   rgb defaultWeight = {0, 0, 0};
   pciVideoPtr match;
   int availableMem;
-  ModuleDescPtr pMod, pDDCMod;
 
   TDFXTRACE("TDFXPreInit start\n");
   if (pScrn->numEntities != 1) return FALSE;
@@ -721,19 +723,19 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   if (pTDFX->pEnt->location.type != BUS_PCI) return FALSE;
 
   /* The vgahw module should be loaded here when needed */
-  if (!(pMod = xf86LoadSubModule(pScrn, "vgahw"))) return FALSE;
+  if (!xf86LoadSubModule(pScrn, "vgahw")) return FALSE;
 
-  xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+  xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
   /* Allocate a vgaHWRec */
   if (!vgaHWGetHWRec(pScrn)) return FALSE;
 
 #if USE_INT10
 #if !defined(__powerpc__)
-  if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
+  if (xf86LoadSubModule(pScrn, "int10")) {
     xf86Int10InfoPtr pInt;
 
-    xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+    xf86LoaderReqSymLists(int10Symbols, NULL);
     xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
                "Softbooting the board (through the int10 interface).\n");
     pInt = xf86InitInt10(pTDFX->pEnt->index);
@@ -992,18 +994,18 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 
   xf86SetDpi(pScrn, 0, 0);
 
-  if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+  if (!xf86LoadSubModule(pScrn, "fb")) {
     TDFXFreeRec(pScrn);
     return FALSE;
   }
-  xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+  xf86LoaderReqSymLists(fbSymbols, NULL);
 
   if (!xf86ReturnOptValBool(pTDFX->Options, OPTION_NOACCEL, FALSE)) {
-    if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+    if (!xf86LoadSubModule(pScrn, "xaa")) {
       TDFXFreeRec(pScrn);
       return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+    xf86LoaderReqSymLists(xaaSymbols, NULL);
   }
 
   if (!xf86GetOptValBool(pTDFX->Options, OPTION_SHOWCACHE, &(pTDFX->ShowCache))) {
@@ -1025,49 +1027,47 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   }
 
   if (!xf86ReturnOptValBool(pTDFX->Options, OPTION_SW_CURSOR, FALSE)) {
-    if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+    if (!xf86LoadSubModule(pScrn, "ramdac")) {
       TDFXFreeRec(pScrn);
       return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    xf86LoaderReqSymLists(ramdacSymbols, NULL);
   }
 
   /* Load DDC and I2C for monitor ID */
-  if (!(pMod = xf86LoadSubModule(pScrn, "i2c"))) {
+  if (!xf86LoadSubModule(pScrn, "i2c")) {
     TDFXFreeRec(pScrn);
     return FALSE;
   }
-  xf86LoaderModReqSymLists(pMod, i2cSymbols, NULL);
-
-  if (!(pDDCMod = xf86LoadSubModule(pScrn, "ddc"))) {
+  xf86LoaderReqSymLists(i2cSymbols, NULL);
+  
+  if (!xf86LoadSubModule(pScrn, "ddc")) {
     TDFXFreeRec(pScrn);
     return FALSE;
   }
-  xf86LoaderModReqSymLists(pDDCMod, ddcSymbols, NULL);
+  xf86LoaderReqSymLists(ddcSymbols, NULL);
 
   /* try to read read DDC2 data */
   pMon = doTDFXDDC(pScrn);
   if (pMon != NULL) {
     xf86SetDDCproperties(pScrn,xf86PrintEDID(pMon));
-#if USE_INT10
-#if !defined(__powerpc__)
   } else {
     /* try to use vbe if we didn't find anything */
+#if USE_INT10
+#if !defined(__powerpc__)
     /* Initialize DDC1 if possible */
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-        vbeInfoPtr pVbe = VBEInit(NULL,pTDFX->pEnt->index);
-        xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
-        if (pVbe) {
-            pMon = vbeDoEDID(pVbe, pDDCMod);
-            vbeFree(pVbe);
-            xf86SetDDCproperties(pScrn,xf86PrintEDID(pMon));
-        }
-        xf86UnloadSubModule(pMod);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
+      vbeInfoPtr pVbe = VBEInit(NULL,pTDFX->pEnt->index);
+
+      xf86LoaderReqSymLists(vbeSymbols, NULL);
+      pMon = vbeDoEDID(pVbe, NULL);
+      vbeFree(pVbe);
+      xf86SetDDCproperties(pScrn,xf86PrintEDID(pMon));
     }
 #endif
 #endif
   }
-
+  
   if (xf86ReturnOptValBool(pTDFX->Options, OPTION_USE_PIO, FALSE)) {
     pTDFX->usePIO=TRUE;
   }
@@ -1130,8 +1130,8 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 #ifdef XF86DRI
   /* Load the dri module if requested. */
   if (xf86ReturnOptValBool(pTDFX->Options, OPTION_DRI, FALSE)) {
-    if ((pMod = xf86LoadSubModule(pScrn, "dri"))) {
-      xf86LoaderModReqSymLists(pMod, driSymbols, drmSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "dri")) {
+      xf86LoaderReqSymLists(driSymbols, drmSymbols, NULL);
     }
   }
 #endif
@@ -2050,7 +2050,7 @@ static void allocateMemory(ScrnInfoPtr pScrn) {
 }
 
 static Bool
-TDFXScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **argv) {
+TDFXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv) {
   ScrnInfoPtr pScrn;
   vgaHWPtr hwp;
   TDFXPtr pTDFX;
@@ -2550,7 +2550,7 @@ TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn, int PowerManagementMode,
   pTDFX->writeLong(pTDFX, DACMODE, dacmode);
 }
 
-static void
+void
 TDFXPutBits(I2CBusPtr b, int  scl, int  sda)
 {
   TDFXPtr pTDFX;
@@ -2564,7 +2564,7 @@ TDFXPutBits(I2CBusPtr b, int  scl, int  sda)
   pTDFX->writeLong(pTDFX, VIDSERIALPARALLELPORT, reg);
 }
 
-static void
+void
 TDFXGetBits(I2CBusPtr b, int *scl, int *sda)
 {
   TDFXPtr pTDFX;

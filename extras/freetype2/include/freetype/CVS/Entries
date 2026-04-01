@@ -1,0 +1,39 @@
+/freetype.h/1.1.1.6/Fri Mar 18 13:07:26 2005//Tnetbsd-5-2-3-RELEASE
+/ftbbox.h/1.1.1.4/Fri Mar 18 13:07:26 2005//Tnetbsd-5-2-3-RELEASE
+/ftbdf.h/1.1.1.3/Fri Mar 18 13:07:26 2005//Tnetbsd-5-2-3-RELEASE
+/ftcache.h/1.1.1.5/Fri Mar 18 13:07:26 2005//Tnetbsd-5-2-3-RELEASE
+/ftchapters.h/1.1.1.3/Fri Mar  5 14:26:22 2004//Tnetbsd-5-2-3-RELEASE
+/fterrdef.h/1.2/Fri Jun  2 16:16:25 2006//Tnetbsd-5-2-3-RELEASE
+/fterrors.h/1.1.1.4/Fri Feb 28 13:19:14 2003//Tnetbsd-5-2-3-RELEASE
+/ftglyph.h/1.1.1.5/Fri Mar 18 13:07:26 2005//Tnetbsd-5-2-3-RELEASE
+/ftgzip.h/1.1.1.2/Fri Mar 18 13:07:26 2005//Tnetbsd-5-2-3-RELEASE
+/ftimage.h/1.1.1.6/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftincrem.h/1.1.1.2/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftlist.h/1.1.1.4/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftlzw.h/1.1.1.1/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftmac.h/1.1.1.4/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftmm.h/1.1.1.4/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftmodapi.h/1.1.1.1/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftmoderr.h/1.1.1.3/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftoutln.h/1.1.1.6/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftpfr.h/1.1.1.2/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftrender.h/1.1.1.4/Fri Mar  5 14:26:23 2004//Tnetbsd-5-2-3-RELEASE
+/ftsizes.h/1.1.1.3/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftsnames.h/1.1.1.4/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftstroke.h/1.1.1.1/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftsynth.h/1.1.1.5/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftsysio.h/1.1.1.2/Fri Mar  5 14:26:23 2004//Tnetbsd-5-2-3-RELEASE
+/ftsysmem.h/1.1.1.2/Fri Mar  5 14:26:23 2004//Tnetbsd-5-2-3-RELEASE
+/ftsystem.h/1.1.1.5/Fri Mar  5 14:26:23 2004//Tnetbsd-5-2-3-RELEASE
+/fttrigon.h/1.1.1.3/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/fttypes.h/1.1.1.4/Fri Mar  5 14:26:23 2004//Tnetbsd-5-2-3-RELEASE
+/ftwinfnt.h/1.1.1.2/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ftxf86.h/1.1.1.2/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/t1tables.h/1.1.1.6/Fri Mar 18 13:07:27 2005//Tnetbsd-5-2-3-RELEASE
+/ttnameid.h/1.1.1.5/Fri Mar 18 13:07:28 2005//Tnetbsd-5-2-3-RELEASE
+/tttables.h/1.1.1.5/Fri Mar 18 13:07:28 2005//Tnetbsd-5-2-3-RELEASE
+/tttags.h/1.1.1.4/Fri Mar 18 13:07:28 2005//Tnetbsd-5-2-3-RELEASE
+/ttunpat.h/1.1.1.1/Fri Mar 18 13:07:28 2005//Tnetbsd-5-2-3-RELEASE
+D/cache////
+D/config////
+D/internal////

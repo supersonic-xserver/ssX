@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/tnl/Imakefile.inc,v 1.4 2004/12/13 22:40:55 tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/tnl/Imakefile.inc,v 1.5 2004/12/17 12:48:59 alanh Exp $
 
 #ifndef MesaTnlBuildDir
 #define MesaTnlBuildDir $(GLXLIBSRC)/mesa/tnl/

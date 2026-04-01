@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xmessage/readfile.h,v 1.1 2003/04/14 23:03:13 herrb Exp $ */
+/* $XFree86: xc/programs/xmessage/readfile.h,v 1.2 2004/02/13 23:58:53 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 2003 The XFree86 Project, Inc.
  * All rights reserved.

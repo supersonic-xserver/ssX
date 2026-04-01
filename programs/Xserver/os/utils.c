@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/os/utils.c,v 3.115tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -49,8 +62,9 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
 OR PERFORMANCE OF THIS SOFTWARE.
 
 */
+/* $XFree86: xc/programs/Xserver/os/utils.c,v 3.102 2005/02/03 02:01:14 dawes Exp $ */
 /*
- * Copyright (c) 1996-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1996-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -104,10 +118,10 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #if defined(WIN32) && !defined(__CYGWIN__)
 #include <X11/Xwinsock.h>
 #endif
-#include <X11/Xos.h>
+#include "Xos.h"
 #include <stdio.h>
 #include "misc.h"
-#include <X11/X.h>
+#include "X.h"
 #include <X11/Xtrans.h>
 #include "input.h"
 #include "dixfont.h"
@@ -154,16 +168,11 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #endif
 
 #ifdef XKB
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #endif
-
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
-#endif
-
-#ifdef XPRINT
-#include "DiPrint.h"
+#include "security.h"
 #endif
 
 #ifdef RENDER
@@ -178,8 +187,8 @@ OR PERFORMANCE OF THIS SOFTWARE.
 Bool CoreDump;
 Bool noTestExtensions;
 
-#ifdef PANORAMIX
 Bool noPanoramiXExtension = TRUE;
+#ifdef PANORAMIX
 Bool PanoramiXVisibilityNotifySent = FALSE;
 Bool PanoramiXMapped = FALSE;
 Bool PanoramiXWindowExposureSent = FALSE;
@@ -195,8 +204,10 @@ int SyncOn  = 0;
 extern int SelectWaitTime;
 #endif
 
-#ifdef SPECIAL_MALLOC
-#undef MEMBUG
+#ifdef DEBUG
+#ifndef SPECIAL_MALLOC
+#define MEMBUG
+#endif
 #endif
 
 #if defined(SVR4) || defined(__linux__) || defined(CSRG_BASED)
@@ -213,7 +224,7 @@ long Memory_fail = 0;
 int userdefinedfontpath = 0;
 #endif /* sgi */
 
-const char *dev_tty_from_init = NULL;	/* since we need to parse it anyway */
+char *dev_tty_from_init = NULL;		/* since we need to parse it anyway */
 
 extern char dispatchExceptionAtReset;
 
@@ -476,60 +487,6 @@ GiveUp(int sig)
     errno = olderrno;
 }
 
-/*ARGSUSED*/
-SIGVAL
-AbortServer(int sig)
-{
-    static Bool beenHere = FALSE;
-
-#if defined(SYSV) && defined(X_NOT_POSIX)
-    if (sig)
-	OsSignal(sig, SIG_IGN);
-#endif
-    /*
-     * Once entering here, ignore SIGINT and SIGTERM so that we don't
-     * re-enter.
-     */
-    OsSignal(SIGINT, SIG_IGN);
-    OsSignal(SIGTERM, SIG_IGN);
-    if (!beenHere) {
-	beenHere = TRUE;
-	if (sig == SIGINT)
-	    ErrorF("X server terminated by an interrupt signal.\n");
-	OsCleanup(TRUE);
-	AbortDDX();
-    } else {
-	ErrorF("Re-entering AbortServer.  Aborting without further cleanup.\n");
-    }
-    fflush(stderr);
-    if (CoreDump)
-	abort();
-    exit (1);
-}
-
-#ifndef DDXTIME
-CARD32
-GetTimeInMillis(void)
-{
-    struct timeval  tp;
-    CARD32 val;
-    INT32 diff;
-    static CARD32 oldval = 0;
-    static CARD32 time = 0;
-
-    X_GETTIMEOFDAY(&tp);
-    val = (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
-    if (oldval) {
-	diff = val - oldval;
-	if (diff > 0)
-	    time += diff;
-    }
-    oldval = val;
-
-    return time;
-}
-#endif
-
 void
 AdjustWaitForDelay (pointer waitTime, unsigned long newdelay)
 {
@@ -671,7 +628,7 @@ VerifyDisplayName(const char *d)
  * argc or any of the strings pointed to by argv.
  */
 void
-ProcessCommandLine(const int argc, const char *argv[])
+ProcessCommandLine(int argc, char *argv[])
 {
     int i, skip;
 
@@ -1305,7 +1262,7 @@ Xalloc(unsigned long amount)
 void *
 XNFalloc(unsigned long amount)
 {
-    pointer ptr;
+    register pointer ptr;
 
     if (amount == 0)
 	return NULL;
@@ -1694,7 +1651,7 @@ OsReleaseSignals (void)
  */
 
 int
-System(const char *command)
+System(char *command)
 {
     int pid, p;
 #ifdef SIGCHLD
@@ -1742,7 +1699,7 @@ static struct pid {
 } *pidlist;
 
 pointer
-Popen(const char *command, const char *type)
+Popen(char *command, char *type)
 {
     struct pid *cur;
     FILE *iop;
@@ -1816,7 +1773,7 @@ Popen(const char *command, const char *type)
 
 /* fopen that drops privileges */
 pointer
-Fopen(const char *file, const char *type)
+Fopen(char *file, char *type)
 {
     FILE *iop;
 #ifndef HAS_SAVED_IDS_AND_SETEUID
@@ -1886,26 +1843,24 @@ Fopen(const char *file, const char *type)
     ErrorF("Popen: `%s', fp = %p\n", command, iop);
 #endif
 
+    return iop;
 #else
     int ruid, euid;
 
     ruid = getuid();
     euid = geteuid();
     
-    if (seteuid(ruid) == -1)
-	return NULL;
-
+    if (seteuid(ruid) == -1) {
+	    return NULL;
+    }
     iop = fopen(file, type);
 
     if (seteuid(euid) == -1) {
-	if (iop)
 	    fclose(iop);
-	return NULL;
+	    return NULL;
     }
-
-#endif /* HAS_SAVED_IDS_AND_SETEUID */
-
     return iop;
+#endif /* HAS_SAVED_IDS_AND_SETEUID */
 }
 
 int
@@ -2031,11 +1986,11 @@ enum BadCode {
       "the \"super user\" (root).\n"
 
 void
-CheckUserParameters(const int argc, const char **argv, char **envp)
+CheckUserParameters(int argc, char **argv, char **envp)
 {
     enum BadCode bad = NotBad;
     int i = 0, j;
-    const char *a, *e = NULL;
+    char *a, *e = NULL;
 #if defined(__QNX__) && !defined(__QNXNTO__)
     char cmd_name[64];
 #endif
@@ -2172,146 +2127,13 @@ CheckUserParameters(const int argc, const char **argv, char **envp)
  */
 
 #ifdef USE_PAM
-#include <pwd.h>
 #include <security/pam_appl.h>
-#ifndef sun
-#ifdef _OPENPAM
-#include <security/openpam.h>
-#undef   misc_conv
-#define  misc_conv openpam_ttyconv
-#else  /* _OPENPAM */
+#if !defined(_OPENPAM) && !defined(OPENPAM)
 #include <security/pam_misc.h>
-#endif /* _OPENPAM */
-#else  /* sun */
-
-#include <termio.h>
-
-static volatile int SIGINTed;
-
-static void
-SIGINThandler(int signo)
-{
-    SIGINTed = 1;
-}
-
-/* A conversation function for Solaris */
-static int
-misc_conv(int nummsgs, struct pam_message **pamms, struct pam_response **pamrs,
-	  void *data)
-{
-    struct pam_message *pamm;
-    struct pam_response *pamr;
-    struct termio tty;
-    void (*handler_save)(int);
-    int echo, c;
-    unsigned short flags_save = 0;
-    char input[PAM_MAX_RESP_SIZE + 1], *pchar;
-
-    if ((nummsgs <= 0) || (nummsgs >= PAM_MAX_NUM_MSG)) {
-	ErrorF("PAM authentication error, invalid number of messages:"
-		"  %d, (max %d)\n", nummsgs, PAM_MAX_NUM_MSG);
-	return PAM_CONV_ERR;
-    }
-
-    pamr = xcalloc(nummsgs, sizeof(struct pam_response));
-    if (!pamr) {
-	ErrorF("PAM authentication error, memory allocation failure\n");
-	return PAM_CONV_ERR;
-    }
-
-    *pamrs = pamr;
-    for (pamm = *pamms;  nummsgs > 0;  nummsgs--, pamm++, pamr++) {
-	if (pamm->msg == NULL) {
-	    ErrorF("PAM authentication error, NULL message\n");
-	    break;
-	}
-
-	/* Strip any trailing newline */
-	pchar = pamm->msg + strlen(pamm->msg);
-	if (*pchar == '\n')
-	    *pchar = '\0';
-
-	echo = 0;
-	switch (pamm->msg_style) {
-	default:
-	    ErrorF("PAM authentication error, unknown message type:  %d\n",
-		   pamm->msg_style);
-	    goto fail;
-
-	case PAM_ERROR_MSG:
-	    (void) fputs(pamm->msg, stderr);
-	    (void) fputc('\n', stderr);
-	    break;
-
-	case PAM_TEXT_INFO:
-	    (void) fputs(pamm->msg, stdout);
-	    (void) fputc('\n', stdout);
-	    break;
-
-	case PAM_PROMPT_ECHO_ON:
-	    echo = 1;
-	    /* Fall through */
-
-	case PAM_PROMPT_ECHO_OFF:
-	    (void) fputs(pamm->msg, stderr);
-
-	    SIGINTed = 0;
-	    handler_save = signal(SIGINT, SIGINThandler);
-
-	    if (!echo) {
-		(void) ioctl(fileno(stdin), TCGETA, &tty);
-		flags_save = tty.c_lflag;
-		tty.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL);
-		(void) ioctl(fileno(stdin), TCSETAF, &tty);
-	    }
-
-	    flockfile(stdin);
-
-	    pchar = input;
-	    while (!SIGINTed &&
-		 ((c = getchar_unlocked()) != '\n') &&
-		 (c != '\r') &&
-		 (c != EOF)) {
-		if (pchar < (input + PAM_MAX_RESP_SIZE))
-		    *pchar++ = c;
-	    }
-	    *pchar = '\0';
-
-	    if (!SIGINTed)
-		pamr->resp = xstrdup(input);
-	    bzero(input, sizeof(input));
-
-	    funlockfile(stdin);
-
-	    if (!echo) {
-		tty.c_lflag = flags_save;
-		(void) ioctl(fileno(stdin), TCSETAW, &tty);
-		(void) fputc('\n', stdout);
-	    }
-
-	    (void) signal(SIGINT, handler_save);
-
-	    if (SIGINTed || !pamr->resp)
-		goto fail;
-	    break;
-	}
-    }
-
-    return PAM_SUCCESS;
-
-fail:
-    for (;  pamr >= *pamrs;  pamr--) {
-	if (pamr->resp) {
-	    bzero(pamr->resp, strlen(pamr->resp));
-	    xfree(pamr->resp);
-	}
-    }
-    xfree(*pamrs);
-    *pamrs = NULL;
-    return PAM_CONV_ERR;
-}
-
-#endif /* sun */
+#else
+#include <security/openpam.h>
+#endif
+#include <pwd.h>
 #endif /* USE_PAM */
 
 void
@@ -2319,7 +2141,11 @@ CheckUserAuthorization(void)
 {
 #ifdef USE_PAM
     static struct pam_conv conv = {
+#if !defined(_OPENPAM) && !defined(OPENPAM)
 	misc_conv,
+#else
+	openpam_ttyconv,
+#endif
 	NULL
     };
 
@@ -2330,8 +2156,7 @@ CheckUserAuthorization(void)
     if (getuid() != geteuid()) {
 	pw = getpwuid(getuid());
 	if (pw == NULL)
-	    FatalError("getpwuid() failed for uid %ld\n",
-			(unsigned long)getuid());
+	    FatalError("getpwuid() failed for uid %d\n", getuid());
 
 	retval = pam_start("xserver", pw->pw_name, &conv, &pamh);
 	if (retval != PAM_SUCCESS)
@@ -2356,25 +2181,4 @@ CheckUserAuthorization(void)
 	pam_end(pamh, PAM_SUCCESS);
     }
 #endif
-}
-
-int
-getArgc()
-{
-    return argcGlobal;
-}
-
-const char **
-getArgvp()
-{
-    return argvGlobal;
-}
-
-const char *
-getArgv(int i)
-{
-    if (i >= 0 && i < argcGlobal)
-	return argvGlobal[i];
-    else
-	return NULL;
 }

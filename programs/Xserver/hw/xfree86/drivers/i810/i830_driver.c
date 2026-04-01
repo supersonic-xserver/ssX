@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_driver.c,v 1.100 Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_driver.c,v 1.64 2005/03/03 18:06:26 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
@@ -103,10 +110,12 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
  *    18/10/2001
  *        - Fixed a bug in I830BIOSLeaveVT() which caused a bug when you
  *          switched VT's
- *
+ */
+/*
  *    07/2002 David Dawes
  *        - Add Intel(R) 855GM/852GM support.
- *
+ */
+/*
  *    07/2002 David Dawes
  *        - Cleanup code formatting.
  *        - Improve VESA mode selection, and fix refresh rate selection.
@@ -126,11 +135,14 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
  *    08/2002 Keith Whitwell
  *        - Fix DRI initialisation.
  *
+ *
  *    08/2002 Alan Hourihane and David Dawes
  *        - Add XVideo support.
  *
+ *
  *    10/2002 David Dawes
  *        - Add Intel(R) 865G support.
+ *
  *
  *    01/2004 Alan Hourihane
  *        - Add Intel(R) 915G support.
@@ -138,12 +150,6 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
  *        - Add lid status checking
  *        - Fix Xvideo with high-res LFP's
  *        - Add ARGB HW cursor support
- *
- *    05/2005 Alan Hourihane
- *        - Add Intel(R) 945G support.
- *
- *    09/2005 Alan Hourihane
- *        - Add Intel(R) 945GM support.
  */
 
 #ifndef PRINT_MODE_INFO
@@ -161,12 +167,11 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "vgaHW.h"
 #include "mipointer.h"
 #include "micmap.h"
-#include "shadowfb.h"
 
 #include "fb.h"
 #include "regionstr.h"
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "vbe.h"
 #include "vbeModes.h"
 
@@ -187,10 +192,7 @@ static SymTabRec I830BIOSChipsets[] = {
    {PCI_CHIP_I855_GM,		"852GM/855GM"},
    {PCI_CHIP_I865_G,		"865G"},
    {PCI_CHIP_I915_G,		"915G"},
-   {PCI_CHIP_E7221_G,		"E7221 (i915)"},
    {PCI_CHIP_I915_GM,		"915GM"},
-   {PCI_CHIP_I945_G,		"945G"},
-   {PCI_CHIP_I945_GM,		"945GM"},
    {-1,				NULL}
 };
 
@@ -200,10 +202,7 @@ static PciChipsets I830BIOSPciChipsets[] = {
    {PCI_CHIP_I855_GM,		PCI_CHIP_I855_GM,	RES_SHARED_VGA},
    {PCI_CHIP_I865_G,		PCI_CHIP_I865_G,	RES_SHARED_VGA},
    {PCI_CHIP_I915_G,		PCI_CHIP_I915_G,	RES_SHARED_VGA},
-   {PCI_CHIP_E7221_G,		PCI_CHIP_E7221_G,	RES_SHARED_VGA},
    {PCI_CHIP_I915_GM,		PCI_CHIP_I915_GM,	RES_SHARED_VGA},
-   {PCI_CHIP_I945_G,		PCI_CHIP_I945_G,	RES_SHARED_VGA},
-   {PCI_CHIP_I945_GM,		PCI_CHIP_I945_GM,	RES_SHARED_VGA},
    {-1,				-1,			RES_UNDEFINED}
 };
 
@@ -228,11 +227,8 @@ typedef enum {
    OPTION_MONITOR_LAYOUT,
    OPTION_CLONE,
    OPTION_CLONE_REFRESH,
-   OPTION_CHECKDEVICES,
-   OPTION_FIXEDPIPE,
-   OPTION_SHADOW_FB,
-   OPTION_ROTATE,
-   OPTION_LINEARALLOC
+   OPTION_CHECKLID,
+   OPTION_FLIP_PRIMARY
 } I830Opts;
 
 static OptionInfoRec I830BIOSOptions[] = {
@@ -250,11 +246,8 @@ static OptionInfoRec I830BIOSOptions[] = {
    {OPTION_MONITOR_LAYOUT, "MonitorLayout", OPTV_ANYSTR,{0},	FALSE},
    {OPTION_CLONE,	"Clone",	OPTV_BOOLEAN,	{0},	FALSE},
    {OPTION_CLONE_REFRESH,"CloneRefresh",OPTV_INTEGER,	{0},	FALSE},
-   {OPTION_CHECKDEVICES, "CheckDevices",OPTV_BOOLEAN,	{0},	FALSE},
-   {OPTION_FIXEDPIPE,   "FixedPipe",    OPTV_ANYSTR, 	{0},	FALSE},
-   {OPTION_SHADOW_FB,   "ShadowFB",     OPTV_BOOLEAN,   {0},    FALSE},
-   {OPTION_ROTATE,      "Rotate",       OPTV_ANYSTR,    {0},    FALSE},
-   {OPTION_LINEARALLOC, "LinearAlloc",  OPTV_INTEGER,   {0},    FALSE},
+   {OPTION_CHECKLID,    "CheckLid",	OPTV_BOOLEAN,	{0},	FALSE},
+   {OPTION_FLIP_PRIMARY,"FlipPrimary",	OPTV_BOOLEAN,	{0},	FALSE},
    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
 };
 /* *INDENT-ON* */
@@ -267,7 +260,7 @@ static Bool I830BIOSSaveScreen(ScreenPtr pScreen, int unblack);
 static Bool I830BIOSEnterVT(int scrnIndex, int flags);
 static Bool I830VESASetVBEMode(ScrnInfoPtr pScrn, int mode,
 			       VbeCRTCInfoBlock *block);
-static CARD32 I830CheckDevicesTimer(OsTimerPtr timer, CARD32 now, pointer arg);
+static CARD32 I830LidTimer(OsTimerPtr timer, CARD32 now, pointer arg);
 static Bool SetPipeAccess(ScrnInfoPtr pScrn);
 static Bool IsPrimary(ScrnInfoPtr pScrn);
 
@@ -409,115 +402,7 @@ Check5fStatus(ScrnInfoPtr pScrn, int func, int ax)
    }
 }
 
-static int
-GetToggleList(ScrnInfoPtr pScrn, int toggle)
-{
-   vbeInfoPtr pVbe = I830PTR(pScrn)->pVbe;
-
-   DPRINTF(PFX, "GetToggleList\n");
-
-   pVbe->pInt10->num = 0x10;
-   pVbe->pInt10->ax = 0x5f64;
-   pVbe->pInt10->bx = 0x500;
- 
-   pVbe->pInt10->bx |= toggle;
-
-   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax)) {
-      xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Toggle (%d) 0x%x\n", toggle, pVbe->pInt10->cx);
-      return pVbe->pInt10->cx & 0xffff;
-   }
-
-   return 0;
-}
-
-static int
-GetNextDisplayDeviceList(ScrnInfoPtr pScrn, int toggle)
-{
-   vbeInfoPtr pVbe = I830PTR(pScrn)->pVbe;
-   int devices = 0;
-   int pipe = 0;
-   int i;
-
-   DPRINTF(PFX, "GetNextDisplayDeviceList\n");
-
-   pVbe->pInt10->num = 0x10;
-   pVbe->pInt10->ax = 0x5f64;
-   pVbe->pInt10->bx = 0xA00;
-   pVbe->pInt10->bx |= toggle;
-   pVbe->pInt10->es = SEG_ADDR(pVbe->real_mode_base);
-   pVbe->pInt10->di = SEG_OFF(pVbe->real_mode_base);
-
-   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (!Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax))
-      return 0;
-
-   for (i=0; i<(pVbe->pInt10->cx & 0xff); i++) {
-      CARD32 VODA = (CARD32)((CARD32*)pVbe->memory)[i];
-
-      xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Next ACPI _DGS [%d] 0x%lx\n",
-		i, (unsigned long)VODA);
-
-      /* Check if it's a custom Video Output Device Attribute */
-      if (!(VODA & 0x80000000)) 
-         continue;
-
-      pipe = (VODA & 0x000000F0) >> 4;
-
-      if (pipe != 0 && pipe != 1) {
-         pipe = 0;
 #if 0
-         ErrorF("PIPE %d\n",pipe);
-#endif
-      }
-
-      switch ((VODA & 0x00000F00) >> 8) {
-      case 0x0:
-      case 0x1: /* CRT */
-         devices |= PIPE_CRT << (pipe == 1 ? 8 : 0);
-         break;
-      case 0x2: /* TV/HDTV */
-         devices |= PIPE_TV << (pipe == 1 ? 8 : 0);
-         break;
-      case 0x3: /* DFP */
-         devices |= PIPE_DFP << (pipe == 1 ? 8 : 0);
-         break;
-      case 0x4: /* LFP */
-         devices |= PIPE_LFP << (pipe == 1 ? 8 : 0);
-         break;
-      }
-   }
-
-   xf86DrvMsg(pScrn->scrnIndex, X_INFO, "ACPI Toggle devices 0x%x\n", devices);
-
-   return devices;
-}
-
-static int
-GetAttachableDisplayDeviceList(ScrnInfoPtr pScrn)
-{
-   vbeInfoPtr pVbe = I830PTR(pScrn)->pVbe;
-   int i;
-
-   DPRINTF(PFX, "GetAttachableDisplayDeviceList\n");
-
-   pVbe->pInt10->num = 0x10;
-   pVbe->pInt10->ax = 0x5f64;
-   pVbe->pInt10->bx = 0x900;
-   pVbe->pInt10->es = SEG_ADDR(pVbe->real_mode_base);
-   pVbe->pInt10->di = SEG_OFF(pVbe->real_mode_base);
-
-   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (!Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax))
-      return 0;
-
-   for (i=0; i<(pVbe->pInt10->cx & 0xff); i++)
-        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Attachable device 0x%lx.\n",
-		   (unsigned long)((CARD32*)pVbe->memory)[i]);
-
-   return pVbe->pInt10->cx & 0xffff;
-}
-
 static int
 BitToRefresh(int bits)
 {
@@ -530,7 +415,7 @@ BitToRefresh(int bits)
 }
 
 static int
-GetRefreshRate(ScrnInfoPtr pScrn, int mode, int *availRefresh)
+GetRefreshRate(ScrnInfoPtr pScrn, int mode, int refresh, int *availRefresh)
 {
    vbeInfoPtr pVbe = I830PTR(pScrn)->pVbe;
 
@@ -539,6 +424,8 @@ GetRefreshRate(ScrnInfoPtr pScrn, int mode, int *availRefresh)
    /* Only 8-bit mode numbers are supported. */
    if (mode & 0x100)
       return 0;
+
+   SetPipeAccess(pScrn);
 
    pVbe->pInt10->num = 0x10;
    pVbe->pInt10->ax = 0x5f05;
@@ -552,6 +439,7 @@ GetRefreshRate(ScrnInfoPtr pScrn, int mode, int *availRefresh)
    } else
       return 0;
 }
+#endif
 
 struct panelid {
 	short hsize;
@@ -709,25 +597,6 @@ SetRefreshRate(ScrnInfoPtr pScrn, int mode, int refresh)
       return 0;
 }
 
-#if 0
-static Bool
-SetPowerStatus(ScrnInfoPtr pScrn, int mode)
-{
-   vbeInfoPtr pVbe = I830PTR(pScrn)->pVbe;
-
-   pVbe->pInt10->num = 0x10;
-   pVbe->pInt10->ax = 0x5f64;
-   pVbe->pInt10->bx = 0x0800 | mode;
-   pVbe->pInt10->cx = 0x0000;
-
-   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax))
-      return TRUE;
-  
-   return FALSE;
-}
-#endif
-
 static Bool
 GetModeSupport(ScrnInfoPtr pScrn, int modePipeA, int modePipeB,
 	       int devicesPipeA, int devicesPipeB, int *maxBandwidth,
@@ -740,7 +609,7 @@ GetModeSupport(ScrnInfoPtr pScrn, int modePipeA, int modePipeB,
 
    /* Only 8-bit mode numbers are supported. */
    if ((modePipeA & 0x100) || (modePipeB & 0x100))
-      return FALSE;
+      return 0;
 
    pVbe->pInt10->num = 0x10;
    pVbe->pInt10->ax = 0x5f28;
@@ -764,7 +633,6 @@ GetModeSupport(ScrnInfoPtr pScrn, int modePipeA, int modePipeB,
       return FALSE;
 }
 
-#if 0
 static int
 GetLFPCompMode(ScrnInfoPtr pScrn)
 {
@@ -783,6 +651,7 @@ GetLFPCompMode(ScrnInfoPtr pScrn)
       return -1;
 }
 
+#if 0
 static Bool
 SetLFPCompMode(ScrnInfoPtr pScrn, int compMode)
 {
@@ -835,112 +704,15 @@ GetDisplayDevices(ScrnInfoPtr pScrn)
    pVbe->pInt10->bx = 0x100;
 
    xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax)) {
+   if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax))
       return pVbe->pInt10->cx & 0xffff;
-   } else {
-      if (pI830->PciInfo->chipType == PCI_CHIP_E7221_G) /* FIXED CONFIG */
-         return PIPE_CRT;
-      else
-         return -1;
-   }
+   else
+      return -1;
 }
 
-static int
-GetBIOSPipe(ScrnInfoPtr pScrn)
-{
-   I830Ptr pI830 = I830PTR(pScrn);
-   vbeInfoPtr pVbe = pI830->pVbe;
-   int pipe;
-
-   DPRINTF(PFX, "GetBIOSPipe:\n");
-
-   /* single pipe machines should always return Pipe A */
-   if (pI830->availablePipes == 1) return 0;
-
-   pVbe->pInt10->num = 0x10;
-   pVbe->pInt10->ax = 0x5f1c;
-   pVbe->pInt10->bx = 0x100;
-
-   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (Check5fStatus(pScrn, 0x5f1c, pVbe->pInt10->ax)) {
-      if (pI830->newPipeSwitch) {
-         pipe = ((pVbe->pInt10->bx & 0x0001));
-      } else {
-         pipe = ((pVbe->pInt10->cx & 0x0100) >> 8);
-      }
-      return pipe;
-   }
-
-   /* failed, assume pipe A */
-   return 0;
-}
-
-static Bool
-SetBIOSPipe(ScrnInfoPtr pScrn, int pipe)
-{
-   I830Ptr pI830 = I830PTR(pScrn);
-   vbeInfoPtr pVbe = pI830->pVbe;
-
-   DPRINTF(PFX, "SetBIOSPipe: pipe 0x%x\n", pipe);
-
-   /* single pipe machines should always return TRUE */
-   if (pI830->availablePipes == 1) return TRUE;
-
-   pVbe->pInt10->num = 0x10;
-   pVbe->pInt10->ax = 0x5f1c;
-   if (pI830->newPipeSwitch) {
-      pVbe->pInt10->bx = pipe;
-      pVbe->pInt10->cx = 0;
-   } else {
-      pVbe->pInt10->bx = 0x0;
-      pVbe->pInt10->cx = pipe << 8;
-   }
-
-   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-   if (Check5fStatus(pScrn, 0x5f1c, pVbe->pInt10->ax)) {
-      return TRUE;
-   }
-	
-   return FALSE;
-}
-
-static Bool
-SetPipeAccess(ScrnInfoPtr pScrn)
-{
-   I830Ptr pI830 = I830PTR(pScrn);
-
-   /* Don't try messing with the pipe, unless we're dual head */
-   if (xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone || pI830->origPipe != pI830->pipe) {
-      if (!SetBIOSPipe(pScrn, pI830->pipe))
-         return FALSE;
-   }
-   
-   return TRUE;
-}
-
-static Bool
-I830Set640x480(ScrnInfoPtr pScrn)
-{
-   I830Ptr pI830 = I830PTR(pScrn);
-   int m = 0x30; /* 640x480 8bpp */
-
-   switch (pScrn->depth) {
-   case 15:
-	 m = 0x40;
-	 break;
-   case 16:
-	 m = 0x41;
-	 break;
-   case 24:
-	 m = 0x50;
-	 break;
-   }
-   m |= (1 << 15) | (1 << 14);
-   return VBESetVBEMode(pI830->pVbe, m, NULL);
-}
-
-/* This is needed for SetDisplayDevices to work correctly on I915G.
- * Enable for all chipsets now as it has no bad side effects, apart
+/* This is needed for SetDisplayDevices to work correctly on I915G
+ * and possibly later Video BIOS builds around 3272 (but not sure here).
+ * So enable for all chipsets now as it has no bad side effects, apart
  * from slightly longer startup time.
  */
 #define I915G_WORKAROUND
@@ -951,28 +723,35 @@ SetDisplayDevices(ScrnInfoPtr pScrn, int devices)
    I830Ptr pI830 = I830PTR(pScrn);
    vbeInfoPtr pVbe = pI830->pVbe;
    CARD32 temp;
-   int singlepipe = 0;
 #ifdef I915G_WORKAROUND
-   int getmode1;
-   Bool setmode = FALSE;
+   int getmode;
+   int mode;
+   switch (pScrn->depth) {
+   case 8:
+      mode = 0x30;
+      break;
+   case 15:
+      mode = 0x40;
+      break;
+   case 16:
+      mode = 0x41;
+      break;
+   case 24:
+      mode = 0x50;
+      break;
+   default: 
+      mode = 0x30;
+      break;
+   }
+   mode |= (1 << 15) | (1 << 14);
 #endif
 
    DPRINTF(PFX, "SetDisplayDevices: devices 0x%x\n", devices);
 
-   if (!pI830->specifiedMonitor)
-      return TRUE;
-
 #ifdef I915G_WORKAROUND
-   if (pI830->preinit)
-      setmode = TRUE;
-   if (pI830->leaving)
-      setmode = FALSE;
-   if (pI830->closing)
-      setmode = FALSE;
-
-   if (setmode) {
-      VBEGetVBEMode(pVbe, &getmode1);
-      I830Set640x480(pScrn);
+   if (pI830->bios_version >= 3272) {
+      VBEGetVBEMode(pVbe, &getmode);
+      I830VESASetVBEMode(pScrn, mode, NULL);
    }
 #endif
 
@@ -984,134 +763,40 @@ SetDisplayDevices(ScrnInfoPtr pScrn, int devices)
    xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
    if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax)) {
 #ifdef I915G_WORKAROUND
-      if (setmode) {
-  	 VBESetVBEMode(pI830->pVbe, getmode1 | 1<<15, NULL);
-      }
+      if (pI830->bios_version >= 3272)
+         I830VESASetVBEMode(pScrn, getmode, NULL);
 #endif
-      pI830->pipeEnabled[0] = (devices & 0xff) ? TRUE : FALSE;
-      pI830->pipeEnabled[1] = (devices & 0xff00) ? TRUE : FALSE;
-
       return TRUE;
    }
 
 #ifdef I915G_WORKAROUND
-   if (setmode)
-      VBESetVBEMode(pI830->pVbe, getmode1 | 1<<15, NULL);
+   if (pI830->bios_version >= 3272)
+      I830VESASetVBEMode(pScrn, getmode, NULL);
 #endif
 
-   if (devices & 0xff) {
-      pVbe->pInt10->num = 0x10;
-      pVbe->pInt10->ax = 0x5f64;
-      pVbe->pInt10->bx = 0x1;
-      pVbe->pInt10->cx = devices & 0xff;
-
-      xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-      if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax)) {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Successfully set display devices to 0x%x.\n",devices & 0xff);
-         singlepipe = devices & 0xff00; /* set alternate */
-      } else {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Failed to set display devices to 0x%x.\n",devices & 0xff);
-         singlepipe = devices;
-      }
-   } else
-      singlepipe = devices; 
-
-   if (singlepipe == devices && devices & 0xff00) {
-      pVbe->pInt10->num = 0x10;
-      pVbe->pInt10->ax = 0x5f64;
-      pVbe->pInt10->bx = 0x1;
-      pVbe->pInt10->cx = devices & 0xff00;
-
-      xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
-      if (Check5fStatus(pScrn, 0x5f64, pVbe->pInt10->ax)) {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Successfully set display devices to 0x%x.\n",devices & 0xff00);
-         singlepipe = devices & 0xff; /* set alternate */
-      } else {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Failed to set display devices to 0x%x.\n",devices & 0xff00);
-         singlepipe = devices;
-      }
-   } 
-
-   /* LVDS doesn't exist on these */
-   if (IS_I830(pI830) || IS_845G(pI830) || IS_I865G(pI830))
-      singlepipe &= ~(PIPE_LFP | (PIPE_LFP<<8));
-
-   if (pI830->availablePipes == 1) 
-      singlepipe &= 0xFF;
-
-   /* Disable LVDS */
-   if (singlepipe & PIPE_LFP)  {
-      /* LFP on PipeA is unlikely! */
-      OUTREG(0x61200, INREG(0x61200) & ~0x80000000);
-      OUTREG(0x61204, INREG(0x61204) & ~0x00000001);
-      while ((INREG(0x61200) & 0x80000000) || (INREG(0x61204) & 1));
-      /* Fix up LVDS */
-      OUTREG(LVDS, (INREG(LVDS) & ~1<<30) | 0x80000300);
-      /* Enable LVDS */
-      OUTREG(0x61200, INREG(0x61200) | 0x80000000);
-      OUTREG(0x61204, INREG(0x61204) | 0x00000001);
-      while (!(INREG(0x61200) & 0x80000000) && !(INREG(0x61204) & 1));
-      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Enabling LVDS directly. Pipe A.\n");
-   } else
-   if (singlepipe & (PIPE_LFP << 8))  {
-      OUTREG(0x61200, INREG(0x61200) & ~0x80000000);
-      OUTREG(0x61204, INREG(0x61204) & ~0x00000001);
-      while ((INREG(0x61200) & 0x80000000) || (INREG(0x61204) & 1));
-      /* Fix up LVDS */
-      OUTREG(LVDS, (INREG(LVDS) | 1<<30) | 0x80000300);
-      /* Enable LVDS */
-      OUTREG(0x61200, INREG(0x61200) | 0x80000000);
-      OUTREG(0x61204, INREG(0x61204) | 0x00000001);
-      while (!(INREG(0x61200) & 0x80000000) && !(INREG(0x61204) & 1));
-      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Enabling LVDS directly. Pipe B.\n");
-   }
-   else if (!(IS_I830(pI830) || IS_845G(pI830) || IS_I865G(pI830))) {
-      if (!(devices & (PIPE_LFP | PIPE_LFP<<8))) {
-         OUTREG(0x61200, INREG(0x61200) & ~0x80000000);
-         OUTREG(0x61204, INREG(0x61204) & ~0x00000001);
-         while ((INREG(0x61200) & 0x80000000) || (INREG(0x61204) & 1));
-         /* Fix up LVDS */
-         OUTREG(LVDS, (INREG(LVDS) | 1<<30) & ~0x80000300);
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Disabling LVDS directly.\n");
-      }
-   }
-
-   /* Now try to program the registers directly if the BIOS failed. */
-   temp = INREG(ADPA);
-   temp &= ~(ADPA_DAC_ENABLE | ADPA_PIPE_SELECT_MASK);
-   temp &= ~(ADPA_VSYNC_CNTL_DISABLE | ADPA_HSYNC_CNTL_DISABLE);
-   /* Turn on ADPA */
-   if (singlepipe & PIPE_CRT)  {
-      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Enabling ADPA directly. Pipe A.\n");
-      temp |= ADPA_DAC_ENABLE | ADPA_PIPE_A_SELECT;
-      OUTREG(ADPA, temp);
-   } else
-   if (singlepipe & (PIPE_CRT << 8)) {
-      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Enabling ADPA directly. Pipe B.\n");
-      temp |= ADPA_DAC_ENABLE | ADPA_PIPE_B_SELECT;
-      OUTREG(ADPA, temp);
-   } 
-   else {
-      if (!(devices & (PIPE_CRT | PIPE_CRT<<8))) {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	 	"Disabling ADPA directly.\n");
-         temp |= ADPA_VSYNC_CNTL_DISABLE | ADPA_HSYNC_CNTL_DISABLE;
-         OUTREG(ADPA, temp);
-      }
-   }
-
-   xf86DrvMsg(pScrn->scrnIndex, X_WARNING,"Writing config directly to SWF0.\n");
+   xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+	 "SetDisplayDevices call failed, writing config directly to SWF0.\n");
    temp = INREG(SWF0);
    OUTREG(SWF0, (temp & ~(0xffff)) | (devices & 0xffff));
+
+   /* Now try to program the registers directly if the BIOS failed.
+    * This currently only turns on the CRT, but should be made to handle
+    * SDVO, TV, LFP etc. etc.
+    */
+   temp = INREG(ADPA);
+   temp &= ~0xc0000c00;
+   /* Turn on ADPA */
+   if (devices & PIPE_CRT)  {
+      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+	 	"BIOS call failed, turning ADPA on directly. Pipe A.\n");
+      temp |= 0x80000000;
+   }
+   if ((devices >> 8) & PIPE_CRT) {
+      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+	 	"BIOS call failed, turning ADPA on directly. Pipe B.\n");
+      temp |= 0xC0000000;
+   }
+   OUTREG(ADPA, temp);
 
    if (GetDisplayDevices(pScrn) != devices) {
       xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
@@ -1119,9 +804,6 @@ SetDisplayDevices(ScrnInfoPtr pScrn, int devices)
 	         GetDisplayDevices(pScrn), devices);
       return FALSE;
    }
-
-   pI830->pipeEnabled[0] = (devices & 0xff) ? TRUE : FALSE;
-   pI830->pipeEnabled[1] = (devices & 0xff00) ? TRUE : FALSE;
 
    return TRUE;
 }
@@ -1410,7 +1092,7 @@ I830DetectMemory(ScrnInfoPtr pScrn)
     * The GTT varying according the the FbMapSize and the popup is 4KB */
    range = (pI830->FbMapSize / (1024*1024)) + 4;
 
-   if (IS_I85X(pI830) || IS_I865G(pI830) || IS_I9XX(pI830)) {
+   if (IS_I85X(pI830) || IS_I865G(pI830) || IS_I915G(pI830) || IS_I915GM(pI830)) {
       switch (gmch_ctrl & I830_GMCH_GMS_MASK) {
       case I855_GMCH_GMS_STOLEN_1M:
 	 memsize = MB(1) - KB(range);
@@ -1428,11 +1110,11 @@ I830DetectMemory(ScrnInfoPtr pScrn)
 	 memsize = MB(32) - KB(range);
 	 break;
       case I915G_GMCH_GMS_STOLEN_48M:
-	 if (IS_I9XX(pI830))
+	 if (IS_I915G(pI830) || IS_I915GM(pI830))
 	    memsize = MB(48) - KB(range);
 	 break;
       case I915G_GMCH_GMS_STOLEN_64M:
-	 if (IS_I9XX(pI830))
+	 if (IS_I915G(pI830) || IS_I915GM(pI830))
 	    memsize = MB(64) - KB(range);
 	 break;
       }
@@ -1469,7 +1151,7 @@ I830MapMMIO(ScrnInfoPtr pScrn)
    int mmioFlags;
    I830Ptr pI830 = I830PTR(pScrn);
 
-#ifndef __alpha__
+#if !defined(__alpha__)
    mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
 #else
    mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT | VIDMEM_SPARSE;
@@ -1605,8 +1287,6 @@ SaveBIOSMemSize(ScrnInfoPtr pScrn)
 #if HAVE_GET_PUT_BIOSMEMSIZE
    if ((pI830->saveBIOSMemSize = GetBIOSMemSize(pScrn)) != -1)
       return TRUE;
-
-   pI830->saveBIOSMemSize = 0;
 #endif
 
    if (IS_I830(pI830) || IS_845G(pI830)) {
@@ -1639,16 +1319,14 @@ SaveBIOSMemSize(ScrnInfoPtr pScrn)
 /*
  * TweakMemorySize() tweaks the BIOS image to set the correct size.
  * Original implementation by Christian Zietz in a stand-alone tool.
- * Returns the previous value on success, or 1 (a value not aligned on a
- * 64K boundary).
  */
 static CARD32
-TweakMemorySize(ScrnInfoPtr pScrn, CARD32 newsize, Bool preinit)
+TweakMemorySize(ScrnInfoPtr pScrn, CARD32 newsize)
 {
 #define SIZE 0x10000
 #define _855_IDOFFSET (-23)
 #define _845_IDOFFSET (-19)
-    
+
     const char *MAGICstring = "Total time for VGA POST:";
     const int len = strlen(MAGICstring);
     I830Ptr pI830 = I830PTR(pScrn);
@@ -1658,24 +1336,23 @@ TweakMemorySize(ScrnInfoPtr pScrn, CARD32 newsize, Bool preinit)
     CARD32 oldpermission;
     CARD32 ret = 0;
     int i,j = 0;
-    int reg = (IS_845G(pI830) || IS_I865G(pI830)) ? _845_DRAM_RW_CONTROL
-	: _855_DRAM_RW_CONTROL;
+    PCITAG tag =pciTag(0,0,0);
+    int reg = (IS_845G(pI830) || IS_I865G(pI830)) ? _845_DRAM_RW_CONTROL : _855_DRAM_RW_CONTROL;
     
-    PCITAG tag = pciTag(0,0,0);
-
-    if(!pI830->PciInfo 
-       || !(IS_845G(pI830) || IS_I85X(pI830) || IS_I865G(pI830)))
-	return 1;
+    if(!pI830->PciInfo
+	|| !(IS_845G(pI830) || IS_I85X(pI830) || IS_I865G(pI830)))
+	return 0;
 
     if (!pI830->pVbe)
-	return 1;
+	return 0;
 
     biosAddr = xf86int10Addr(pI830->pVbe->pInt10, 
 				    pI830->pVbe->pInt10->BIOSseg << 4);
 
     if (!pI830->BIOSMemSizeLoc) {
-	if (!preinit)
-	    return 1;
+
+	if (!pI830->preinit)
+	    return 0;
 
 	/* Search for MAGIC string */
 	for (i = 0; i < SIZE; i++) {
@@ -1687,36 +1364,34 @@ TweakMemorySize(ScrnInfoPtr pScrn, CARD32 newsize, Bool preinit)
 		j = 0;
 	    }
 	}
-	if (j < len) return 1;
+	if (j < len) return 0;
 
 	pI830->BIOSMemSizeLoc =  (i - j + 1 + (IS_845G(pI830)
-					    ? _845_IDOFFSET : _855_IDOFFSET));
+				  ? _845_IDOFFSET : _855_IDOFFSET));
     }
-    
+
     position = biosAddr + pI830->BIOSMemSizeLoc;
     oldsize = *(CARD32 *)position;
-
     ret = oldsize - 0x21000;
-    
+
     /* verify that register really contains current size */
-    if (preinit && ((ret >> 16) !=  pI830->vbeInfo->TotalMemory))
-	return 1;
+    if (pI830->preinit && ((ret >> 16) !=  pI830->vbeInfo->TotalMemory))
+	return 0;
 
     oldpermission = pciReadLong(tag, reg);
     pciWriteLong(tag, reg, DRAM_WRITE | (oldpermission & 0xffff)); 
-    
-    *(CARD32 *)position = newsize + 0x21000;
 
-    if (preinit) {
+    *(CARD32 *)position = newsize + 0x21000;
+    if (pI830->preinit) {
 	/* reinitialize VBE for new size */
 	VBEFreeVBEInfo(pI830->vbeInfo);
 	vbeFree(pI830->pVbe);
 	pI830->pVbe = VBEInit(NULL, pI830->pEnt->index);
 	pI830->vbeInfo = VBEGetVBEInfo(pI830->pVbe);
-	
+
 	/* verify that change was successful */
-	if (pI830->vbeInfo->TotalMemory != (newsize >> 16)){
-	    ret = 1;
+	if (pI830->vbeInfo->TotalMemory != (newsize >> 16)) {
+	    ret = 0;
 	    *(CARD32 *)position = oldsize;
 	} else {
 	    pI830->BIOSMemorySize = KB(pI830->vbeInfo->TotalMemory * 64);
@@ -1728,7 +1403,7 @@ TweakMemorySize(ScrnInfoPtr pScrn, CARD32 newsize, Bool preinit)
 
     pciWriteLong(tag, reg, oldpermission);
 
-    return ret;
+     return ret;
 }
 
 static void
@@ -1739,7 +1414,7 @@ RestoreBIOSMemSize(ScrnInfoPtr pScrn)
 
    DPRINTF(PFX, "RestoreBIOSMemSize\n");
 
-   if (TweakMemorySize(pScrn, pI830->saveBIOSMemSize, FALSE) != 1)
+   if (TweakMemorySize(pScrn, pI830->saveBIOSMemSize))
        return;
 
    if (!pI830->overrideBIOSMemSize)
@@ -1803,180 +1478,49 @@ SetBIOSMemSize(ScrnInfoPtr pScrn, int newSize)
    }
 }
 
-static CARD32 val8[256];
-
+/*
+ * Use the native method instead of the vgahw method.  So far this is
+ * only used for 8-bit mode.
+ *
+ * XXX Look into using the 10-bit gamma correction mode for 15/16/24 bit,
+ * and see if a DirectColor visual can be offered.
+ */
 static void
 I830LoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 		LOCO * colors, VisualPtr pVisual)
 {
    I830Ptr pI830;
-   int i,j, index;
+   int i, index;
    unsigned char r, g, b;
    CARD32 val, temp;
-   int palreg;
-   int dspreg, dspbase;
 
    DPRINTF(PFX, "I830LoadPalette: numColors: %d\n", numColors);
    pI830 = I830PTR(pScrn);
 
    if (pI830->pipe == 0) {
-      palreg = PALETTE_A;
-      dspreg = DSPACNTR;
-      dspbase = DSPABASE;
-   } else {
-      palreg = PALETTE_B;
-      dspreg = DSPBCNTR;
-      dspbase = DSPBBASE;
-   }
-
-   /* To ensure gamma is enabled we need to turn off and on the plane */
-   temp = INREG(dspreg);
-   OUTREG(dspreg, temp & ~(1<<31));
-   OUTREG(dspbase, INREG(dspbase));
-   OUTREG(dspreg, temp | DISPPLANE_GAMMA_ENABLE);
-   OUTREG(dspbase, INREG(dspbase));
-
-   /* It seems that an initial read is needed. */
-   temp = INREG(palreg);
-
-   switch(pScrn->depth) {
-   case 15:
+      /* It seems that an initial read is needed. */
+      temp = INREG(PALETTE_A);
       for (i = 0; i < numColors; i++) {
-         index = indices[i];
-         r = colors[index].red;
-         g = colors[index].green;
-         b = colors[index].blue;
-	 val = (r << 16) | (g << 8) | b;
-         for (j = 0; j < 8; j++) {
-	    OUTREG(palreg + index * 32 + (j * 4), val);
-         }
-      }
-      break;
-   case 16:
-      for (i = 0; i < numColors; i++) {
-         index = indices[i];
-	 r   = colors[index / 2].red;
-	 g   = colors[index].green;
-	 b   = colors[index / 2].blue;
-
-	 val = (r << 16) | (g << 8) | b;
-	 OUTREG(palreg + index * 16, val);
-	 OUTREG(palreg + index * 16 + 4, val);
-	 OUTREG(palreg + index * 16 + 8, val);
-	 OUTREG(palreg + index * 16 + 12, val);
-
-   	 if (index <= 31) {
-            r   = colors[index].red;
-	    g   = colors[(index * 2) + 1].green;
-	    b   = colors[index].blue;
-
-	    val = (r << 16) | (g << 8) | b;
-	    OUTREG(palreg + index * 32, val);
-	    OUTREG(palreg + index * 32 + 4, val);
-	    OUTREG(palreg + index * 32 + 8, val);
-	    OUTREG(palreg + index * 32 + 12, val);
-	 }
-      }
-      break;
-   default:
-#if 1
-      /* Dual head 8bpp modes seem to squish the primary's cmap - reload */
-      if (IsPrimary(pScrn) && xf86IsEntityShared(pScrn->entityList[0]) &&
-          pScrn->depth == 8) {
-         for(i = 0; i < numColors; i++) {
-	    index = indices[i];
-	    r = colors[index].red;
-	    g = colors[index].green;
-	    b = colors[index].blue;
-	    val8[index] = (r << 16) | (g << 8) | b;
-        }
-      }
-#endif
-      for(i = 0; i < numColors; i++) {
 	 index = indices[i];
 	 r = colors[index].red;
 	 g = colors[index].green;
 	 b = colors[index].blue;
 	 val = (r << 16) | (g << 8) | b;
-	 OUTREG(palreg + index * 4, val);
-#if 1
-         /* Dual head 8bpp modes seem to squish the primary's cmap - reload */
-         if (!IsPrimary(pScrn) && xf86IsEntityShared(pScrn->entityList[0]) &&
-             pScrn->depth == 8) {
-  	    if (palreg == PALETTE_A)
-	       OUTREG(PALETTE_B + index * 4, val8[index]);
-	    else
-	       OUTREG(PALETTE_A + index * 4, val8[index]);
-         }
-#endif
-      }
-      break;
-   }
-}
-
-static int
-I830UseDDC(ScrnInfoPtr pScrn)
-{
-   xf86MonPtr DDC = (xf86MonPtr)(pScrn->monitor->DDC);
-   struct detailed_monitor_section* detMon;
-   struct monitor_ranges *mon_range = NULL;
-   int i;
-
-   if (!DDC) return 0;
-
-   /* Now change the hsync/vrefresh values of the current monitor to
-    * match those of DDC */
-   for (i = 0; i < 4; i++) {
-      detMon = &DDC->det_mon[i];
-      if(detMon->type == DS_RANGES)
-         mon_range = &detMon->section.ranges;
-   }
-
-   if (!mon_range || mon_range->min_h == 0 || mon_range->max_h == 0 ||
-		     mon_range->min_v == 0 || mon_range->max_v == 0)
-      return 0;	/* bad ddc */
-
-   xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Using detected DDC timings\n");
-   xf86DrvMsg(pScrn->scrnIndex, X_INFO, "\tHorizSync %d-%d\n", 
-		mon_range->min_h, mon_range->max_h);
-   xf86DrvMsg(pScrn->scrnIndex, X_INFO, "\tVertRefresh %d-%d\n", 
-		mon_range->min_v, mon_range->max_v);
-#define DDC_SYNC_TOLERANCE SYNC_TOLERANCE
-   if (pScrn->monitor->nHsync > 0) {
-      for (i = 0; i < pScrn->monitor->nHsync; i++) {
-         if ((1.0 - DDC_SYNC_TOLERANCE) * mon_range->min_h >
-				pScrn->monitor->hsync[i].lo ||
-	     (1.0 + DDC_SYNC_TOLERANCE) * mon_range->max_h <
-				pScrn->monitor->hsync[i].hi) {
-	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			  "config file hsync range %g-%gkHz not within DDC "
-			  "hsync range %d-%dkHz\n",
-			  pScrn->monitor->hsync[i].lo, pScrn->monitor->hsync[i].hi,
-			  mon_range->min_h, mon_range->max_h);
-         }
-         pScrn->monitor->hsync[i].lo = mon_range->min_h;
-	 pScrn->monitor->hsync[i].hi = mon_range->max_h;
+	 OUTREG(PALETTE_A + index * 4, val);
       }
    }
-
-   if (pScrn->monitor->nVrefresh > 0) {
-      for (i=0; i<pScrn->monitor->nVrefresh; i++) {
-         if ((1.0 - DDC_SYNC_TOLERANCE) * mon_range->min_v >
-				pScrn->monitor->vrefresh[i].lo ||
-	     (1.0 + DDC_SYNC_TOLERANCE) * mon_range->max_v <
-				pScrn->monitor->vrefresh[i].hi) {
-   	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			  "config file vrefresh range %g-%gHz not within DDC "
-			  "vrefresh range %d-%dHz\n",
-			  pScrn->monitor->vrefresh[i].lo, pScrn->monitor->vrefresh[i].hi,
-			  mon_range->min_v, mon_range->max_v);
-         }
-         pScrn->monitor->vrefresh[i].lo = mon_range->min_v;
-         pScrn->monitor->vrefresh[i].hi = mon_range->max_v;
+   if (pI830->pipe == 1) {
+      /* It seems that an initial read is needed. */
+      temp = INREG(PALETTE_B);
+      for (i = 0; i < numColors; i++) {
+	 index = indices[i];
+	 r = colors[index].red;
+	 g = colors[index].green;
+	 b = colors[index].blue;
+	 val = (r << 16) | (g << 8) | b;
+	 OUTREG(PALETTE_B + index * 4, val);
       }
    }
-
-   return mon_range->max_clock;
 }
 
 static void
@@ -1984,8 +1528,6 @@ PreInitCleanup(ScrnInfoPtr pScrn)
 {
    I830Ptr pI830 = I830PTR(pScrn);
 
-   if (IsPrimary(pScrn))
-      pI830->entityPrivate->pScrn_1 = NULL;
    if (IsPrimary(pScrn) && pI830->LpRing) {
       xfree(pI830->LpRing);
       pI830->LpRing = NULL;
@@ -2018,6 +1560,77 @@ PreInitCleanup(ScrnInfoPtr pScrn)
    I830BIOSFreeRec(pScrn);
 }
 
+static int
+GetBIOSPipe(ScrnInfoPtr pScrn)
+{
+   I830Ptr pI830 = I830PTR(pScrn);
+   vbeInfoPtr pVbe = pI830->pVbe;
+   int pipe;
+
+   DPRINTF(PFX, "GetBIOSPipe:\n");
+
+   /* single pipe machines should always return Pipe A */
+   if (pI830->availablePipes == 1) return 0;
+
+   pVbe->pInt10->num = 0x10;
+   pVbe->pInt10->ax = 0x5f1c;
+   pVbe->pInt10->bx = 0x100;
+
+   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
+   if (Check5fStatus(pScrn, 0x5f1c, pVbe->pInt10->ax)) {
+      if (pI830->newPipeSwitch) {
+         pipe = ((pVbe->pInt10->bx & 0x0001));
+      } else {
+         pipe = ((pVbe->pInt10->cx & 0x0100) >> 8);
+      }
+      return pipe;
+   }
+
+   return -1;
+}
+
+static Bool
+SetBIOSPipe(ScrnInfoPtr pScrn, int pipe)
+{
+   I830Ptr pI830 = I830PTR(pScrn);
+   vbeInfoPtr pVbe = pI830->pVbe;
+
+   DPRINTF(PFX, "SetBIOSPipe: pipe 0x%x\n", pipe);
+
+   /* single pipe machines should always return TRUE */
+   if (pI830->availablePipes == 1) return TRUE;
+
+   pVbe->pInt10->num = 0x10;
+   pVbe->pInt10->ax = 0x5f1c;
+   if (pI830->newPipeSwitch) {
+      pVbe->pInt10->bx = pipe;
+      pVbe->pInt10->cx = 0;
+   } else {
+      pVbe->pInt10->bx = 0x0;
+      pVbe->pInt10->cx = pipe << 8;
+   }
+
+   xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
+   if (Check5fStatus(pScrn, 0x5f1c, pVbe->pInt10->ax))
+      return TRUE;
+	
+   return FALSE;
+}
+
+static Bool
+SetPipeAccess(ScrnInfoPtr pScrn)
+{
+   I830Ptr pI830 = I830PTR(pScrn);
+
+   /* Don't try messing with the pipe, unless we're dual head */
+   if (xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone) {
+      if (!SetBIOSPipe(pScrn, pI830->pipe))
+         return FALSE;
+   }
+   
+   return TRUE;
+}
+
 static Bool
 IsPrimary(ScrnInfoPtr pScrn)
 {
@@ -2044,10 +1657,8 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    int flags24;
    int defmon = 0;
    int i, n;
-   int DDCclock = 0;
    char *s;
-   DisplayModePtr p, pMon;
-   ModuleDescPtr pMod;
+   pointer pDDCModule, pVBEModule;
    Bool enable;
    const char *chipname;
    unsigned int ver;
@@ -2057,14 +1668,14 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       return FALSE;
 
    /* Load int10 module */
-   if (!(pMod = xf86LoadSubModule(pScrn, "int10")))
+   if (!xf86LoadSubModule(pScrn, "int10"))
       return FALSE;
-   xf86LoaderModReqSymLists(pMod, I810int10Symbols, NULL);
+   xf86LoaderReqSymLists(I810int10Symbols, NULL);
 
    /* Load vbe module */
-   if (!(pMod = xf86LoadVBEModule(pScrn)))
+   if (!(pVBEModule = xf86LoadSubModule(pScrn, "vbe")))
       return FALSE;
-   xf86LoaderModReqSymLists(pMod, I810vbeSymbols, NULL);
+   xf86LoaderReqSymLists(I810vbeSymbols, NULL);
 
    pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
 
@@ -2074,9 +1685,9 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    }
 
    /* The vgahw module should be loaded here when needed */
-   if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+   if (!xf86LoadSubModule(pScrn, "vgahw"))
       return FALSE;
-   xf86LoaderModReqSymLists(pMod, I810vgahwSymbols, NULL);
+   xf86LoaderReqSymLists(I810vgahwSymbols, NULL);
 
    /* Allocate a vgaHWRec */
    if (!vgaHWGetHWRec(pScrn))
@@ -2197,17 +1808,8 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    case PCI_CHIP_I915_G:
       chipname = "915G";
       break;
-   case PCI_CHIP_E7221_G:
-      chipname = "E7221 (i915)";
-      break;
    case PCI_CHIP_I915_GM:
       chipname = "915GM";
-      break;
-   case PCI_CHIP_I945_G:
-      chipname = "945G";
-      break;
-   case PCI_CHIP_I945_GM:
-      chipname = "945GM";
       break;
    default:
       chipname = "unknown chipset";
@@ -2246,8 +1848,8 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       pI830->LinearAddr = pI830->pEnt->device->MemBase;
       from = X_CONFIG;
    } else {
-      if (IS_I9XX(pI830)) {
-	 pI830->LinearAddr = pI830->PciInfo->memBase[2] & 0xFF000000;
+      if (IS_I915G(pI830) || IS_I915GM(pI830)) {
+	 pI830->LinearAddr = pI830->PciInfo->memBase[2] & 0xF0000000;
 	 from = X_PROBED;
       } else if (pI830->PciInfo->memBase[1] != 0) {
 	 /* XXX Check mask. */
@@ -2268,7 +1870,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       pI830->MMIOAddr = pI830->pEnt->device->IOBase;
       from = X_CONFIG;
    } else {
-      if (IS_I9XX(pI830)) {
+      if (IS_I915G(pI830) || IS_I915GM(pI830)) {
 	 pI830->MMIOAddr = pI830->PciInfo->memBase[0] & 0xFFF80000;
 	 from = X_PROBED;
       } else if (pI830->PciInfo->memBase[1]) {
@@ -2313,14 +1915,11 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 	 pI830->FbMapSize = 0x4000000; /* 64MB - has this been tested ?? */
       }
    } else {
-      if (IS_I9XX(pI830)) {
+      if (IS_I915G(pI830) || IS_I915GM(pI830)) {
 	 if (pI830->PciInfo->memBase[2] & 0x08000000)
 	    pI830->FbMapSize = 0x8000000;	/* 128MB aperture */
 	 else
 	    pI830->FbMapSize = 0x10000000;	/* 256MB aperture */
-
-   	 if (pI830->PciInfo->chipType == PCI_CHIP_E7221_G)
-	    pI830->FbMapSize = 0x8000000;	/* 128MB aperture */
       } else
 	 /* 128MB aperture for later chips */
 	 pI830->FbMapSize = 0x8000000;
@@ -2343,10 +1942,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       }
    }
 
-   if (pI830->PciInfo->chipType == PCI_CHIP_E7221_G)
-      pI830->availablePipes = 1;
-   else
-   if (IS_MOBILE(pI830) || IS_I9XX(pI830))
+   if (IS_MOBILE(pI830) || IS_I915G(pI830))
       pI830->availablePipes = 2;
    else
       pI830->availablePipes = 1;
@@ -2421,31 +2017,8 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    }
 #endif
 
-   pI830->LinearAlloc = 0;
-   if (xf86GetOptValInteger(pI830->Options, OPTION_LINEARALLOC, &memsize)) {
-      if (memsize > 0) {
-	 pI830->LinearAlloc = memsize;
-	 xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
-		    "Allocating %dKbytes of memory\n", pI830->LinearAlloc);
-      } else {
-	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		    "Ignoring non-positive LinearAlloc specification\n");
-      }
-   }
-
-   pI830->fixedPipe = -1;
-   if ((s = xf86GetOptValString(pI830->Options, OPTION_FIXEDPIPE)) &&
-      IsPrimary(pScrn)) {
-
-      if (strstr(s, "A") || strstr(s, "a") || strstr(s, "0"))
-         pI830->fixedPipe = 0;
-      else if (strstr(s, "B") || strstr(s, "b") || strstr(s, "1"))
-         pI830->fixedPipe = 1;
-   }
-
    pI830->MonType1 = PIPE_NONE;
    pI830->MonType2 = PIPE_NONE;
-   pI830->specifiedMonitor = FALSE;
 
    if ((s = xf86GetOptValString(pI830->Options, OPTION_MONITOR_LAYOUT)) &&
       IsPrimary(pScrn)) {
@@ -2525,8 +2098,6 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 		    "Monitor 1 and 2 cannot be type NONE\n");
             return FALSE;
       }
-
-      pI830->specifiedMonitor = TRUE;
    }
 
    if (xf86ReturnOptValBool(pI830->Options, OPTION_CLONE, FALSE)) {
@@ -2543,24 +2114,22 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
          return FALSE;
       }
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Enabling Clone Mode\n");
+      pI830->CloneRefresh = 60; /* default to 60Hz */
+      if (xf86GetOptValInteger(pI830->Options, OPTION_CLONE_REFRESH,
+			    &(pI830->CloneRefresh))) {
+         xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Clone Monitor Refresh Rate %d\n",
+		 pI830->CloneRefresh);
+      }
+      /* See above i830refreshes on why 120Hz is commented out */
+      if (pI830->CloneRefresh < 60 || pI830->CloneRefresh > 85 /* 120 */) {
+         xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Bad Clone Refresh Rate\n");
+         PreInitCleanup(pScrn);
+         return FALSE;
+      }
       pI830->Clone = TRUE;
    }
 
-   pI830->CloneRefresh = 60; /* default to 60Hz */
-   if (xf86GetOptValInteger(pI830->Options, OPTION_CLONE_REFRESH,
-			    &(pI830->CloneRefresh))) {
-      xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Clone Monitor Refresh Rate %d\n",
-		 pI830->CloneRefresh);
-   }
-
-   /* See above i830refreshes on why 120Hz is commented out */
-   if (pI830->CloneRefresh < 60 || pI830->CloneRefresh > 85 /* 120 */) {
-      xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Bad Clone Refresh Rate\n");
-      PreInitCleanup(pScrn);
-      return FALSE;
-   }
-
-   if ((pI830->entityPrivate && IsPrimary(pScrn)) || pI830->Clone) {
+    if ((pI830->entityPrivate && IsPrimary(pScrn)) || pI830->Clone) {
       if ((!xf86GetOptValString(pI830->Options, OPTION_MONITOR_LAYOUT))) {
 	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "You must have a MonitorLayout "
 	 		"defined for use in a DualHead or Clone setup.\n");
@@ -2576,57 +2145,26 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       }
     }
 
-    xf86GetOptValBool(pI830->Options, OPTION_SHADOW_FB, &pI830->shadowFB);
-    if (pI830->shadowFB) {
-	xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Option: shadow FB enabled\n");
-    }
-
-    if ((s = xf86GetOptValString(pI830->Options, OPTION_ROTATE))) {
-	if(!xf86NameCmp(s, "CW")) {
-	    /* accel is disabled below for shadowFB */
-	    pI830->shadowFB = TRUE;
-	    pI830->rotate = 1;
-	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
-		"Rotating screen clockwise - acceleration disabled\n");
-	} else if(!xf86NameCmp(s, "CCW")) {
-	    pI830->shadowFB = TRUE;
-	    pI830->rotate = -1;
-	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,  "Rotating screen"
-		"counter clockwise - acceleration disabled\n");
-	} else {
-	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "\"%s\" is not a valid"
-		"value for Option \"Rotate\"\n", s);
-	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		"Valid options are \"CW\" or \"CCW\"\n");
-	}
-    }
-
-   if (pI830->shadowFB && !pI830->noAccel) {
-       xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-       	   "HW acceleration not supported with \"shadowFB\".\n");
-       pI830->noAccel = TRUE;
-   }
-
    /*
     * Let's setup the mobile systems to check the lid status
     */
    if (IS_MOBILE(pI830)) {
-      pI830->checkDevices = TRUE;
+      pI830->checkLid = TRUE;
 
-      if (!xf86ReturnOptValBool(pI830->Options, OPTION_CHECKDEVICES, TRUE)) {
-         pI830->checkDevices = FALSE;
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Monitoring connected displays disabled\n");
+      if (!xf86ReturnOptValBool(pI830->Options, OPTION_CHECKLID, TRUE)) {
+         pI830->checkLid = FALSE;
+         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Checking Lid status disabled\n");
       } else
       if (pI830->entityPrivate && !IsPrimary(pScrn) &&
-          !I830PTR(pI830->entityPrivate->pScrn_1)->checkDevices) {
+          !I830PTR(pI830->entityPrivate->pScrn_1)->checkLid) {
          /* If checklid is off, on the primary head, then 
           * turn it off on the secondary*/
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Monitoring connected displays disabled\n");
-         pI830->checkDevices = FALSE;
+         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Checking Lid status disabled\n");
+         pI830->checkLid = FALSE;
       } else
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Monitoring connected displays enabled\n");
+         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Checking Lid status enabled\n");
    } else
-      pI830->checkDevices = FALSE;
+      pI830->checkLid = FALSE;
 
    /*
     * The "VideoRam" config file parameter specifies the total amount of
@@ -2737,14 +2275,14 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		       "BIOS now sees %ld kB VideoRAM\n",
 		       pI830->BIOSMemorySize / 1024);
- 	 } else if ((pI830->saveBIOSMemSize
-		 = TweakMemorySize(pScrn, pI830->newBIOSMemSize, TRUE)) != 1) 
-	     pI830->overrideBIOSMemSize = TRUE;
+         } else 
+         if ((pI830->saveBIOSMemSize =
+		     TweakMemorySize(pScrn, pI830->newBIOSMemSize)) != 0)
+	    pI830->overrideBIOSMemSize = TRUE;
 	 else {
-	     pI830->saveBIOSMemSize = 0;
-	     xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-			"BIOS view of memory size can't be changed "
-			"(this is not an error).\n");
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		       "BIOS view of memory size can't be changed "
+		       "(this is not an error).\n");
 	 }
       }
    }
@@ -2754,7 +2292,6 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 	      pI830->StolenMemory.Size / 1024);
    xf86DrvMsg(pScrn->scrnIndex, from, "VideoRAM: %d kByte\n",
 	      pScrn->videoRam);
-
    pI830->TotalVideoRam = KB(pScrn->videoRam);
 
    /*
@@ -2777,6 +2314,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    pI830->XvDisabled =
 	!xf86ReturnOptValBool(pI830->Options, OPTION_XVIDEO, TRUE);
 
+#ifdef I830_XV
    if (xf86GetOptValInteger(pI830->Options, OPTION_VIDEO_KEY,
 			    &(pI830->colorKey))) {
       from = X_CONFIG;
@@ -2792,6 +2330,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    }
    xf86DrvMsg(pScrn->scrnIndex, from, "video overlay key set to 0x%x\n",
 	      pI830->colorKey);
+#endif
 
    pI830->allowPageFlip = FALSE;
    enable = xf86ReturnOptValBool(pI830->Options, OPTION_PAGEFLIP, FALSE);
@@ -2823,16 +2362,13 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    v[2] = (ver & 0x0000ff00) >> 8;
    v[3] = (ver & 0x000000ff) >> 0;
    v[4] = 0;
-   
+
    pI830->bios_version = atoi(v);
 
    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "BIOS Build: %d\n",pI830->bios_version);
 
-   if (IS_I9XX(pI830))
-      pI830->newPipeSwitch = TRUE;
-   else
+   /* BIOS build 3062 changed the pipe switching functionality */
    if (pI830->availablePipes == 2 && pI830->bios_version >= 3062) {
-      /* BIOS build 3062 changed the pipe switching functionality */
       pI830->newPipeSwitch = TRUE;
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Using new Pipe switch code\n");
    } else
@@ -2851,7 +2387,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
     * or, at least it's meant to..... alas it doesn't seem to always work.
     */
    if (pI830->devicePresence) {
-      int req = 0, att = 0, enc = 0;
+      int req, att, enc;
       GetDevicePresence(pScrn, &req, &att, &enc);
       for (i = 0; i < NumDisplayTypes; i++) {
          xf86DrvMsg(pScrn->scrnIndex, X_INFO,
@@ -2866,52 +2402,38 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    pI830->savedDevices = GetDisplayDevices(pScrn);
 
    if (IsPrimary(pScrn)) {
-      pI830->pipe = pI830->origPipe = GetBIOSPipe(pScrn);
+      pI830->pipe = GetBIOSPipe(pScrn);
 
-      /* Override */
-      if (pI830->fixedPipe != -1) {
-         if (xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone) {
-            pI830->pipe = pI830->fixedPipe; 
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-	        "Fixed Pipe setting primary to pipe %s.\n", 
-                	pI830->fixedPipe ? "B" : "A");
-         }
+      if (xf86ReturnOptValBool(pI830->Options, OPTION_FLIP_PRIMARY, FALSE)) {
+         xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Primary flipping enabled\n");
+         pI830->pipe = !pI830->pipe;
       }
-      
+
       /* If the monitors aren't setup, read from the current config */
-      if (pI830->MonType1 == PIPE_NONE && pI830->MonType2 == PIPE_NONE) {
+      if (pI830->MonType1 == PIPE_NONE)
          pI830->MonType1 = pI830->savedDevices & 0xff;
+      if (pI830->MonType2 == PIPE_NONE)
          pI830->MonType2 = (pI830->savedDevices & 0xff00) >> 8;
-      } else {
-         /* Here, we've switched pipes from our primary */
-         if (pI830->MonType1 == PIPE_NONE && pI830->pipe == 0)
-            pI830->pipe = 1;
-         if (pI830->MonType2 == PIPE_NONE && pI830->pipe == 1)
-            pI830->pipe = 0;
-      }
    
       pI830->operatingDevices = (pI830->MonType2 << 8) | pI830->MonType1;
 
       if (!xf86IsEntityShared(pScrn->entityList[0]) && !pI830->Clone) {
-	  /* If we're not dual head or clone, turn off the second head,
+         /* If we're not dual head or clone, turn off the second head,
           * if monitorlayout is also specified. */
 
          if (pI830->pipe == 0)
             pI830->operatingDevices = pI830->MonType1;
          else
             pI830->operatingDevices = pI830->MonType2 << 8;
-      }
 
-      if (pI830->pipe != pI830->origPipe)
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-	     "Primary Pipe has been switched from original pipe (%s to %s)\n",
-             pI830->origPipe ? "B" : "A", pI830->pipe ? "B" : "A");
+         if (pI830->operatingDevices & 0xFF00)
+            xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		 "Primary Pipe is %s, switching off second monitor (0x%x)\n",
+			pI830->pipe ? "B" : "A", pI830->operatingDevices);
+      }
    } else {
       I830Ptr pI8301 = I830PTR(pI830Ent->pScrn_1);
       pI830->operatingDevices = pI8301->operatingDevices;
-      pI830->pipe = !pI8301->pipe;
-      pI830->MonType1 = pI8301->MonType1;
-      pI830->MonType2 = pI8301->MonType2;
    }
 
    /* Buggy BIOS 3066 is known to cause this, so turn this off */
@@ -2939,25 +2461,26 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       return FALSE;
    }
 
-   if (IsPrimary(pScrn)) {
-      if (!SetDisplayDevices(pScrn, pI830->operatingDevices)) {
-         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+   if (!SetDisplayDevices(pScrn, pI830->operatingDevices)) {
+      xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
  		 "Failed to switch to monitor configuration (0x%x)\n",
                  pI830->operatingDevices);
-         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+      xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		 "Please check the devices specified in your MonitorLayout\n");
-         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+      xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		 "is configured correctly.\n");
-         PreInitCleanup(pScrn);
-         return FALSE;
-      }
+      PreInitCleanup(pScrn);
+      return FALSE;
    }
 
    PrintDisplayDeviceInfo(pScrn);
 
    if (xf86IsEntityShared(pScrn->entityList[0])) {
       if (!IsPrimary(pScrn)) {
+         I830Ptr pI8301 = I830PTR(pI830Ent->pScrn_1);
+
          pI830Ent->pScrn_2 = pScrn;
+         pI830->pipe = !pI8301->pipe;
 
 	 /* This could be made to work with a little more fiddling */
 	 pI830->directRenderingDisabled = TRUE;
@@ -2996,13 +2519,14 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    }
 
    /* Check if the HW cursor needs physical address. */
-   if (IS_MOBILE(pI830) || IS_I9XX(pI830))
+   if (IS_MOBILE(pI830) || IS_I915G(pI830))
       pI830->CursorNeedsPhysical = TRUE;
    else
       pI830->CursorNeedsPhysical = FALSE;
 
-   /* Force ring buffer to be in low memory for all chipsets */
-   pI830->NeedRingBufferLow = TRUE;
+   /* Force ring buffer to be in low memory for the 845G and later. */
+   if (IS_845G(pI830) || IS_I85X(pI830) || IS_I865G(pI830) || IS_I915G(pI830) || IS_I915GM(pI830))
+      pI830->NeedRingBufferLow = TRUE;
 
    /*
     * XXX If we knew the pre-initialised GTT format for certain, we could
@@ -3042,21 +2566,26 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 
    SetPipeAccess(pScrn);
 
-   /* Check we have an LFP connected, before trying to
-    * read PanelID information. */
-   if ( (pI830->pipe == 1 && pI830->operatingDevices & (PIPE_LFP << 8)) ||
-        (pI830->pipe == 0 && pI830->operatingDevices & PIPE_LFP) )
-   	vbeDoPanelID(pI830->pVbe);
-
-   pMod = xf86LoadSubModule(pScrn, "ddc");
-
-   pI830->vesa->monitor = vbeDoEDID(pI830->pVbe, pMod);
-
-   if ((pScrn->monitor->DDC = pI830->vesa->monitor) != NULL) {
-      xf86PrintEDID(pI830->vesa->monitor);
-      xf86SetDDCproperties(pScrn, pI830->vesa->monitor);
+   if ((pDDCModule = xf86LoadSubModule(pScrn, "ddc")) == NULL) {
+      PreInitCleanup(pScrn);
+      return FALSE;
    }
-   xf86UnloadSubModule(pMod);
+
+   /* Check we are on pipe B and have an LFP connected, before trying to
+    * read PanelID information. */
+   if ((pI830->pipe == 1) && (pI830->operatingDevices & (PIPE_LFP << 8))) {
+   	vbeDoPanelID(pI830->pVbe);
+   }
+
+   /* If we managed to get PanelID, then try EDID too, and if we get that
+    * it'll override the PanelID information above */
+   if (!pI830->vesa->monitor && 
+       (pI830->vesa->monitor = vbeDoEDID(pI830->pVbe, pDDCModule)) != NULL) {
+      xf86PrintEDID(pI830->vesa->monitor);
+   }
+   if ((pScrn->monitor->DDC = pI830->vesa->monitor) != NULL)
+      xf86SetDDCproperties(pScrn, pI830->vesa->monitor);
+   xf86UnloadSubModule(pDDCModule);
 
    /* XXX Move this to a header. */
 #define VIDEO_BIOS_SCRATCH 0x18
@@ -3175,13 +2704,13 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       defmon |= 2;
    }
 
-   DDCclock = I830UseDDC(pScrn);
-
    /*
     * Note: VBE modes (> 0x7f) won't work with Intel's extended BIOS
-    * functions. 
+    * functions.  For that reason it's important to set only
+    * V_MODETYPE_VGA in the flags.
     */
-   pScrn->modePool = I830GetModePool(pScrn, pI830->pVbe, pI830->vbeInfo);
+   pScrn->modePool = i830GetModePool(pScrn, pI830->pVbe, pI830->vbeInfo,
+				    V_MODETYPE_VGA);
 
    if (!pScrn->modePool) {
       xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -3230,63 +2759,15 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
       return FALSE;
    }
 
-   /* Only use this if we've got DDC available */
-   if (DDCclock > 0) {
-      p = pScrn->modes;
-      if (p == NULL)
-         return FALSE;
-      do {
-         int Clock = 100000000; /* incredible value */
-
-	 if (p->status == MODE_OK) {
-            for (pMon = pScrn->monitor->Modes; pMon != NULL; pMon = pMon->next) {
-               if ((pMon->HDisplay != p->HDisplay) ||
-                   (pMon->VDisplay != p->VDisplay) ||
-                   (pMon->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
-                   continue;
-
-               /* Find lowest supported Clock for this resolution */
-               if (Clock > pMon->Clock)
-                  Clock = pMon->Clock;
-            } 
-
-            if (DDCclock < 2550 && Clock / 1000.0 > DDCclock) {
-               ErrorF("(%s,%s) mode clock %gMHz exceeds DDC maximum %dMHz\n",
-		   p->name, pScrn->monitor->id,
-		   Clock/1000.0, DDCclock);
-               p->status = MODE_BAD;
-            } 
- 	 }
-         p = p->next;
-      } while (p != NULL && p != pScrn->modes);
-   }
-
    xf86PruneDriverModes(pScrn);
+
+   pScrn->currentMode = pScrn->modes;
 
    if (pScrn->modes == NULL) {
       xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "No modes.\n");
       PreInitCleanup(pScrn);
       return FALSE;
    }
-
-   /* Now we check the VESA BIOS's displayWidth and reset if necessary */
-   p = pScrn->modes;
-   do {
-      VbeModeInfoData *data = (VbeModeInfoData *) p->Private;
-      VbeModeInfoBlock *modeInfo;
-
-      /* Get BytesPerScanline so we can reset displayWidth */
-      if ((modeInfo = VBEGetModeInfo(pI830->pVbe, data->mode))) {
-         if (pScrn->displayWidth < modeInfo->BytesPerScanline / pI830->cpp) {
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Correcting stride (%d -> %d)\n", pScrn->displayWidth, modeInfo->BytesPerScanline);
-	    pScrn->displayWidth = modeInfo->BytesPerScanline / pI830->cpp;
-	 }
-      } 
-      p = p->next;
-   } while (p != NULL && p != pScrn->modes);
-
-   pScrn->currentMode = pScrn->modes;
-
 #ifndef USE_PITCHES
 #define USE_PITCHES 1
 #endif
@@ -3296,7 +2777,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
     * If DRI is potentially usable, check if there is enough memory available
     * for it, and if there's also enough to allow tiling to be enabled.
     */
-#ifdef XF86DRI
+#if defined(XF86DRI)
    if (IsPrimary(pScrn) && !pI830->directRenderingDisabled) {
       int savedDisplayWidth = pScrn->displayWidth;
       int memNeeded = 0;
@@ -3311,11 +2792,13 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 	 0
       };
 
+#ifdef I830_XV
       /*
        * Set this so that the overlay allocation is factored in when
        * appropriate.
        */
       pI830->XvEnabled = !pI830->XvDisabled;
+#endif
 
       for (i = 0; pitches[i] != 0; i++) {
 #if USE_PITCHES
@@ -3406,7 +2889,7 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
 #endif
 
    SetPipeAccess(pScrn);
-   I830PrintModes(pScrn);
+   i830PrintModes(pScrn);
 
    if (!pI830->vesa->useDefaultRefresh) {
       /*
@@ -3417,11 +2900,13 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
        * if there are no non-CRT devices attached.
        */
       SetPipeAccess(pScrn);
-      I830SetModeParameters(pScrn, pI830->pVbe);
+      i830SetModeParameters(pScrn, pI830->pVbe);
    }
 
    /* PreInit shouldn't leave any state changes, so restore this. */
+   pI830->preinit = FALSE; /* temporarily do this */
    RestoreBIOSMemSize(pScrn);
+   pI830->preinit = TRUE; /* now put it back */
 
    /* Don't need MMIO access anymore. */
    if (pI830->swfSaved) {
@@ -3433,27 +2918,32 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    xf86SetDpi(pScrn, 0, 0);
 
    /* Load the required sub modules */
-   if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+   if (!xf86LoadSubModule(pScrn, "fb")) {
       PreInitCleanup(pScrn);
       return FALSE;
    }
 
-   xf86LoaderModReqSymLists(pMod, I810fbSymbols, NULL);
+   xf86LoaderReqSymLists(I810fbSymbols, NULL);
 
    if (!pI830->noAccel) {
-      if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+      if (!xf86LoadSubModule(pScrn, "xaa")) {
 	 PreInitCleanup(pScrn);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, I810xaaSymbols, NULL);
+      xf86LoaderReqSymLists(I810xaaSymbols, NULL);
    }
 
    if (!pI830->SWCursor) {
-      if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+      if (!xf86LoadSubModule(pScrn, "ramdac")) {
 	 PreInitCleanup(pScrn);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, I810ramdacSymbols, NULL);
+      xf86LoaderReqSymLists(I810ramdacSymbols, NULL);
+   }
+
+   if (!SetDisplayDevices(pScrn, pI830->savedDevices)) {
+      xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		    "Failed to switch to saved display devices, continuing.\n");
    }
 
    I830UnmapMMIO(pScrn);
@@ -3463,19 +2953,8 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    xf86SetOperatingState(resVgaIo, pI830->pEnt->index, ResUnusedOpr);
    xf86SetOperatingState(resVgaMem, pI830->pEnt->index, ResDisableOpr);
 
-   if (pI830->shadowFB) {
-       if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
-	   I830BIOSFreeRec(pScrn);
-	   vbeFree(pI830->pVbe);
-	   return FALSE;
-       }
-      xf86LoaderModReqSymLists(pMod, I810shadowFBSymbols, NULL);
-   }
-
    VBEFreeVBEInfo(pI830->vbeInfo);
-   pI830->vbeInfo = NULL;
    vbeFree(pI830->pVbe);
-   pI830->pVbe = NULL;
 
    /* Use the VBE mode restore workaround by default. */
    pI830->vbeRestoreWorkaround = TRUE;
@@ -3487,21 +2966,21 @@ I830BIOSPreInit(ScrnInfoPtr pScrn, int flags)
    xf86DrvMsg(pScrn->scrnIndex, from, "VBE Restore workaround: %s.\n",
 	      pI830->vbeRestoreWorkaround ? "enabled" : "disabled");
       
-#ifdef XF86DRI
+#if defined(XF86DRI)
    /* Load the dri module if requested. */
    if (xf86ReturnOptValBool(pI830->Options, OPTION_DRI, FALSE) &&
        !pI830->directRenderingDisabled) {
-      if ((pMod = xf86LoadSubModule(pScrn, "dri"))) {
-	 xf86LoaderModReqSymLists(pMod, I810driSymbols, I810drmSymbols, NULL);
+      if (xf86LoadSubModule(pScrn, "dri")) {
+	 xf86LoaderReqSymLists(I810driSymbols, I810drmSymbols, NULL);
       }
    }
 
    if (!pI830->directRenderingDisabled) {
-      if (!(pMod = xf86LoadSubModule(pScrn, "shadow"))) {
+      if (!xf86LoadSubModule(pScrn, "shadow")) {
 	 PreInitCleanup(pScrn);
 	 return FALSE;
       }
-      xf86LoaderModReqSymLists(pMod, I810shadowSymbols, NULL);
+      xf86LoaderReqSymLists(I810shadowSymbols, NULL);
    }
 #endif
 
@@ -3694,16 +3173,12 @@ SaveHWState(ScrnInfoPtr pScrn)
 
    DPRINTF(PFX, "SaveHWState\n");
 
-   if (IsPrimary(pScrn) && pI830->pipe != pI830->origPipe)
-      SetBIOSPipe(pScrn, pI830->origPipe);
-   else
-      SetPipeAccess(pScrn);
+   SetPipeAccess(pScrn);
 
    pVesa = pI830->vesa;
 
    /* Make sure we save at least this information in case of failure. */
    VBEGetVBEMode(pVbe, &pVesa->stateMode);
-   pVesa->stateRefresh = GetRefreshRate(pScrn, pVesa->stateMode, NULL);
    modeInfo = VBEGetModeInfo(pVbe, pVesa->stateMode);
    pVesa->savedScanlinePitch = 0;
    if (modeInfo) {
@@ -3769,11 +3244,6 @@ RestoreHWState(ScrnInfoPtr pScrn)
 
    DPRINTF(PFX, "RestoreHWState\n");
 
-   if (IsPrimary(pScrn) && pI830->pipe != pI830->origPipe)
-      SetBIOSPipe(pScrn, pI830->origPipe);
-   else
-      SetPipeAccess(pScrn);
-
    pVesa = pI830->vesa;
 
    /*
@@ -3781,8 +3251,26 @@ RestoreHWState(ScrnInfoPtr pScrn)
     * Temporarily program a 640x480 mode before switching back to
     * text mode.
     */
-   if (pVesa->useDefaultRefresh)
-      I830Set640x480(pScrn);
+   if (pVesa->useDefaultRefresh) {
+      int mode = 0;
+
+      switch (pScrn->depth) {
+      case 8:
+	 mode = 0x30;
+	 break;
+      case 15:
+	 mode = 0x40;
+	 break;
+      case 16:
+	 mode = 0x41;
+	 break;
+      case 24:
+	 mode = 0x50;
+	 break;
+      }
+      mode |= (1 << 15) | (1 << 14);
+      I830VESASetVBEMode(pScrn, mode, NULL);
+   }
 
    if (pVesa->state && pVesa->stateSize) {
       CARD16 imr = INREG16(IMR);
@@ -3815,9 +3303,6 @@ RestoreHWState(ScrnInfoPtr pScrn)
 		 "Setting the original video mode instead of restoring\n\t"
 		 "the saved state\n");
       I830VESASetVBEMode(pScrn, pVesa->stateMode, NULL);
-      if (!pVesa->useDefaultRefresh && pI830->useExtendedRefresh) {
-         SetRefreshRate(pScrn, pVesa->stateMode, pVesa->stateRefresh);
-      }
    }
    if (pVesa->savedScanlinePitch)
        VBESetLogicalScanline(pVbe, pVesa->savedScanlinePitch);
@@ -3829,9 +3314,12 @@ RestoreHWState(ScrnInfoPtr pScrn)
 
    vgaHWRestore(pScrn, vgaReg, VGA_SR_FONTS);
    vgaHWLock(hwp);
-
    return TRUE;
 }
+
+#ifndef USE_VBE
+#define USE_VBE 1
+#endif
 
 static void I830SetCloneVBERefresh(ScrnInfoPtr pScrn, int mode, VbeCRTCInfoBlock * block, int refresh)
 {
@@ -3868,7 +3356,8 @@ static void I830SetCloneVBERefresh(ScrnInfoPtr pScrn, int mode, VbeCRTCInfoBlock
 #endif
          if (clock)
             block->PixelClock = clock;
-         block->RefreshRate = RefreshRate;
+         block->RefreshRate = ((double)(block->PixelClock) /
+                               (double)(p->HTotal * p->VTotal)) * 100;
          return;
       }
    }
@@ -3878,139 +3367,62 @@ static Bool
 I830VESASetVBEMode(ScrnInfoPtr pScrn, int mode, VbeCRTCInfoBlock * block)
 {
    I830Ptr pI830 = I830PTR(pScrn);
-   Bool ret = FALSE;
-   int Mon;
 
    DPRINTF(PFX, "Setting mode 0x%.8x\n", mode);
 
-   if (pI830->Clone && pI830->CloneHDisplay && pI830->CloneVDisplay &&
-       !pI830->preinit && !pI830->closing) {
+   if (pI830->Clone && !pI830->preinit) {
       VbeCRTCInfoBlock newblock;
-      int newmode = mode;
+      int Mon;
 
-      if (pI830->pipe == 1)
+      if (pI830->pipe == 0)
          Mon = pI830->MonType1;
       else
          Mon = pI830->MonType2;
 
       SetBIOSPipe(pScrn, !pI830->pipe);
 
-      /* Now recheck refresh operations we can use */
-      pI830->useExtendedRefresh = FALSE;
-      pI830->vesa->useDefaultRefresh = FALSE;
-
-      if (Mon != PIPE_CRT) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "A non-CRT device is attached to Clone pipe %c.\n"
-		    "\tNo refresh rate overrides will be attempted (0x%x).\n",
-		    PIPE_NAME(!pI830->pipe), newmode);
-	 pI830->vesa->useDefaultRefresh = TRUE;
-      }
-      /*
-       * Some desktop platforms might not have 0x5f05, so useExtendedRefresh
-       * would need to be set to FALSE for those cases.
-       */
-      if (!pI830->vesa->useDefaultRefresh) 
-	 pI830->useExtendedRefresh = TRUE;
-
-      newmode |= 1 << 11;
-      if (pI830->vesa->useDefaultRefresh)
-            newmode &= ~(1 << 11);
-
-      if (!SetRefreshRate(pScrn, newmode, 60)) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "BIOS call 0x5f05 not supported on Clone Head, "
-		    "setting refresh with VBE 3 method.\n");
-	 pI830->useExtendedRefresh = FALSE;
-      }
-
-      if (!pI830->vesa->useDefaultRefresh) {
-         I830SetCloneVBERefresh(pScrn, newmode, &newblock, pI830->CloneRefresh * 100);
-
-         if (!VBESetVBEMode(pI830->pVbe, newmode, &newblock)) {
-            if (!VBESetVBEMode(pI830->pVbe, (newmode & ~(1 << 11)), NULL))
-               xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		 "Failed to set mode for Clone head.\n");
-         } else {
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		 "Setting refresh on clone head with VBE 3 method.\n");
-            pI830->useExtendedRefresh = FALSE;
-         }
-      } else {
-         if (!VBESetVBEMode(pI830->pVbe, (newmode & ~(1 << 11)), NULL))
-            xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		 "Failed to set mode for Clone head.\n");
-      }
-
-      if (pI830->useExtendedRefresh && !pI830->vesa->useDefaultRefresh) {
-         if (!SetRefreshRate(pScrn, newmode, pI830->CloneRefresh))
-	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		    "Failed to set refresh rate to %dHz on Clone head.\n",
-		    pI830->CloneRefresh);
+      /* The reason for this code is if we've not got a CRT on this pipe, then
+       * make sure we're using a 60Hz refresh */
+      if (pI830->useExtendedRefresh && !pI830->vesa->useDefaultRefresh &&
+         (mode & (1 << 11)) && block) {
+         /* we'll call 5F05 to set the refresh later.... */
+         if (Mon != PIPE_CRT)
+            VBESetVBEMode(pI830->pVbe, mode, NULL);
          else
-	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "Set refresh rate to %dHz on Clone head.\n",
-		    pI830->CloneRefresh);
-      }
-
-      SetPipeAccess(pScrn);
-   }
-
-   if (pI830->pipe == 0)
-      Mon = pI830->MonType1;
-   else
-      Mon = pI830->MonType2;
-
-   /* Now recheck refresh operations we can use */
-   pI830->useExtendedRefresh = FALSE;
-   pI830->vesa->useDefaultRefresh = FALSE;
-
-   if (Mon != PIPE_CRT)
-      pI830->vesa->useDefaultRefresh = TRUE;
-
-   mode |= 1 << 11;
-   if (pI830->vesa->useDefaultRefresh)
-      mode &= ~(1 << 11);
-   /*
-    * Some desktop platforms might not have 0x5f05, so useExtendedRefresh
-    * would need to be set to FALSE for those cases.
-    */
-   if (!pI830->vesa->useDefaultRefresh) 
-      pI830->useExtendedRefresh = TRUE;
-
-   if (!SetRefreshRate(pScrn, mode, 60)) {
-      xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		    "BIOS call 0x5f05 not supported, "
-		    "setting refresh with VBE 3 method.\n");
-      pI830->useExtendedRefresh = FALSE;
-   }
-
-   if (!pI830->vesa->useDefaultRefresh && block) {
-      ret = VBESetVBEMode(pI830->pVbe, mode, block);
-      if (!ret)
-         ret = VBESetVBEMode(pI830->pVbe, (mode & ~(1 << 11)), NULL);
-      else {
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-		 "Setting refresh with VBE 3 method.\n");
-	 pI830->useExtendedRefresh = FALSE;
-      }
-   } else {
-      ret = VBESetVBEMode(pI830->pVbe, (mode & ~(1 << 11)), NULL);
-   }
-
-   /* Might as well bail now if we've failed */
-   if (!ret) return FALSE;
-
-   if (pI830->useExtendedRefresh && !pI830->vesa->useDefaultRefresh && block) {
-      if (!SetRefreshRate(pScrn, mode, block->RefreshRate / 100)) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		    "Failed to set refresh rate to %dHz.\n",
-		    block->RefreshRate / 100);
-	 pI830->useExtendedRefresh = FALSE;
+            VBESetVBEMode(pI830->pVbe, mode, block);
+      } else { 
+         if (Mon != PIPE_CRT)
+            /* Set clone head to 60Hz because we ain't got a CRT on it */
+            I830SetCloneVBERefresh(pScrn, mode, &newblock, 6000);
+         else
+            /* Set clone head to specified clone refresh rate */
+            I830SetCloneVBERefresh(pScrn, mode, &newblock, pI830->CloneRefresh * 100);
+         if (newblock.RefreshRate == 0)
+	    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+	       "Failed to setup clone head mode resolution and refresh.\n");
+         else
+            VBESetVBEMode(pI830->pVbe, mode, &newblock);
       }
    }
 
-   return ret;
+   SetPipeAccess(pScrn);
+
+#if USE_VBE
+   return VBESetVBEMode(pI830->pVbe, mode, block);
+#else
+   {
+      vbeInfoPtr pVbe = pI830->pVbe;
+      pVbe->pInt10->num = 0x10;
+      pVbe->pInt10->ax = 0x80 | (mode & 0x7f);
+      xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
+      pVbe->pInt10->ax = 0x0f00;
+      xf86ExecX86int10_wrapper(pVbe->pInt10, pScrn);
+      if ((pVbe->pInt10->ax & 0x7f) == (mode & 0x7f))
+	 return TRUE;
+      else
+	 return FALSE;
+   }
+#endif
 }
 
 static Bool
@@ -4039,6 +3451,21 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
    }
 #endif
 
+   /*
+    * Do this early to find out if we can support it or not....
+    * Test if the extendedRefresh BIOS function is supported.
+    */
+   if (pI830->useExtendedRefresh && !pI830->vesa->useDefaultRefresh &&
+       (mode & (1 << 11)) && data && data->data && data->block) {
+      SetPipeAccess(pScrn);
+      if (!SetRefreshRate(pScrn, mode, 60)) {
+	 xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		    "BIOS call 0x5f05 not supported, "
+		    "setting refresh with VBE 3 method.\n");
+	 pI830->useExtendedRefresh = FALSE;
+      }
+   }
+
    if (pI830->Clone) {
       pI830->CloneHDisplay = pMode->HDisplay;
       pI830->CloneVDisplay = pMode->VDisplay;
@@ -4053,16 +3480,23 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
 
    /* XXX Add macros for the various mode parameter bits. */
 
-#if 0
    if (pI830->vesa->useDefaultRefresh)
       mode &= ~(1 << 11);
-#endif
-
-   SetPipeAccess(pScrn);
 
    if (I830VESASetVBEMode(pScrn, mode, data->block) == FALSE) {
-      xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Set VBE Mode failed!\n");
-      return FALSE;
+      if ((data->block && (mode & (1 << 11))) &&
+	  I830VESASetVBEMode(pScrn, (mode & ~(1 << 11)), NULL) == TRUE) {
+	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		    "Set VBE Mode rejected this modeline.\n\t"
+		    "Trying standard mode instead!\n");
+	 DPRINTF(PFX, "OOPS!\n");
+	 xfree(data->block);
+	 data->block = NULL;
+	 data->mode &= ~(1 << 11);
+      } else {
+	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Set VBE Mode failed!\n");
+	 return FALSE;
+      }
    }
 
    /*
@@ -4088,6 +3522,49 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
       VBESetGetDACPaletteFormat(pVbe, 8);
    }
 
+   /*
+    * When it's OK to set better than default refresh rates, set them here.
+    */
+   if (pI830->Clone) {
+      int Mon;
+      if (pI830->pipe == 0)
+         Mon = pI830->MonType1;
+      else
+         Mon = pI830->MonType2;
+      SetBIOSPipe(pScrn, !pI830->pipe);
+      if (pI830->CloneRefresh && (Mon == PIPE_CRT)) {
+         if (pI830->useExtendedRefresh && !pI830->vesa->useDefaultRefresh &&
+             (mode & (1 << 11)) && data && data->data && data->block) {
+            refresh = SetRefreshRate(pScrn, mode, pI830->CloneRefresh);
+            if (!refresh)
+	       xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		    "Failed to set refresh rate to %dHz on Clone head.\n",
+		    pI830->CloneRefresh);
+            else
+	       xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		    "Set refresh rate to %dHz on Clone head.\n",
+		    pI830->CloneRefresh);
+         } else
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		    "Will use VBE3 method to set refresh on Clone head.\n");
+      } else {
+	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+	  "Not attempting to override default refresh on non-CRT clone head\n");
+      }
+   }
+
+   if (pI830->useExtendedRefresh && !pI830->vesa->useDefaultRefresh &&
+       (mode & (1 << 11)) && data && data->data && data->block) {
+      SetPipeAccess(pScrn);
+      refresh = SetRefreshRate(pScrn, mode, data->block->RefreshRate / 100);
+      if (!refresh) {
+	 refresh = 60;
+	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+		    "Failed to set refresh rate to %dHz.\n",
+		    data->block->RefreshRate / 100);
+      }
+   }
+
    /* XXX Fix plane A with pipe A, and plane B with pipe B. */
    planeA = INREG(DSPACNTR);
    planeB = INREG(DSPBCNTR);
@@ -4103,18 +3580,36 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
 	      pI830->planeEnabled[1] ? "enabled" : "disabled",
 	      planeB & DISPPLANE_SEL_PIPE_MASK ? "Pipe B" : "Pipe A");
    
-   if (pI830->operatingDevices & 0xff) {
+   if (xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone) {
       pI830->planeEnabled[0] = 1;
-   } else { 
-      pI830->planeEnabled[0] = 0;
+      pI830->pipeEnabled[0] = 1;
+      pI830->planeEnabled[1] = 1;
+      pI830->pipeEnabled[1] = 1;
    }
 
-   if (pI830->operatingDevices & 0xff00) {
-      pI830->planeEnabled[1] = 1;
-   } else {
-      pI830->planeEnabled[1] = 0;
+   /*
+    * Sometimes it seems that no display planes are enabled at this point.
+    * For mobile platforms pick the plane(s) connected to enabled pipes.
+    * For others choose plane A.
+    */
+   if (!pI830->planeEnabled[0] && !pI830->planeEnabled[1]) {
+      if (pI830->availablePipes == 2) {
+	 if ((pI830->pipeEnabled[0] &&
+	      ((planeA & DISPPLANE_SEL_PIPE_MASK) == DISPPLANE_SEL_PIPE_A)) ||
+	     (pI830->pipeEnabled[1] &&
+	      ((planeA & DISPPLANE_SEL_PIPE_MASK) == DISPPLANE_SEL_PIPE_B))) {
+	    pI830->planeEnabled[0] = TRUE;
+	 }
+	 if ((pI830->pipeEnabled[0] &&
+	      ((planeB & DISPPLANE_SEL_PIPE_MASK) == DISPPLANE_SEL_PIPE_A)) ||
+	     (pI830->pipeEnabled[1] &&
+	      ((planeB & DISPPLANE_SEL_PIPE_MASK) == DISPPLANE_SEL_PIPE_B))) {
+	    pI830->planeEnabled[1] = TRUE;
+	 }
+      } else {
+	 pI830->planeEnabled[0] = TRUE;
+      }
    }
-   
    if (pI830->planeEnabled[0]) {
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Enabling plane A.\n");
       planeA |= DISPLAY_PLANE_ENABLE;
@@ -4153,14 +3648,12 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
     */
    temp = INREG(PIPEACONF);
    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "PIPEACONF is 0x%08lx\n",
-	      (unsigned long)temp);
+	(unsigned long)temp);
    if (pI830->availablePipes == 2) {
       temp = INREG(PIPEBCONF);
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "PIPEBCONF is 0x%08lx\n",
-		 (unsigned long)temp);
+	(unsigned long)temp);
    }
-
-
 
    if (xf86IsEntityShared(pScrn->entityList[0])) {
       /* Clean this up !! */
@@ -4340,7 +3833,6 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
       }
    }
 
-#if 0
    {
       int ret;
 
@@ -4350,7 +3842,6 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
 		    "LFP compensation mode: 0x%x\n", ret);
       }
    }
-#endif
 
 #if MODESWITCH_RESET_STATE
    ResetState(pScrn, TRUE);
@@ -4602,8 +4093,7 @@ I830_dump_registers(ScrnInfoPtr pScrn)
 #endif
 
 static Bool
-I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
-		   const int argc, const char **argv)
+I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
    ScrnInfoPtr pScrn;
    vgaHWPtr hwp;
@@ -4611,8 +4101,6 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
    VisualPtr visual;
    I830EntPtr pI830Ent = NULL;
    I830Ptr pI8301 = NULL;
-   int width, height, displayWidth;
-   unsigned char *fbbase;
 #ifdef XF86DRI
    Bool driDisabled;
 #endif
@@ -4675,25 +4163,30 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
     * If we're changing the BIOS's view of the video memory size, do that
     * first, then re-initialise the VBE information.
     */
-   if (pI830->pVbe)
-      vbeFree(pI830->pVbe);
    pI830->pVbe = VBEInit(NULL, pI830->pEnt->index);
-   if (TweakMemorySize(pScrn, pI830->newBIOSMemSize, FALSE) == 1)
+   if (!TweakMemorySize(pScrn, pI830->newBIOSMemSize))
        SetBIOSMemSize(pScrn, pI830->newBIOSMemSize);
    if (!pI830->pVbe)
       return FALSE;
-   if (pI830->vbeInfo)
-      VBEFreeVBEInfo(pI830->vbeInfo);
    pI830->vbeInfo = VBEGetVBEInfo(pI830->pVbe);
 
    miClearVisualTypes();
-   if (!miSetVisualTypes(pScrn->depth,
+   if (!xf86SetDefaultVisual(pScrn, -1))
+      return FALSE;
+   if (pScrn->bitsPerPixel > 8) {
+      if (!miSetVisualTypes(pScrn->depth, TrueColorMask,
+			    pScrn->rgbBits, TrueColor))
+	 return FALSE;
+   } else {
+      if (!miSetVisualTypes(pScrn->depth,
 			    miGetDefaultVisualMask(pScrn->depth),
 			    pScrn->rgbBits, pScrn->defaultVisual))
 	 return FALSE;
+   }
    if (!miSetPixmapDepths())
       return FALSE;
 
+#ifdef I830_XV
    pI830->XvEnabled = !pI830->XvDisabled;
    if (pI830->XvEnabled) {
       if (!IsPrimary(pScrn)) {
@@ -4708,6 +4201,9 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
 	 pI830->XvEnabled = FALSE;
       }
    }
+#else
+   pI830->XvEnabled = FALSE;
+#endif
 
    if (IsPrimary(pScrn)) {
       I830ResetAllocations(pScrn, 0);
@@ -4734,6 +4230,7 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
       }
    }
 
+#ifdef I830_XV
    if (pI830->XvEnabled) {
       if (pI830->noAccel) {
 	 xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Disabling Xv because it "
@@ -4747,6 +4244,7 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
 	 pI830->XvEnabled = FALSE;
       }
    }
+#endif
 
    InitRegisterRec(pScrn);
 
@@ -4763,7 +4261,7 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
     */
 
    if (pI830->directRenderingEnabled) {
-      if (pI830->noAccel || pI830->SWCursor || (pI830->StolenOnly && IsPrimary(pScrn))) {
+      if (pI830->noAccel || pI830->SWCursor || pI830->StolenOnly) {
 	 xf86DrvMsg(pScrn->scrnIndex, X_PROBED, "DRI is disabled because it "
 		    "needs HW cursor, 2D accel and AGPGART.\n");
 	 pI830->directRenderingEnabled = FALSE;
@@ -4841,26 +4339,10 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
       return FALSE;
 
    DPRINTF(PFX, "assert( if(!fbScreenInit(pScreen, ...) )\n");
-   if (pI830->rotate) {
-       height = pScrn->virtualX;
-       width = pScrn->virtualY;
-   } else {
-       width = pScrn->virtualX;
-       height = pScrn->virtualY;
-   }
-   if (pI830->shadowFB) {
-       pI830->shadowPitch = BitmapBytePad(pScrn->bitsPerPixel * width);
-       pI830->shadowPtr = xalloc(pI830->shadowPitch * height);
-       displayWidth = pI830->shadowPitch / (pScrn->bitsPerPixel >> 3);
-       fbbase = pI830->shadowPtr;
-   } else {
-       pI830->shadowPtr = NULL;
-       fbbase = pI830->FbBase;
-       displayWidth = pScrn->displayWidth;
-   }
-   if (!fbScreenInit(pScreen, fbbase + pScrn->fbOffset, width, height,
+   if (!fbScreenInit(pScreen, pI830->FbBase + pScrn->fbOffset,
+		     pScrn->virtualX, pScrn->virtualY,
 		     pScrn->xDpi, pScrn->yDpi,
-		     displayWidth, pScrn->bitsPerPixel))
+		     pScrn->displayWidth, pScrn->bitsPerPixel))
       return FALSE;
 
    if (pScrn->bitsPerPixel > 8) {
@@ -4882,8 +4364,7 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
 
    xf86SetBlackWhitePixels(pScreen);
 
-   if (!pI830->shadowFB)
-       I830DGAInit(pScreen);
+   I830DGAInit(pScreen);
 
    DPRINTF(PFX,
 	   "assert( if(!xf86InitFBManager(pScreen, &(pI830->FbMemBox))) )\n");
@@ -4893,11 +4374,6 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
 		 "Failed to init memory manager\n");
          return FALSE;
       }
-
-      if (pI830->LinearAlloc && xf86InitFBManagerLinear(pScreen, pI830->LinearMem.Offset / pI830->cpp, pI830->LinearMem.Size / pI830->cpp))
-            xf86DrvMsg(scrnIndex, X_INFO, 
-			"Using %ld bytes of offscreen memory for linear (offset=0x%lx)\n", pI830->LinearMem.Size, pI830->LinearMem.Offset);
-
    } else {
       if (!xf86InitFBManager(pScreen, &(pI8301->FbMemBox2))) {
          xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -4926,47 +4402,23 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
    } else
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Initializing SW Cursor!\n");
 
-   if (pI830->shadowFB) {
-       RefreshAreaFuncPtr refreshArea = I830RefreshArea;
-       if (pI830->rotate) {
-	   if (!pI830->PointerMoved) {
-	       pI830->PointerMoved = pScrn->PointerMoved;
-	       pScrn->PointerMoved = I830PointerMoved;
-	   }
-	   switch (pScrn->bitsPerPixel) {
-	   case 8:
-	       refreshArea = I830RefreshArea8;
-	       break;
-	   case 16:
-	       refreshArea = I830RefreshArea16;
-	       break;
-	   case 24:
-	       refreshArea = I830RefreshArea24;
-	       break;
-	   case 32:
-	       refreshArea = I830RefreshArea32;
-	       break;
-	   }
-       }
-       ShadowFBInit(pScreen, refreshArea);
-   }
-
    DPRINTF(PFX, "assert( if(!miCreateDefColormap(pScreen)) )\n");
    if (!miCreateDefColormap(pScreen))
       return FALSE;
 
    DPRINTF(PFX, "assert( if(!xf86HandleColormaps(pScreen, ...)) )\n");
    if (!xf86HandleColormaps(pScreen, 256, 8, I830LoadPalette, 0,
-			    CMAP_RELOAD_ON_MODE_SWITCH |
-			    CMAP_PALETTED_TRUECOLOR)) {
+			    CMAP_RELOAD_ON_MODE_SWITCH)) {
       return FALSE;
    }
 
    xf86DPMSInit(pScreen, I830DisplayPowerManagementSet, 0);
 
+#ifdef I830_XV
    /* Init video */
    if (pI830->XvEnabled)
       I830InitVideo(pScreen);
+#endif
 
 #ifdef XF86DRI
    if (pI830->directRenderingEnabled) {
@@ -4994,6 +4446,9 @@ I830BIOSScreenInit(int scrnIndex, ScreenPtr pScreen,
    pI830->CloseScreen = pScreen->CloseScreen;
    pScreen->CloseScreen = I830BIOSCloseScreen;
  
+   if (pI830->checkLid)
+      pI830->lidTimer = TimerSet(NULL, 0, 1000, I830LidTimer, pScrn);
+
    if (serverGeneration == 1)
       xf86ShowUnusedOptions(pScrn->scrnIndex, pScrn->options);
 
@@ -5013,7 +4468,6 @@ I830BIOSAdjustFrame(int scrnIndex, int x, int y, int flags)
    ScrnInfoPtr pScrn;
    I830Ptr pI830;
    vbeInfoPtr pVbe;
-   unsigned long Start;
 
    pScrn = xf86Screens[scrnIndex];
    pI830 = I830PTR(pScrn);
@@ -5022,36 +4476,43 @@ I830BIOSAdjustFrame(int scrnIndex, int x, int y, int flags)
    DPRINTF(PFX, "I830BIOSAdjustFrame: y = %d (+ %d), x = %d (+ %d)\n",
 	   x, pI830->xoffset, y, pI830->yoffset);
 
-   /* Sync the engine before adjust frame */
-   if (pI830->AccelInfoRec && pI830->AccelInfoRec->NeedToSync) {
-      (*pI830->AccelInfoRec->Sync)(pScrn);
-      pI830->AccelInfoRec->NeedToSync = FALSE;
-   }
-
-   if (IsPrimary(pScrn))
-      Start = pI830->FrontBuffer.Start;
-   else {
-      I830Ptr pI8301 = I830PTR(pI830->entityPrivate->pScrn_1);
-      Start = pI8301->FrontBuffer2.Start;
-   }
-
-   /* Sigh...
-    * It seems that there are quite a few Video BIOS' that get this wrong.
-    * So, we'll bypass the VBE call and hit the hardware directly.
+   /* The i830M just happens to have some problems programming offsets via
+    * this VESA BIOS call. Especially in dual head configurations which
+    * have high resolutions which cause the DSP{A,B}BASE registers to be
+    * programmed incorrectly. Thus, it warrants bypassing the BIOS for i830M
+    * and hitting the DSP{A,B}BASE registers directly. 
+    *
+    * We could probably do this for other platforms too, but we don't
+    * know what else the Video BIOS may do when calling it. It seems safe
+    * though for i830M during testing......
+    *
+    * Also note, calling the Video BIOS version first and then fixing the
+    * registers fail on i830M and eventually cause a lockup of the hardware
+    * in my testing.
     */
 
    if (pI830->Clone) {
-      if (!pI830->pipe == 0) {
-         OUTREG(DSPABASE, Start + ((y * pScrn->displayWidth + x) * pI830->cpp));
+      if (!IS_I830(pI830)) {
+         SetBIOSPipe(pScrn, !pI830->pipe);
+         VBESetDisplayStart(pVbe, x + pI830->xoffset, y + pI830->yoffset, TRUE);
       } else {
-         OUTREG(DSPBBASE, Start + ((y * pScrn->displayWidth + x) * pI830->cpp));
+         if (!pI830->pipe == 0) {
+            OUTREG(DSPABASE, pScrn->fbOffset + ((y * pScrn->displayWidth + x) * pI830->cpp));
+         } else {
+            OUTREG(DSPBBASE, pScrn->fbOffset + ((y * pScrn->displayWidth + x) * pI830->cpp));
+         }
       }
    }
 
-   if (pI830->pipe == 0) {
-      OUTREG(DSPABASE, Start + ((y * pScrn->displayWidth + x) * pI830->cpp));
+   if (!IS_I830(pI830)) {
+      SetPipeAccess(pScrn);
+      VBESetDisplayStart(pVbe, x + pI830->xoffset, y + pI830->yoffset, TRUE);
    } else {
-      OUTREG(DSPBBASE, Start + ((y * pScrn->displayWidth + x) * pI830->cpp));
+      if (pI830->pipe == 0) {
+         OUTREG(DSPABASE, pScrn->fbOffset + ((y * pScrn->displayWidth + x) * pI830->cpp));
+      } else {
+         OUTREG(DSPBBASE, pScrn->fbOffset + ((y * pScrn->displayWidth + x) * pI830->cpp));
+      }
    }
 }
 
@@ -5099,27 +4560,12 @@ I830BIOSLeaveVT(int scrnIndex, int flags)
 
    DPRINTF(PFX, "Leave VT\n");
 
-   pI830->leaving = TRUE;
-
-   if (pI830->devicesTimer)
-      TimerCancel(pI830->devicesTimer);
-   pI830->devicesTimer = NULL;
-
-   /* Give the video overlay code a chance to shutdown. */
-   I830VideoSwitchModeBefore(pScrn, NULL);
-
-   if (pI830->Clone) {
-      /* Ensure we don't try and setup modes on a clone head */
-      pI830->CloneHDisplay = 0;
-      pI830->CloneVDisplay = 0;
-   }
-
    if (!IsPrimary(pScrn)) {
    	I830Ptr pI8301 = I830PTR(pI830->entityPrivate->pScrn_1);
 	if (!pI8301->GttBound) {
 		return;
 	}
-   }
+    }
 
 #ifdef XF86DRI
    if (pI830->directRenderingOpen) {
@@ -5136,10 +4582,15 @@ I830BIOSLeaveVT(int scrnIndex, int flags)
       SaveHWOperatingState(pScrn);
 #endif
 
-   if (pI830->CursorInfoRec && pI830->CursorInfoRec->HideCursor)
-      pI830->CursorInfoRec->HideCursor(pScrn);
-
    ResetState(pScrn, TRUE);
+   RestoreHWState(pScrn);
+   RestoreBIOSMemSize(pScrn);
+   if (IsPrimary(pScrn))
+      I830UnbindGARTMemory(pScrn);
+#ifdef XF86DRI
+   if (pI830->AccelInfoRec)
+      pI830->AccelInfoRec->NeedToSync = FALSE;
+#endif
 
    if (IsPrimary(pScrn)) {
       if (!SetDisplayDevices(pScrn, pI830->savedDevices)) {
@@ -5151,35 +4602,18 @@ I830BIOSLeaveVT(int scrnIndex, int flags)
 		 "Successfully set original devices\n");
       }
    }
-
-   RestoreHWState(pScrn);
-   RestoreBIOSMemSize(pScrn);
-   if (IsPrimary(pScrn))
-      I830UnbindGARTMemory(pScrn);
-   if (pI830->AccelInfoRec)
-      pI830->AccelInfoRec->NeedToSync = FALSE;
-
-   /* DO IT AGAIN! AS IT SEEMS THAT SOME LFPs FLICKER OTHERWISE */
-   if (IsPrimary(pScrn)) {
-      if (!SetDisplayDevices(pScrn, pI830->savedDevices)) {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		 "Failed to switch back to original display devices (0x%x) (2)\n",
-		 pI830->savedDevices);
-      } else {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-		 "Successfully set original devices (2)\n");
-      }
-   }
 }
 
 static Bool
 I830DetectMonitorChange(ScrnInfoPtr pScrn)
 {
    I830Ptr pI830 = I830PTR(pScrn);
-   pointer pDDCModule = NULL;
+   pointer pDDCModule;
    DisplayModePtr p, pMon;
-   int memsize;
-   int DDCclock = 0;
+   xf86MonPtr DDC;
+   struct detailed_monitor_section* detMon;
+   int i, memsize;
+   struct monitor_ranges *mon_range = NULL;
    int displayWidth = pScrn->displayWidth;
    int curHDisplay = pScrn->currentMode->HDisplay;
    int curVDisplay = pScrn->currentMode->VDisplay;
@@ -5189,29 +4623,79 @@ I830DetectMonitorChange(ScrnInfoPtr pScrn)
    SetPipeAccess(pScrn);
 
    /* Re-read EDID */
-   pDDCModule = xf86LoadSubModule(pScrn, "ddc");
+   if ((pDDCModule = xf86LoadSubModule(pScrn, "ddc")) == NULL)
+      return FALSE;
    if (pI830->vesa->monitor)
       xfree(pI830->vesa->monitor);
-   pI830->vesa->monitor = vbeDoEDID(pI830->pVbe, pDDCModule);
-   if ((pScrn->monitor->DDC = pI830->vesa->monitor) != NULL) {
+   if ((pI830->vesa->monitor = vbeDoEDID(pI830->pVbe, pDDCModule)) != NULL)
       xf86PrintEDID(pI830->vesa->monitor);
-      xf86SetDDCproperties(pScrn, pI830->vesa->monitor);
-   }
    xf86UnloadSubModule(pDDCModule);
-   if (!pScrn->monitor->DDC)
+   if ((pScrn->monitor->DDC = pI830->vesa->monitor) != NULL)
+      xf86SetDDCproperties(pScrn, pI830->vesa->monitor);
+   else 
       /* No DDC, so get out of here, and continue to use the current settings */
       return FALSE; 
 
-   if (!(DDCclock = I830UseDDC(pScrn)))
-      return FALSE;
+   DDC = (xf86MonPtr)(pScrn->monitor->DDC);
+
+   /* Now change the hsync/vrefresh values of the current monitor to
+    * match those of DDC */
+   for (i = 0; i < 4; i++) {
+      detMon = &DDC->det_mon[i];
+      if(detMon->type == DS_RANGES)
+         mon_range = &detMon->section.ranges;
+   }
+
+   if (!mon_range || mon_range->min_h == 0 || mon_range->max_h == 0 ||
+		     mon_range->min_v == 0 || mon_range->max_v == 0)
+      return FALSE;	/* bad ddc */
+
+   if (mon_range) {
+#define DDC_SYNC_TOLERANCE SYNC_TOLERANCE
+      if (pScrn->monitor->nHsync > 0) {
+         for (i = 0; i < pScrn->monitor->nHsync; i++) {
+            if ((1.0 - DDC_SYNC_TOLERANCE) * mon_range->min_h >
+				pScrn->monitor->hsync[i].lo ||
+		(1.0 + DDC_SYNC_TOLERANCE) * mon_range->max_h <
+				pScrn->monitor->hsync[i].hi) {
+		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			  "config file hsync range %g-%gkHz not within DDC "
+			  "hsync range %d-%dkHz\n",
+			  pScrn->monitor->hsync[i].lo, pScrn->monitor->hsync[i].hi,
+			  mon_range->min_h, mon_range->max_h);
+            }
+            pScrn->monitor->hsync[i].lo = mon_range->min_h;
+	    pScrn->monitor->hsync[i].hi = mon_range->max_h;
+         }
+      }
+
+      if (pScrn->monitor->nVrefresh > 0) {
+         for (i=0; i<pScrn->monitor->nVrefresh; i++) {
+            if ((1.0 - DDC_SYNC_TOLERANCE) * mon_range->min_v >
+				pScrn->monitor->vrefresh[i].lo ||
+		(1.0 + DDC_SYNC_TOLERANCE) * mon_range->max_v <
+				pScrn->monitor->vrefresh[i].hi) {
+		xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+			  "config file vrefresh range %g-%gHz not within DDC "
+			  "vrefresh range %d-%dHz\n",
+			  pScrn->monitor->vrefresh[i].lo, pScrn->monitor->vrefresh[i].hi,
+			  mon_range->min_v, mon_range->max_v);
+            }
+            pScrn->monitor->vrefresh[i].lo = mon_range->min_v;
+            pScrn->monitor->vrefresh[i].hi = mon_range->max_v;
+         }
+      }
+   } /* if (mon_range) */
 
    /* Revalidate the modes */
 
    /*
     * Note: VBE modes (> 0x7f) won't work with Intel's extended BIOS
-    * functions.  
+    * functions.  For that reason it's important to set only
+    * V_MODETYPE_VGA in the flags.
     */
-   pScrn->modePool = I830GetModePool(pScrn, pI830->pVbe, pI830->vbeInfo);
+   pScrn->modePool = i830GetModePool(pScrn, pI830->pVbe, pI830->vbeInfo,
+				    V_MODETYPE_VGA);
 
    if (!pScrn->modePool) {
       /* This is bad, which would cause the Xserver to exit, maybe
@@ -5236,43 +4720,39 @@ I830DetectMonitorChange(ScrnInfoPtr pScrn)
 			pScrn->display->virtualY,
 			memsize, LOOKUP_BEST_REFRESH);
 
-   if (DDCclock > 0) {
-      p = pScrn->modes;
-      if (p == NULL)
-         return FALSE;
-      do {
-         int Clock = 100000000; /* incredible value */
+   p = pScrn->modes;
+   if (p == NULL)
+      return FALSE;
+   do {
+      int Clock = 100000000; /* incredible value */
 
-         if (p->status == MODE_OK) {
-            for (pMon = pScrn->monitor->Modes; pMon != NULL; pMon = pMon->next) {
-               if ((pMon->HDisplay != p->HDisplay) ||
-                   (pMon->VDisplay != p->VDisplay) ||
-                   (pMon->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
-                  continue;
+      for (pMon = pScrn->monitor->Modes; pMon != NULL; pMon = pMon->next) {
+         if ((pMon->HDisplay != p->HDisplay) ||
+             (pMon->VDisplay != p->VDisplay) ||
+             (pMon->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
+            continue;
 
-               /* Find lowest supported Clock for this resolution */
-               if (Clock > pMon->Clock)
-                  Clock = pMon->Clock;
-            } 
+         /* Find lowest supported Clock for this resolution */
+         if (Clock > pMon->Clock)
+            Clock = pMon->Clock;
+      } 
 
-            if (DDCclock < 2550 && Clock / 1000.0 > DDCclock) {
-               ErrorF("(%s,%s) mode clock %gMHz exceeds DDC maximum %dMHz\n",
+      if (mon_range->max_clock < 2550 &&
+	 			Clock / 1000.0 > mon_range->max_clock) {
+#if 0
+         ErrorF("(%s,%s) mode clock %gMHz exceeds DDC maximum %dMHz\n",
 		   p->name, pScrn->monitor->id,
-		   Clock/1000.0, DDCclock);
-               p->status = MODE_BAD;
-            } 
-         }
-         p = p->next;
-      } while (p != NULL && p != pScrn->modes);
-   }
+		   Clock/1000.0, mon_range->max_clock);
+#endif
+         p->status = MODE_BAD;
+      } 
+      p = p->next;
+   } while (p != NULL && p != pScrn->modes);
 
    pScrn->displayWidth = displayWidth; /* restore old displayWidth */
 
    xf86PruneDriverModes(pScrn);
-   I830PrintModes(pScrn);
-
-   if (!pI830->vesa->useDefaultRefresh)
-      I830SetModeParameters(pScrn, pI830->pVbe);
+   i830PrintModes(pScrn);
 
    /* Now check if the previously used mode is o.k. for the current monitor.
     * This allows VT switching to continue happily when not disconnecting
@@ -5318,32 +4798,6 @@ I830DetectMonitorChange(ScrnInfoPtr pScrn)
 
    return TRUE;
 }
-
-Bool
-I830CheckModeSupport(ScrnInfoPtr pScrn, int x, int y, int mode)
-{
-   I830Ptr pI830 = I830PTR(pScrn);
-   Bool ret = TRUE;
-
-   if (pI830->Clone) {
-      if (pI830->pipeDisplaySize[0].x2 != 0) {
-	 if (x > pI830->pipeDisplaySize[0].x2 ||
-             y > pI830->pipeDisplaySize[0].y2) {
-	 	xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Bad Clone Mode removing\n");
-		return FALSE;
-         }
-      }
-      if (pI830->pipeDisplaySize[1].x2 != 0) {
-	 if (x > pI830->pipeDisplaySize[1].x2 ||
-             y > pI830->pipeDisplaySize[1].y2) {
-	 	xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Bad Clone Mode removing\n");
-		return FALSE;
-         }
-      }
-   }
-
-   return ret;
-}
 		
 /*
  * This gets called when gaining control of the VT, and from ScreenInit().
@@ -5356,34 +4810,19 @@ I830BIOSEnterVT(int scrnIndex, int flags)
 
    DPRINTF(PFX, "Enter VT\n");
 
-   /*
-    * Only save state once per server generation since that's what most
-    * drivers do.  Could change this to save state at each VT enter.
-    */
-   if (pI830->SaveGeneration != serverGeneration) {
-      pI830->SaveGeneration = serverGeneration;
-      SaveHWState(pScrn);
-   }
-
-   pI830->leaving = FALSE;
-
    if (IsPrimary(pScrn)) {
      /* 
       * This is needed for restoring from ACPI modes (especially S3)
       * so that we warmboot the Video BIOS. Some platforms have problems,
       * warm booting when we don't need to, so check that we can call
-      * the Video BIOS with our saved devices, and only when that fails,
+      * the Video BIOS with our display devices, and only when that fails,
       * we'll warm boot it.
       */
-     /* Check Pipe conf registers or possibly HTOTAL/VTOTAL for 0x00000000)*/
-      CARD32 temp = pI830->pipe ? INREG(PIPEBCONF) : INREG(PIPEACONF);
-      if (!I830Set640x480(pScrn) || !(temp & 0x80000000)) {
-         xf86Int10InfoPtr pInt;
+      if (!SetDisplayDevices(pScrn, pI830->operatingDevices)) {
+         xf86Int10InfoPtr pInt = xf86InitInt10(pI830->pEnt->index);
 
          xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-				"Detected resume, re-POSTing.\n");
-
-         pInt = xf86InitInt10(pI830->pEnt->index);
+				"SetDisplayDevices failed, re-trying.\n");
 
          /* Now perform our warm boot */
          if (pInt) {
@@ -5395,27 +4834,35 @@ I830BIOSEnterVT(int scrnIndex, int flags)
             xf86DrvMsg(pScrn->scrnIndex, X_WARNING, 
 		"Re-POSTing via int10 failed, trying to continue.\n");
          }
-      }
-     
-      /* Finally, re-setup the display devices */
-      if (!SetDisplayDevices(pScrn, pI830->operatingDevices)) {
-         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+   
+         /* Finally, re-setup the display devices */
+         if (!SetDisplayDevices(pScrn, pI830->operatingDevices)) {
+            xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
  		 "Failed to switch to configured display devices\n");
-         return FALSE;
+	    return FALSE;
+         }
       }
    }
 
-   /* Setup for device monitoring status */
-   pI830->monitorSwitch = pI830->toggleDevices = INREG(SWF0) & 0x0000FFFF;
+   /* Setup for checking lid status */
+   pI830->monitorSwitch = INREG(SWF0) & 0x0000FFFF;
 
    if (IsPrimary(pScrn))
       if (!I830BindGARTMemory(pScrn))
          return FALSE;
 
    CheckInheritedState(pScrn);
-   if (TweakMemorySize(pScrn, pI830->newBIOSMemSize, FALSE) == 1)
+   if (!TweakMemorySize(pScrn, pI830->newBIOSMemSize))
        SetBIOSMemSize(pScrn, pI830->newBIOSMemSize);
 
+   /*
+    * Only save state once per server generation since that's what most
+    * drivers do.  Could change this to save state at each VT enter.
+    */
+   if (pI830->SaveGeneration != serverGeneration) {
+      pI830->SaveGeneration = serverGeneration;
+      SaveHWState(pScrn);
+   }
    ResetState(pScrn, FALSE);
    SetHWOperatingState(pScrn);
 
@@ -5432,7 +4879,9 @@ I830BIOSEnterVT(int scrnIndex, int flags)
    if (!I830VESASetMode(pScrn, pScrn->currentMode))
       return FALSE;
    
+#ifdef I830_XV
    I830VideoSwitchModeAfter(pScrn, pScrn->currentMode);
+#endif
 
    ResetState(pScrn, TRUE);
    SetHWOperatingState(pScrn);
@@ -5446,7 +4895,9 @@ I830BIOSEnterVT(int scrnIndex, int flags)
 #ifdef XF86DRI
    if (pI830->directRenderingEnabled) {
       if (!pI830->starting) {
-	 I830DRIResume(screenInfo.screens[scrnIndex]);
+         /* gdg DRM driver 1.2 supports resume */
+         if (pI830->drmMinor >= 2)
+	    I830DRIResume(screenInfo.screens[scrnIndex]);
       
 	 I830EmitInvarientState(pScrn);
 	 I830RefreshRing(pScrn);
@@ -5460,9 +4911,6 @@ I830BIOSEnterVT(int scrnIndex, int flags)
    }
 #endif
 
-   if (pI830->checkDevices)
-      pI830->devicesTimer = TimerSet(NULL, 0, 1000, I830CheckDevicesTimer, pScrn);
-
    return TRUE;
 }
 
@@ -5470,15 +4918,22 @@ static Bool
 I830BIOSSwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 {
 
+   int _head;
+   int _tail;
    ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
    I830Ptr pI830 = I830PTR(pScrn);
    int ret = TRUE;
 
    DPRINTF(PFX, "I830BIOSSwitchMode: mode == %p\n", mode);
 
-   /* Sync the engine before mode switch */
-   if (!pI830->noAccel && pI830->AccelInfoRec)
-      (*pI830->AccelInfoRec->Sync)(pScrn);
+   /* Stops head pointer freezes for 845G */
+   if (!pI830->noAccel && (1 || IS_845G(pI830))) {
+      do {
+	 _head = INREG(LP_RING + RING_HEAD) & I830_HEAD_MASK;
+	 _tail = INREG(LP_RING + RING_TAIL) & I830_TAIL_MASK;
+	 DELAY(1000);
+      } while (_head != _tail);
+   }
 
 #ifndef BINDUNBIND
 #define BINDUNBIND 0
@@ -5487,12 +4942,16 @@ I830BIOSSwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
    if (IsPrimary(pScrn))
       I830UnbindGARTMemory(pScrn);
 #endif
+#ifdef I830_XV
    /* Give the video overlay code a chance to see the new mode. */
    I830VideoSwitchModeBefore(pScrn, mode);
+#endif
    if (!I830VESASetMode(pScrn, mode))
       ret = FALSE;
+#ifdef I830_XV
    /* Give the video overlay code a chance to see the new mode. */
    I830VideoSwitchModeAfter(pScrn, mode);
+#endif
 #if BINDUNBIND
    if (IsPrimary(pScrn))
       I830BindGARTMemory(pScrn);
@@ -5508,27 +4967,30 @@ I830BIOSSaveScreen(ScreenPtr pScreen, int mode)
    I830Ptr pI830 = I830PTR(pScrn);
    Bool on = xf86IsUnblank(mode);
    CARD32 temp, ctrl, base;
+   int i;
 
    DPRINTF(PFX, "I830BIOSSaveScreen: %d, on is %s\n", mode, BOOLTOSTRING(on));
 
    if (pScrn->vtSema) {
-      if (pI830->pipe == 0) {
-	 ctrl = DSPACNTR;
-	 base = DSPABASE;
-      } else {
-	 ctrl = DSPBCNTR;
-	 base = DSPBADDR;
-      }
-      if (pI830->planeEnabled[pI830->pipe]) {
-	 temp = INREG(ctrl);
-	 if (on)
-	    temp |= DISPLAY_PLANE_ENABLE;
-	 else
-	    temp &= ~DISPLAY_PLANE_ENABLE;
-	 OUTREG(ctrl, temp);
-	 /* Flush changes */
-	 temp = INREG(base);
-	 OUTREG(base, temp);
+      for (i = 0; i < pI830->availablePipes; i++) {
+	 if (i == 0) {
+	    ctrl = DSPACNTR;
+	    base = DSPABASE;
+	 } else {
+	    ctrl = DSPBCNTR;
+	    base = DSPBADDR;
+	 }
+	 if (pI830->planeEnabled[i]) {
+	    temp = INREG(ctrl);
+	    if (on)
+	       temp |= DISPLAY_PLANE_ENABLE;
+	    else
+	       temp &= ~DISPLAY_PLANE_ENABLE;
+	    OUTREG(ctrl, temp);
+	    /* Flush changes */
+	    temp = INREG(base);
+	    OUTREG(base, temp);
+	 }
       }
 
       if (pI830->CursorInfoRec && !pI830->SWCursor && pI830->cursorOn) {
@@ -5621,10 +5083,6 @@ I830BIOSCloseScreen(int scrnIndex, ScreenPtr pScreen)
       I830BIOSLeaveVT(scrnIndex, 0);
    }
 
-   if (pI830->devicesTimer)
-      TimerCancel(pI830->devicesTimer);
-   pI830->devicesTimer = NULL;
-
    DPRINTF(PFX, "\nUnmapping memory\n");
    I830UnmapMem(pScrn);
    vgaHWUnmapMem(pScrn);
@@ -5661,6 +5119,9 @@ I830BIOSCloseScreen(int scrnIndex, ScreenPtr pScreen)
       pI830->overlayOn = NULL;
    }
 
+   if (pI830->lidTimer)
+      TimerCancel(pI830->lidTimer);
+
    pScrn->vtSema = FALSE;
    pI830->closing = FALSE;
    pScreen->CloseScreen = pI830->CloseScreen;
@@ -5675,7 +5136,7 @@ I830ValidMode(int scrnIndex, DisplayModePtr mode, Bool verbose, int flags)
 	 xf86DrvMsg(scrnIndex, X_PROBED,
 		    "Removing interlaced mode \"%s\"\n", mode->name);
       }
-      return MODE_BAD;
+      return MODE_NO_INTERLACE;
    }
    return MODE_OK;
 }
@@ -5734,331 +5195,64 @@ I830PMEvent(int scrnIndex, pmEvent event, Bool undo)
 	 SaveScreens(SCREEN_SAVER_FORCER, ScreenSaverReset);
       }
       break;
-   /* This is currently used for ACPI */
-   case XF86_APM_CAPABILITY_CHANGED:
-#if 0
-      /* If we had status checking turned on, turn it off now */
-      if (pI830->checkDevices) {
-         if (pI830->devicesTimer)
-            TimerCancel(pI830->devicesTimer);
-         pI830->devicesTimer = NULL;
-         pI830->checkDevices = FALSE; 
-      }
-#endif
-      if (!IsPrimary(pScrn))
-         return TRUE;
-
-      ErrorF("I830PMEvent: Capability change\n");
-
-      /* ACPI Toggle */
-      pI830->toggleDevices = GetNextDisplayDeviceList(pScrn, 1);
-      if (xf86IsEntityShared(pScrn->entityList[0])) {
-         I830Ptr pI8302 = I830PTR(pI830->entityPrivate->pScrn_2);
-         pI8302->toggleDevices = pI830->toggleDevices;
-      }
-
-      xf86DrvMsg(pScrn->scrnIndex, X_INFO, "ACPI Toggle to 0x%x\n",pI830->toggleDevices);
-
-      I830CheckDevicesTimer(NULL, 0, pScrn);
-      SaveScreens(SCREEN_SAVER_FORCER, ScreenSaverReset);
-      break;
    default:
       ErrorF("I830PMEvent: received APM event %d\n", event);
    }
    return TRUE;
 }
 
-static int CountBits(int a)
-{
-   int i;
-   int b = 0;
-
-   for (i=0;i<8;i++) {
-     if (a & (1<<i))
-        b+=1;
-   }
-
-   return b;
-}
-
 static CARD32
-I830CheckDevicesTimer(OsTimerPtr timer, CARD32 now, pointer arg)
+I830LidTimer(OsTimerPtr timer, CARD32 now, pointer arg)
 {
    ScrnInfoPtr pScrn = (ScrnInfoPtr) arg;
    I830Ptr pI830 = I830PTR(pScrn);
-   int cloned = 0;
 
    if (pScrn->vtSema) {
       /* Check for monitor lid being closed/opened and act accordingly */
-      CARD32 adjust;
-      CARD32 temp = INREG(SWF0) & 0x0000FFFF;
-      int fixup = 0;
-      I830Ptr pI8301;
-      I830Ptr pI8302 = NULL;
+      int temp = INREG(SWF0) & 0x0000FFFF;
 
-      if (IsPrimary(pScrn))
-         pI8301 = pI830;
-      else 
-         pI8301 = I830PTR(pI830->entityPrivate->pScrn_1);
-
-      if (xf86IsEntityShared(pScrn->entityList[0]))
-         pI8302 = I830PTR(pI830->entityPrivate->pScrn_2);
-
-      /* this avoids several BIOS calls if possible */
-      if (pI830->monitorSwitch != temp || pI830->monitorSwitch != pI830->toggleDevices) {
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Hotkey switch to 0x%lx.\n",
-		    (unsigned long)temp);
-
-         if (pI830->AccelInfoRec && pI830->AccelInfoRec->NeedToSync) {
-            (*pI830->AccelInfoRec->Sync)(pScrn);
-            pI830->AccelInfoRec->NeedToSync = FALSE;
-            if (xf86IsEntityShared(pScrn->entityList[0]))
-               pI8302->AccelInfoRec->NeedToSync = FALSE;
-         }
-
-         GetAttachableDisplayDeviceList(pScrn);
-         
-	 pI8301->lastDevice0 = pI8301->lastDevice1;
-         pI8301->lastDevice1 = pI8301->lastDevice2;
-         pI8301->lastDevice2 = pI8301->monitorSwitch;
-
-	 if (temp != pI8301->lastDevice1 && 
-	     temp != pI8301->lastDevice2) {
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected three device configs.\n");
-	 } else
-         if (CountBits(temp & 0xff) > 1) {
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected cloned pipe mode (A).\n");
-            if (xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone)
-	       temp = pI8301->MonType2 << 8 | pI8301->MonType1;
-         } else
-         if (CountBits((temp & 0xff00) >> 8) > 1) {
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected cloned pipe mode (B).\n");
-            if (xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone)
-	       temp = pI8301->MonType2 << 8 | pI8301->MonType1;
-         } else
-         if (pI8301->lastDevice1 && pI8301->lastDevice2) {
-            if ( ((pI8301->lastDevice1 & 0xFF00) == 0) && 
-                 ((pI8301->lastDevice2 & 0x00FF) == 0) ) {
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected last devices (1).\n");
-	       cloned = 1;
-            } else if ( ((pI8301->lastDevice2 & 0xFF00) == 0) && 
-                 ((pI8301->lastDevice1 & 0x00FF) == 0) ) {
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected last devices (2).\n");
-	       cloned = 1;
-            } else
-               cloned = 0;
-         }
-
-         if (cloned &&
-             ((CountBits(pI8301->lastDevice1 & 0xff) > 1) ||
-             ((CountBits((pI8301->lastDevice1 & 0xff00) >> 8) > 1))) ) {
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected duplicate (1).\n");
-               cloned = 0;
-         } else
-         if (cloned &&
-             ((CountBits(pI8301->lastDevice2 & 0xff) > 1) ||
-             ((CountBits((pI8301->lastDevice2 & 0xff00) >> 8) > 1))) ) {
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected duplicate (2).\n");
-               cloned = 0;
-         } 
-
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-		    "Requested display devices 0x%lx.\n", (unsigned long)temp);
-
-
-         /* If the BIOS doesn't flip between CRT, LFP and CRT+LFP we fake
-          * it here as it seems some just flip between CRT and LFP. Ugh!
-          *
-          * So this pushes them onto Pipe B and clones the displays, which
-          * is what most BIOS' should be doing.
-          *
-          * Cloned pipe mode should only be done when running single head.
-          */
-         if (xf86IsEntityShared(pScrn->entityList[0])) {
-            cloned = 0;
-
-	    /* Some BIOS' don't realize we may be in true dual head mode.
-	     * And only display the primary output on both when switching.
-	     * We detect this here and cycle back to both pipes.
-	     */
-	    if ((pI830->lastDevice0 == temp) &&
-                ((CountBits(pI8301->lastDevice2 & 0xff) > 1) ||
-                ((CountBits((pI8301->lastDevice2 & 0xff00) >> 8) > 1))) ) {
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected cloned pipe mode when dual head on previous switch. (0x%x -> 0x%x)\n", (int)temp, pI8301->MonType2 << 8 | pI8301->MonType1);
-	       temp = pI8301->MonType2 << 8 | pI8301->MonType1;
-	    }
-	    
-	 }
-
-         if (cloned) { 
-            if (pI830->Clone)
-               temp = pI8301->MonType2 << 8 | pI8301->MonType1;
-	    else if (pI8301->lastDevice1 & 0xFF)
-	       temp = pI8301->lastDevice1 << 8 | pI8301->lastDevice2;
-            else
-	       temp = pI8301->lastDevice2 << 8 | pI8301->lastDevice1;
-         } 
-
-         /* Jump to our next mode if we detect we've been here before */
-         if (temp == pI8301->lastDevice1 || temp == pI8301->lastDevice2) {
-             temp = GetToggleList(pScrn, 1);
-             xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"Detected duplicate devices. Toggling (0x%lx)\n",
-			(unsigned long)temp);
-         }
-
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-		"Detected display change operation (0x%x, 0x%x, 0x%lx).\n", 
-                pI8301->lastDevice1, pI8301->lastDevice2, (unsigned long)temp);
-
-         /* So that if we close on the wrong config, we restore correctly */
-         pI830->specifiedMonitor = TRUE;
-
-         if (!xf86IsEntityShared(pScrn->entityList[0])) {
-            if ((temp & 0xFF00) && (temp & 0x00FF)) {
-               pI830->Clone = TRUE;
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Setting Clone mode\n");
-            } else {
-               pI830->Clone = FALSE;
-               xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Clearing Clone mode\n");
-            }
-         }
-
-         {
-            /* Turn Cursor off before switching */
-            Bool on = pI830->cursorOn;
-            if (pI830->CursorInfoRec && pI830->CursorInfoRec->HideCursor)
-               pI830->CursorInfoRec->HideCursor(pScrn);
-            pI830->cursorOn = on;
-         }
-
-         /* double check the display devices are what's configured and try
-          * not to do it twice because of dual heads with the code above */
-         if (!SetDisplayDevices(pScrn, temp)) {
-            if ( cloned &&
-                    ((CountBits(temp & 0xff) > 1) ||
-                     (CountBits((temp & 0xff00) >> 8) > 1)) ) {
-	       temp = pI8301->lastDevice2 | pI8301->lastDevice1;
-               xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Cloning failed, "
-			  "trying dual pipe clone mode (0x%lx)\n",
-			  (unsigned long)temp);
-               if (!SetDisplayDevices(pScrn, temp))
-                    xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Failed to switch "
-			       "to configured display devices (0x%lx).\n",
-			       (unsigned long)temp);
-               else {
-                 pI830->Clone = TRUE;
-                 xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Setting Clone mode\n");
-               }
-            }
-         }
-
-         pI8301->monitorSwitch = temp;
-	 pI8301->operatingDevices = temp;
-	 pI8301->toggleDevices = temp;
-
-         if (xf86IsEntityShared(pScrn->entityList[0])) {
-	    pI8302->operatingDevices = pI8301->operatingDevices;
-            pI8302->monitorSwitch = pI8301->monitorSwitch;
-	    pI8302->toggleDevices = pI8301->toggleDevices;
-         }
-
-         fixup = 1;
-
+      if (pI830->monitorSwitch != temp) {
+	 int conf = pI830->operatingDevices;
+         xf86DrvMsg(pScrn->scrnIndex, X_WARNING, 
+			"Detected possible lid operation, fixing up.\n");
+         if ((temp & 0x0808) == 0x0000) {
+	    /* LFP (PIPE A or B) GOING OFF - PROBABLE LID CLOSURE */
+	    conf = pI830->operatingDevices & 0xF7F7;
 #if 0
-         xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
-			"ACPI _DGS queried devices is 0x%x, but probed is 0x%x monitorSwitch=0x%x\n", 
-			pI830->toggleDevices, INREG(SWF0), pI830->monitorSwitch);
+            xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Lid is being closed.\n");
 #endif
-      } else {
-         int offset = -1;
-         if (IsPrimary(pScrn))
-            offset = pI8301->FrontBuffer.Start + ((pScrn->frameY0 * pScrn->displayWidth + pScrn->frameX0) * pI830->cpp);
-         else {
-            offset = pI8301->FrontBuffer2.Start + ((pScrn->frameY0 * pScrn->displayWidth + pScrn->frameX0) * pI830->cpp);
-	 }
-
-         if (pI830->pipe == 0)
-            adjust = INREG(DSPABASE);
-         else 
-            adjust = INREG(DSPBBASE);
-
-         if (adjust != offset) {
-            xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
-			                       "Fixing display offsets.\n");
-
-            I830BIOSAdjustFrame(pScrn->pScreen->myNum, pScrn->frameX0, pScrn->frameY0, 0);
+         } else {
+#if 0
+            xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Lid is being opened.\n");
+#endif
          }
-      }
 
-      if (fixup) {
-         ScreenPtr   pCursorScreen;
-         int x = 0, y = 0;
-
-
-         pCursorScreen = miPointerCurrentScreen();
-         if (pScrn->pScreen == pCursorScreen)
-            miPointerPosition(&x, &y);
-
+         /* If we've defined our own monitors, then get them and set them
+          * up when switching in single head mode, no effect in dual heads
+          * NOTE: This assumes that the LCD is always on Pipe B..... */
+         conf |= pI830->MonType1;
+	 if (IsPrimary(pScrn)) {
+            if (!SetDisplayDevices(pScrn, conf)) 
+               xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Failed to switch "
+ 		    "to configured display devices during lid operation.\n");
+         }
+         pI830->monitorSwitch = conf;
+   
          /* Now, when we're single head, make sure we switch pipes */
-         if (!(xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone) || cloned) {
-            if (temp & 0xFF00)
-               pI830->pipe = 1;
-            else 
+         if (!(xf86IsEntityShared(pScrn->entityList[0]) || pI830->Clone)) {
+            if ((temp & 0xFF00) == 0x0000)
                pI830->pipe = 0;
-	       xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-			 "Primary pipe is now %s.\n", pI830->pipe ? "B" : "A");
-         } 
-
+            if ((temp & 0x00FF) == 0x0000)
+               pI830->pipe = 1;
+         }
          I830BIOSSwitchMode(pScrn->pScreen->myNum, pScrn->currentMode, 0);
          I830BIOSAdjustFrame(pScrn->pScreen->myNum, pScrn->frameX0, pScrn->frameY0, 0);
-         if (xf86IsEntityShared(pScrn->entityList[0])) {
-	    ScrnInfoPtr pScrn2;
-            I830Ptr pI8302;
-
-            if (IsPrimary(pScrn)) {
-	       pScrn2 = pI830->entityPrivate->pScrn_2;
-               pI8302 = I830PTR(pI830->entityPrivate->pScrn_2);
-            } else {
-	       pScrn2 = pI830->entityPrivate->pScrn_1;
-               pI8302 = I830PTR(pI830->entityPrivate->pScrn_1);
-            }
-
-            I830BIOSSwitchMode(pScrn2->pScreen->myNum, pScrn2->currentMode, 0);
-            I830BIOSAdjustFrame(pScrn2->pScreen->myNum, pScrn2->frameX0, pScrn2->frameY0, 0);
-            if (pScrn2->pScreen == pCursorScreen) {
-               int sigstate = xf86BlockSIGIO ();
-               miPointerWarpCursor(pScrn2->pScreen,x,y);
-
-               /* xf86Info.currentScreen = pScrn->pScreen; */
-               xf86UnblockSIGIO (sigstate);
-               if (pI8302->CursorInfoRec && !pI8302->SWCursor && pI8302->cursorOn) {
-                  pI8302->CursorInfoRec->HideCursor(pScrn);
-                  pI8302->CursorInfoRec->ShowCursor(pScrn);
-                  pI8302->cursorOn = TRUE;
-               }
-            }
-	 }
-
-         if (pScrn->pScreen == pCursorScreen) {
-            int sigstate = xf86BlockSIGIO ();
-            miPointerWarpCursor(pScrn->pScreen,x,y);
-
-            /* xf86Info.currentScreen = pScrn->pScreen; */
-            xf86UnblockSIGIO (sigstate);
-            if (pI830->CursorInfoRec && !pI830->SWCursor && pI830->cursorOn) {
-               pI830->CursorInfoRec->HideCursor(pScrn);
-               pI830->CursorInfoRec->ShowCursor(pScrn);
-               pI830->cursorOn = TRUE;
-            }
+ 
+         /* Everything should be o.k. now, so make sure the HW cursor is
+          * on the correct pipe */
+         if (pI830->CursorInfoRec && !pI830->SWCursor && pI830->cursorOn) {
+            pI830->CursorInfoRec->ShowCursor(pScrn);
+            pI830->cursorOn = TRUE;
          }
       }
    }

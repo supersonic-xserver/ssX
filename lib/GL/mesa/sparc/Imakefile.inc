@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/sparc/Imakefile.inc,v 1.2 2004/04/22 13:58:40 tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/sparc/Imakefile.inc,v 1.3 2005/02/06 23:48:15 dawes Exp $
 
 #ifndef MesaSPARCBuildDir
 #define MesaSPARCBuildDir $(GLXLIBSRC)/mesa/sparc/

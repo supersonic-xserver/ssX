@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/include/servermd.h,v 3.59 2005/06/03 01:16:57 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/include/servermd.h,v 3.58 2004/03/21 11:27:06 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,13 +52,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: servermd.h,v 1.3 2000/08/17 19:53:31 cpqbld Exp $ */
 
 #ifndef SERVERMD_H
 #define SERVERMD_H 1
 
 /*
  * Machine dependent values:
- *
  * GLYPHPADBYTES should be chosen with consideration for the space-time
  * trade-off.  Padding to 0 bytes means that there is no wasted space
  * in the font bitmaps (both on disk and in memory), but that access of
@@ -111,12 +118,10 @@ SOFTWARE.
  *	define uses unaligned reads for 8-bit BitBLT instead of doing
  *	aligned reads and combining the results with shifts and
  *	logical-ors.  Currently defined for 68020 and vax.
- *
  *  PLENTIFUL_REGISTERS -
  *	For machines with > 20 registers.  Currently used for
  *	unrolling the text painting code a bit more.  Currently
  *	defined for MIPS.
- *
  *  SHARED_IDCACHE -
  *	For non-Harvard RISC machines, those which share the same
  *	CPU memory bus for instructions and data.  This unrolls some
@@ -124,29 +129,46 @@ SOFTWARE.
  *	Currently defined for SPARC.
  */
 
-#ifdef vax
+#if defined(vax) || defined(__vax__)
 
 #define IMAGE_BYTE_ORDER	LSBFirst        /* Values for the VAX only */
 #define BITMAP_BIT_ORDER	LSBFirst
-#define	GLYPHPADBYTES		1
-#define GETLEFTBITS_ALIGNMENT	4
+#define	GLYPHPADBYTES		4
+#define GETLEFTBITS_ALIGNMENT	1
 #define FAST_UNALIGNED_READS
 
 #endif /* vax */
 
+#if defined(__arm__)
+#define IMAGE_BYTE_ORDER        LSBFirst
+#define BITMAP_BIT_ORDER      LSBFirst
+#define GLYPHPADBYTES           4
+#define GETLEFTBITS_ALIGNMENT   1
+#define LARGE_INSTRUCTION_CACHE
+
+#endif /* __arm__ */
 #ifdef __arm32__
 
-# define IMAGE_BYTE_ORDER        LSBFirst
-# define BITMAP_BIT_ORDER        LSBFirst
+#define IMAGE_BYTE_ORDER        LSBFirst
 
-# define GLYPHPADBYTES           4
-# define GETLEFTBITS_ALIGNMENT   1
-# define LARGE_INSTRUCTION_CACHE
-# define AVOID_MEMORY_READ
+# if defined(XF86MONOVGA) || defined(XF86VGA16) || defined(XF86MONO)
+#  define BITMAP_BIT_ORDER      MSBFirst
+# else
+#  define BITMAP_BIT_ORDER      LSBFirst
+# endif
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16)
+#  define BITMAP_SCANLINE_UNIT  8
+# endif
+
+#define GLYPHPADBYTES           4
+#define GETLEFTBITS_ALIGNMENT   1
+#define LARGE_INSTRUCTION_CACHE
+#define AVOID_MEMORY_READ
 
 #endif /* __arm32__ */
 
-#if defined(hpux)
+#if defined(hpux) || defined (__hppa__)
 
 #define IMAGE_BYTE_ORDER	MSBFirst
 #define BITMAP_BIT_ORDER	MSBFirst
@@ -158,7 +180,7 @@ SOFTWARE.
 #define LARGE_INSTRUCTION_CACHE
 #define PLENTIFUL_REGISTERS
 
-#endif /* hpux */
+#endif /* hpux || __hppa__ */
 
 #if defined(__powerpc__)
 
@@ -215,7 +237,7 @@ SOFTWARE.
 # define BITMAP_BIT_ORDER	MSBFirst
 #endif
 
-#ifdef sparc
+#if defined(sparc) || defined(__sparc__) || defined(__sparc_v9__)
 # define AVOID_MEMORY_READ
 # define LARGE_INSTRUCTION_CACHE
 # define FAST_CONSTANT_OFFSET_MODE
@@ -310,7 +332,16 @@ SOFTWARE.
 
 #if defined(__alpha) || defined(__alpha__) || defined(__alphaCross)
 # define IMAGE_BYTE_ORDER	LSBFirst	/* Values for the Alpha only */
-# define BITMAP_BIT_ORDER       LSBFirst
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16) || defined(XF86MONO)
+#  define BITMAP_BIT_ORDER      MSBFirst
+# else
+#  define BITMAP_BIT_ORDER      LSBFirst
+# endif
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16)
+#  define BITMAP_SCANLINE_UNIT  8
+# endif
 
 # define GLYPHPADBYTES		4
 # define GETLEFTBITS_ALIGNMENT	1
@@ -354,7 +385,16 @@ SOFTWARE.
 
 #if defined(__ia64__) || defined(ia64)
 # define IMAGE_BYTE_ORDER	LSBFirst
-# define BITMAP_BIT_ORDER       LSBFirst
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16) || defined(XF86MONO)
+#  define BITMAP_BIT_ORDER      MSBFirst
+# else
+#  define BITMAP_BIT_ORDER      LSBFirst
+# endif
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16)
+#  define BITMAP_SCANLINE_UNIT  8
+# endif
 
 # define GLYPHPADBYTES		4
 # define GETLEFTBITS_ALIGNMENT	1
@@ -364,9 +404,18 @@ SOFTWARE.
 
 #endif /* ia64 */
 
-#if defined(__amd64__) || defined(__x86_64__)
+#if defined(__AMD64__) || defined(AMD64) || defined(__amd64__)
 # define IMAGE_BYTE_ORDER	LSBFirst
-# define BITMAP_BIT_ORDER       LSBFirst
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16) || defined(XF86MONO)
+#  define BITMAP_BIT_ORDER      MSBFirst
+# else
+#  define BITMAP_BIT_ORDER      LSBFirst
+# endif
+
+# if defined(XF86MONOVGA) || defined(XF86VGA16)
+#  define BITMAP_SCANLINE_UNIT  8
+# endif
 
 # define GLYPHPADBYTES		4
 # define GETLEFTBITS_ALIGNMENT	1
@@ -374,7 +423,7 @@ SOFTWARE.
 # define FAST_CONSTANT_OFFSET_MODE
 /* ???? */
 # define FAST_UNALIGNED_READS
-#endif /* __amd64__ || __x86_64__ */
+#endif /* AMD64 */
 
 #ifdef stellar
 
@@ -419,7 +468,17 @@ SOFTWARE.
 #endif
 
 #ifndef BITMAP_BIT_ORDER
-#define BITMAP_BIT_ORDER        LSBFirst
+# if defined(XF86MONOVGA) || defined(XF86VGA16) || defined(XF86MONO)
+#  define BITMAP_BIT_ORDER      MSBFirst
+# else
+#  define BITMAP_BIT_ORDER      LSBFirst
+# endif
+#endif
+
+#ifndef BITMAP_SCANLINE_UNIT
+# if defined(XF86MONOVGA) || defined(XF86VGA16)
+#  define BITMAP_SCANLINE_UNIT  8
+# endif
 #endif
 
 #ifndef GLYPHPADBYTES
@@ -437,7 +496,8 @@ SOFTWARE.
 
 #endif /* SVR4 / BSD / i386 */
 
-#if defined (linux) && defined (__mc68000__)
+#if (defined (linux) && defined (__mc68000__)) || \
+    (defined (__NetBSD__) && defined (__m68k__))
 
 #define IMAGE_BYTE_ORDER       MSBFirst
 #define BITMAP_BIT_ORDER       MSBFirst
@@ -445,7 +505,7 @@ SOFTWARE.
 #define GLYPHPADBYTES          4
 #define GETLEFTBITS_ALIGNMENT  1
 
-#endif /* linux/m68k */
+#endif /* linux/m68k or NetBSD/m68k */
 
 #ifdef sgi
 
@@ -476,19 +536,9 @@ SOFTWARE.
 #define IMAGE_BUFSIZE		(64*1024)
 #endif
 
-#if defined(XF86VGA16) || defined(XF86MONO)
-# undef BITMAP_BIT_ORDER	/* Always override this */
-# define BITMAP_BIT_ORDER	MSBFirst
-#endif
-
-#ifdef XF86VGA16
-# undef  BITMAP_SCANLINE_UNIT	/* Always override */
-# define BITMAP_SCANLINE_UNIT	8
-#endif
-
 /* pad scanline to a longword */
 #ifndef BITMAP_SCANLINE_UNIT
-# define BITMAP_SCANLINE_UNIT	32
+#define BITMAP_SCANLINE_UNIT	32
 #endif
 
 #ifndef BITMAP_SCANLINE_PAD

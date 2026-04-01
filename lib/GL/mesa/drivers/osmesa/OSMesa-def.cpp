@@ -26,4 +26,4 @@ EXPORTS
 	OSMesaCreateContextExt
 #endif  /* __UNIXOS2__ */
 
-/* $XFree86: xc/lib/GL/mesa/src/OSmesa/OSMesa-def.cpp,v 1.2 2003/03/25 04:18:08 dawes Exp $ */
+/* $XFree86: xc/lib/GL/mesa/drivers/osmesa/OSMesa-def.cpp,v 1.1 2004/04/14 11:18:28 alanh Exp $ */

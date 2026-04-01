@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * (c) Copyright 1998 by Sebastien Marineau
  *                      <sebastien@qnx.com>
  *
@@ -24,7 +31,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from Sebastien Marineau.
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_VTsw.c,v 1.1tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_VTsw.c,v 1.1 1999/12/27 00:45:47 robin Exp $
  */
 
 /* This module contains the code to use _select_receive to handle
@@ -34,7 +41,7 @@
 /* This module contains the functions which are used to do 
  * VT switching to a text console and back... Experimental.
  */
-#include <X11/X.h>
+#include "X.h"
 #include "input.h"
 #include "scrnintstr.h"
 

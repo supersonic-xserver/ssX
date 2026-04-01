@@ -1,3 +1,11 @@
+/* $Xorg: shutdown.c,v 1.4 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -33,7 +41,11 @@ Author: Ralph Mor, X Consortium
 
 
 Status
-IceProtocolShutdown(IceConn iceConn, int majorOpcode)
+IceProtocolShutdown (iceConn, majorOpcode)
+
+IceConn iceConn;
+int	majorOpcode;
+
 {
     if (iceConn->proto_ref_count == 0 || iceConn->process_msg_info == NULL ||
         majorOpcode < 1 || majorOpcode > _IceLastMajorOpcode)
@@ -77,22 +89,35 @@ IceProtocolShutdown(IceConn iceConn, int majorOpcode)
 }
 
 
+
 void
-IceSetShutdownNegotiation(IceConn iceConn, Bool negotiate)
+IceSetShutdownNegotiation (iceConn, negotiate)
+
+IceConn     	iceConn;
+Bool		negotiate;
+
 {
     iceConn->skip_want_to_close = negotiate ? False : True;
 }
 
 
+
 Bool
-IceCheckShutdownNegotiation(IceConn iceConn)
+IceCheckShutdownNegotiation (iceConn)
+
+IceConn     iceConn;
+
 {
     return (iceConn->skip_want_to_close ? False : True);
 }
 
 
+
 IceCloseStatus
-IceCloseConnection(IceConn iceConn)
+IceCloseConnection (iceConn)
+
+IceConn     iceConn;
+
 {
     int refCountReachedZero;
     IceCloseStatus status;
@@ -230,8 +255,12 @@ IceCloseConnection(IceConn iceConn)
 }
 
 
+
 void
-_IceFreeConnection(IceConn iceConn)
+_IceFreeConnection (iceConn)
+
+IceConn iceConn;
+
 {
     if (iceConn->listen_obj == NULL)
     {

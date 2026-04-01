@@ -1,3 +1,19 @@
+/* $Xorg: TranslateI.h,v 1.4 2001/02/09 02:03:59 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/TranslateI.h,v 1.6tsi Exp $ */
+/* $XFree86: xc/lib/Xt/TranslateI.h,v 1.5 2004/05/05 00:07:03 dickey Exp $ */
 
 /*
  * TranslateI.h - Header file private to translation management
@@ -259,7 +275,7 @@ typedef struct _TMConvertRec {
     XtTranslations	new; /* table to merge from */
 } TMConvertRec;
 
-#define _XtEventTimerEventType ((TMLongCard)~0U)
+#define _XtEventTimerEventType ((TMLongCard)~0L)
 #define KeysymModMask		(1L<<27) /* private to TM */
 #define AnyButtonMask		(1L<<28) /* private to TM */
 

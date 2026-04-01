@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/vgaImages.c,v 1.5 2003/11/03 05:11:57 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,6 +28,7 @@
  * SOFTWARE.
  *
 */
+/* $XConsortium: vgaImages.c /main/5 1996/02/21 17:58:58 kaleb $ */
 
 #include "xf4bpp.h"
 #include "OScompiler.h"
@@ -36,21 +44,26 @@ extern ScrnInfoPtr *xf86Screens;
 #define FALSE 0
 
 void
-xf4bppDrawColorImage(WindowPtr pWin, int x, int y, int w, int h,
-		     unsigned char *data, int RowIncrement, const int alu,
-		     const unsigned long planes)
+xf4bppDrawColorImage( pWin, x, y, w, h, data, RowIncrement, alu, planes )
+WindowPtr pWin; /* GJA */
+int x, y ;
+register int w, h ;
+unsigned char *data ;
+register int RowIncrement ;
+const int alu ;
+const unsigned long int planes ;
 {
 IOADDRESS REGBASE;
-unsigned long int tmp ;
-const unsigned char *src ;
-volatile unsigned char *dst ;
-int Pixel_Count ;
-unsigned int currMask ;
-unsigned int InitialMask ;
-volatile unsigned char *StartByte ;
+register unsigned long int tmp ;
+register const unsigned char *src ;
+register volatile unsigned char *dst ;
+register int Pixel_Count ;
+register unsigned int currMask ;
+register unsigned int InitialMask ;
+register volatile unsigned char *StartByte ;
 unsigned int invert_source_data = FALSE ;
 #ifdef	PC98_EGC	/* new EGC test */
-unsigned char tmp1;
+register unsigned char tmp1;
 #endif
 
 {	/* Start GJA */
@@ -267,10 +280,14 @@ return ;
 
 #ifndef	PC98_EGC
 static unsigned long int
-read8Z(IOADDRESS REGBASE, volatile unsigned char *screen_ptr)
+read8Z
+(
+	IOADDRESS REGBASE,
+	register volatile unsigned char *screen_ptr
+)
 {
-unsigned long int i ;
-unsigned long int j ;
+register unsigned long int i ;
+register unsigned long int j ;
 
 /* Read One Byte At A Time to get
  *	i ==	[ Plane 3 ] [ Plane 2 ] [ Plane 1 ] [ Plane 0 ]
@@ -339,12 +356,16 @@ return j ;
 #endif		/* not PC98_EGC */
 
 void
-xf4bppReadColorImage(WindowPtr pWin, int x, int y, int lx, int ly,
-		     unsigned char *data, int RowIncrement)
+xf4bppReadColorImage( pWin, x, y, lx, ly, data, RowIncrement )
+WindowPtr pWin; /* GJA */
+int x, y ;
+int lx, ly ;
+register unsigned char *data ;
+int RowIncrement ;
 {
 IOADDRESS REGBASE;
-unsigned long int tmp ;
-volatile unsigned char *src ;
+register unsigned long int tmp ;
+register volatile unsigned char *src ;
 volatile unsigned char *masterSrc ;
 int savCenterWidth ;
 int dx ;

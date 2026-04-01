@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/font/builtins/builtin.h,v 1.4tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: builtin.h,v 1.2 1999/11/02 06:16:47 keithp Exp $
  *
  * Copyright 1999 SuSE, Inc.
  *
@@ -17,18 +24,15 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
-
-#ifndef _FONT_BUILTIN_H_
-
-#define _FONT_BUILTIN_H_
+/* $XFree86: xc/lib/font/builtins/builtin.h,v 1.4 2000/02/23 20:29:33 dawes Exp $ */
 
 #include <X11/Xdefs.h>
-#include <X11/fonts/font.h>
+#include <font.h>
 #include "fontxlfd.h"
 #include "fntfil.h"
 #include "fntfilio.h"
@@ -59,12 +63,5 @@ extern const int		builtin_dir_count;
 extern const BuiltinAliasRec	builtin_alias[];
 extern const int		builtin_alias_count;
 
-extern FontFilePtr		BuiltinFileOpen(char *name);
-extern int			BuiltinFileClose(FontFilePtr f);
-
-extern int			BuiltinReadDirectory(char *directory,
-						     FontDirectoryPtr *pdir);
-
-extern void			BuiltinRegisterFontFileFunctions(void);
-
-#endif
+extern FontFilePtr	BuiltinFileOpen ();
+extern int		BuiltinFileClose ();

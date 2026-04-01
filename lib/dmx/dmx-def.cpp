@@ -19,4 +19,4 @@ EXPORTS
   DMXAddBackendInput
   DMXAddConsoleInput
   DMXRemoveInput
-/* $XFree86$ */
+/* $XFree86: xc/lib/dmx/dmx-def.cpp,v 1.1 2005/02/07 01:38:23 tsi Exp $ */

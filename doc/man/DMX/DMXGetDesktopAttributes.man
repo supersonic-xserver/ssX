@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $XFree86: xc/doc/man/DMX/DMXGetDesktopAttributes.man,v 1.1 2004/06/30 20:21:36 martin Exp $
 .\"
 .\" Copyright 2004 Red Hat Inc., Durham, North Carolina.
 .\" All Rights Reserved.

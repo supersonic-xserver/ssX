@@ -1,7 +1,7 @@
-XCOMM $XFree86: xc/programs/Xserver/dix/Imakefile,v 3.23tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/dix/Imakefile,v 3.20 2004/09/21 18:37:48 torrey Exp $
 
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -47,28 +47,38 @@ XCOMM $XFree86: xc/programs/Xserver/dix/Imakefile,v 3.23tsi Exp $
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <Server.tmpl>
 
-#if !HasFfs
-            FFS_SRC = ffs.c
-            FFS_OBJ = ffs.o
+
+#if BuildSeparateTinyDIX && !BuildTinyDIX
+#define IHaveSubdirs
+SUBDIRS = tiny
 #endif
 
-               SRCS = atom.c colormap.c cursor.c devices.c dispatch.c \
-		      dixutils.c events.c extension.c gc.c globals.c \
-		      glyphcurs.c grabs.c main.c property.c resource.c \
-		      swaprep.c swapreq.c tables.c window.c initatoms.c \
-		      dixfonts.c privates.c pixmap.c $(FFS_SRC)
-               OBJS = atom.o colormap.o cursor.o devices.o dispatch.o \
-		      dixutils.o events.o extension.o gc.o globals.o \
-		      glyphcurs.o grabs.o main.o property.o resource.o \
-		      swaprep.o swapreq.o tables.o window.o initatoms.o \
-		      dixfonts.o privates.o pixmap.o $(FFS_OBJ)
+#include <Server.tmpl>
 
-           INCLUDES = -I$(SERVERSRC)/include -I$(SERVERSRC)/dix \
-		      -I$(SERVERSRC)/Xext -I$(SERVERSRC)/lbx \
-		      -I$(SERVERSRC)/Xprint
-           LINTLIBS = ../os/llib-los.ln
+#if PrintOnlyServer
+XPSRC = xpstubs.c
+XPOBJ = xpstubs.o
+#endif
+
+#if !HasFfs
+FFS_SRC = ffs.c
+FFS_OBJ = ffs.o
+#endif
+
+SRCS = atom.c colormap.c cursor.c devices.c dispatch.c dixutils.c events.c \
+	extension.c gc.c globals.c glyphcurs.c grabs.c \
+	main.c property.c resource.c swaprep.c swapreq.c \
+	tables.c window.c initatoms.c dixfonts.c privates.c pixmap.c $(FFS_SRC)
+OBJS = atom.o colormap.o cursor.o devices.o dispatch.o dixutils.o events.o \
+	extension.o gc.o globals.o glyphcurs.o grabs.o \
+	main.o property.o resource.o swaprep.o swapreq.o \
+	tables.o window.o initatoms.o dixfonts.o privates.o pixmap.o $(FFS_OBJ)
+
+    INCLUDES = -I$(SERVERSRC)/dix -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+		-I$(FONTINCSRC) -I$(EXTINCSRC) -I$(SERVERSRC)/Xext \
+		-I$(SERVERSRC)/lbx
+    LINTLIBS = ../os/llib-los.ln
 
 /*
  * The following configuration parameters may be set in the appropriate
@@ -83,69 +93,73 @@ XCOMM $XFree86: xc/programs/Xserver/dix/Imakefile,v 3.23tsi Exp $
  */
 
 #ifdef DefaultFontPath
-    DEFAULTFONTPATH = DefaultFontPath
-     SITE_FONT_PATH = -DCOMPILEDDEFAULTFONTPATH=\"$(DEFAULTFONTPATH)\"
+DEFAULTFONTPATH = DefaultFontPath
+SITE_FONT_PATH = -DCOMPILEDDEFAULTFONTPATH=\"$(DEFAULTFONTPATH)\"
 #endif
 
 #ifdef DefaultRGBDatabase
- DEFAULTRGBDATABASE = DefaultRGBDatabase
-        SITE_RGB_DB = -DRGB_DB=\"$(DEFAULTRGBDATABASE)\"
+DEFAULTRGBDATABASE = DefaultRGBDatabase
+   SITE_RGB_DB = -DRGB_DB=\"$(DEFAULTRGBDATABASE)\"
 #endif
 
 #ifdef DefaultDisplayClass
 DEFAULTDISPLAYCLASS = DefaultDisplayClass
- SITE_DISPLAY_CLASS = -DCOMPILEDDISPLAYCLASS=\"$(DEFAULTDISPLAYCLASS)\"
+   SITE_DISPLAY_CLASS = -DCOMPILEDDISPLAYCLASS=\"$(DEFAULTDISPLAYCLASS)\"
 #endif
 
 #ifdef XVendorString
-       VENDORSTRING = XVendorString
-      VENDOR_STRING = -DVENDOR_STRING=\"$(VENDORSTRING)\"
+VENDORSTRING = XVendorString
+   VENDOR_STRING = -DVENDOR_STRING=\"$(VENDORSTRING)\"
 #endif
 
 #ifdef XVendorRelease
-      VENDORRELEASE = XVendorRelease
-     VENDOR_RELEASE = -DVENDOR_RELEASE="$(VENDORRELEASE)"
+VENDORRELEASE = XVendorRelease
+   VENDOR_RELEASE = -DVENDOR_RELEASE="$(VENDORRELEASE)"
 #endif
 
 #if HasKrb5
-             K5DEFS = Krb5Defines
+         K5DEFS = Krb5Defines
 #endif
 
 #ifdef DarwinArchitecture
 #if DarwinQuartzSupport
-     QUARTZ_DEFINES = -DDARWIN_WITH_QUARTZ -DROOTLESS
+    QUARTZ_DEFINES = -DDARWIN_WITH_QUARTZ -DROOTLESS
 #endif
 #endif
 
-       SITE_DEFINES = $(SITE_FONT_PATH) $(SITE_RGB_DB) $(SITE_DISPLAY_CLASS)
+SITE_DEFINES = $(SITE_FONT_PATH) $(SITE_RGB_DB) $(SITE_DISPLAY_CLASS)
 
-     VENDOR_DEFINES = $(VENDOR_STRING) $(VENDOR_RELEASE) $(QUARTZ_DEFINES)
+VENDOR_DEFINES = $(VENDOR_STRING) $(VENDOR_RELEASE) $(QUARTZ_DEFINES)
 
-#ifndef LinkDefines
-#define LinkDefines /**/
+#if BuildTinyDIX
+TINY_DEFINES = TinyDIXDefines
 #endif
 
-/*
- * Insert EXT_DEFINES just in case the list of pervasive extensions isn't
- * being kept up to date.
- */
-            DEFINES = $(EXT_DEFINES) LinkDefines
+DEFINES = $(TINY_DEFINES)
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(dix,$(OBJS))
-LintLibraryTarget(dix,$(SRCS))
-NormalLintTarget($(SRCS))
+LintLibraryTarget(dix,$(SRCS) $(XPSRC))
+NormalLintTarget($(SRCS) $(XPSRC))
 
 SpecialCObjectRule(globals,$(ICONFIGFILES),$(SITE_DEFINES))
 SpecialCObjectRule(tables,$(ICONFIGFILES),$(K5DEFS))
 SpecialCObjectRule(dispatch,$(ICONFIGFILES),$(K5DEFS))
 SpecialCObjectRule(main,$(ICONFIGFILES),$(VENDOR_DEFINES))
-SpecialCObjectRule(events,$(ICONFIGFILES),NullParameter)
-SpecialCObjectRule(pixmap,$(ICONFIGFILES),NullParameter)
-SpecialCObjectRule(privates,$(ICONFIGFILES),NullParameter)
+SpecialCObjectRule(pixmap,$(ICONFIGFILES),$(_NOOP_))
+SpecialCObjectRule(privates,$(ICONFIGFILES),$(_NOOP_))
 SpecialCObjectRule(window,$(ICONFIGFILES),$(QUARTZ_DEFINES))
 
+#if PrintOnlyServer
+NormalLibraryTarget(xpstubs,$(XPOBJ))
+#endif
+
 DependTarget()
+
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif
 
 #ifdef LinkDirectory
 LinkSourceFile(atom.c,LinkDirectory)
@@ -172,5 +186,6 @@ LinkSourceFile(swaprep.c,LinkDirectory)
 LinkSourceFile(swapreq.c,LinkDirectory)
 LinkSourceFile(tables.c,LinkDirectory)
 LinkSourceFile(window.c,LinkDirectory)
+LinkSourceFile(xpstubs.c,LinkDirectory)
 #endif
 

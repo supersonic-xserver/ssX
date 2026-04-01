@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX Hardware Device Driver for Intel tdfx
  * Copyright (C) 1999 Keith Whitwell
  *
@@ -22,7 +29,7 @@
  *
  *
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/tdfx_vb.h,v 1.2 2002/02/22 21:45:04 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/tdfx_vb.h,v 1.1.1.2 2004/12/10 15:06:02 alanh Exp $ */
 
 #ifndef TDFXVB_INC
 #define TDFXVB_INC
@@ -39,7 +46,8 @@
 #define TDFX_TEX1_BIT       0x8
 #define TDFX_TEX0_BIT       0x10	
 #define TDFX_PTEX_BIT       0x20
-#define TDFX_MAX_SETUP      0x40
+#define TDFX_FOGC_BIT       0x40
+#define TDFX_MAX_SETUP      0x80
 
 #define _TDFX_NEW_RASTERSETUP (_NEW_TEXTURE |			\
 			       _DD_NEW_SEPARATE_SPECULAR |	\

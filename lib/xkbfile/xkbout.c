@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  Copyright (c) 1994 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -23,7 +30,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/lib/xkbfile/xkbout.c,v 3.11tsi Exp $ */
+/* $XFree86: xc/lib/xkbfile/xkbout.c,v 3.11 2005/02/28 23:19:13 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -41,16 +48,16 @@
 
 #else
 
-#include <X11/X.h>
+#include "X.h"
 #define	NEED_EVENTS
 #include <X11/keysym.h>
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "misc.h"
 #include "inputstr.h"
 #include "dix.h"
-#include <X11/extensions/XKBstr.h>
+#include "XKBstr.h"
 #define XKBSRV_NEED_FILE_FUNCS	1
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 
 #include <X11/extensions/XKBgeom.h>
 #include <X11/extensions/XKBfile.h>

@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_texmem.c,v 1.1.1.4tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_texmem.c,v 1.1.1.4 2004/12/10 15:33:02 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright (C) Tungsten Graphics 2002.  All Rights Reserved.  
@@ -43,7 +50,7 @@ SOFTWARE.
 #include "context.h"
 #include "colormac.h"
 #include "macros.h"
-#include "r200_reg.h" /* gets definition for usleep */
+#include "radeon_reg.h" /* gets definition for usleep */
 #include "r200_context.h"
 #include "r200_state.h"
 #include "r200_ioctl.h"

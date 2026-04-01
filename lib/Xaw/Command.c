@@ -1,3 +1,19 @@
+/* $Xorg: Command.c,v 1.5 2001/02/09 02:03:43 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1988, 1994, 1998  The Open Group
@@ -44,7 +60,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xaw/Command.c,v 1.18 2006/01/09 14:59:01 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Command.c,v 1.17 2003/08/04 10:32:20 eich Exp $ */
 
 /*
  * Command.c - Command button widget
@@ -330,7 +346,7 @@ Set(Widget w, XEvent *event, String *params, Cardinal *num_params)
 	return;
 
     XawCommandToggle(w);
-    cbw->command.set = True;
+    cbw->command.set= True;
 }
 
 /*ARGSUSED*/

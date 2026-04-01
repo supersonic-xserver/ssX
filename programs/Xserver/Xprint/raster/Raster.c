@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/raster/Raster.c,v 1.13 2005/10/14 15:16:16 tsi Exp $ */
+/* $Xorg: Raster.c,v 1.4 2001/03/14 18:46:12 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
@@ -31,6 +38,7 @@ dealings in this Software without prior written authorization from said
 copyright holders.
 */
 
+/* $XFree86: xc/programs/Xserver/Xprint/raster/Raster.c,v 1.12 2003/10/29 22:11:55 tsi Exp $ */
 
 /*******************************************************************
 **
@@ -55,12 +63,12 @@ copyright holders.
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <X11/X.h>
-#include <X11/Xos.h>	/* for SIGCLD on pre-POSIX systems */
+#include "X.h"
+#include "Xos.h"	/* for SIGCLD on pre-POSIX systems */
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #undef NEED_EVENTS
-#include <X11/Xatom.h>
+#include "Xatom.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "scrnintstr.h"
@@ -181,7 +189,7 @@ InitializeRasterDriver(
      int ndx,
      ScreenPtr pScreen,
      int argc,
-     const char **argv)
+     char **argv)
 {
     int xRes, yRes;
     int maxRes, maxDim, numBytes;

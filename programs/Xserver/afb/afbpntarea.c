@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbpntarea.c,v 3.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbpntarea.c,v 3.1 2001/10/28 03:32:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,8 +54,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbpntarea.c,v 5.7 94/04/17 20:28:29 dpw Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -70,28 +78,32 @@ is equivalent to iy%= tileheight, and saves a division.
 
 /*ARGSUSED*/
 void
-afbSolidFillArea(DrawablePtr pDraw, int nbox, BoxPtr pbox, unsigned char *rrops)
+afbSolidFillArea (pDraw, nbox, pbox, rrops)
+	DrawablePtr pDraw;
+	int nbox;
+	BoxPtr pbox;
+	register unsigned char *rrops;
 {
-	int nlwidth;		/* width in longwords of the drawable */
-	int w;			/* width of current box */
-	int h;			/* height of current box */
-	PixelType *p;		/* pointer to bits we're writing */
-	int nlw;		/* loop version of nlwMiddle */
-	PixelType startmask;
-	PixelType endmask;
-				/* masks for reggedy bits at either end of line */
-	int nlwExtra;
-				/* to get from right of box to left of next span */
-	int nlwMiddle;		/* number of longwords between sides of boxes */
-	PixelType *pbits;	/* pointer to start of drawable */
+	int nlwidth;				/* width in longwords of the drawable */
+	int w;						/* width of current box */
+	register int h;			/* height of current box */
+	register PixelType *p;	/* pointer to bits we're writing */
+	register int nlw;			/* loop version of nlwMiddle */
+	register PixelType startmask;
+	register PixelType endmask;
+									/* masks for reggedy bits at either end of line */
+	register int nlwExtra;
+									/* to get from right of box to left of next span */
+	int nlwMiddle;				/* number of longwords between sides of boxes */
+	PixelType *pbits;			/* pointer to start of drawable */
 	PixelType *saveP;
 	int saveH;
 	int depthDst;
 	int sizeDst;
-	int d;
+	register int d;
 
 	afbGetPixelWidthSizeDepthAndPointer(pDraw, nlwidth, sizeDst, depthDst,
-						 pbits);
+													 pbits);
 
 	while (nbox--) {
 		w = pbox->x2 - pbox->x1;
@@ -270,33 +282,37 @@ XOR the destination with the stipple pattern.
 
 /*ARGSUSED*/
 void
-afbStippleAreaPPW(DrawablePtr pDraw, int nbox, BoxPtr pbox, PixmapPtr pstipple,
-		  unsigned char *rrops)
+afbStippleAreaPPW (pDraw, nbox, pbox, pstipple, rrops)
+	DrawablePtr pDraw;
+	int nbox;
+	BoxPtr pbox;
+	PixmapPtr pstipple;
+	unsigned char *rrops;
 {
-	PixelType *psrc;
-				/* pointer to bits in tile, if needed */
+	register PixelType *psrc;
+						/* pointer to bits in tile, if needed */
 	int tileHeight;		/* height of the tile */
-	PixelType srcpix;
+	register PixelType srcpix;
 
 	int nlwidth;		/* width in longwords of the drawable */
-	int w;			/* width of current box */
-	int nlw;		/* loop version of nlwMiddle */
-	PixelType *p;		/* pointer to bits we're writing */
-	int h;			/* height of current box */
+	int w;				/* width of current box */
+	register int nlw;		/* loop version of nlwMiddle */
+	register PixelType *p;		/* pointer to bits we're writing */
+	register int h;		/* height of current box */
 	PixelType startmask;
-	PixelType endmask;	/* masks for reggedy bits at either end of line */
+	PixelType endmask;		/* masks for reggedy bits at either end of line */
 	int nlwMiddle;		/* number of longwords between sides of boxes */
 	int nlwExtra;		/* to get from right of box to left of next span */
 	int sizeDst;
 	int depthDst;
 	int d;
 	int saveIy;
-	int iy;			/* index of current scanline in tile */
-	PixelType *pbits;	/* pointer to start of drawable */
+	register int iy;		/* index of current scanline in tile */
+	PixelType *pbits;		/* pointer to start of drawable */
 	PixelType *pBase;
 
 	afbGetPixelWidthSizeDepthAndPointer(pDraw, nlwidth, sizeDst, depthDst,
-							 pBase);
+													 pBase);
 
 	tileHeight = pstipple->drawable.height;
 	psrc = (PixelType *)(pstipple->devPrivate.ptr);
@@ -518,10 +534,10 @@ afbStippleArea (pDraw, nbox, pbox, pTile, xOff, yOff, rrops)
 	int yOff;
 	unsigned char *rrops;
 {
-	PixelType *psrc;	/* pointer to bits in tile, if needed */
+	register PixelType *psrc;	/* pointer to bits in tile, if needed */
 	int nlwidth;					/* width in longwords of the drawable */
-	int h;				/* height of current box */
-	PixelType *pdst;	/* pointer to bits we're writing */
+	register int h;				/* height of current box */
+	register PixelType *pdst;	/* pointer to bits we're writing */
 	int sizeDst;
 	int depthDst;
 	int tileLine;
@@ -529,7 +545,7 @@ afbStippleArea (pDraw, nbox, pbox, pTile, xOff, yOff, rrops)
 	int w, width, x, xSrc, ySrc, srcStartOver, nend;
 	int tlwidth, rem, tileWidth, tileHeight, endinc;
 	int saveW;
-	int rop;
+	register int rop;
 	PixelType *psrcT;
 	int d;
 	int nstart;

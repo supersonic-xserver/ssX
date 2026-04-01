@@ -1,4 +1,24 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_reg.h,v 1.19tsi Exp $ */
+/* $XConsortium: mgareg.h /main/2 1996/10/25 10:33:21 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_reg.h,v 1.18 2001/09/26 12:59:18 alanh Exp $ */
+
+
 
 /*
  * MGA Millennium (MGA2064W) functions
@@ -351,7 +371,6 @@
 #define MGA1064_GEN_CTL		0x1d
 #define MGA1064_MISC_CTL	0x1e
 #define MGA1064_MISC_CTL_DAC_POW_DN   		( 0x01 << 0 )
-#define MGA1064_MISC_CTL_DAC_EN                ( 0x01 << 0 )
 #define MGA1064_MISC_CTL_VGA   		( 0x01 << 1 )
 #define MGA1064_MISC_CTL_DIS_CON   		( 0x03 << 1 )
 #define MGA1064_MISC_CTL_MAFC   		( 0x02 << 1 )

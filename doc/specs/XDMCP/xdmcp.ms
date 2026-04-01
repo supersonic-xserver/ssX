@@ -1,4 +1,5 @@
 .\" Use eqn, tbl, and -ms
+.\" $Xorg: xdmcp.ms,v 1.3 2000/08/17 19:42:20 cpqbld Exp $
 .\" $XFree86: xc/doc/specs/XDMCP/xdmcp.ms,v 1.3 2003/11/22 04:50:59 dawes Exp $
 .EQ
 delim @@

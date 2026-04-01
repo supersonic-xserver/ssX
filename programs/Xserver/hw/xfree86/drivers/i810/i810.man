@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810.man,v 1.10 2005/05/20 15:34:50 alanh Exp $ 
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810.man,v 1.9 2005/02/01 02:25:07 dawes Exp $ 
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH I810 __drivermansuffix__ __vendorversion__
@@ -162,19 +162,21 @@ When the Clone option is specified we can drive the second monitor at a
 different refresh rate than the primary. 
 Default: 60Hz.
 .TP
-.BI "Option \*qCheckDevices\*q \*q" boolean \*q
-On mobile platforms it's desirable to monitor the device status and switch
-the outputs accordingly. For example, when the lid is opened or closed, or
-when using hotkeys without ACPI support. By default this option is on for
-mobile platforms and is not available on desktop systems.
+.BI "Option \*qCheckLid\*q \*q" boolean \*q
+On mobile platforms it's desirable to monitor the lid status and switch
+the outputs accordingly when the lid is opened or closed. By default this
+option is on, but may incur a very minor performance penalty as we need
+to poll a register on the card to check for this activity. It can be
+turned off using this option. This only works with the 830M, 852GM and 855GM
+systems.
 Default: enabled.
 .TP
-.BI "Option \*qFixedPipe\*q \*q" anystr \*q
-When using a dual pipe system, it may be preferable to fix the primary pipe
-such that if you boot up on an external screen you may want the internal
-flat panel to be the primary. Using this option will allow this.
-Options are A or B.
-Default: disabled (uses current pipe as primary).
+.BI "Option \*qFlipPrimary\*q \*q" boolean \*q
+When using a dual pipe system, it may be preferable to switch the primary
+screen to the alternate pipe to display on the other monitor connection.
+NOTE: Using this option may cause text mode to be restored incorrectly,
+and thus should be used with caution.
+Default: disabled.
 .TP
 .BI "Option \*qDisplayInfo\*q \*q" boolean \*q
 It has been found that a certain BIOS call can lockup the Xserver because
@@ -188,17 +190,6 @@ monitors. This option is useful if the monitor was not connected when
 the machine has booted, but unfortunately it doesn't always work and
 is extremely dependent upon the Video BIOS.
 Default: disabled
-.TP
-.BI "Option \*qRotate\*q \*qCW\*q"
-.TP
-.BI "Option \*qRotate\*q \*qCCW\*q"
-Rotate the desktop 90 degrees clockwise or counterclockwise.  This option 
-forces the ShadowFB option on, and disables acceleration.
-Default: no rotation.
-.TP
-.BI "Option \*qShadowFB\*q \*q" boolean \*q
-Enable or disable use of the shadow framebuffer layer.  This option
-disables acceleration.  Default: off.
 
 .SH "SEE ALSO"
 XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__)

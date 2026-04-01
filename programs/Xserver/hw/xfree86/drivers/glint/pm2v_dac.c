@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1997-2001 by Alan Hourihane <alanh@fairlite.demon.co.uk>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -27,7 +34,7 @@
  * this work is sponsored by S.u.S.E. GmbH, Fuerth, Elsa GmbH, Aachen and
  * Siemens Nixdorf Informationssysteme
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/pm2v_dac.c,v 1.30tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/pm2v_dac.c,v 1.30 2003/11/03 05:11:13 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -217,7 +224,7 @@ Permedia2VInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
   
     {
 	/* Get the programmable clock values */
-    	unsigned char m = 0, n = 0, p = 0;
+    	unsigned char m,n,p;
 	
 	(void) PM2VDAC_CalculateClock(mode->Clock/2,pGlint->RefClock,
 								&m,&n,&p);

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2001 by Alan Hourihane.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,7 +30,7 @@
  *           Kevin E. Martin <martin@valinux.com>
  *
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/gamma/gamma_inithw.c,v 1.9 2002/10/30 12:51:29 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/gamma/gamma_inithw.c,v 1.1.1.1 2004/04/08 09:16:54 alanh Exp $ */
 
 #include "gamma_context.h"
 #include "glint_dri.h"

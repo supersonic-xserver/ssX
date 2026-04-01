@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/programs/setxkbmap/Imakefile,v 3.4 2005/10/14 15:17:31 tsi Exp $
+XCOMM $XConsortium: Imakefile /main/1 1995/11/30 19:18:08 kaleb $
+
+
+
+
+XCOMM $XFree86: xc/programs/setxkbmap/Imakefile,v 3.3 2003/05/27 17:58:23 tsi Exp $
 
            SRCS = setxkbmap.c
            OBJS = setxkbmap.o
@@ -6,6 +11,8 @@ XCOMM $XFree86: xc/programs/setxkbmap/Imakefile,v 3.4 2005/10/14 15:17:31 tsi Ex
 LOCAL_LIBRARIES = $(XKBFILELIB) $(XONLYLIB)
 
         DEFINES = -DDFLT_XKB_CONFIG_ROOT=\"$(LIBDIR)/xkb\"
+
+INCLUDES = -I$(EXTINCSRC)
 
 all::
 

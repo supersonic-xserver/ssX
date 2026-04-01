@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/sparc64_video.c,v 1.3 2003/10/07 23:14:55 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1992 by Rich Murphey <Rich@Rice.edu>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>
@@ -24,7 +31,10 @@
  *
  */
 
-#include <X11/X.h>
+
+/* $XConsortium: bsd_video.c /main/10 1996/10/25 11:37:57 kaleb $ */
+
+#include "X.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 
@@ -68,7 +78,7 @@ sparc64MapVidMem(int ScreenNum, unsigned long Base, unsigned long Size,
 		     PROT_READ : (PROT_READ | PROT_WRITE),
 		    MAP_SHARED, fd, Base);
 	if (base == MAP_FAILED)
-		FatalError("%s: could not mmap screen [s=%lx,a=%lx] (%s)",
+		FatalError("%s: could not mmap screen [s=%x,a=%x] (%s)",
 			   "xf86MapVidMem", Size, Base, strerror(errno));
 	return base;
 }

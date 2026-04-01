@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxlog.c,v 1.2 2005/10/14 15:16:25 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxlog.c,v 1.1 2004/06/30 20:21:39 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001 Red Hat Inc., Durham, North Carolina.
  *
@@ -40,8 +47,8 @@
 #include "dmxlog.h"
 #include "dmxinput.h"
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #endif
 
 static dmxLogLevel dmxCurrentLogLevel = dmxDebug;
@@ -96,6 +103,7 @@ void VErrorF(const char *format, va_list args)
 }
 #else
 /** This function was removed between XFree86 4.3.0 and XFree86 4.4.0. */
+extern void AbortServer(void);
 static void VFatalError(const char *format, va_list args)
 {
     VErrorF(format, args);
@@ -103,7 +111,7 @@ static void VFatalError(const char *format, va_list args)
 #ifdef DDXOSFATALERROR
     OsVendorFatalError();
 #endif
-    AbortServer(0);
+    AbortServer();
     /*NOTREACHED*/
 }
 #endif

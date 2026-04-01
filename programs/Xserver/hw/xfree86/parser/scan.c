@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/scan.c,v 1.33 2004/10/18 00:02:32 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -109,7 +116,7 @@
 
 #define CONFIG_BUF_LEN     1024
 
-static int StringToToken (const char *, xf86ConfigSymTabRec *);
+static int StringToToken (char *, xf86ConfigSymTabRec *);
 
 static FILE *configFile = NULL;
 static const char **builtinConfig = NULL;
@@ -314,8 +321,8 @@ again:
 			}
 			while ((c != '\"') && (c != '\n') && (c != '\r') && (c != '\0'));
 			configRBuf[i] = '\0';
-			/* No private copy! */
-			val.str = configRBuf;
+			val.str = xf86confmalloc (strlen (configRBuf) + 1);
+			strcpy (val.str, configRBuf);	/* private copy ! */
 			return (STRING);
 		}
 
@@ -787,7 +794,7 @@ xf86setBuiltinConfig(const char *config[])
 }
 
 void
-xf86parseError (const char *format,...)
+xf86parseError (char *format,...)
 {
 	va_list ap;
 
@@ -801,7 +808,7 @@ xf86parseError (const char *format,...)
 }
 
 void
-xf86parseWarning (const char *format,...)
+xf86parseWarning (char *format,...)
 {
 	va_list ap;
 
@@ -815,7 +822,7 @@ xf86parseWarning (const char *format,...)
 }
 
 void
-xf86validationError (const char *format,...)
+xf86validationError (char *format,...)
 {
 	va_list ap;
 
@@ -828,11 +835,12 @@ xf86validationError (const char *format,...)
 }
 
 void
-xf86setSection (const char *section)
+xf86setSection (char *section)
 {
 	if (configSection)
 		xf86conffree(configSection);
-	configSection = xf86configStrdup(section);
+	configSection = xf86confmalloc(strlen (section) + 1);
+	strcpy (configSection, section);
 }
 
 /* 
@@ -846,7 +854,7 @@ xf86getStringToken (xf86ConfigSymTabRec * tab)
 }
 
 static int
-StringToToken (const char *str, xf86ConfigSymTabRec * tab)
+StringToToken (char *str, xf86ConfigSymTabRec * tab)
 {
 	int i;
 
@@ -898,10 +906,9 @@ xf86nameCompare (const char *s1, const char *s2)
 }
 
 char *
-xf86addComment(char *cur, const char *add)
+xf86addComment(char *cur, char *add)
 {
 	char *str;
-	const char *s;
 	int len, curlen, iscomment, hasnewline = 0, endnewline;
 
 	if (add == NULL || add[0] == '\0')
@@ -916,14 +923,14 @@ xf86addComment(char *cur, const char *add)
 	else
 		curlen = 0;
 
-	s = add;
+	str = add;
 	iscomment = 0;
-	while (*s) {
-	    if (*s != ' ' && *s != '\t')
+	while (*str) {
+	    if (*str != ' ' && *str != '\t')
 		break;
-	    ++s;
+	    ++str;
 	}
-	iscomment = (*s == '#');
+	iscomment = (*str == '#');
 
 	len = strlen(add);
 	endnewline = add[len - 1] == '\n';
@@ -944,61 +951,3 @@ xf86addComment(char *cur, const char *add)
 
 	return (cur);
 }
-
-char *
-xf86configStrdup (const char *s)
-{
-	char *tmp;
-	if (!s) return NULL;
-	tmp = xf86confmalloc (sizeof (char) * (strlen (s) + 1));
-	if (tmp)
-		strcpy (tmp, s);
-	return (tmp);
-}
-
-int
-xf86configAsprintf (char **ret, const char *format, ...)
-{
-	char *s;
-	va_list args;
-	int status;
-
-	if (!ret || !format)
-		return -1;
-
-#ifdef HAS_ASPRINTF
-	va_start(args, format);
-	status = vasprintf(&s, format, args);
-	va_end(args);
-	if (status != -1 && s) {
-		*ret = xf86configStrdup(s);
-		free(s);
-		if (!*ret)
-			status = -1;
-	} else
-		*ret = NULL;
-	return status;
-#else
-#define TMP_SIZE 4000
-	s = xf86confcalloc(1, TMP_SIZE);
-	if (!s) {
-		*ret = NULL;
-		return -1;
-	}
-	va_start(args, format);
-	status = vsnprintf(s, TMP_SIZE, format, args);
-	va_end(args);
-	if (status > TMP_SIZE - 1)
-		status = TMP_SIZE - 1;
-	if (status < TMP_SIZE - 1) {
-		*ret = xf86confrealloc(s, status + 1);
-		if (!*ret) {
-			xf86conffree(s);
-			status = -1;
-		}
-	} else
-		*ret = s;
-	return status;
-#endif
-}
-

@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/mfbzerarc.c,v 1.5 2003/02/18 21:29:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /************************************************************
 
@@ -27,6 +41,8 @@ in this Software without prior written authorization from the X Consortium.
 
 ********************************************************/
 /* GJA -- Took mfb code and modified it. */
+
+/* $XConsortium: mfbzerarc.c /main/4 1996/02/21 17:56:52 kaleb $ */
 
 /* Derived from:
  * "Algorithm for drawing ellipses or hyperbolae with a digital plotter"
@@ -69,12 +85,12 @@ extern ScrnInfoPtr *xf86Screens;
 
 #define PixelateWhite(addr,off) \
 { \
-    int *tmpaddr = &((addr)[(off)>>PWSH]); \
+    register int *tmpaddr = &((addr)[(off)>>PWSH]); \
     UPDRW(tmpaddr,SCRRIGHT (LEFTMOST, ((off) & PIM))); \
 }
 #define PixelateBlack(addr,off) \
 { \
-    int *tmpaddr = &((addr)[(off)>>PWSH]); \
+    register int *tmpaddr = &((addr)[(off)>>PWSH]); \
     UPDRW(tmpaddr,~(SCRRIGHT (LEFTMOST, ((off) & PIM)))); \
 }
 
@@ -88,18 +104,23 @@ extern ScrnInfoPtr *xf86Screens;
 #define DoPix(bit,base,off) if (msk & bit) Pixelate(base,off);
 
 static void
-v16ZeroArcSS(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
+v16ZeroArcSS
+(
+    DrawablePtr pDraw,
+    GCPtr pGC,
+    xArc *arc
+)
 {
     miZeroArcRec info;
     Bool do360;
-    int x, y, a, b, d, msk;
-    int k1, k3, dx, dy;
+    register int x, y, a, b, d, msk;
+    register int k1, k3, dx, dy;
     int *addrl;
     int *yorgl, *yorgol;
     unsigned long pixel;
     int nlwidth, yoffset, dyoffset;
     int pmask;
-    int *paddr;
+    register int *paddr;
 
     if (((mfbPrivGC *)(pGC->devPrivates[mfbGCPrivateIndex].ptr))->rop ==
 	RROP_BLACK)
@@ -210,10 +231,16 @@ v16ZeroArcSS(DrawablePtr pDraw, GCPtr pGC, xArc *arc)
 }
 
 static void
-xf4bppZeroPolyArcSS(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
+xf4bppZeroPolyArcSS
+(
+    DrawablePtr	pDraw,
+    GCPtr	pGC,
+    int		narcs,
+    xArc	*parcs
+)
 {
-    xArc *arc;
-    int i;
+    register xArc *arc;
+    register int i;
     BoxRec box;
     RegionPtr cclip;
 
@@ -239,7 +266,11 @@ xf4bppZeroPolyArcSS(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
 }
 
 void
-xf4bppZeroPolyArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
+xf4bppZeroPolyArc(pDraw, pGC, narcs, parcs)
+    DrawablePtr	pDraw;
+    GCPtr	pGC;
+    int		narcs;
+    xArc	*parcs;
 {
     if ( !xf86Screens[pDraw->pScreen->myNum]->vtSema ) {
 	miZeroPolyArc(pDraw, pGC, narcs, parcs);

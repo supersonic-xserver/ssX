@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vga/generic.c,v 1.70tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vga/generic.c,v 1.68 2004/11/26 11:50:22 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 1998 The XFree86 Project, Inc.  All Rights Reserved.
  *
@@ -76,8 +83,7 @@ static const OptionInfoRec *GenericAvailableOptions(int chipid, int busid);
 static void                 GenericIdentify(int);
 static Bool                 GenericProbe(DriverPtr, int);
 static Bool                 GenericPreInit(ScrnInfoPtr, int);
-static Bool                 GenericScreenInit(int, ScreenPtr,
-                                              const int, const char **);
+static Bool                 GenericScreenInit(int, ScreenPtr, int, char **);
 static Bool                 GenericSwitchMode(int, DisplayModePtr, int);
 static void                 GenericAdjustFrame(int, int, int, int);
 static Bool                 GenericEnterVT(int, int);
@@ -196,8 +202,7 @@ static XF86ModuleVersionInfo GenericVersionRec =
 XF86ModuleData vgaModuleData = { &GenericVersionRec, GenericSetup, NULL };
 
 static pointer
-GenericSetup(ModuleDescPtr Module, pointer Options,
-	     int *ErrorMajor, int *ErrorMinor)
+GenericSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
 {
     static Bool Initialised = FALSE;
 
@@ -205,8 +210,8 @@ GenericSetup(ModuleDescPtr Module, pointer Options,
     {
 	Initialised = TRUE;
 	xf86AddDriver(&VGA, Module, 0);
-	LoaderModRefSymLists(Module, vgahwSymbols, miscfbSymbols, fbSymbols,
-			     shadowfbSymbols, int10Symbols, NULL);
+	LoaderRefSymLists(vgahwSymbols, miscfbSymbols, fbSymbols,
+			  shadowfbSymbols, int10Symbols, NULL);
 	return (pointer)TRUE;
     }
 
@@ -507,7 +512,6 @@ GenericPreInit(ScrnInfoPtr pScreenInfo, int flags)
     vgaHWPtr          pvgaHW;
     GenericPtr        pGenericPriv;
     EntityInfoPtr     pEnt;
-    ModuleDescPtr     pMod;
 
     if (flags & PROBE_DETECT)
 	return FALSE;
@@ -521,10 +525,10 @@ GenericPreInit(ScrnInfoPtr pScreenInfo, int flags)
     if (pEnt->resources)
 	return FALSE;
 
-    if ((pMod = xf86LoadSubModule(pScreenInfo, "int10")))
+    if (xf86LoadSubModule(pScreenInfo, "int10"))
     {
 	xf86Int10InfoPtr pInt;
-	xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+	xf86LoaderReqSymLists(int10Symbols, NULL);
 	xf86DrvMsg(pScreenInfo->scrnIndex, X_INFO, "initializing int10.\n");
 	pInt = xf86ExtendedInitInt10(pEnt->index,
 				     SET_BIOS_SCRATCH | RESTORE_BIOS_SCRATCH);
@@ -621,10 +625,10 @@ GenericPreInit(ScrnInfoPtr pScreenInfo, int flags)
 	return FALSE;
 
     /* Ensure vgahw entry points are available for the clock probe */
-    if (!(pMod = xf86LoadSubModule(pScreenInfo, "vgahw")))
+    if (!xf86LoadSubModule(pScreenInfo, "vgahw"))
 	return FALSE;
 
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     /* Allocate driver private structure */
     if (!(pGenericPriv = GenericGetRec(pScreenInfo)))
@@ -771,21 +775,21 @@ GenericPreInit(ScrnInfoPtr pScreenInfo, int flags)
 	pScreenInfo->bitmapScanlineUnit = BITMAP_SCANLINE_UNIT;
 	Module = "fb";
 	Sym = NULL;
-	if (!(pMod = xf86LoadSubModule(pScreenInfo, "shadowfb")))
+	if (!xf86LoadSubModule(pScreenInfo, "shadowfb"))
 	    return FALSE;
-	xf86LoaderModReqSymLists(pMod, shadowfbSymbols, NULL);
+	xf86LoaderReqSymLists(shadowfbSymbols, NULL);
     }
 
     /* Ensure depth-specific entry points are available */
     if (Module)
     {
-	if (!(pMod = xf86LoadSubModule(pScreenInfo, Module)))
+	if (!xf86LoadSubModule(pScreenInfo, Module))
 	    return FALSE;
 
 	if (Sym)
-	    xf86LoaderModReqSymbols(pMod, Sym, NULL);
+	    xf86LoaderReqSymbols(Sym, NULL);
 	else
-	    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	    xf86LoaderReqSymLists(fbSymbols, NULL);
     }
 
     /* Only one chipset here */
@@ -1366,8 +1370,7 @@ GenericRefreshArea4bpp(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 #endif /* SPECIAL_FB_BYTE_ACCESS */
 
 static Bool
-GenericScreenInit(int scrnIndex, ScreenPtr pScreen,
-		  const int argc, const char **argv)
+GenericScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScreenInfo = xf86Screens[scrnIndex];
 

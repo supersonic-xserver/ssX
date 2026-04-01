@@ -1,3 +1,19 @@
+/* $Xorg: cmsMath.c,v 1.4 2001/02/09 02:03:39 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1990, 1998  The Open Group
@@ -23,7 +39,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/cmsMath.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/lib/X11/cmsMath.c,v 3.5 2001/12/14 19:54:10 dawes Exp $ */
 
 /*
  * Stephen Gildea, MIT X Consortium, January 1991
@@ -31,11 +47,11 @@ in this Software without prior written authorization from The Open Group.
 
 #include "Xlibint.h"
 #include "Xcmsint.h"
+
+#include <float.h>
 #ifdef DEBUG
 #include <stdio.h>
 #endif
-
-#include <float.h>
 #ifndef DBL_EPSILON
 #define DBL_EPSILON 1e-6
 #endif

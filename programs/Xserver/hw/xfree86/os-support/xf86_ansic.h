@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_ansic.h,v 3.63tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_ansic.h,v 3.59 2004/12/13 22:40:55 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1997-2004 by The XFree86 Project, Inc
  * All rights reserved.
@@ -49,9 +56,6 @@
 #ifndef _XF86_ANSIC_H
 #define _XF86_ANSIC_H
 
-#include <X11/Xmd.h>
-#include <X11/Xdefs.h>
-
 /* Handle <stdarg.h> */
 
 #ifndef IN_MODULE
@@ -61,9 +65,6 @@
 #  include <stdarg.h>
 # else /* __OS2ELF__ */
    /* EMX/gcc_elf under OS/2 does not have native header files */
-#  ifndef _STDARG_H
-#   define _STDARG_H
-#  endif
 #  if !defined (_VA_LIST)
 #   define _VA_LIST
     typedef char *va_list;
@@ -176,24 +177,10 @@
 #ifndef MAXLONG
 #define MAXLONG LONG_MAX
 #endif
-#ifndef RAND_MAX
-#define RAND_MAX INT_MAX
-#endif
 
 #endif /* (XFree86LOADER && IN_MODULE) || NEED_XF86_TYPES */
 
 #if (defined(XFree86LOADER) && defined(IN_MODULE)) || defined(NEED_XF86_PROTOTYPES)
-
-/* XXX Need to check which GCC versions have the format(printf) attribute. */
-#if (!defined(printf) || defined(printf_is_xf86printf)) && \
-    defined(__GNUC__) && \
-    ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ > 4)))
-# define _printf_attribute(a,b) __attribute((format(printf,a,b)))
-# undef printf
-#else
-# define _printf_attribute(a,b) /**/
-#endif
-
 /*
  * ANSI C compilers only.
  */
@@ -231,8 +218,8 @@ extern double xf86floor(double);
 extern double xf86fmod(double,double);
 extern XF86FILE* xf86fopen(const char*,const char*);
 extern double xf86frexp(double, int*);
-extern int xf86printf(const char*,...) _printf_attribute(1,2);
-extern int xf86fprintf(XF86FILE*,const char*,...) _printf_attribute(2,3);
+extern int xf86printf(const char*,...);
+extern int xf86fprintf(XF86FILE*,const char*,...);
 extern int xf86fputc(int,XF86FILE*);
 extern int xf86fputs(const char*,XF86FILE*);
 extern xf86size_t xf86fread(void*,xf86size_t,xf86size_t,XF86FILE*);
@@ -241,8 +228,8 @@ extern XF86FILE* xf86freopen(const char*,const char*,XF86FILE*);
 #if defined(HAVE_VFSCANF) || !defined(NEED_XF86_PROTOTYPES)
 extern int xf86fscanf(XF86FILE*,const char*,...);
 #else
-extern int xf86fscanf(XF86FILE*,const char*,char *,char *,char *,char *,
-		      char *,char *,char *,char *,char *,char *);
+extern int xf86fscanf(/*XF86FILE*,const char*,char *,char *,char *,char *,
+			char *,char *,char *,char *,char *,char * */);
 #endif
 extern int xf86fseek(XF86FILE*,long,int);
 extern int xf86fsetpos(XF86FILE*,const XF86fpos_t*);
@@ -275,7 +262,6 @@ extern void xf86perror(const char*);
 extern double xf86pow(double,double);
 extern void xf86qsort(void*, xf86size_t, xf86size_t, 
                       int(*)(const void*, const void*));
-extern int xf86rand(void);
 extern void* xf86realloc(void*,xf86size_t);
 extern int xf86remove(const char*);
 extern int xf86rename(const char*,const char*);
@@ -283,14 +269,14 @@ extern void xf86rewind(XF86FILE*);
 extern int xf86setbuf(XF86FILE*,char*);
 extern int xf86setvbuf(XF86FILE*,char*,int,xf86size_t);
 extern double xf86sin(double);
-extern int xf86sprintf(char*,const char*,...) _printf_attribute(2,3);
-extern int xf86snprintf(char*,xf86size_t,const char*,...) _printf_attribute(3,4);
+extern int xf86sprintf(char*,const char*,...);
+extern int xf86snprintf(char*,xf86size_t,const char*,...);
 extern double xf86sqrt(double);
 #if defined(HAVE_VSSCANF) || !defined(NEED_XF86_PROTOTYPES)
 extern int xf86sscanf(const char*,const char*,...);
 #else
-extern int xf86sscanf(const char*,const char*,char *,char *,char *,char *,
-		      char *,char *,char *,char *,char *,char *);
+extern int xf86sscanf(/*const char*,const char*,char *,char *,char *,char *,
+			char *,char *,char *,char *,char *,char * */);
 #endif
 extern char* xf86strcat(char*,const char*);
 extern char* xf86strchr(const char*, int c);
@@ -365,7 +351,7 @@ unsigned int xf86sleep(unsigned int seconds);
 extern int xf86shmget(xf86key_t key, int size, int xf86shmflg);
 extern char * xf86shmat(int id, char *addr, int xf86shmflg);
 extern int xf86shmdt(char *addr);
-extern int xf86shmctl(int id, int xf86cmd, struct xf86shmid_ds * buf);
+extern int xf86shmctl(int id, int xf86cmd, pointer buf);
 
 extern int xf86setjmp(xf86jmp_buf env);
 extern int xf86setjmp0(xf86jmp_buf env);
@@ -379,15 +365,9 @@ extern void xf86longjmp(xf86jmp_buf env, int val);
 	(xf86getjmptype() == 1 ? xf86setjmp1((env), xf86setjmp1_arg2()) : \
 		xf86setjmperror((env))))
 
-#undef _printf_attribute
-#if defined(printf_is_xf86printf) && !defined(printf)
-#define printf xf86printf
-#endif
-
 #else /* (XFree86LOADER && IN_MODULE) || NEED_XF86_PROTOTYPES */
 #include <unistd.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <fcntl.h>

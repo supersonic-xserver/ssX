@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/dri_util.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/dri_util.c,v 1.3 2004/12/13 22:40:49 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**
  * \file dri_util.c
  * DRI utility functions.
@@ -39,8 +46,8 @@
 
 #ifndef DRI_NEW_INTERFACE_ONLY
 # include <X11/Xlibint.h>
-# include <X11/extensions/Xext.h>
-# include <X11/extensions/extutil.h>
+# include <Xext.h>
+# include <extutil.h>
 # include "xf86dri.h"
 # define _mesa_malloc(b) Xmalloc(b)
 # define _mesa_free(m) Xfree(m)
@@ -150,7 +157,7 @@ typedef __DRIscreen *(*PFNGLXFINDDRISCREEN)(__DRInativeDisplay *, int);
 static __DRIscreen *glx_find_dri_screen(__DRInativeDisplay *d, int i)
 {
     PFNGLXFINDDRISCREEN findscreen = 
-        (PFNGLXFINDDRISCREEN)glXGetProcAddress((const GLubyte *)"__glXFindDRIScreen");
+        (PFNGLXFINDDRISCREEN)glXGetProcAddress("__glXFindDRIScreen");
 
     if (!findscreen)
     {

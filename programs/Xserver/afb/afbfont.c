@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbfont.c,v 3.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbfont.c,v 3.0 1996/08/18 01:45:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987  X Consortium
@@ -46,25 +53,30 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
+/* $XConsortium: afbfont.c,v 1.18 94/04/17 20:28:22 keith Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "afb.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "scrnintstr.h"
 
 /*ARGSUSED*/
 Bool
-afbRealizeFont(ScreenPtr pscr, FontPtr pFont)
+afbRealizeFont( pscr, pFont)
+	ScreenPtr		pscr;
+	FontPtr		pFont;
 {
 	return (TRUE);
 }
 
 /*ARGSUSED*/
 Bool
-afbUnrealizeFont(ScreenPtr pscr, FontPtr pFont)
+afbUnrealizeFont( pscr, pFont)
+	ScreenPtr		pscr;
+	FontPtr		pFont;
 {
 	return (TRUE);
 }

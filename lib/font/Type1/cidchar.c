@@ -1,4 +1,11 @@
 /* Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * The contents of this file are subject to the CID Font Code Public Licence
  * Version 1.0 (the "License"). You may not use this file except in compliance
@@ -15,7 +22,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
-/* $XFree86: xc/lib/font/Type1/cidchar.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/cidchar.c,v 1.10 2003/05/27 22:26:45 tsi Exp $ */
 
 #ifdef BUILDCID
 #ifndef FONTMODULE
@@ -29,8 +36,8 @@
 #endif
 #endif
 #else
-#include <X11/Xmd.h>        /* For INT32 declaration */
-#include <X11/Xdefs.h>      /* For Bool */
+#include "Xmd.h"        /* For INT32 declaration */
+#include "Xdefs.h"      /* For Bool */
 #include "xf86_ansic.h"
 #endif
 #ifndef FONTMODULE
@@ -64,17 +71,19 @@ CharInfoPtr
 CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
 {
     CharInfoPtr cp = NULL;
-    cidglyphs *cid;
-    unsigned char *p1 = NULL;
 #ifdef USE_MMAP
     int   fd;
     unsigned char *buf;
     long total_len = 0;
 #else
-    unsigned char *p2;
     FILE *fp;
     unsigned char buf[BSIZE];
     unsigned int count = 0;
+#endif
+    cidglyphs *cid;
+    unsigned char *p1 = NULL;
+#ifndef USE_MMAP
+    unsigned char *p2;
 #endif
     register int i = 0, j;
     long byteoffset;
@@ -102,7 +111,14 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
            return (cp);
        }
     }
+#else
+    if (!(fp = fopen(cid->CIDFontName,"rb"))) {
+        *rc = BadFontName;
+        return(cp);
+    }
+#endif
 
+#ifdef USE_MMAP
     if (cid->dataoffset == 0) {
        if ((p1 = (unsigned char *)strstr((char *)cid->CIDdata, (char *)sd)) 
            != NULL) {
@@ -114,12 +130,7 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
        }
     }
 #else /* USE_MMAP */
-    if (!(fp = fopen(cid->CIDFontName,"rb"))) {
-        *rc = BadFontName;
-        return(cp);
-    }
     if (cid->dataoffset == 0) {
-        cid->CIDsize = fseek(fp, 0, SEEK_END);
         p2 = sd;
 
         /* find "StartData" */
@@ -184,18 +195,6 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
     CIDMapOffset = CIDFontP->CIDfontInfoP[CIDMAPOFFSET].value.data.integer;
     byteoffset = cid->dataoffset + 1 + CIDMapOffset +
         cidcode * (FDBytes + GDBytes);
-
-    if ((FDBytes < 0) || (FDBytes > sizeof(FDindex)) ||
-        (GDBytes <= 0) || (GDBytes > sizeof(cstringoffset)) ||
-        (byteoffset < 0) ||
-        (cid->CIDsize < (byteoffset + 2 * (FDBytes + GDBytes)))) {
-        *rc = BadFontFormat;
-#ifndef USE_MMAP
-        fclose(fp);
-#endif
-        return(cp);
-    }
-
 #ifdef USE_MMAP
     buf = &cid->CIDdata[byteoffset];
 #else
@@ -213,14 +212,15 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
 
     /* if FDBytes is equal to 0, the CIDMap contains no FD indices, and the */
     /* FD index of 0 is assumed.                                            */
-    FDindex = 0;
-    if (FDBytes != 0) {
+    if (FDBytes == 0)
+        FDindex = 0;
+    else {
+        FDindex = 0;
         for (i = 0; i < FDBytes; i++)
             FDindex += (unsigned char)buf[i] << (8 * (FDBytes - 1 - i));
     }
 
-    if ((FDindex < 0) ||
-        (FDindex >= CIDFontP->CIDfontInfoP[CIDFDARRAY].value.len)) {
+    if (FDindex >= CIDFontP->CIDfontInfoP[CIDFDARRAY].value.len) {
         *rc = BadFontFormat;
 #ifndef USE_MMAP
         fclose(fp);
@@ -240,9 +240,7 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
 
     len = nextcstringoffset - cstringoffset;
 
-    if ((cstringoffset < 0) || (nextcstringoffset < 0) ||
-        ((len = nextcstringoffset - cstringoffset) <= 0)) {
-        /* empty interval, missing glyph */
+    if (len <= 0) { /* empty interval, missing glyph */
         *rc = BadFontFormat;
 #ifndef USE_MMAP
         fclose(fp);
@@ -265,16 +263,8 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
 
     byteoffset = cid->dataoffset + 1 + cstringoffset;
 
-    if ((byteoffset < 0) || (cid->CIDsize < (byteoffset + len))) {
-        *rc = BadFontFormat;
-#ifndef USE_MMAP
-        xfree(charstring.data.stringP);
-        fclose(fp);
-#endif
-        return(cp);
-    }
 #ifdef USE_MMAP
-    charstring.data.stringP = &cid->CIDdata[byteoffset];
+    charstring.data.stringP =  &cid->CIDdata[byteoffset];
 #else
     if (fseek(fp, byteoffset, SEEK_SET)) {
         *rc = BadFontFormat;
@@ -299,42 +289,34 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
         SDBytes = FDArrayP[FDindex].Private[CIDT1SDBYTES].value.data.integer;
 
         SubrCount = FDArrayP[FDindex].Private[CIDT1SUBRCNT].value.data.integer;
-
-        if ((SDBytes < 0) || (SDBytes > sizeof(subroffsets[0])) ||
-            (SubrCount < 0) || (SubrCount > MAX_PS_PSOBJS) ||
-            (byteoffset < 0) ||
-            (cid->CIDsize < (byteoffset + (SDBytes * (SubrCount + 1))))) {
-            *rc = BadFontFormat;
-#ifndef USE_MMAP
-            xfree(charstring.data.stringP);
-            fclose(fp);
-#endif
-            return(cp);
-        }
-
 #ifdef USE_MMAP
         buf = &cid->CIDdata[byteoffset];
 #else
         if (fseek(fp, byteoffset, SEEK_SET)) {
             *rc = BadFontFormat;
-            xfree(charstring.data.stringP);
             fclose(fp);
             return(cp);
         }
 
         if ((count = fread(buf, 1, BSIZE, fp)) < SDBytes * (SubrCount + 1)) {
             *rc = BadFontFormat;
-            xfree(charstring.data.stringP);
             fclose(fp);
             return(cp);
         }
 #endif
 
-        if (!(arrayP = (psobj *)vm_alloc(SubrCount*sizeof(psobj))) ||
-            !(subroffsets = (long *)xalloc((SubrCount + 1)*sizeof(long)))) {
+        arrayP = (psobj *)vm_alloc(SubrCount*sizeof(psobj));
+        if (!arrayP) {
             *rc = AllocError;
 #ifndef USE_MMAP
-            xfree(charstring.data.stringP);
+            fclose(fp);
+#endif
+            return(cp);
+        }  
+
+        if (!(subroffsets = (long *)xalloc((SubrCount + 1)*sizeof(long)))) {
+            *rc = AllocError;
+#ifndef USE_MMAP
             fclose(fp);
 #endif
             return(cp);
@@ -345,34 +327,15 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
             for (j = 0; j < SDBytes; j++)
                 subroffsets[i] += (unsigned char)buf[i * SDBytes + j] <<
                     (8 * (SDBytes - 1 - j));
-            if ((subroffsets[i] < 0) || (subroffsets[i] > cid->CIDsize)) {
-                *rc = BadFontFormat;
-                xfree(subroffsets);
-#ifndef USE_MMAP
-                xfree(charstring.data.stringP);
-                fclose(fp);
-#endif
-                return(cp);
-            }
         }
 
         byteoffset = cid->dataoffset + 1 + subroffsets[0];
-        if ((byteoffset < 0) || (byteoffset > cid->CIDsize)) {
-            *rc = BadFontFormat;
-            xfree(subroffsets);
-#ifndef USE_MMAP
-            xfree(charstring.data.stringP);
-            fclose(fp);
-#endif
-            return(cp);
-        }
 
         /* get subroutine info */
 #ifndef USE_MMAP
         if (fseek(fp, byteoffset, SEEK_SET)) {
             *rc = BadFontFormat;
             xfree(subroffsets);
-            xfree(charstring.data.stringP);
             fclose(fp);
             return(cp);
         }
@@ -381,32 +344,23 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
 #endif
         for (i = 0; i < SubrCount; i++) {
             len = subroffsets[i + 1] - subroffsets[i];
-            if (len < 0) {
-                *rc = BadFontFormat;
-                xfree(subroffsets);
 #ifndef USE_MMAP
-                xfree(charstring.data.stringP);
+            arrayP[i].data.valueP = vm_alloc(len);
+            if (!arrayP[i].data.valueP) {
+                *rc = AllocError;
+                xfree(subroffsets);
                 fclose(fp);
-#endif
                 return(cp);
             }
+#endif
             arrayP[i].len = len;
 #ifdef USE_MMAP
             arrayP[i].data.valueP = (char *)&cid->CIDdata[total_len];
             total_len += len;
 #else
-            arrayP[i].data.valueP = vm_alloc(len);
-            if (!arrayP[i].data.valueP) {
-                *rc = AllocError;
-                xfree(subroffsets);
-                xfree(charstring.data.stringP);
-                fclose(fp);
-                return(cp);
-            }
             if ((count = fread(arrayP[i].data.valueP, 1, len, fp)) != len) {
                 *rc = BadFontFormat;
                 xfree(subroffsets);
-                xfree(charstring.data.stringP);
                 fclose(fp);
                 return(cp);
             }
@@ -414,7 +368,7 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
         }
 
         FontP->Subrs.len = SubrCount;
-        FontP->Subrs.data.arrayP = arrayP;
+        FontP->Subrs.data.arrayP =  arrayP;
         xfree(subroffsets);
     }
 
@@ -423,7 +377,7 @@ CIDGetGlyphInfo(FontPtr pFont, unsigned int cidcode, CharInfoPtr pci, int *rc)
         if (!blues) {
             *rc = AllocError;
 #ifndef USE_MMAP
-            xfree(charstring.data.stringP);
+            xfree(subroffsets);
             fclose(fp);
 #endif
             return(cp);

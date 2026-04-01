@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: protocol.ms,v 1.3 2000/08/17 19:42:40 cpqbld Exp $
 .\" Input Extension
 .EH ''''
 .OH ''''

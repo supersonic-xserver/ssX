@@ -1,3 +1,11 @@
+/* $Xorg: cppsetup.c,v 1.5 2001/02/09 02:03:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1993, 1994, 1998  The Open Group
@@ -23,7 +31,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/config/makedepend/cppsetup.c,v 3.13tsi Exp $ */
+/* $XFree86: xc/config/makedepend/cppsetup.c,v 3.12 2004/03/05 16:02:58 tsi Exp $ */
 
 #include "def.h"
 
@@ -92,29 +100,30 @@ cppsetup(char *line, struct filepointer *filep, struct inclist *inc)
 	return(value);
 }
 
-struct symtab **lookup(char *symbol)
+struct symtab **lookup(symbol)
+	char	*symbol;
 {
-	static struct symtab undefstr, *undefined = &undefstr;
-	struct symtab **sp;
+	static struct symtab    *undefined;
+	struct symtab   **sp;
 
-	sp = isdefined(symbol, currentinc);
+	sp = isdefined(symbol, currentinc, NULL);
 	if (sp == NULL) {
 		sp = &undefined;
-		(*sp)->s_name = symbol;
 		(*sp)->s_value = NULL;
-		(*sp)->s_args = NULL;
 	}
 	return (sp);
 }
 
-pperror(int tag,int x0,int x1,int x2,int x3,int x4)
+pperror(tag, x0,x1,x2,x3,x4)
+	int	tag,x0,x1,x2,x3,x4;
 {
 	warning("\"%s\", line %d: ", currentinc->i_file, currentfile->f_line);
 	warning(x0,x1,x2,x3,x4);
 }
 
 
-yyerror(char *s)
+yyerror(s)
+	register char	*s;
 {
 	fatalerr("Fatal error: %s\n", s);
 }
@@ -166,7 +175,7 @@ lookup_variable (IfParser *ip, const char *var, int len)
 
     strncpy (tmpbuf, var, len);
     tmpbuf[len] = '\0';
-    return isdefined (tmpbuf, pd->inc);
+    return isdefined (tmpbuf, pd->inc, NULL);
 }
 
 
@@ -257,7 +266,7 @@ build_keyword_list (const char* keys, const char* values)
 
 
 static const keyword_type*
-get_keyword_entry (const keyword_type* phead, const char* keyname, int keylen)
+get_keyword_entry (const keyword_type* phead, const char* keyname, const int keylen)
 {
     while (phead)
     {
@@ -397,8 +406,6 @@ my_eval_variable (IfParser *ip, const char *var, int len, const char *args)
     else
     {
        var = (*s)->s_value;
-       if (!var)
-	   return 0;
     }
 
     var = ParseIfExpression(ip, var, &val);

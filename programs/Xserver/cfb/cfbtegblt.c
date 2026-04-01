@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbtegblt.c,v 3.9 2005/10/14 15:16:19 tsi Exp $ */
+/* $Xorg: cfbtegblt.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,12 +52,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbtegblt.c,v 3.7 2003/10/29 22:44:53 tsi Exp $ */
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"cfb.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
@@ -82,8 +90,13 @@ and the paints the characters.
 */
 
 void
-cfbTEGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
-	      unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+cfbTEGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer	pglyphBase;	/* start of array of glyphs */
 {
     FontPtr	pfont = pGC->font;
     int widthDst;
@@ -92,16 +105,16 @@ cfbTEGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
 
     int w;			/* width of glyph and char */
     int h;			/* height of glyph and char */
-    int xpos=x;	/* current x%32  */
+    register int xpos=x;	/* current x%32  */
     int ypos=y;			/* current y%32 */
-    unsigned char *pglyph;
+    register unsigned char *pglyph;
     int widthGlyph;
 
-    CfbBits *pdst;/* pointer to current longword in dst */
+    register CfbBits *pdst;/* pointer to current longword in dst */
     int hTmp;			/* counter for height */
     BoxRec bbox;		/* for clipping */
 
-    int wtmp,xtemp,width;
+    register int wtmp,xtemp,width;
     CfbBits bgfill,fgfill,*ptemp,tmpDst1,tmpDst2,*pdtmp;
 #if PSZ != 24
     int tmpx;
@@ -174,7 +187,7 @@ cfbTEGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
 		{
 #if PSZ == 24
 		    w = 1;
-		    ptemp = (CfbBits *)(pglyph + ((xtemp * PSZB) / PGSZB));
+		    ptemp = (CfbBits *)(pglyph + ((xtemp *3)>> 2));
 		    getstipplepixels24(ptemp,xtemp,0,&bgfill,&tmpDst1, xtemp);
 		    getstipplepixels24(ptemp,xtemp,1,&fgfill,&tmpDst2, xtemp);
 #else
@@ -189,7 +202,7 @@ cfbTEGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
 		    {
 			CfbBits tmpDst = tmpDst1 | tmpDst2;
 #if PSZ == 24
-			CfbBits *pdsttmp = pdst + ((x * PSZB) / PGSZB);
+			CfbBits *pdsttmp = pdst + ((x*3) >> 2);
 			putbits24(tmpDst,w,pdsttmp,pGC->planemask,x);
 #else
 			CfbBits *pdsttmp = pdst + (x >> PWSH);

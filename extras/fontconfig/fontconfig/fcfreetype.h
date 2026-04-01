@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/extras/fontconfig/fontconfig/fcfreetype.h,v 1.1.1.1 2003/06/04 02:57:42 dawes Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/extras/fontconfig/fontconfig/fcfreetype.h,v 1.2 2003/11/20 22:36:33 dawes Exp $
  *
  * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
  *

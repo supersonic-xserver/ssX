@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /***************************************************************************
  *                                                                         *
@@ -58,7 +65,6 @@ in this Software without prior written authorization from The Open Group.
  *			argument is provided, the output is placed there.
  *		-e[F]	execute instead of show; optionally name Makefile F
  *		-v	verbose.  Show the make command line executed.
- *		-k	Keep the temporary "Imakefile.c" file.
  *
  * Environment variables:
  *
@@ -395,7 +401,6 @@ boolean CrossCompiling = FALSE;
 
 boolean verbose = FALSE;
 boolean show = TRUE;
-boolean keepTmp = FALSE;
 
 int
 main(int argc, char *argv[])
@@ -483,7 +488,7 @@ wrapup(void)
 		unlink(tmpMakefile);
 	if (cleanedImakefile && cleanedImakefile != Imakefile)
 		unlink(cleanedImakefile);
-	if (haveImakefileC && !keepTmp)
+	if (haveImakefileC)
 		unlink(ImakefileC);
 }
 
@@ -528,7 +533,7 @@ init(void)
 		 * Sharable imake configurations require a
 		 * machine identifier.
 		 */
-		if (uname(&uts) < 0)
+		if (uname(&uts) != 0)
 			LogFatal("uname(3) failed; can't tell what %s",
 			    "kind of machine you have.");
 
@@ -653,8 +658,6 @@ SetOpts(int argc, char **argv)
 		    }
 		} else if (argv[0][1] == 'v') {
 		    verbose = TRUE;
-		} else if (argv[0][1] == 'k') {
-		    keepTmp = TRUE;
 		} else
 		    AddMakeArg(argv[0]);
 	    } else
@@ -975,11 +978,12 @@ const char *libc_c=
 ;
 
 static void
-get_libc_version(FILE *inFile, const char *cc)
+get_libc_version(FILE *inFile)
 {
   char aout[] = "/tmp/imakeXXXXXX";
   FILE *fp;
   const char *format = "%s -o %s -x c -";
+  char *cc;
   int len;
   char *command;
 
@@ -993,6 +997,9 @@ get_libc_version(FILE *inFile, const char *cc)
     }
     close(tmpfd);
   }
+  cc = getenv ("CC");
+  if (cc == NULL)
+    cc = "gcc";
   len = strlen (aout) + strlen (format) + strlen (cc);
   if (len < 128) len = 128;
   command = alloca (len);
@@ -1019,12 +1026,18 @@ get_libc_version(FILE *inFile, const char *cc)
 }
 #endif
 
+#if defined(__OpenBSD__) 
 static void
-get_gcc_stackprotector(FILE *inFile, const char *cc)
+get_stackprotector(FILE *inFile)
 {
   FILE *fp;
+  char *cc;
   char command[1024], buf[1024];
   
+  cc = getenv("CC");
+  if (cc == NULL) {
+    cc = "cc";
+  }
   snprintf(command, sizeof(command), "%s -v 2>&1", cc);
   fp = popen(command, "r");
   if (fp == NULL) 
@@ -1038,6 +1051,8 @@ get_gcc_stackprotector(FILE *inFile, const char *cc)
   if (pclose(fp)) 
     abort();
 }
+#endif
+	
 
 #if defined CROSSCOMPILE || defined linux
 static void
@@ -1133,7 +1148,7 @@ get_ld_version(FILE *inFile)
 }
 #endif
 
-#if defined(__FreeBSD__) && !defined(__DragonFly__)
+#if defined __FreeBSD__
 static void
 get_binary_format(FILE *inFile)
 {
@@ -1253,10 +1268,10 @@ get_gcc_version(FILE *inFile, char *name)
 #endif
     {
 #if __GNUC__ > 1
-	int v;
-
-	for (v = 2;  v <= __GNUC__;  v++)
-	    fprintf (inFile, "#define HasGcc%d 1\n", v);
+	fprintf (inFile, "#define HasGcc2 1\n");
+# if __GNUC__ > 2
+	fprintf (inFile, "#define HasGcc3 1\n");
+# endif
 #endif
 	fprintf (inFile, "#define GccMajorVersion %d\n", __GNUC__);
 	fprintf (inFile, "#define GccMinorVersion %d\n", __GNUC_MINOR__);
@@ -1268,10 +1283,9 @@ get_gcc_version(FILE *inFile, char *name)
 #endif
 
 static boolean
-get_cc_name(char *cmd)
+get_gcc(char *cmd)
 {
-#ifndef CCCMD
-    struct stat sb;
+  struct stat sb;
     static char* gcc_path[] = {
 # if defined(linux) || \
      defined(__NetBSD__) || \
@@ -1283,10 +1297,8 @@ get_cc_name(char *cmd)
 # endif
 	"/usr/local/bin/gcc",
 	"/opt/gnu/bin/gcc",
-	"/usr/pkg/bin/gcc",
-	"/usr/bin/gcc"
+	"/usr/pkg/bin/gcc"
     };
-#endif
 
 #ifdef CROSSCOMPILE
     static char* cross_cc_name[] = {
@@ -1302,40 +1314,21 @@ get_cc_name(char *cmd)
 	    strcat (cmd, cross_cc_name[i]);
 	    if (lstat (cmd, &sb) == 0) {
 		return TRUE;
+		break;
 	    }
 	}
     } else
 #endif
-    {
-	const char *cc;
-
-	cc = getenv("CC");
-	if (cc) {
-	    strcpy(cmd, cc);
-	    return TRUE;
-	} else {
-#ifdef CCCMD
-	    strcpy(cmd, CCCMD);
-	    return TRUE;
-#else
-	    int i;
-	    for (i = 0; i < sizeof (gcc_path) / sizeof gcc_path[0]; i++) {
-		if (lstat(gcc_path[i], &sb) == 0) {
-		    strcpy(cmd, gcc_path[i]);
-		    return TRUE;
-		}
+      {
+	int i;
+	for (i = 0; i < sizeof (gcc_path) / sizeof gcc_path[0]; i++) {
+	    if (lstat (gcc_path[i], &sb) == 0) {
+		strcpy (cmd, gcc_path[i]);
+		return TRUE;
 	    }
-	    strcpy(cmd, "cc");
-	    return TRUE;
-#endif
 	}
-    }
-    /*
-     * Need to return TRUE.
-     * XXX Should make sure that the cross-compile case never gets here.
-     */
-    strcpy(cmd, "cc");
-    return TRUE;
+      }
+    return FALSE;
 }
 
 #if defined CROSSCOMPILE || !defined __UNIXOS2__
@@ -1367,7 +1360,6 @@ get_gcc_incdir(FILE *inFile, char* name)
 boolean
 define_os_defaults(FILE *inFile)
 {
-  char ccname[PATH_MAX] = "";
 #if defined CROSSCOMPILE || ( !defined(WIN32) && !defined(__UNIXOS2__) )
 #ifdef CROSSCOMPILE
   if ((sys != win32) && (sys != emx))
@@ -1537,28 +1529,11 @@ define_os_defaults(FILE *inFile)
 #  endif
 	  get_distrib (inFile);
 # endif
-     /* get_cc_name() will always succeed. */
-      get_cc_name(ccname);
-# if defined CROSSCOMPILE || defined __GNUC__
-#  if defined CROSSCOMPILE
-      if (gnu_c)
-#  endif
-	{
-	  get_gcc_version(inFile, ccname);
-#  if defined CROSSCOMPILE || !defined __UNIXOS2__
-#   if defined CROSSCOMPILE
-	  if (sys != emx)
-#   endif
-	    get_gcc_incdir(inFile, ccname);
-#  endif
-	  get_gcc_stackprotector(inFile, ccname);
-	}
-# endif
 # if defined linux
 #  if defined CROSSCOMPILE
       if (!CrossCompiling)
 #  endif
-	  get_libc_version(inFile, ccname);
+	  get_libc_version (inFile);
 #  if defined CROSSCOMPILE
       else {
 	  fprintf(inFile,"#define DefaultLinuxCLibMajorVersion %d\n",
@@ -1578,7 +1553,24 @@ define_os_defaults(FILE *inFile)
 # if defined (sun) && defined(SVR4)
       get_sun_compiler_versions (inFile);
 # endif
-# if defined(__FreeBSD__) && !defined(__DragonFly__)
+# if defined CROSSCOMPILE || defined __GNUC__
+#  if defined CROSSCOMPILE
+      if (gnu_c)
+#  endif
+	{
+	  char name[PATH_MAX];
+	  if (get_gcc(name)) {
+	      get_gcc_version (inFile,name);
+#  if defined CROSSCOMPILE || !defined __UNIXOS2__
+#   if defined CROSSCOMPILE
+	      if (sys != emx)
+#   endif
+		  get_gcc_incdir(inFile,name);
+#  endif
+	  }
+	}
+# endif
+# if defined __FreeBSD__
 #  if defined CROSSCOMPILE
       if (sys == freeBSD)
 #  endif
@@ -1617,6 +1609,9 @@ define_os_defaults(FILE *inFile)
       fprintf(inFile, "#define DefaultOSTeenyVersion 0\n");
     }
 #endif /* EMX */
+#if defined(__OpenBSD__)
+  get_stackprotector(inFile);
+#endif
   return FALSE;
 }
 
@@ -1927,7 +1922,9 @@ ReadLine(FILE *tmpfd, char *tmpfname)
 		initialized = TRUE;
 	    fprintf (tmpfd, "# Makefile generated by imake - do not edit!\n");
 	    fprintf (tmpfd, "# %s\n",
-		"$XFree86: xc/config/imake/imake.c,v 3.70 2006/06/27 00:43:50 dawes Exp $");
+		"$Xorg: imake.c,v 1.6 2001/02/09 02:03:15 xorgcvs Exp $");
+	    fprintf (tmpfd, "# %s\n",
+		"$XFree86: xc/config/imake/imake.c,v 3.66 2004/04/26 16:24:26 tsi Exp $");
 	}
 
 	for (p1 = pline; p1 < end; p1++) {

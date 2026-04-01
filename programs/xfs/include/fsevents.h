@@ -1,3 +1,11 @@
+/* $XConsortium: events.h,v 1.5 94/04/17 19:55:57 dpw Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (c) 1987  X Consortium
 
@@ -47,13 +55,13 @@ in this Software without prior written authorization from the X Consortium.
  * @(#)events.h	4.2	91/05/03
  *
  */
-/* $XFree86: xc/programs/xfs/include/fsevents.h,v 1.4 2005/10/14 15:17:33 tsi Exp $ */
+/* $XFree86: xc/programs/xfs/include/fsevents.h,v 1.3 1998/10/25 12:48:04 dawes Exp $ */
 
 #ifndef _EVENTS_H_
 #define _EVENTS_H_
 
 #include	<misc.h>
-#include	<X11/fonts/FS.h>
+#include	"FS.h"
 
 extern int ProcGetEventMask(ClientPtr client);
 extern int ProcSetEventMask(ClientPtr client);

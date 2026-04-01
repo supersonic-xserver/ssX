@@ -1,0 +1,99 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/loader/Imakefile,v 1.48 2006/07/05 22:46:02 tsi Exp $ */
+
+#include <Server.tmpl>
+#ifdef LoaderTest
+#define IHaveSubdirs
+SUBDIRS = test
+#endif
+
+#if defined(i386Architecture) || defined(PowerPCArchitecture)
+#define HasCoff YES
+#else
+#define HasCoff NO
+#endif
+
+#define UseDBMalloc	NO
+
+#if UseDBMalloc
+SYS_LIBRARIES = -ldbmalloc
+DBMALLOCDEFINE = -DDBMALLOC
+#endif
+
+#if HasDlopen
+DLOPENDEFINES = -DDLOPEN_SUPPORT
+DLSRC = dlloader.c
+DLOBJ = dlloader.o
+#endif
+
+#if HasCoff
+COFFDEFINES = -DCOFF_SUPPORT
+COFFSRC = coffloader.c
+COFFOBJ = coffloader.o
+#endif
+
+#if FontencCompatibility
+ COMPAT_DEFINES = -DFONTENC_COMPATIBILITY
+#endif
+
+#if HasShm
+    SHM_DEFINES = -DHAS_SHM
+#endif
+
+#if defined(LinuxArchitecture)
+ARCHDEFINES = -DDoMMAPedMerge -DMmapPageAlign
+#elif !defined(OS2Architecture) && !defined(SparcArchitecture)
+ARCHDEFINES = -DUseMMAP -DMmapPageAlign
+#endif
+
+#if UseStackTrace
+STRACEDEFS = -DSTACKTRACE
+STRACEINCS = -I$(TOP)/util/memleak
+#endif
+
+LOADERBUILDFLAGS = LoaderBuildFlags
+
+DEFINES = $(DBMALLOCDEFINE) $(DLOPENDEFINES) $(COFFDEFINES) $(OS_DEFINES) \
+	  $(COMPAT_DEFINES) $(SHM_DEFINES) $(ARCHDEFINES) $(EXT_DEFINES) \
+	  $(STRACEDEFS) $(LOADERBUILDFLAGS)
+
+MODULEDEFINES = -DDEFAULT_MODULE_PATH=\"$(MODULEDIR)\"
+
+   INCLUDES = -I.. -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(XF86SRC)/vbe \
+		-I$(SERVERSRC)/dbe -I$(SERVERSRC)/Xext -I$(XF86SRC)/int10 \
+		-I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+		-I$(FONTLIBSRC)/include -I$(FONTLIBSRC)/fontcache \
+		-I$(SERVERSRC)/os -I$(XF86SRC)/ddc -I$(XF86SRC)/i2c \
+		-I$(SERVERSRC)/render -I$(XF86SRC)/parser $(STRACEINCS)
+
+#ifdef OS2Architecture
+SRCS1 = os2funcs.c
+OBJS1 = os2funcs.o
+#endif
+
+#ifdef SparcArchitecture
+SRCS1 = SparcMulDiv.S
+OBJS1 = SparcMulDiv.o
+#endif
+
+SRCS = aoutloader.c $(COFFSRC) $(DLSRC) elfloader.c hash.c loader.c \
+	loadmod.c loadfont.c loadext.c os.c dixsym.c misym.c xf86sym.c \
+	fontsym.c extsym.c $(SRCS1)
+OBJS = aoutloader.o $(COFFOBJ) $(DLOBJ) elfloader.o hash.o loader.o \
+	loadmod.o loadfont.o loadext.o os.o dixsym.o misym.o xf86sym.o \
+	fontsym.o extsym.o $(OBJS1)
+XOBJS =  aoutloader.o $(COFFOBJ) $(DLOBJ) elfloader.o hash.o loader.o \
+	loadmod.o loadfont.o loadext.o os.o $(OBJS1)
+
+NormalAsmObjectRule()
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(loader,$(OBJS) )
+NormalLibraryTarget(xloader,$(XOBJS) )
+
+SpecialCObjectRule(loadmod,NullParameter,$(MODULEDEFINES))
+
+#ifdef SparcArchitecture
+ObjectFromAsmSource(SparcMulDiv,NullParameter)
+#endif
+
+DependTarget()

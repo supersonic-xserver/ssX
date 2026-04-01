@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128.h,v 1.29tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128.h,v 1.28 2004/12/10 16:07:00 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1999, 2000 ATI Technologies Inc., Markham, Ontario,
  *                      Precision Insight, Inc., Cedar Park, Texas, and
@@ -64,6 +71,7 @@
 #define R128_DEBUG          0   /* Turn off debugging output               */
 #define R128_IDLE_RETRY    32   /* Fall out of idle loops after this count */
 #define R128_TIMEOUT  2000000   /* Fall out of wait loops after this count */
+#define R128_MMIOSIZE  0x4000
 
 #define R128_VBIOS_SIZE 0x00010000
 
@@ -134,13 +142,6 @@ typedef struct {
 
 				/* CRTC2 registers */
     CARD32     crtc2_gen_cntl;
-    CARD32     crtc2_h_total_disp;
-    CARD32     crtc2_h_sync_strt_wid;
-    CARD32     crtc2_v_total_disp;
-    CARD32     crtc2_v_sync_strt_wid;
-    CARD32     crtc2_offset;
-    CARD32     crtc2_offset_cntl;
-    CARD32     crtc2_pitch;
 
 				/* Flat panel registers */
     CARD32     fp_crtc_h_total_disp;
@@ -166,29 +167,13 @@ typedef struct {
     CARD32     ppll_div_3;
     CARD32     htotal_cntl;
 
-				/* Computed values for PLL2 */
-    CARD32     dot_clock_freq_2;
-    CARD32     pll_output_freq_2;
-    int        feedback_div_2;
-    int        post_div_2;
-
-				/* PLL2 registers */
-    CARD32     p2pll_ref_div;
-    CARD32     p2pll_div_0;
-    CARD32     htotal_cntl2;
-
 				/* DDA register */
     CARD32     dda_config;
     CARD32     dda_on_off;
 
-				/* DDA2 register */
-    CARD32     dda2_config;
-    CARD32     dda2_on_off;
-
 				/* Pallet */
     Bool       palette_valid;
     CARD32     palette[256];
-    CARD32     palette2[256];
 } R128SaveRec, *R128SavePtr;
 
 typedef struct {
@@ -207,16 +192,6 @@ typedef struct {
     int                pixel_bytes;
     DisplayModePtr     mode;
 } R128FBLayout;
-
-typedef enum
-{
-    MT_NONE,
-    MT_CRT,
-    MT_LCD,
-    MT_DFP,
-    MT_CTV,
-    MT_STV
-} R128MonitorType;
 
 typedef struct {
     EntityInfoPtr     pEnt;
@@ -334,7 +309,7 @@ typedef struct {
     Bool              IsPCI;            /* Current card is a PCI card */
     drmSize           pciSize;
     drm_handle_t      pciMemHandle;
-    drmAddress        PCI;              /* Map */
+    unsigned char     *PCI;             /* Map */
 
     Bool              allowPageFlip;    /* Enable 3d page flipping */
     Bool              have3DWindows;    /* Are there any 3d clients? */
@@ -343,7 +318,7 @@ typedef struct {
     drmSize           agpSize;
     drm_handle_t      agpMemHandle;     /* Handle from drmAgpAlloc */
     unsigned long     agpOffset;
-    drmAddress        AGP;              /* Map */
+    unsigned char     *AGP;             /* Map */
     int               agpMode;
 
     Bool              CCEInUse;         /* CCE is currently active */
@@ -357,20 +332,20 @@ typedef struct {
     drm_handle_t      ringHandle;       /* Handle from drmAddMap */
     drmSize           ringMapSize;      /* Size of map */
     int               ringSize;         /* Size of ring (in MB) */
-    drmAddress        ring;             /* Map */
+    unsigned char     *ring;            /* Map */
     int               ringSizeLog2QW;
 
     unsigned long     ringReadOffset;   /* Offset into AGP space */
     drm_handle_t      ringReadPtrHandle; /* Handle from drmAddMap */
     drmSize           ringReadMapSize;  /* Size of map */
-    drmAddress        ringReadPtr;      /* Map */
+    unsigned char     *ringReadPtr;     /* Map */
 
 				/* CCE vertex/indirect buffer data */
     unsigned long     bufStart;        /* Offset into AGP space */
     drm_handle_t      bufHandle;       /* Handle from drmAddMap */
     drmSize           bufMapSize;      /* Size of map */
     int               bufSize;         /* Size of buffers (in MB) */
-    drmAddress        buf;             /* Map */
+    unsigned char     *buf;            /* Map */
     int               bufNumBufs;      /* Number of buffers */
     drmBufMapPtr      buffers;         /* Buffer map */
 
@@ -379,7 +354,7 @@ typedef struct {
     drm_handle_t      agpTexHandle;     /* Handle from drmAddMap */
     drmSize           agpTexMapSize;    /* Size of map */
     int               agpTexSize;       /* Size of AGP tex space (in MB) */
-    drmAddress        agpTex;           /* Map */
+    unsigned char     *agpTex;          /* Map */
     int               log2AGPTexGran;
 
 				/* CCE 2D accleration */
@@ -432,16 +407,6 @@ typedef struct {
     Bool              isPro2;
     I2CBusPtr         pI2CBus;
     CARD32            DDCReg;
-
-    /****** Added for dualhead support *******************/
-    Bool              HasCRTC2;     /* M3/M4 */
-    Bool              IsSecondary;  /* second Screen */
-    Bool              IsPrimary;    /* primary Screen */
-    Bool              UseCRT;       /* force use CRT port as primary */
-    Bool              SwitchingMode;
-    R128MonitorType   DisplayType;  /* Monitor connected on */
-
-    Bool              UseVGAHW;
 
 } R128InfoRec, *R128InfoPtr;
 

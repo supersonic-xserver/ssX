@@ -1,0 +1,119 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/quartz/Imakefile,v 1.18 2007/05/22 17:01:29 tsi Exp $
+
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+SRCS =  Preferences.m \
+        XApplication.m \
+        XServer.m \
+        applewm.c \
+        keysym2ucs.c \
+        quartz.c \
+        quartzAudio.c \
+        quartzCocoa.m \
+        quartzPasteboard.c \
+        quartzKeyboard.c \
+        quartzStartup.c \
+        pseudoramiX.c
+
+OBJS =  Preferences.o \
+        XApplication.o \
+        XServer.o \
+        applewm.o \
+        keysym2ucs.o \
+        quartz.o \
+        quartzAudio.o \
+        quartzCocoa.o \
+        quartzPasteboard.o \
+        quartzKeyboard.o \
+        quartzStartup.o \
+        pseudoramiX.o
+
+INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+           -I$(SERVERSRC)/render -I$(SERVERSRC)/miext/shadow \
+           -I$(SERVERSRC)/Xext -I.. -I$(APPLEWMLIBSRC)
+
+#if defined(XFree86CustomVersion)
+CUSTOMVERSION = XFree86CustomVersion
+CUSTOMVERDEF =  -DXF86_CUSTOM_VERSION='$(CUSTOMVERSION)'
+#endif
+
+CONFIGURATION=`if [ "\`$(PROJ_BUILD) -help 2>&1 | grep buildstyle\`" ]; then echo buildstyle; else echo configuration; fi`
+
+#if XFree86Devel
+BUILDSTYLE = -$(CONFIGURATION) Development
+DEBUGDEFINES = -DROOTLESSDEBUG
+#else
+BUILDSTYLE = -$(CONFIGURATION) Deployment
+#endif
+
+PROJ_TARGET = -target XDarwin
+
+#if (OSMajorVersion == 1 && OSMinorVersion >= 4) || OSMajorVersion >= 5
+QUARTZDEFINES = -DHAS_CG_MACH_PORT
+#endif
+
+#if HasXplugin
+XPRDEFINES = -DBUILD_XPR
+#endif
+
+#if OSMajorVersion >= 6
+KLDEFINES = -DHAS_KL_API
+#endif
+
+DEFINES = $(CUSTOMVERDEF) -DXBINDIR=$(BINDIR) -DXINITDIR=$(XINITDIR) \
+          $(QUARTZDEFINES) $(DEBUGDEFINES) $(XPRDEFINES) $(KLDEFINES)
+EXTRAMANDEFS = -D__XBinDir__=$(BINDIR)
+#if NothingOutsideProjectRoot
+XDARWINROOT = $(BINDIR)
+#else
+XDARWINROOT = /Applications
+#endif
+
+#if HasXplugin
+SUBDIRS = cr fullscreen xpr
+#else
+SUBDIRS = cr fullscreen
+#endif
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(XQuartz,$(OBJS))
+
+AllTarget(XDarwinStartup)
+NormalProgramTarget(XDarwinStartup,XDarwinStartup.o, \
+	NullParameter,NullParameter, \
+	-framework CoreFoundation -framework ApplicationServices)
+InstallProgram(XDarwinStartup,$(BINDIR))
+install::
+	-(cd $(DESTDIR)$(BINDIR); $(RM) X; $(LN) XDarwinStartup X)
+
+AllTarget(XDarwin)
+
+/*
+ * $(PROJ_BUILD) doesn't follow all symbolic links.
+ */
+XDarwin:
+	cd ../bundle && $(MAKE) unsymlink
+	$(PROJ_BUILD) $(PROJ_TARGET) $(BUILDSTYLE)
+	cd ../bundle && $(MAKE) resymlink
+	$(RM) -r ../symlinks
+
+/*
+ * $(PROJ_BUILD) doesn't follow all symbolic links.
+ */
+install::
+	cd ../bundle && $(MAKE) unsymlink
+	$(PROJ_BUILD) install $(PROJ_TARGET) $(BUILDSTYLE) \
+		DSTROOT=$(DESTDIR)$(XDARWINROOT)
+	cd ../bundle && $(MAKE) resymlink
+	$(RM) -r ../symlinks
+
+InstallManPage(XDarwinStartup,$(MANDIR))
+
+clean::
+	$(PROJ_BUILD) "clean" $(PROJ_TARGET) $(BUILDSTYLE)
+
+DependTarget()
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

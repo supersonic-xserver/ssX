@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_video.c,v 1.33tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_video.c,v 1.32 2004/03/21 02:30:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "r128.h"
 #include "r128_reg.h"
@@ -11,7 +25,7 @@
 #include "xf86.h"
 #include "dixstruct.h"
 
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "fourcc.h"
 
 #define OFF_DELAY       250  /* milliseconds */
@@ -579,20 +593,20 @@ R128AllocateMemory(
 
    pScreen = screenInfo.screens[pScrn->scrnIndex];
 
-   new_linear = xf86AllocateOffscreenLinear(pScreen, size, 8,
+   new_linear = xf86AllocateOffscreenLinear(pScreen, size, 16,
 						NULL, NULL, NULL);
 
    if(!new_linear) {
 	int max_size;
 
-	xf86QueryLargestOffscreenLinear(pScreen, &max_size, 8,
+	xf86QueryLargestOffscreenLinear(pScreen, &max_size, 16,
 						PRIORITY_EXTREME);
 
 	if(max_size < size)
 	   return NULL;
 
 	xf86PurgeUnlockedOffscreenAreas(pScreen);
-	new_linear = xf86AllocateOffscreenLinear(pScreen, size, 8,
+	new_linear = xf86AllocateOffscreenLinear(pScreen, size, 16,
 						NULL, NULL, NULL);
    }
 

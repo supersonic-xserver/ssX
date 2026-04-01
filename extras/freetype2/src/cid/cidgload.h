@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cidgload.h                                                             */
 /*                                                                         */
 /*    OpenType Glyph Loader (specification).                               */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,48 +23,36 @@
 /***************************************************************************/
 
 
-#ifndef CIDGLOAD_H
-#define CIDGLOAD_H
+#ifndef __CIDGLOAD_H__
+#define __CIDGLOAD_H__
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "cidobjs.h"
 
-#else
 
-#include <cid/cidobjs.h>
-
-#endif
-
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
 #if 0
 
   /* Compute the maximum advance width of a font through quick parsing */
-  FT_LOCAL
-  FT_Error  CID_Compute_Max_Advance( CID_Face  face,
-                                     FT_Int*   max_advance );
+  FT_LOCAL( FT_Error )
+  cid_face_compute_max_advance( CID_Face  face,
+                                FT_Int*   max_advance );
 
 #endif /* 0 */
 
-  FT_LOCAL
-  FT_Error  CID_Load_Glyph( CID_GlyphSlot  glyph,
-                            CID_Size       size,
-                            FT_Int         glyph_index,
-                            FT_Int         load_flags );
+  FT_LOCAL( FT_Error )
+  cid_slot_load_glyph( CID_GlyphSlot  glyph,
+                       CID_Size       size,
+                       FT_Int         glyph_index,
+                       FT_Int32       load_flags );
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-
-#endif /* CIDGLOAD_H */
+#endif /* __CIDGLOAD_H__ */
 
 
 /* END */

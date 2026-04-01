@@ -1,7 +1,21 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86str.h,v 1.110tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86str.h,v 1.106 2005/02/26 01:07:12 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright (c) 1997-2007 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -207,16 +221,15 @@ typedef enum {
     MODE_ERROR	= -1	/* error condition */
 } ModeStatus;
 
-# define M_T_BUILTIN  0x001        /* built-in mode */
-# define M_T_CLOCK_C (0x002 | M_T_BUILTIN) /* built-in mode - configure clock */
-# define M_T_CRTC_C  (0x004 | M_T_BUILTIN) /* built-in mode - configure CRTC  */
+# define M_T_BUILTIN 0x01        /* built-in mode */
+# define M_T_CLOCK_C (0x02 | M_T_BUILTIN) /* built-in mode - configure clock */
+# define M_T_CRTC_C  (0x04 | M_T_BUILTIN) /* built-in mode - configure CRTC  */
 # define M_T_CLOCK_CRTC_C  (M_T_CLOCK_C | M_T_CRTC_C)
                                /* built-in mode - configure CRTC and clock */
-# define M_T_DEFAULT  0x010	/* (VESA) default modes */
-# define M_T_USERDEF  0x020	/* One of the modes from the config file */
-# define M_T_EDID     0x040	/* Mode from EDID detailed timings data. */
-# define M_T_PREFER   0x080	/* Preferred mode from EDID data. */
-# define M_T_LOWPREF  0x100	/* A low preference mode. */
+# define M_T_DEFAULT 0x10	/* (VESA) default modes */
+# define M_T_USERDEF 0x20	/* One of the modes from the config file */
+# define M_T_EDID    0x40	/* Mode from EDID detailed timings data. */
+# define M_T_PREFER  0x80	/* Preferred mode from EDID data. */
 
 /* Video mode */
 typedef struct _DisplayModeRec {
@@ -346,7 +359,7 @@ typedef struct _DriverRec {
     void		(*Identify)(int flags);
     Bool		(*Probe)(struct _DriverRec *drv, int flags);
     const OptionInfoRec * (*AvailableOptions)(int chipid, int bustype);
-    ModuleDescPtr	module;
+    pointer		module;
     int			refCount;
 } DriverRec, *DriverPtr;
 
@@ -359,7 +372,7 @@ typedef struct _DriverRec {
 typedef struct _ModuleInfoRec {
     int			moduleVersion;
     char *		moduleName;
-    ModuleDescPtr	module;
+    pointer		module;
     int			refCount;
     const OptionInfoRec * (*AvailableOptions)(void *unused);
     pointer		unused[8];	/* leave some space for more fields */
@@ -480,7 +493,7 @@ typedef struct {
     memType		biosBase;
     int			biosSize;
     pointer		thisCard;
-    int			validSize;	/* was Bool, now a bit mask */
+    Bool		validSize;
     Bool		validate;
     CARD32		listed_class;
 } pciVideoRec, *pciVideoPtr;
@@ -939,8 +952,7 @@ typedef struct _ScrnInfoRec *ScrnInfoPtr;
 
 typedef Bool xf86ProbeProc                (DriverPtr, int);
 typedef Bool xf86PreInitProc              (ScrnInfoPtr, int);
-typedef Bool xf86ScreenInitProc           (int, ScreenPtr, const int,
-					   const char**);
+typedef Bool xf86ScreenInitProc           (int, ScreenPtr, int, char**);
 typedef Bool xf86SwitchModeProc           (int, DisplayModePtr, int);
 typedef void xf86AdjustFrameProc          (int, int, int, int);
 typedef Bool xf86EnterVTProc              (int, int);
@@ -1035,7 +1047,7 @@ typedef struct _ScrnInfoRec {
     DevUnion *		privates;		/* Other privates can hook in
 						 * here */
     DriverPtr		drv;			/* xf86DriverList[] entry */
-    ModuleDescPtr	module;			/* Pointer to module head */
+    pointer		module;			/* Pointer to module head */
     int			colorKey;
     int			overlayFlags;
 
@@ -1209,6 +1221,13 @@ typedef struct {
 #define OVERLAY_8_24_DUALFB	0x00000002
 #define OVERLAY_8_16_DUALFB	0x00000004
 #define OVERLAY_8_32_PLANAR	0x00000008
+
+#if 0
+#define LD_RESOLV_IFDONE		0	/* only check if no more 
+						   delays pending */
+#define LD_RESOLV_NOW			1	/* finish one delay step */
+#define LD_RESOLV_FORCE			2	/* force checking... */
+#endif
 
 /* Values of xf86Info.mouseFlags */
 #define MF_CLEAR_DTR       1

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/int10/Imakefile,v 1.21tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/int10/Imakefile,v 1.21 2005/01/30 17:48:44 tsi Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -101,8 +101,8 @@ OBJS = pci.o xf86int10module.o helper_exec.o helper_mem.o xf86int10.o \
 
 #endif
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-	   -I$(SERVERSRC)/include $(X86EMUINCLUDES)
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I. -I$(SERVERSRC)/include \
+	   -I$(XINCLUDESRC) -I$(EXTINCSRC) $(X86EMUINCLUDES)
 
 DEFINES = $(X86EMUDEFINES) $(INT10DEFINES)
 

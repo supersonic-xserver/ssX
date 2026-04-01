@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __LINUX_VIDEODEV_H
 #define __LINUX_VIDEODEV_H
 
@@ -7,9 +14,9 @@
  * Used here with the explicit permission of the original author, Alan Cox.
  *				<alan@lxorguk.ukuu.org.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/videodev.h,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/via/videodev.h,v 1.1 2003/08/04 10:32:28 eich Exp $ */
 
-#include <X11/Xmd.h>
+#include "Xmd.h"
 
 #define VID_TYPE_CAPTURE	1	/* Can capture */
 #define VID_TYPE_TUNER		2	/* Can tune */

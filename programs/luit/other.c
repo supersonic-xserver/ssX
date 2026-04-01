@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 2002 by Tomohiro KUBOTA
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +26,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/luit/other.c,v 1.1 2002/10/17 01:06:09 dawes Exp $ */
+/* $XFree86: xc/programs/luit/other.c,v 1.2 2004/01/27 02:30:30 dawes Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>

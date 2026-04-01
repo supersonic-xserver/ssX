@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1995-2000 by Robin Cutshaw <robin@XFree86.Org>
  * Copyright 1998 by Number Nine Visual Technology, Inc.
  * 
@@ -22,7 +29,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i128/i128_driver.c,v 1.40tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i128/i128_driver.c,v 1.36 2005/02/18 02:55:07 dawes Exp $ */
 
 
 /* All drivers should typically include these */
@@ -60,7 +67,7 @@
 #include "fb.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /* driver specific includes */
 #include "i128.h"
@@ -75,8 +82,8 @@ static const OptionInfoRec *	I128AvailableOptions(int chipid, int busid);
 static void	I128Identify(int flags);
 static Bool	I128Probe(DriverPtr drv, int flags);
 static Bool	I128PreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	I128ScreenInit(int Index, ScreenPtr pScreen,
-			       const int argc, const char **argv);
+static Bool	I128ScreenInit(int Index, ScreenPtr pScreen, int argc,
+			      char **argv);
 static Bool	I128EnterVT(int scrnIndex, int flags);
 static void	I128LeaveVT(int scrnIndex, int flags);
 static Bool	I128CloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -166,10 +173,10 @@ XF86ModuleData i128ModuleData = { &i128VersRec, i128Setup, NULL };
  * List of symbols from other modules that this module references.  This
  * list is used to tell the loader that it is OK for symbols here to be
  * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderModReqSymbols() or
- * xf86LoaderModReqSymLists().  The purpose is this is to avoid warnings about
+ * told that they are essential via a call to xf86LoaderReqSymbols() or
+ * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
  * unresolved symbols that are not required.  These are provided to the
- * LoaderModRefSymLists() function in the module specific Setup() function.
+ * LoaderRefSymLists() function in the module specific Setup() function.
  */
 
 static const char *vgahwSymbols[] = {
@@ -254,7 +261,7 @@ static const char *int10Symbols[] = {
  */
 
 static pointer
-i128Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+i128Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -273,16 +280,16 @@ i128Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, fbSymbols,
-			     xaaSymbols, 
-			     ramdacSymbols,
-			     ddcSymbols,
-			     ddcSymbols,
-			     i2cSymbols,
-			     vbeSymbols,
-			     int10Symbols,
-			     vgahwSymbols,
-			     NULL);
+	LoaderRefSymLists(fbSymbols,
+			  xaaSymbols, 
+			  ramdacSymbols,
+			  ddcSymbols,
+			  ddcSymbols,
+			  i2cSymbols,
+			  vbeSymbols,
+			  int10Symbols,
+			  vgahwSymbols,
+			  NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -529,7 +536,6 @@ I128PreInit(ScrnInfoPtr pScrn, int flags)
     unsigned char n, m, p, mdc, df;
     float mclk;
     xf86MonPtr mon;
-    ModuleDescPtr pMod;
 
     /* Check the number of entities, and fail if it isn't one. */
     if (pScrn->numEntities != 1)
@@ -558,10 +564,10 @@ I128PreInit(ScrnInfoPtr pScrn, int flags)
     pI128->Primary = xf86IsPrimaryPci(pI128->PciInfo);
 
     /* The vgahw module should be allocated here when needed */
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
         return FALSE;
     
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     /*
      * Allocate a vgaHWRec
@@ -836,8 +842,8 @@ I128PreInit(ScrnInfoPtr pScrn, int flags)
     /* Load DDC if we have the code to use it */
     /* This gives us DDC1 */
     if (pI128->ddc1Read || pI128->i2cInit) {
-        if ((pMod = xf86LoadSubModule(pScrn, "ddc"))) {
-          xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+        if (xf86LoadSubModule(pScrn, "ddc")) {
+          xf86LoaderReqSymLists(ddcSymbols, NULL);
         } else {
           /* ddc module not found, we can do without it */
           pI128->ddc1Read = NULL;
@@ -849,8 +855,8 @@ I128PreInit(ScrnInfoPtr pScrn, int flags)
     /* - DDC can use I2C bus */
     /* Load I2C if we have the code to use it */
     if (pI128->i2cInit) {
-      if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
-        xf86LoaderModReqSymLists(pMod, i2cSymbols,NULL);
+      if ( xf86LoadSubModule(pScrn, "i2c") ) {
+        xf86LoaderReqSymLists(i2cSymbols,NULL);
       } else {
         /* i2c module not found, we can do without it */
         pI128->i2cInit = NULL;
@@ -1154,28 +1160,28 @@ I128PreInit(ScrnInfoPtr pScrn, int flags)
     /* Set display resolution */
     xf86SetDpi(pScrn, 0, 0);
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (!xf86LoadSubModule(pScrn, "fb")) {
 	I128FreeRec(pScrn);
 	return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, NULL);
 
     /* Load XAA if needed */
     if (!pI128->NoAccel) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    I128FreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     /* Load ramdac if needed */
     if (pI128->HWCursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+	if (!xf86LoadSubModule(pScrn, "ramdac")) {
 	    I128FreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
 
     I128UnmapMem(pScrn);
@@ -1451,8 +1457,7 @@ I128ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 /* This gets called at the start of each server generation */
 
 static Bool
-I128ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	       const int argc, const char **argv)
+I128ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     I128Ptr pI128;

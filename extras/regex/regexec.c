@@ -1,6 +1,11 @@
-/* $XFree86$ */
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * the outer shell of regexec()
  *
  * This file includes engine.c *twice*, after muchos fiddling with the
@@ -18,9 +23,7 @@
 #include "utils.h"
 #include "regex2.h"
 
-#if 0
 static int nope = 0;		/* for use in asserts; shuts lint up */
-#endif
 
 /* macros for manipulating states, small version */
 #define	states	unsigned

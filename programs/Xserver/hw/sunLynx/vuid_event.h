@@ -1,3 +1,11 @@
+/* $Xorg: vuid_event.h,v 1.3 2000/08/17 19:48:38 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -41,6 +49,7 @@
  *
  *	@(#)vuid_event.h	8.1 (Berkeley) 6/11/93
  */
+/*	$NetBSD: vuid_event.h,v 1.1.1.3 2001/06/09 15:03:12 tron Exp $ */
 /*	$XFree86: xc/programs/Xserver/hw/sunLynx/vuid_event.h,v 3.2 2001/01/17 22:36:53 dawes Exp $ */
 
 /*

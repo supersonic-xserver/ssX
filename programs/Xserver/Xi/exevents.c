@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xi/exevents.c,v 3.11tsi Exp $ */
+/* $Xorg: exevents.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -44,6 +51,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/exevents.c,v 3.11 2003/11/17 22:20:29 dawes Exp $ */
 
 /********************************************************************
  *
@@ -54,10 +62,10 @@ SOFTWARE.
  */
 
 #define	 NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "X.h"
+#include "Xproto.h"
+#include "XI.h"
+#include "XIproto.h"
 #include "inputstr.h"
 #include "windowstr.h"
 #include "miscstruct.h"

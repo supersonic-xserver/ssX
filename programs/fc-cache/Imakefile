@@ -13,6 +13,11 @@ OBJS=fc-cache.o
 ComplexProgramTarget(fc-cache)
 LinkBuildBinary(ProgramTargetName(fc-cache))
 
+install::
+	if [ x$${DESTDIR} = x ]; then \
+		$(FCCACHE) -v -f;\
+	fi
+
 LinkSourceFile(fc-cache.c,$(FONTCONFIGDIR)/fc-cache)
 LinkSourceFile(fc-cache.man,$(FONTCONFIGDIR)/fc-cache)
 

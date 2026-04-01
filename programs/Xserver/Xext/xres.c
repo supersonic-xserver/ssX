@@ -1,22 +1,27 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (c) 2002  XFree86 Inc
 */
-/* $XFree86: xc/programs/Xserver/Xext/xres.c,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xres.c,v 1.9 2004/03/04 19:31:37 dawes Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include "swaprep.h"
-#include <X11/extensions/XResproto.h>
+#include "XResproto.h"
 #include "pixmapstr.h"
 #include "modinit.h"
-
-#ifdef RES
 
 static int
 ProcXResQueryVersion (ClientPtr client)
@@ -88,7 +93,7 @@ ProcXResQueryClients (ClientPtr client)
             scratch.resource_mask = RESOURCE_ID_MASK;
         
             if(client->swapped) {
-                int n;
+                register int n;
                 swapl (&scratch.resource_base, n);
                 swapl (&scratch.resource_mask, n);
             }
@@ -169,7 +174,7 @@ ProcXResQueryClientResources (ClientPtr client)
             scratch.count = counts[i];
 
             if(client->swapped) {
-                int n;
+                register int n;
                 swapl (&scratch.resource_type, n);
                 swapl (&scratch.count, n);
             }
@@ -334,5 +339,3 @@ ResExtensionInit(INITARGS)
     RegisterResourceName(RT_OTHERCLIENT, "OTHER CLIENT");
     RegisterResourceName(RT_PASSIVEGRAB, "PASSIVE GRAB");
 }
-
-#endif

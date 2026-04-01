@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Option.c,v 1.37 2005/10/14 15:16:33 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Option.c,v 1.36 2005/02/18 01:52:59 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1998-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1998-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -98,7 +105,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Xinput.h"
@@ -142,7 +149,7 @@ xf86CollectOptions(ScrnInfoPtr pScrn, pointer extraOpts)
 	if (device && device->options) {
 	    tmp = xf86optionListDup(device->options);
 	    if (pScrn->options)
-		xf86optionListMerge(pScrn->options, tmp);
+		xf86optionListMerge(pScrn->options,tmp);
 	    else
 		pScrn->options = tmp;
 	}
@@ -351,14 +358,11 @@ pointer
 xf86ReplaceIntOption(pointer optlist, const char *name, const int val)
 {
     char *tmp;
-    pointer ret;
 
     xasprintf(&tmp, "%i", val);
-    if (tmp) {
-	ret = xf86AddNewOption(optlist, name, tmp);
-	xfree(tmp);
-	return ret;
-    } else
+    if (tmp)
+	return xf86AddNewOption(optlist, name, tmp);
+    else
 	return NULL;
 }
 
@@ -366,33 +370,34 @@ pointer
 xf86ReplaceRealOption(pointer optlist, const char *name, const double val)
 {
     char *tmp;
-    pointer ret;
 
     xasprintf(&tmp, "%f", val);
-    if (tmp) {
-	ret = xf86AddNewOption(optlist, name, tmp);
-	xfree(tmp);
-	return ret;
-    } else
+    if (tmp)
+	return xf86AddNewOption(optlist, name, tmp);
+    else
 	return NULL;
 }
 
 pointer
 xf86ReplaceBoolOption(pointer optlist, const char *name, const Bool val)
 {
-    return xf86AddNewOption(optlist, name, val ? "True" : "False");
+    return xf86AddNewOption(optlist,name,val?"True":"False");
 }
 
 pointer
 xf86ReplaceStrOption(pointer optlist, const char *name, const char* val)
 {
-      return xf86AddNewOption(optlist, name, val);
+      return xf86AddNewOption(optlist,name,val);
 }
 
 pointer
 xf86AddNewOption(pointer head, const char *name, const char *val)
 {
-    return xf86addNewOption(head, name, val);
+    /* XXX These should actually be allocated in the parser library. */
+    char *tmp = strdup(val);
+    char *tmp_name = strdup(name);
+
+    return xf86addNewOption(head, tmp_name, tmp);
 }
 
 

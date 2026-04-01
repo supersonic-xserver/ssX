@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/dmx/examples/Imakefile,v 1.3tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/dmx/examples/Imakefile,v 1.3 2005/02/07 01:38:24 tsi Exp $
 
 #include <Server.tmpl>
 
@@ -6,6 +6,7 @@ SRCS = xdmx.c xinput.c dmxwininfo.c xtest.c evi.c res.c dmxreconfig.c xled.c \
 	xbell.c dmxresize.c
 OBJS = xdmx.o xinput.o dmxwininfo.o xtest.o evi.o res.o dmxreconfig.o xled.o \
 	xbell.o dmxresize.o
+INCLUDES  = -I$(EXTINCSRC)
 
 #ifndef OS2Architecture
 XDMXPROG = xdmx

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1cmap.c                                                               */
 /*                                                                         */
 /*    Type 1 character map support (body).                                 */
 /*                                                                         */
-/*  Copyright 2002 by                                                      */
+/*  Copyright 2002, 2003 by                                                */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -20,6 +27,8 @@
 
 #include FT_INTERNAL_DEBUG_H
 
+#include "psauxerr.h"
+
 
   /*************************************************************************/
   /*************************************************************************/
@@ -33,8 +42,8 @@
   t1_cmap_std_init( T1_CMapStd  cmap,
                     FT_Int      is_expert )
   {
-    T1_Face          face    = (T1_Face)FT_CMAP_FACE( cmap );
-    PSNames_Service  psnames = (PSNames_Service)face->psnames;
+    T1_Face             face    = (T1_Face)FT_CMAP_FACE( cmap );
+    FT_Service_PsCMaps  psnames = (FT_Service_PsCMaps)face->psnames;
 
 
     cmap->num_glyphs    = face->type1.num_glyphs;
@@ -197,12 +206,11 @@
                              FT_UInt32      char_code )
   {
     FT_UInt    result = 0;
-    FT_UInt32  idx;
 
 
-    idx = (FT_UInt32)( char_code - cmap->first );
-    if ( idx < cmap->count )
-      result = cmap->indices[idx];
+    if ( ( char_code >= cmap->first )                  &&
+         ( char_code < ( cmap->first + cmap->count ) ) )
+      result = cmap->indices[char_code];
 
     return result;
   }
@@ -214,7 +222,6 @@
   {
     FT_UInt    result = 0;
     FT_UInt32  char_code = *pchar_code;
-    FT_UInt32  idx;
 
 
     ++char_code;
@@ -222,10 +229,9 @@
     if ( char_code < cmap->first )
       char_code = cmap->first;
 
-    idx = (FT_UInt32)( char_code - cmap->first );
-    for ( ; idx < cmap->count; idx++, char_code++ )
+    for ( ; char_code < ( cmap->first + cmap->count ); char_code++ )
     {
-      result = cmap->indices[idx];
+      result = cmap->indices[char_code];
       if ( result != 0 )
         goto Exit;
     }
@@ -264,26 +270,26 @@
   {
     FT_UInt32  u1 = ((T1_CMapUniPair)pair1)->unicode;
     FT_UInt32  u2 = ((T1_CMapUniPair)pair2)->unicode;
-    
+
 
     if ( u1 < u2 )
       return -1;
-      
+
     if ( u1 > u2 )
       return +1;
-      
+
     return 0;
-  }                            
+  }
 
 
   FT_CALLBACK_DEF( FT_Error )
   t1_cmap_unicode_init( T1_CMapUnicode  cmap )
   {
-    FT_Error         error;
-    FT_UInt          count;
-    T1_Face          face    = (T1_Face)FT_CMAP_FACE( cmap );
-    FT_Memory        memory  = FT_FACE_MEMORY( face );
-    PSNames_Service  psnames = (PSNames_Service)face->psnames;
+    FT_Error            error;
+    FT_UInt             count;
+    T1_Face             face    = (T1_Face)FT_CMAP_FACE( cmap );
+    FT_Memory           memory  = FT_FACE_MEMORY( face );
+    FT_Service_PsCMaps  psnames = (FT_Service_PsCMaps)face->psnames;
 
 
     cmap->num_pairs = 0;
@@ -317,13 +323,13 @@
           }
         }
       }
-      
+
       new_count = (FT_UInt)( pair - cmap->pairs );
       if ( new_count == 0 )
       {
         /* there are no unicode characters in here! */
         FT_FREE( cmap->pairs );
-        error = FT_Err_Invalid_Argument;
+        error = PSaux_Err_Invalid_Argument;
       }
       else
       {

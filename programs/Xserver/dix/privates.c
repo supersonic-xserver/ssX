@@ -1,3 +1,11 @@
+/* $Xorg: privates.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -25,9 +33,9 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/dix/privates.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/privates.c,v 3.8 2001/12/14 19:59:32 dawes Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "misc.h"
 #include "os.h"
@@ -72,7 +80,9 @@ AllocateClientPrivateIndex()
 }
 
 Bool
-AllocateClientPrivate(int index2, unsigned amount)
+AllocateClientPrivate(index2, amount)
+    int index2;
+    unsigned amount;
 {
     unsigned oldamount;
 
@@ -163,7 +173,10 @@ AllocateWindowPrivateIndex()
 }
 
 Bool
-AllocateWindowPrivate(ScreenPtr pScreen, int index2, unsigned amount)
+AllocateWindowPrivate(pScreen, index2, amount)
+    register ScreenPtr pScreen;
+    int index2;
+    unsigned amount;
 {
     unsigned oldamount;
 
@@ -213,7 +226,10 @@ AllocateGCPrivateIndex()
 }
 
 Bool
-AllocateGCPrivate(ScreenPtr pScreen, int index2, unsigned amount)
+AllocateGCPrivate(pScreen, index2, amount)
+    register ScreenPtr pScreen;
+    int index2;
+    unsigned amount;
 {
     unsigned oldamount;
 
@@ -263,7 +279,10 @@ AllocatePixmapPrivateIndex()
 }
 
 Bool
-AllocatePixmapPrivate(ScreenPtr pScreen, int index2, unsigned amount)
+AllocatePixmapPrivate(pScreen, index2, amount)
+    register ScreenPtr pScreen;
+    int index2;
+    unsigned amount;
 {
     unsigned oldamount;
 
@@ -310,7 +329,10 @@ ResetColormapPrivates()
 
 
 int
-AllocateColormapPrivateIndex(InitCmapPrivFunc initPrivFunc)
+AllocateColormapPrivateIndex (initPrivFunc)
+
+InitCmapPrivFunc initPrivFunc;
+
 {
     int		index;
     int		i;

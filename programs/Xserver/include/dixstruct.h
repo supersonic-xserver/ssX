@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/include/dixstruct.h,v 3.20 2003/11/03 05:11:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -21,6 +28,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: dixstruct.h,v 1.3 2000/08/17 19:53:29 cpqbld Exp $ */
 
 #ifndef DIXSTRUCT_H
 #define DIXSTRUCT_H
@@ -159,7 +167,10 @@ extern Bool SmartScheduleInit(void);
 
 typedef struct _WorkQueue {
     struct _WorkQueue *next;
-    WorkQueueProcPtr function;
+    Bool        (*function) (
+		ClientPtr	/* pClient */,
+		pointer		/* closure */
+);
     ClientPtr   client;
     pointer     closure;
 }           WorkQueueRec;

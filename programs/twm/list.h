@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/twm/list.h,v 1.7 2007/10/10 00:31:39 tsi Exp $ */
 /*****************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -49,9 +55,12 @@ in this Software without prior written authorization from The Open Group.
 /**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
+/* $XFree86: xc/programs/twm/list.h,v 1.5 2001/12/14 20:01:08 dawes Exp $ */
 
 
 /**********************************************************************
+ *
+ * $Xorg: list.h,v 1.4 2001/02/09 02:05:36 xorgcvs Exp $
  *
  * TWM list handling external definitions
  *
@@ -71,11 +80,12 @@ typedef struct name_list_struct name_list;
 extern void AddToList ( name_list **list_head, char *name, char *ptr );
 extern void FreeList ( name_list **list );
 
-extern int GetColorFromList ( name_list *list_head, char *name,
+extern int GetColorFromList ( name_list *list_head, char *name, 
 			      XClassHint *class, Pixel *ptr );
-extern char * LookInList ( name_list *list_head, char *name,
+extern char * LookInList ( name_list *list_head, char *name, 
 			   XClassHint *class );
 extern char * LookInNameList ( name_list *list_head, char *name );
 
 
 #endif /* _LIST_ */
+

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/array_cache/Imakefile.inc,v 1.1tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/array_cache/Imakefile.inc,v 1.2 2004/04/22 13:58:39 tsi Exp $
 
 #ifndef MesaACBuildDir
 #define MesaACBuildDir $(GLXLIBSRC)/mesa/array_cache/

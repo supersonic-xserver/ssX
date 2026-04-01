@@ -1,15 +1,22 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (c) 1999 - The XFree86 Project Inc.
 
    Written by Mark Vojkovich
 */
-/* $XFree86: xc/programs/Xserver/Xext/xf86dga2.c,v 1.24 2006/02/20 00:14:35 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xf86dga2.c,v 1.21 2005/01/20 17:53:44 tsi Exp $ */
 
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "dixstruct.h"
 #include "dixevents.h"
@@ -20,8 +27,8 @@
 #include "scrnintstr.h"
 #include "servermd.h"
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dga.h>
-#include <X11/extensions/xf86dgastr.h>
+#include "xf86dga.h"
+#include "xf86dgastr.h"
 #include "swaprep.h"
 #include "dgaproc.h"
 #include "xf86dgaext.h"
@@ -33,8 +40,6 @@
 #endif
 
 #include "modinit.h"
-
-#ifdef XFreeXDGA
 
 static DISPATCH_PROC(ProcXDGADispatch);
 static DISPATCH_PROC(SProcXDGADispatch);
@@ -122,11 +127,10 @@ XFree86DGAExtensionInit(INITARGS)
 
 
 static void
-XDGAResetProc(ExtensionEntry *extEntry)
+XDGAResetProc (ExtensionEntry *extEntry)
 {
    DeleteCallback (&ClientStateCallback, DGAClientStateChange, NULL);
    DGACallbackRefCount = 0;
-   DGAShutdown();
 }
 
 
@@ -777,6 +781,4 @@ XFree86DGARegister(INITARGS)
 {
   XDGAEventBase = &DGAEventBase; 
 }
-#endif
-
 #endif

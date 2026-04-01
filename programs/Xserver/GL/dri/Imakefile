@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/dri/Imakefile,v 1.12tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/dri/Imakefile,v 1.12 2005/03/01 03:48:50 dawes Exp $
 /*
  * Copyright (c) 2000-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -57,10 +57,12 @@ MOBJ = drimodule.o
          SRCS = xf86dri.c dri.c $(MSRC)
          OBJS = xf86dri.o dri.o $(MOBJ)
 
-     INCLUDES = -I$(SERVERSRC)/include -I$(MESASRCDIR)/include \
+     INCLUDES = -I$(SERVERSRC)/include -I$(INCLUDESRC) -I$(XINCLUDESRC) \
+		-I$(EXTINCSRC) -I$(MESASRCDIR)/include \
 		-I$(XF86OSSRC) -I$(XF86COMSRC) \
 		-I../include -I../glx -I$(LIBSRC)/GL/include \
-		-I$(SERVERSRC)/mi -I$(DRMINCLUDESDIR)
+		-I$(SERVERSRC)/mi -I$(FONTINCSRC) \
+		-I$(DRMINCLUDESDIR)
       DEFINES = $(GLX_DEFINES)
 
 LinkSourceFile(xf86dri.h,$(LIBSRC)/GL/glx)

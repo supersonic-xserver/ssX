@@ -81,8 +81,8 @@ all:: Configure								@@\
 Configure:: target.o							@@\
 									@@\
 target.c: script dep							@@\
-	$(MAKE) $(PASSMFLAGS) Makefile					@@\
-	$(MAKE) $(PASSMFLAGS) extra Concat(Build,target)		@@\
+	$(MAKE) $(MFLAGS) Makefile					@@\
+	$(MAKE) $(MFLAGS) extra Concat(Build,target)			@@\
 									@@\
 Concat(Build,target):							@@\
 	$(RM) target.c							@@\

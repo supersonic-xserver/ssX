@@ -1,4 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $NCDXorg: @(#)lbxdelta.c,v 1.2 1994/01/22 02:23:40 dct Exp $
+ * $Xorg: lbxdelta.c,v 1.5 2000/08/17 19:46:40 cpqbld Exp $
  * Copyright 1993 Network Computing Devices
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,14 +29,14 @@
  *
  * Author:  Dale Tonogai, Network Computing Devices
  */
-/* $XFree86: xc/lib/lbxutil/delta/lbxdelta.c,v 1.9 2005/10/14 15:16:07 tsi Exp $ */
+/* $XFree86: xc/lib/lbxutil/delta/lbxdelta.c,v 1.8 2001/08/27 19:01:07 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "os.h"
 #define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
-#include <X11/extensions/lbxdeltastr.h>
+#include "lbxstr.h"
+#include "lbxdeltastr.h"
 
 #include <stddef.h>
 

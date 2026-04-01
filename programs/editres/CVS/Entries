@@ -1,0 +1,17 @@
+/Edit-col.ad/1.1.1.4/Fri Feb 28 13:19:19 2003//Tnetbsd-5-2-3-RELEASE
+/Editres.ad/1.1.1.4/Fri Feb 28 13:19:19 2003//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.2/Sat Jun  9 15:10:35 2001//Tnetbsd-5-2-3-RELEASE
+/README/1.1.1.1/Mon Jan  1 12:47:00 2001//Tnetbsd-5-2-3-RELEASE
+/actions.c/1.1.1.5/Fri Mar  5 14:26:44 2004//Tnetbsd-5-2-3-RELEASE
+/comm.c/1.1.1.4/Sat Jan 19 15:14:49 2002//Tnetbsd-5-2-3-RELEASE
+/editres.c/1.1.1.4/Sat Jan 19 15:14:49 2002//Tnetbsd-5-2-3-RELEASE
+/editres.man/1.1.1.5/Fri Mar 18 13:07:58 2005//Tnetbsd-5-2-3-RELEASE
+/editresP.h/1.1.1.4/Sat Jan 19 15:14:50 2002//Tnetbsd-5-2-3-RELEASE
+/geometry.c/1.1.1.4/Sat Jan 19 15:14:50 2002//Tnetbsd-5-2-3-RELEASE
+/handler.c/1.1.1.5/Fri Mar  5 14:26:44 2004//Tnetbsd-5-2-3-RELEASE
+/setvalues.c/1.1.1.4/Sat Jan 19 15:14:50 2002//Tnetbsd-5-2-3-RELEASE
+/svpopup.c/1.1.1.4/Sat Jan 19 15:14:51 2002//Tnetbsd-5-2-3-RELEASE
+/utils.c/1.1.1.4/Sat Jan 19 15:14:51 2002//Tnetbsd-5-2-3-RELEASE
+/widgets.c/1.1.1.4/Sat Jan 19 15:14:51 2002//Tnetbsd-5-2-3-RELEASE
+/wtree.c/1.1.1.4/Sat Jan 19 15:14:52 2002//Tnetbsd-5-2-3-RELEASE
+D

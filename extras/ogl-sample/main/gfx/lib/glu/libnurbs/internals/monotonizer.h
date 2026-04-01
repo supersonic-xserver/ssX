@@ -1,4 +1,11 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *									  *
  * 		 Copyright (C) 1999, Silicon Graphics, Inc.		  *
  *									  *
@@ -13,6 +20,7 @@
 /*
  * monotonizer.h
  *
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/monotonizer.h,v 1.1.1.1 2001/06/09 15:20:52 tron Exp $
  */
 
 #ifndef __glumonotonizer_h_

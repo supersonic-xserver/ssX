@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/GL/apple/aglGlx.c,v 1.4tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX implementation that uses Apple's AGL.framework for OpenGL
  *
  * FIXME: This file and indirect.c are very similar. The two should be
@@ -33,6 +39,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+/* $XFree86: xc/programs/Xserver/GL/apple/aglGlx.c,v 1.4 2004/12/10 17:52:46 alanh Exp $ */
 
 #include "quartzCommon.h"
 #include <AGL/agl.h>
@@ -118,7 +125,6 @@ static __GLXscreenInfo __glDDXScreenInfo = {
     NULL,                 /* Set up pVisualPriv in probe */
     0,                    /* Set up numVisuals in probe */
     0,                    /* Set up numUsableVisuals in probe */
-    NULL,                 /* GLextensions is overwritten by __glXScreenInit */
     "Vendor String",      /* GLXvendor is overwritten by __glXScreenInit */
     "Version String",     /* GLXversion is overwritten by __glXScreenInit */
     "Extensions String",  /* GLXextensions is overwritten by __glXScreenInit */

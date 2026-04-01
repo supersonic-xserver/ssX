@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/sysv_io.c,v 3.12 2005/10/14 15:17:08 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/sysv_io.c,v 3.11 2003/02/17 15:12:00 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993 by David Dawes <dawes@xfree86.org>
@@ -23,8 +30,9 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: sysv_io.c /main/8 1996/10/19 18:08:06 kaleb $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "compiler.h"
 

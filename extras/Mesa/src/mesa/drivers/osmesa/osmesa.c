@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -59,6 +66,7 @@
 #include "tnl/tnl.h"
 #include "tnl/t_context.h"
 #include "tnl/t_pipeline.h"
+#include "drivers/common/driverfuncs.h"
 
 
 
@@ -132,7 +140,7 @@ set_buffer( GLcontext *ctx, GLframebuffer *buffer, GLuint bufferBit )
 {
    /* separate read buffer not supported */
    ASSERT(buffer == ctx->DrawBuffer);
-   ASSERT(bufferBit == FRONT_LEFT_BIT);
+   ASSERT(bufferBit == DD_FRONT_LEFT_BIT);
 }
 
 
@@ -281,8 +289,8 @@ clear( GLcontext *ctx, GLbitfield mask, GLboolean all,
 #define SPAN_VARS \
    const OSMesaContext osmesa = OSMESA_CONTEXT(ctx);
 #define INIT_PIXEL_PTR(P, X, Y) \
-   GLchan *P = osmesa->rowaddr[Y] + 4 * (X)
-#define INC_PIXEL_PTR(P) P += 4
+   GLchan *P = osmesa->rowaddr[Y] + 3 * (X)
+#define INC_PIXEL_PTR(P) P += 3
 #define STORE_RGB_PIXEL(P, X, Y, R, G, B) \
    P[0] = R;  P[1] = G;  P[2] = B
 #define STORE_RGBA_PIXEL(P, X, Y, R, G, B, A) \
@@ -296,8 +304,8 @@ clear( GLcontext *ctx, GLbitfield mask, GLboolean all,
 #define SPAN_VARS \
    const OSMesaContext osmesa = OSMESA_CONTEXT(ctx);
 #define INIT_PIXEL_PTR(P, X, Y) \
-   GLchan *P = osmesa->rowaddr[Y] + 4 * (X)
-#define INC_PIXEL_PTR(P) P += 4
+   GLchan *P = osmesa->rowaddr[Y] + 3 * (X)
+#define INC_PIXEL_PTR(P) P += 3
 #define STORE_RGB_PIXEL(P, X, Y, R, G, B) \
    P[0] = B;  P[1] = G;  P[2] = R
 #define STORE_RGBA_PIXEL(P, X, Y, R, G, B, A) \
@@ -629,6 +637,7 @@ osmesa_choose_line( GLcontext *ctx )
                              _NEW_RENDERMODE | \
                              _SWRAST_NEW_RASTERMASK)
 
+
 /* one-time, per-context initialization */
 static void
 hook_in_driver_functions( GLcontext *ctx )
@@ -642,45 +651,6 @@ hook_in_driver_functions( GLcontext *ctx )
 
    /* use default TCL pipeline */
    tnl->Driver.RunPipeline = _tnl_run_pipeline;
-
-   ctx->Driver.GetString = get_string;
-   ctx->Driver.UpdateState = osmesa_update_state;
-   ctx->Driver.ResizeBuffers = _swrast_alloc_buffers;
-   ctx->Driver.GetBufferSize = get_buffer_size;
-
-   ctx->Driver.Accum = _swrast_Accum;
-   ctx->Driver.Bitmap = _swrast_Bitmap;
-   ctx->Driver.Clear = clear;  /* uses _swrast_Clear */
-   ctx->Driver.CopyPixels = _swrast_CopyPixels;
-   ctx->Driver.DrawPixels = _swrast_DrawPixels;
-   ctx->Driver.ReadPixels = _swrast_ReadPixels;
-   ctx->Driver.DrawBuffer = _swrast_DrawBuffer;
-
-   ctx->Driver.ChooseTextureFormat = _mesa_choose_tex_format;
-   ctx->Driver.TexImage1D = _mesa_store_teximage1d;
-   ctx->Driver.TexImage2D = _mesa_store_teximage2d;
-   ctx->Driver.TexImage3D = _mesa_store_teximage3d;
-   ctx->Driver.TexSubImage1D = _mesa_store_texsubimage1d;
-   ctx->Driver.TexSubImage2D = _mesa_store_texsubimage2d;
-   ctx->Driver.TexSubImage3D = _mesa_store_texsubimage3d;
-   ctx->Driver.TestProxyTexImage = _mesa_test_proxy_teximage;
-
-   ctx->Driver.CompressedTexImage1D = _mesa_store_compressed_teximage1d;
-   ctx->Driver.CompressedTexImage2D = _mesa_store_compressed_teximage2d;
-   ctx->Driver.CompressedTexImage3D = _mesa_store_compressed_teximage3d;
-   ctx->Driver.CompressedTexSubImage1D = _mesa_store_compressed_texsubimage1d;
-   ctx->Driver.CompressedTexSubImage2D = _mesa_store_compressed_texsubimage2d;
-   ctx->Driver.CompressedTexSubImage3D = _mesa_store_compressed_texsubimage3d;
-
-   ctx->Driver.CopyTexImage1D = _swrast_copy_teximage1d;
-   ctx->Driver.CopyTexImage2D = _swrast_copy_teximage2d;
-   ctx->Driver.CopyTexSubImage1D = _swrast_copy_texsubimage1d;
-   ctx->Driver.CopyTexSubImage2D = _swrast_copy_texsubimage2d;
-   ctx->Driver.CopyTexSubImage3D = _swrast_copy_texsubimage3d;
-   ctx->Driver.CopyColorTable = _swrast_CopyColorTable;
-   ctx->Driver.CopyColorSubTable = _swrast_CopyColorSubTable;
-   ctx->Driver.CopyConvolutionFilter1D = _swrast_CopyConvolutionFilter1D;
-   ctx->Driver.CopyConvolutionFilter2D = _swrast_CopyConvolutionFilter2D;
 
    swdd->SetBuffer = set_buffer;
 
@@ -800,6 +770,7 @@ OSMesaCreateContextExt( GLenum format, GLint depthBits, GLint stencilBits,
                         GLint accumBits, OSMesaContext sharelist )
 {
    OSMesaContext osmesa;
+   struct dd_function_table functions;
    GLint rshift, gshift, bshift, ashift;
    GLint rind, gind, bind, aind;
    GLint indexBits = 0, redBits = 0, greenBits = 0, blueBits = 0, alphaBits =0;
@@ -961,20 +932,19 @@ OSMesaCreateContextExt( GLenum format, GLint depthBits, GLint stencilBits,
          return NULL;
       }
 
-      /* Setup these pointers here since they're using for making the default
-       * and proxy texture objects.  Actually, we don't really need to do
-       * this since we're using the default fallback functions which
-       * _mesa_initialize_context() would plug in if needed.
-       */
-      osmesa->mesa.Driver.NewTextureObject = _mesa_new_texture_object;
-      osmesa->mesa.Driver.DeleteTexture = _mesa_delete_texture_object;
+      /* Initialize device driver function table */
+      _mesa_init_driver_functions(&functions);
+      /* override with our functions */
+      functions.GetString = get_string;
+      functions.UpdateState = osmesa_update_state;
+      functions.GetBufferSize = get_buffer_size;
+      functions.Clear = clear;
 
       if (!_mesa_initialize_context(&osmesa->mesa,
                                     osmesa->gl_visual,
                                     sharelist ? &sharelist->mesa
                                               : (GLcontext *) NULL,
-                                    (void *) osmesa,
-                                    GL_FALSE)) {
+                                    &functions, (void *) osmesa)) {
          _mesa_destroy_visual( osmesa->gl_visual );
          FREE(osmesa);
          return NULL;
@@ -1017,10 +987,15 @@ OSMesaCreateContextExt( GLenum format, GLint depthBits, GLint stencilBits,
       {
 	 GLcontext *ctx = &osmesa->mesa;
 
-	 _swrast_CreateContext( ctx );
-	 _ac_CreateContext( ctx );
-	 _tnl_CreateContext( ctx );
-	 _swsetup_CreateContext( ctx );
+	 if (!_swrast_CreateContext( ctx ) ||
+             !_ac_CreateContext( ctx ) ||
+             !_tnl_CreateContext( ctx ) ||
+             !_swsetup_CreateContext( ctx )) {
+            _mesa_destroy_visual(osmesa->gl_visual);
+            _mesa_free_context_data(ctx);
+            _mesa_free(osmesa);
+            return NULL;
+         }
 	
 	 _swsetup_Wakeup( ctx );
          hook_in_driver_functions( ctx );
@@ -1305,23 +1280,25 @@ OSMesaGetColorBuffer( OSMesaContext c, GLint *width,
 }
 
 
+typedef void (*OSMESAproc)(void);
 
-struct name_address {
+struct name_function
+{
    const char *Name;
-   GLvoid *Address;
+   OSMESAproc Function;
 };
 
-static struct name_address functions[] = {
-   { "OSMesaCreateContext", (void *) OSMesaCreateContext },
-   { "OSMesaCreateContextExt", (void *) OSMesaCreateContextExt },
-   { "OSMesaDestroyContext", (void *) OSMesaDestroyContext },
-   { "OSMesaMakeCurrent", (void *) OSMesaMakeCurrent },
-   { "OSMesaGetCurrentContext", (void *) OSMesaGetCurrentContext },
-   { "OSMesaPixelsStore", (void *) OSMesaPixelStore },
-   { "OSMesaGetIntegerv", (void *) OSMesaGetIntegerv },
-   { "OSMesaGetDepthBuffer", (void *) OSMesaGetDepthBuffer },
-   { "OSMesaGetColorBuffer", (void *) OSMesaGetColorBuffer },
-   { "OSMesaGetProcAddress", (void *) OSMesaGetProcAddress },
+static struct name_function functions[] = {
+   { "OSMesaCreateContext", (OSMESAproc) OSMesaCreateContext },
+   { "OSMesaCreateContextExt", (OSMESAproc) OSMesaCreateContextExt },
+   { "OSMesaDestroyContext", (OSMESAproc) OSMesaDestroyContext },
+   { "OSMesaMakeCurrent", (OSMESAproc) OSMesaMakeCurrent },
+   { "OSMesaGetCurrentContext", (OSMESAproc) OSMesaGetCurrentContext },
+   { "OSMesaPixelsStore", (OSMESAproc) OSMesaPixelStore },
+   { "OSMesaGetIntegerv", (OSMESAproc) OSMesaGetIntegerv },
+   { "OSMesaGetDepthBuffer", (OSMESAproc) OSMesaGetDepthBuffer },
+   { "OSMesaGetColorBuffer", (OSMESAproc) OSMesaGetColorBuffer },
+   { "OSMesaGetProcAddress", (OSMESAproc) OSMesaGetProcAddress },
    { NULL, NULL }
 };
 
@@ -1331,7 +1308,7 @@ OSMesaGetProcAddress( const char *funcName )
    int i;
    for (i = 0; functions[i].Name; i++) {
       if (_mesa_strcmp(functions[i].Name, funcName) == 0)
-         return (void *) functions[i].Address;
+         return (void *) functions[i].Function;
    }
    return (void *) _glapi_get_proc_address(funcName);
 }

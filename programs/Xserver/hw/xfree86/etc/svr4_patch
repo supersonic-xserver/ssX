@@ -7,6 +7,8 @@
 # Version 1.0 - 11/18/92
 #	initial version - dwex@goblin.org, dwex@aib.com
 #
+# $XConsortium: svr4_patch /main/4 1996/02/21 17:48:36 kaleb $
+#
 
 PATH=/sbin:/usr/sbin:/usr/bin
 

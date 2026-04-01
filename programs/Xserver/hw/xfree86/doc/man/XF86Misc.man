@@ -1,3 +1,7 @@
+.\" $TOG: XF86Misc.man /main/7 1997/07/19 10:30:32 kaleb $
+.\"
+.\"
+.\"
 .\" Copyright (c) 1996  Joe Moss, The XFree86 Project
 .\" 
 .\" $XFree86: xc/programs/Xserver/hw/xfree86/doc/man/XF86Misc.man,v 3.13 2003/11/23 05:40:36 dawes Exp $

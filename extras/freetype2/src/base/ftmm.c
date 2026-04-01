@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftmm.c                                                                 */
 /*                                                                         */
 /*    Multiple Master font support (body).                                 */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2003 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,8 +23,10 @@
 /***************************************************************************/
 
 
-#include <freetype/ftmm.h>
-#include <freetype/internal/ftobjs.h>
+#include <ft2build.h>
+#include FT_MULTIPLE_MASTERS_H
+#include FT_INTERNAL_OBJECTS_H
+#include FT_SERVICE_MULTIPLE_MASTERS_H
 
 
   /*************************************************************************/
@@ -30,13 +39,14 @@
 #define FT_COMPONENT  trace_mm
 
 
-  /* documentation is in ftmm.h */
-
-  FT_EXPORT_DEF( FT_Error )  FT_Get_Multi_Master( FT_Face           face,
-                                                  FT_Multi_Master  *amaster )
+  static FT_Error
+  ft_face_get_mm_service( FT_Face                   face,
+                          FT_Service_MultiMasters  *aservice )
   {
     FT_Error  error;
 
+
+    *aservice = NULL;
 
     if ( !face )
       return FT_Err_Invalid_Face_Handle;
@@ -45,14 +55,12 @@
 
     if ( FT_HAS_MULTIPLE_MASTERS( face ) )
     {
-      FT_Driver       driver = face->driver;
-      FT_Get_MM_Func  func;
+      FT_FACE_LOOKUP_SERVICE( face,
+                              *aservice,
+                              MULTI_MASTERS );
 
-
-      func = (FT_Get_MM_Func)driver->root.clazz->get_interface(
-                               FT_MODULE( driver ), "get_mm" );
-      if ( func )
-        error = func( face, amaster );
+      if ( aservice )
+        error = FT_Err_Ok;
     }
 
     return error;
@@ -61,29 +69,20 @@
 
   /* documentation is in ftmm.h */
 
-  FT_EXPORT_DEF( FT_Error )  FT_Set_MM_Design_Coordinates(
-                               FT_Face   face,
-                               FT_UInt   num_coords,
-                               FT_Long*  coords )
+  FT_EXPORT_DEF( FT_Error )
+  FT_Get_Multi_Master( FT_Face           face,
+                       FT_Multi_Master  *amaster )
   {
-    FT_Error  error;
+    FT_Error                 error;
+    FT_Service_MultiMasters  service;
 
 
-    if ( !face )
-      return FT_Err_Invalid_Face_Handle;
-
-    error = FT_Err_Invalid_Argument;
-
-    if ( FT_HAS_MULTIPLE_MASTERS( face ) )
+    error = ft_face_get_mm_service( face, &service );
+    if ( !error )
     {
-      FT_Driver              driver = face->driver;
-      FT_Set_MM_Design_Func  func;
-
-
-      func = (FT_Set_MM_Design_Func)driver->root.clazz->get_interface(
-                                      FT_MODULE( driver ), "set_mm_design" );
-      if ( func )
-        error = func( face, num_coords, coords );
+      error = FT_Err_Invalid_Argument;
+      if ( service->get_mm )
+        error = service->get_mm( face, amaster );
     }
 
     return error;
@@ -92,29 +91,44 @@
 
   /* documentation is in ftmm.h */
 
-  FT_EXPORT_DEF( FT_Error )  FT_Set_MM_Blend_Coordinates(
-                               FT_Face    face,
+  FT_EXPORT_DEF( FT_Error )
+  FT_Set_MM_Design_Coordinates( FT_Face   face,
+                                FT_UInt   num_coords,
+                                FT_Long*  coords )
+  {
+    FT_Error                 error;
+    FT_Service_MultiMasters  service;
+
+
+    error = ft_face_get_mm_service( face, &service );
+    if ( !error )
+    {
+      error = FT_Err_Invalid_Argument;
+      if ( service->set_mm_design )
+        error = service->set_mm_design( face, num_coords, coords );
+    }
+
+    return error;
+  }
+
+
+  /* documentation is in ftmm.h */
+
+  FT_EXPORT_DEF( FT_Error )
+  FT_Set_MM_Blend_Coordinates( FT_Face    face,
                                FT_UInt    num_coords,
                                FT_Fixed*  coords )
   {
-    FT_Error  error;
+    FT_Error                 error;
+    FT_Service_MultiMasters  service;
 
 
-    if ( !face )
-      return FT_Err_Invalid_Face_Handle;
-
-    error = FT_Err_Invalid_Argument;
-
-    if ( FT_HAS_MULTIPLE_MASTERS( face ) )
+    error = ft_face_get_mm_service( face, &service );
+    if ( !error )
     {
-      FT_Driver             driver = face->driver;
-      FT_Set_MM_Blend_Func  func;
-
-
-      func = (FT_Set_MM_Blend_Func)driver->root.clazz->get_interface(
-                                     FT_MODULE( driver ), "set_mm_blend" );
-      if ( func )
-        error = func( face, num_coords, coords );
+      error = FT_Err_Invalid_Argument;
+      if ( service->set_mm_blend )
+         error = service->set_mm_blend( face, num_coords, coords );
     }
 
     return error;

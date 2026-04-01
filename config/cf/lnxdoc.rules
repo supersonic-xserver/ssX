@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/lnxdoc.rules,v 3.28 2003/10/18 02:14:21 dawes Exp $
+XCOMM $XFree86: xc/config/cf/lnxdoc.rules,v 3.29 2004/11/28 03:52:09 tsi Exp $
 XCOMM
 XCOMM Rules for formatting Linuxdoc-SGML documentation
 XCOMM

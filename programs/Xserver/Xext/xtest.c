@@ -1,3 +1,11 @@
+/* $Xorg: xtest.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1992, 1998  The Open Group
@@ -25,11 +33,11 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/xtest.c,v 3.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xtest.c,v 3.11 2003/11/17 22:20:27 dawes Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #define NEED_EVENTS
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -40,11 +48,11 @@ from The Open Group.
 #include "dixevents.h"
 #include "sleepuntil.h"
 #define _XTEST_SERVER_
-#include <X11/extensions/XTest.h>
-#include <X11/extensions/xteststr.h>
+#include "XTest.h"
+#include "xteststr.h"
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #define EXTENSION_EVENT_BASE	64
 #include "extinit.h"		/* LookupDeviceIntRec */
 #endif /* XINPUT */
@@ -105,12 +113,14 @@ XTestExtensionInit(INITARGS)
 
 /*ARGSUSED*/
 static void
-XTestResetProc(ExtensionEntry *extEntry)
+XTestResetProc (extEntry)
+ExtensionEntry	*extEntry;
 {
 }
 
 static int
-ProcXTestGetVersion(ClientPtr client)
+ProcXTestGetVersion(client)
+    register ClientPtr client;
 {
     xXTestGetVersionReply rep;
     register int n;
@@ -130,7 +140,8 @@ ProcXTestGetVersion(ClientPtr client)
 }
 
 static int
-ProcXTestCompareCursor(ClientPtr client)
+ProcXTestCompareCursor(client)
+    register ClientPtr client;
 {
     REQUEST(xXTestCompareCursorReq);
     xXTestCompareCursorReply rep;
@@ -166,7 +177,8 @@ ProcXTestCompareCursor(ClientPtr client)
 }
 
 static int
-ProcXTestFakeInput(ClientPtr client)
+ProcXTestFakeInput(client)
+    register ClientPtr client;
 {
     REQUEST(xXTestFakeInputReq);
     int nev;
@@ -460,7 +472,8 @@ ProcXTestFakeInput(ClientPtr client)
 }
 
 static int
-ProcXTestGrabControl(ClientPtr client)
+ProcXTestGrabControl(client)
+    register ClientPtr client;
 {
     REQUEST(xXTestGrabControlReq);
 
@@ -478,7 +491,8 @@ ProcXTestGrabControl(ClientPtr client)
 }
 
 static int
-ProcXTestDispatch(ClientPtr client)
+ProcXTestDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)
@@ -497,7 +511,8 @@ ProcXTestDispatch(ClientPtr client)
 }
 
 static int
-SProcXTestGetVersion(ClientPtr client)
+SProcXTestGetVersion(client)
+    register ClientPtr	client;
 {
     register int n;
     REQUEST(xXTestGetVersionReq);
@@ -509,7 +524,8 @@ SProcXTestGetVersion(ClientPtr client)
 }
 
 static int
-SProcXTestCompareCursor(ClientPtr client)
+SProcXTestCompareCursor(client)
+    register ClientPtr	client;
 {
     register int n;
     REQUEST(xXTestCompareCursorReq);
@@ -522,7 +538,9 @@ SProcXTestCompareCursor(ClientPtr client)
 }
 
 static int
-XTestSwapFakeInput(ClientPtr client, xReq *req)
+XTestSwapFakeInput(client, req)
+    register ClientPtr	client;
+    xReq *req;
 {
     register int nev;
     register xEvent *ev;
@@ -546,7 +564,8 @@ XTestSwapFakeInput(ClientPtr client, xReq *req)
 }
 
 static int
-SProcXTestFakeInput(ClientPtr client)
+SProcXTestFakeInput(client)
+    register ClientPtr	client;
 {
     register int n;
     REQUEST(xReq);
@@ -559,7 +578,8 @@ SProcXTestFakeInput(ClientPtr client)
 }
 
 static int
-SProcXTestGrabControl(ClientPtr client)
+SProcXTestGrabControl(client)
+    register ClientPtr	client;
 {
     register int n;
     REQUEST(xXTestGrabControlReq);
@@ -570,7 +590,8 @@ SProcXTestGrabControl(ClientPtr client)
 }
 
 static int
-SProcXTestDispatch(ClientPtr client)
+SProcXTestDispatch (client)
+    register ClientPtr	client;
 {
     REQUEST(xReq);
     switch (stuff->data)

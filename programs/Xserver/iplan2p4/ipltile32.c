@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/iplan2p4/ipltile32.c,v 3.2 2005/10/14 15:17:19 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/ipltile32.c,v 3.1 1998/03/20 21:08:09 hohndel Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Fill 32 bit tiled rectangles.  Used by both PolyFillRect and PaintWindow.
  * no depth dependencies.
@@ -30,11 +37,13 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from the X Consortium.
 */
 
+/* $XConsortium: ipltile32.c,v 1.8 94/04/17 20:29:05 dpw Exp $ */
+
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 #include "gcstruct.h"
 #include "window.h"

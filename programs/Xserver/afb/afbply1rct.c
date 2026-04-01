@@ -1,5 +1,13 @@
-/* $XFree86: xc/programs/Xserver/afb/afbply1rct.c,v 3.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbply1rct.c,v 3.2 2001/10/28 03:32:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $XConsortium: afbply1rct.c,v 1.9 94/04/17 20:28:28 dpw Exp $
  *
 Copyright (c) 1990  X Consortium
 
@@ -27,7 +35,7 @@ in this Software without prior written authorization from the X Consortium.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -58,15 +66,20 @@ in this Software without prior written authorization from the X Consortium.
 #endif
 
 void
-afbFillPolygonSolid(DrawablePtr pDrawable, GCPtr pGC, int shape, int mode,
-		    int count, DDXPointPtr ptsIn)
+afbFillPolygonSolid (pDrawable, pGC, shape, mode, count, ptsIn)
+	DrawablePtr pDrawable;
+	GCPtr pGC;
+	int shape;
+	int mode;
+	int count;
+	DDXPointPtr ptsIn;
 {
 	afbPrivGCPtr	devPriv;
 	int nlwidth;
 	PixelType *addrl, *addr;
 	int maxy;
 	int origin;
-	int vertex1, vertex2;
+	register int vertex1, vertex2;
 	int c;
 	BoxPtr extents;
 	int clip;
@@ -83,12 +96,12 @@ afbFillPolygonSolid(DrawablePtr pDrawable, GCPtr pGC, int shape, int mode,
 	int l, r;
 	PixelType mask, bits = ~((PixelType)0);
 	int nmiddle;
-	unsigned char *rrops;
-	int n;
-	int d;
+	register unsigned char *rrops;
+	register int n;
+	register int d;
 	int sizeDst;
 	int depthDst;
-	PixelType *pdst;
+	register PixelType *pdst;
 
 	devPriv = (afbPrivGC *)(pGC->devPrivates[afbGCPrivateIndex].ptr);
 

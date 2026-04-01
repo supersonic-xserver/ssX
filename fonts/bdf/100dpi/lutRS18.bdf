@@ -1,5 +1,5 @@
 STARTFONT 2.1
-COMMENT $XFree86$
+COMMENT $Xorg: $
 COMMENT ISO10646-1 extension by Markus Kuhn <mkuhn@acm.org>, 2001-03-20
 FONT -B&H-LucidaTypewriter-Medium-R-Normal-Sans-25-180-100-100-M-150-ISO10646-1
 SIZE 18 100 100

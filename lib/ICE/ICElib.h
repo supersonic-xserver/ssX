@@ -1,3 +1,11 @@
+/* $Xorg: ICElib.h,v 1.5 2001/02/09 02:03:26 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
 
 
@@ -423,17 +431,6 @@ extern void IceAppLockConn (
 extern void IceAppUnlockConn (
     IceConn		/* iceConn */
 );
-
-/* libSM uses these. */
-extern IcePoAuthStatus _IcePoMagicCookie1Proc(IceConn iceConn,
-	IcePointer *authStatePtr, Bool cleanUp, Bool swap, int authDataLen,
-	IcePointer authData, int *replyDataLenRet, IcePointer *replyDataRet,
-	char **errorStringRet);
-
-extern IcePaAuthStatus _IcePaMagicCookie1Proc(IceConn iceConn,
-	IcePointer *authStatePtr, Bool swap, int authDataLen,
-	IcePointer authData, int *replyDataLenRet, IcePointer *replyDataRet,
-	char **errorStringRet);
 
 _XFUNCPROTOEND
 

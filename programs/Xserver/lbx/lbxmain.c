@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/lbx/lbxmain.c,v 1.14tsi Exp $ */
+/* $Xorg: lbxmain.c,v 1.4 2001/02/09 02:05:16 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -45,13 +52,14 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/Xserver/lbx/lbxmain.c,v 1.13 2001/12/14 20:00:00 dawes Exp $ */
  
 #include <sys/types.h>
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/Xos.h>
+#include "X.h"
+#include "Xproto.h"
+#include "Xos.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -63,13 +71,13 @@ in this Software without prior written authorization from The Open Group.
 #include "extnsionst.h"
 #include "servermd.h"
 #define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
-#include <X11/extensions/lbxdeltastr.h>
+#include "lbxstr.h"
+#include "lbxdeltastr.h"
 #include "lbxserve.h"
-#include <X11/extensions/lbximage.h>
+#include "lbximage.h"
 #include "lbxsrvopts.h"
 #include "lbxtags.h"
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 #include <errno.h>
 #ifndef Lynx
 #include <sys/uio.h>
@@ -118,7 +126,7 @@ int lbxDebug = 0;
 
 
 void
-LbxExtensionInit(INITARGS)
+LbxExtensionInit(void)
 {
     ExtensionEntry *extEntry;
 

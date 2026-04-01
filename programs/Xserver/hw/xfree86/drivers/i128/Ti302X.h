@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i128/Ti302X.h,v 1.2 2001/03/03 22:26:11 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1994-2000 by Robin Cutshaw <robin@XFree86.Org>
  *
@@ -21,6 +28,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: $ */
 
 #include "compiler.h"
 

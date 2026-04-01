@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ttgload.h                                                              */
 /*                                                                         */
 /*    TrueType Glyph Loader (specification).                               */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,54 +23,40 @@
 /***************************************************************************/
 
 
-#ifndef TTGLOAD_H
-#define TTGLOAD_H
+#ifndef __TTGLOAD_H__
+#define __TTGLOAD_H__
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ttobjs.h"
 
 #ifdef TT_CONFIG_OPTION_BYTECODE_INTERPRETER
 #include "ttinterp.h"
 #endif
 
-#else /* FT_FLAT_COMPILE */
 
-#include <truetype/ttobjs.h>
-
-#ifdef TT_CONFIG_OPTION_BYTECODE_INTERPRETER
-#include <truetype/ttinterp.h>
-#endif
-
-#endif /* FT_FLAT_COMPILE */
+FT_BEGIN_HEADER
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+  FT_LOCAL( void )
+  TT_Get_Metrics( TT_HoriHeader*  header,
+                  FT_UInt         idx,
+                  FT_Short*       bearing,
+                  FT_UShort*      advance );
+
+  FT_LOCAL( void )
+  TT_Init_Glyph_Loading( TT_Face  face );
+
+  FT_LOCAL( FT_Error )
+  TT_Load_Glyph( TT_Size       size,
+                 TT_GlyphSlot  glyph,
+                 FT_UInt       glyph_index,
+                 FT_Int32      load_flags );
 
 
-  FT_LOCAL
-  void  TT_Get_Metrics( TT_HoriHeader*  header,
-                        FT_UInt         index,
-                        FT_Short*       bearing,
-                        FT_UShort*      advance );
+FT_END_HEADER
 
-  FT_LOCAL
-  void  TT_Init_Glyph_Loading( TT_Face  face );
-
-  FT_LOCAL
-  FT_Error  TT_Load_Glyph( TT_Size       size,
-                           TT_GlyphSlot  glyph,
-                           FT_UShort     glyph_index,
-                           FT_UInt       load_flags );
-
-#ifdef __cplusplus
-  }
-#endif
-
-#endif /* TTGLOAD_H */
+#endif /* __TTGLOAD_H__ */
 
 
 /* END */

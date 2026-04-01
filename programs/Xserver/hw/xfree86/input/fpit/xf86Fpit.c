@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1995, 1999 by Patrick Lecoanet, France. <lecoanet@cena.dgac.fr>
  * Copyright 2002, Red Hat <alan@redhat.com>
  *
@@ -585,15 +592,11 @@ InputDriverRec FPIT = {
 };
 
 #ifdef XFree86LOADER
-static MODULESETUPPROTO(Plug);
-
-static pointer Plug(ModuleDescPtr module, pointer options, int *errmaj, int *errmin)
+static pointer Plug(pointer module, pointer options, int *errmaj, int *errmin)
 {
 	xf86AddInputDriver(&FPIT, module, 0);
 	return module;
 }
-
-static MODULETEARDOWNPROTO(Unplug);
 
 static void Unplug(pointer p)
 {

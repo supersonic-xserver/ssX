@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
-/*  raster1.c                                                              */
+/*  raster.c                                                               */
 /*                                                                         */
 /*    FreeType monochrome rasterer module component (body only).           */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,18 +25,9 @@
 
 #define FT_MAKE_OPTION_SINGLE_OBJECT
 
-
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ftraster.c"
 #include "ftrend1.c"
-
-#else
-
-#include <raster/ftraster.c>
-#include <raster/ftrend1.c>
-
-#endif
 
 
 /* END */

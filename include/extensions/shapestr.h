@@ -1,29 +1,13 @@
-/* $XFree86: xc/include/extensions/shapestr.h,v 1.3tsi Exp $ */
-/************************************************************
+/*
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
+ *
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-Copyright 1989, 1998  The Open Group
-
-Permission to use, copy, modify, distribute, and sell this software and its
-documentation for any purpose is hereby granted without fee, provided that
-the above copyright notice appear in all copies and that both that
-copyright notice and this permission notice appear in supporting
-documentation.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of The Open Group shall not be
-used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from The Open Group.
-
-********************************************************/
 
 #ifndef _SHAPESTR_H_
 #define _SHAPESTR_H_
@@ -33,7 +17,7 @@ in this Software without prior written authorization from The Open Group.
  * These would really be in SHAPE's X.h and Xproto.h equivalents
  */
 
-#include <X11/extensions/shape.h>
+#include "shape.h"
 
 #define Window CARD32
 #define Time CARD32
@@ -41,7 +25,7 @@ in this Software without prior written authorization from The Open Group.
 #define SHAPENAME "SHAPE"
 
 #define SHAPE_MAJOR_VERSION	1	/* current version numbers */
-#define SHAPE_MINOR_VERSION	1
+#define SHAPE_MINOR_VERSION	0
 
 typedef struct _ShapeQueryVersion {
 	CARD8	reqType;		/* always ShapeReqCode */

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/lbx/lbxserve.h,v 1.6tsi Exp $ */
+/* $Xorg: lbxserve.h,v 1.4 2001/02/09 02:05:17 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -45,6 +52,7 @@ in this Software without prior written authorization from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XFree86: xc/programs/Xserver/lbx/lbxserve.h,v 1.5 2001/12/14 20:00:00 dawes Exp $ */
 
 #ifndef _LBXSERVE_H_
 
@@ -53,10 +61,9 @@ in this Software without prior written authorization from The Open Group.
 
 #define _LBXSERVE_H_
 #define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
-#include <X11/extensions/lbxdeltastr.h>
-#include <X11/extensions/lbxopts.h>
-#include "extnsionst.h"
+#include "lbxstr.h"
+#include "lbxdeltastr.h"
+#include "lbxopts.h"
 
 #define MAX_LBX_CLIENTS	MAXCLIENTS
 #define	MAX_NUM_PROXIES	(MAXCLIENTS >> 1)
@@ -215,7 +222,7 @@ extern int LbxDecodeArc ( char *in, char *inend, short *out );
 extern LbxProxyPtr LbxPidToProxy ( int pid );
 extern void LbxReencodeOutput ( ClientPtr client, char *pbuf, int *pcount,
 				char *cbuf, int *ccount );
-extern void LbxExtensionInit ( INITARGS );
+extern void LbxExtensionInit ( void );
 extern void LbxCloseClient ( ClientPtr client );
 extern void LbxSetForBlock ( LbxClientPtr lbxClient );
 extern int ProcLbxDispatch ( ClientPtr client );

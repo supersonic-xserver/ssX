@@ -1,8 +1,5 @@
 .XFree86_Version
 bin
-lib64/libAppleWM.so.1.0
-lib64/libAppleWM.so.1
-lib64/libAppleWM.so
 lib64/libFS.so.6.0
 lib64/libFS.so.6
 lib64/libFS.so
@@ -15,6 +12,9 @@ lib64/libGLU.so
 lib64/libGLw.so.1.0
 lib64/libGLw.so.1
 lib64/libGLw.so
+lib64/libI810XvMC.so.1.0
+lib64/libI810XvMC.so.1
+lib64/libI810XvMC.so
 lib64/libICE.so.6.3
 lib64/libICE.so.6
 lib64/libICE.so
@@ -35,7 +35,7 @@ lib64/libXTrap.so.6
 lib64/libXTrap.so
 lib64/libXaw.so.6.1
 lib64/libXaw.so.6
-lib64/libXaw.so.7.1
+lib64/libXaw.so.7.0
 lib64/libXaw.so.7
 lib64/libXaw.so
 lib64/libXcursor.so.1.0
@@ -82,7 +82,7 @@ lib64/libXrender.so
 lib64/libXss.so.1.0
 lib64/libXss.so.1
 lib64/libXss.so
-lib64/libXt.so.6.1
+lib64/libXt.so.6.0
 lib64/libXt.so.6
 lib64/libXt.so
 lib64/libXtst.so.6.1

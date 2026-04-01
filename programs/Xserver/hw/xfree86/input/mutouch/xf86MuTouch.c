@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1996, 1999 by Patrick Lecoanet, France. <lecoanet@cena.dgac.fr>
  *                                                                            
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -1299,10 +1306,8 @@ InputDriverRec MUTOUCH = {
 };
 
 #ifdef XFree86LOADER
-static MODULESETUPPROTO(Plug);
-
 static pointer
-Plug(ModuleDescPtr	module,
+Plug(pointer	module,
      pointer	options,
      int	*errmaj,
      int	*errmin)
@@ -1311,8 +1316,6 @@ Plug(ModuleDescPtr	module,
 
   return module;
 }
-
-static MODULETEARDOWNPROTO(Unplug);
 
 static void
 Unplug(pointer	p)

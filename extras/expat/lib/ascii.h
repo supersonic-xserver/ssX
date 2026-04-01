@@ -1,6 +1,12 @@
-/*
-Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
-See the file COPYING for copying permission.
+/* Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   See the file COPYING for copying permission.
 */
 
 #define ASCII_A 0x41
@@ -69,7 +75,7 @@ See the file COPYING for copying permission.
 #define ASCII_9 0x39
 
 #define ASCII_TAB 0x09
-#define ASCII_SPACE 0x20 
+#define ASCII_SPACE 0x20
 #define ASCII_EXCL 0x21
 #define ASCII_QUOT 0x22
 #define ASCII_AMP 0x26

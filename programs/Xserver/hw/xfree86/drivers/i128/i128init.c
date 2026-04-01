@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i128/i128init.c,v 1.6 2003/09/24 02:43:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1995-2000 by Robin Cutshaw <robin@XFree86.Org>
  * Copyright 1998 by Number Nine Visual Technology, Inc.
@@ -22,6 +29,9 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+
+/* $XConsortium: $ */
+
 
 #include "xf86.h"
 #include "xf86_ansic.h"

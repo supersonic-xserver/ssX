@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/twm/parse.h,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/twm/parse.h,v 1.11 2001/12/14 20:01:09 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*****************************************************************************/
 /*
 
@@ -53,6 +60,8 @@ in this Software without prior written authorization from The Open Group.
 
 /**********************************************************************
  *
+ * $Xorg: parse.h,v 1.4 2001/02/09 02:05:37 xorgcvs Exp $
+ *
  * .twmrc parsing externs
  *
  *  8-Apr-88 Tom LaStrange        Initial Version.
@@ -68,7 +77,7 @@ extern void assign_var_savecolor ( void );
 extern int do_single_keyword ( int keyword );
 extern int do_string_keyword ( int keyword, char *s );
 extern int do_number_keyword ( int keyword, int num );
-extern name_list **do_colorlist_keyword ( int keyword, int colormode,
+extern name_list **do_colorlist_keyword ( int keyword, int colormode, 
 					  char *s );
 extern int do_color_keyword ( int keyword, int colormode, char *s );
 void put_pixel_on_root ( Pixel pixel );
@@ -79,7 +88,7 @@ extern int ParseTwmrc ( char *filename );
 extern int parse_keyword ( char *s, int *nump );
 extern void TwmOutput ( int c );
 extern void twmUnput ( int c );
-extern void do_squeeze_entry ( name_list **list, char *name, int justify,
+extern void do_squeeze_entry ( name_list **list, char *name, int justify, 
 			       int num, int denom );
 
 
@@ -134,8 +143,6 @@ extern int mods;
 #define F_CUTFILE		43
 #define F_SHOWLIST		44
 #define F_HIDELIST		45
-#define F_CHANGELABEL		46
-#define F_TOTALZOOM		47
 
 #define F_MENU			101	/* string */
 #define F_WARPNEXT		112	/* string */

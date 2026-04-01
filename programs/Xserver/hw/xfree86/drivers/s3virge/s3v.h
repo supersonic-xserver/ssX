@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v.h,v 1.34tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v.h,v 1.33 2004/03/29 16:25:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (C) 1994-1999 The XFree86 Project, Inc.
@@ -78,6 +92,19 @@
 /* All drivers using the mi colormap manipulation need this */
 #include "micmap.h"
 
+/* Drivers using cfb need this */
+
+#define PSZ 8
+#include "cfb.h"
+#undef PSZ
+
+/* Drivers supporting bpp 16, 24 or 32 with cfb need these */
+
+#include "cfb16.h"
+#include "cfb24.h"
+#include "cfb32.h"
+#include "cfb24_32.h"
+
 /* fb support */
 
 #include "fb.h"
@@ -90,7 +117,7 @@
 #include "vbe.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "fourcc.h"
 
 #ifndef _S3V_VGAHWMMIO_H

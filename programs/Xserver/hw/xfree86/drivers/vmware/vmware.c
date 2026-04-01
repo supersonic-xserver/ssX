@@ -1,8 +1,19 @@
 /* **********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1998-2001 VMware, Inc.
  * All Rights Reserved
  * **********************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vmware/vmware.c,v 1.28tsi Exp $ */
+#ifdef VMX86_DEVEL
+char rcsId_vmware[] =
+    "Id: vmware.c,v 1.11 2001/02/23 02:10:39 yoel Exp $";
+#endif
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vmware/vmware.c,v 1.24 2005/02/26 01:07:13 dawes Exp $ */
 
 /*
  * TODO: support the vmware linux kernel fb driver (Option "UseFBDev").
@@ -61,7 +72,7 @@
 
 static const char VMWAREBuildStr[] = "VMware Guest X Server " 
     VMW_STRING(VMWARE_MAJOR_VERSION) "." VMW_STRING(VMWARE_MINOR_VERSION)
-    "." VMW_STRING(VMWARE_PATCHLEVEL) " - build=$Name:  $\n";
+    "." VMW_STRING(VMWARE_PATCHLEVEL) " - build=$Name: netbsd-5-2-3-RELEASE $\n";
 
 static SymTabRec VMWAREChipsets[] = {
     { PCI_CHIP_VMWARE0405, "vmware0405" },
@@ -323,7 +334,7 @@ VMXGetVMwareSvgaId(VMWAREPtr pVMWARE)
  *
  *  RewriteTagString --
  *
- *      Rewrites the given string, removing the $Name:  $, and
+ *      Rewrites the given string, removing the $Name: netbsd-5-2-3-RELEASE $, and
  *      replacing it with the contents.  The output string must
  *      have enough room, or else.
  *
@@ -367,10 +378,6 @@ RewriteTagString(const char *istr, char *ostr, int osize)
 static void
 VMWAREIdentify(int flags)
 {
-    char buildString[sizeof(VMWAREBuildStr)];
-
-    RewriteTagString(VMWAREBuildStr, buildString, sizeof(VMWAREBuildStr));
-    xf86MsgVerb(X_PROBED, 4, "%s", buildString);
     xf86PrintChipsets(VMWARE_NAME, "driver for VMware SVGA", VMWAREChipsets);
 }
 
@@ -391,7 +398,6 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
     int i;
     ClockRange* clockRanges;
     IOADDRESS domainIOBase = 0;
-    ModuleDescPtr pMod;
 
 #ifndef BUILD_FOR_420
     domainIOBase = pScrn->domainIOBase;
@@ -437,11 +443,11 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
                "VMware SVGA regs at (0x%04lx, 0x%04lx)\n",
                pVMWARE->indexReg, pVMWARE->valueReg);
 
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw"))) {
+    if (!xf86LoadSubModule(pScrn, "vgahw")) {
         return FALSE;
     }
 
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
     if (!vgaHWGetHWRec(pScrn)) {
         return FALSE;
@@ -762,32 +768,28 @@ VMWAREPreInit(ScrnInfoPtr pScrn, int flags)
     pScrn->currentMode = pScrn->modes;
     xf86PrintModes(pScrn);
     xf86SetDpi(pScrn, 0, 0);
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+    if (!xf86LoadSubModule(pScrn, "fb") ||
+        !xf86LoadSubModule(pScrn, "shadowfb")) {
         VMWAREFreeRec(pScrn);
         return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
-    if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
-        VMWAREFreeRec(pScrn);
-        return FALSE;
-    }
-    xf86LoaderModReqSymLists(pMod, shadowfbSymbols, NULL);
+    xf86LoaderReqSymLists(fbSymbols, shadowfbSymbols, NULL);
 
     /* Need ramdac for hwcursor */
     if (pVMWARE->hwCursor) {
-        if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+        if (!xf86LoadSubModule(pScrn, "ramdac")) {
             VMWAREFreeRec(pScrn);
             return FALSE;
         }
-        xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+        xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
 
     if (!pVMWARE->noAccel) {
-        if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+        if (!xf86LoadSubModule(pScrn, "xaa")) {
             VMWAREFreeRec(pScrn);
             return FALSE;
         }
-        xf86LoaderModReqSymLists(pMod, vmwareXaaSymbols, NULL);
+        xf86LoaderReqSymLists(vmwareXaaSymbols, NULL);
     }
 
     return TRUE;
@@ -1129,8 +1131,7 @@ VMWARELoadPalette(ScrnInfoPtr pScrn, int numColors, int* indices,
 }
 
 static Bool
-VMWAREScreenInit(int scrnIndex, ScreenPtr pScreen,
-                 const int argc, const char **argv)
+VMWAREScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     vgaHWPtr hwp;
@@ -1366,6 +1367,10 @@ VMWAREProbe(DriverPtr drv, int flags)
     int *usedChips;
     int i;
     Bool foundScreen = FALSE;
+    char buildString[sizeof(VMWAREBuildStr)];
+
+    RewriteTagString(VMWAREBuildStr, buildString, sizeof(VMWAREBuildStr));
+    xf86MsgVerb(X_PROBED, 4, "%s", buildString);
 
     numDevSections = xf86MatchDevice(VMWARE_DRIVER_NAME, &devSections);
     if (numDevSections <= 0) {
@@ -1430,7 +1435,7 @@ static MODULESETUPPROTO(vmwareSetup);
 XF86ModuleData vmwareModuleData = { &vmwareVersRec, vmwareSetup, NULL };
 
 static pointer
-vmwareSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+vmwareSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -1438,8 +1443,8 @@ vmwareSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
         setupDone = TRUE;
         xf86AddDriver(&VMWARE, module, 0);
 
-        LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, ramdacSymbols,
-                             shadowfbSymbols, vmwareXaaSymbols, NULL);
+        LoaderRefSymLists(vgahwSymbols, fbSymbols, ramdacSymbols,
+                          shadowfbSymbols, vmwareXaaSymbols, NULL);
 
         return (pointer)1;
     }

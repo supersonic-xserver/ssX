@@ -1,6 +1,12 @@
-/* $XFree86: xc/programs/twm/screen.h,v 1.8tsi Exp $ */
 /*
- *
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * 
 Copyright 1989, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -26,11 +32,14 @@ in this Software without prior written authorization from The Open Group.
 
 /***********************************************************************
  *
+ * $Xorg: screen.h,v 1.4 2001/02/09 02:05:37 xorgcvs Exp $
+ *
  * twm per-screen data include file
  *
  * 11-3-88 Dave Payne, Apple Computer			File created
  *
  ***********************************************************************/
+/* $XFree86: xc/programs/twm/screen.h,v 1.7 2004/06/08 01:17:02 dawes Exp $ */
 
 #ifndef _SCREEN_
 #define _SCREEN_
@@ -98,7 +107,7 @@ typedef struct ScreenInfo
     MouseButton WindowFunction;
 
     struct {
-      Colormaps *cmaps;		/* current list of colormap windows */
+      Colormaps *cmaps; 	/* current list of colormap windows */
       int maxCmaps;		/* maximum number of installed colormaps */
       unsigned long first_req;	/* seq # for first XInstallColormap() req in
 				   pass thru loading a colortable list */

@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# $XFree86$
-#
 # compute arctangent table for CORDIC computations in fttrigon.c
 import sys, math
 

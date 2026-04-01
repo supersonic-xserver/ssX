@@ -92,4 +92,4 @@ EXPORTS
  _XkbErrMessages
  _XkbKSCheckCase
 
-/* $XFree86: xc/lib/xkbfile/xkbfile-def.cpp,v 1.2 2003/11/06 03:25:42 dawes Exp $ */
+/* $XFree86: xc/lib/xkbfile/xkbfile-def.cpp,v 1.3 2004/05/06 01:17:30 dawes Exp $ */

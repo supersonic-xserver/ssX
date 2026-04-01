@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/examples/dmxwininfo.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/examples/dmxwininfo.c,v 1.1 2004/06/30 20:21:43 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 2003 by the XFree86 Project, Inc.
  *
@@ -41,7 +48,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xmu/SysUtil.h>
-#include <X11/extensions/dmxext.h>
+#include "dmxext.h"
 
 static const char *FontName = "fixed";
 

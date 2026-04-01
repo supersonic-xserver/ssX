@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/GL/glx/glxext.h,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/glx/glxext.h,v 1.9 2004/12/10 16:06:59 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef _glxext_h_
 #define _glxext_h_
 
@@ -84,7 +91,7 @@ extern int DoCreateContext(__GLXclientState *cl, GLXContextID gcId,
 extern int DoCreateGLXPixmap(__GLXclientState *cl, VisualID visual,
     GLuint screenNum, XID pixmapId, XID glxpixmapId);
 
-extern void GlxExtensionInit(INITARGS);
+extern void GlxExtensionInit(void);
 
 extern Bool __glXCoreType(void);
 

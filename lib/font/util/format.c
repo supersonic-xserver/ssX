@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/util/format.c,v 1.5tsi Exp $ */
+/* $Xorg: format.c,v 1.4 2001/02/09 02:04:04 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990, 1991 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -50,10 +57,11 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/lib/font/util/format.c,v 1.5 2001/12/14 19:56:57 dawes Exp $ */
 
-#include	<X11/fonts/FSproto.h>
-#include	<X11/fonts/font.h>
-#include	<X11/fonts/fontstruct.h>
+#include	"FSproto.h"
+#include	"font.h"
+#include	"fontstruct.h"
 #include	"fontutil.h"
 
 int

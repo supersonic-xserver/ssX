@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -229,7 +236,7 @@ extern void
 _glxapi_set_no_op_table(struct _glxapi_table *t);
 
 
-extern const GLvoid *
+extern __GLXextFuncPtr
 _glxapi_get_proc_address(const char *funcName);
 
 

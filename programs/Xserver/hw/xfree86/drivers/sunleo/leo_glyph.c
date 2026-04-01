@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Acceleration for the Leo (ZX) framebuffer - Glyph rops.
  *
  * Copyright (C) 1999, 2000 Jakub Jelinek (jakub@redhat.com)
@@ -20,16 +27,15 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunleo/leo_glyph.c,v 1.2 2005/10/14 15:16:46 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunleo/leo_glyph.c,v 1.1 2000/05/18 23:21:40 dawes Exp $ */
 
 #define PSZ 32
 
 #include "leo.h"
-#include "leo_gc.h"
 
 #include "pixmapstr.h"
 #include "scrnintstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 
 #include "cfb.h"

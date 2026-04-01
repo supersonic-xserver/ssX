@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -48,8 +48,6 @@
 \s+1\fBXlib Functions and Protocol Requests\fP\s-1
 .sp 2
 .na
-.EF ''\fB % \fP''
-.OF ''\fB % \fP''
 .LP
 .XS
 Appendix A: Xlib Functions and Protocol Requests
@@ -164,7 +162,6 @@ XGetKeyboardControl	GetKeyboardControl
 XGetKeyboardMapping	GetKeyboardMapping
 XGetModifierMapping	GetModifierMapping
 XGetMotionEvents	GetMotionEvents
-XGetModifierMapping	GetModifierMapping
 XGetNormalHints	GetProperty
 XGetPointerControl	GetPointerControl
 XGetPointerMapping	GetPointerMapping
@@ -351,11 +348,7 @@ AllocColorPlanes	XAllocColorPlanes
 AllocNamedColor	XAllocNamedColor
 AllowEvents	XAllowEvents
 Bell	XBell
-SetAccessControl	XDisableAccessControl
-	XEnableAccessControl
-	XSetAccessControl
 ChangeActivePointerGrab	XChangeActivePointerGrab
-SetCloseDownMode	XSetCloseDownMode
 ChangeGC	XChangeGC
 	XSetArcMode
 	XSetBackground
@@ -512,8 +505,8 @@ GrabKey	XGrabKey
 GrabKeyboard	XGrabKeyboard
 GrabPointer	XGrabPointer
 GrabServer	XGrabServer
-ImageText16	XDrawImageString16
 ImageText8	XDrawImageString
+ImageText16	XDrawImageString16
 InstallColormap	XInstallColormap
 InternAtom	XGetWMColormapWindows
 	XGetWMProtocols
@@ -549,10 +542,10 @@ PolyRectangle	XDrawRectangle
 	XDrawRectangles
 PolySegment	XDrawLine
 	XDrawSegments
-PolyText16	XDrawString16
-	XDrawText16
 PolyText8	XDrawString
 	XDrawText
+PolyText16	XDrawString16
+	XDrawText16
 PutImage	XPutImage
 	XCreateBitmapFromData
 	XCreatePixmapFromData
@@ -580,6 +573,9 @@ SendEvent	XIconifyWindow
 	XReconfigureWMWindow
 	XSendEvent
 	XWithdrawWindow
+SetAccessControl	XDisableAccessControl
+	XEnableAccessControl
+	XSetAccessControl
 SetClipRectangles	XSetClipRectangles
 SetCloseDownMode	XSetCloseDownMode
 SetDashes	XSetDashes

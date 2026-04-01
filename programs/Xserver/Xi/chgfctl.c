@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/Xi/chgfctl.c,v 3.5tsi Exp $ */
+/* $Xorg: chgfctl.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /************************************************************
 
@@ -45,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/chgfctl.c,v 3.4 2001/12/14 19:58:54 dawes Exp $ */
 
 /********************************************************************
  *
@@ -54,11 +69,11 @@ SOFTWARE.
 
 #define	 NEED_EVENTS			/* for inputstr.h    */
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>			/* control constants */
+#include "XI.h"
+#include "XIproto.h"			/* control constants */
 
 #include "extnsionst.h"
 #include "extinit.h"			/* LookupDeviceIntRec */
@@ -500,7 +515,8 @@ ChangeStringFeedback (client, dev, mask, s, f)
     StringFeedbackPtr 	s;
     xStringFeedbackCtl 	*f;
     {
-    char n;
+    register char n;
+    register long *p;
     int		i, j;
     KeySym	*syms, *sup_syms;
 
@@ -508,7 +524,12 @@ ChangeStringFeedback (client, dev, mask, s, f)
     if (client->swapped)
 	{
 	swaps(&f->length,n);	/* swapped num_keysyms in calling proc */
-	SwapLongs((CARD32 *)syms, f->num_keysyms);
+	p = (long *) (syms);
+	for (i=0; i<f->num_keysyms; i++)
+	    {
+	    swapl(p, n);
+	    p++;
+	    }
 	}
 
     if (f->num_keysyms > s->ctrl.max_symbols)

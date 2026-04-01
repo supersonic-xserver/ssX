@@ -1,0 +1,201 @@
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/input/aiptek/aiptek.man,v 1.2 2005/06/11 02:40:55 dawes Exp $ 
+.\" shorthand for double quote that works everywhere.
+.ds q \N'34'
+.TH AIPTEK __drivermansuffix__ __vendorversion__
+.SH NAME
+aiptek \- Aiptek USB Digital Tablet Input Driver for Linux
+.SH SYNOPSIS
+.nf
+.B "Section \*qInputDevice\*q"
+.BI "  Identifier \*q" idevname \*q
+.B  "  Driver \*qaiptek\*q"
+.BI "  Option \*qDevice\*q   \*q" devpath \*q
+\ \ ...
+.B EndSection
+.fi
+.SH DESCRIPTION
+.B aiptek 
+is an XFree86 input driver for Aiptek HyperPen USB-based tablet devices.
+This driver only supports the USB protocol, and only under Linux; for 
+RS-232C-based HyperPens, please see the
+hyperpen(__drivermansuffix__) driver.
+.PP
+The
+.B aiptek
+driver functions as a pointer input device, and may be used as the
+X server's core pointer.
+.SH SUPPORTED HARDWARE
+This driver supports the Aiptek HyperPen 4000U, 5000U, 6000U, 8000U
+and 12000U USB-based input tablet on some Linux platforms.
+.SH CONFIGURATION DETAILS
+Please refer to XF86Config(__filemansuffix__) for general configuration
+details and for options that can be used with all input drivers.  This
+section only covers configuration details specific to this driver.
+.PP
+Multiple instances of the Aiptek devices can cohabit. It can be useful
+to define multiple devices with different active zones. Each device
+supports the following entries:
+.RS 8
+.TP 4
+.BR "Option \*qType\*q \*qstylus" | eraser | cursor\*q
+sets the type of tool the device represent. This option is mandatory.
+.TP 4
+.BI "Option \*qDevice\*q \*q" path \*q
+sets the path to the special file which represents serial line where
+the tablet is plugged.  You have to specify it for each subsection with
+the same value if you want to have multiple devices with the same tablet.
+This option is mandatory.
+.TP 4
+.BI "Option \*qUSB\*q \*q" on"\fP
+specifies that you are using the USB bus to communicate with your tablet.
+This setting is mandatory, as USB is the only protocol supported by this driver.
+.TP 4
+.BI "Option \*qDeviceName\*q \*q" name \*q
+sets the name of the X device.
+.TP 4
+.BR "Option \*qMode\*q \*qRelative" | Absolute\*q
+sets the mode of the device.
+.TP 4
+.BI "Option \*qHistorySize\*q \*q" number \*q
+sets the motion history size. By default the value is zero.
+.TP 4
+.BI "Option \*qAlwaysCore\*q \*q" on \*q
+enables the sharing of the core pointer. When this feature is enabled, the
+device will take control of the core pointer (and thus will emit core events)
+and at the same time will be able, when asked so, to report extended events.
+You can use the last available integer feedback to control this feature. When
+the value of the feedback is zero, the feature is disabled. The feature is
+enabled for any other value.
+.TP 4
+.BI "Option \*qXTop\*q \*q" number \*q
+First of three sets of parameters to set the active zone. This sets the X coordinate of the top corner of the active zone.
+.RB \*q TopX \*q
+is a synonym.
+.TP 4
+.BI "Option \*qYTop\*q \*q" number \*q
+First of three sets of parameters to set the active zone. This sets the
+Y coordinate of the top corner of the active zone.
+.RB \*q TopY \*q
+is a synonym.
+.TP 4
+.BI "Option \*qXBottom\*q \*q" number \*q
+First of three sets of parameters to set the active zone. This sets the
+X coordinate of the bottom corner of the active zone.
+.RB \*q BottomX \*q
+is a synonym.
+.TP 4
+.BI "Option \*qYBottom\*q \*q" number \*q
+First of three sets of parameters to set the active zone. This sets the
+Y coordinate of the bottom corner of the active zone.
+.RB \*q BottomY \*q
+is a synonym.
+.TP 4
+.BI "Option \*qXMax\*q \*q" number \*q
+Second of three sets of parameters to set the active zone. This sets the
+the X coordinate of the bottom corner of the active zone. The Top X
+corner's coordinate is fixed at 0.
+.RB \*q MaxX \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qYMax\*q \*q" number \*q
+Second of three sets of parameters to set the active zone. This sets the
+the Y coordinate of the bottom corner of the active zone. The Top Y
+corner's coordinate is fixed at 0.
+.RB \*q MaxY \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qXOffset\*q \*q" number \*q
+Third of three sets of parameters to set the active zone. This sets the
+X coordinate of the top corner of the active zone.
+.RB \*q OffsetX \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qYOffset\*q \*q" number \*q
+Third of three sets of parameters to set the active zone. This sets the
+Y coordinate of the top corner of the active zone.
+.RB \*q OffsetY \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qXSize\*q \*q" number \*q
+Third of three sets of parameters to set the active zone. This sets the
+X coordinate of the bottom corner of the active zone. Unlike others,
+this parameter is expressed in \fIrelative\fP coordinates from the
+.RB \*q XOffset \*q
+parameter.
+.RB \*q SizeX \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qYSize\*q \*q" number \*q
+Third of three sets of parameters to set the active zone. This sets the
+Y coordinate of the bottom corner of the active zone. Unlike others,
+this parameter is expressed in \fIrelative\fP coordinates from the
+.RB \*q YOffset \*q
+parameter.
+.RB \*q SizeY \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qZMin\*q \*q" number \*q
+Minimum pressure reading that will be accepted from the Stylus tool.
+.RB \*q MinZ \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qZMax\*q \*q" number \*q
+Maximum pressure reading that will be accepted from the Stylus tool.
+.RB \*q MaxZ \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qXThreshold\*q \*q" number \*q
+Minimal change in X coordinate position that will be accepted as data
+input.
+.RB \*q ThresholdX \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qYThreshold\*q \*q" number \*q
+Minimal change in Y coordinate position that will be accepted as data
+input.
+.RB \*q ThresholdY \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qZThreshold\*q \*q" number \*q
+Minimal change in pressure reading that will be accepted as data input.
+.RB \*q ThresholdZ \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qInvX\*q \*q" on \*q
+Inverts X coordinate reports.
+.RB \*q XInv \*q
+is a synomyn.
+.TP 4
+.BI "Option \*qInvY\*q \*q" on \*q
+Inverts Y coordinate reports.
+.RB \*q YInv \*q
+is a synomyn.
+.TP 4
+.BR "Option \*qPressure\*q \*qsoft" | hard | linear\*q
+Pressure reports either delivered in linearly incremental values (default),
+or perturbed by one of two log-linear algorithms
+.RB (\*q soft \*q
+or
+.RB \*q hard \*q).
+.TP 4
+.BI "Option \*qKeepShape\*q \*q" on \*q
+When this option is enabled, the active zone  begins according to TopX
+and TopY.  The bottom corner is adjusted to keep the ratio width/height
+of the active zone the same as the screen while maximizing the area
+described by the active area set of parameters, XTop/YTop/XBottom/YBottom,
+XMax/YMax, or XOffset/YOffset/XSize/YSize.
+.TP 4
+.BI "Option \*qDebugLevel\*q \*q" number \*q
+sets the level of debugging info reported.
+.RE
+.PP
+This driver is currently Linux specific.
+.PP
+.SH "SEE ALSO"
+XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__), hyperpen(__drivermansuffix__).
+.SH AUTHORS
+Bryan W. Headley <bheadley@earthlink.net>
+.SH PROJECT PAGE
+http://aiptektablet.sourceforge.net tracks ongoing development of this driver,
+the Linux kernel driver, and a GUI front-end application that works in
+concert with the above.

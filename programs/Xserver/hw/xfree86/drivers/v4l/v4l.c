@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *  video4linux Xv Driver 
  *  based on Michael Schimek's permedia 2 driver.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/v4l/v4l.c,v 1.36dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/v4l/v4l.c,v 1.34 2003/12/31 06:08:53 dawes Exp $ */
 
 #include "videodev.h"
 #include "xf86.h"
@@ -12,15 +19,14 @@
 #include "xf86PciInfo.h"
 #include "xf86fbman.h"
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "regionstr.h"
 #include "dgaproc.h"
 #include "xf86str.h"
 
 #include <asm/ioctl.h>		/* _IORW(xxx) #defines are here */
 
-#ifdef DEBUG
-# undef DEBUG
+#if 0
 # define DEBUG(x) (x)
 #else
 # define DEBUG(x)
@@ -62,7 +68,7 @@ static XF86ModuleVersionInfo v4lVersRec =
 XF86ModuleData v4lModuleData = { &v4lVersRec, v4lSetup, NULL };
 
 static pointer
-v4lSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+v4lSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
         const char *osname;
 	static Bool setupDone = FALSE;

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 by Frederic Lepied, France. <Lepied@XFree86.org>
  *                                                                            
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,7 @@
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/void/void.c,v 1.4 2005/10/14 15:16:58 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/void/void.c,v 1.3 2004/04/26 22:26:11 dawes Exp $ */
 
 /* Input device which doesn't output any event. This device can be used
  * as a core pointer or as a core keyboard.
@@ -41,7 +48,7 @@
 #include <xf86_OSproc.h>
 #include <xf86Xinput.h>
 #include <exevents.h>		/* Needed for InitValuator/Proximity stuff */
-#include <X11/keysym.h>
+#include <keysym.h>
 #include <mipointer.h>
 
 #include <xf86Module.h>
@@ -235,8 +242,6 @@ InputDriverRec VOID = {
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULETEARDOWNPROTO(xf86VoidUnplug);
-
 static void
 xf86VoidUnplug(pointer	p)
 {
@@ -247,10 +252,8 @@ xf86VoidUnplug(pointer	p)
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULESETUPPROTO(xf86VoidPlug);
-
 static pointer
-xf86VoidPlug(ModuleDescPtr	module,
+xf86VoidPlug(pointer	module,
 	    pointer	options,
 	    int		*errmaj,
 	    int		*errmin)

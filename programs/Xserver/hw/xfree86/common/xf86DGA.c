@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DGA.c,v 1.51 2005/10/14 15:16:32 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DGA.c,v 1.50 2005/02/18 22:38:31 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1998-2002 by The XFree86 Project, Inc.
  *
@@ -32,7 +39,7 @@
 #include "xf86str.h"
 #include "xf86Priv.h"
 #include "dgaproc.h"
-#include <X11/extensions/xf86dgastr.h>
+#include "xf86dgastr.h"
 #include "colormapst.h"
 #include "pixmapstr.h"
 #include "inputstr.h"
@@ -40,7 +47,7 @@
 #include "servermd.h"
 #include "micmap.h"
 #ifdef XKB
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #endif
 #include "xf86Xinput.h"
 
@@ -502,11 +509,7 @@ DGAActive(int indx)
 
 
 
-/*
- * Called whenever the server is shutdown, before the CloseScreen phase.
- * It ensures that all screens are not in DGA mode before proceeding with
- * the shutdown/reset.
- */
+/* Called by the event code in case the server is abruptly terminated */
 
 void 
 DGAShutdown()

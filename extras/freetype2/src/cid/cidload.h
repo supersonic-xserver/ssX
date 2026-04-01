@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cidload.h                                                              */
 /*                                                                         */
 /*    CID-keyed Type1 font loader (specification).                         */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,25 +23,16 @@
 /***************************************************************************/
 
 
-#ifndef CIDLOAD_H
-#define CIDLOAD_H
+#ifndef __CIDLOAD_H__
+#define __CIDLOAD_H__
 
-#include <freetype/internal/ftstream.h>
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
+#include FT_INTERNAL_STREAM_H
 #include "cidparse.h"
 
-#else
 
-#include <cid/cidparse.h>
-
-#endif
-
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
   typedef struct  CID_Loader_
@@ -45,25 +43,18 @@
   } CID_Loader;
 
 
-  FT_LOCAL
-  FT_Long  cid_get_offset( FT_Byte**  start,
-                           FT_Byte    offsize );
+  FT_LOCAL( FT_Long )
+  cid_get_offset( FT_Byte**  start,
+                  FT_Byte    offsize );
 
-  FT_LOCAL
-  void  cid_decrypt( FT_Byte*   buffer,
-                     FT_Int     length,
-                     FT_UShort  seed );
-
-  FT_LOCAL
-  FT_Error  CID_Open_Face( CID_Face  face );
+  FT_LOCAL( FT_Error )
+  cid_face_open( CID_Face  face,
+                 FT_Int    face_index );
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-
-#endif /* CIDLOAD_H */
+#endif /* __CIDLOAD_H__ */
 
 
 /* END */

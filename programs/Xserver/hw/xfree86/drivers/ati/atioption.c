@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atioption.c,v 1.27tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atioption.c,v 1.24 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1999 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1999 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -60,6 +67,9 @@ const OptionInfoRec ATIPublicOptions[] =
         {0, },
         FALSE,
     },
+
+#ifndef AVOID_CPIO
+
     {
         ATI_OPTION_LINEAR,
         "linear",
@@ -67,6 +77,9 @@ const OptionInfoRec ATIPublicOptions[] =
         {0, },
         FALSE
     },
+
+#endif /* AVOID_CPIO */
+
     {
         ATI_OPTION_MMIO_CACHE,
         "mmio_cache",

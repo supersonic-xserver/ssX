@@ -1,3 +1,19 @@
+/* $Xorg: globals.h,v 1.4 2001/02/09 02:03:30 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -28,6 +44,15 @@ in this Software without prior written authorization from The Open Group.
 /*
  * Author: Ralph Mor, X Consortium
  */
+
+extern void _SmcDefaultErrorHandler ();
+extern void _SmsDefaultErrorHandler ();
+
+extern IcePoAuthStatus _IcePoMagicCookie1Proc ();
+extern IcePaAuthStatus _IcePaMagicCookie1Proc ();
+
+extern void _SmcProcessMessage ();
+extern void _SmsProcessMessage ();
 
 int 	_SmcOpcode = 0;
 int 	_SmsOpcode = 0;

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mipolyseg.c,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mipolyseg.c,v 1.4 2003/07/16 01:38:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,9 +52,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+/* $Xorg: mipolyseg.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
+#include "X.h"
+#include "Xprotostr.h"
 #include "regionstr.h"
 #include "gcstruct.h"
 #include "pixmap.h"
@@ -65,7 +72,11 @@ SOFTWARE.
 
 
 void
-miPolySegment(DrawablePtr pDraw, GCPtr pGC, int nseg, xSegment *pSegs)
+miPolySegment(pDraw, pGC, nseg, pSegs)
+    DrawablePtr pDraw;
+    GCPtr 	pGC;
+    int		nseg;
+    xSegment	*pSegs;
 {
     int i;
 

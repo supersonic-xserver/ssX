@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
 Permission to use, copy, modify, and distribute this
@@ -23,7 +30,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbInit.c,v 3.36 2005/10/14 15:17:28 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/xkbInit.c,v 3.34 2005/02/11 19:42:58 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,8 +47,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "opaque.h"
 #include "property.h"
 #define	XKBSRV_NEED_FILE_FUNCS
-#include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XKBgeom.h>
+#include "XKBsrv.h"
+#include "XKBgeom.h"
 #include <X11/extensions/XKMformat.h>
 #include <X11/extensions/XKBfile.h>
 #include "xkb.h"
@@ -112,11 +119,11 @@ typedef struct	_SrvXkmInfo {
 #define	XKB_DFLT_RULES_PROP	True
 #endif
 
-const char	*	XkbBaseDirectory=	XKB_BASE_DIRECTORY;
+char	*		XkbBaseDirectory=	XKB_BASE_DIRECTORY;
 char	*		XkbInitialMap=		NULL;
 int	 		XkbWantAccessX=		0;	
 static XkbFileInfo *	_XkbInitFileInfo=	NULL;
-const char *		XkbDB=			NULL;
+char *			XkbDB=			NULL;
 int			XkbAutoLoad=		1;
 
 static Bool		rulesDefined=		False;
@@ -309,7 +316,7 @@ XkbInitRadioGroups(XkbSrvInfoPtr xkbi,SrvXkmInfo *file)
 static Status
 XkbInitCompatStructs(XkbDescPtr xkb,SrvXkmInfo *file)
 {
-int 	i;
+register int 	i;
 XkbCompatMapPtr	compat;
 
     if (file->xkbinfo.defined&XkmCompatMapMask)
@@ -890,7 +897,7 @@ extern unsigned int	XkbDfltAccessXFeedback;
 extern unsigned char	XkbDfltAccessXOptions;
 
 int
-XkbProcessArguments(int argc,const char *argv[],int i)
+XkbProcessArguments(int argc,char *argv[],int i)
 {
     if (strcmp(argv[i],"-kb")==0) {
 	noXkbExtension= True;
@@ -925,7 +932,7 @@ XkbProcessArguments(int argc,const char *argv[],int i)
     else if (strncmp(argv[i], "-xkbmap", 7) == 0) {
 	if(++i < argc) {
 	    if (strlen(argv[i]) < PATH_MAX) {
-		XkbInitialMap= xstrdup(argv[i]);
+		XkbInitialMap= argv[i];
 		return 2;
 	    } else {
 		LogMessage(X_ERROR, "-xkbmap pathname too long\n");

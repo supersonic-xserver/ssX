@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/twm/list.c,v 1.10tsi Exp $ */
 /*****************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -49,9 +55,12 @@ in this Software without prior written authorization from The Open Group.
 /**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
+/* $XFree86: xc/programs/twm/list.c,v 1.9 2003/04/21 11:46:13 herrb Exp $ */
 
 
 /**********************************************************************
+ *
+ * $Xorg: list.c,v 1.4 2001/02/09 02:05:36 xorgcvs Exp $
  *
  * TWM code to deal with the name lists for the NoTitle list and
  * the AutoRaise list
@@ -80,20 +89,23 @@ struct name_list_struct
  *
  *  Inputs:
  *	list	- the address of the pointer to the head of a list
- *	name	- a pointer to the name of the window
+ *	name	- a pointer to the name of the window 
  *	ptr	- pointer to list dependent data
  *
  *  Special Considerations
- *	If the list does not use the ptr value, a non-null value
+ *	If the list does not use the ptr value, a non-null value 
  *	should be placed in it.  LookInList returns this ptr value
- *	and procedures calling LookInList will check for a non-null
+ *	and procedures calling LookInList will check for a non-null 
  *	return value as an indication of success.
  *
  ***********************************************************************
  */
 
 void
-AddToList(name_list **list_head, char *name, char *ptr)
+AddToList(list_head, name, ptr)
+name_list **list_head;
+char *name;
+char *ptr;
 {
     name_list *nptr;
 
@@ -107,12 +119,13 @@ AddToList(name_list **list_head, char *name, char *ptr)
 		 (unsigned long)sizeof(name_list));
 	Done(NULL, NULL);
     }
+    memset(nptr, 0, sizeof(name_list));
 
     nptr->next = *list_head;
     nptr->name = name;
     nptr->ptr = (ptr == NULL) ? (char *)TRUE : ptr;
     *list_head = nptr;
-}
+}    
 
 /***********************************************************************
  *
@@ -120,7 +133,7 @@ AddToList(name_list **list_head, char *name, char *ptr)
  *	LookInList - look through a list for a window name, or class
  *
  *  Returned Value:
- *	the ptr field of the list structure or NULL if the name
+ *	the ptr field of the list structure or NULL if the name 
  *	or class was not found in the list
  *
  *  Inputs:
@@ -132,7 +145,10 @@ AddToList(name_list **list_head, char *name, char *ptr)
  */
 
 char *
-LookInList(name_list *list_head, char *name, XClassHint *class)
+LookInList(list_head, name, class)
+name_list *list_head;
+char *name;
+XClassHint *class;
 {
     name_list *nptr;
 
@@ -157,7 +173,9 @@ LookInList(name_list *list_head, char *name, XClassHint *class)
 }
 
 char *
-LookInNameList(name_list *list_head, char *name)
+LookInNameList(list_head, name)
+name_list *list_head;
+char *name;
 {
     return (LookInList(list_head, name, NULL));
 }
@@ -182,9 +200,11 @@ LookInNameList(name_list *list_head, char *name)
  ***********************************************************************
  */
 
-int
-GetColorFromList(name_list *list_head, char *name, XClassHint *class,
-		 Pixel *ptr)
+int GetColorFromList(list_head, name, class, ptr)
+name_list *list_head;
+char *name;
+XClassHint *class;
+Pixel *ptr;
 {
     int save;
     name_list *nptr;
@@ -232,8 +252,8 @@ GetColorFromList(name_list *list_head, char *name, XClassHint *class,
  ***********************************************************************
  */
 
-void
-FreeList(name_list **list)
+void FreeList(list)
+name_list **list;
 {
     name_list *nptr;
     name_list *tmp;

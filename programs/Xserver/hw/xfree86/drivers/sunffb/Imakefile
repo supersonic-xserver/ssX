@@ -1,9 +1,9 @@
 XCOMM
 XCOMM This is an Imakefile for the ffb driver.  
 XCOMM
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/Imakefile,v 1.16tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/Imakefile,v 1.13 2005/03/01 03:48:53 dawes Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -55,11 +55,12 @@ XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sunffb/Imakefile,v 1.16ts
 #if BuildXF86DRI
 DRISRCS = ffb_dri.c
 DRIOBJS = ffb_dri.o
-DRIINCLUDES = -I$(SERVERSRC)/GL/dri -I$(LIBSRC)/GL/dri -I$(DRMINCLUDESDIR)
+DRIINCLUDES = -I$(SERVERSRC)/GL/dri -I$(LIBSRC)/GL/dri -I$(TOP)/include \
+	      -I$(DRMINCLUDESDIR)
 DRIDEFINES = $(GLX_DEFINES)
 #endif
 
-#if defined(AsVISOption) && defined(UseElfFormat)
+#if defined(AsVISOption)
 VISOBJS = VISmoveImage.o ffb_asm.o
 VISOPTIONS = -DUSE_VIS
 ASVISOPTION = AsVISOption
@@ -67,7 +68,7 @@ GCCVISOPTION = -Wa,$(ASVISOPTION)
 #if AsOutputArchSize == 32
 #define FFBCObjectRule(name)						@@\
 name.o: name.c								@@\
-	ObjectCompile(-mcpu=v8 -mtune=ultrasparc \
+	ObjectCompile(-mv8 -mtune=ultrasparc \
 		$(GCCVISOPTION) $(VISOPTIONS) $(DRIDEFINES))		@@\
 	dd if=/dev/zero bs=1 count=3 2>/dev/null | \
 		dd of=$@ bs=1 count=3 seek=36 conv=notrunc 2>/dev/null	@@\
@@ -76,10 +77,10 @@ name.o: name.c								@@\
 		dd of=$@ bs=1 count=1 seek=19 conv=notrunc 2>/dev/null	@@\
 									@@\
 name.i: name.c								@@\
-	CPPOnlyCompile(name.c,-mcpu=v8 \
+	CPPOnlyCompile(name.c,-mv8 \
 		$(GCCVISOPTION) $(VISOPTIONS) $(DRIDEFINES))		@@\
 									@@\
-CenterLoadTarget(debug_src,name.c,NullParameter,$(ALLDEFINES) -mcpu=v8 \
+CenterLoadTarget(debug_src,name.c,NullParameter,$(ALLDEFINES) -mv8 \
 	$(GCCVISOPTION) $(VISOPTIONS) $(DRIDEFINES))
 #define FFBsObjectRule(name)						@@\
 name.o: name.s								@@\
@@ -109,26 +110,28 @@ SRCS = ffb_driver.c ffb_accel.c ffb_attr.c ffb_stip.c ffb_bcopy.c \
        ffb_cplane.c ffb_fspans.c ffb_point.c ffb_seg.c ffb_plygon.c \
        ffb_line.c ffb_glyph.c ffb_frect.c ffb_circle.c ffb_checks.c \
        ffb_stubs.c ffb_gc.c ffb_gspans.c ffb_sspans.c ffb_zeroarc.c \
-       ffb_cursor.c ffb_dga.c ffb_dac.c ffb_wid.c ffb_dbe.c $(DRISRCS)
+       ffb_cursor.c ffb_dga.c ffb_dac.c ffb_wid.c ffb_dbe.c ffb_ddc.c \
+       $(DRISRCS)
 OBJS = ffb_driver.o ffb_accel.o ffb_attr.o ffb_stip.o ffb_bcopy.o \
        ffb_cplane.o ffb_fspans.o ffb_point.o ffb_seg.o ffb_plygon.o \
        ffb_line.o ffb_glyph.o ffb_frect.o ffb_circle.o ffb_checks.o \
        ffb_stubs.o ffb_gc.o ffb_gspans.o ffb_sspans.o ffb_zeroarc.o \
-       ffb_cursor.o ffb_dga.o ffb_dac.o ffb_wid.o ffb_dbe.o $(VISOBJS) \
-       $(DRIOBJS)
+       ffb_cursor.o ffb_dga.o ffb_dac.o ffb_wid.o ffb_dbe.o ffb_ddc.o \
+       $(VISOBJS) $(DRIOBJS)
 
 #if defined(XF86DriverSDK)
-INCLUDES = -I../../include
+INCLUDES = -I. -I../../include
 #else
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
-	   -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
-	   -I$(SERVERSRC)/Xext -I$(SERVERSRC)/cfb \
-	   -I$(SERVERSRC)/dbe \
-	   -I$(XF86SRC)/xf8_32wid \
-	   -I$(XF86SRC)/ramdac \
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86OSSRC) \
+           -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
+           -I$(SERVERSRC)/Xext -I$(SERVERSRC)/cfb \
+	   -I$(SERVERSRC)/dbe -I$(SERVERSRC)/render\
+	   -I$(XF86SRC)/xf8_32wid -I$(SERVERSRC)/fb\
+	   -I$(XF86SRC)/ramdac -I$(XF86SRC)/xaa\
 	   -I$(XF86SRC)/ddc \
 	   -I$(XF86SRC)/i2c \
-	   -I$(SERVERSRC)/include \
+           -I$(FONTINCSRC) -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	   -I$(EXTINCSRC) \
 	   $(DRIINCLUDES)
 #endif
 
@@ -136,31 +139,11 @@ INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
 SubdirLibraryRule($(OBJS))
 #endif
 
-/*
- * The following should match the definitions in hw/xfree86/loader/os.c.  Add
- * to this as necessary.
- */
-#if defined(LinuxArchitecture)
-OSDIR = linux
-#elif defined(SunArchitecture)
-OSDIR = sunos
-#elif defined(NetBSDArchitecture)
-OSDIR = netbsd
-#elif defined(FreeBSDArchitecture)
-OSDIR = freebsd
-#elif defined(OpenBSDArchitecture)
-OSDIR = openbsd
-#elif defined(GNUMachArchitecture)
-OSDIR = hurd
-#else
-OSDIR = svr4
-#endif
-
 ModuleObjectRule()
 
-ObjectModuleTarget(sunffb,$(OBJS),drivers/$(OSDIR))
+ObjectModuleTarget(sunffb,$(OBJS),drivers)
 
-InstallObjectModule(sunffb,$(MODULEDIR),drivers/$(OSDIR))
+InstallObjectModule(sunffb,$(MODULEDIR),drivers)
 
 #if !defined(XF86DriverSDK)
 InstallModuleManPage(sunffb)
@@ -198,24 +181,3 @@ FFBCObjectRule(ffb_dri)
 #endif
 
 DependTarget()
-
-#if DoLoadableServer
-/* Remove instances of this module at its old location */
-
-#undef SunFfbDriverModuleName
-#if MakeDllModules
-# define SunFfbDriverModuleName drivers/sunffb_drv.so
-#else
-# define SunFfbDriverModuleName drivers/sunffb_drv.o
-#endif
-
-all::
-	RemoveFile($(BUILDMODULEDIR)/SunFfbDriverModuleName)
-
-install::
-	RemoveFile($(DESTDIR)$(MODULEDIR)/SunFfbDriverModuleName)
-
-install.sdk::
-	RemoveFile($(DESTDIR)$(DRIVERSDKMODULEDIR)/SunFfbDriverModuleName)
-
-#endif

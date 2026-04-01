@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/secauth.c,v 1.13tsi Exp $ */
+/* $Xorg: secauth.c,v 1.4 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright 1996, 1998  The Open Group
 
@@ -24,8 +31,9 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
+/* $XFree86: xc/programs/Xserver/os/secauth.c,v 1.13 2004/08/05 20:37:42 tsi Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "osdep.h"
 #include "dixstruct.h"
@@ -33,7 +41,7 @@ from The Open Group.
 
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#include "extensions/security.h"
 
 static char InvalidPolicyReason[] = "invalid policy specification";
 static char PolicyViolationReason[] = "policy violation";

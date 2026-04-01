@@ -1,4 +1,11 @@
 /* ===EmacsMode: -*- Mode: C; tab-width:4; c-basic-offset: 4; -*- === */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* ===FileName: ===
    Copyright (c) 1998 Takuya SHIOZAKI, All Rights reserved.
    Copyright (c) 1998 X-TrueType Server Project, All rights reserved. 
@@ -30,7 +37,7 @@
 
 Notice===
  */
-/* $XFree86: xc/extras/X-TrueType/xttcap.h,v 1.2 2001/08/01 00:44:33 tsi Exp $ */
+/* $XFree86: xc/lib/font/FreeType/xttcap.h,v 1.1 2003/10/19 18:53:50 dawes Exp $ */
 
 #ifndef _XTTCAP_H_
 #define _XTTCAP_H_ (1)

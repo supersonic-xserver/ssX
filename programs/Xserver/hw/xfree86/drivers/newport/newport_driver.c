@@ -1,4 +1,13 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: newport_driver.c,v 1.2 2000/11/29 20:58:10 agx Exp $ 
+ *
  * Driver for the SGI Indy's Newport graphics card
  * 
  * This driver is based on the newport.c & newport_con.c kernel code
@@ -28,7 +37,13 @@
  * Project.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_driver.c,v 1.31tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_driver.c,v 1.26 2003/08/23 15:03:08 dawes Exp $ */
+
+#if defined(__NetBSD__)
+#include <fcntl.h>
+#include <dev/wscons/wsconsio.h>
+#include <sys/ioctl.h>
+#endif
 
 /* function prototypes, common data structures & generic includes */
 #include "newport.h"
@@ -48,11 +63,11 @@
 
 /* Xv Extension */
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /* DPMS */
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #define VERSION			4000
 #define NEWPORT_NAME		"NEWPORT"
@@ -67,7 +82,7 @@ static void	NewportIdentify(int flags);
 static const OptionInfoRec * NewportAvailableOptions(int chipid, int busid);
 static Bool NewportProbe(DriverPtr drv, int flags);
 static Bool NewportPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool NewportScreenInit(int Index, ScreenPtr pScreen, const int argc, const char **argv);
+static Bool NewportScreenInit(int Index, ScreenPtr pScreen, int argc, char **argv);
 static Bool NewportEnterVT(int scrnIndex, int flags);
 static void NewportLeaveVT(int scrnIndex, int flags);
 static Bool NewportCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -141,7 +156,7 @@ static XF86ModuleVersionInfo newportVersRec =
 XF86ModuleData newportModuleData = { &newportVersRec, newportSetup, NULL };
 
 static pointer
-newportSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+newportSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
 	static Bool setupDone = FALSE;
 
@@ -159,8 +174,7 @@ newportSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 		 * might refer to.
 		 *
 		 */
-		LoaderModRefSymLists(module, fbSymbols, ramdacSymbols,
-				     shadowSymbols, NULL);
+		LoaderRefSymLists( fbSymbols, ramdacSymbols, shadowSymbols, NULL);
 
 
 		/*
@@ -289,7 +303,6 @@ NewportPreInit(ScrnInfoPtr pScrn, int flags)
 	NewportPtr pNewport;
 	MessageType from;
 	ClockRangePtr clockRanges;
-	ModuleDescPtr pMod;
 
 	if (flags & PROBE_DETECT) return FALSE;
 
@@ -451,33 +464,33 @@ NewportPreInit(ScrnInfoPtr pScrn, int flags)
 	xf86SetDpi (pScrn, 0, 0);
 
 	/* Load FB module */
-	if (!(pMod = xf86LoadSubModule (pScrn, "fb"))) {
+	if (!xf86LoadSubModule (pScrn, "fb")) {
 		NewportFreeRec(pScrn);
 		return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	xf86LoaderReqSymLists( fbSymbols, NULL);
 
 	/* Load ramdac modules */
     	if (pNewport->hwCursor) {
-        	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+        	if (!xf86LoadSubModule(pScrn, "ramdac")) {
 			NewportFreeRec(pScrn);
             		return FALSE;
         	}
-        	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+        	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     	}
 
 	/* Load ShadowFB module */
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 		NewportFreeRec(pScrn);
 		return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
 
 	return TRUE;
 }
 
 static Bool 
-NewportScreenInit(int index, ScreenPtr pScreen, const int argc, const char **argv)
+NewportScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
 {
 	ScrnInfoPtr pScrn;
 	NewportPtr pNewport;
@@ -819,9 +832,21 @@ NewportRestore(ScrnInfoPtr pScrn, Bool Closing)
 static unsigned
 NewportHWProbe(unsigned probedIDs[])
 {
+	unsigned hasNewport = 0;
+#if defined(__NetBSD__)
+	int fd, type, i;
+
+	probedIDs[0] = 0;
+
+	fd = open("/dev/ttyE0", O_RDONLY, 0);
+	i = ioctl(fd, WSDISPLAYIO_GTYPE, &type);
+	close(fd);
+
+	if ( (i == 0) && ( type == WSDISPLAY_TYPE_NEWPORT) )
+		hasNewport = 1;
+#else
 	FILE* cpuinfo;
 	char line[80];
-	unsigned hasNewport = 0;
 
 	if ((cpuinfo = fopen("/proc/cpuinfo", "r"))) {
 		while(fgets(line, 80, cpuinfo) != NULL) {
@@ -838,6 +863,7 @@ NewportHWProbe(unsigned probedIDs[])
 		}
 		fclose(cpuinfo);
 	}
+#endif
 	return hasNewport;
 }
 
@@ -873,10 +899,15 @@ NewportMapRegs(ScrnInfoPtr pScrn)
 {
 	NewportPtr pNewport = NEWPORTPTR(pScrn);
 
+#if defined(__NetBSD__)
+	pNewport->pNewportRegs = xf86MapVidMem(pScrn->scrnIndex,
+			VIDMEM_MMIO, NEWPORT_REGISTERS, sizeof(NewportRegs));
+#else
 	pNewport->pNewportRegs = xf86MapVidMem(pScrn->scrnIndex, 
 			VIDMEM_MMIO,
 			NEWPORT_BASE_ADDR0 + pNewport->busID * NEWPORT_BASE_OFFSET,
 			 sizeof(NewportRegs));
+#endif
 	if ( ! pNewport->pNewportRegs ) 
 		return FALSE;
 	return TRUE;

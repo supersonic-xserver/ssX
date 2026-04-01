@@ -1,4 +1,7 @@
 XCOMM! /bin/sh
+XCOMM $NetBSD: server.cpp,v 1.3 2004/03/05 16:33:10 tron Exp $
+XCOMM $Xorg: server.cpp,v 1.3 2000/08/17 19:54:01 cpqbld Exp $
+XCOMM
 
 XCOMM Copyright (c) 1993 Quarterdeck Office Systems
 XCOMM

@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1gload.h                                                              */
 /*                                                                         */
 /*    Type 1 Glyph Loader (specification).                                 */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,43 +23,31 @@
 /***************************************************************************/
 
 
-#ifndef T1GLOAD_H
-#define T1GLOAD_H
+#ifndef __T1GLOAD_H__
+#define __T1GLOAD_H__
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "t1objs.h"
 
-#else
 
-#include <type1/t1objs.h>
-
-#endif
+FT_BEGIN_HEADER
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+  FT_LOCAL( FT_Error )
+  T1_Compute_Max_Advance( T1_Face  face,
+                          FT_Pos*  max_advance );
+
+  FT_LOCAL( FT_Error )
+  T1_Load_Glyph( T1_GlyphSlot  glyph,
+                 T1_Size       size,
+                 FT_UInt       glyph_index,
+                 FT_Int32      load_flags );
 
 
-  FT_LOCAL
-  FT_Error  T1_Compute_Max_Advance( T1_Face  face,
-                                    FT_Int*  max_advance );
+FT_END_HEADER
 
-  FT_LOCAL
-  FT_Error  T1_Load_Glyph( T1_GlyphSlot  glyph,
-                           T1_Size       size,
-                           FT_Int        glyph_index,
-                           FT_Int        load_flags );
-
-
-#ifdef __cplusplus
-  }
-#endif
-
-
-#endif /* T1GLOAD_H */
+#endif /* __T1GLOAD_H__ */
 
 
 /* END */

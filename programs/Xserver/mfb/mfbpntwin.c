@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbpntwin.c,v 1.3tsi Exp $ */
+/* $Xorg: mfbpntwin.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,7 +54,7 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "windowstr.h"
 #include "regionstr.h"
@@ -59,9 +66,12 @@ SOFTWARE.
 #include "mi.h"
 
 void
-mfbPaintWindow(WindowPtr pWin, RegionPtr pRegion, int what)
+mfbPaintWindow(pWin, pRegion, what)
+    WindowPtr	pWin;
+    RegionPtr	pRegion;
+    int		what;
 {
-    mfbPrivWin	*pPrivWin;
+    register mfbPrivWin	*pPrivWin;
 
     pPrivWin = (mfbPrivWin *)(pWin->devPrivates[mfbWindowPrivateIndex].ptr);
     

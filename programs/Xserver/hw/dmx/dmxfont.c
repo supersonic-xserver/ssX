@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxfont.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxfont.c,v 1.2 2005/01/30 17:48:43 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -42,7 +49,7 @@
 #include "dmxfont.h"
 #include "dmxlog.h"
 
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfont.h"
 #include "dixstruct.h"
 

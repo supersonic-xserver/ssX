@@ -31,6 +31,10 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 **
+** $Date: 2004/03/05 14:26:36 $ $Revision: 1.1.1.2 $
+*/
+/*
+** $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/dataTransform.cc,v 1.1.1.2 2004/03/05 14:26:36 tron Exp $
 */
 /* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/internals/dataTransform.cc,v 1.2 2003/10/22 19:20:57 tsi Exp $ */
 

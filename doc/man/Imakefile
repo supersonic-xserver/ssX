@@ -1,4 +1,8 @@
-XCOMM $XFree86: xc/doc/man/Imakefile,v 1.9 2005/03/29 17:33:22 tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:41:54 cpqbld Exp $
+
+
+
+XCOMM $XFree86: xc/doc/man/Imakefile,v 1.8 2004/06/30 20:21:36 martin Exp $
 
 #define IHaveSubdirs
 #define PassCDebugFlags
@@ -29,3 +33,4 @@ SUBDIRS = general $(LIBMANDIRS) $(MISCDIR)
 all::
 
 MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

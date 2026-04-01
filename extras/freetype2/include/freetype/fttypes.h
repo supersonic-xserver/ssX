@@ -1,6 +1,11 @@
-/* $XFree86: xc/extras/freetype2/include/freetype/fttypes.h,v 1.0tsi Exp $ */
-
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  fttypes.h                                                              */
 /*                                                                         */
@@ -27,19 +32,7 @@
 #include FT_SYSTEM_H
 #include FT_IMAGE_H
 
-#ifndef FONTMODULE
 #include <stddef.h>
-#else
-#include <X11/Xmd.h>
-#define _XTYPEDEF_BOOL
-#include <X11/Xdefs.h>
-#include "xf86_ansic.h"
-#ifndef size_t
-#define DONT_DEFINE_WRAPPERS
-#define size_t xf86size_t
-#undef DONT_DEFINE_WRAPPERS
-#endif
-#endif
 
 
 FT_BEGIN_HEADER

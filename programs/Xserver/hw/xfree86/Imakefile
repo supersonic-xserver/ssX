@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/Imakefile,v 3.93tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/Imakefile,v 3.89 2004/11/30 22:31:45 dickey Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -61,10 +61,6 @@ FBDEVHWDIR = fbdevhw
 XAADIR = xaa
 #endif
 
-#if defined(BuildTestmod) && BuildTestmod
-TESTMODDIR = testmod
-#endif
-
 #if XF1Bpp || XF4Bpp
 XF1BPPDIR = xf1bpp
 # if XF4Bpp
@@ -72,8 +68,7 @@ XF4BPPDIR = xf4bpp
 # endif
 #endif
 
-/* xf8_32wid is only used by sunffb driver */
-#if XF8_32Wid && (DoLoadableServer || defined(SparcArchitecture)) 
+#if XF8_32Wid
 XF8_32WIDDIR = xf8_32wid
 #endif
 
@@ -85,8 +80,7 @@ XF8_32BPPDIR = xf8_32bpp
 XF8_16BPPDIR = xf8_16bpp
 #endif
 
-/* xf24_32bpp is no longer used by any included drivers */
-#if XF24_32Bpp && DoLoadableServer
+#if XF24_32Bpp
 XF24_32BPPDIR = xf24_32bpp
 #endif
 
@@ -130,7 +124,7 @@ INPUTDIR = input
 DRIVERSDK = sdk
 #endif
 
-#if BuildXFree86ConfigTools
+#if !BuildServersOnly || BuildXFree86ConfigTools
 XF86CFGDIRS = xf86cfg xf86config
 #endif
 
@@ -139,7 +133,7 @@ SUBDIRS = os-support common $(I2CDIR) $(XAADIR) $(XF1BPPDIR) $(XF4BPPDIR) \
 	  dummylib drivers $(LOADERDIR) $(VGAHWDIR) $(FBDEVHWDIR) \
 	  $(RAMDACDIR) $(RACDIR) $(DDCDIR) $(INPUTDIR) $(INT10DIR) $(VBEDIR) \
 	  parser scanpci doc $(XF86CFGDIRS) etc $(DRIVERSDK) \
-	  $(XF8_32WIDDIR) $(TESTMODDIR) getconfig
+	  $(XF8_32WIDDIR) getconfig
 
 #if !defined(OS2Architecture) && !defined(cygwinArchitecture)
 XF86CONFIG = XF86Config
@@ -152,16 +146,7 @@ SAMPLE_CONFIG_FILES = $(XF86CONFIG) $(XF98CONFIG)
 
 all:: $(SAMPLE_CONFIG_FILES) xf86Build.h
 
-#ifdef ChangelogFile
-CHANGELOGFILE = ChangelogFile
-#else
 CHANGELOGFILE = CHANGELOG
-#endif
-#ifdef ChangelogId
-CHANGELOGID = ChangelogId
-#else
-CHANGELOGID = XFree86
-#endif
 
 #if defined(BuildDate)
     BUILD_DATE = BuildDate
@@ -274,7 +259,6 @@ InstallNamedNonExec($(XF98CONFIG),XF86Config.98,$(LIBDIR))
 InstallNamedNonExec(Options,Options,$(LIBDIR))
 
 InstallDriverSDKNamedNonExec($(XF86CONFIG),XF86Config.eg,$(DRIVERSDKDIR))
-InstallDriverSDKNonExecFile(xf86Version.h,$(DRIVERSDKINCLUDEDIR))
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))

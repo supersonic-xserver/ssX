@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/applewm.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/applewm.c,v 1.3 2003/11/11 23:48:41 torrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright (c) 2002 Apple Computer, Inc. All Rights Reserved.
@@ -40,11 +47,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "windowstr.h"
 #include "servermd.h"
 #include "swaprep.h"
-#include "propertyst.h"
-#include <X11/Xatom.h>
+#include "Xatom.h"
 #include "darwin.h"
 #define _APPLEWM_SERVER_
-#include <X11/extensions/applewmstr.h>
+#include "applewmstr.h"
 #include "applewmExt.h"
 
 #define DEFINE_ATOM_HELPER(func,atom_name)			\
@@ -59,7 +65,6 @@ static Atom func (void) {					\
 }
 
 DEFINE_ATOM_HELPER(xa_native_screen_origin, "_NATIVE_SCREEN_ORIGIN")
-DEFINE_ATOM_HELPER(xa_apple_no_order_in, "_APPLE_NO_ORDER_IN")
 
 static AppleWMProcsPtr appleWMProcs;
 
@@ -153,29 +158,6 @@ AppleWMSetScreenOrigin(
     ChangeWindowProperty(pWin, xa_native_screen_origin(), XA_INTEGER,
                          32, PropModeReplace, 2, data, TRUE);
 }
-
-/* Window managers can set the _APPLE_NO_ORDER_IN property on windows
-   that are being genie-restored from the Dock. We want them to
-   be mapped but remain ordered-out until the animation
-   completes (when the Dock will order them in). */
-Bool
-AppleWMDoReorderWindow(
-    WindowPtr pWin
-)
-{
-    Atom atom;
-    PropertyPtr prop;
-
-    atom = xa_apple_no_order_in();
-    for (prop = wUserProps(pWin); prop != NULL; prop = prop->next)
-    {
-        if (prop->propertyName == atom && prop->type == atom)
-            return FALSE;
-    }
-
-    return TRUE;
-}
-
 
 static int
 ProcAppleWMQueryVersion(
@@ -597,7 +579,7 @@ ProcAppleWMFrameDraw(
 {
     BoxRec ir, or;
     unsigned int title_length, title_max;
-    char *title_bytes;
+    unsigned char *title_bytes;
     REQUEST(xAppleWMFrameDrawReq);
     WindowPtr pWin;
 
@@ -618,7 +600,7 @@ ProcAppleWMFrameDraw(
     if (title_max < title_length)
         return BadValue;
 
-    title_bytes = (char *) &stuff[1];
+    title_bytes = (unsigned char *) &stuff[1];
 
     errno = appleWMProcs->FrameDraw(pWin, stuff->frame_class,
                                     stuff->frame_attr, &or, &ir,

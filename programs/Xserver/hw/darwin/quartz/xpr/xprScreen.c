@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Xplugin rootless implementation screen functions
  */
 /*
@@ -27,7 +34,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprScreen.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprScreen.c,v 1.11 2004/07/15 18:53:25 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "quartz.h"
@@ -350,7 +357,7 @@ xprUpdateScreen(ScreenPtr pScreen)
  *  Finalize xpr specific setup.
  */
 static void
-xprInitInput(int argc, const char **argv)
+xprInitInput(int argc, char **argv)
 {
     int i;
 

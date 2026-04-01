@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DPMS.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DPMS.c,v 1.13 2004/06/01 01:23:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1997-2004 by The XFree86 Project, Inc.
@@ -96,14 +110,14 @@
  * This file contains the DPMS functions required by the extension.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "globals.h"
 #include "xf86.h"
 #include "xf86Priv.h"
 #ifdef DPMSExtension
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 #include "dpmsproc.h"
 #endif
 #include "edid.h"

@@ -1,3 +1,11 @@
+/* $Xorg: greet.c,v 1.4 2001/02/09 02:05:41 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xdm/greeter/greet.c,v 3.18tsi Exp $ */
+/* $XFree86: xc/programs/xdm/greeter/greet.c,v 3.17 2003/07/09 15:27:40 tsi Exp $ */
 
 /*
  * xdm - display manager daemon
@@ -82,7 +90,7 @@ char    **(*__xdm_parseArgs)(char **argv, char *string) = NULL;
 void    (*__xdm_printEnv)(char **e) = NULL;
 char    **(*__xdm_systemEnv)(struct display *d, char *user, char *home) = NULL;
 void    (*__xdm_LogOutOfMem)(char * fmt, ...) = NULL;
-SETGRENT_TYPE    (*__xdm_setgrent)(void) = NULL;
+void    (*__xdm_setgrent)(void) = NULL;
 struct group    *(*__xdm_getgrent)(void) = NULL;
 void    (*__xdm_endgrent)(void) = NULL;
 #ifdef USESHADOW

@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Type1/fontfcn.h,v 1.6tsi Exp $ */
+/* $Xorg: fontfcn.h,v 1.3 2000/08/17 19:46:30 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Copyright International Business Machines,Corp. 1991
  * All Rights Reserved
  *
@@ -44,6 +51,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
+/* $XFree86: xc/lib/font/Type1/fontfcn.h,v 1.5 2001/01/17 19:43:22 dawes Exp $ */
 
 
 #ifdef BUILDCID
@@ -81,12 +89,8 @@ typedef struct ps_font {
             psdict  *CharStringsP;
             psdict  *Private;
             psdict  *fontInfoP;
-            struct blues_struct *BluesP;
+struct blues_struct *BluesP;
 } psfont;
-
-#define MAX_PS_PSFONTS \
-    ((int)((unsigned int)(-1) / (2 * sizeof(psfont))))
-
 /***================================================================***/
 /*  Routines in scan_font                                             */
 /***================================================================***/

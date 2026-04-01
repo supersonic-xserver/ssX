@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -498,7 +505,7 @@ void
 s3FillBoxSolid (DrawablePtr pDrawable, int nBox, BoxPtr pBox, 
 		unsigned long pixel, int alu, unsigned long planemask);
 
-void	s3ValidateGC (GCPtr pGC, unsigned long changes, DrawablePtr pDrawable);
+void	s3ValidateGC (GCPtr pGC, Mask changes, DrawablePtr pDrawable);
 
 void
 s3CheckGCFill (GCPtr pGC);

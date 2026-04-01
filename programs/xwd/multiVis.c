@@ -1,3 +1,11 @@
+/* $Xorg: multiVis.c,v 1.5 2001/02/09 02:06:03 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /** ------------------------------------------------------------------------
 	This file contains functions to create a list of regions which
 	tile a specified window.  Each region contains all visible 
@@ -33,7 +41,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
     ------------------------------------------------------------------------ **/
-/* $XFree86: xc/programs/xwd/multiVis.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/xwd/multiVis.c,v 1.10 2003/11/17 22:20:54 dawes Exp $ */
 
 #include <stdlib.h>
 #include <X11/Xlib.h>
@@ -205,7 +213,6 @@ int *rShift, *gShift, *bShift;
                 colors[i].pad = 0;
                 colors[i].flags = DoRed|DoGreen|DoBlue;
          }
-         *rShift = *gShift = *bShift = 0;
      }
      else /** src is decomposed rgb ***/
      {

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/pmax/pmax_init.c,v 1.4 2005/10/14 15:17:06 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/pmax/pmax_init.c,v 1.3 1998/07/25 16:56:55 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *
@@ -79,8 +86,8 @@
 #include <sys/cpu.h>
 #include <sys/ipl.h>
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 
 #include "compiler.h"
 
@@ -379,7 +386,7 @@ void xf86CloseConsole()
 
 int xf86ProcessArgument(argc, argv, i)
 int argc;
-const char *argv[];
+char *argv[];
 int i;
 {
 	/*

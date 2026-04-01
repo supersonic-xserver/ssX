@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -20,7 +27,7 @@
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/savage/s3gc.c,v 1.2 2005/10/14 15:16:29 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/savage/s3gc.c,v 1.1 2004/06/02 22:43:02 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -71,13 +78,13 @@
 #include	"s3.h"
 #include	"s3draw.h"
 
-#include	<X11/Xmd.h>
+#include	"Xmd.h"
 #include	"gcstruct.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"regionstr.h"
 #include	"mistruct.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"migc.h"
 
@@ -176,7 +183,7 @@ s3MatchCommon (DrawablePtr pDraw, GCPtr pGC, FbGCPrivPtr fbPriv)
 }
 
 void
-s3ValidateGC (GCPtr pGC, unsigned long changes, DrawablePtr pDrawable)
+s3ValidateGC (GCPtr pGC, Mask changes, DrawablePtr pDrawable)
 {
     int		new_type;	/* drawable type has changed */
     int		new_origin;

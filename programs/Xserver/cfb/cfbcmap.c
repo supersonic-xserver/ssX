@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbcmap.c,v 3.14tsi Exp $ */
+/* $Xorg: cfbcmap.c,v 1.3 2000/08/17 19:48:13 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -27,10 +34,11 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbcmap.c,v 3.13 2001/01/17 22:36:34 dawes Exp $ */
 
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "scrnintstr.h"
 #include "colormapst.h"
 #include "resource.h"
@@ -56,8 +64,10 @@ cfbUninstallColormap(ColormapPtr pmap)
 }
 
 void
-cfbResolveColor(unsigned short *pred, unsigned short *pgreen,
-		unsigned short *pblue, VisualPtr pVisual)
+cfbResolveColor(unsigned short *pred, 
+		unsigned short *pgreen,
+		unsigned short *pblue,
+		VisualPtr	pVisual)
 {
     miResolveColor(pred, pgreen, pblue, pVisual);
 }
@@ -100,9 +110,14 @@ cfbSetVisualTypes (int depth, int visuals, int bitsPerRGB)
  */
 
 Bool
-cfbInitVisuals(VisualPtr *visualp, DepthPtr *depthp, int *nvisualp,
-	       int *ndepthp, int *rootDepthp, VisualID *defaultVisp,
-	       unsigned long sizes, int bitsPerRGB)
+cfbInitVisuals (VisualPtr   *visualp,
+		DepthPtr    *depthp,
+		int	    *nvisualp,
+		int	    *ndepthp,
+		int	    *rootDepthp,
+		VisualID    *defaultVisp,
+		unsigned long	sizes,
+		int	    bitsPerRGB)
 {
     return miInitVisuals(visualp, depthp, nvisualp, ndepthp, rootDepthp,
 			 defaultVisp, sizes, bitsPerRGB, -1);

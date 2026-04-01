@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/sparcPci.c,v 1.31tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/sparcPci.c,v 1.19 2005/01/08 22:09:26 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (C) 2001-2007 The XFree86 Project, Inc.
+ * Copyright (C) 2001-2003 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -48,21 +55,14 @@
 
 #include "xf86.h"
 #include "xf86Priv.h"
-#define NEED_OS_RAC_PROTOS
 #include "xf86_OSlib.h"
 #include "Pci.h"
 #include "xf86sbusBus.h"
 
-#if defined(sun) || defined(__OpenBSD__)
+#if defined(sun)
 
-#if defined(__OpenBSD__)
-#define apertureDevName "/dev/mem"
-#else
 extern char *apertureDevName;
-#endif
-
-static unsigned long long pagemask;
-static int apertureFd = -1;
+static int  apertureFd = -1;
 
 /*
  * A version of xf86MapVidMem() that allows for 64-bit displacements (but not
@@ -83,10 +83,9 @@ sparcMapAperture(int iScreen, int Flags,
 	lastFlags = Flags;
 	apertureFd = open(apertureDevName,
 	    (Flags & VIDMEM_READONLY) ? O_RDONLY : O_RDWR);
-	if (apertureFd < 0) {
-	    ErrorF("sparcMapAperture:  open failure:  %s\n", strerror(errno));
-	    return MAP_FAILED;
-	}
+	if (apertureFd < 0)
+	    FatalError("sparcMapAperture:  open failure:  %s\n",
+		       strerror(errno));
     }
 
     result = mmap(NULL, Size,
@@ -94,16 +93,8 @@ sparcMapAperture(int iScreen, int Flags,
 		      PROT_READ : (PROT_READ | PROT_WRITE),
 		  MAP_SHARED, apertureFd, (off_t)Base);
 
-    if (result == MAP_FAILED) {
-	ErrorF("sparcMapAperture:  mmap failure:  %s\n", strerror(errno));
-	return MAP_FAILED;
-    }
-
-#if !defined(sun) && !defined(__bsdi__) && \
-    !(defined(MACH) && defined(__GNU__))
-    /* Register this mapping */
-    xf86MakeNewMapping(iScreen, Flags, Base, Size, result);
-#endif
+    if (result == MAP_FAILED)
+	FatalError("sparcMapAperture:  mmap failure:  %s\n", strerror(errno));
 
     return result;
 }
@@ -116,8 +107,7 @@ typedef struct _sparcDomainRec {
     unsigned long long mem_addr, mem_size;
     pointer pci, io;
     int bus_min, bus_max;
-    int tagMultiplier, maxOffset;
-    unsigned char *bdf_mask;
+    unsigned char dfn_mask[256 / 8];
 } sparcDomainRec, *sparcDomainPtr;
 
 #define SetBitInMap(bit, map) \
@@ -137,89 +127,27 @@ typedef struct _sparcDomainRec {
 static sparcDomainPtr xf86DomainInfo[MAX_DOMAINS];
 static int            pciNumDomains = 1;
 
-/* Variables to which this is assigned must be declared volatile */
-#define PciReg(domain, tag, off, type) \
-    *(volatile type *)(pointer)((char *)((domain)->pci) + \
-	((PCI_TAG_NO_DOMAIN(tag) * (domain)->tagMultiplier) | (off)))
-
-/*
- * Functions to wrap PciReg accesses with membar's for fault isolation
- * purposes.
- */
-
-static __inline__ CARD8
-GetPciByte(sparcDomainPtr pDomain, PCITAG tag, int off)
-{
-    volatile CARD8 result;			/* Must be volatile */
-
-    barrier();
-    result = PciReg(pDomain, tag, off, CARD8);
-    barrier();
-    return result;
-}
-
-static __inline__ CARD16
-GetPciWord(sparcDomainPtr pDomain, PCITAG tag, int off)
-{
-    volatile CARD16 result;			/* Must be volatile */
-
-    barrier();
-    result = PciReg(pDomain, tag, off, CARD16);
-    barrier();
-    return result;
-}
-
-static __inline__ CARD32
-GetPciLong(sparcDomainPtr pDomain, PCITAG tag, int off)
-{
-    volatile CARD32 result;			/* Must be volatile */
-
-    barrier();
-    result = PciReg(pDomain, tag, off, CARD32);
-    barrier();
-    return result;
-}
-
-static __inline__ void
-PutPciByte(sparcDomainPtr pDomain, PCITAG tag, int off, CARD8 val)
-{
-    barrier();
-    PciReg(pDomain, tag, off, CARD8) = val;
-    barrier();
-}
-
-static __inline__ void
-PutPciWord(sparcDomainPtr pDomain, PCITAG tag, int off, CARD16 val)
-{
-    barrier();
-    PciReg(pDomain, tag, off, CARD16) = val;
-    barrier();
-}
-
-static __inline void
-PutPciLong(sparcDomainPtr pDomain, PCITAG tag, int off, CARD32 val)
-{
-    barrier();
-    PciReg(pDomain, tag, off, CARD32) = val;
-    barrier();
-}
+/* Variables that are assigned this must be declared volatile */
+#define PciReg(base, tag, off, type) \
+    *(volatile type *)(pointer)((char *)(base) + \
+	(PCI_TAG_NO_DOMAIN(tag) | (off)))
 
 /* Generic SPARC PCI access functions */
 static CARD32
 sparcPciCfgRead32(PCITAG tag, int off)
 {
-    pciBusInfo_t   *pBusInfo;
-    sparcDomainPtr pDomain;
-    CARD32         result = (CARD32)(-1);
-    int            bus;
+    pciBusInfo_t    *pBusInfo;
+    sparcDomainPtr  pDomain;
+    volatile CARD32 result = (CARD32)(-1);	/* Must be volatile */
+    int             bus;
 
-    if ((off >= 0) && !(off & 3) &&
+    if ((off >= 0) && (off <= 252) && !(off & 3) &&
 	((bus = PCI_BUS_FROM_TAG(tag)) < pciNumBuses) &&
 	(pBusInfo = pciBusInfo[bus]) && (pDomain = pBusInfo->pciBusPriv) &&
-	(off < pDomain->maxOffset) &&
 	(bus >= pDomain->bus_min) && (bus < pDomain->bus_max) &&
-	IsBitSetInMap(PCI_BDF_FROM_TAG(tag), pDomain->bdf_mask)) {
-	result = GetPciLong(pDomain, tag, off);
+	((bus > pDomain->bus_min) ||
+	 IsBitSetInMap(PCI_DFN_FROM_TAG(tag), pDomain->dfn_mask))) {
+	result = PciReg(pDomain->pci, tag, off, CARD32);
 
 	result = PCI_CPU(result);
     }
@@ -234,16 +162,16 @@ sparcPciCfgWrite32(PCITAG tag, int off, CARD32 val)
     sparcDomainPtr pDomain;
     int            bus;
 
-    if ((off < 0) || (off & 3) ||
+    if ((off < 0) || (off > 252) || (off & 3) ||
 	((bus = PCI_BUS_FROM_TAG(tag)) >= pciNumBuses) ||
 	!(pBusInfo = pciBusInfo[bus]) || !(pDomain = pBusInfo->pciBusPriv) ||
-	(off >= pDomain->maxOffset) ||
 	(bus < pDomain->bus_min) || (bus >= pDomain->bus_max) ||
-	!IsBitSetInMap(PCI_BDF_FROM_TAG(tag), pDomain->bdf_mask))
+	((bus == pDomain->bus_min) &&
+	 !IsBitSetInMap(PCI_DFN_FROM_TAG(tag), pDomain->dfn_mask)))
 	return;
 
     val = PCI_CPU(val);
-    PutPciLong(pDomain, tag, off, val);
+    PciReg(pDomain->pci, tag, off, CARD32) = val;
 }
 
 static void
@@ -273,10 +201,10 @@ static pciBusFuncs_t sparcPCIFunctions =
 static CARD32
 sabrePciCfgRead32(PCITAG tag, int off)
 {
-    pciBusInfo_t   *pBusInfo;
-    sparcDomainPtr pDomain;
-    CARD32         result;
-    int            bus;
+    pciBusInfo_t    *pBusInfo;
+    sparcDomainPtr  pDomain;
+    volatile CARD32 result;			/* Must be volatile */
+    int             bus;
 
     if (PCI_BDEV_FROM_TAG(tag))
 	return sparcPciCfgRead32(tag, off);
@@ -288,15 +216,15 @@ sabrePciCfgRead32(PCITAG tag, int off)
 	return (CARD32)(-1);
 
     if (off < 8) {
-	result = (GetPciWord(pDomain, tag, off) << 16) |
-		  GetPciWord(pDomain, tag, off + 2);
+	result = (PciReg(pDomain->pci, tag, off, CARD16) << 16) |
+		  PciReg(pDomain->pci, tag, off + 2, CARD16);
 	return PCI_CPU(result);
     }
 
-    result = (GetPciByte(pDomain, tag, off + 3) << 24) |
-	     (GetPciByte(pDomain, tag, off + 2) << 16) |
-	     (GetPciByte(pDomain, tag, off + 1) <<  8) |
-	     (GetPciByte(pDomain, tag, off    )      );
+    result = (PciReg(pDomain->pci, tag, off + 3, CARD8) << 24) |
+	     (PciReg(pDomain->pci, tag, off + 2, CARD8) << 16) |
+	     (PciReg(pDomain->pci, tag, off + 1, CARD8) <<  8) |
+	     (PciReg(pDomain->pci, tag, off    , CARD8)      );
     return result;
 }
 
@@ -317,13 +245,13 @@ sabrePciCfgWrite32(PCITAG tag, int off, CARD32 val)
 	     (bus == pDomain->bus_min)) {
 	if (off < 8) {
 	    val = PCI_CPU(val);
-	    PutPciWord(pDomain, tag, off    , val >> 16);
-	    PutPciWord(pDomain, tag, off + 2, val);
+	    PciReg(pDomain->pci, tag, off    , CARD16) = val >> 16;
+	    PciReg(pDomain->pci, tag, off + 2, CARD16) = val;
 	} else {
-	    PutPciByte(pDomain, tag, off    , val);
-	    PutPciByte(pDomain, tag, off + 1, val >>  8);
-	    PutPciByte(pDomain, tag, off + 2, val >> 16);
-	    PutPciByte(pDomain, tag, off + 3, val >> 24);
+	    PciReg(pDomain->pci, tag, off    , CARD8) = val;
+	    PciReg(pDomain->pci, tag, off + 1, CARD8) = val >> 8;
+	    PciReg(pDomain->pci, tag, off + 2, CARD8) = val >> 16;
+	    PciReg(pDomain->pci, tag, off + 3, CARD8) = val >> 24;
 	}
     }
 }
@@ -348,115 +276,13 @@ static pciBusFuncs_t sabrePCIFunctions =
     pciAddrNOOP
 };
 
-
-static struct {
-    CARD32 tag;
-    int size;
-} *pAddressSizes = NULL;
-static int nAddressSizes = 0;
-
-/*
- * Scan the PROM device tree rooted at 'node', accumulating a bit map of PCI
- * devices that exist, and retrieving base size information.
- */
-
-static void
-sparcScanPciTree(sparcDomainPtr pDomain, int node)
-{
-    char *prop_val;
-    int prop_len;
-
-    for (node = promGetChild(node);  node;  node = promGetSibling(node)) {
-	/* Retrieve and validate "reg" property */
-	prop_val = promGetProperty("reg", &prop_len);
-	if (prop_val && !(prop_len % 20)) {
-	    /*
-	     * It's unnecessary to scan the entire "reg" property, but I'll do
-	     * so anyway.
-	     */
-	    prop_len /= 20;
-	    for (;  prop_len--;  prop_val += 20)
-		SetBitInMap(PCI_BDF_FROM_TAG(*(CARD32 *)prop_val),
-		    pDomain->bdf_mask);
-	}
-
-	/* Retrieve and validate "assigned-addresses" property */
-	prop_val = promGetProperty("assigned-addresses", &prop_len);
-	if (prop_val && !(prop_len % 20)) {
-	    prop_len /= 20;
-	    for (;  prop_len--;  prop_val += 20) {
-		if (((unsigned char)prop_val[1] < pDomain->bus_min) ||
-		    ((unsigned char)prop_val[1] > pDomain->bus_max) ||
-		    (prop_val[3] & 0x3) || (prop_val[3] < PCI_MAP_REG_START) ||
-		    ((CARD32 *)prop_val)[1] || ((CARD32 *)prop_val)[3] ||
-		    (((CARD32 *)prop_val)[4] < 4) ||
-		    (((CARD32 *)prop_val)[4] & (((CARD32 *)prop_val)[4] - 1)) ||
-		    (((CARD32 *)prop_val)[2] & (((CARD32 *)prop_val)[4] - 1)))
-		    continue;
-
-		if ((prop_val[3] >= PCI_MAP_REG_END) &&
-		    (prop_val[3] != PCI_MAP_ROM_REG) &&
-		    (prop_val[3] != PCI_PCI_BRIDGE_ROM_REG))
-		    continue;
-
-		prop_val[0] = pciNumDomains;
-		pAddressSizes = xnfrealloc(pAddressSizes,
-		    sizeof(*pAddressSizes) * (nAddressSizes + 1));
-		pAddressSizes[nAddressSizes].tag = ((CARD32 *)prop_val)[0];
-		for (pAddressSizes[nAddressSizes].size = -1;
-		     ((CARD32 *)prop_val)[4];
-		     ((CARD32 *)prop_val)[4] >>= 1)
-		    pAddressSizes[nAddressSizes].size++;
-		nAddressSizes++;
-	    }
-	}
-
-	/* Retrieve and validate "class-code" property */
-	prop_val = promGetProperty("class-code", &prop_len);
-	if (prop_val && (prop_len == 4) &&
-	    (prop_val[0] == 0) && (prop_val[1] == PCI_CLASS_BRIDGE) &&
-	    ((prop_val[2] == PCI_SUBCLASS_BRIDGE_PCI) ||
-	     (prop_val[2] == PCI_SUBCLASS_BRIDGE_CARDBUS)))
-		sparcScanPciTree(pDomain, node);
-    }
-}
-
-/* Return the PCI allocation sizes derived above */
-Bool
-xf86GetPciSizeFromOS(PCITAG tag, int Index, int *bits)
-{
-    int i;
-
-    if ((Index < 0) || (Index > 7) || !pAddressSizes || (tag != (CARD32)tag))
-	return FALSE;
-
-    switch (Index) {
-    case 6:
-	tag |= PCI_MAP_ROM_REG;
-	break;
-    case 7:
-	tag |= PCI_PCI_BRIDGE_ROM_REG;
-	break;
-    default:
-	tag |= PCI_MAP_REG_START + (Index * 4);
-	break;
-    }
-
-    for (i = 0;  i < nAddressSizes;  i++) {
-	if (tag == pAddressSizes[i].tag) {
-	    *bits = pAddressSizes[i].size;
-	    return TRUE;
-	}
-    }
-
-    return FALSE;
-}
+static long pagemask;
 
 /* Scan PROM for all PCI host bridges in the system */
 void
 sparcPciInit(void)
 {
-    int node;
+    int node, node2;
 
     if (!xf86LinearVidMem())
 	return;
@@ -474,20 +300,17 @@ sparcPciInit(void)
     for (node = promGetChild(promRootNode);
 	 node;
 	 node = promGetSibling(node)) {
-	unsigned long long pci_addr, pci_size, phys_addr, phys_size;
+	unsigned long long pci_addr;
 	sparcDomainRec     domain;
 	sparcDomainPtr     pDomain;
 	pciBusFuncs_p      pFunctions;
-	char               *prop_val;
+	char               *prop_val, *bridge_name;
 	int                prop_len, bus;
-	char               shared_pci, pciex;
 
 	prop_val = promGetProperty("name", &prop_len);
-	if (!prop_val || (prop_len < 3))
-	    continue;
-
-	prop_val[prop_len] = '\0';
-	if (strcmp(prop_val, "pci") && strcmp(prop_val, "pciex"))
+	/* Some PROMs include the trailing null;  some don't */
+	if (!prop_val || (prop_len < 3) || (prop_len > 4) ||
+	    strcmp(prop_val, "pci"))
 	    continue;
 
 	prop_val = promGetProperty("model", &prop_len);
@@ -502,154 +325,218 @@ sparcPciInit(void)
 	if (!strlen(prop_val))
 	    continue;
 
-	if (strcmp("SUNW,sabre",   prop_val) &&
-	    strcmp("pci108e,a000", prop_val) &&
-	    strcmp("pci108e,a001", prop_val))
-	    pFunctions = &sparcPCIFunctions;
-	else
-	    pFunctions = &sabrePCIFunctions;
-
-	if (strcmp("SUNW,psycho", prop_val) &&
-	    strcmp("pci108e,8000", prop_val))
-	    shared_pci = 0;
-	else
-	    shared_pci = 1;
-
-	xf86Msg(X_INFO, "PCI host bridge found (\"%s\")\n", prop_val);
-
-	prop_val = promGetProperty("device_type", &prop_len);
-	if (prop_val && !strcmp("pciex", prop_val))
-	    pciex = 1;
-	else
-	    pciex = 0;
-
-	/* Get "bus-range" property */
-	prop_val = promGetProperty("bus-range", &prop_len);
-	if (!prop_val || (prop_len != 8) ||
-	    (((unsigned int *)prop_val)[1] >= 256) ||
-	    (((unsigned int *)prop_val)[0] > ((unsigned int *)prop_val)[1]))
-	    continue;
-
+	pFunctions = &sparcPCIFunctions;
 	(void)memset(&domain, 0, sizeof(domain));
 
-	domain.bus_min = ((int *)prop_val)[0];
-	domain.bus_max = ((int *)prop_val)[1];
+	do {
+	    static Bool sabre_seen = FALSE;
 
-	/* Retrieve and validate "ranges" property */
-	prop_val = promGetProperty("ranges", &prop_len);
-	if (!prop_val || (prop_len <= 0) || (prop_len % 28))
-	    continue;
+	    if (!strcmp("SUNW,sabre",   prop_val) ||
+		!strcmp("pci108e,a000", prop_val))
+		bridge_name = "Sabre";
+	    else
+	    if (!strcmp("pci108e,a001", prop_val))
+		bridge_name = "Hummingbird";
+	    else
+		break;
 
-	/* Extract address space location and size from "ranges" property */
-	pci_addr = pci_size = 0;
-	for (prop_len /= 28;  prop_len--;  prop_val += 28) {
-	   /* Address space size must be a power of two */
-	   phys_size =
-		((unsigned long long)((unsigned int *)prop_val)[5] << 32) |
-		(unsigned long long)((unsigned int *)prop_val)[6];
-	   if (!phys_size || (phys_size & (phys_size - 1)))
+	    /*
+	     * There can only be one "Sabre" bridge in a system.  It provides
+	     * PCI configuration space, a 24-bit I/O space and a 32-bit memory
+	     * space, all three of which are at fixed physical CPU addresses.
+	     */
+	    xf86Msg(X_INFO, "%s PCI host bridge found (\"%s\")\n",
+		bridge_name, prop_val);
+
+	    /* There can only be one Sabre */
+	    if (sabre_seen)
+		goto nextNode;
+	    sabre_seen = TRUE;
+
+	    /* Get "bus-range" property */
+	    prop_val = promGetProperty("bus-range", &prop_len);
+	    if (!prop_val || (prop_len != 8) ||
+		(((unsigned int *)prop_val)[0]) ||
+		(((unsigned int *)prop_val)[1] >= 256))
 		goto nextNode;
 
-	   /* Address space must be size-aligned */
-	   phys_addr =
-		((unsigned long long)((unsigned int *)prop_val)[3] << 32) |
-		(unsigned long long)((unsigned int *)prop_val)[4];
-	   if (phys_addr % phys_size)
+	    pci_addr         = 0x01fe01000000ull;
+	    domain.io_addr   = 0x01fe02000000ull;
+	    domain.io_size   = 0x000001000000ull;
+	    domain.mem_addr  = 0x01ff00000000ull;
+	    domain.mem_size  = 0x000100000000ull;
+	    domain.bus_min   = 0;			/* Always */
+	    domain.bus_max   = ((int *)prop_val)[1];
+
+	    pFunctions = &sabrePCIFunctions;
+
+	    goto newDomain;
+	} while (0);
+
+	if (!strcmp("SUNW,psycho",  prop_val) ||
+	    !strcmp("pci108e,8000", prop_val)) {
+	    bridge_name = "Psycho";
+
+	    /*
+	     * A "Psycho" host bridge provides two PCI interfaces, each with
+	     * its own 16-bit I/O and 31-bit memory spaces.  Both share the
+	     * same PCI configuration space.  Here, they are assigned separate
+	     * domain numbers to prevent unintentional I/O and/or memory
+	     * resource conflicts.
+	     */
+	    xf86Msg(X_INFO,
+		"Psycho PCI host bridge found (\"%s\")\n", prop_val);
+
+	    /* Get "bus-range" property */
+	    prop_val = promGetProperty("bus-range", &prop_len);
+	    if (!prop_val || (prop_len != 8) ||
+		(((unsigned int *)prop_val)[1] >= 256) ||
+		(((unsigned int *)prop_val)[0] > ((unsigned int *)prop_val)[1]))
 		goto nextNode;
 
-	   switch (prop_val[0] & 0x03) {
-	   case 0:	/* PCI configuration space */
-		if ((pci_addr == phys_addr) && (pci_size == phys_size))
-		    break;
+	    domain.bus_min = ((int *)prop_val)[0];
+	    domain.bus_max = ((int *)prop_val)[1];
 
-		if (pci_size)
-		    goto nextNode;
-		if (shared_pci) {
-		    phys_size <<= 1;
-		    if (!phys_size)
-			goto nextNode;
-		}
-		pci_addr = phys_addr;
-		pci_size = phys_size;
-		break;
+	    /* Get "ranges" property */
+	    prop_val = promGetProperty("ranges", &prop_len);
+	    if (!prop_val || (prop_len != 112) ||
+		prop_val[0] || (prop_val[28] != 0x01u) ||
+		(prop_val[56] != 0x02u) || (prop_val[84] != 0x03u) ||
+		(((unsigned int *)prop_val)[4] != 0x01000000u) ||
+		((unsigned int *)prop_val)[5] ||
+		((unsigned int *)prop_val)[12] ||
+		(((unsigned int *)prop_val)[13] != 0x00010000u) ||
+		((unsigned int *)prop_val)[19] ||
+		(((unsigned int *)prop_val)[20] != 0x80000000u) ||
+		((((unsigned int *)prop_val)[11] & ~0x00010000u) !=
+		 0x02000000u) ||
+		(((unsigned int *)prop_val)[18] & ~0x80000000u) ||
+		(((unsigned int *)prop_val)[3] !=
+		 ((unsigned int *)prop_val)[10]) ||
+		(((unsigned int *)prop_val)[17] !=
+		 ((unsigned int *)prop_val)[24]) ||
+		(((unsigned int *)prop_val)[18] !=
+		 ((unsigned int *)prop_val)[25]) ||
+		(((unsigned int *)prop_val)[19] !=
+		 ((unsigned int *)prop_val)[26]) ||
+		(((unsigned int *)prop_val)[20] !=
+		 ((unsigned int *)prop_val)[27]))
+		goto nextNode;
 
-	   case 1:	/* I/O space */
-		if ((domain.io_addr == phys_addr) &&
-		    (domain.io_size == phys_size))
-		    break;
+	    /* Use memcpy() to avoid alignment issues */
+	    (void)memcpy(&pci_addr, prop_val + 12,
+			 sizeof(pci_addr));
+	    (void)memcpy(&domain.io_addr, prop_val + 40,
+			 sizeof(domain.io_addr));
+	    (void)memcpy(&domain.mem_addr, prop_val + 68,
+			 sizeof(domain.mem_addr));
 
-		if (domain.io_size)
-		    goto nextNode;
-		domain.io_addr = phys_addr;
-		domain.io_size = phys_size;
-		break;
+	    domain.io_size  = 0x000000010000ull;
+	    domain.mem_size = 0x000080000000ull;
 
-	   case 2:	/* 32-bit memory space */
-		if ((domain.mem_addr == phys_addr) &&
-		    (domain.mem_size == phys_size))
-		    break;
-
-		if (domain.mem_size)
-		    goto nextNode;
-		domain.mem_addr = phys_addr;
-		domain.mem_size = phys_size;
-		break;
-
-	   case 3:	/* 64-bit memory space */
-	   default:	/* Muffle compiler */
-		break;	/* Ignore, for now */
-	   }
+	    goto newDomain;
 	}
 
-	/* Enforce minimum address space sizes */
-	if (!domain.mem_size ||
-	    (domain.io_size < 0x00010000ull) ||
-	    (pci_size < 0x01000000ull))
-	    continue;
+	do {
+	    volatile unsigned long long mem_match, mem_mask, io_match, io_mask;
+	    unsigned long Offset;
+	    pointer pSchizo;
 
+	    if (!strcmp("SUNW,schizo",    prop_val) ||
+		!strcmp("pci108e,8001",   prop_val))
+		bridge_name = "Schizo";
+	    else
+	    if (!strcmp("SUNW,schizo+",   prop_val) ||
+		!strcmp("pci108e,8002",   prop_val))
+		bridge_name = "Schizo+";
+	    else
+	    if (!strcmp("SUNW,tomatillo", prop_val) ||
+		!strcmp("pci108e,a801",   prop_val))
+		bridge_name = "Tomatillo";
+	    else
+		break;
+
+	    /*
+	     * I have no docs on the "Schizo", nor on any of its revisions, but
+	     * judging from the Linux kernel, it also provides two PCI domains.
+	     * Each PCI configuration space is the usual 16M in size, followed
+	     * by a variable-length I/O space.  Each domain also provides a
+	     * variable-length memory space.  The kernel seems to think the I/O
+	     * spaces are 16M long, and the memory spaces, 2G, but these
+	     * assumptions are actually only present in source code comments.
+	     * Sun has, however, confirmed to me the validity of these
+	     * assumptions.
+	     */
+	    xf86Msg(X_INFO, "%s PCI host bridge found (\"%s\")\n",
+		bridge_name, prop_val);
+
+	    /* Get "bus-range" property */
+	    prop_val = promGetProperty("bus-range", &prop_len);
+	    if (!prop_val || (prop_len != 8) ||
+		(((unsigned int *)prop_val)[1] >= 256) ||
+		(((unsigned int *)prop_val)[0] > ((unsigned int *)prop_val)[1]))
+		goto nextNode;
+
+	    domain.bus_min = ((int *)prop_val)[0];
+	    domain.bus_max = ((int *)prop_val)[1];
+
+	    /* Get "reg" property */
+	    prop_val = promGetProperty("reg", &prop_len);
+	    if (!prop_val || ((prop_len != 48) && (prop_len != 64)))
+		goto nextNode;
+
+	    /* Temporarily map some of Schizo's registers */
+	    pSchizo = sparcMapAperture(-1, VIDMEM_MMIO,
+		((unsigned long long *)prop_val)[2] - 0x000000010000ull,
+		0x00010000ul);
+
+	    /* Determine where PCI config, I/O and memory spaces reside */
+	    if ((((unsigned long long *)prop_val)[0] & 0x000000700000ull) ==
+		0x000000600000ull)
+		Offset = 0x0040;
+	    else
+		Offset = 0x0060;
+
+	    mem_match = PciReg(pSchizo, 0, Offset, unsigned long long);
+	    mem_mask  = PciReg(pSchizo, 0, Offset + 8, unsigned long long);
+	    io_match  = PciReg(pSchizo, 0, Offset + 16, unsigned long long);
+	    io_mask   = PciReg(pSchizo, 0, Offset + 24, unsigned long long);
+
+	    /* Unmap Schizo registers */
+	    xf86UnMapVidMem(-1, pSchizo, 0x00010000ul);
+
+	    /* Calculate sizes */
+	    mem_mask = (((mem_mask - 1) ^ mem_mask) >> 1) + 1;
+	    io_mask  = (((io_mask  - 1) ^ io_mask ) >> 1) + 1;
+
+	    if (io_mask <= 0x000001000000ull)	/* Nothing left for I/O */
+		goto nextNode;
+
+	    domain.mem_addr = mem_match & ~0x8000000000000000ull;
+	    domain.mem_size = mem_mask;
+	    pci_addr        = io_match  & ~0x8000000000000000ull;
+	    domain.io_addr  = pci_addr  +  0x0000000001000000ull;
+	    domain.io_size  = io_mask   -  0x0000000001000000ull;
+
+	    goto newDomain;
+	} while (0);
+
+	xf86Msg(X_WARNING, "Unknown PCI host bridge: \"%s\"\n", prop_val);
+	continue;
+
+newDomain:
 	if (pciNumDomains >= MAX_DOMAINS) {
 	    xf86Msg(X_ERROR, "MAX_PCI_BUSES needs to be increased to"
-		    " accomodate this host bridge\n");
+		    " accomodate this %s host bridge\n", bridge_name);
 	    pciNumDomains++;
 	    continue;
 	}
 
-	domain.tagMultiplier = pci_size >> 24;
-	domain.maxOffset = domain.tagMultiplier << 8;
-
-	/* Only mmap as much PCI configuration as we need */
-	phys_addr = pci_addr +
-	    (PCI_MAKE_TAG(domain.bus_min, 0, 0) * domain.tagMultiplier);
-	phys_addr &= ~pagemask;
-	phys_size = pci_addr +
-	    (PCI_MAKE_TAG(domain.bus_max + 1, 0, 0) * domain.tagMultiplier);
-	phys_size += pagemask;
-	phys_size &= ~pagemask;
-	phys_size -= phys_addr;
-
-	domain.pci = sparcMapAperture(-1, VIDMEM_MMIO, phys_addr, phys_size);
-	if (domain.pci == MAP_FAILED)
-	    continue;
-
-	domain.pci = (char *)domain.pci - (phys_addr - pci_addr);
-
-	/* Allocate bus/device/function bit map */
-	domain.bdf_mask = (unsigned char *)xnfcalloc(1,
-	    (domain.bus_max - domain.bus_min + 1) << 5) -
-	    (domain.bus_min << 5);
-
-	xf86MsgVerb(X_INFO, 4, "Adding PCI domain %d:\n", pciNumDomains);
-	xf86MsgVerb(X_INFO, 4,
-	    "PCI Configuration space: 0x%016llx, size: 0x%09llx\n",
-	    pci_addr, pci_size);
-	xf86MsgVerb(X_INFO, 4,
-	    "PCI Input/Output space:  0x%016llx, size: 0x%09llx\n",
-	    domain.io_addr, domain.io_size);
-	xf86MsgVerb(X_INFO, 4,
-	    "PCI Memory space:        0x%016llx, size: 0x%09llx\n",
-	    domain.mem_addr, domain.mem_size);
-	xf86MsgVerb(X_INFO, 4, "PCI Bus range:           %d-%d\n",
-	    domain.bus_min, domain.bus_max);
+	/* Only map as much PCI configuration as we need */
+	domain.pci = (char *)sparcMapAperture(-1, VIDMEM_MMIO,
+	    pci_addr + PCI_MAKE_TAG(domain.bus_min, 0, 0),
+	    PCI_MAKE_TAG(domain.bus_max - domain.bus_min + 1, 0, 0)) -
+	    PCI_MAKE_TAG(domain.bus_min, 0, 0);
 
 	/* Allocate a domain record */
 	pDomain = xnfalloc(sizeof(sparcDomainRec));
@@ -669,7 +556,6 @@ sparcPciInit(void)
 	pciBusInfo[bus]->numDevices = 32;
 	pciBusInfo[bus]->funcs = pFunctions;
 	pciBusInfo[bus]->pciBusPriv = pDomain;
-	pciBusInfo[bus]->pciMaxOffset = domain.maxOffset;
 	while (++bus < pciNumBuses) {
 	    pciBusInfo[bus] = xnfalloc(sizeof(pciBusInfo_t));
 	    *(pciBusInfo[bus]) = *(pciBusInfo[bus - 1]);
@@ -677,7 +563,7 @@ sparcPciInit(void)
 	}
 
 	/* Next domain, please... */
-	xf86DomainInfo[pciNumDomains] = pDomain;
+	xf86DomainInfo[pciNumDomains++] = pDomain;
 
 	/*
 	 * OK, enough of the straight-forward stuff.  Time to deal with some
@@ -685,7 +571,7 @@ sparcPciInit(void)
 	 *
 	 * The PCI specs require that when a bus transaction remains unclaimed
 	 * for too long, the master entity on that bus is to cancel the
-	 * transaction it issued, or passed on, with a master abort.  Two
+	 * transaction it issued or passed on with a master abort.  Two
 	 * outcomes are possible:
 	 *
 	 * - the master abort can be treated as an error that is propogated
@@ -703,9 +589,9 @@ sparcPciInit(void)
 	 * detect when master aborts occur.  Obviously, PCI discovery is much
 	 * simpler when master aborts are allowed to complete normally.
 	 *
-	 * Unfortunately, a number of PCI implementations have chosen to treat
-	 * master aborts as severe errors.  The net effect is to cripple PCI
-	 * discovery algorithms in userland.
+	 * Unfortunately, a number of non-Intel PCI implementations have chosen
+	 * to treat master aborts as severe errors.  The net effect is to
+	 * cripple PCI discovery algorithms in userland.
 	 *
 	 * On SPARCs, master aborts cause a number of different behaviours,
 	 * including delivering a signal to the userland application, rebooting
@@ -741,32 +627,27 @@ sparcPciInit(void)
 	 * VGA, or if a PCI device actually implements PCI disablement.
 	 *
 	 * ---  TSI @ UQV  2001.09.19
-	 *
-	 * This has been changed to generate a bit map for all of an
-	 * interface's buses, because it appears that probing for a PCI Express
-	 * switch's downstream ports cannot be done without generating
-	 * interrupts that are untrappable from userland.  In effect, PCI
-	 * Express has entrenched the hard-failing of unsupported requests
-	 * (which include its equivalent to master aborts).
-	 *
-	 * ---  TSI @ UQV  2008.01.31
 	 */
-	sparcScanPciTree(&domain, node);
+	for (node2 = promGetChild(node);
+	     node2;
+	     node2 = promGetSibling(node2)) {
+	    /* Get "reg" property */
+	    prop_val = promGetProperty("reg", &prop_len);
+	    if (!prop_val || (prop_len % 20))
+		continue;
 
-	/*
-	 * Assume the host bridge is device 0, function 0 on its bus.  Note
-	 * that this is valid for PCI Express as well, because the spec
-	 * requires that the other end of the link from a root port, or any
-	 * of a switch's downstream ports, be device 0, function 0.
-	 */
-	SetBitInMap(domain.bus_min << 8, pDomain->bdf_mask);
+	    /*
+	     * It's unnecessary to scan the entire "reg" property, but I'll do
+	     * so anyway.
+	     */
+	    prop_len /= 20;
+	    for (;  prop_len--;  prop_val += 20)
+		SetBitInMap(PCI_DFN_FROM_TAG(*(PCITAG *)prop_val),
+		    pDomain->dfn_mask);
+	}
 
-	if ((domain.bus_min < domain.bus_max) &&
-	    (!pciex || (xf86Info.estimateSizesAggressively > 0)))
-	    memset(domain.bdf_mask + ((domain.bus_min + 1) << 5), 0xff,
-		(domain.bus_max - domain.bus_min) << 5);
-
-	pciNumDomains++;
+	/* Assume the host bridge is device 0, function 0 on its bus */
+	SetBitInMap(0, pDomain->dfn_mask);
 
 nextNode:;
     }
@@ -805,9 +686,6 @@ xf86MapDomainMemory(int ScreenNum, int Flags, PCITAG Tag,
 
     result = sparcMapAperture(ScreenNum, Flags, pDomain->mem_addr + Base, Size);
 
-    if (result == MAP_FAILED)
-	FatalError("xf86MapDomainMemory():  sparcMapAperture() failure.\n");
-
     if (apertureFd >= 0) {
 	close(apertureFd);
 	apertureFd = -1;
@@ -832,9 +710,6 @@ xf86MapDomainIO(int ScreenNum, int Flags, PCITAG Tag,
     if (!pDomain->io) {
 	pDomain->io = sparcMapAperture(ScreenNum, Flags,
 	    pDomain->io_addr, pDomain->io_size);
-
-	if (pDomain->io == MAP_FAILED)
-	    FatalError("xf86MapDomainIO():  sparcMapAperture() failure.\n");
 
 	if (apertureFd >= 0) {
 	    close(apertureFd);
@@ -999,9 +874,9 @@ xf86LocatePciMemoryArea(PCITAG Tag, char **devName, unsigned int *devOffset,
     return TRUE;
 }
 
-#endif /* !defined(INCLUDE_XF86_NO_DOMAIN) */
+#endif /* !INCLUDE_XF86_NO_DOMAIN */
 
-#endif /* defined(sun) || defined(__OpenBSD__) */
+#endif /* defined(sun) */
 
 #if defined(ARCH_PCI_PCI_BRIDGE)
 
@@ -1023,14 +898,12 @@ xf86LocatePciMemoryArea(PCITAG Tag, char **devName, unsigned int *devOffset,
  * re-routes much more.
  */
 static PCITAG simbavgaIOTag = 0, simbavgaMemTag = 0;
-static PCITAG simbadefaultIOTag = 0, simbadefaultMemTag = 0;
 static Bool simbavgaRoutingAllow = TRUE;
 
 /*
  * Scan the bus subtree rooted at 'bus' for a non-display device that might be
- * decoding any resource in the bottom 2 MB of I/O space and/or the bottom 512
- * MB of memory space.  Reset simbavgaRoutingAllow if such a device is found.
- * Also, ensure the ranges always remain forwarded by some Simba in the system.
+ * decoding the bottom 2 MB of I/O space and/or the bottom 512 MB of memory
+ * space.  Reset simbavgaRoutingAllow if such a device is found.
  *
  * XXX For now, this is very conservative and should be made less so as the
  *     need arises.
@@ -1039,7 +912,6 @@ static void
 simbaCheckBus(CARD16 pcicommand, int bus)
 {
     pciConfigPtr pPCI, *ppPCI = xf86scanpci(0);
-    CARD16 savecmd = pcicommand;
 
     while ((pPCI = *ppPCI++)) {
 	if (pPCI->busnum < bus)
@@ -1048,19 +920,15 @@ simbaCheckBus(CARD16 pcicommand, int bus)
 	    break;
 
 	/* XXX Assume all devices respect PCI disablement */
-	pcicommand = savecmd & pPCI->pci_command;
-	if (!pcicommand)
+	if (!(pcicommand & pPCI->pci_command))
 	    continue;
 
-	/* XXX This doesn't deal with mis-advertised classes ... */
+	/* XXX This doesn't deal with mis-advertised classes */
 	switch (pPCI->pci_base_class) {
 	case PCI_CLASS_PREHISTORIC:
-	    if ((pPCI->pci_sub_class != PCI_SUBCLASS_PREHISTORIC_VGA) ||
-		/* ... except for known cases */
-		(pPCI->pci_vendor == PCI_VENDOR_CREATIVE) ||
-		(pPCI->pci_vendor == PCI_VENDOR_ENSONIQ))
-		break;
-	    /* Fall through */
+	    if (pPCI->pci_sub_class == PCI_SUBCLASS_PREHISTORIC_VGA)
+		continue;	/* Ignore VGA */
+	    break;
 
 	case PCI_CLASS_DISPLAY:
 	    continue;
@@ -1071,7 +939,7 @@ simbaCheckBus(CARD16 pcicommand, int bus)
 	    case PCI_SUBCLASS_BRIDGE_CARDBUS:
 		/* Scan secondary bus */
 		/* XXX First check bridge routing? */
-		simbaCheckBus(pcicommand,
+		simbaCheckBus(pcicommand & pPCI->pci_command,
 		    PCI_SECONDARY_BUS_EXTRACT(pPCI->pci_pp_bus_register,
 			pPCI->tag));
 		if (!simbavgaRoutingAllow)
@@ -1134,27 +1002,11 @@ simbaControlBridge(int bus, CARD16 mask, CARD16 value)
 				pPCI->busnum, pPCI->devnum, pPCI->funcnum);
 		    value |= PCI_PCI_BRIDGE_VGA_EN;
 		} else {
-		    if (pPCI->tag != simbadefaultIOTag) {
-			pciWriteByte(pPCI->tag, APB_IO_ADDRESS_MAP,
-				     iomap & ~0x01);
-			if ((simbavgaIOTag = simbadefaultIOTag)) {
-			    iomap = pciReadByte(simbavgaIOTag,
-						APB_IO_ADDRESS_MAP);
-			    pciWriteByte(simbavgaIOTag, APB_IO_ADDRESS_MAP,
-					 iomap | 0x01);
-			}
-		    }
-
-		    if (pPCI->tag != simbadefaultMemTag) {
-			pciWriteByte(pPCI->tag, APB_MEM_ADDRESS_MAP,
-				     memmap & ~0x01);
-			if ((simbavgaMemTag = simbadefaultMemTag)) {
-			    memmap = pciReadByte(simbavgaMemTag,
-						 APB_MEM_ADDRESS_MAP);
-			    pciWriteByte(simbavgaMemTag, APB_MEM_ADDRESS_MAP,
-					 memmap | 0x01);
-			}
-		    }
+		    pciWriteByte(pPCI->tag, APB_IO_ADDRESS_MAP,
+				 iomap & ~0x01);
+		    pciWriteByte(pPCI->tag, APB_MEM_ADDRESS_MAP,
+				 memmap & ~0x01);
+		    simbavgaIOTag = simbavgaMemTag = 0;
 		}
 	    }
 	} else {
@@ -1295,12 +1147,12 @@ void ARCH_PCI_PCI_BRIDGE(pciConfigPtr pPCI)
 
     if (pciReadByte(pPCI->tag, APB_IO_ADDRESS_MAP) & 0x01) {
 	pcicommand |= PCI_CMD_IO_ENABLE;
-	simbavgaIOTag = simbadefaultIOTag = pPCI->tag;
+	simbavgaIOTag = pPCI->tag;
     }
 
     if (pciReadByte(pPCI->tag, APB_MEM_ADDRESS_MAP) & 0x01) {
 	pcicommand |= PCI_CMD_MEM_ENABLE;
-	simbavgaMemTag = simbadefaultMemTag = pPCI->tag;
+	simbavgaMemTag = pPCI->tag;
     }
 
     if (!pcicommand)

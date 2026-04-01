@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   xfIOKit.h
 
   IOKit specific functions and definitions
@@ -28,14 +35,14 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKit.h,v 1.1 2003/05/14 05:27:56 torrey Exp $ */
 
 #ifndef _XFIOKIT_H
 #define _XFIOKIT_H
 
 #include <pthread.h>
 #include <IOKit/graphics/IOFramebufferShared.h>
-#include <X11/Xproto.h>
+#include "X11/Xproto.h"
 #include "screenint.h"
 #include "darwin.h"
 
@@ -47,7 +54,7 @@ typedef struct {
 } XFIOKitScreenRec, *XFIOKitScreenPtr;
 
 #define XFIOKIT_SCREEN_PRIV(pScreen) \
-    pScreen->devPrivates[xfIOKitScreenIndex].ptr
+    ((XFIOKitScreenPtr)pScreen->devPrivates[xfIOKitScreenIndex].ptr)
 
 extern int xfIOKitScreenIndex; // index into pScreen.devPrivates
 extern io_connect_t xfIOKitInputConnect;

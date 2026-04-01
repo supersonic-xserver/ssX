@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  truetype.c                                                             */
 /*                                                                         */
 /*    FreeType TrueType driver component (body only).                      */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,30 +25,15 @@
 
 #define FT_MAKE_OPTION_SINGLE_OBJECT
 
-
-#ifdef FT_FLAT_COMPILE
-
-#include "ttdriver.c"    /* driver interface     */
-#include "ttpload.c"     /* tables loader        */
-#include "ttgload.c"     /* glyph loader         */
-#include "ttobjs.c"      /* object manager       */
+#include <ft2build.h>
+#include "ttdriver.c"   /* driver interface */
+#include "ttpload.c"    /* tables loader    */
+#include "ttgload.c"    /* glyph loader     */
+#include "ttobjs.c"     /* object manager   */
 
 #ifdef TT_CONFIG_OPTION_BYTECODE_INTERPRETER
-#include "ttinterp.c"    /* bytecode interpreter */
+#include "ttinterp.c"
 #endif
-
-#else /* FT_FLAT_COMPILE */
-
-#include <truetype/ttdriver.c>    /* driver interface     */
-#include <truetype/ttpload.c>     /* tables loader        */
-#include <truetype/ttgload.c>     /* glyph loader         */
-#include <truetype/ttobjs.c>      /* object manager       */
-
-#ifdef TT_CONFIG_OPTION_BYTECODE_INTERPRETER
-#include <truetype/ttinterp.c>    /* bytecode interpreter */
-#endif
-
-#endif /* FT_FLAT_COMPILE */
 
 
 /* END */

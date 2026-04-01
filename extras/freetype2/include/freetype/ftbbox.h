@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftbbox.h                                                               */
 /*                                                                         */
 /*    FreeType exact bbox computation (specification).                     */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2003 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -27,16 +34,30 @@
   /*************************************************************************/
 
 
-#ifndef FTBBOX_H
-#define FTBBOX_H
+#ifndef __FTBBOX_H__
+#define __FTBBOX_H__
 
-#ifndef    FT_BUILD_H
-#  define  FT_BUILD_H    <freetype/config/ftbuild.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
 #endif
-#include   FT_BUILD_H
-#include   FT_FREETYPE_H
+
 
 FT_BEGIN_HEADER
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Section>                                                             */
+  /*    outline_processing                                                 */
+  /*                                                                       */
+  /*************************************************************************/
+
 
   /*************************************************************************/
   /*                                                                       */
@@ -59,15 +80,17 @@ FT_BEGIN_HEADER
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  FT_EXPORT( FT_Error )  FT_Outline_Get_BBox( FT_Outline*  outline,
-                                              FT_BBox     *abbox );
+  FT_EXPORT( FT_Error )
+  FT_Outline_Get_BBox( FT_Outline*  outline,
+                       FT_BBox     *abbox );
 
 
   /* */
 
+
 FT_END_HEADER
 
-#endif /* FTBBOX_H */
+#endif /* __FTBBOX_H__ */
 
 
 /* END */

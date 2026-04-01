@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmblt.c,v 3.1 2005/10/14 15:17:16 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmblt.c,v 3.0 1996/08/18 01:53:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * ilbm copy area
  */
@@ -31,13 +38,14 @@ in this Software without prior written authorization from the X Consortium.
 Author: Keith Packard
 
 */
+/* $XConsortium: ilbmblt.c,v 1.11 94/04/17 20:28:16 dpw Exp $ */
 
 /* Modified jun 95 by Geert Uytterhoeven (Geert.Uytterhoeven@cs.kuleuven.ac.be)
    to use interleaved bitplanes instead of normal bitplanes */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "ilbm.h"
 #include "gcstruct.h"
 #include "windowstr.h"

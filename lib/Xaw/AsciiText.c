@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xaw/AsciiText.c,v 3.10tsi Exp $ */
+/* $Xorg: AsciiText.c,v 1.4 2001/02/09 02:03:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 
@@ -27,15 +41,15 @@ in this Software without prior written authorization from The Open Group.
 
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
 
-			All Rights Reserved
+                        All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -46,17 +60,18 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
+/* $XFree86: xc/lib/Xaw/AsciiText.c,v 3.10 2001/12/14 19:54:39 dawes Exp $ */
 
 /*
  * AsciiText.c - Source code for AsciiText Widget
  *
- * This Widget is intended to be used as a simple front end to the
+ * This Widget is intended to be used as a simple front end to the 
  * text widget with an ascii source and ascii sink attached to it
  *
  * Date:    June 29, 1989
  *
  * By:      Chris D. Peterson
- *          MIT X Consortium
+ *          MIT X Consortium 
  *          kit@expo.lcs.mit.edu
  */
 
@@ -264,6 +279,8 @@ XawAsciiInitialize(Widget request, Widget cnew,
     int i;
     int tabs[TAB_COUNT], tab;
 
+    MultiSinkObject sink;
+
     /* superclass Initialize can't set the following,
      * as it didn't know the source or sink when it was called
      */
@@ -311,7 +328,7 @@ XawAsciiInitialize(Widget request, Widget cnew,
 
     for (i = 0, tab = 0; i < TAB_COUNT; i++)
 	tabs[i] = (tab += 8);
-
+  
     XawTextSinkSetTabs(w->text.sink, TAB_COUNT, tabs);
 
     XawTextDisableRedisplay(cnew);
@@ -323,7 +340,6 @@ XawAsciiInitialize(Widget request, Widget cnew,
     if (w->simple.international == True) {
 	Arg list[4];
 	Cardinal ac = 0;
-	MultiSinkObject sink;
 
 	sink = (MultiSinkObject)w->text.sink;
 	XtSetArg(list[ac], XtNfontSet, sink->multi_sink.fontset);	ac++;
@@ -334,7 +350,7 @@ XawAsciiInitialize(Widget request, Widget cnew,
     }
 }
 
-static void
+static void 
 XawAsciiDestroy(Widget w)
 {
     AsciiWidget ascii = (AsciiWidget)w;

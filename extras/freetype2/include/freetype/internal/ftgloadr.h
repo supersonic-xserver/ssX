@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftgloadr.h                                                             */
 /*                                                                         */
 /*    The FreeType glyph loader (specification).                           */
 /*                                                                         */
-/*  Copyright 2002 by                                                      */
+/*  Copyright 2002, 2003 by                                                */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg                       */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -50,12 +57,6 @@ FT_BEGIN_HEADER
 #define FT_SUBGLYPH_FLAG_XY_SCALE             0x40
 #define FT_SUBGLYPH_FLAG_2X2                  0x80
 #define FT_SUBGLYPH_FLAG_USE_MY_METRICS      0x200
-
-
-  enum
-  {
-    FT_GLYPH_OWN_BITMAP = 1
-  };
 
 
   typedef struct  FT_SubGlyphRec_
@@ -116,15 +117,15 @@ FT_BEGIN_HEADER
   FT_BASE( void )
   FT_GlyphLoader_Rewind( FT_GlyphLoader  loader );
 
-  /* check that there is enough room to add 'n_points' and 'n_contours' */
-  /* to the glyph loader                                                */
+  /* check that there is enough space to add `n_points' and `n_contours' */
+  /* to the glyph loader                                                 */
   FT_BASE( FT_Error )
   FT_GlyphLoader_CheckPoints( FT_GlyphLoader  loader,
                               FT_UInt         n_points,
                               FT_UInt         n_contours );
 
-  /* check that there is enough room to add 'n_subs' sub-glyphs to */
-  /* a glyph loader                                                */
+  /* check that there is enough space to add `n_subs' sub-glyphs to */
+  /* a glyph loader                                                 */
   FT_BASE( FT_Error )
   FT_GlyphLoader_CheckSubGlyphs( FT_GlyphLoader  loader,
                                  FT_UInt         n_subs );

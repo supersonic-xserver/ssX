@@ -1,5 +1,12 @@
 /*
- * Copyright (C) 1998-2006 The XFree86 Project, Inc.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright (C) 1998-2004 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -74,7 +81,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData xttModuleData = { &VersRec, xttSetup, NULL };
 
 static pointer
-xttSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+xttSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     /* We are just a wrapper, so load the real module. */
     return LoadSubModule(module, "freetype", NULL, NULL, NULL, NULL,

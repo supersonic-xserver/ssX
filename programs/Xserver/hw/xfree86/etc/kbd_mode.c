@@ -1,6 +1,24 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/kbd_mode.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/kbd_mode.c,v 3.6 1998/07/26 09:56:17 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /* Keyboard mode control program for 386BSD */
+
+
+/* $XConsortium: kbd_mode.c /main/7 1996/03/11 10:46:12 kaleb $ */
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -11,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <X11/X.h>
+#include "X.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -21,8 +39,8 @@
 
 static int fd;
 
-static void
-msg(const char* s)
+void
+msg (char* s)
 {
   perror (s);
   close (fd);

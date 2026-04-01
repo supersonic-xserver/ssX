@@ -1,5 +1,12 @@
-/* $XFree86: xc/util/memleak/getretmips.c,v 1.3tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: getretmips.c,v 1.4 2001/02/09 02:06:19 xorgcvs Exp $
  *
 Copyright 1992, 1998  The Open Group
 
@@ -72,7 +79,7 @@ in this Software without prior written authorization from The Open Group.
 /* jr $ra */
 #define RETURN	    0x03e00008
 
-#define CALL(f)	    (0x0c000000 | (((unsigned long) (f)) >> 2))
+#define CALL(f)	    (0x0c000000 | (((int) (f)) >> 2))
 
 /*
  * This computation is expensive, so we cache the results;
@@ -89,15 +96,16 @@ typedef struct _returnCache {
 
 static ReturnCacheRec	returnCache[HASH_SIZE];
 
-#define HASH(ra)    ((((unsigned long) (ra)) >> 2) & (HASH_SIZE - 1))
+#define HASH(ra)    ((((int) (ra)) >> 2) & (HASH_SIZE - 1))
 
 typedef int Bool;
 
 #define TRUE 1
 #define FALSE 0
 
-void
-getStackTrace (unsigned long *results, int max)
+getStackTrace (results, max)
+    unsigned long   *results;
+    int		    max;
 {
     extern unsigned long    *getReturnAddress (), *getStackPointer ();
     extern int	    main ();

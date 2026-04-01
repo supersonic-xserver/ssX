@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/glx_pbuffer.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/glx_pbuffer.c,v 1.3 2004/12/17 16:38:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (C) Copyright IBM Corporation 2004
  * All Rights Reserved.
@@ -31,8 +38,8 @@
  */
 
 #include "glxclient.h"
-#include <X11/extensions/extutil.h>
-#include <X11/extensions/Xext.h>
+#include <extutil.h>
+#include <Xext.h>
 #include <assert.h>
 #include <string.h>
 #include "glapi.h"

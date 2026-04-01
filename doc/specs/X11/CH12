@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -63,6 +63,8 @@ Grab the pointer and individual buttons on the pointer
 .IP \(bu 5
 Grab the keyboard and individual keys on the keyboard
 .IP \(bu 5
+Resume event processing
+.IP \(bu 5
 Move the pointer
 .IP \(bu 5
 Set the input focus
@@ -84,7 +86,7 @@ which is determined by the window and input focus.
 The X server provides sufficient control over event delivery to
 allow window managers to support mouse ahead and various other
 styles of user interface.
-Many of these user interfaces depend upon synchronous delivery of events.
+Many of these user interfaces depend on synchronous delivery of events.
 The delivery of  pointer and keyboard events can be controlled
 independently.
 .LP
@@ -449,7 +451,7 @@ The
 function changes the specified dynamic parameters if the pointer is actively
 grabbed by the client and if the specified time is no earlier than the
 last-pointer-grab time and no later than the current X server time.
-This function has no effect on the passive parameters of a
+This function has no effect on the passive parameters of an
 .PN XGrabButton .
 The interpretation of event_mask and cursor is the same as described in
 .PN XGrabPointer .
@@ -578,7 +580,7 @@ issuing the request for all possible buttons.
 Otherwise, it is not required that the specified button currently be assigned
 to a physical button.
 .LP
-If some other client has already issued a 
+If some other client has already issued an
 .PN XGrabButton
 with the same button/key combination on the same window, a
 .PN BadAccess 
@@ -1118,17 +1120,17 @@ T{
 .PN ReplayPointer
 T}	T{
 If the pointer is actively grabbed by the client and is frozen as the result of
-an event having been sent to the client (either from the activation of a 
+an event having been sent to the client (either from the activation of an 
 .PN XGrabButton 
 or from a previous 
 .PN XAllowEvents 
 with mode 
 .PN SyncPointer
-but not from a 
+but not from an 
 .PN XGrabPointer ),
 the pointer grab is released and that event is completely reprocessed.
 This time, however, the function ignores any passive grabs at or above 
-(towards the root of) the grab_window of the grab just released.
+(toward the root of) the grab_window of the grab just released.
 The request has no effect if the pointer is not grabbed by the client
 or if the pointer is not frozen as the result of an event.
 T}
@@ -1169,17 +1171,17 @@ T{
 T}	T{
 If the keyboard is actively grabbed by the client and is frozen 
 as the result of an event having been sent to the client (either from the
-activation of a 
+activation of an 
 .PN XGrabKey 
 or from a previous 
 .PN XAllowEvents 
 with mode 
 .PN SyncKeyboard 
-but not from a 
+but not from an 
 .PN XGrabKeyboard ),
 the keyboard grab is released and that event is completely reprocessed.
 This time, however, the function ignores any passive grabs at or above 
-(towards the root of)
+(toward the root of)
 the grab_window of the grab just released.
 The request has no effect if the keyboard is not grabbed by the client
 or if the keyboard is not frozen as the result of an event.
@@ -1502,9 +1504,9 @@ The
 .PN XGetInputFocus
 function returns the focus window and the current focus state.
 .NH 2
-Keyboard and Pointer Settings
+Manipulating the Keyboard and Pointer Settings
 .XS
-\*(SN Keyboard and Pointer Settings 
+\*(SN Manipulating the Keyboard and Pointer Settings 
 .XE
 .LP
 Xlib provides functions that you can use to
@@ -1659,7 +1661,7 @@ or
 if possible.
 If only auto_repeat_mode is
 specified, the global auto_repeat_mode for the entire keyboard is
-changed, if possible, and does not affect the per key settings.
+changed, if possible, and does not affect the per-key settings.
 If a key is specified without an auto_repeat_mode, a
 .PN BadMatch
 error results.
@@ -1767,7 +1769,7 @@ typedef struct {
 .LP
 .eM
 For the LEDs, 
-the least-significant bit of led_mask corresponds to LED one,
+the least significant bit of led_mask corresponds to LED one,
 and each bit set to 1 in led_mask indicates an LED that is lit.
 The global_auto_repeat member can be set to
 .PN AutoRepeatModeOn
@@ -1778,7 +1780,7 @@ Each bit set to 1 indicates that auto-repeat is enabled
 for the corresponding key.
 The vector is represented as 32 bytes.  
 Byte N (from 0) contains the bits for keys 8N to 8N + 7
-with the least-significant bit in the byte representing key 8N.
+with the least significant bit in the byte representing key 8N.
 .LP
 .sp
 To turn on keyboard auto-repeat, use
@@ -1887,7 +1889,7 @@ where each bit set to 1 indicates that the corresponding key is currently
 pressed down.
 The vector is represented as 32 bytes.
 Byte N (from 0) contains the bits for keys 8N to 8N + 7 
-with the least-significant bit in the byte representing key 8N.
+with the least significant bit in the byte representing key 8N.
 .LP
 Note that the logical state of a device (as seen by client applications)
 may lag the physical state if device event processing is frozen.
@@ -2072,9 +2074,9 @@ The
 function returns the pointer's current acceleration multiplier
 and acceleration threshold.
 .NH 2
-Keyboard Encoding
+Manipulating the Keyboard Encoding
 .XS
-\*(SN Keyboard Encoding 
+\*(SN Manipulating the Keyboard Encoding 
 .XE
 .LP
 A KeyCode represents a physical (or logical) key.  
@@ -2140,7 +2142,7 @@ for which both lowercase and uppercase forms are defined.
 In that case,
 the group should be treated as if the first element were 
 the lowercase form of ``\fIK\fP'' and the second element were 
-the uppercase form of ``\fIK\fP.''
+the uppercase form of ``\fIK\fP''.
 .LP
 The standard rules for obtaining a KeySym from a
 .PN KeyPress
@@ -2597,8 +2599,8 @@ event, and
 .PN XSetModifierMapping
 returns
 .PN MappingSuccess .
-X permits at most eight modifier keys.
-If more than eight are specified in the
+X permits at most 8 modifier keys.
+If more than 8 are specified in the
 .PN XModifierKeymap
 structure, a
 .PN BadLength
@@ -2606,7 +2608,7 @@ error results.
 .LP
 The modifiermap member of the 
 .PN XModifierKeymap
-structure contains eight sets of max_keypermod KeyCodes, 
+structure contains 8 sets of max_keypermod KeyCodes, 
 one for each modifier in the order 
 .PN Shift , 
 .PN Lock , 

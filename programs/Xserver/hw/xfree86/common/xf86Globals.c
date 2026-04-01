@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Globals.c,v 1.48 2006/06/28 03:20:27 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Globals.c,v 1.45 2005/03/04 21:59:13 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
@@ -96,7 +110,7 @@
  * This file contains all the XFree86 global variables.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "windowstr.h"
 #include "propertyst.h"
@@ -236,9 +250,9 @@ xf86InfoRec xf86Info = {
 	{ FALSE, NULL, FALSE, FALSE, },	/* grabInfo */
 	NULL,		/* config */
 	NULL,		/* serverLayout */
-	NULL,		/* confFiles */
-	NULL,		/* confFlags */
-	NULL		/* confModules */
+	NULL,		/* configFiles */
+	NULL,		/* configFlags */
+	NULL		/* configModules */
 };
 const char *xf86ConfigFile = NULL;
 Bool xf86LogFileWasOpened = FALSE;
@@ -287,15 +301,15 @@ const char *xf86VisualNames[] = {
 };
 
 /* Parameters set only from the command line */
-const char *xf86ServerName = "no-name";
+char *xf86ServerName = "no-name";
 Bool xf86sFlag = FALSE;
 Bool xf86bsEnableFlag = FALSE;
 Bool xf86bsDisableFlag = FALSE;
 Bool xf86silkenMouseDisableFlag = FALSE;
-const char *xf86LayoutName = NULL;
-const char *xf86ScreenName = NULL;
-const char *xf86PointerName = NULL;
-const char *xf86KeyboardName = NULL;
+char *xf86LayoutName = NULL;
+char *xf86ScreenName = NULL;
+char *xf86PointerName = NULL;
+char *xf86KeyboardName = NULL;
 Bool xf86ProbeOnly = FALSE;
 int xf86Verbose = DEFAULT_VERBOSE;
 int xf86LogVerbose = DEFAULT_LOG_VERBOSE;
@@ -319,3 +333,9 @@ Bool xf86MiscModInDevAllowNonLocal = FALSE;
 RootWinPropPtr *xf86RegisteredPropertiesTable = NULL;
 Bool xf86inSuspend = FALSE;
 
+#ifdef DLOPEN_HACK
+/*
+ * This stuff is a hack to allow dlopen() modules to work.  It is intended
+ * only to be used when using dlopen() modules for debugging purposes.
+ */
+#endif

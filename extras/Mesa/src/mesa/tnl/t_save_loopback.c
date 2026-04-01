@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /*
  * Mesa 3-D graphics library
@@ -164,11 +171,13 @@ static attr_func mat_attrfunc[4] = {
 
 static void index_attr1fv(GLcontext *ctx, GLint target, const GLfloat *v)
 {
+   (void) target;
    ctx->Exec->Indexf(v[0]);
 }
 
 static void edgeflag_attr1fv(GLcontext *ctx, GLint target, const GLfloat *v)
 {
+   (void) target;
    ctx->Exec->EdgeFlag((GLboolean)(v[0] == 1.0));
 }
 
@@ -194,7 +203,7 @@ static void loopback_prim( GLcontext *ctx,
    GLuint k;
 
    if (prim->mode & PRIM_BEGIN) {
-      glBegin( prim->mode & PRIM_MODE_MASK );
+      GL_CALL(Begin)( prim->mode & PRIM_MODE_MASK );
    }
    else {
       assert(i == 0);
@@ -219,7 +228,7 @@ static void loopback_prim( GLcontext *ctx,
    }
 
    if (prim->mode & PRIM_END) {
-      glEnd();
+      GL_CALL(End)();
    }
    else {
       assert (i == list->prim_count-1);

@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86pciBus.h,v 3.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86pciBus.h,v 3.11 2004/02/13 23:58:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1999-2003 by The XFree86 Project, Inc.
@@ -81,24 +95,17 @@ typedef union {
 } pciBridgesSave, *pciBridgesSavePtr;
 
 typedef struct pciBusRec {
-    int domain;			/* bridge & bus domain number */
     int brbus, brdev, brfunc;	/* ID of the bridge to this bus */
-    /*
-     * If primary == -1, then redundant host bridge, else
-     * if secondary == -1, then pre-PCI bus, else
-     * if primary == secondary, then PCI root bus segment, else
-     * PCI non-root bus segment.
-     */
     int primary, secondary, subordinate;
     int subclass;		/* bridge type */
     int interface;
-    int brcontrol;		/* bridge_control word */
     resPtr preferred_io;	/* I/O range */
     resPtr preferred_mem;	/* non-prefetchable memory range */
     resPtr preferred_pmem;	/* prefetchable memory range */
     resPtr io;			/* for subtractive PCI-PCI bridges */
     resPtr mem;
     resPtr pmem;
+    int brcontrol;		/* bridge_control byte */
     struct pciBusRec *next;
 } PciBusRec, *PciBusPtr;
 

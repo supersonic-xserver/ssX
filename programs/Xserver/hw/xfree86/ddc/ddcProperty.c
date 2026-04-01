@@ -1,13 +1,22 @@
 /* ddcProperty.c: Make the DDC monitor information available to clients
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * as properties on the root window
  * 
  * Copyright 1999 by Andrew C Aitchison <A.C.Aitchison@dpmms.cam.ac.uk>
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/ddcProperty.c,v 1.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/ddcProperty.c,v 1.11 2004/12/11 20:38:46 dawes Exp $ */
 
 #include "misc.h"
 #include "xf86.h"
-#include <X11/Xatom.h>
+/* #include "xf86_ansic.h" */
+/* #include "xf86_OSproc.h" */
+#include "Xatom.h"
 #include "property.h"
 #include "propertyst.h"
 #include "xf86DDC.h"
@@ -134,7 +143,7 @@ xf86SetDDCproperties(ScrnInfoPtr pScrnInfo, xf86MonPtr DDC)
 	     xf86RegisterRootWindowProperty,
 	     pScrnInfo->scrnIndex,
 	     VDIFAtom, XA_STRING, 8,
-	     (int)strlen(VDIF_DUMMY_STRING), VDIF_DUMMY_STRING 
+	     strlen(VDIF_DUMMY_STRING), VDIF_DUMMY_STRING 
 	     );
 #endif
 

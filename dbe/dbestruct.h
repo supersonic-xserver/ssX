@@ -1,0 +1,242 @@
+/******************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * 
+ * Copyright (c) 1994, 1995  Hewlett-Packard Company
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL HEWLETT-PACKARD COMPANY BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * Except as contained in this notice, the name of the Hewlett-Packard
+ * Company shall not be used in advertising or otherwise to promote the
+ * sale, use or other dealings in this Software without prior written
+ * authorization from the Hewlett-Packard Company.
+ * 
+ *     Header file for DIX-related DBE
+ *
+ *****************************************************************************/
+/* $XFree86: xc/programs/Xserver/dbe/dbestruct.h,v 3.5 2006/02/19 15:51:18 tsi Exp $ */
+
+
+#ifndef DBE_STRUCT_H
+#define DBE_STRUCT_H
+
+
+/* INCLUDES */
+
+#define NEED_DBE_PROTOCOL
+#include <X11/extensions/dbeproto.h>
+#include "windowstr.h"
+#include "scrnintstr.h"
+
+/* Map legacy struct member names to Xlib Xdbe.h names */
+typedef struct {
+    VisualID    visualID;  /* one visual ID that supports double-buffering */
+    int         depth;     /* depth of visual in bits                      */
+    int         perfLevel; /* performance level of visual                  */
+} XdbeVisualInfo;
+
+/* XdbeScreenVisualInfo - legacy code uses .count and .visinfo */
+typedef struct {
+    int                 count;          /* number of items in visual_depth   */
+    XdbeVisualInfo      *visinfo;       /* list of visuals & depths for scrn */
+} XdbeScreenVisualInfo;
+
+
+/* DEFINES */
+
+#define DBE_SCREEN_PRIV(pScreen) \
+    ((dbeScreenPrivIndex < 0) ? \
+     NULL : \
+     ((DbeScreenPrivPtr)((pScreen)->devPrivates[dbeScreenPrivIndex].ptr)))
+
+#define DBE_SCREEN_PRIV_FROM_DRAWABLE(pDrawable) \
+    DBE_SCREEN_PRIV((pDrawable)->pScreen)
+
+#define DBE_SCREEN_PRIV_FROM_WINDOW_PRIV(pDbeWindowPriv) \
+    DBE_SCREEN_PRIV((pDbeWindowPriv)->pWindow->drawable.pScreen)
+
+#define DBE_SCREEN_PRIV_FROM_WINDOW(pWindow) \
+    DBE_SCREEN_PRIV((pWindow)->drawable.pScreen)
+
+#define DBE_SCREEN_PRIV_FROM_PIXMAP(pPixmap) \
+    DBE_SCREEN_PRIV((pPixmap)->drawable.pScreen)
+
+#define DBE_SCREEN_PRIV_FROM_GC(pGC)\
+    DBE_SCREEN_PRIV((pGC)->pScreen)
+
+#define DBE_WINDOW_PRIV(pWindow)\
+    ((dbeWindowPrivIndex < 0) ? \
+     NULL : \
+     ((DbeWindowPrivPtr)(pWindow->devPrivates[dbeWindowPrivIndex].ptr)))
+
+/* Initial size of the buffer ID array in the window priv. */
+#define DBE_INIT_MAX_IDS	2
+
+/* Reallocation increment for the buffer ID array. */
+#define DBE_INCR_MAX_IDS	4
+
+/* Marker for free elements in the buffer ID array. */
+#define DBE_FREE_ID_ELEMENT	0
+
+
+/* TYPEDEFS */
+
+/* Record used to pass swap information between DIX and DDX swapping
+ * procedures.
+ */
+typedef struct _DbeSwapInfoRec
+{
+    WindowPtr		pWindow;
+    unsigned char	swapAction;
+
+} DbeSwapInfoRec, *DbeSwapInfoPtr;
+
+/*
+ ******************************************************************************
+ ** Per-window data
+ ******************************************************************************
+ */
+
+typedef struct _DbeWindowPrivRec
+{
+    /* A pointer to the window with which the DBE window private (buffer) is
+     * associated.
+     */
+    WindowPtr		pWindow;
+
+    /* Last known swap action for this buffer.  Legal values for this field
+     * are XdbeUndefined, XdbeBackground, XdbeUntouched, and XdbeCopied.
+     */
+    unsigned char	swapAction;
+
+    /* Last known buffer size.
+     */
+    unsigned short	width, height;
+
+    /* Coordinates used for static gravity when the window is positioned.
+     */
+    short		x, y;
+
+    /* Number of XIDs associated with this buffer.
+     */
+    int			nBufferIDs;
+
+    /* Capacity of the current buffer ID array, IDs. */
+    int			maxAvailableIDs;
+
+    /* Pointer to the array of buffer IDs.  This initially points to initIDs.
+     * When the static limit of the initIDs array is reached, the array is
+     * reallocated and this pointer is set to the new array instead of initIDs.
+     */
+    XID			*IDs;
+
+    /* Initial array of buffer IDs.  We are defining the XID array within the
+     * window priv to optimize for data locality.  In most cases, only one
+     * buffer will be associated with a window.  Having the array declared
+     * here can prevent us from accessing the data in another memory page,
+     * possibly resulting in a page swap and loss of performance.  Initially we
+     * will use this array to store buffer IDs.  For situations where we have
+     * more IDs than can fit in this static array, we will allocate a larger
+     * array to use, possibly suffering a performance loss. 
+     */
+    XID			initIDs[DBE_INIT_MAX_IDS];
+
+    /* Device-specific private information.
+     */
+    DevUnion		*devPrivates;
+
+} DbeWindowPrivRec, *DbeWindowPrivPtr;
+
+
+/*
+ ******************************************************************************
+ ** Per-screen data
+ ******************************************************************************
+ */
+
+typedef Bool (*DbeSetupBackgroundPainterProcPtr)(WindowPtr pWin, GCPtr pGC);
+typedef DbeWindowPrivPtr (*DbeAllocWinPrivProcPtr)(ScreenPtr);
+typedef int (*DbeAllocWinPrivPrivIndexProcPtr)(void);
+typedef Bool (*DbeAllocWinPrivPrivProcPtr)(ScreenPtr pScreen, int index,
+					   unsigned amount);
+
+typedef Bool (*DbeGetVisualInfoProcPtr)(ScreenPtr pScreen,
+				        XdbeScreenVisualInfo *pVisInfo);
+typedef int (*DbeAllocBackBufferNameProcPtr)(WindowPtr pWin, XID bufId,
+					     int swapAction);
+typedef int (*DbeSwapBuffersProcPtr)(ClientPtr client, int *pNumWindows,
+				     DbeSwapInfoPtr swapInfo);
+typedef void (*DbeBeginIdiomProcPtr)(ClientPtr client);
+typedef void (*DbeEndIdiomProcPtr)(ClientPtr client);
+typedef void (*DbeWinPrivDeleteProcPtr)(DbeWindowPrivPtr pDbeWindowPriv,
+					XID bufId);
+typedef void (*DbeResetProcPtr)(ScreenPtr pScreen);
+typedef void (*DbeValidateBufferProcPtr)(WindowPtr pWin, XID bufId,
+					 Bool dstbuffer);
+typedef struct _DbeScreenPrivRec
+{
+    /* Info for creating window privs */
+    int          winPrivPrivLen;    /* Length of privs in DbeWindowPrivRec   */
+    unsigned int *winPrivPrivSizes; /* Array of private record sizes         */
+    unsigned int totalWinPrivSize;  /* PrivRec + size of all priv priv ptrs  */
+
+    /* Resources created by DIX to be used by DDX */
+    RESTYPE	dbeDrawableResType;
+    RESTYPE	dbeWindowPrivResType;
+
+    /* Private indices created by DIX to be used by DDX */
+    int		dbeScreenPrivIndex;
+    int		dbeWindowPrivIndex;
+
+    /* Wrapped functions
+     * It is the responsibilty of the DDX layer to wrap PositionWindow().
+     * DbeExtensionInit wraps DestroyWindow().
+     */
+    PositionWindowProcPtr PositionWindow;
+    DestroyWindowProcPtr  DestroyWindow;
+
+    /* Per-screen DIX routines */
+    DbeSetupBackgroundPainterProcPtr	SetupBackgroundPainter;
+    DbeAllocWinPrivProcPtr		AllocWinPriv;
+    DbeAllocWinPrivPrivIndexProcPtr	AllocWinPrivPrivIndex;
+    DbeAllocWinPrivPrivProcPtr		AllocWinPrivPriv;
+
+    /* Per-screen DDX routines */
+    DbeGetVisualInfoProcPtr		GetVisualInfo;
+    DbeAllocBackBufferNameProcPtr	AllocBackBufferName;
+    DbeSwapBuffersProcPtr		SwapBuffers;
+    DbeBeginIdiomProcPtr		BeginIdiom;
+    DbeEndIdiomProcPtr			EndIdiom;
+    DbeWinPrivDeleteProcPtr		WinPrivDelete;
+    DbeResetProcPtr			ResetProc;
+    DbeValidateBufferProcPtr		ValidateBuffer;
+
+    /* Device-specific private information.
+     */
+    DevUnion	*devPrivates;
+
+} DbeScreenPrivRec, *DbeScreenPrivPtr;
+
+#endif /* DBE_STRUCT_H */

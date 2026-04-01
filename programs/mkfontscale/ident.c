@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   Copyright (c) 2003 by Juliusz Chroboczek
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,7 +36,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "zlib.h"
-#include "ident.h"
 
 #define PCF_VERSION (('p'<<24)|('c'<<16)|('f'<<8)|1)
 #define PCF_PROPERTIES (1 << 0)

@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/bsdi.cf,v 3.42 2006/07/23 20:51:48 tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/bsdi.cf,v 3.40 2004/06/25 15:33:21 tsi Exp $
 
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
@@ -84,8 +84,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #define Krb5Libraries		-lkrb5 -lk5crypto -lprofile -lcom_err
 #endif
 
-#define SharedGLUReqs		$(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) \
-				$(XLIB) -lstdc++
+#define SharedGLUReqs		$(LDPRELIB) $(XLIB) $(GLXLIB) -lstdc++
 
 #if (OSMajorVersion == 4 && OSMinorVersion >= 1) || (OSMajorVersion > 4)
 #define HasNCurses		YES
@@ -220,7 +219,7 @@ XCOMM xf86site.def
 /*
  * Heck, build a server that can load modules too...
  */
-#define DoLoadableServer        YES
+#define DoLoadableServer        Yes
 #endif
 
 XCOMM math.h uses _REENTRANT in FreeBSD, so we define it here too
@@ -389,6 +388,10 @@ install.man:: 								@@\
 olor */
 #endif
 
+#ifndef       BuildPexExt
+#define       BuildPexExt     (XsunServer || Xsun24Server)
+#endif
+
 #ifndef NeedConstPrototypes
 #define NeedConstPrototypes YES
 #endif
@@ -398,6 +401,8 @@ olor */
 #ifndef NeedVarargsPrototypes
 #define NeedVarargsPrototypes YES
 #endif
+
+#define PexCCOptions DefaultCCOptions
 
 #ifndef       BuildXKB
 #define       BuildXKB        YES

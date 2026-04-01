@@ -1,6 +1,20 @@
 /* (c) Itai Nahshon */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/alp_i2c.c,v 1.6 1999/02/28 11:19:38 dawes Exp $ */
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/alp_i2c.c,v 1.3 2000/12/06 15:35:15 eich Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

@@ -1,6 +1,13 @@
-/* $XFree86: xc/lib/Xaw/Toggle.h,v 1.6tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
+
+ * $Xorg: Toggle.h,v 1.4 2001/02/09 02:03:47 xorgcvs Exp $
+ *
 Copyright 1989, 1994, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -23,6 +30,7 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
  */
+/* $XFree86: xc/lib/Xaw/Toggle.h,v 1.6 2001/12/14 19:54:45 dawes Exp $ */
 
 /*
  * ToggleP.h - Private definitions for Toggle widget
@@ -30,7 +38,7 @@ in this Software without prior written authorization from The Open Group.
  * Author: Chris D. Peterson
  *         MIT X Consortium
  *         kit@expo.lcs.mit.edu
- *
+ *  
  * Date:   January 12, 1989
  */
 
@@ -74,7 +82,7 @@ in this Software without prior written authorization from The Open Group.
 + To use the toggle as a radio toggle button, set this resource to point to
   any other widget in the radio group.
 
-++ This is the data returned from a call to XawToggleGetCurrent, by default
+++ This is the data returned from a call to XtToggleGetCurrent, by default
    this is set to the name of toggle widget.
 
 */
@@ -106,7 +114,7 @@ typedef struct _ToggleRec        *ToggleWidget;
  */
 
 _XFUNCPROTOBEGIN
-
+   
 /*
  * Function:
  *	XawToggleChangeRadioGroup

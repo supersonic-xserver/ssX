@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright (c) 2001 by Juliusz Chroboczek
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +26,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* $XFree86: xc/programs/luit/charset.c,v 1.10 2004/10/23 15:29:32 dawes Exp $ */
+/* $XFree86: xc/programs/luit/charset.c,v 1.11 2004/10/27 23:03:54 dickey Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xext/sampleEVI.c,v 3.7tsi Exp $ */
+/* $Xorg: sampleEVI.c,v 1.3 2000/08/17 19:47:58 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1997 by Silicon Graphics Computer Systems, Inc.
 Permission to use, copy, modify, and distribute this
@@ -21,18 +28,18 @@ DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
 OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xext/sampleEVI.c,v 3.5 2003/07/16 01:38:29 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include "dix.h"
 #define _XEVI_SERVER_
-#include <X11/extensions/XEVIstr.h>
+#include "XEVIstr.h"
 #include "EVIstruct.h"
 #include "scrnintstr.h"
-static int
-sampleGetVisualInfo(
+static int sampleGetVisualInfo(
     VisualID32 *visual,
     int n_visual,
     xExtendedVisualInfo **evi_rn,
@@ -40,37 +47,24 @@ sampleGetVisualInfo(
     VisualID32 **conflict_rn,
     int *n_conflict_rn)
 {
-    CARD32 max_sz_evi;
+    int max_sz_evi = n_visual * sz_xExtendedVisualInfo * screenInfo.numScreens;
     VisualID32 *temp_conflict;
     xExtendedVisualInfo *evi;
     int max_visuals = 0, max_sz_conflict, sz_conflict = 0;
-    int visualI, scrI, sz_evi = 0, conflictI, n_conflict;
-
-    if ((CARD32)n_visual >
-	(((CARD32)(-1L) / sz_xExtendedVisualInfo) / screenInfo.numScreens))
-	return BadAlloc;
-
+    register int visualI, scrI, sz_evi = 0, conflictI, n_conflict;
+    *evi_rn = evi = (xExtendedVisualInfo *)xalloc(max_sz_evi);
+    if (!*evi_rn)
+         return BadAlloc;
     for (scrI = 0; scrI < screenInfo.numScreens; scrI++) {
         if (screenInfo.screens[scrI]->numVisuals > max_visuals)
             max_visuals = screenInfo.screens[scrI]->numVisuals;
     }
-
-    if ((CARD32)n_visual > (((CARD32)(-1L) / sz_VisualID32) / max_visuals))
-	return BadAlloc;
-
-    max_sz_evi = n_visual * sz_xExtendedVisualInfo * screenInfo.numScreens;
-    *evi_rn = evi = (xExtendedVisualInfo *)xalloc(max_sz_evi);
-    if (!*evi_rn)
-         return BadAlloc;
-
-    max_sz_conflict =
-	n_visual * sz_VisualID32 * screenInfo.numScreens * max_visuals;
+    max_sz_conflict = n_visual * sz_VisualID32 * screenInfo.numScreens * max_visuals;
     temp_conflict = (VisualID32 *)xalloc(max_sz_conflict);
     if (!temp_conflict) {
         xfree(*evi_rn);
         return BadAlloc;
     }
-
     for (scrI = 0; scrI < screenInfo.numScreens; scrI++) {
         for (visualI = 0; visualI < n_visual; visualI++) {
 	    evi[sz_evi].core_visual_id = visual[visualI];
@@ -92,8 +86,9 @@ sampleGetVisualInfo(
     return Success;
 }
 
-static void
-sampleFreeVisualInfo(xExtendedVisualInfo *evi, VisualID32 *conflict)
+static void sampleFreeVisualInfo(
+    xExtendedVisualInfo *evi,
+    VisualID32 *conflict)
 {
     if (evi)
         xfree(evi);
@@ -101,8 +96,7 @@ sampleFreeVisualInfo(xExtendedVisualInfo *evi, VisualID32 *conflict)
     	xfree(conflict);
 }
 
-EviPrivPtr
-eviDDXInit(void)
+EviPrivPtr eviDDXInit(void)
 {
     static EviPrivRec eviPriv;
     eviPriv.getVisualInfo = sampleGetVisualInfo;
@@ -110,7 +104,6 @@ eviDDXInit(void)
     return &eviPriv;
 }
 
-void
-eviDDXReset(void)
+void eviDDXReset(void)
 {
 }

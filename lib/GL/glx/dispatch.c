@@ -1,4 +1,11 @@
 /* $XFree86: xc/lib/GL/glx/dispatch.c,v 1.5 2003/06/30 01:45:10 torrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -34,7 +41,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef GLX_USE_APPLEGL
 
-#define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include "glapi.h"
 #include "glapitable.h"

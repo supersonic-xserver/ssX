@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xnest/GetTime.c,v 1.2tsi Exp $ */
+/* $Xorg: GetTime.c,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1993  X Consortium
@@ -28,9 +35,10 @@ other dealings in this Software without prior written authorization
 from the X Consortium.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xnest/GetTime.c,v 1.2 2003/11/16 05:05:20 dawes Exp $ */
 
 
-#include <X11/Xos.h>
+#include "Xos.h"
 #include "os.h"
 #include <time.h>
 

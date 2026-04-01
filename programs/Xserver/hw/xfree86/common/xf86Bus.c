@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c,v 1.99tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c,v 1.88 2005/02/18 01:52:59 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1997-2007 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -54,7 +61,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -130,7 +137,7 @@ void
 xf86BusProbe(void)
 {
     xf86PciProbe();
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__)
     xf86SbusProbe();
 #endif
 }
@@ -160,7 +167,7 @@ StringToBusType(const char* busID, const char **retID)
 	return BUS_NONE;
     }
     if (!xf86NameCmp(p, "pci") || !xf86NameCmp(p, "agp"))
-	ret = BUS_PCI;
+	ret = BUS_PCI; 
     if (!xf86NameCmp(p, "isa"))
 	ret = BUS_ISA;
     if (!xf86NameCmp(p, "sbus"))
@@ -183,7 +190,7 @@ xf86EntityInit(void)
     resPtr *pprev_next;
     resPtr res;
     xf86AccessPtr pacc;
-
+    
     for (i = 0; i < xf86NumEntities; i++)
 	if (xf86Entities[i]->entityInit) {
 	    if (xf86Entities[i]->access->busAcc)
@@ -198,11 +205,11 @@ xf86EntityInit(void)
 	    /* remove init resources after init is processed */
 	    pprev_next = &Acc;
 	    res = Acc;
-	    while (res) {
+	    while (res) {  
 		if (res->res_type & ResInit && (res->entityIndex == i)) {
 		    (*pprev_next) = res->next;
 		    xfree(res);
-		} else
+		} else 
 		    pprev_next = &(res->next);
 		res = (*pprev_next);
 	    }
@@ -217,7 +224,7 @@ xf86AllocateEntity(void)
 			      sizeof(EntityPtr) * xf86NumEntities);
     xf86Entities[xf86NumEntities - 1] = xnfcalloc(1,sizeof(EntityRec));
     xf86Entities[xf86NumEntities - 1]->entityPrivates =
-	       xnfcalloc(sizeof(DevUnion) * xf86EntityPrivateCount, 1);
+               xnfcalloc(sizeof(DevUnion) * xf86EntityPrivateCount, 1);
     return (xf86NumEntities - 1);
 }
 
@@ -226,7 +233,7 @@ EntityEnter(void)
 {
     int i;
     xf86AccessPtr pacc;
-
+    
     for (i = 0; i < xf86NumEntities; i++)
 	if (xf86Entities[i]->entityEnter) {
 	    if (xf86Entities[i]->access->busAcc)
@@ -264,13 +271,8 @@ EntityLeave(void)
 Bool
 xf86IsEntityPrimary(int entityIndex)
 {
-    EntityPtr pEnt;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return FALSE;
-
-    pEnt = xf86Entities[entityIndex];
-
+    EntityPtr pEnt = xf86Entities[entityIndex];
+    
     if (primaryBus.type != pEnt->busType) return FALSE;
 
     switch (pEnt->busType) {
@@ -286,14 +288,13 @@ xf86IsEntityPrimary(int entityIndex)
 	return FALSE;
     }
 }
-
+	
 Bool
 xf86SetEntityFuncs(int entityIndex, EntityProc init, EntityProc enter,
 		   EntityProc leave, pointer private)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
+    if (entityIndex >= xf86NumEntities)
 	return FALSE;
-
     xf86Entities[entityIndex]->entityInit = init;
     xf86Entities[entityIndex]->entityEnter = enter;
     xf86Entities[entityIndex]->entityLeave = leave;
@@ -306,7 +307,7 @@ xf86DriverHasEntities(DriverPtr drvp)
 {
     int i;
     for (i = 0; i < xf86NumEntities; i++) {
-	if (xf86Entities[i]->driver == drvp && xf86Entities[i]->inUse)
+	if (xf86Entities[i]->driver == drvp && xf86Entities[i]->inUse) 
 	    return TRUE;
     }
     return FALSE;
@@ -325,9 +326,8 @@ xf86ClearDriverEntities(DriverPtr drvp)
 void
 xf86AddEntityToScreen(ScrnInfoPtr pScrn, int entityIndex)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
+    if (entityIndex == -1)
 	return;
-
     if (xf86Entities[entityIndex]->inUse &&
 	!(xf86Entities[entityIndex]->entityProp & IS_SHARED_ACCEL))
 	FatalError("Requested Entity already in use!\n");
@@ -350,7 +350,7 @@ xf86SetEntityInstanceForScreen(ScrnInfoPtr pScrn, int entityIndex, int instance)
 {
     int i;
 
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
+    if (entityIndex == -1 || entityIndex >= xf86NumEntities)
 	return;
 
     for (i = 0; i < pScrn->numEntities; i++) {
@@ -370,9 +370,8 @@ xf86FindScreenForEntity(int entityIndex)
 {
     int i,j;
 
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return NULL;
-
+    if (entityIndex == -1) return NULL;
+    
     if (xf86Screens) {
 	for (i = 0; i < xf86NumScreens; i++) {
 	    for (j = 0; j < xf86Screens[i]->numEntities; j++) {
@@ -390,10 +389,7 @@ xf86RemoveEntityFromScreen(ScrnInfoPtr pScrn, int entityIndex)
     int i;
     EntityAccessPtr *ptr = (EntityAccessPtr *)&pScrn->access;
     EntityAccessPtr peacc;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return;
-
+    
     for (i = 0; i < pScrn->numEntities; i++) {
 	if (pScrn->entityList[i] == entityIndex) {
 	    peacc = xf86Entities[pScrn->entityList[i]]->access;
@@ -424,9 +420,9 @@ xf86ClearEntityListForScreen(int scrnIndex)
     ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
     EntityAccessPtr peacc;
     int i, entityIndex;
-
+    
     if (pScrn->entityList == NULL || pScrn->numEntities == 0) return;
-
+	
     for (i = 0; i < pScrn->numEntities; i++) {
 	entityIndex = pScrn->entityList[i];
 	xf86Entities[entityIndex]->inUse = FALSE;
@@ -458,12 +454,12 @@ xf86DeallocateResourcesForEntity(int entityIndex, unsigned long type)
     resPtr res = Acc;
 
     while (res) {
-	if ((res->entityIndex == entityIndex) &&
+	if (res->entityIndex == entityIndex &&
 	    (type & ResAccMask & res->res_type))
 	{
 	    (*pprev_next) = res->next;
 	    xfree(res);
-	} else
+	} else 
 	    pprev_next = &(res->next);
 	res = (*pprev_next);
     }
@@ -477,10 +473,10 @@ void
 xf86AddDevToEntity(int entityIndex, GDevPtr dev)
 {
     EntityPtr pEnt;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
+    
+    if (entityIndex >= xf86NumEntities)
 	return;
-
+    
     pEnt = xf86Entities[entityIndex];
     pEnt->numInstances++;
     pEnt->devices = xnfrealloc(pEnt->devices,
@@ -499,10 +495,10 @@ xf86GetEntityInfo(int entityIndex)
 {
     EntityInfoPtr pEnt;
     int i;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
+    
+    if (entityIndex >= xf86NumEntities)
 	return NULL;
-
+    
     pEnt = xnfcalloc(1,sizeof(EntityInfoRec));
     pEnt->index = entityIndex;
     pEnt->location = xf86Entities[entityIndex]->bus;
@@ -511,23 +507,23 @@ xf86GetEntityInfo(int entityIndex)
     pEnt->resources = xf86Entities[entityIndex]->resources;
     pEnt->driver = xf86Entities[entityIndex]->driver;
     if ( (xf86Entities[entityIndex]->devices) &&
-	 (xf86Entities[entityIndex]->devices[0]) ) {
+         (xf86Entities[entityIndex]->devices[0]) ) {
 	for (i = 0; i < xf86Entities[entityIndex]->numInstances; i++)
 	    if (xf86Entities[entityIndex]->devices[i]->screen == 0)
-		break;
+	        break;
 	pEnt->device = xf86Entities[entityIndex]->devices[i];
     } else
 	pEnt->device = NULL;
-
+    
     return pEnt;
 }
 
 int
 xf86GetNumEntityInstances(int entityIndex)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
+    if (entityIndex >= xf86NumEntities)
 	return -1;
-
+    
     return xf86Entities[entityIndex]->numInstances;
 }
 
@@ -535,19 +531,16 @@ GDevPtr
 xf86GetDevFromEntity(int entityIndex, int instance)
 {
     int i;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return NULL;
-
+  
     /* We might not use AddDevtoEntity */
     if ( (!xf86Entities[entityIndex]->devices) ||
-	 (!xf86Entities[entityIndex]->devices[0]) )
+         (!xf86Entities[entityIndex]->devices[0]) ) 
 	return NULL;
 
-    if ((instance < 0) ||
-	(instance >= xf86Entities[entityIndex]->numInstances))
+    if (entityIndex >= xf86NumEntities ||
+	instance >= xf86Entities[entityIndex]->numInstances)
 	return NULL;
-
+    
     for (i = 0; i < xf86Entities[entityIndex]->numInstances; i++)
 	if (xf86Entities[entityIndex]->devices[i]->screen == instance)
 	    break;
@@ -563,7 +556,7 @@ disableAccess(void)
     int i;
     xf86AccessPtr pacc;
     EntityAccessPtr peacc;
-
+    
     /* call disable funcs and reset current access pointer */
     /* the entity specific access funcs are in an enabled  */
     /* state - driver must restore their state explicitely */
@@ -585,7 +578,7 @@ disableAccess(void)
     }
     /* then call the generic entity disable funcs */
     for (i = 0; i < xf86NumEntities; i++) {
-	pacc = xf86Entities[i]->access->fallback;
+	pacc = xf86Entities[i]->access->fallback; 
 	if (pacc->AccessDisable)
 	    pacc->AccessDisable(pacc->arg);
     }
@@ -595,7 +588,7 @@ static void
 clearAccess(void)
 {
     int i;
-
+    
     /* call disable funcs and reset current access pointer */
     /* the entity specific access funcs are in an enabled  */
     /* state - driver must restore their state explicitely */
@@ -621,18 +614,18 @@ xf86AccessInit(void)
     initPciBusState();
     DisablePciBusAccess();
     DisablePciAccess();
-
+    
     xf86ResAccessEnter = TRUE;
 }
 
 /*
- * xf86AccessEnter() -- gets called to save the text mode VGA IO
+ * xf86AccessEnter() -- gets called to save the text mode VGA IO 
  * resources when reentering the server after a VT switch.
  */
 void
 xf86AccessEnter(void)
 {
-    if (xf86ResAccessEnter)
+    if (xf86ResAccessEnter) 
 	return;
 
     /*
@@ -683,7 +676,7 @@ xf86AccessLeaveState(void)
  * xf86AccessRestoreState() - Restore the access registers to the
  * state before X was started. This is handy for framebuffers.
  */
-static void
+static void 
 xf86AccessRestoreState(void)
 {
     if (!xf86ResAccessEnter)
@@ -712,22 +705,22 @@ static AsyncQPtr *AsyncQ = NULL;
 ScrnInfoPtr xf86CurrentScreen = NULL;
 
 #define SETUP_Q  org = AsyncQ; \
-		 AsyncQ = &new;
+	         AsyncQ = &new;
 
 #define PROCESS_Q xf86CurrentScreen = pScrn;
-		  if (!new) AsyncQ = org; \
-		  else { \
-		       AsyncQPtr tmp_Q; \
-		       while (1) {\
-			  new->func(new->arg);\
-			  if (!(new->next)) {\
+                  if (!new) AsyncQ = org; \
+                  else { \
+                       AsyncQPtr tmp_Q; \
+                       while (1) {\
+                          new->func(new->arg);\
+                          if (!(new->next)) {\
 			      AsyncQ = org; xfree(new); break; \
 			   } \
 			   tmp_Q = new->next; \
-			   xfree(new); \
-			   new = tmp_Q; \
+		           xfree(new); \
+ 		           new = tmp_Q; \
 		       } \
-		  }
+                  }
 #else
 #define SETUP_Q
 #define PROCESS_Q
@@ -757,7 +750,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	}
 	return;
     }
-
+    
     switch (pScrn->resourceType) {
     case IO:
 	pceAcc = pScrn->CurrentAccess->pIoAccess;
@@ -769,7 +762,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    pScrn->CurrentAccess->pMemAccess = NULL;
 	while (pceAcc) {
 	    pAcc = pceAcc->pAccess;
-	    if ( pAcc && pAcc->AccessDisable)
+	    if ( pAcc && pAcc->AccessDisable) 
 		(*pAcc->AccessDisable)(pAcc->arg);
 	    pceAcc = pceAcc->next;
 	}
@@ -777,14 +770,14 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    ((BusAccPtr)pScrn->busAccess)->set_f(pScrn->busAccess);
 	while (peAcc) {
 	    pAcc = peAcc->pAccess;
-	    if (pAcc && pAcc->AccessEnable)
+	    if (pAcc && pAcc->AccessEnable) 
 		(*pAcc->AccessEnable)(pAcc->arg);
 	    peAcc = peAcc->next;
 	}
 	pScrn->CurrentAccess->pIoAccess = (EntityAccessPtr) pScrn->access;
 	PROCESS_Q;
 	return;
-
+	
     case MEM_IO:
 	pceAcc = pScrn->CurrentAccess->pIoAccess;
 	if (peAcc != pceAcc) { /* current Io != pAccess */
@@ -814,7 +807,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    SETUP_Q;
 	    while (pceAcc) {  /* current Mem != pAccess */
 		pAcc = pceAcc->pAccess;
-		if (pAcc && pAcc->AccessDisable)
+		if (pAcc && pAcc->AccessDisable) 
 		    (*pAcc->AccessDisable)(pAcc->arg);
 		pceAcc = pceAcc->next;
 	    }
@@ -823,7 +816,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    ((BusAccPtr)pScrn->busAccess)->set_f(pScrn->busAccess);
 	while (peAcc) {
 	    pAcc = peAcc->pAccess;
-	    if (pAcc && pAcc->AccessEnable)
+	    if (pAcc && pAcc->AccessEnable) 
 		(*pAcc->AccessEnable)(pAcc->arg);
 		peAcc = peAcc->next;
 	}
@@ -831,7 +824,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    pScrn->CurrentAccess->pIoAccess = (EntityAccessPtr) pScrn->access;
 	PROCESS_Q;
 	return;
-
+	
     case MEM:
 	pceAcc = pScrn->CurrentAccess->pMemAccess;
 	if (peAcc == pceAcc) {
@@ -842,7 +835,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    pScrn->CurrentAccess->pIoAccess = NULL;
 	while (pceAcc) {
 	    pAcc = pceAcc->pAccess;
-	    if ( pAcc && pAcc->AccessDisable)
+	    if ( pAcc && pAcc->AccessDisable) 
 		(*pAcc->AccessDisable)(pAcc->arg);
 	    pceAcc = pceAcc->next;
 	}
@@ -850,7 +843,7 @@ xf86EnableAccess(ScrnInfoPtr pScrn)
 	    ((BusAccPtr)pScrn->busAccess)->set_f(pScrn->busAccess);
 	while (peAcc) {
 	    pAcc = peAcc->pAccess;
-	    if (pAcc && pAcc->AccessEnable)
+	    if (pAcc && pAcc->AccessEnable) 
 		(*pAcc->AccessEnable)(pAcc->arg);
 	    peAcc = peAcc->next;
 	}
@@ -875,7 +868,7 @@ xf86SetCurrentAccess(Bool Enable, ScrnInfoPtr pScrn)
     register EntityAccessPtr pceAcc = NULL;
     register xf86AccessPtr pAcc;
 
-
+    
     switch(pScrn->resourceType) {
     case IO:
 	pceAcc = pScrn->CurrentAccess->pIoAccess;
@@ -895,10 +888,10 @@ xf86SetCurrentAccess(Bool Enable, ScrnInfoPtr pScrn)
 	pAcc = pceAcc->pAccess;
 	if ( pAcc) {
 	    if (!Enable) {
-		if (pAcc->AccessDisable)
+		if (pAcc->AccessDisable) 
 		    (*pAcc->AccessDisable)(pAcc->arg);
 	    } else {
-		if (pAcc->AccessEnable)
+		if (pAcc->AccessEnable) 
 		    (*pAcc->AccessEnable)(pAcc->arg);
 	    }
 	}
@@ -925,11 +918,11 @@ xf86SetAccessFuncs(EntityInfoPtr pEnt, xf86SetAccessFuncPtr funcs,
 	xf86Entities[pEnt->index]->entityProp |= NO_SEPARATE_MEM_FROM_IO;
     if (funcs->io == funcs->io_mem && funcs->mem && funcs->io)
 	xf86Entities[pEnt->index]->entityProp |= NO_SEPARATE_IO_FROM_MEM;
-
+    
     rac->mem_new = funcs->mem;
     rac->io_new = funcs->io;
     rac->io_mem_new = funcs->io_mem;
-
+    
     rac->old = oldFuncs;
 }
 
@@ -942,10 +935,10 @@ getMask(memType val)
 {
     memType mask = 0;
     memType tmp = 0;
-
+    
     mask=~mask;
     tmp = ~((~tmp) >> 1);
-
+    
     while (!(val & tmp)) {
 	mask = mask >> 1;
 	val = val << 1;
@@ -962,7 +955,7 @@ checkConflictBlock(resRange *range, resPtr pRes)
 {
     memType val,tmp,prev;
     int i;
-
+    
     switch (pRes->res_type & ResExtMask) {
     case ResBlock:
 	if (range->rBegin < pRes->block_end &&
@@ -977,7 +970,7 @@ checkConflictBlock(resRange *range, resPtr pRes)
 	return 0;
     case ResSparse:
 	if (pRes->sparse_base > range->rEnd) return 0;
-
+	
 	val = (~pRes->sparse_mask | pRes->sparse_base) & getMask(range->rEnd);
 #ifdef DEBUG
 	ErrorF("base = 0x%lx, mask = 0x%lx, begin = 0x%lx, end = 0x%lx ,"
@@ -987,7 +980,7 @@ checkConflictBlock(resRange *range, resPtr pRes)
 #endif
 	i = sizeof(memType) * 8;
 	tmp = prev = pRes->sparse_base;
-
+	
 	while (i) {
 	    tmp |= 1<< (--i) & val;
 	    if (tmp > range->rEnd)
@@ -1020,7 +1013,7 @@ checkConflictSparse(resRange *range, resPtr pRes)
 {
     memType val, tmp, prev;
     int i;
-
+    
     switch (pRes->res_type & ResExtMask) {
     case ResSparse:
 	tmp = pRes->sparse_mask & range->rMask;
@@ -1035,11 +1028,11 @@ checkConflictSparse(resRange *range, resPtr pRes)
 
     case ResBlock:
 	if (pRes->block_end < range->rBase) return 0;
-
+	
 	val = (~range->rMask | range->rBase) & getMask(pRes->block_end);
 	i = length;
 	tmp = prev = range->rBase;
-
+	
 	while (i) {
 #ifdef DEBUG
 	    ErrorF("tmp = 0x%lx\n",tmp);
@@ -1050,7 +1043,7 @@ checkConflictSparse(resRange *range, resPtr pRes)
 	    else
 		prev = tmp;
 	}
-	if (tmp < pRes->block_begin)
+	if (tmp < pRes->block_begin) 
 	    return 0;
 	else {
 	    /*
@@ -1059,14 +1052,14 @@ checkConflictSparse(resRange *range, resPtr pRes)
 	     * This might be done in a simpler way....
 	     */
 	    memType mask, m_mask = 0, base = pRes->block_begin;
-	    int i;
+	    int i;	    
 	    while (base < pRes->block_end) {
 		for (i = 1; i < length; i++)
 		    if ( base != (base & (mt_max << i))) break;
 		mask = mt_max >> (length - i);
 		do mask >>= 1;
 		while ((mask + base + 1) > pRes->block_end);
-		/* m_mask and are _inverted_ sparse masks */
+		/* m_mask and are _inverted_ sparse masks */ 
 		m_mask = mask > m_mask ? mask : m_mask;
 		base = base + mask + 1;
 	    }
@@ -1075,7 +1068,7 @@ checkConflictSparse(resRange *range, resPtr pRes)
 	    ErrorF("b-b conflict w: %lx %lx\n",
 		   pRes->block_begin,pRes->block_end);
 #endif
-	    return ~m_mask;
+	    return ~m_mask; 
 	}
     }
     return 0;
@@ -1099,9 +1092,9 @@ needCheck(resPtr pRes, unsigned long type, int entityIndex, xf86State state)
     /* Ignore overlapped ranges that have been nullified */
     if ((pRes->res_type & ResOverlap) && (pRes->block_begin > pRes->block_end))
 	return FALSE;
-
+    
     if ((pRes->res_type & ResTypeMask) != (type & ResTypeMask))
-	return FALSE;
+        return FALSE;
 
     /*
      * Resources set by BIOS (ResBios) are allowed to conflict
@@ -1109,13 +1102,13 @@ needCheck(resPtr pRes, unsigned long type, int entityIndex, xf86State state)
      */
     if (pRes->res_type & type & ResBios)
 	return FALSE;
-
+    
     /*If requested, skip over estimated resources */
     if (pRes->res_type & type & ResEstimated)
-	return FALSE;
-
+ 	return FALSE;
+      
     if (type & pRes->res_type & ResUnused)
-	return FALSE;
+ 	return FALSE;
 
     if (state == OPERATING) {
 	if (type & ResDisableOpr || pRes->res_type & ResDisableOpr)
@@ -1129,10 +1122,10 @@ needCheck(resPtr pRes, unsigned long type, int entityIndex, xf86State state)
 	    (type & ResUnused && pRes->res_type & ResUnusedOpr))
 	    return FALSE;
     }
-
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities))
+    
+    if (entityIndex > -1)
 	loc = xf86Entities[entityIndex]->busType;
-    if ((pRes->entityIndex >= 0) && (pRes->entityIndex < xf86NumEntities))
+    if (pRes->entityIndex > -1)
 	r_loc = xf86Entities[pRes->entityIndex]->busType;
 
     switch (type & ResAccMask) {
@@ -1151,7 +1144,7 @@ needCheck(resPtr pRes, unsigned long type, int entityIndex, xf86State state)
 	switch (pRes->res_type & ResAccMask) {
 	case ResExclusive:
 	    /* ISA buses are only locally exclusive on a PCI system */
-	    if (loc == BUS_PCI && r_loc == BUS_ISA)
+	    if (loc == BUS_PCI && r_loc == BUS_ISA) 
 		return FALSE;
 	    break;
 	case ResShared:
@@ -1161,10 +1154,11 @@ needCheck(resPtr pRes, unsigned long type, int entityIndex, xf86State state)
     case ResAny:
 	break;
     }
-
+    
     if (pRes->entityIndex == entityIndex) return FALSE;
 
-    if ((pScrn = xf86FindScreenForEntity(entityIndex))) {
+    if (pRes->entityIndex > -1 &&
+	(pScrn = xf86FindScreenForEntity(entityIndex))) {
 	for (i = 0; i < pScrn->numEntities; i++)
 	    if (pScrn->entityList[i] == pRes->entityIndex) return FALSE;
     }
@@ -1180,11 +1174,11 @@ checkConflict(resRange *rgp, resPtr pRes, int entityIndex,
 	      xf86State state, Bool ignoreIdentical)
 {
     memType ret;
-
+    
     while(pRes) {
-	if (!needCheck(pRes,rgp->type, entityIndex ,state)) {
-	    pRes = pRes->next;
-	    continue;
+	if (!needCheck(pRes,rgp->type, entityIndex ,state)) { 
+	    pRes = pRes->next;                    
+	    continue;                             
 	}
 	switch (rgp->type & ResExtMask) {
 	case ResBlock:
@@ -1281,15 +1275,15 @@ xf86AddResToList(resPtr rlist, resRange *range, int entityIndex)
 	}
 	break;
     }
-
+    
     new = xnfalloc(sizeof(resRec));
-    /*
-     * Only background resources may be registered with ResBios
+    /* 
+     * Only background resources may be registered with ResBios 
      * and ResEstimated set. Other resources only set it for
      * testing.
      */
-    if (entityIndex != (-1))
-	range->type &= ~(ResBios | ResEstimated);
+    if (entityIndex != (-1)) 
+        range->type &= ~(ResBios | ResEstimated);
     new->val = *range;
     new->entityIndex = entityIndex;
     new->next = rlist;
@@ -1336,7 +1330,7 @@ xf86PrintResList(int verb, resPtr list)
     const char *s, *r;
     resPtr tmp = list;
     unsigned long type;
-
+    
     if (!list)
 	return;
 
@@ -1348,18 +1342,17 @@ xf86PrintResList(int verb, resPtr list)
 		switch (list->res_type & ResExtMask) {
 		case ResBlock:
 		    xf86ErrorFVerb(verb,
-				   "\t[%3d] %3d %3ld 0x%08lx - 0x%08lx (0x%08lx)",
+				   "\t[%d] %d\t%ld\t0x%08lx - 0x%08lx (0x%lx)",
 				   i, list->entityIndex,
 				   (list->res_type & ResDomain) >> 24,
 				   list->block_begin, list->block_end,
 				   list->block_end - list->block_begin + 1);
 		    break;
 		case ResSparse:
-		    xf86ErrorFVerb(verb,
-				   "\t[%3d] %3d %3ld 0x%08lx - 0x%08lx",
+		    xf86ErrorFVerb(verb, "\t[%d] %d\t%ld\t0x%08lx - 0x%08lx ",
 				   i, list->entityIndex,
 				   (list->res_type & ResDomain) >> 24,
-				   list->sparse_base, list->sparse_mask);
+				   list->sparse_base,list->sparse_mask);
 		    break;
 		default:
 		    list = list->next;
@@ -1460,7 +1453,7 @@ xf86ResourceBrokerInit(void)
     /* Bus dep initialization */
     resPci = ResourceBrokerInitPci(&osRes);
     Acc = xf86JoinResLists(xf86DupResList(osRes), resPci);
-
+    
     xf86MsgVerb(X_INFO, 3, "All system resource ranges:\n");
     xf86PrintResList(3, Acc);
 
@@ -1545,7 +1538,7 @@ RemoveOverlaps(resPtr target, resPtr list, Bool pow2Alignment, Bool useEstimated
 
 #define ALIGN(x,a) ((x) + a) &~(a)
 
-resRange
+resRange 
 xf86GetBlock(unsigned long type, memType size,
 	 memType window_start, memType window_end,
 	 memType align_mask, resPtr avoid)
@@ -1553,7 +1546,7 @@ xf86GetBlock(unsigned long type, memType size,
     memType min, max, tmp;
     resRange r = {ResEnd,0,0};
     resPtr res_range = ResRange;
-
+    
     if (!size) return r;
     if (window_end < window_start || (window_end - window_start) < (size - 1)) {
 	ErrorF("Requesting insufficient memory window!:"
@@ -1562,7 +1555,7 @@ xf86GetBlock(unsigned long type, memType size,
 	return r;
     }
     type = (type & ~(ResExtMask | ResBios | ResEstimated)) | ResBlock;
-
+    
     while (res_range) {
 	if ((type & ResTypeMask) == (res_range->res_type & ResTypeMask)) {
 	    if (res_range->block_begin > window_start)
@@ -1582,7 +1575,7 @@ xf86GetBlock(unsigned long type, memType size,
 		    tmp = ChkConflict(&r,avoid,SETUP);
 		    if (!tmp) {
 			return r;
-		    }
+		    } 
 		}
 		min = ALIGN(tmp,align_mask);
 	    }
@@ -1597,7 +1590,7 @@ xf86GetBlock(unsigned long type, memType size,
 #define length sizeof(memType) * 8
 /*
  * make_base() -- assign the lowest bits to the bits set in mask.
- *                example: mask 011010 val 0000110 -> 011000
+ *                example: mask 011010 val 0000110 -> 011000 
  */
 static memType
 make_base(memType val, memType mask)
@@ -1623,7 +1616,7 @@ unmake_base(memType val, memType mask)
 {
     int i,j = 0;
     memType ret = 0;
-
+    
     for (i = 0;i<length;i++) {
 	if ((1 << i) & mask) {
 	    ret |= (((val >> i) & 1) << j);
@@ -1637,7 +1630,7 @@ static memType
 fix_counter(memType val, memType old_mask, memType mask)
 {
     mask = old_mask & mask;
-
+    
     val = make_base(val,old_mask);
     return unmake_base(val,mask);
 }
@@ -1655,7 +1648,7 @@ xf86GetSparse(unsigned long type,  memType fixed_bits,
     memType max_counter = ~(memType)0;
     memType max_counter1;
     memType conflict = 0;
-
+    
     /* for sanity */
     type = (type & ~(ResExtMask | ResBios | ResEstimated)) | ResSparse;
 
@@ -1719,7 +1712,7 @@ xf86GetSparse(unsigned long type,  memType fixed_bits,
     mask1 = decode_mask & ~new_mask;
     max_counter1 = fix_counter(mt_max,mt_max,mask1);
     counter = 0;
-
+    
     while (1) {
 	counter1 = 0;
 	while (1) {
@@ -1753,9 +1746,8 @@ xf86GetSparse(unsigned long type,  memType fixed_bits,
 static resList
 xf86GetResourcesImplicitly(int entityIndex)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return NULL;
-
+    if (entityIndex >= xf86NumEntities) return NULL;
+    
     switch (xf86Entities[entityIndex]->bus.type) {
     case BUS_ISA:
     case BUS_NONE:
@@ -1772,9 +1764,6 @@ xf86GetResourcesImplicitly(int entityIndex)
 static void
 convertRange2Host(int entityIndex, resRange *pRange)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return;
-
     if (pRange->type & ResBus) {
 	switch (xf86Entities[entityIndex]->busType) {
 	case BUS_PCI:
@@ -1810,7 +1799,7 @@ xf86RegisterResources(int entityIndex, resList list, unsigned long access)
 	if (!list) return NULL;
 	list_f = list;
     }
-
+    
     while(list->type != ResEnd) {
 	range = *list;
 
@@ -1819,10 +1808,10 @@ xf86RegisterResources(int entityIndex, resList list, unsigned long access)
 	if ((access != ResNone) && (access & ResAccMask)) {
 	    range.type = (range.type & ~ResAccMask) | (access & ResAccMask);
 	}
-	range.type &= ~ResEstimated;	/* Not allowed for drivers */
+ 	range.type &= ~ResEstimated;	/* Not allowed for drivers */
 #if !(defined(__alpha__) && defined(linux))
 	/* On Alpha Linux, do not check for conflicts, trust the kernel. */
-	if (checkConflict(&range, Acc, entityIndex, SETUP,TRUE))
+	if (checkConflict(&range, Acc, entityIndex, SETUP,TRUE)) 
 	    res = xf86AddResToList(res,&range,entityIndex);
 	else
 #endif
@@ -1843,7 +1832,7 @@ xf86RegisterResources(int entityIndex, resList list, unsigned long access)
     xf86PrintResList(3, res);
 #endif
     return res;
-
+    
 }
 
 static void
@@ -1851,7 +1840,7 @@ busTypeSpecific(EntityPtr pEnt, xf86State state, xf86AccessPtr *acc_mem,
 		xf86AccessPtr *acc_io, xf86AccessPtr *acc_mem_io)
 {
     pciAccPtr *ppaccp;
-
+    
     switch (pEnt->bus.type) {
     case BUS_ISA:
     case BUS_SBUS:
@@ -1866,11 +1855,11 @@ busTypeSpecific(EntityPtr pEnt, xf86State state, xf86AccessPtr *acc_mem,
 		*acc_io = &(*ppaccp)->ioAccess;
 		*acc_mem = &(*ppaccp)->memAccess;
 		*acc_mem_io = &(*ppaccp)->io_memAccess;
-		return;
+		break;
 	    }
 	    ppaccp++;
 	}
-	/* Fall through */
+	break;
     default:
 	*acc_mem = *acc_io = *acc_mem_io = NULL;
 	break;
@@ -1885,7 +1874,7 @@ setAccess(EntityPtr pEnt, xf86State state)
     xf86AccessPtr acc_mem, acc_io, acc_mem_io;
     xf86AccessPtr org_mem = NULL, org_io = NULL, org_mem_io = NULL;
     int prop;
-
+    
     busTypeSpecific(pEnt,state,&acc_mem,&acc_io,&acc_mem_io);
 
     /* The replacement function needs to handle _all_ shared resources */
@@ -1898,18 +1887,14 @@ setAccess(EntityPtr pEnt, xf86State state)
 	if (pEnt->rac->mem_new) {
 	    org_mem = acc_mem;
 	    acc_mem = pEnt->rac->mem_new;
-	}
+	}	
 	if (pEnt->rac->io_mem_new) {
 	    org_mem_io = acc_mem_io;
 	    acc_mem_io = pEnt->rac->io_mem_new;
-	}
+	}   
     }
 
-    if (state == OPERATING)
-	prop = pEnt->entityProp;
-    else
-	prop = NEED_SHARED | NEED_MEM | NEED_IO;
-
+    prop = pEnt->entityProp;
     switch (prop & NEED_SHARED) {
     case NEED_SHARED:
 	pEnt->access->rt = MEM_IO;
@@ -1925,10 +1910,10 @@ setAccess(EntityPtr pEnt, xf86State state)
 	break;
     default: /* no conflicts at all */
 	pEnt->access->rt = NONE;
-	pEnt->access->pAccess = NULL;	/* remove from RAC */
+	pEnt->access->pAccess =  NULL; /* remove from RAC */
 	break;
     }
-
+    
     if (org_io) {
 	/* does the driver want the old access func? */
 	if (pEnt->rac->old) {
@@ -1983,7 +1968,7 @@ setAccess(EntityPtr pEnt, xf86State state)
     }
 
     /* disable shared resources */
-    if (pEnt->access->pAccess
+    if (pEnt->access->pAccess 
 	&& pEnt->access->pAccess->AccessDisable)
 	pEnt->access->pAccess->AccessDisable(pEnt->access->pAccess->arg);
 
@@ -1999,7 +1984,7 @@ setAccess(EntityPtr pEnt, xf86State state)
 	((BusAccPtr)pEnt->busAcc)->set_f(pEnt->busAcc);
 }
 
-
+    
 /*
  * xf86EnterServerState() -- set state the server is in.
  */
@@ -2013,11 +1998,11 @@ SetSIGIOForState(xf86State state)
     static TriState sigio_blocked = TRI_UNSET;
 
     if ((state == SETUP) && (sigio_blocked != TRI_TRUE)) {
-	sigio_state = xf86BlockSIGIO();
+        sigio_state = xf86BlockSIGIO();
 	sigio_blocked = TRI_TRUE;
     } else if ((state == OPERATING) && (sigio_blocked != TRI_UNSET)) {
-	xf86UnblockSIGIO(sigio_state);
-	sigio_blocked = TRI_FALSE;
+        xf86UnblockSIGIO(sigio_state);
+        sigio_blocked = TRI_FALSE;
     }
 }
 
@@ -2029,11 +2014,11 @@ xf86EnterServerState(xf86State state)
     int i,j;
     int needVGA = 0;
     resType rt;
-    /*
+    /* 
      * This is a good place to block SIGIO during SETUP state.
      * SIGIO should be blocked in SETUP state otherwise (u)sleep()
-     * might get interrupted early.
-     * We take care not to call xf86BlockSIGIO() twice.
+     * might get interrupted early. 
+     * We take care not to call xf86BlockSIGIO() twice. 
      */
     SetSIGIOForState(state);
 #ifdef DEBUG
@@ -2050,17 +2035,17 @@ xf86EnterServerState(xf86State state)
 	pScrn = xf86Screens[i];
 	j = pScrn->entityList[pScrn->numEntities - 1];
 	pScrn->access = xf86Entities[j]->access;
-
-	for (j = 0; j<xf86Screens[i]->numEntities; j++) {
-	    pEnt = xf86Entities[xf86Screens[i]->entityList[j]];
-	    if (pEnt->entityProp & (state == SETUP ? NEED_VGA_ROUTED_SETUP
-				    : NEED_VGA_ROUTED))
+	
+ 	for (j = 0; j<xf86Screens[i]->numEntities; j++) {
+ 	    pEnt = xf86Entities[xf86Screens[i]->entityList[j]];
+ 	    if (pEnt->entityProp & (state == SETUP ? NEED_VGA_ROUTED_SETUP
+ 				    : NEED_VGA_ROUTED)) 
 		xf86Screens[i]->busAccess = pEnt->busAcc;
-	}
+ 	}
 	if (xf86Screens[i]->busAccess)
 	    needVGA ++;
     }
-
+    
     /*
      * if we just have one screen we don't have RAC.
      * Therefore just enable the screen and return.
@@ -2070,17 +2055,17 @@ xf86EnterServerState(xf86State state)
 	notifyStateChange(NOTIFY_ENABLE);
 	return;
     }
-
+    
     if (state == SETUP)
 	notifyStateChange(NOTIFY_SETUP_TRANSITION);
     else
 	notifyStateChange(NOTIFY_OPERATING_TRANSITION);
-
+    
     clearAccess();
     for (i=0; i<xf86NumScreens;i++) {
 
 	rt = NONE;
-
+	
 	for (j = 0; j<xf86Screens[i]->numEntities; j++) {
 	    pEnt = xf86Entities[xf86Screens[i]->entityList[j]];
 	    setAccess(pEnt,state);
@@ -2098,7 +2083,7 @@ xf86EnterServerState(xf86State state)
 	    if (needVGA < 2)
 		xf86Screens[i]->busAccess = NULL;
 	}
-
+	
 #ifdef DEBUG
 	if (xf86Screens[i]->busAccess)
 	    ErrorF("Screen %i setting vga route\n",i);
@@ -2133,7 +2118,7 @@ xf86SetOperatingState(resList list, int entityIndex, int mask)
     resPtr acc;
     resPtr r_fail = NULL;
     resRange range;
-
+    
     while (list->type != ResEnd) {
 	range = *list;
 	convertRange2Host(entityIndex,&range);
@@ -2141,7 +2126,7 @@ xf86SetOperatingState(resList list, int entityIndex, int mask)
 	acc = Acc;
 	while (acc) {
 #define MASK (ResTypeMask | ResExtMask)
-	    if ((acc->entityIndex == entityIndex)
+	    if ((acc->entityIndex == entityIndex) 
 		&& (acc->val.a == range.a) && (acc->val.b == range.b)
 		&& ((acc->val.type & MASK) == (range.type & MASK)))
 		break;
@@ -2156,7 +2141,7 @@ xf86SetOperatingState(resList list, int entityIndex, int mask)
 	}
 	list ++;
     }
-
+    
      return r_fail;
 }
 
@@ -2210,30 +2195,29 @@ void
 xf86ClaimFixedResources(resList list, int entityIndex)
 {
     resPtr ptr = NULL;
-    resRange range;
+    resRange range;	
 
-    if (!list || (entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return;
-
-    while (list->type != ResEnd) {
-	range = *list;
+    if (!list) return;
+    
+    while (list->type !=ResEnd) {
+ 	range = *list;
 
 	convertRange2Host(entityIndex,&range);
 
-	range.type &= ~ResEstimated;	/* Not allowed for drivers */
-	switch (range.type & ResAccMask) {
-	case ResExclusive:
-	    if (!xf86ChkConflict(&range, entityIndex)) {
-		Acc = xf86AddResToList(Acc, &range, entityIndex);
+ 	range.type &= ~ResEstimated;	/* Not allowed for drivers */
+ 	switch (range.type & ResAccMask) {
+  	case ResExclusive:
+ 	    if (!xf86ChkConflict(&range, entityIndex)) {
+ 		Acc = xf86AddResToList(Acc, &range, entityIndex);
 #ifdef REDUCER
 	    } else {
-		range.type |= ResEstimated;
-		if (!xf86ChkConflict(&range, entityIndex) &&
-		    !checkConflict(&range, AccReducers, entityIndex,
+ 		range.type |= ResEstimated;
+ 		if (!xf86ChkConflict(&range, entityIndex) &&
+ 		    !checkConflict(&range, AccReducers, entityIndex,
 				   SETUP, FALSE)) {
-		    range.type &= ~(ResEstimated | ResBios);
-		    AccReducers =
-			xf86AddResToList(AccReducers, &range, entityIndex);
+ 		    range.type &= ~(ResEstimated | ResBios);
+ 		    AccReducers =
+ 			xf86AddResToList(AccReducers, &range, entityIndex);
 #endif
 		} else resError(&range); /* no return */
 #ifdef REDUCER
@@ -2255,7 +2239,6 @@ xf86ClaimFixedResources(resList list, int entityIndex)
 	}
 	list++;
     }
-
     xf86Entities[entityIndex]->resources =
 	xf86JoinResLists(xf86Entities[entityIndex]->resources,ptr);
     xf86MsgVerb(X_INFO, 3,
@@ -2362,11 +2345,11 @@ xf86PostProbe(void)
     resPtr resp, acc, tmp, resp_x, *pprev_next;
 
     if (fbSlotClaimed) {
-	if (pciSlotClaimed || isaSlotClaimed
-#if defined(__sparc__)
+        if (pciSlotClaimed || isaSlotClaimed 
+#if defined(__sparc__) && !defined(__OpenBSD__)
 	    || sbusSlotClaimed
 #endif
-	    ) {
+	    ) { 
 	    FatalError("Cannot run in framebuffer mode. Please specify busIDs "
 		       "       for all framebuffer devices\n");
 	    return;
@@ -2386,7 +2369,7 @@ xf86PostProbe(void)
 	if (tmp->res_type & ResInit) {
 	    (*pprev_next) = tmp->next;
 	    xfree(tmp);
-	} else
+	} else 
 	    pprev_next = &(tmp->next);
 	tmp = (*pprev_next);
     }
@@ -2397,7 +2380,7 @@ xf86PostProbe(void)
 	resp_x = NULL;
 	while (resp) {
 	    if (! (val = checkConflict(&resp->val,acc,i,SETUP,FALSE)))  {
-		resp->res_type &= ~(ResBios); /* just used for chkConflict() */
+ 	        resp->res_type &= ~(ResBios); /* just used for chkConflict() */
 		tmp = resp_x;
 		resp_x = resp;
 		resp = resp->next;
@@ -2405,16 +2388,16 @@ xf86PostProbe(void)
 #ifdef REDUCER
 	    } else {
 		resp->res_type |= ResEstimated;
-		if (!checkConflict(&resp->val, acc, i, SETUP, FALSE)) {
-		    resp->res_type &= ~(ResEstimated | ResBios);
-		    tmp = AccReducers;
-		    AccReducers = resp;
-		    resp = resp->next;
-		    AccReducers->next = tmp;
+ 		if (!checkConflict(&resp->val, acc, i, SETUP, FALSE)) {
+ 		    resp->res_type &= ~(ResEstimated | ResBios);
+ 		    tmp = AccReducers;
+ 		    AccReducers = resp;
+ 		    resp = resp->next;
+ 		    AccReducers->next = tmp;
 #endif
 		} else {
 		    xf86MsgVerb(X_INFO, 3, "Found conflict at: 0x%lx\n",val);
-		    resp->res_type &= ~ResEstimated;
+ 		    resp->res_type &= ~ResEstimated;
 		    tmp = xf86Entities[i]->resources;
 		    xf86Entities[i]->resources = resp;
 		    resp = resp->next;
@@ -2431,8 +2414,15 @@ xf86PostProbe(void)
     }
     xf86FreeResList(acc);
 
+#if !(defined(__alpha__) && defined(linux)) && \
+    !(defined(__sparc64__) && defined(__OpenBSD__))
+    /* 
+     * No need to validate on Alpha Linux or OpenBSD/sparc64, 
+     * trust the kernel.
+     */
     ValidatePci();
-
+#endif
+    
     xf86MsgVerb(X_INFO, 3, "resource ranges after probing:\n");
     xf86PrintResList(3, Acc);
     checkRoutingForScreens(SETUP);
@@ -2440,8 +2430,8 @@ xf86PostProbe(void)
     for (i = 0; i < xf86NumScreens; i++) {
 	for (j = 0; j<xf86Screens[i]->numEntities; j++) {
 	    EntityPtr pEnt = xf86Entities[xf86Screens[i]->entityList[j]];
-	    if ((pEnt->entityProp & NEED_VGA_ROUTED_SETUP) &&
-		((xf86Screens[i]->busAccess = pEnt->busAcc)))
+ 	    if ((pEnt->entityProp & NEED_VGA_ROUTED_SETUP) &&
+ 		((xf86Screens[i]->busAccess = pEnt->busAcc)))
 		break;
 	}
     }
@@ -2452,12 +2442,7 @@ checkRequiredResources(int entityIndex)
 {
     resRange range;
     resPtr pAcc = Acc;
-    EntityPtr pEnt;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return;
-
-    pEnt = xf86Entities[entityIndex];
+    const EntityPtr pEnt = xf86Entities[entityIndex];
     while (pAcc) {
 	if (pAcc->entityIndex == entityIndex) {
 	    range = pAcc->val;
@@ -2485,7 +2470,7 @@ checkRequiredResources(int entityIndex)
 	}
 	pAcc = pAcc->next;
     }
-
+    
     /* check if we can separately enable mem/io resources */
     /* XXX we still need to find out how to set this yet  */
     if ( ((pEnt->entityProp & NO_SEPARATE_MEM_FROM_IO)
@@ -2497,7 +2482,7 @@ checkRequiredResources(int entityIndex)
      * After we have checked all resources of an entity agains any
      * other resource we know if the entity need this resource type
      * (ie. mem/io) at all. if not we can disable this type completely,
-     * so no need to share it either.
+     * so no need to share it either. 
      */
     if ((pEnt->entityProp & NEED_MEM_SHARED)
 	&& (!(pEnt->entityProp & NEED_MEM))
@@ -2520,16 +2505,16 @@ xf86PostPreInit()
 
 #ifdef XFree86LOADER
     xf86MsgVerb(X_INFO, 3, "do I need RAC?");
-
+    
     if (needRAC) {
 	xf86ErrorFVerb(3, "  Yes, I do.\n");
-
+	
 	if (!xf86LoadOneModule("rac",NULL))
 	    FatalError("Cannot load RAC module\n");
     } else
 	xf86ErrorFVerb(3, "  No, I don't.\n");
-#endif
-
+#endif    
+ 	
     xf86MsgVerb(X_INFO, 3, "resource ranges after preInit:\n");
     xf86PrintResList(3, Acc);
 }
@@ -2558,14 +2543,14 @@ xf86PostScreenInit(void)
 	}
 #endif
 #ifdef DEBUG
-    ErrorF("PostScreenInit  generation: %li\n",serverGeneration);
+    ErrorF("PostScreenInit  generation: %i\n",serverGeneration);
 #endif
     if (serverGeneration == 1) {
 	checkRoutingForScreens(OPERATING);
-	for (i = 0; i < xf86NumEntities; i++) {
+	for (i=0; i<xf86NumEntities; i++) {
 	    checkRequiredResources(i);
 	}
-
+	
 	/*
 	 * after removing NEED_XXX_SHARED from entities that
 	 * don't need need XXX resources at all we might have
@@ -2585,7 +2570,7 @@ xf86PostScreenInit(void)
 		xf86Entities[i]->entityProp &= ~NEED_IO_SHARED;
 	}
     }
-
+    
     if (xf86Screens && needRAC) {
 	int needRACforVga = 0;
 
@@ -2598,10 +2583,10 @@ xf86PostScreenInit(void)
 		}
 	    }
 	}
-
+	
 	for (i = 0; i < xf86NumScreens; i++) {
 	    Bool needRACforMem = FALSE, needRACforIo = FALSE;
-
+	    
 	    for (j = 0; j < xf86Screens[i]->numEntities; j++) {
 		if (xf86Entities[xf86Screens[i]->entityList[j]]->entityProp
 		    & NEED_MEM_SHARED)
@@ -2620,10 +2605,10 @@ xf86PostScreenInit(void)
 			needRACforMem = TRUE;
 		    if (xf86Entities[xf86Screens[i]->entityList[j]]->entityProp
 			& NEED_VGA_IO)
-			needRACforIo = TRUE;
+			needRACforIo = TRUE;		
 		}
 	    }
-
+		
 	    pScreen = xf86Screens[i]->pScreen;
 	    flags = 0;
 	    if (needRACforMem) {
@@ -2634,7 +2619,7 @@ xf86PostScreenInit(void)
 		flags |= xf86Screens[i]->racIoFlags;
 		xf86ErrorFVerb(3, "Screen %d is using RAC for io\n", i);
 	    }
-
+	    
 #ifdef XFree86LOADER
 		((Bool(*)(ScreenPtr,unsigned int))xf86RACInit)
 		    (pScreen,flags);
@@ -2643,9 +2628,9 @@ xf86PostScreenInit(void)
 #endif
 	}
     }
-
+    
     xf86EnterServerState(OPERATING);
-
+    
 }
 
 /*
@@ -2660,7 +2645,7 @@ decomposeSparse(resRange range)
     resPtr ret = NULL;
     memType val = range.rBegin;
     int i = 0;
-
+    
     new.type = (range.type & ~ResExtMask) | ResSparse;
 
     while (1) {
@@ -2677,7 +2662,7 @@ decomposeSparse(resRange range)
     }
     i--;
     val <<= 1;
-
+    
     while (1) {
 	if((((val + 1) << i) - 1)> range.rEnd) {
 	    if (--i < 0) break;
@@ -2691,7 +2676,7 @@ decomposeSparse(resRange range)
     }
     return ret;
 }
-
+    
 static Bool
 x_isSubsetOf(resRange range, resPtr list1, resPtr list2)
 {
@@ -2699,7 +2684,7 @@ x_isSubsetOf(resRange range, resPtr list1, resPtr list2)
     memType m1_A_m2;
     Bool ret;
     resPtr list;
-
+    
     if (list1) {
 	list = list1;
 	if ((range.type & ResTypeMask) == (list->res_type & ResTypeMask)) {
@@ -2709,8 +2694,7 @@ x_isSubsetOf(resRange range, resPtr list1, resPtr list2)
 		    if (range.rBegin >= list->block_begin
 			&& range.rEnd <= list->block_end)
 			return TRUE;
-
-		    if (range.rBegin < list->block_begin
+		    else if (range.rBegin < list->block_begin
 			     && range.rEnd > list->block_end) {
 			RANGE(range1, range.rBegin, list->block_begin - 1,
 			      range.type);
@@ -2719,28 +2703,24 @@ x_isSubsetOf(resRange range, resPtr list1, resPtr list2)
 			return (x_isSubsetOf(range1,list->next,list2) &&
 				x_isSubsetOf(range2,list->next,list2));
 		    }
-
-		    if (range.rBegin >= list->block_begin
+		    else if (range.rBegin >= list->block_begin
 			     && range.rBegin <= list->block_end) {
 			RANGE(range1, list->block_end + 1, range.rEnd,
 			      range.type);
 			return (x_isSubsetOf(range1,list->next,list2));
-		    }
-
-		    if (range.rEnd >= list->block_begin
+		    } else if (range.rEnd >= list->block_begin
 			       && range.rEnd <= list->block_end) {
 			RANGE(range1,range.rBegin, list->block_begin - 1,
 			      range.type);
 			return (x_isSubsetOf(range1,list->next,list2));
-		    }
+		    } 
 		}
 		break;
-
 	    case ResSparse:
 		if ((list->res_type & ResExtMask) == ResSparse) {
 		    memType test;
 		    int i;
-
+		    
 		    m1_A_m2 = range.rMask & list->sparse_mask;
 		    if ((range.rBase ^ list->sparse_base) & m1_A_m2)
 			break;
@@ -2765,17 +2745,14 @@ x_isSubsetOf(resRange range, resPtr list1, resPtr list2)
 		    test = list->sparse_mask & ~range.rMask;
 		    if (test == 0)
 			return TRUE;
-		    for (i = 0; i < sizeof(memType) * 8; i++) {
+		    for (i = 0; i < sizeof(memType); i++) {
 			if ((test >> i) & 0x1) {
-			    RANGE(
-				range1,
-				((range.rBase & list->sparse_base) |
-				 (range.rBase & ~list->sparse_mask) |
-				 ((~list->sparse_base & list->sparse_mask) &
-				  ~range.rMask)) & range.rMask,
-				((range.rMask | list->sparse_mask) & ~test) |
-				 (1 << i),
-				range.type);
+			    RANGE(range1, ((range.rBase & list->sparse_base)
+				  | (range.rBase & ~list->sparse_mask)
+				  | ((~list->sparse_base & list->sparse_mask)
+				     & ~range.rMask)) & range1.rMask,
+				  ((range.rMask | list->sparse_mask) & ~test)
+				  | (1 << i), range.type);
 			    return (x_isSubsetOf(range1,list->next,list2));
 			}
 		    }
@@ -2783,40 +2760,32 @@ x_isSubsetOf(resRange range, resPtr list1, resPtr list2)
 		break;
 	    }
 	}
-
 	return (x_isSubsetOf(range,list->next,list2));
-    }
-
-    if (list2) {
+    } else if (list2) {
 	resPtr tmpList = NULL;
-
 	switch (range.type & ResExtMask) {
 	case ResBlock:
-	    list = tmpList = decomposeSparse(range);
-
+	    tmpList = decomposeSparse(range);
 	    while (tmpList) {
 		if (!x_isSubsetOf(tmpList->val,list2,NULL)) {
-		    xf86FreeResList(list);
+		    xf86FreeResList(tmpList);
 		    return FALSE;
 		}
-
 		tmpList = tmpList->next;
 	    }
-
-	    xf86FreeResList(list);
+	    xf86FreeResList(tmpList);
 	    return TRUE;
-
 	case ResSparse:
 	    while (list2) {
 		tmpList = xf86JoinResLists(tmpList,decomposeSparse(list2->val));
 		list2 = list2->next;
 	    }
-
-	    ret = x_isSubsetOf(range, tmpList, NULL);
+	    ret = x_isSubsetOf(range,tmpList,NULL);
 	    xf86FreeResList(tmpList);
 	    return ret;
 	}
-    }
+    } else
+	return FALSE;
 
     return FALSE;
 }
@@ -2827,7 +2796,7 @@ xf86IsSubsetOf(resRange range, resPtr list)
     resPtr dup = xf86DupResList(list);
     resPtr r_sp = NULL, r = NULL, tmp = NULL;
     Bool ret = FALSE;
-
+    
     while (dup) {
 	tmp = dup;
 	dup = dup->next;
@@ -2842,7 +2811,7 @@ xf86IsSubsetOf(resRange range, resPtr list)
 	    break;
 	}
     }
-
+    
     switch (range.type & ResExtMask) {
     case ResBlock:
 	ret = x_isSubsetOf(range,r,r_sp);
@@ -2853,7 +2822,7 @@ xf86IsSubsetOf(resRange range, resPtr list)
     }
     xf86FreeResList(r);
     xf86FreeResList(r_sp);
-
+    
     return ret;
 }
 
@@ -2873,7 +2842,7 @@ findIntersect(resRange Range, resPtr list)
 {
     resRange range;
     resPtr new = NULL;
-
+    
     while (list) {
 	    if ((Range.type & ResTypeMask) == (list->res_type & ResTypeMask)) {
 		switch (Range.type & ResExtMask) {
@@ -2886,7 +2855,7 @@ findIntersect(resRange Range, resPtr list)
 			    range.rBegin = list->block_begin;
 			if (Range.rEnd <= list->block_end)
 			    range.rEnd = Range.rEnd;
-			else
+			else 
 			    range.rEnd = list->block_end;
 			if (range.rEnd > range.rBegin) {
 			    range.type = Range.type;
@@ -2894,31 +2863,26 @@ findIntersect(resRange Range, resPtr list)
 			}
 			break;
 		    case ResSparse:
-			new = xf86JoinResLists(new,
-				xf86FindIntersectOfLists(new,
-				  decomposeSparse(list->val)));
+			new = xf86JoinResLists(new,xf86FindIntersectOfLists(new,decomposeSparse(list->val)));
 			break;
 		    }
 		    break;
 		case ResSparse:
 		    switch (list->res_type & ResExtMask) {
 		    case ResSparse:
-			if (!((~(Range.rBase ^ list->sparse_base)
-			    & (Range.rMask & list->sparse_mask)))) {
-			    RANGE(
-				range,
-				(Range.rBase & list->sparse_base) |
-				 (~Range.rMask & list->sparse_base) |
-				 (~list->sparse_mask & Range.rBase),
-				Range.rMask | list->sparse_mask,
-				Range.type);
-			    new = xf86AddResToList(new, &range, -1);
+			if (!((~(range.rBase ^ list->sparse_base)
+			    & (range.rMask & list->sparse_mask)))) {
+			    RANGE(range, (range.rBase & list->sparse_base)
+				  | (~range.rMask & list->sparse_base)
+				  | (~list->sparse_mask & range.rBase),
+				  range.rMask | list->sparse_mask,
+				  Range.type);
+			    new = xf86AddResToList(new,&range,-1);
 			}
 			break;
 		    case ResBlock:
-			new = xf86JoinResLists(new,
-				xf86FindIntersectOfLists(
-				  decomposeSparse(Range), list));
+			new = xf86JoinResLists(new,xf86FindIntersectOfLists(
+			    decomposeSparse(range),list));
 			break;
 		    }
 		}
@@ -2927,7 +2891,7 @@ findIntersect(resRange Range, resPtr list)
     }
     return new;
 }
-
+    
 resPtr
 xf86FindIntersectOfLists(resPtr l1, resPtr l2)
 {
@@ -2948,7 +2912,7 @@ xf86FindComplement(resRange Range)
     memType tmp;
     resPtr new = NULL;
     int i;
-
+    
     switch (Range.type & ResExtMask) {
     case ResBlock:
 	if (Range.rBegin > 0) {
@@ -2980,7 +2944,7 @@ resPtr
 xf86ExtractTypeFromList(resPtr list, unsigned long type)
 {
     resPtr ret = NULL;
-
+    
     while (list) {
 	if ((list->res_type & ResTypeMask) == type)
 	    ret = xf86AddResToList(ret,&(list->val),list->entityIndex);
@@ -3001,7 +2965,7 @@ xf86FindPrimaryDevice()
 {
     /* if no VGA device is found check for primary PCI device */
     if (primaryBus.type == BUS_NONE)
-	CheckGenericGA();
+        CheckGenericGA();
     if (primaryBus.type != BUS_NONE) {
 	char *bus;
 	char *loc = NULL;
@@ -3022,13 +2986,13 @@ xf86FindPrimaryDevice()
 	default:
 	    bus = "";
 	}
-
+	
 	xf86MsgVerb(X_INFO, 2, "Primary Device is: %s%s\n",
 		    bus, loc ? loc : "");
 	if (loc)
 	    xfree(loc);
     }
-
+    
 }
 
 #if !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__)
@@ -3043,7 +3007,7 @@ static void
 CheckGenericGA()
 {
 /* This needs to be changed for multiple domains */
-#if !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__)
+#if /*!defined(__arm__) &&*/ !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__) /* FIXME ?? */
     IOADDRESS GenericIOBase = VGAHW_GET_IOBASE();
     CARD8 CurrentValue, TestValue;
 
@@ -3068,7 +3032,7 @@ Bool
 xf86NoSharedResources(int screenIndex,resType res)
 {
     int j;
-
+    
     if (screenIndex > xf86NumScreens)
 	return TRUE;
 
@@ -3122,7 +3086,7 @@ xf86DeregisterStateChangeNotificationCallback(xf86StateChangeNotificationCallbac
 {
     StateChangeNotificationPtr *ptr = &StateChangeNotificationList;
     StateChangeNotificationPtr tmp;
-
+    
     while (*ptr) {
 	if ((*ptr)->func == func) {
 	    tmp = (*ptr);
@@ -3150,7 +3114,7 @@ Bool
 xf86QueueAsyncEvent(void (*func)(pointer),pointer arg)
 {
     AsyncQPtr new;
-
+    
     if (!AsyncQ) return FALSE;
 
     new = (AsyncQPtr)xfnalloc(sizeof(AsyncQRec));
@@ -3167,85 +3131,83 @@ xf86QueueAsyncEvent(void (*func)(pointer),pointer arg)
 int
 xf86GetLastScrnFlag(int entityIndex)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return -1;
-
-    return(xf86Entities[entityIndex]->lastScrnFlag);
+    if(entityIndex < xf86NumEntities) {
+        return(xf86Entities[entityIndex]->lastScrnFlag);
+    } else {
+        return -1;
+    }
 }
 
 void
 xf86SetLastScrnFlag(int entityIndex, int scrnIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	xf86Entities[entityIndex]->lastScrnFlag = scrnIndex;
+    if(entityIndex < xf86NumEntities) {
+        xf86Entities[entityIndex]->lastScrnFlag = scrnIndex;
     }
 }
 
 Bool
 xf86IsEntityShared(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	if (xf86Entities[entityIndex]->entityProp & IS_SHARED_ACCEL) {
+    if(entityIndex < xf86NumEntities) {
+        if(xf86Entities[entityIndex]->entityProp & IS_SHARED_ACCEL) {
 	    return TRUE;
 	}
     }
-
     return FALSE;
 }
 
 void
 xf86SetEntityShared(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	xf86Entities[entityIndex]->entityProp |= IS_SHARED_ACCEL;
+    if(entityIndex < xf86NumEntities) {
+        xf86Entities[entityIndex]->entityProp |= IS_SHARED_ACCEL;
     }
 }
 
 Bool
 xf86IsEntitySharable(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	if (xf86Entities[entityIndex]->entityProp & ACCEL_IS_SHARABLE) {
+    if(entityIndex < xf86NumEntities) {
+        if(xf86Entities[entityIndex]->entityProp & ACCEL_IS_SHARABLE) {
 	    return TRUE;
 	}
     }
-
     return FALSE;
 }
 
 void
 xf86SetEntitySharable(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	xf86Entities[entityIndex]->entityProp |= ACCEL_IS_SHARABLE;
+    if(entityIndex < xf86NumEntities) {
+        xf86Entities[entityIndex]->entityProp |= ACCEL_IS_SHARABLE;
     }
 }
 
 Bool
 xf86IsPrimInitDone(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	if (xf86Entities[entityIndex]->entityProp & SA_PRIM_INIT_DONE) {
+    if(entityIndex < xf86NumEntities) {
+        if(xf86Entities[entityIndex]->entityProp & SA_PRIM_INIT_DONE) {
 	    return TRUE;
 	}
     }
-
     return FALSE;
 }
 
 void
 xf86SetPrimInitDone(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	xf86Entities[entityIndex]->entityProp |= SA_PRIM_INIT_DONE;
+    if(entityIndex < xf86NumEntities) {
+        xf86Entities[entityIndex]->entityProp |= SA_PRIM_INIT_DONE;
     }
 }
 
 void
 xf86ClearPrimInitDone(int entityIndex)
 {
-    if ((entityIndex >= 0) && (entityIndex < xf86NumEntities)) {
-	xf86Entities[entityIndex]->entityProp &= ~SA_PRIM_INIT_DONE;
+    if(entityIndex < xf86NumEntities) {
+        xf86Entities[entityIndex]->entityProp &= ~SA_PRIM_INIT_DONE;
     }
 }
 
@@ -3276,8 +3238,7 @@ xf86AllocateEntityPrivateIndex(void)
 DevUnion *
 xf86GetEntityPrivate(int entityIndex, int privIndex)
 {
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities) ||
-	(privIndex < 0) || (privIndex >= xf86EntityPrivateCount))
+    if (entityIndex >= xf86NumEntities || privIndex >= xf86EntityPrivateCount)
 	return NULL;
 
     return &(xf86Entities[entityIndex]->entityPrivates[privIndex]);
@@ -3290,12 +3251,7 @@ xf86LocateMemoryArea(int entityIndex, char **devName,
 		     unsigned int *devOffset, unsigned int *fbSize,
 		     unsigned int *fbOffset, unsigned int *flags)
 {
-    EntityPtr pEntity;
-
-    if ((entityIndex < 0) || (entityIndex >= xf86NumEntities))
-	return FALSE;
-
-    pEntity = xf86Entities[entityIndex];
+    EntityPtr pEntity = xf86Entities[entityIndex];
 
     switch (pEntity->busType) {
     case BUS_PCI:
@@ -3305,7 +3261,7 @@ xf86LocateMemoryArea(int entityIndex, char **devName,
 		   pEntity->pciBusId.func),
 	    devName, devOffset, fbSize, fbOffset, flags);
 
-#if defined(__sparc__)
+#if defined(__sparc__) && !defined(__OpenBSD__) && defined(___NOT_YET___)
     case BUS_SBUS:
 	return xf86LocateSbusMemoryArea(xf86GetSbusInfoForEntity(entityIndex),
 					devName, devOffset,

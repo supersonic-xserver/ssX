@@ -1,3 +1,11 @@
+/* $Xorg: bmtoa.c,v 1.4 2001/02/09 02:05:28 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1988, 1993, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/bitmap/bmtoa.c,v 3.8 2006/01/09 15:00:40 dawes Exp $ */
+/* $XFree86: xc/programs/bitmap/bmtoa.c,v 3.7 2001/12/14 20:00:41 dawes Exp $ */
 
 /*
  * bmtoa - bitmap to ascii filter
@@ -41,6 +49,9 @@ from The Open Group.
 
 #include <stdlib.h>
 #include <unistd.h>
+#ifndef HAS_MKSTEMP
+extern char *mktemp();
+#endif
 
 char *ProgramName;
 

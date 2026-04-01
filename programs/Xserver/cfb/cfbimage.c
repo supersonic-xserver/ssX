@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbimage.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbimage.c,v 1.13 2001/12/14 19:59:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: cfbimage.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "windowstr.h"
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -57,8 +65,13 @@ SOFTWARE.
 #include "mi.h"
 
 void
-cfbPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y,
-	    int w, int h, int leftPad, int format, char *pImage)
+cfbPutImage(pDraw, pGC, depth, x, y, w, h, leftPad, format, pImage)
+    DrawablePtr pDraw;
+    GCPtr	pGC;
+    int		depth, x, y, w, h;
+    int		leftPad;
+    int		format;
+    char 	*pImage;
 {
     PixmapPtr   pPixmap;
 
@@ -120,8 +133,12 @@ cfbPutImage(DrawablePtr pDraw, GCPtr pGC, int depth, int x, int y,
 }
 
 void
-cfbGetImage(DrawablePtr pDrawable, int sx, int sy, int w, int h,
-	    unsigned int format, unsigned long planeMask, char *pdstLine)
+cfbGetImage(pDrawable, sx, sy, w, h, format, planeMask, pdstLine)
+    DrawablePtr pDrawable;
+    int		sx, sy, w, h;
+    unsigned int format;
+    unsigned long planeMask;
+    char	*pdstLine;
 {
     BoxRec box;
     DDXPointRec ptSrc;

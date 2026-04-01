@@ -1,3 +1,11 @@
+/* $Xorg: dsimple.c,v 1.4 2001/02/09 02:05:54 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xlsfonts/dsimple.c,v 3.8tsi Exp $ */
+/* $XFree86: xc/programs/xlsfonts/dsimple.c,v 3.7 2003/09/24 02:43:38 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include <X11/Xlib.h>
@@ -402,127 +410,12 @@ void blip()
 }
 
 
-/* MAKE_RECT converts the original root coordinates and the event root
- * coordinates into a rectangle in xrect */
-#define MAKE_RECT(etype)	\
-    x = event.etype.x_root;	\
-    y = event.etype.y_root;	\
-    rw = x - rootx;		\
-    if (rw < 0) rw = -rw;	\
-    rh = y - rooty;		\
-    if (rh < 0) rh = -rh;	\
-    rx = x < rootx ? x : rootx;	\
-    ry = y < rooty ? y : rooty
-
-/* MAKE_CURSOR assigns a correct cursor */
-#define MAKE_CURSOR(etype)						\
-    pointer = (event.etype.x_root > rootx ?				\
-	       (event.etype.y_root > rooty ? pointer2 : pointer4) :	\
-	       (event.etype.y_root > rooty ? pointer3 : pointer1));
-
-/*
- * Routine to let user select a rect using the mouse
- */
-
-XRectangle Select_Rect(dpy)
-    Display *dpy;
-{
-    int status;
-    XRectangle xrect;
-    XEvent event;
-    unsigned int x, y, rootx, rooty;
-    Cursor pointer1, pointer2, pointer3, pointer4, pointer;
-    int boxDrawn = False, selectionDone = False;
-    int rx, ry, rw = 0, rh = 0;
-    Display *hDisplay = dpy;
-    Window root = RootWindow(dpy,screen);
-    GC gc;
-
-    /* get some cursors for rectangle formation */
-    pointer1 = XCreateFontCursor(hDisplay, XC_ul_angle);
-    pointer2 = XCreateFontCursor(hDisplay, XC_lr_angle);
-    pointer3 = XCreateFontCursor(hDisplay, XC_ll_angle);
-    pointer4 = XCreateFontCursor(hDisplay, XC_ur_angle);
-
-    /* grab the pointer */
-    status = XGrabPointer(dpy, root, False, ButtonPressMask,
-			  GrabModeAsync, GrabModeAsync, root,
-			  pointer1, CurrentTime);
-    if (status != GrabSuccess) Fatal_Error("Can't grab the mouse.");
-
-    /* create a graphics context to draw with */
-    gc = XCreateGC(dpy, root, 0, NULL);
-    if (!gc) Fatal_Error("Could not get drawing resources.");
-
-    XSetSubwindowMode(dpy, gc, IncludeInferiors);
-    XSetForeground(dpy, gc, 255);
-    XSetFunction(dpy, gc, GXinvert);
-
-    /* get a button-press and pull out the root location */
-    XMaskEvent(dpy, ButtonPressMask, &event);
-    rootx = rx = event.xbutton.x_root;
-    rooty = ry = event.xbutton.y_root;
-
-    /* get pointer motion events */
-    XChangeActivePointerGrab(dpy, ButtonMotionMask | ButtonReleaseMask,
-			     pointer2, CurrentTime);
-
-    /* loop to let the user drag a rectangle */
-    while (!selectionDone) {
-	XNextEvent(dpy, &event);
-	switch(event.type) {
-	case ButtonRelease:
-	    if (boxDrawn) {
-		XDrawRectangle(dpy, root, gc, rx, ry, rw, rh);
-		boxDrawn = False;
-	    }
-	    XFlush(dpy);
-	    /* record the final location */
-	    MAKE_RECT(xbutton);
-	    selectionDone = True;
-	    break;
-
-	case MotionNotify:
-	    if (boxDrawn) {
-		XDrawRectangle(dpy, root, gc, rx, ry, rw, rh);
-		boxDrawn = False;
-	    }
-	    while (XCheckTypedEvent(dpy, MotionNotify, &event)) { }
-	    MAKE_RECT(xmotion);
-	    XDrawRectangle(dpy, root, gc, rx, ry, rw, rh);
-	    boxDrawn = True;
-	    MAKE_CURSOR(xmotion);
-	    XChangeActivePointerGrab(dpy,
-				     ButtonMotionMask | ButtonReleaseMask,
-				     pointer, CurrentTime);
-	    break;
-	}
-    }
-
-    xrect.x      = rx;
-    xrect.y      = ry;
-    xrect.width  = rw;
-    xrect.height = rh;
-
-    /* release resources */
-    XFreeGC(dpy, gc);
-    XFreeCursor(dpy, pointer1);
-    XFreeCursor(dpy, pointer2);
-    XFreeCursor(dpy, pointer3);
-    XFreeCursor(dpy, pointer4);
-
-    XUngrabPointer(dpy, CurrentTime);
-
-    return xrect;
-}
-
-
 /*
  * Routine to let user select a window using the mouse
  */
 
 Window Select_Window(dpy)
-    Display *dpy;
+     Display *dpy;
 {
   int status;
   Cursor cursor;

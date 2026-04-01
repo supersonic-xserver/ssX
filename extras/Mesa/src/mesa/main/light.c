@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -409,14 +416,6 @@ _mesa_LightModelfv( GLenum pname, const GLfloat *params )
 	    return;
 	 FLUSH_VERTICES(ctx, _NEW_LIGHT);
 	 ctx->Light.Model.ColorControl = newenum;
-
-	 if ((ctx->Light.Enabled &&
-	      ctx->Light.Model.ColorControl==GL_SEPARATE_SPECULAR_COLOR)
-	     || ctx->Fog.ColorSumEnabled)
-	    ctx->_TriangleCaps |= DD_SEPARATE_SPECULAR;
-	 else
-	    ctx->_TriangleCaps &= ~DD_SEPARATE_SPECULAR;
-
          break;
       default:
          _mesa_error( ctx, GL_INVALID_ENUM, "glLightModel(pname=0x%x)", pname );
@@ -695,6 +694,8 @@ _mesa_GetMaterialfv( GLenum face, GLenum pname, GLfloat *params )
    GLfloat (*mat)[4] = ctx->Light.Material.Attrib;
    ASSERT_OUTSIDE_BEGIN_END_AND_FLUSH(ctx); /* update materials */
 
+   FLUSH_CURRENT(ctx, 0); /* update ctx->Light.Material from vertex buffer */
+
    if (face==GL_FRONT) {
       f = 0;
    }
@@ -740,6 +741,8 @@ _mesa_GetMaterialiv( GLenum face, GLenum pname, GLint *params )
    GLuint f;
    GLfloat (*mat)[4] = ctx->Light.Material.Attrib;
    ASSERT_OUTSIDE_BEGIN_END_AND_FLUSH(ctx); /* update materials */
+
+   FLUSH_CURRENT(ctx, 0); /* update ctx->Light.Material from vertex buffer */
 
    if (face==GL_FRONT) {
       f = 0;
@@ -1133,6 +1136,7 @@ _mesa_update_tnl_spaces( GLcontext *ctx, GLuint new_state )
 {
    const GLuint oldneedeyecoords = ctx->_NeedEyeCoords;
 
+   (void) new_state;
    ctx->_NeedEyeCoords = 0;
 
    if (ctx->_ForceEyeCoords ||

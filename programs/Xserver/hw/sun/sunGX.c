@@ -1,4 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.c,v 1.11tsi Exp $ */
+/*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+static char *rid="$Xorg: sunGX.c,v 1.5 2001/02/09 02:04:44 xorgcvs Exp $";
+ */
 /*
 Copyright 1991, 1998  The Open Group
 
@@ -25,16 +34,17 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
+/* $XFree86: xc/programs/Xserver/hw/sun/sunGX.c,v 1.9 2003/11/17 22:20:36 dawes Exp $ */
 
 #include	"sun.h"
 
-#include	<X11/Xmd.h>
+#include	"Xmd.h"
 #include	"gcstruct.h"
 #include	"scrnintstr.h"
 #include	"pixmapstr.h"
 #include	"regionstr.h"
 #include	"mistruct.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"cfb/cfb.h"
 #include	"cfb/cfbmskbits.h"
@@ -282,7 +292,7 @@ sunGXDoBitblt(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
     unsigned long   planemask;
 {
     register sunGXPtr	gx = sunGXGetScreenPrivate (pSrc->pScreen);
-    register int r;
+    register long r;
     register BoxPtr pboxTmp;
     register DDXPointPtr pptTmp;
     register int nbox;
@@ -424,7 +434,7 @@ sunGXCopyArea(pSrcDrawable, pDstDrawable,
             pGC, srcx, srcy, width, height, dstx, dsty, sunGXDoBitblt, 0);
 }
 
-static unsigned long copyPlaneFG, copyPlaneBG;
+static unsigned long	copyPlaneFG, copyPlaneBG;
 
 static void
 sunGXCopyPlane1to8 (pSrcDrawable, pDstDrawable, rop, prgnDst, pptSrc, planemask, bitPlane)
@@ -441,13 +451,13 @@ sunGXCopyPlane1to8 (pSrcDrawable, pDstDrawable, rop, prgnDst, pptSrc, planemask,
     int			dstLastx, dstRightx;
     int			xoffSrc, widthSrc, widthRest;
     int			widthLast;
-    CfbBits		*psrcBase, *psrc;
-    CfbBits		bits, tmp;
+    unsigned long	*psrcBase, *psrc;
+    unsigned long	bits, tmp;
     register int	leftShift, rightShift;
     register int	nl, nlMiddle;
     int			nbox;
     BoxPtr		pbox;
-    register int	r;
+    register long	r;
 
     GXDrawInit (gx, copyPlaneFG, 
 		gx_opaque_stipple_rop_table[rop]|GX_PATTERN_ONES,
@@ -477,7 +487,7 @@ sunGXCopyPlane1to8 (pSrcDrawable, pDstDrawable, rop, prgnDst, pptSrc, planemask,
 	psrc = psrcBase + srcy * widthSrc + (srcx >> LOG2_BITMAP_PAD);
 	dstLastx--;
 	dstRightx = dstx + BITMAP_SCANLINE_UNIT - 1;
-	nlMiddle = (width + BITMAP_SCANLINE_UNIT - 1) >> 5;
+	nlMiddle = (width + BITMAP_SCANLINE_UNIT - 1) >> LOG2_BITMAP_PAD;
 	widthLast = width & (BITMAP_SCANLINE_UNIT - 1);
 	xoffSrc = srcx & ((1 << LOG2_BITMAP_PAD) - 1);
 	leftShift = xoffSrc;
@@ -498,7 +508,11 @@ sunGXCopyPlane1to8 (pSrcDrawable, pDstDrawable, rop, prgnDst, pptSrc, planemask,
 	    	if (widthLast) 
 	    	{
 		    gx->x1 = dstLastx;
+#if BITMAP_SCANLINE_UNIT == 64
+		    gx->font = (int)((*psrc++)>>32);
+#else
 		    gx->font = *psrc++;
+#endif
 	    	}
 		psrc += widthRest;
 	    }
@@ -1609,12 +1623,12 @@ sunGXTEGlyphBlt (pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
     int		    h, hTmp;
     FontPtr	    pfont = pGC->font;
     register int    r;
-    unsigned int    *char1, *char2, *char3, *char4;
+    unsigned int   *char1, *char2, *char3, *char4;
     int		    widthGlyphs, widthGlyph;
     BoxRec	    bbox;
     BoxPtr	    extents;
     RegionPtr	    clip;
-    unsigned int    rop;
+    unsigned long   rop;
 
     widthGlyph = FONTMAXBOUNDS(pfont,characterWidth);
     h = FONTASCENT(pfont) + FONTDESCENT(pfont);
@@ -1845,7 +1859,7 @@ sunGXCheckStipple (pPixmap, stipple)
     sunGXStipplePtr stipple;
 {
     unsigned short  *sbits;
-    unsigned int    *stippleBits;
+    unsigned int   *stippleBits;
     unsigned long   sbit, mask;
     int		    h, w;
     int		    y;
@@ -2848,7 +2862,7 @@ sunGXInit (
 {
     sunGXPtr	    gx;
     Uint	    mode;
-    register int   r;
+    register long   r;
 
     if (serverGeneration != sunGXGeneration)
     {

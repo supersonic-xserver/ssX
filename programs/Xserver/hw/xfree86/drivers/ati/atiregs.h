@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiregs.h,v 1.34tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atiregs.h,v 1.28 2005/02/10 15:26:37 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 1994 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 1994 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -49,54 +56,48 @@
 #define DWORD_SELECT		(BLOCK_SELECT | MM_IO_SELECT)
 
 #define IO_BYTE_SELECT		0x0003u
-#define IO_WORD_SELECT		0x0002u
 
 #define SPARSE_IO_PORT		(SPARSE_IO_BASE | IO_BYTE_SELECT)
 #define BLOCK_IO_PORT		(BLOCK_IO_BASE | IO_BYTE_SELECT)
-
-#define IO_LONG_PORT		(SPARSE_IO_BASE | BLOCK_IO_BASE)
-#define IO_WORD_PORT		(IO_LONG_PORT | IO_WORD_SELECT)
-#define IO_BYTE_PORT		(IO_LONG_PORT | IO_BYTE_SELECT)
 
 #define IOPortTag(_SparseIOSelect, _BlockIOSelect)	\
 	(SetBits(_SparseIOSelect, SPARSE_IO_SELECT) |	\
 	 SetBits(_BlockIOSelect, DWORD_SELECT))
 #define SparseIOTag(_IOSelect)	IOPortTag(_IOSelect, 0)
 #define BlockIOTag(_IOSelect)	IOPortTag(0, _IOSelect)
-#define IOPort(_IOPort)		(pATI->DomainIOBase + (_IOPort))
 
 /* MDA/[M]CGA/EGA/VGA I/O ports */
-#define GENVS			IOPort(0x0102u)		/* W (& R on uC only) */
+#define GENVS			0x0102u		/* Write (and Read on uC only) */
 
-#define R_GENLPS		IOPort(0x03b9u)		/* R */
+#define R_GENLPS		0x03b9u		/* Read */
 
-#define GENHP			IOPort(0x03bfu)
+#define GENHP			0x03bfu
 
-#define ATTRX			IOPort(0x03c0u)
-#define ATTRD			IOPort(0x03c1u)
-#define GENS0			IOPort(0x03c2u)		/* R */
-#define GENMO			IOPort(0x03c2u)		/* W */
-#define GENENB			IOPort(0x03c3u)		/* R */
-#define SEQX			IOPort(0x03c4u)
-#define SEQD			IOPort(0x03c5u)
-#define VGA_DAC_MASK		IOPort(0x03c6u)
-#define VGA_DAC_READ		IOPort(0x03c7u)
-#define VGA_DAC_WRITE		IOPort(0x03c8u)
-#define VGA_DAC_DATA		IOPort(0x03c9u)
-#define R_GENFC			IOPort(0x03cau)		/* R */
-/*	?			IOPort(0x03cbu) */
-#define R_GENMO			IOPort(0x03ccu)		/* R */
-/*	?			IOPort(0x03cdu) */
-#define GRAX			IOPort(0x03ceu)
-#define GRAD			IOPort(0x03cfu)
+#define ATTRX			0x03c0u
+#define ATTRD			0x03c1u
+#define GENS0			0x03c2u		/* Read */
+#define GENMO			0x03c2u		/* Write */
+#define GENENB			0x03c3u		/* Read */
+#define SEQX			0x03c4u
+#define SEQD			0x03c5u
+#define VGA_DAC_MASK		0x03c6u
+#define VGA_DAC_READ		0x03c7u
+#define VGA_DAC_WRITE		0x03c8u
+#define VGA_DAC_DATA		0x03c9u
+#define R_GENFC			0x03cau		/* Read */
+/*	?			0x03cbu */
+#define R_GENMO			0x03ccu		/* Read */
+/*	?			0x03cdu */
+#define GRAX			0x03ceu
+#define GRAD			0x03cfu
 
-#define GENB			IOPort(0x03d9u)
+#define GENB			0x03d9u
 
-#define GENLPS			IOPort(0x03dcu)		/* W */
-#define KCX			IOPort(0x03ddu)
-#define KCD			IOPort(0x03deu)
+#define GENLPS			0x03dcu		/* Write */
+#define KCX			0x03ddu
+#define KCD			0x03deu
 
-#define GENENA			IOPort(0x46e8u)		/* W */
+#define GENENA			0x46e8u		/* Write */
 
 /* I/O port base numbers */
 #define MonochromeIOBase	0x03b0u
@@ -113,48 +114,40 @@
 /*	?(_IOBase)		((_IOBase) + 0x07u) */
 #define GENMC(_IOBase)		((_IOBase) + 0x08u)
 /*	?(_IOBase)		((_IOBase) + 0x09u) */	/* R_GENLPS/GENB */
-#define GENS1(_IOBase)		((_IOBase) + 0x0au)	/* R */
-#define GENFC(_IOBase)		((_IOBase) + 0x0au)	/* W */
+#define GENS1(_IOBase)		((_IOBase) + 0x0au)	/* Read */
+#define GENFC(_IOBase)		((_IOBase) + 0x0au)	/* Write */
 #define GENLPC(_IOBase)		((_IOBase) + 0x0bu)
 /*	?(_IOBase)		((_IOBase) + 0x0cu) */	/* /GENLPS */
 /*	?(_IOBase)		((_IOBase) + 0x0du) */	/* /KCX */
 /*	?(_IOBase)		((_IOBase) + 0x0eu) */	/* /KCD */
 /*	?(_IOBase)		((_IOBase) + 0x0fu) */	/* GENHP/ */
 
-/*
- * I have a Mach32 that gives me spurious parity errors only when reading
- * GENS1...
- */
-#undef  GENS1
-#define GENS1(_IOBase)		(pATI->CaughtSignal = -1, (_IOBase) + 0x0au)
-
 /* 8514/A VESA approved register definitions */
-#define DISP_STAT		IOPort(0x02e8u)		/* Read */
+#define DISP_STAT		0x02e8u		/* Read */
 #define SENSE				0x0001u	/* Presumably belong here */
 #define VBLANK				0x0002u
 #define HORTOG				0x0004u
-#define H_TOTAL			IOPort(0x02e8u)		/* Write */
-#define IBM_DAC_MASK		IOPort(0x02eau)
-#define IBM_DAC_READ		IOPort(0x02ebu)
-#define IBM_DAC_WRITE		IOPort(0x02ecu)
-#define IBM_DAC_DATA		IOPort(0x02edu)
-#define IBM_DAC_WAIT		IBM_DAC_MASK
-#define H_DISP			IOPort(0x06e8u)		/* Write */
-#define H_SYNC_STRT		IOPort(0x0ae8u)		/* Write */
-#define H_SYNC_WID		IOPort(0x0ee8u)		/* Write */
+#define H_TOTAL			0x02e8u		/* Write */
+#define IBM_DAC_MASK		0x02eau
+#define IBM_DAC_READ		0x02ebu
+#define IBM_DAC_WRITE		0x02ecu
+#define IBM_DAC_DATA		0x02edu
+#define H_DISP			0x06e8u		/* Write */
+#define H_SYNC_STRT		0x0ae8u		/* Write */
+#define H_SYNC_WID		0x0ee8u		/* Write */
 #define HSYNCPOL_POS			0x0000u
 #define HSYNCPOL_NEG			0x0020u
 #define H_POLARITY_POS			HSYNCPOL_POS	/* Sigh */
 #define H_POLARITY_NEG			HSYNCPOL_NEG	/* Sigh */
-#define V_TOTAL			IOPort(0x12e8u)		/* Write */
-#define V_DISP			IOPort(0x16e8u)		/* Write */
-#define V_SYNC_STRT		IOPort(0x1ae8u)		/* Write */
-#define V_SYNC_WID		IOPort(0x1ee8u)		/* Write */
+#define V_TOTAL			0x12e8u		/* Write */
+#define V_DISP			0x16e8u		/* Write */
+#define V_SYNC_STRT		0x1ae8u		/* Write */
+#define V_SYNC_WID		0x1ee8u		/* Write */
 #define VSYNCPOL_POS			0x0000u
 #define VSYNCPOL_NEG			0x0020u
 #define V_POLARITY_POS			VSYNCPOL_POS	/* Sigh */
 #define V_POLARITY_NEG			VSYNCPOL_NEG	/* Sigh */
-#define DISP_CNTL		IOPort(0x22e8u)		/* Write */
+#define DISP_CNTL		0x22e8u		/* Write */
 #define ODDBNKENAB			0x0001u
 #define MEMCFG_2			0x0000u
 #define MEMCFG_4			0x0002u
@@ -165,14 +158,14 @@
 #define DISPEN_NC			0x0000u
 #define DISPEN_ENAB			0x0020u
 #define DISPEN_DISAB			0x0040u
-#define R_H_TOTAL		IOPort(0x26e8u)		/* Read */
-/*	?			IOPort(0x2ae8u) */
-/*	?			IOPort(0x2ee8u) */
-/*	?			IOPort(0x32e8u) */
-/*	?			IOPort(0x36e8u) */
-/*	?			IOPort(0x3ae8u) */
-/*	?			IOPort(0x3ee8u) */
-#define SUBSYS_STAT		IOPort(0x42e8u)		/* Read */
+#define R_H_TOTAL		0x26e8u		/* Read */
+/*	?			0x2ae8u */
+/*	?			0x2ee8u */
+/*	?			0x32e8u */
+/*	?			0x36e8u */
+/*	?			0x3ae8u */
+/*	?			0x3ee8u */
+#define SUBSYS_STAT		0x42e8u		/* Read */
 #define VBLNKFLG			0x0001u
 #define PICKFLAG			0x0002u
 #define INVALIDIO			0x0004u
@@ -188,7 +181,7 @@
 #define MONITORID_8513				0x0060u
 #define MONITORID_NONE				0x0070u
 #define _8PLANE				0x0080u
-#define SUBSYS_CNTL		IOPort(0x42e8u)		/* Write */
+#define SUBSYS_CNTL		0x42e8u		/* Write */
 #define RVBLNKFLG			0x0001u
 #define RPICKFLAG			0x0002u
 #define RINVALIDIO			0x0004u
@@ -203,35 +196,35 @@
 #define GPCTRL_NC			0x0000u
 #define GPCTRL_ENAB			0x4000u
 #define GPCTRL_RESET			0x8000u
-#define ROM_PAGE_SEL		IOPort(0x46e8u)		/* Write */
-#define ADVFUNC_CNTL		IOPort(0x4ae8u)		/* Write */
+#define ROM_PAGE_SEL		0x46e8u		/* Write */
+#define ADVFUNC_CNTL		0x4ae8u		/* Write */
 #define DISABPASSTHRU			0x0001u
 #define CLOKSEL				0x0004u
-/*	?			IOPort(0x4ee8u) */
-#define EXT_CONFIG_0		IOPort(0x52e8u)		/* C & T 82C480 */
-#define EXT_CONFIG_1		IOPort(0x56e8u)		/* C & T 82C480 */
-#define EXT_CONFIG_2		IOPort(0x5ae8u)		/* C & T 82C480 */
-#define EXT_CONFIG_3		IOPort(0x5ee8u)		/* C & T 82C480 */
-/*	?			IOPort(0x62e8u) */
-/*	?			IOPort(0x66e8u) */
-/*	?			IOPort(0x6ae8u) */
-/*	?			IOPort(0x6ee8u) */
-/*	?			IOPort(0x72e8u) */
-/*	?			IOPort(0x76e8u) */
-/*	?			IOPort(0x7ae8u) */
-/*	?			IOPort(0x7ee8u) */
-#define CUR_Y			IOPort(0x82e8u)
-#define CUR_X			IOPort(0x86e8u)
-#define DESTY_AXSTP		IOPort(0x8ae8u)		/* Write */
-#define DESTX_DIASTP		IOPort(0x8ee8u)		/* Write */
-#define ERR_TERM		IOPort(0x92e8u)
-#define MAJ_AXIS_PCNT		IOPort(0x96e8u)		/* Write */
-#define GP_STAT			IOPort(0x9ae8u)		/* Read */
-#define GE_STAT			IOPort(0x9ae8u)		/* Alias */
+/*	?			0x4ee8u */
+#define EXT_CONFIG_0		0x52e8u		/* C & T 82C480 */
+#define EXT_CONFIG_1		0x56e8u		/* C & T 82C480 */
+#define EXT_CONFIG_2		0x5ae8u		/* C & T 82C480 */
+#define EXT_CONFIG_3		0x5ee8u		/* C & T 82C480 */
+/*	?			0x62e8u */
+/*	?			0x66e8u */
+/*	?			0x6ae8u */
+/*	?			0x6ee8u */
+/*	?			0x72e8u */
+/*	?			0x76e8u */
+/*	?			0x7ae8u */
+/*	?			0x7ee8u */
+#define CUR_Y			0x82e8u
+#define CUR_X			0x86e8u
+#define DESTY_AXSTP		0x8ae8u		/* Write */
+#define DESTX_DIASTP		0x8ee8u		/* Write */
+#define ERR_TERM		0x92e8u
+#define MAJ_AXIS_PCNT		0x96e8u		/* Write */
+#define GP_STAT			0x9ae8u		/* Read */
+#define GE_STAT			0x9ae8u		/* Alias */
 #define DATARDY				0x0100u
-#define DATA_READY			DATARDY		/* Alias */
+#define DATA_READY			DATARDY	/* Alias */
 #define GPBUSY				0x0200u
-#define CMD			IOPort(0x9ae8u)		/* Write */
+#define CMD			0x9ae8u		/* Write */
 #define WRTDATA				0x0001u
 #define PLANAR				0x0002u
 #define LASTPIX				0x0004u
@@ -251,7 +244,7 @@
 #define CMD_RECTV2				0x8000u
 #define CMD_LINEAF				0xa000u
 #define CMD_BITBLT				0xc000u
-#define SHORT_STROKE		IOPort(0x9ee8u)		/* Write */
+#define SHORT_STROKE		0x9ee8u		/* Write */
 #define SSVDRAW				0x0010u
 #define VECDIR_000			0x0000u
 #define VECDIR_045			0x0020u
@@ -261,24 +254,24 @@
 #define VECDIR_225			0x00a0u
 #define VECDIR_270			0x00c0u
 #define VECDIR_315			0x00e0u
-#define BKGD_COLOR		IOPort(0xa2e8u)		/* Write */
-#define FRGD_COLOR		IOPort(0xa6e8u)		/* Write */
-#define WRT_MASK		IOPort(0xaae8u)		/* Write */
-#define RD_MASK			IOPort(0xaee8u)		/* Write */
-#define COLOR_CMP		IOPort(0xb2e8u)		/* Write */
-#define BKGD_MIX		IOPort(0xb6e8u)		/* Write */
+#define BKGD_COLOR		0xa2e8u		/* Write */
+#define FRGD_COLOR		0xa6e8u		/* Write */
+#define WRT_MASK		0xaae8u		/* Write */
+#define RD_MASK			0xaee8u		/* Write */
+#define COLOR_CMP		0xb2e8u		/* Write */
+#define BKGD_MIX		0xb6e8u		/* Write */
 /*					0x001fu	See MIX_* definitions below */
 #define BSS_BKGDCOL			0x0000u
 #define BSS_FRGDCOL			0x0020u
 #define BSS_PCDATA			0x0040u
 #define BSS_BITBLT			0x0060u
-#define FRGD_MIX		IOPort(0xbae8u)		/* Write */
+#define FRGD_MIX		0xbae8u		/* Write */
 /*					0x001fu	See MIX_* definitions below */
 #define FSS_BKGDCOL			0x0000u
 #define FSS_FRGDCOL			0x0020u
 #define FSS_PCDATA			0x0040u
 #define FSS_BITBLT			0x0060u
-#define MULTIFUNC_CNTL		IOPort(0xbee8u)		/* Write */
+#define MULTIFUNC_CNTL		0xbee8u		/* Write */
 #define MIN_AXIS_PCNT			0x0000u
 #define SCISSORS_T			0x1000u
 #define SCISSORS_L			0x2000u
@@ -310,31 +303,31 @@
 #define MIXSEL_PATT				0x0040u
 #define MIXSEL_EXPPC				0x0080u
 #define MIXSEL_EXPBLT				0x00c0u
-/*	?			IOPort(0xc2e8u) */
-/*	?			IOPort(0xc6e8u) */
-/*	?			IOPort(0xcae8u) */
-/*	?			IOPort(0xcee8u) */
-/*	?			IOPort(0xd2e8u) */
-/*	?			IOPort(0xd6e8u) */
-/*	?			IOPort(0xdae8u) */
-/*	?			IOPort(0xdee8u) */
-#define PIX_TRANS		IOPort(0xe2e8u)
-/*	?			IOPort(0xe6e8u) */
-/*	?			IOPort(0xeae8u) */
-/*	?			IOPort(0xeee8u) */
-/*	?			IOPort(0xf2e8u) */
-/*	?			IOPort(0xf6e8u) */
-/*	?			IOPort(0xfae8u) */
-/*	?			IOPort(0xfee8u) */
+/*	?			0xc2e8u */
+/*	?			0xc6e8u */
+/*	?			0xcae8u */
+/*	?			0xcee8u */
+/*	?			0xd2e8u */
+/*	?			0xd6e8u */
+/*	?			0xdae8u */
+/*	?			0xdee8u */
+#define PIX_TRANS		0xe2e8u
+/*	?			0xe6e8u */
+/*	?			0xeae8u */
+/*	?			0xeee8u */
+/*	?			0xf2e8u */
+/*	?			0xf6e8u */
+/*	?			0xfae8u */
+/*	?			0xfee8u */
 
 /* ATI Mach8 & Mach32 register definitions */
-#define OVERSCAN_COLOR_8	IOPort(0x02eeu)	/* Write */	/* Mach32 */
-#define OVERSCAN_BLUE_24	IOPort(0x02efu)	/* Write */	/* Mach32 */
-#define OVERSCAN_GREEN_24	IOPort(0x06eeu)	/* Write */	/* Mach32 */
-#define OVERSCAN_RED_24		IOPort(0x06efu)	/* Write */	/* Mach32 */
-#define CURSOR_OFFSET_LO	IOPort(0x0aeeu)	/* Write */	/* Mach32 */
-#define CURSOR_OFFSET_HI	IOPort(0x0eeeu)	/* Write */	/* Mach32 */
-#define CONFIG_STATUS_1		IOPort(0x12eeu)	/* Read */
+#define OVERSCAN_COLOR_8	0x02eeu		/* Write */	/* Mach32 */
+#define OVERSCAN_BLUE_24	0x02efu		/* Write */	/* Mach32 */
+#define OVERSCAN_GREEN_24	0x06eeu		/* Write */	/* Mach32 */
+#define OVERSCAN_RED_24		0x06efu		/* Write */	/* Mach32 */
+#define CURSOR_OFFSET_LO	0x0aeeu		/* Write */	/* Mach32 */
+#define CURSOR_OFFSET_HI	0x0eeeu		/* Write */	/* Mach32 */
+#define CONFIG_STATUS_1		0x12eeu		/* Read */
 #define CLK_MODE			0x0001u			/* Mach8 */
 #define BUS_16				0x0002u			/* Mach8 */
 #define MC_BUS				0x0004u			/* Mach8 */
@@ -360,8 +353,8 @@
 #define DACTYPE				0x0e00u			/* Mach32 */
 #define MC_ADR_DECODE			0x1000u			/* Mach32 */
 #define CARD_ID				0xe000u			/* Mach32 */
-#define HORZ_CURSOR_POSN	IOPort(0x12eeu)	/* Write */	/* Mach32 */
-#define CONFIG_STATUS_2		IOPort(0x16eeu)	/* Read */
+#define HORZ_CURSOR_POSN	0x12eeu		/* Write */	/* Mach32 */
+#define CONFIG_STATUS_2		0x16eeu		/* Read */
 #define SHARE_CLOCK			0x0001u			/* Mach8 */
 #define HIRES_BOOT			0x0002u			/* Mach8 */
 #define EPROM_16_ENA			0x0004u			/* Mach8 */
@@ -381,19 +374,19 @@
 #define VESA_RDY			0x1000u			/* Mach32 */
 #define Z4GB				0x2000u			/* Mach32 */
 #define LOC2_MDRAM			0x4000u			/* Mach32 */
-#define VERT_CURSOR_POSN	IOPort(0x16eeu)	/* Write */	/* Mach32 */
-#define FIFO_TEST_DATA		IOPort(0x1aeeu)	/* Read */	/* Mach32 */
-#define CURSOR_COLOR_0		IOPort(0x1aeeu)	/* Write */	/* Mach32 */
-#define CURSOR_COLOR_1		IOPort(0x1aefu)	/* Write */	/* Mach32 */
-#define HORZ_CURSOR_OFFSET	IOPort(0x1eeeu)	/* Write */	/* Mach32 */
-#define VERT_CURSOR_OFFSET	IOPort(0x1eefu)	/* Write */	/* Mach32 */
-#define PCI_CNTL		IOPort(0x22eeu)			/* Mach32-PCI */
-#define CRT_PITCH		IOPort(0x26eeu)	/* Write */
-#define CRT_OFFSET_LO		IOPort(0x2aeeu)	/* Write */
-#define CRT_OFFSET_HI		IOPort(0x2eeeu)	/* Write */
-#define LOCAL_CNTL		IOPort(0x32eeu)			/* Mach32 */
-#define FIFO_OPT		IOPort(0x36eeu)	/* Write */	/* Mach8 */
-#define MISC_OPTIONS		IOPort(0x36eeu)			/* Mach32 */
+#define VERT_CURSOR_POSN	0x16eeu		/* Write */	/* Mach32 */
+#define FIFO_TEST_DATA		0x1aeeu		/* Read */	/* Mach32 */
+#define CURSOR_COLOR_0		0x1aeeu		/* Write */	/* Mach32 */
+#define CURSOR_COLOR_1		0x1aefu		/* Write */	/* Mach32 */
+#define HORZ_CURSOR_OFFSET	0x1eeeu		/* Write */	/* Mach32 */
+#define VERT_CURSOR_OFFSET	0x1eefu		/* Write */	/* Mach32 */
+#define PCI_CNTL		0x22eeu				/* Mach32-PCI */
+#define CRT_PITCH		0x26eeu		/* Write */
+#define CRT_OFFSET_LO		0x2aeeu		/* Write */
+#define CRT_OFFSET_HI		0x2eeeu		/* Write */
+#define LOCAL_CNTL		0x32eeu				/* Mach32 */
+#define FIFO_OPT		0x36eeu		/* Write */	/* Mach8 */
+#define MISC_OPTIONS		0x36eeu				/* Mach32 */
 #define W_STATE_ENA			0x0000u			/* Mach32 */
 #define HOST_8_ENA			0x0001u			/* Mach32 */
 #define MEM_SIZE_ALIAS			0x000cu			/* Mach32 */
@@ -408,14 +401,14 @@
 #define TEST_MODE			0x0100u			/* Mach32 */
 #define BLK_WR_ENA			0x0400u			/* Mach32 */
 #define _64_DRAW_ENA			0x0800u			/* Mach32 */
-#define FIFO_TEST_TAG		IOPort(0x3aeeu)	/* Read */	/* Mach32 */
-#define EXT_CURSOR_COLOR_0	IOPort(0x3aeeu)	/* Write */	/* Mach32 */
-#define EXT_CURSOR_COLOR_1	IOPort(0x3eeeu)	/* Write */	/* Mach32 */
-#define MEM_BNDRY		IOPort(0x42eeu)			/* Mach32 */
+#define FIFO_TEST_TAG		0x3aeeu		/* Read */	/* Mach32 */
+#define EXT_CURSOR_COLOR_0	0x3aeeu		/* Write */	/* Mach32 */
+#define EXT_CURSOR_COLOR_1	0x3eeeu		/* Write */	/* Mach32 */
+#define MEM_BNDRY		0x42eeu				/* Mach32 */
 #define MEM_PAGE_BNDRY			0x000fu			/* Mach32 */
 #define MEM_BNDRY_ENA			0x0010u			/* Mach32 */
-#define SHADOW_CTL		IOPort(0x46eeu)	/* Write */
-#define CLOCK_SEL		IOPort(0x4aeeu)
+#define SHADOW_CTL		0x46eeu		/* Write */
+#define CLOCK_SEL		0x4aeeu
 /*	DISABPASSTHRU			0x0001u	See ADVFUNC_CNTL */
 #define VFIFO_DEPTH_1			0x0100u			/* Mach32 */
 #define VFIFO_DEPTH_2			0x0200u			/* Mach32 */
@@ -433,27 +426,27 @@
 #define VFIFO_DEPTH_E			0x0e00u			/* Mach32 */
 #define VFIFO_DEPTH_F			0x0f00u			/* Mach32 */
 #define COMPOSITE_SYNC			0x1000u
-/*	?			IOPort(0x4eeeu) */
-#define ROM_ADDR_1		IOPort(0x52eeu)
+/*	?			0x4eeeu */
+#define ROM_ADDR_1		0x52eeu
 #define BIOS_BASE_SEGMENT		0x007fu			/* Mach32 */
 /*	?				0xff80u */		/* Mach32 */
-#define ROM_ADDR_2		IOPort(0x56eeu)		/* Sick ... */
-#define SHADOW_SET		IOPort(0x5aeeu)		/* Write */
-#define MEM_CFG			IOPort(0x5eeeu)			/* Mach32 */
+#define ROM_ADDR_2		0x56eeu		/* Sick ... */
+#define SHADOW_SET		0x5aeeu		/* Write */
+#define MEM_CFG			0x5eeeu				/* Mach32 */
 #define MEM_APERT_SEL			0x0003u			/* Mach32 */
 #define MEM_APERT_PAGE			0x000cu			/* Mach32 */
 #define MEM_APERT_LOC			0xfff0u			/* Mach32 */
-#define EXT_GE_STATUS		IOPort(0x62eeu)	/* Read */	/* Mach32 */
-#define HORZ_OVERSCAN		IOPort(0x62eeu)	/* Write */	/* Mach32 */
-#define VERT_OVERSCAN		IOPort(0x66eeu)	/* Write */	/* Mach32 */
-#define MAX_WAITSTATES		IOPort(0x6aeeu)
-#define GE_OFFSET_LO		IOPort(0x6eeeu)	/* Write */
-#define BOUNDS_LEFT		IOPort(0x72eeu)	/* Read */
-#define GE_OFFSET_HI		IOPort(0x72eeu)	/* Write */
-#define BOUNDS_TOP		IOPort(0x76eeu)	/* Read */
-#define GE_PITCH		IOPort(0x76eeu)	/* Write */
-#define BOUNDS_RIGHT		IOPort(0x7aeeu)	/* Read */
-#define EXT_GE_CONFIG		IOPort(0x7aeeu)	/* Write */	/* Mach32 */
+#define EXT_GE_STATUS		0x62eeu		/* Read */	/* Mach32 */
+#define HORZ_OVERSCAN		0x62eeu		/* Write */	/* Mach32 */
+#define VERT_OVERSCAN		0x66eeu		/* Write */	/* Mach32 */
+#define MAX_WAITSTATES		0x6aeeu
+#define GE_OFFSET_LO		0x6eeeu		/* Write */
+#define BOUNDS_LEFT		0x72eeu		/* Read */
+#define GE_OFFSET_HI		0x72eeu		/* Write */
+#define BOUNDS_TOP		0x76eeu		/* Read */
+#define GE_PITCH		0x76eeu		/* Write */
+#define BOUNDS_RIGHT		0x7aeeu		/* Read */
+#define EXT_GE_CONFIG		0x7aeeu		/* Write */	/* Mach32 */
 #define MONITOR_ALIAS			0x0007u			/* Mach32 */
 /*	MONITOR_?				0x0000u */	/* Mach32 */
 #define MONITOR_8507				0x0001u		/* Mach32 */
@@ -480,66 +473,66 @@
 #define xBGR24				0x0600u			/* Mach32 */
 #define DAC_8_BIT_EN			0x4000u			/* Mach32 */
 #define ORDER_16BPP_565			RGB16_565		/* Mach32 */
-#define BOUNDS_BOTTOM		IOPort(0x7eeeu)	/* Read */
-#define MISC_CNTL		IOPort(0x7eeeu)	/* Write */	/* Mach32 */
-#define PATT_DATA_INDEX		IOPort(0x82eeu)
-/*	?			IOPort(0x86eeu) */
-/*	?			IOPort(0x8aeeu) */
-#define R_EXT_GE_CONFIG		IOPort(0x8eeeu)	/* Read */	/* Mach32 */
-#define PATT_DATA		IOPort(0x8eeeu)	/* Write */
-#define R_MISC_CNTL		IOPort(0x92eeu)	/* Read */	/* Mach32 */
-#define BRES_COUNT		IOPort(0x96eeu)
-#define EXT_FIFO_STATUS		IOPort(0x9aeeu)	/* Read */
-#define LINEDRAW_INDEX		IOPort(0x9aeeu)	/* Write */
-/*	?			IOPort(0x9eeeu) */
-#define LINEDRAW_OPT		IOPort(0xa2eeu)
+#define BOUNDS_BOTTOM		0x7eeeu		/* Read */
+#define MISC_CNTL		0x7eeeu		/* Write */	/* Mach32 */
+#define PATT_DATA_INDEX		0x82eeu
+/*	?			0x86eeu */
+/*	?			0x8aeeu */
+#define R_EXT_GE_CONFIG		0x8eeeu		/* Read */	/* Mach32 */
+#define PATT_DATA		0x8eeeu		/* Write */
+#define R_MISC_CNTL		0x92eeu		/* Read */	/* Mach32 */
+#define BRES_COUNT		0x96eeu
+#define EXT_FIFO_STATUS		0x9aeeu		/* Read */
+#define LINEDRAW_INDEX		0x9aeeu		/* Write */
+/*	?			0x9eeeu */
+#define LINEDRAW_OPT		0xa2eeu
 #define BOUNDS_RESET			0x0100u
 #define CLIP_MODE_0			0x0000u	/* Clip exception disabled */
 #define CLIP_MODE_1			0x0200u	/* Line segments */
 #define CLIP_MODE_2			0x0400u	/* Polygon boundary lines */
 #define CLIP_MODE_3			0x0600u	/* Patterned lines */
-#define DEST_X_START		IOPort(0xa6eeu)	/* Write */
-#define DEST_X_END		IOPort(0xaaeeu)	/* Write */
-#define DEST_Y_END		IOPort(0xaeeeu)	/* Write */
-#define R_H_TOTAL_DISP		IOPort(0xb2eeu)	/* Read */	/* Mach32 */
-#define SRC_X_STRT		IOPort(0xb2eeu)	/* Write */
-#define R_H_SYNC_STRT		IOPort(0xb6eeu)	/* Read */	/* Mach32 */
-#define ALU_BG_FN		IOPort(0xb6eeu)	/* Write */
-#define R_H_SYNC_WID		IOPort(0xbaeeu)	/* Read */	/* Mach32 */
-#define ALU_FG_FN		IOPort(0xbaeeu)	/* Write */
-#define SRC_X_END		IOPort(0xbeeeu)	/* Write */
-#define R_V_TOTAL		IOPort(0xc2eeu)	/* Read */
-#define SRC_Y_DIR		IOPort(0xc2eeu)	/* Write */
-#define R_V_DISP		IOPort(0xc6eeu)	/* Read */	/* Mach32 */
-#define EXT_SHORT_STROKE	IOPort(0xc6eeu)	/* Write */
-#define R_V_SYNC_STRT		IOPort(0xcaeeu)	/* Read */	/* Mach32 */
-#define SCAN_X			IOPort(0xcaeeu)	/* Write */
-#define VERT_LINE_CNTR		IOPort(0xceeeu)	/* Read */	/* Mach32 */
-#define DP_CONFIG		IOPort(0xceeeu)	/* Write */
+#define DEST_X_START		0xa6eeu		/* Write */
+#define DEST_X_END		0xaaeeu		/* Write */
+#define DEST_Y_END		0xaeeeu		/* Write */
+#define R_H_TOTAL_DISP		0xb2eeu		/* Read */	/* Mach32 */
+#define SRC_X_STRT		0xb2eeu		/* Write */
+#define R_H_SYNC_STRT		0xb6eeu		/* Read */	/* Mach32 */
+#define ALU_BG_FN		0xb6eeu		/* Write */
+#define R_H_SYNC_WID		0xbaeeu		/* Read */	/* Mach32 */
+#define ALU_FG_FN		0xbaeeu		/* Write */
+#define SRC_X_END		0xbeeeu		/* Write */
+#define R_V_TOTAL		0xc2eeu		/* Read */
+#define SRC_Y_DIR		0xc2eeu		/* Write */
+#define R_V_DISP		0xc6eeu		/* Read */	/* Mach32 */
+#define EXT_SHORT_STROKE	0xc6eeu		/* Write */
+#define R_V_SYNC_STRT		0xcaeeu		/* Read */	/* Mach32 */
+#define SCAN_X			0xcaeeu		/* Write */
+#define VERT_LINE_CNTR		0xceeeu		/* Read */	/* Mach32 */
+#define DP_CONFIG		0xceeeu		/* Write */
 #define READ_WRITE			0x0001u
 #define DATA_WIDTH			0x0200u
 #define DATA_ORDER			0x1000u
 #define FG_COLOR_SRC_FG			0x2000u
 #define FG_COLOR_SRC_BLIT		0x6000u
-#define R_V_SYNC_WID		IOPort(0xd2eeu)	/* Read */
-#define PATT_LENGTH		IOPort(0xd2eeu)	/* Write */
-#define PATT_INDEX		IOPort(0xd6eeu)	/* Write */
-#define READ_SRC_X		IOPort(0xdaeeu)	/* Read */	/* Mach32 */
-#define EXT_SCISSOR_L		IOPort(0xdaeeu)	/* Write */
-#define READ_SRC_Y		IOPort(0xdeeeu)	/* Read */	/* Mach32 */
-#define EXT_SCISSOR_T		IOPort(0xdeeeu)	/* Write */
-#define EXT_SCISSOR_R		IOPort(0xe2eeu)	/* Write */
-#define EXT_SCISSOR_B		IOPort(0xe6eeu)	/* Write */
-/*	?			IOPort(0xeaeeu) */
-#define DEST_COMP_FN		IOPort(0xeeeeu)	/* Write */
-#define DEST_COLOR_CMP_MASK	IOPort(0xf2eeu)	/* Write */	/* Mach32 */
-/*	?			IOPort(0xf6eeu) */
-#define CHIP_ID			IOPort(0xfaeeu)	/* Read */	/* Mach32 */
+#define R_V_SYNC_WID		0xd2eeu		/* Read */
+#define PATT_LENGTH		0xd2eeu		/* Write */
+#define PATT_INDEX		0xd6eeu		/* Write */
+#define READ_SRC_X		0xdaeeu		/* Read */	/* Mach32 */
+#define EXT_SCISSOR_L		0xdaeeu		/* Write */
+#define READ_SRC_Y		0xdeeeu		/* Read */	/* Mach32 */
+#define EXT_SCISSOR_T		0xdeeeu		/* Write */
+#define EXT_SCISSOR_R		0xe2eeu		/* Write */
+#define EXT_SCISSOR_B		0xe6eeu		/* Write */
+/*	?			0xeaeeu */
+#define DEST_COMP_FN		0xeeeeu		/* Write */
+#define DEST_COLOR_CMP_MASK	0xf2eeu		/* Write */	/* Mach32 */
+/*	?			0xf6eeu */
+#define CHIP_ID			0xfaeeu		/* Read */	/* Mach32 */
 #define CHIP_CODE_0			0x001fu			/* Mach32 */
 #define CHIP_CODE_1			0x03e0u			/* Mach32 */
 #define CHIP_CLASS			0x0c00u			/* Mach32 */
 #define CHIP_REV			0xf000u			/* Mach32 */
-#define LINEDRAW		IOPort(0xfeeeu)	/* Write */
+#define LINEDRAW		0xfeeeu		/* Write */
 
 /* ATI Mach64 register definitions */
 #define CRTC_H_TOTAL_DISP	IOPortTag(0x00u, 0x00u)
@@ -708,19 +701,6 @@
 /*	?				0xf8000000ul */
 #define TIMER_CONFIG		BlockIOTag(0x0au)	/* VTB/GTB/LT */
 #define MEM_BUF_CNTL		BlockIOTag(0x0bu)	/* VTB/GTB/LT */
-#define Z_WB_FLUSH			0x00000007ul
-#define Z_WB_FLUSH_P			0x0000000ful	/* GTPro */
-#define VID_WB_FLUSH_P			0x000000f0ul	/* GTPro */
-#define VID_WB_FLUSH_MSB		0x00000100ul
-#define GUI_WB_FLUSH_P			0x00001f00ul	/* GTPro */
-#define HST_WB_FLUSH_P			0x0000e000ul	/* GTPro */
-#define SCL_MIN_BURST_LEN		0x001f0000ul
-#define SCL_THRESH			0x003f0000ul	/* GTPro */
-/*	?				0x00400000ul */
-#define INVALIDATE_RB_CACHE		0x00800000ul
-#define HST_WB_FLUSH			0x03000000ul
-#define VID_WB_FLUSH			0x1c000000ul
-#define GUI_WB_FLUSH			0xe0000000ul
 #define SHARED_CNTL		BlockIOTag(0x0cu)	/* VTB/GTB/LT */
 #define SHARED_MEM_CONFIG	BlockIOTag(0x0du)	/* VTB/GTB/LT */
 #define MEM_ADDR_CONFIG		BlockIOTag(0x0du)	/* GTPro */
@@ -939,8 +919,8 @@
 #define CLOCK_SELECT			0x0000000ful
 #define CLOCK_DIVIDER			0x00000030ul
 #define CLOCK_STROBE			0x00000040ul
-#define CLOCK_SERIAL_DATA_EN		0x00000080ul
-#define CLOCK_SERIAL_DATA		0x00000100ul
+#define CLOCK_DATA			0x00000080ul
+/*	?				0x00000100ul */
 #define PLL_WR_EN			0x00000200ul	/* For internal PLL */
 #define PLL_ADDR			0x0000fc00ul	/* For internal PLL */
 #define PLL_DATA			0x00ff0000ul	/* For internal PLL */
@@ -1112,7 +1092,6 @@
 #define M64_DAC_DATA			(DAC_REGS + 1)
 #define M64_DAC_MASK			(DAC_REGS + 2)
 #define M64_DAC_READ			(DAC_REGS + 3)
-#define M64_DAC_WAIT			M64_DAC_MASK
 #define DAC_CNTL		IOPortTag(0x18u, 0x31u)
 #define DAC_EXT_SEL			0x00000003ul
 #define DAC_EXT_SEL_RS2				0x000000001ul
@@ -1965,19 +1944,6 @@
 #define CRT_HORZ_VERT_LOAD	BlockIOTag(0x151u)	/* VTB/GTB */
 #define AGP_BASE		BlockIOTag(0x152u)	/* GTPro */
 #define AGP_CNTL		BlockIOTag(0x153u)	/* GTPro */
-#define AGP_APER_SIZE_MASK		0x0000003ful
-#define AGP_APER_SIZE_256MB			0x00000000ul
-#define AGP_APER_SIZE_128MB			0x00000020ul
-#define AGP_APER_SIZE_64MB			0x00000030ul
-#define AGP_APER_SIZE_32MB			0x00000038ul
-#define AGP_APER_SIZE_16MB			0x0000003cul
-#define AGP_APER_SIZE_8MB			0x0000003eul
-#define AGP_APER_SIZE_4MB			0x0000003ful
-/*	?				0x000000c0ul */
-#define MAX_IDLE_CLK			0x0000ff00ul
-#define HIGH_PRIORITY_READ_EN		0x00010000ul
-#define AGP_TRDY_MODE			0x00020000ul
-/*	?				0xfffc0000ul */
 #define SCALER_COLOUR_CNTL	BlockIOTag(0x154u)	/* GTPro */
 #define SCALE_BRIGHTNESS		0x0000007ful
 /*	?				0x00000080ul */

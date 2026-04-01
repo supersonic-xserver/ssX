@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cidriver.c                                                             */
 /*                                                                         */
 /*    CID driver interface (body).                                         */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,25 +23,17 @@
 /***************************************************************************/
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "cidriver.h"
 #include "cidgload.h"
+#include FT_INTERNAL_DEBUG_H
+#include FT_INTERNAL_STREAM_H
 
-#else
+#include "ciderrs.h"
 
-#include <cid/cidriver.h>
-#include <cid/cidgload.h>
-
-#endif
-
-
-#include <freetype/internal/ftdebug.h>
-#include <freetype/internal/ftstream.h>
-#include <freetype/internal/psnames.h>
-
-#include <string.h>         /* for strcmp() */
-
+#include FT_SERVICE_POSTSCRIPT_NAME_H
+#include FT_SERVICE_XFREE86_NAME_H
+#include FT_SERVICE_POSTSCRIPT_INFO_H
 
   /*************************************************************************/
   /*                                                                       */
@@ -46,148 +45,86 @@
 #define FT_COMPONENT  trace_ciddriver
 
 
-  static
-  FT_Module_Interface  CID_Get_Interface( FT_Driver         driver,
-                                          const FT_String*  interface )
+ /*
+  *  POSTSCRIPT NAME SERVICE
+  *
+  */
+
+  static const char*
+  cid_get_postscript_name( CID_Face  face )
   {
-    FT_UNUSED( driver );
-    FT_UNUSED( interface );
-
-    return 0;
-  }
+    const char*  result = face->cid.cid_font_name;
 
 
-#if 0 /* unimplemented yet */
+    if ( result && result[0] == '/' )
+      result++;
 
-  static
-  FT_Error  cid_Get_Kerning( T1_Face     face,
-                             FT_UInt     left_glyph,
-                             FT_UInt     right_glyph,
-                             FT_Vector*  kerning )
-  {
-    CID_AFM*  afm;
-
-
-    kerning->x = 0;
-    kerning->y = 0;
-
-    afm = (CID_AFM*)face->afm_data;
-    if ( afm )
-      CID_Get_Kerning( afm, left_glyph, right_glyph, kerning );
-
-    return T1_Err_Ok;
-  }
-
-
-#endif /* 0 */
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    Cid_Get_Char_Index                                                 */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Uses a charmap to return a given character code's glyph index.     */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    charmap  :: A handle to the source charmap object.                 */
-  /*                                                                       */
-  /*    charcode :: The character code.                                    */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    Glyph index.  0 means `undefined character code'.                  */
-  /*                                                                       */
-  static
-  FT_UInt  CID_Get_Char_Index( FT_CharMap  charmap,
-                               FT_Long     charcode )
-  {
-    T1_Face             face;
-    FT_UInt             result = 0;
-    PSNames_Interface*  psnames;
-
-
-    face = (T1_Face)charmap->face;
-    psnames = (PSNames_Interface*)face->psnames;
-    if ( psnames )
-      switch ( charmap->encoding )
-      {
-        /*******************************************************************/
-        /*                                                                 */
-        /* Unicode encoding support                                        */
-        /*                                                                 */
-      case ft_encoding_unicode:
-        /* use the `PSNames' module to synthetize the Unicode charmap */
-        result = psnames->lookup_unicode( &face->unicode_map,
-                                          (FT_ULong)charcode );
-
-        /* the function returns 0xFFFF if the Unicode charcode has */
-        /* no corresponding glyph.                                 */
-        if ( result == 0xFFFF )
-          result = 0;
-        goto Exit;
-
-        /*******************************************************************/
-        /*                                                                 */
-        /* Custom Type 1 encoding                                          */
-        /*                                                                 */
-      case ft_encoding_adobe_custom:
-        {
-          T1_Encoding*  encoding = &face->type1.encoding;
-
-
-          if ( charcode >= encoding->code_first &&
-               charcode <= encoding->code_last  )
-            result = encoding->char_index[charcode];
-          goto Exit;
-        }
-
-        /*******************************************************************/
-        /*                                                                 */
-        /* Adobe Standard & Expert encoding support                        */
-        /*                                                                 */
-      default:
-        if ( charcode < 256 )
-        {
-          FT_UInt      code;
-          FT_Int       n;
-          const char*  glyph_name;
-
-
-          code = psnames->adobe_std_encoding[charcode];
-          if ( charmap->encoding == ft_encoding_adobe_expert )
-            code = psnames->adobe_expert_encoding[charcode];
-
-          glyph_name = psnames->adobe_std_strings( code );
-          if ( !glyph_name )
-            break;
-
-          for ( n = 0; n < face->type1.num_glyphs; n++ )
-          {
-            const char*  gname = face->type1.glyph_names[n];
-
-
-            if ( gname && gname[0] == glyph_name[0] &&
-                 strcmp( gname, glyph_name ) == 0   )
-            {
-              result = n;
-              break;
-            }
-          }
-        }
-      }
-
-  Exit:
     return result;
   }
 
 
+  static const FT_Service_PsFontNameRec  cid_service_ps_name =
+  {
+    (FT_PsName_GetFunc) cid_get_postscript_name
+  };
+
+
+ /*
+  *  POSTSCRIPT INFO SERVICE
+  *
+  */
+
+  static FT_Error
+  cid_ps_get_font_info( FT_Face          face,
+                        PS_FontInfoRec*  afont_info )
+  {
+    *afont_info = ((CID_Face)face)->cid.font_info;
+    return 0;
+  }
+
+
+  static const FT_Service_PsInfoRec  cid_service_ps_info =
+  {
+    (PS_GetFontInfoFunc)  cid_ps_get_font_info,
+    (PS_HasGlyphNamesFunc)NULL          /* unsupported with CID fonts */
+  };
+
+
+ /*
+  *  SERVICE LIST
+  *
+  */
+
+  static const FT_ServiceDescRec  cid_services[] =
+  {
+    { FT_SERVICE_ID_POSTSCRIPT_FONT_NAME, &cid_service_ps_name },
+    { FT_SERVICE_ID_XF86_NAME,            FT_XF86_FORMAT_CID },
+    { FT_SERVICE_ID_POSTSCRIPT_INFO,      &cid_service_ps_info },
+    { NULL, NULL }
+  };
+
+
+  static FT_Module_Interface
+  cid_get_interface( FT_Driver         driver,
+                     const FT_String*  cid_interface )
+  {
+    FT_UNUSED( driver );
+    FT_UNUSED( cid_interface );
+
+    return ft_service_list_lookup( cid_services, cid_interface );
+  }
+
+
+
   FT_CALLBACK_TABLE_DEF
-  const FT_Driver_Class  t1cid_driver_class =
+  const FT_Driver_ClassRec  t1cid_driver_class =
   {
     /* first of all, the FT_Module_Class fields */
     {
-      ft_module_font_driver | ft_module_driver_scalable,
+      FT_MODULE_FONT_DRIVER       |
+      FT_MODULE_DRIVER_SCALABLE   |
+      FT_MODULE_DRIVER_HAS_HINTER,
+
       sizeof( FT_DriverRec ),
       "t1cid",   /* module name           */
       0x10000L,  /* version 1.0 of driver */
@@ -195,9 +132,9 @@
 
       0,
 
-      (FT_Module_Constructor)CID_Init_Driver,
-      (FT_Module_Destructor) CID_Done_Driver,
-      (FT_Module_Requester)  CID_Get_Interface
+      (FT_Module_Constructor)cid_driver_init,
+      (FT_Module_Destructor) cid_driver_done,
+      (FT_Module_Requester)  cid_get_interface
     },
 
     /* then the other font drivers fields */
@@ -205,56 +142,24 @@
     sizeof( CID_SizeRec ),
     sizeof( CID_GlyphSlotRec ),
 
-    (FTDriver_initFace)     CID_Init_Face,
-    (FTDriver_doneFace)     CID_Done_Face,
+    (FT_Face_InitFunc)       cid_face_init,
+    (FT_Face_DoneFunc)       cid_face_done,
 
-    (FTDriver_initSize)     0,
-    (FTDriver_doneSize)     0,
-    (FTDriver_initGlyphSlot)0,
-    (FTDriver_doneGlyphSlot)0,
+    (FT_Size_InitFunc)       cid_size_init,
+    (FT_Size_DoneFunc)       cid_size_done,
+    (FT_Slot_InitFunc)       cid_slot_init,
+    (FT_Slot_DoneFunc)       cid_slot_done,
 
-    (FTDriver_setCharSizes) 0,
-    (FTDriver_setPixelSizes)0,
+    (FT_Size_ResetPointsFunc)cid_size_reset,
+    (FT_Size_ResetPixelsFunc)cid_size_reset,
 
-    (FTDriver_loadGlyph)    CID_Load_Glyph,
-    (FTDriver_getCharIndex) CID_Get_Char_Index,
+    (FT_Slot_LoadFunc)       cid_slot_load_glyph,
 
-    (FTDriver_getKerning)   0,
-    (FTDriver_attachFile)   0,
+    (FT_Face_GetKerningFunc) 0,
+    (FT_Face_AttachFunc)     0,
 
-    (FTDriver_getAdvances)  0
+    (FT_Face_GetAdvancesFunc)0,
   };
-
-
-#ifdef FT_CONFIG_OPTION_DYNAMIC_DRIVERS
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    getDriverClass                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    This function is used when compiling the TrueType driver as a      */
-  /*    shared library (`.DLL' or `.so').  It will be used by the          */
-  /*    high-level library of FreeType to retrieve the address of the      */
-  /*    driver's generic interface.                                        */
-  /*                                                                       */
-  /*    It shouldn't be implemented in a static build, as each driver must */
-  /*    have the same function as an exported entry point.                 */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    The address of the TrueType's driver generic interface.  The       */
-  /*    format-specific interface can then be retrieved through the method */
-  /*    interface->get_format_interface.                                   */
-  /*                                                                       */
-  FT_EXPORT_DEF( const FT_Driver_Class* )  getDriverClass( void )
-  {
-    return &t1cid_driver_class;
-  }
-
-
-#endif /* CONFIG_OPTION_DYNAMIC_DRIVERS */
 
 
 /* END */

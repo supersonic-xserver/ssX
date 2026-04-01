@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * quartz.h
  *
  * External interface of the Quartz display modes seen by the generic, mode
@@ -30,7 +37,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartz.h,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartz.h,v 1.10 2004/07/15 18:53:25 torrey Exp $ */
 
 #ifndef _QUARTZ_H
 #define _QUARTZ_H
@@ -50,7 +57,7 @@
 typedef void (*DisplayInitProc)(void);
 typedef Bool (*AddScreenProc)(int index, ScreenPtr pScreen);
 typedef Bool (*SetupScreenProc)(int index, ScreenPtr pScreen);
-typedef void (*InitInputProc)(int argc, const char **argv);
+typedef void (*InitInputProc)(int argc, char **argv);
 
 /*
  * Cursor functions

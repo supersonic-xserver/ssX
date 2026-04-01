@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/fontconfig/src/fcatomic.c,v 1.3 2002/08/31 22:17:31 keithp Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/extras/fontconfig/src/fcatomic.c,v 1.1.1.1 2003/06/04 02:57:42 dawes Exp $
  *
  * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *

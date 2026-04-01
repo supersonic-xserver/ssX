@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/aticonfig.c,v 1.21tsi Exp $*/
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/aticonfig.c,v 1.17 2004/12/31 16:07:06 tsi Exp $*/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -111,7 +118,13 @@ ATIProcessOptions
 #   define CSync         PublicOption[ATI_OPTION_CSYNC].value.bool
 #   define Devel         PrivateOption[ATI_OPTION_DEVEL].value.bool
 #   define HWCursor      PublicOption[ATI_OPTION_HWCURSOR].value.bool
+
+#ifndef AVOID_CPIO
+
 #   define Linear        PublicOption[ATI_OPTION_LINEAR].value.bool
+
+#endif /* AVOID_CPIO */
+
 #   define CacheMMIO     PublicOption[ATI_OPTION_MMIO_CACHE].value.bool
 #   define TestCacheMMIO PublicOption[ATI_OPTION_TEST_MMIO_CACHE].value.bool
 #   define PanelDisplay  PublicOption[ATI_OPTION_PANEL_DISPLAY].value.bool
@@ -127,18 +140,44 @@ ATIProcessOptions
     xf86CollectOptions(pScreenInfo, NULL);
 
     /* Set non-zero defaults */
+
+#ifndef AVOID_CPIO
+
     if (pATI->Adapter >= ATI_ADAPTER_MACH64)
-        Accel = CacheMMIO = HWCursor = Linear = Blend = PanelDisplay = TRUE;
+
+#endif /* AVOID_CPIO */
+
+    {
+        Accel = CacheMMIO = HWCursor = TRUE;
+
+#ifndef AVOID_CPIO
+
+        Linear = TRUE;
+
+#endif /* AVOID_CPIO */
+
+    }
 
     ReferenceClock = ((double)157500000.0) / ((double)11.0);
 
+#ifndef AVOID_CPIO
+
     if (pATI->PCIInfo)
+
+#endif /* AVOID_CPIO */
+
+    {
         ShadowFB = TRUE;
+    }
+
+    Blend = PanelDisplay = TRUE;
 
     xf86ProcessOptions(pScreenInfo->scrnIndex, pScreenInfo->options,
         PublicOption);
     xf86ProcessOptions(pScreenInfo->scrnIndex, pScreenInfo->options,
         PrivateOption);
+
+#ifndef AVOID_CPIO
 
     /* Disable linear apertures if the OS doesn't support them */
     if (!xf86LinearVidMem() && Linear)
@@ -149,6 +188,8 @@ ATIProcessOptions
         Linear = FALSE;
     }
 
+#endif /* AVOID_CPIO */
+
     /* Move option values into driver private structure */
     pATI->OptionAccel = Accel;
     pATI->OptionBIOSDisplay = BIOSDisplay;
@@ -156,7 +197,13 @@ ATIProcessOptions
     pATI->OptionCRTDisplay = CRTDisplay;
     pATI->OptionCSync = CSync;
     pATI->OptionDevel = Devel;
+
+#ifndef AVOID_CPIO
+
     pATI->OptionLinear = Linear;
+
+#endif /* AVOID_CPIO */
+
     pATI->OptionMMIOCache = CacheMMIO;
     pATI->OptionTestMMIOCache = TestCacheMMIO;
     pATI->OptionProbeClocks = ProbeClocks;
@@ -192,7 +239,7 @@ ATIProcessOptions
     /* Only set the reference clock if it hasn't already been determined */
     if (!pATI->ReferenceNumerator || !pATI->ReferenceDenominator)
     {
-        switch ((int)((ReferenceClock + 50000) / ((double)100000.0)))
+        switch ((int)(ReferenceClock / ((double)100000.0)))
         {
             case 143:
                 pATI->ReferenceNumerator = 157500;
@@ -201,11 +248,6 @@ ATIProcessOptions
 
             case 286:
                 pATI->ReferenceNumerator = 315000;
-                pATI->ReferenceDenominator = 11;
-                break;
-
-            case 295:
-                pATI->ReferenceNumerator = 324480;
                 pATI->ReferenceDenominator = 11;
                 break;
 

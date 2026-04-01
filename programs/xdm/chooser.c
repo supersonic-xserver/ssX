@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: chooser.c,v 1.4 2001/02/09 02:05:40 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -25,7 +33,7 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xdm/chooser.c,v 3.30 2006/01/09 15:01:03 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/chooser.c,v 3.29 2004/04/03 22:26:26 dawes Exp $ */
 
 /*
  * Chooser - display a menu of names and let the user select one
@@ -738,7 +746,6 @@ RegisterHostname (char *name)
 			}
 		    }
 		}
-		freeaddrinfo(ai);
 	    }
 	}
 #else

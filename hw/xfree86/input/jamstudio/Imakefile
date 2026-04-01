@@ -1,0 +1,30 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/jamstudio/Imakefile,v 1.3 2005/10/14 15:16:56 tsi Exp $
+
+#define IHaveModules
+#include <Server.tmpl>
+
+SRCS = js_x.c
+OBJS = js_x.o
+
+DRIVER = js_x
+
+INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) \
+         -I$(SERVERSRC)/include -I$(SERVERSRC)/mi
+
+#if MakeHasPosixVariableSubstitutions
+SubdirLibraryRule($(OBJS))
+#endif
+
+ModuleObjectRule()
+
+ObjectModuleTarget($(DRIVER),$(OBJS),input)
+
+InstallObjectModule($(DRIVER),$(MODULEDIR),input)
+
+#if !defined(XF86DriverSDK)
+InstallModuleManPage($(DRIVER))
+#endif
+
+DependTarget()
+
+InstallDriverSDKObjectModule($(DRIVER),$(DRIVERSDKMODULEDIR),input)

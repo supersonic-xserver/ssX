@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# $Xorg: find-rtns.sh,v 1.3 2000/08/17 19:55:19 cpqbld Exp $
+#
 # find-routines - convert leak tracer stack traces into file/lineno traces
 #                 modified to work with the an unmodified version of
 #                 gdb-4.18

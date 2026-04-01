@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
 ** Software License B, Version 1.1 (the "License"), the contents of this
@@ -35,6 +42,8 @@
 /*
  * mystdio.h
  *
+ * $Date: 2004/03/05 14:26:37 $ $Revision: 1.1.1.2 $
+ * $Header: /cvsroot/xsrc/xfree/xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdio.h,v 1.1.1.2 2004/03/05 14:26:37 tron Exp $
  */
 /* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libnurbs/nurbtess/mystdio.h,v 1.2 2003/10/22 19:20:57 tsi Exp $ */
 

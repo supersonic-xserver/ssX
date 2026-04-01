@@ -1,4 +1,18 @@
 /***************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2001 Intel Corporation.  All Rights Reserved.
 
@@ -333,6 +347,28 @@ typedef struct _drm_i810_mc {
 #define GET_RSTATUS(c) drmCommandNone(c->fd, DRM_I810_RSTATUS)
 #define GET_BUFFER(c,dma) drmCommandWriteRead(c->fd, DRM_I810_GETBUF, &dma, sizeof(drmI810DMA))
 #define FLUSH(c) drmCommandNone(c->fd, DRM_I810_FLUSH)
+
+/*
+  Definitions for temporary wire protocol hooks to be replaced
+  when a HW independent libXvMC is created.
+*/
+extern Status _xvmc_create_context(Display *dpy, XvMCContext *context,
+				   int *priv_count, uint **priv_data);
+
+extern Status _xvmc_destroy_context(Display *dpy, XvMCContext *context);
+
+extern Status _xvmc_create_surface(Display *dpy, XvMCContext *context,
+				   XvMCSurface *surface, int *priv_count,
+				   uint **priv_data);
+
+extern Status _xvmc_destroy_surface(Display *dpy, XvMCSurface *surface);
+
+extern Status  _xvmc_create_subpicture(Display *dpy, XvMCContext *context,
+				       XvMCSubpicture *subpicture,
+				       int *priv_count, uint **priv_data);
+
+extern Status   _xvmc_destroy_subpicture(Display *dpy,
+					 XvMCSubpicture *subpicture);
 
 /*
   Prototypes

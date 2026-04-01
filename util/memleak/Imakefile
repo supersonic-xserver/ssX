@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/util/memleak/Imakefile,v 3.7 2006/03/02 03:00:40 dawes Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/17 19:55:19 cpqbld Exp $
+
+
+
+
+XCOMM $XFree86: xc/util/memleak/Imakefile,v 3.5 2001/01/17 23:20:07 dawes Exp $
 
 #define DoNormalLib YES
 #define DoSharedLib NO
@@ -7,73 +12,52 @@ XCOMM $XFree86: xc/util/memleak/Imakefile,v 3.7 2006/03/02 03:00:40 dawes Exp $
 #define IncSubdir X11
 #include <Library.tmpl>
 
-#if HasGcc2 && UseGccBuiltinFrameAddress
-
-GRET_NAME = getretgcc
-#define HasGetReturnAddress YES
-
-#else
-
 #ifdef MipsArchitecture
-#define TopOfStack		0x7fffbbb0
-#define BottomOfData		0x10000000
+#define TopOfStack 0x7fffbbb0
+#define BottomOfData 0x10000000
 #define HasGetReturnAddress 	YES
-GRET_NAME = getretmips
-STACK_SRCS = mipsstack.s
-STACK_OBJS = mipsstack.o
+GRA_OBJS = getretmips.o mipsstack.o
+GRA_SRCS = getretmips.c
 #endif
 
 #ifdef SparcArchitecture
 #define HasGetReturnAddress	YES
-#define BottomOfData		\&environ
-GRET_NAME = getretspar
-#if !HasGcc
-#if SystemV4
-STACK_SRCS = sparcsolstack.s
-STACK_OBJS = sparcsolstack.o
-#else
-STACK_SRCS = sparcstack.s
-STACK_OBJS = sparcstack.o
-#endif
-#endif
-#if SystemV4
-#define TopOfStack		0xeffffc70
+#define BottomOfData \&environ
+#ifdef SystemV4
+GRA_OBJS = getretspar.o sparcsolstack.o
+#define TopOfStack 0xeffffc70
 #else
 LOCAL_DEFS = -Datexit=on_exit
-#define TopOfStack		0xf7fffbdc
+GRA_OBJS = getretspar.o sparcstack.o
+#define TopOfStack 0xf7fffbdc
 #endif
+GRA_SRCS = getretspar.c
 #endif
 
+#ifdef i386BsdArchitecture
+#define HasGetReturnAddress	YES
+#define TopOfStack 'GC_get_stack_base()'
+#define BottomOfData \&etext
+GRA_OBJS = getreti386.o stackbottom.o
+GRA_SRCS = getreti386.c stackbottom.c
+#endif
+
+#ifdef LinuxArchitecture
 #ifdef i386Architecture
-
-GRET_NAME = getreti386
-
-#if defined(i386BsdArchitecture)
-#define HasGetReturnAddress	YES
-#define TopOfStack		'GC_get_stack_base()'
-#define BottomOfData		\&etext
-GETSTACK_SRCS = stackbottom.c
-GETSTACK_OBJS = stackbottom.o
-#elif defined(LinuxArchitecture)
-#define HasGetReturnAddress	YES
-#define TopOfStack		0xbffff800
-#define BottomOfData		\&__data_start
-#elif SystemV4
 #define HasGetReturnAddress	YES
 #define TopOfStack 0xbffff800
-#define BottomOfData		\&__data_start
+#define BottomOfData \&__data_start
+GRA_OBJS = getreti386.o stackbottom.o
+GRA_SRCS = getreti386.c stackbottom.c
 #endif
-
-#endif /* i386Architecture */
+#endif
 
 #ifdef AlphaArchitecture
 #define HasGetReturnAddress	NO
-#define TopOfData		\&_end
-#define TopOfStack		0x11ffffff0
-#define BottomOfData		\&xf86DriverList
+#define TopOfData \&_end
+#define TopOfStack 0x11ffffff0
+#define BottomOfData \&xf86DriverList
 #endif
-
-#endif /* HasGcc */
 
 #ifndef HasGetReturnAddress
 #define HasGetReturnAddress NO
@@ -86,44 +70,21 @@ GETSTACK_OBJS = stackbottom.o
 #ifdef TopOfData
  TOD_DEFS = -DTOP_OF_DATA=TopOfData
 #endif
-#ifdef TopOfStack
- BOD_DEFS = -DBOTTOM_OF_DATA=BottomOfData
-#endif
-#ifdef TopOfStack
- TOS_DEFS = -DTOP_OF_STACK=TopOfStack
-#endif
 
-DEFINES = 	$(TOS_DEFS) $(BOD_DEFS) $(GRA_DEFS) $(TOD_DEFS) \
-		$(LOCAL_DEFS) $(STACKBASE)
+DEFINES = 	-DTOP_OF_STACK=TopOfStack -DBOTTOM_OF_DATA=BottomOfData\
+		$(GRA_DEFS) $(TOD_DEFS) $(LOCAL_DEFS)
 
-#if UseMemLeak
-MSRCS = fmalloc.c $(GETSTACK_SRCS)
-MOBJS = fmalloc.o $(GETSTACK_OBJS)
-#endif
+CDEBUGFLAGS = DebuggableCDebugFlags
 
-GRET_SRCS = $(GRET_NAME).c
-GRET_OBJS = $(GRET_NAME).o
+SRCS =	fmalloc.c $(GRA_SRCS)
 
-GRA_SRCS = $(GRET_SRCS) $(STACK_SRCS)
-GRA_OBJS = $(GRET_OBJS) $(STACK_OBJS)
-
-SRCS =	$(MSRCS) $(GRA_SRCS)
-
-OBJS =	$(MOBJS) $(GRA_OBJS)
-
-#if HasGetReturnAddress
-SpecialCObjectRule($(GRET_NAME),NullParameter,-O0)
-#endif
+OBJS =	fmalloc.o $(GRA_OBJS)
 
 LibraryObjectRule()
 
 #if DoNormalLib
-#if UseMemLeak
 NormalLibraryTarget(memleak,$(OBJS))
 InstallLibrary(memleak,$(USRLIBDIR))
-#elif UseStackTrace
-NormalLibraryTarget(stacktrace,$(GRA_OBJS))
-#endif
 #endif
 
 InstallNamedProg(find-rtns.sh,find-routines,$(BINDIR))

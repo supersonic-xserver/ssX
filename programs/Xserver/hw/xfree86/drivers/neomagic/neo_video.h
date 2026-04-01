@@ -1,4 +1,11 @@
 /**********************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 2002 by Shigehiro Nomura.
 
                         All Rights Reserved
@@ -22,7 +29,7 @@ RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
 CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **********************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_video.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/neomagic/neo_video.h,v 1.2 2002/07/01 02:25:58 tsi Exp $ */
 
 #ifndef _NEO_VIDEO_H
 #define _NEO_VIDEO_H
@@ -31,7 +38,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "vgaHW.h"
 #include "fourcc.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 #define NEO_VIDEO_VIDEO		0
 #define NEO_VIDEO_IMAGE		1

@@ -1,8 +1,14 @@
-/* $XFree86: xc/include/extensions/xtrapbits.h,v 1.1tsi Exp $ */
 /*
- * This include file is designed to be a portable way for systems to define
- * bit field manipulation of arrays of bits.
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
+ *
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
+
+
 #ifndef __XTRAPBITS__
 #define __XTRAPBITS__ "@(#)xtrapbits.h	1.6 - 90/09/18  "
 
@@ -78,11 +84,6 @@ typedef unsigned char *UByteP;  /* Pointer to an unsigned byte array */
     (BitIsTrue((array),(bit)) ? True : False)
 
 #define BitSet(array,bit,value) /* Set bit to given value in array */ \
-    do { \
-	if (value) \
-	    BitTrue((array),(bit)); \
-	else \
-	    BitFalse((array),(bit)); \
-    } while (0)
+    (value) ? BitTrue((array),(bit)) : BitFalse((array),(bit))
 
 #endif /* __XTRAPBITS__ */

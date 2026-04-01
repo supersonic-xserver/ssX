@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * XDPS.c -- implementation of low-level Xlib routines for XDPS extension
  *
  * (c) Copyright 1989-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/lib/dps/XDPS.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/lib/dps/XDPS.c,v 1.5 2003/10/24 15:50:20 tsi Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES

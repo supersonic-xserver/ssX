@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/Xext/panoramiXh.h,v 1.4 2004/06/25 15:44:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *	Server dispatcher function replacements
@@ -72,6 +86,7 @@ PROC_EXTERN(ProcPanoramiXGetScreenSize);
  
 PROC_EXTERN(ProcXineramaQueryScreens);
 PROC_EXTERN(ProcXineramaIsActive);
+extern Bool XineramaCreateGC(GCPtr pGC);
 
 extern int SProcPanoramiXDispatch(ClientPtr client);
 

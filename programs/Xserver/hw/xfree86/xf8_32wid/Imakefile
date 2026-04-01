@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/Imakefile,v 1.3tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/Imakefile,v 1.3 2004/06/01 00:17:07 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -59,9 +59,10 @@ SRCS = 	cfbscrinit.c cfbwindow.c cfbwid.c $(XFMODSRC)
 
 OBJS = 	cfbscrinit.o cfbwindow.o cfbwid.o $(XFMODOBJ) 
 
-INCLUDES = -I$(XF86SRC)/xf1bpp -I$(SERVERSRC)/mfb \
+INCLUDES = -I. -I$(XF86SRC)/xf1bpp -I$(SERVERSRC)/mfb \
         -I$(SERVERSRC)/cfb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
-        -I$(XF86OSSRC) -I$(XF86COMSRC)
+        -I$(XF86OSSRC) -I$(XF86COMSRC) \
+        -I$(FONTINCSRC) -I$(XINCLUDESRC)
 
 
 ModuleObjectRule()

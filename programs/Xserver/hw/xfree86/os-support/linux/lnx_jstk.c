@@ -1,5 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_jstk.c,v 3.13 1998/07/25 16:56:43 dawes Exp $ */
+/* $XConsortium: lnx_jstk.c /main/7 1996/02/21 17:51:36 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
+
+/* Id: lnx_jstk.c,v 1.1 1995/12/20 14:06:09 lepied Exp */
 /*
  * Copyright 1995 by Frederic Lepied, France. <fred@sugix.frmug.fr.net>       
  *                                                                            
@@ -22,6 +29,10 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_jstk.c,v 3.13 1998/07/25 16:56:43 dawes Exp $ */
+
+static const char rcs_id[] = "Id: lnx_jstk.c,v 1.1 1995/12/20 14:06:09 lepied Exp";
 
 #include <sys/types.h>
 #include <unistd.h>

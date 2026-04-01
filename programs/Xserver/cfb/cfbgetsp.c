@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbgetsp.c,v 3.12tsi Exp $ */
+/* $Xorg: cfbgetsp.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,9 +52,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbgetsp.c,v 3.10 2003/10/29 22:44:53 tsi Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "servermd.h"
 
 #include "misc.h"
@@ -65,35 +73,31 @@ SOFTWARE.
  * Each scanline returned will be server scanline padded, i.e., it will come
  * out to an integral number of words.
  */
-/*
-    DrawablePtr		pDrawable;	drawable from which to get bits
-    int			wMax;		largest value of all *pwidths
-    DDXPointPtr		ppt;		points to start copying from
-    int			*pwidth;	list of number of bits to copy
-    int			nspans;		number of scanlines to copy
-    char		*pchardstStart; where to put the bits
-*/
-
 void
-cfbGetSpans(DrawablePtr pDrawable, int wMax, DDXPointPtr ppt,
-	    int *pwidth, int nspans, char *pchardstStart)
+cfbGetSpans(pDrawable, wMax, ppt, pwidth, nspans, pchardstStart)
+    DrawablePtr		pDrawable;	/* drawable from which to get bits */
+    int			wMax;		/* largest value of all *pwidths */
+    register DDXPointPtr ppt;		/* points to start copying from */
+    int			*pwidth;	/* list of number of bits to copy */
+    int			nspans;		/* number of scanlines to copy */
+    char		*pchardstStart; /* where to put the bits */
 {
-    PixelGroup		*pdstStart = (PixelGroup *)pchardstStart;
-    PixelGroup		*pdst;		/* where to put the bits */
-    PixelGroup		*psrc;		/* where to get the bits */
-    PixelGroup		tmpSrc;		/* scratch buffer for bits */
+    PixelGroup	*pdstStart = (PixelGroup *)pchardstStart;
+    register PixelGroup	*pdst;		/* where to put the bits */
+    register PixelGroup	*psrc;		/* where to get the bits */
+    register PixelGroup	tmpSrc;		/* scratch buffer for bits */
     PixelGroup		*psrcBase;	/* start of src bitmap */
     int			widthSrc;	/* width of pixmap in bytes */
-    DDXPointPtr		pptLast;	/* one past last point to get */
+    register DDXPointPtr pptLast;	/* one past last point to get */
     int         	xEnd;		/* last pixel to copy from */
     int			nl, srcBit;
     int			w;
     PixelGroup		*pdstNext;
 #if PSZ == 24
-    char		*psrcb, *pdstb;
-    int			xIndex = 0;
+    register char *psrcb, *pdstb;
+    register int xIndex = 0;
 #else
-    int	nstart; 
+    register int	nstart; 
 #if PSZ != 32 || PPW != 1
     int	 		nend; 
 #endif
@@ -139,14 +143,14 @@ cfbGetSpans(DrawablePtr pDrawable, int wMax, DDXPointPtr ppt,
     while(ppt < pptLast)
     {
 #if PSZ == 24
-	xEnd = min(ppt->x + *pwidth, widthSrc * sizeof(CfbBits) / PSZB);
+	xEnd = min(ppt->x + *pwidth, widthSrc * sizeof(CfbBits) / 3);
 	w = xEnd - ppt->x;
 	psrc = psrcBase + ppt->y * widthSrc;
 	srcBit = ppt->x;
-	psrcb = (char *)psrc + (ppt->x * PSZB);
+	psrcb = (char *)psrc + (ppt->x * 3);
 	xIndex = 0;
 	pdstb = (char *)pdst;
-    	pdstNext = pdst + (((w + 1) * PSZB) / PGSZB);
+    	pdstNext = pdst + ((w * 3 + 3) >> 2);
 #else
 	xEnd = min(ppt->x + *pwidth, widthSrc << PWSH);
 	w = xEnd - ppt->x;
@@ -160,14 +164,14 @@ cfbGetSpans(DrawablePtr pDrawable, int wMax, DDXPointPtr ppt,
 	  FatalError("cfb24GetSpans: Internal error (w < 0)\n");
 	nl = w;
 	while (nl--){ 
-	  psrc = (PixelGroup *)((unsigned long)psrcb & ~(PGSZB - 1));
+	  psrc = (PixelGroup *)((unsigned long)psrcb & ~0x03);
 	  getbits24(psrc, tmpSrc, srcBit);
-	  pdst = (PixelGroup *)((unsigned long)pdstb & ~(PGSZB - 1));
+	  pdst = (PixelGroup *)((unsigned long)pdstb & ~0x03);
 	  putbits24(tmpSrc, PPW, pdst, ~((CfbBits)0), xIndex);
 	  srcBit++;
-	  psrcb += PSZB;
+	  psrcb += 3;
 	  xIndex++;
-	  pdstb += PSZB;
+	  pdstb += 3;
 	} 
 	pdst = pdstNext;
 #else /* PSZ == 24 */

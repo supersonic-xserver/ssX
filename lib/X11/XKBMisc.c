@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/X11/XKBMisc.c,v 3.8tsi Exp $ */
+/* $Xorg: XKBMisc.c,v 1.4 2000/08/17 19:45:02 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,6 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/lib/X11/XKBMisc.c,v 3.6 2003/11/17 22:20:09 dawes Exp $ */
 
 #ifndef XKB_IN_SERVER
 
@@ -38,15 +46,15 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #else 
 
 #include <stdio.h>
-#include <X11/X.h>
+#include "X.h"
 #define	NEED_EVENTS
 #define	NEED_REPLIES
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "misc.h"
 #include "inputstr.h"
 #include <X11/keysym.h>
 #define	XKBSRV_NEED_FILE_FUNCS
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 
 #endif /* XKB_IN_SERVER */
 
@@ -659,7 +667,7 @@ register int	i;
 int		width,nOldGroups,oldWidth,newTypes[XkbNumKbdGroups];
 
     if ((!xkb) || (!XkbKeycodeInRange(xkb,key)) || (!xkb->map) ||
-	(!xkb->map->types)||((groups&XkbAllGroupsMask)==0)||
+	(!xkb->map->types)||(!newTypes)||((groups&XkbAllGroupsMask)==0)||
 	(nGroups>XkbNumKbdGroups)) {
 	return BadMatch;
     }
@@ -776,11 +784,12 @@ XkbVirtualModsToReal(XkbDescPtr xkb,unsigned virtual_mask,unsigned *mask_rtrn)
 register int i,bit;
 register unsigned mask;
 
-    *mask_rtrn = 0;
     if (xkb==NULL)
 	return False;
-    if (virtual_mask==0)
+    if (virtual_mask==0) {
+	*mask_rtrn= 0;
 	return True;
+    }
     if (xkb->server==NULL)
 	return False;
     for (i=mask=0,bit=1;i<XkbNumVirtualMods;i++,bit<<=1) {

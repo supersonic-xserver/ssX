@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * $XFree86: xc/programs/Xserver/hw/xfree86/etc/2key.c,v 3.5 1999/05/07 02:56:17 dawes Exp $
  *
  * Enable/disable the 2-key VT switching sequences for Esix SVR4
@@ -12,6 +19,7 @@
  * David Dawes <dawes@xfree86.org>  October 1992
  *
  */
+/* $XConsortium: 2key.c /main/3 1996/02/21 17:47:02 kaleb $ */
 
 #include <stdio.h>
 #include <sys/types.h>

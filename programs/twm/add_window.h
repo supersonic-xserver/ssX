@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/twm/add_window.h,v 1.8 2007/10/10 00:31:39 tsi Exp $ */
 /*****************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1989, 1998  The Open Group
@@ -49,9 +55,12 @@ in this Software without prior written authorization from The Open Group.
 /**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
+/* $XFree86: xc/programs/twm/add_window.h,v 1.6 2001/12/14 20:01:06 dawes Exp $ */
 
 
 /**********************************************************************
+ *
+ * $Xorg: add_window.h,v 1.4 2001/02/09 02:05:36 xorgcvs Exp $
  *
  * AddWindow include file
  *
@@ -78,9 +87,10 @@ extern void GrabButtons ( TwmWindow *tmp_win );
 extern void GrabKeys ( TwmWindow *tmp_win );
 extern int MappedNotOverride ( Window w );
 extern void SetHighlightPixmap ( char *filename );
-extern int AddingX;
+extern int AddingX;	
 extern int AddingY;
 extern int AddingW;
 extern int AddingH;
 
 #endif /* _ADD_WINDOW_ */
+

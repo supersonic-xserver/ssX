@@ -1,0 +1,24 @@
+/Configint.h/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/DRI.c/1.1.1.6/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Device.c/1.1.1.6/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+/Files.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Flags.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.5/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Input.c/1.1.1.6/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+/Keyboard.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Layout.c/1.1.1.6/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+/Module.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Monitor.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Pointer.c/1.1.1.6/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+/Screen.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Vendor.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/Video.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/configProcs.h/1.1.1.6/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/cpconfig.c/1.1.1.4/Fri Feb 28 13:20:22 2003//Tnetbsd-5-2-3-RELEASE
+/read.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/scan.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/write.c/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/xf86Optrec.h/1.1.1.5/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+/xf86Parser.h/1.1.1.7/Fri Mar 18 13:12:42 2005//Tnetbsd-5-2-3-RELEASE
+/xf86tokens.h/1.1.1.5/Fri Mar  5 14:29:23 2004//Tnetbsd-5-2-3-RELEASE
+D

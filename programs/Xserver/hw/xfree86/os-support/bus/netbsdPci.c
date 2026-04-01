@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/netbsdPci.c,v 1.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/netbsdPci.c,v 1.5 2004/02/13 23:58:47 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 1994-2003 The XFree86 Project, Inc.
  * All rights reserved.
@@ -64,7 +71,7 @@ static CARD32 netbsdPciConfRead(PCITAG, int);
 static void netbsdPciConfWrite(PCITAG, int, CARD32);
 static void netbsdPciSetBits(PCITAG, int, CARD32, CARD32);
 
-static int devpci = -1;
+int devpci = -1;
 
 static pciBusFuncs_t netbsdFuncs0 = {
 /* pciReadLong      */	netbsdPciConfRead,
@@ -89,44 +96,49 @@ netbsdPciInit()
 {
 	struct pciio_businfo pci_businfo;
 
-	/* Always prefer a hardware-derived mechanism over an OS-provided one */
-	if (pciNumBuses)
+#ifdef PCI_VIA_TTYE0
+	/* XXX we should already have this open somewhere */
+	devpci = open("/dev/ttyE0", O_RDWR);
+	if (devpci == -1) {
+		ErrorF("netbsdPciInit: can't open /dev/ttyE0\n");
 		return;
-
+	}
+#else
 	devpci = open("/dev/pci0", O_RDWR);
-	if (devpci < 0) {
-		if (errno != EPERM)
-			return;
-
-		/* Try again without write access */
-		devpci = open("/dev/pci0", O_RDONLY);
-		if (devpci < 0)
-			return;
-
-		xf86MsgVerb(X_WARNING, 3,
-			"OS limits PCI configuration space access to"
-			" read-only\n");
+	if (devpci == -1) {
+		ErrorF("netbsdPciInit: can't open /dev/pci0\n");
+		return;
 	}
-
-	/* Use businfo to get the number of devs */
-	if (ioctl(devpci, PCI_IOC_BUSINFO, &pci_businfo) != 0) {
-	    ErrorF("netbsdPciInit: /dev/pci0 not a PCI bus device (%s)",
-		strerror(errno));
-	    close(devpci);
-	    devpci = -1;
-	    return;
-	}
+#endif
 
 	pciNumBuses    = 1;
 	pciBusInfo[0]  = &netbsdPci0;
 	pciFindFirstFP = pciGenFindFirst;
 	pciFindNextFP  = pciGenFindNext;
+#ifdef PCI_VIA_TTYE0
+	netbsdPci0.numDevices = 1;
+#else
+	/* use businfo to get the number of devs */
+	if (ioctl(devpci, PCI_IOC_BUSINFO, &pci_businfo) != 0)
+		ErrorF("netbsdPciInit: not a PCI bus device");
 	netbsdPci0.numDevices = pci_businfo.maxdevs;
+#endif
 }
 
 static CARD32
 netbsdPciConfRead(PCITAG tag, int reg)
 {
+#ifdef PCI_VIA_TTYE0
+	struct pciio_cfgreg cfgr;
+
+	cfgr.reg = reg;
+	if (ioctl(devpci, PCI_IOC_CFGREAD, &cfgr) == -1) {
+		xf86Msg(X_ERROR, "netbsdPciConfRead: failed on ttyE0\n");
+		return 0;
+	}
+
+	return (cfgr.val);
+#else
 	struct pciio_bdf_cfgreg bdfr;
 
 	bdfr.bus      = PCI_BUS_FROM_TAG(tag);
@@ -134,20 +146,25 @@ netbsdPciConfRead(PCITAG tag, int reg)
 	bdfr.function = PCI_FUNC_FROM_TAG(tag);
 	bdfr.cfgreg.reg = reg;
 
-	if (ioctl(devpci, PCI_IOC_BDF_CFGREAD, &bdfr) == -1) {
-		xf86MsgVerb(X_WARNING, 4,
-		    "netbsdPciConfRead: failed on %d:%d:%d %02x (%s)\n",
-		    bdfr.bus, bdfr.device, bdfr.function, reg,
-		    strerror(errno));
-		return ~0;
-	}
+	if (ioctl(devpci, PCI_IOC_BDF_CFGREAD, &bdfr) == -1)
+		FatalError("netbsdPciConfRead: failed on %d/%d/%d\n",
+		    bdfr.bus, bdfr.device, bdfr.function);
 
 	return (bdfr.cfgreg.val);
+#endif
 }
 
 static void
 netbsdPciConfWrite(PCITAG tag, int reg, CARD32 val)
 {
+#ifdef PCI_VIA_TTYE0
+	struct pciio_cfgreg cfgr;
+
+	cfgr.reg = reg;
+	cfgr.val = val;
+	if (ioctl(devpci, PCI_IOC_CFGWRITE, &cfgr) == -1)
+		FatalError("netbsdPciConfWrite: failed on ttyE0\n");
+#else
 	struct pciio_bdf_cfgreg bdfr;
 
 	bdfr.bus      = PCI_BUS_FROM_TAG(tag);
@@ -157,10 +174,9 @@ netbsdPciConfWrite(PCITAG tag, int reg, CARD32 val)
 	bdfr.cfgreg.val = val;
 
 	if (ioctl(devpci, PCI_IOC_BDF_CFGWRITE, &bdfr) == -1)
-		xf86MsgVerb(X_WARNING, 4,
-		    "netbsdPciConfWrite: failed on %d:%d:%d %02x %08lx (%s)\n",
-		    bdfr.bus, bdfr.device, bdfr.function, reg,
-		    (unsigned long)val, strerror(errno));
+		FatalError("netbsdPciConfWrite: failed on %d/%d/%d\n",
+		    bdfr.bus, bdfr.device, bdfr.function);
+#endif
 }
 
 static void

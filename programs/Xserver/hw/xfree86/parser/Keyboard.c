@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Keyboard.c,v 1.20 2004/10/26 22:17:38 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -120,8 +127,8 @@ static xf86ConfigSymTabRec KeyboardTab[] =
 XF86ConfInputPtr
 xf86parseKeyboardSection (void)
 {
-	char *s = NULL, *s1;
-	int n1, n2, l;
+	char *s, *s1, *s2;
+	int l;
 	int token;
 	parsePrologue (XF86ConfInputPtr, XF86ConfInputRec)
 
@@ -136,21 +143,23 @@ xf86parseKeyboardSection (void)
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "Protocol");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-													"Protocol", val.str);
+							       xf86configStrdup("Protocol"),
+							       val.str);
 			break;
 		case AUTOREPEAT:
 			if (xf86getSubToken (&(ptr->inp_comment)) != NUMBER)
 				Error (AUTOREPEAT_MSG, NULL);
-			n1 = val.num;
+			s1 = xf86uLongToString(val.num);
 			if (xf86getSubToken (&(ptr->inp_comment)) != NUMBER)
 				Error (AUTOREPEAT_MSG, NULL);
-			n2 = val.num;
-			xf86configAsprintf(&s, "%d %d", n1, n2);
-			if (s) {
-				ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-														"AutoRepeat", s);
-				xf86conffree(s);
-			}
+			s2 = xf86uLongToString(val.num);
+			l = strlen(s1) + 1 + strlen(s2) + 1;
+			s = xf86confmalloc(l);
+			sprintf(s, "%s %s", s1, s2);
+			xf86conffree(s1);
+			xf86conffree(s2);
+			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
+							       xf86configStrdup("AutoRepeat"), s);
 			break;
 		case XLEDS:
 			if (xf86getSubToken (&(ptr->inp_comment)) != NUMBER)
@@ -167,11 +176,6 @@ xf86parseKeyboardSection (void)
 				xf86conffree(s1);
 			}
 			xf86unGetToken (token);
-			if (s) {
-				ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-														"xleds", s);
-				xf86conffree(s);
-			}
 			break;
 		case SERVERNUM:
 			xf86parseWarning(OBSOLETE_MSG, xf86tokenString());
@@ -192,77 +196,89 @@ xf86parseKeyboardSection (void)
 			break;
 		case XKBDISABLE:
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbDisable", NULL);
+												xf86configStrdup("XkbDisable"),
+												NULL);
 			break;
 		case XKBKEYMAP:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBKeymap");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbKeymap", val.str);
+												xf86configStrdup("XkbKeymap"),
+												val.str);
 			break;
 		case XKBCOMPAT:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBCompat");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbCompat", val.str);
+												xf86configStrdup("XkbCompat"),
+												val.str);
 			break;
 		case XKBTYPES:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBTypes");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbTypes", val.str);
+												xf86configStrdup("XkbTypes"),
+												val.str);
 			break;
 		case XKBKEYCODES:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBKeycodes");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbKeycodes", val.str);
+												xf86configStrdup("XkbKeycodes"),
+												val.str);
 			break;
 		case XKBGEOMETRY:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBGeometry");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbGeometry", val.str);
+												xf86configStrdup("XkbGeometry"),
+												val.str);
 			break;
 		case XKBSYMBOLS:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBSymbols");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbSymbols", val.str);
+												xf86configStrdup("XkbSymbols"),
+												val.str);
 			break;
 		case XKBRULES:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBRules");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbRules", val.str);
+												xf86configStrdup("XkbRules"),
+												val.str);
 			break;
 		case XKBMODEL:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBModel");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbModel", val.str);
+												xf86configStrdup("XkbModel"),
+												val.str);
 			break;
 		case XKBLAYOUT:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBLayout");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbLayout", val.str);
+												xf86configStrdup("XkbLayout"),
+												val.str);
 			break;
 		case XKBVARIANT:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBVariant");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbVariant", val.str);
+												xf86configStrdup("XkbVariant"),
+												val.str);
 			break;
 		case XKBOPTIONS:
 			if (xf86getSubToken (&(ptr->inp_comment)) != STRING)
 				Error (QUOTE_MSG, "XKBOptions");
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"XkbOptions", val.str);
+												xf86configStrdup("XkbOptions"),
+												val.str);
 			break;
 		case PANIX106:
 			ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-												"Panix106", NULL);
+												xf86configStrdup("Panix106"), NULL);
 			break;
 		case EOF_TOKEN:
 			Error (UNEXPECTED_EOF_MSG, NULL);
@@ -276,7 +292,7 @@ xf86parseKeyboardSection (void)
 	ptr->inp_identifier = xf86configStrdup(CONF_IMPLICIT_KEYBOARD);
 	ptr->inp_driver = xf86configStrdup("keyboard");
 	ptr->inp_option_lst = xf86addNewOption(ptr->inp_option_lst,
-										"CoreKeyboard", NULL);
+										xf86configStrdup("CoreKeyboard"), NULL);
 
 #ifdef DEBUG
 	printf ("Keyboard section parsed\n");

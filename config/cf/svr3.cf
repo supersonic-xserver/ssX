@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/svr3.cf,v 3.19tsi Exp $
+XCOMM $XFree86: xc/config/cf/svr3.cf,v 3.19 2004/06/02 22:42:53 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -54,9 +54,6 @@ XCOMM $XFree86: xc/config/cf/svr3.cf,v 3.19tsi Exp $
 #endif
 #ifndef HasGcc3
 #define HasGcc3     NO
-#endif
-#ifndef HasGcc4
-#define HasGcc4     NO
 #endif
 #ifndef GccUsesGas
 #define GccUsesGas  NO

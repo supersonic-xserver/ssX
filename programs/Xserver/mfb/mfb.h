@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/mfb/mfb.h,v 1.22 2003/11/17 22:20:44 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -46,6 +53,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mfb.h,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
 
 #if !defined(_MFB_H_) || defined(MFB_PROTOTYPES_ONLY)
 #ifndef MFB_PROTOTYPES_ONLY
@@ -95,19 +103,20 @@ extern RegionPtr mfbCopyArea(
     int /*dsty*/
 );
 
-#ifndef MFBCOPYPLANEPROC_DEFINED
-#define MFBCOPYPLANEPROC_DEFINED
-typedef RegionPtr (mfbCopyPlaneProcPtr)(DrawablePtr pSrcDrawable,
-					DrawablePtr pDstDrawable,
-					GCPtr pGC, int srcx, int srcy,
-					int width, int height,
-					int dstx, int dsty,
-					unsigned long bitPlane);
-#endif
-
 extern Bool mfbRegisterCopyPlaneProc(
     ScreenPtr /*pScreen*/,
-    mfbCopyPlaneProcPtr /*proc*/
+    RegionPtr (* /*proc*/)(
+	DrawablePtr         /* pSrcDrawable */,
+	DrawablePtr         /* pDstDrawable */,
+	GCPtr               /* pGC */,
+	int                 /* srcx */,
+	int                 /* srcy */,
+	int                 /* width */,
+	int                 /* height */,
+	int                 /* dstx */,
+	int                 /* dsty */,
+	unsigned long	    /* bitPlane */
+	)
 );
 
 extern RegionPtr mfbCopyPlane(

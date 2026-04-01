@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/dri/drm/Imakefile,v 1.29tsi Exp $
+XCOMM $XFree86: xc/lib/GL/dri/drm/Imakefile,v 1.29 2005/03/01 03:48:49 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -57,7 +57,8 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 #endif
 
       DEFINES = $(ALLOC_DEFINES)
-     INCLUDES = -I$(XF86OSSRC)/$(OS_SUBDIR)/drm \
+     INCLUDES = -I$(XINCLUDESRC) -I$(EXTINCSRC) \
+		-I$(XF86OSSRC)/$(OS_SUBDIR)/drm \
 		-I$(XF86OSSRC) -I$(DRMINCLUDESDIR)
          SRCS = xf86drm.c xf86drmHash.c xf86drmRandom.c xf86drmSL.c
          OBJS = xf86drm.o xf86drmHash.o xf86drmRandom.o xf86drmSL.o

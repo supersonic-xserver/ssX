@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcCReduce.c,v 1.3 1999/06/06 08:48:58 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -22,6 +29,8 @@
  *
 */
 
+/* $XConsortium: ppcCReduce.c /main/3 1996/02/21 17:57:17 kaleb $ */
+
 #include "xf4bpp.h"
 #include "ppcGCstr.h"
 
@@ -31,9 +40,16 @@
  */
 
 static void 
-ppcReduceGeneral(int alu, unsigned long pm, unsigned long fg,
-		 unsigned long bg, int fillStyle, int drawableDepth,
-		 ppcReducedRrop *returnLoc)
+ppcReduceGeneral
+(
+	register int		alu,
+	register unsigned long	pm,
+	register unsigned long	fg,
+	register unsigned long	bg,
+	register int		fillStyle,
+	int			drawableDepth,
+	ppcReducedRrop		*returnLoc
+)
 {
 
 if ( ( alu == GXnoop )
@@ -209,7 +225,10 @@ return ;
 }
 
 void 
-xf4bppGetReducedColorRrop(GC *pGC, int drawableDepth, ppcReducedRrop *returnLoc)
+xf4bppGetReducedColorRrop( pGC, drawableDepth, returnLoc )
+GC		*pGC ;
+int		drawableDepth ;
+ppcReducedRrop	*returnLoc ;
 {
 
 ppcReduceGeneral( pGC->alu,

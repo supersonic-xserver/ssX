@@ -1,4 +1,10 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/ct_driver.h,v 1.37tsi Exp $ */
+/* $XConsortium: ct_driver.h /main/3 1996/10/27 11:49:29 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Modified 1996 by Egbert Eich <eich@xfree86.org>
@@ -22,6 +28,9 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
+
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/ct_driver.h,v 1.36 2004/03/29 16:25:16 tsi Exp $ */
+
 
 #ifndef _CT_DRIVER_H_
 #define _CT_DRIVER_H_

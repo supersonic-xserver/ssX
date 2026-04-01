@@ -1,3 +1,4 @@
+.\" $Xorg: fstobdf.man,v 1.4 2001/02/09 02:05:30 xorgcvs Exp $
 .\" Copyright 1990, Network Computing Devices
 .\" Copyright 1990, 1998  The Open Group
 .\" 

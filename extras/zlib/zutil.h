@@ -1,8 +1,15 @@
 /* zutil.h -- internal interface and configuration of the compression library
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
-/* $XFree86$ */
+/* $XFree86: xc/extras/zlib/zutil.h,v 1.3 2003/10/22 20:46:21 tsi Exp $ */
 
 /* WARNING: this file should *not* be used by applications. It is
    part of the implementation of the compression library and is

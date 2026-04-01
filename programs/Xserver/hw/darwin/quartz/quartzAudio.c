@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 //
 // QuartzAudio.m
 //
@@ -35,7 +42,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzAudio.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/quartzAudio.c,v 1.2 2003/05/14 05:27:56 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "quartzAudio.h"
@@ -44,7 +51,7 @@
 #include <pthread.h>
 
 #include "inputstr.h"
-#include <X11/extensions/XI.h>
+#include "extensions/XI.h"
 
 void NSBeep();
 
@@ -232,7 +239,7 @@ static void QuartzCoreAudioBell(
         OSStatus status;
         status = AudioDeviceStart(quartzAudioDevice, QuartzAudioIOProc);
         if (status) {
-            ErrorF("QuartzAudioBell: AudioDeviceStart returned %ld\n", status);
+            ErrorF("QuartzAudioBell: AudioDeviceStart returned %d\n", status);
         } else {
             data.playing = TRUE;
         }
@@ -292,7 +299,7 @@ void QuartzAudioInit(void)
                     kAudioHardwarePropertyDefaultOutputDevice, 
                     &propertySize, &outputDevice);
     if (status) {
-        ErrorF("QuartzAudioInit: AudioHardwareGetProperty returned %ld\n",
+        ErrorF("QuartzAudioInit: AudioHardwareGetProperty returned %d\n",
                status);
         return;
     }
@@ -307,7 +314,7 @@ void QuartzAudioInit(void)
                                     kAudioDevicePropertyStreamFormat, 
                                     &propertySize, &outputStreamDescription);
     if (status) {
-        ErrorF("QuartzAudioInit: GetProperty(stream format) returned %ld\n",
+        ErrorF("QuartzAudioInit: GetProperty(stream format) returned %d\n",
                status);
         return;
     }
@@ -333,7 +340,7 @@ void QuartzAudioInit(void)
     // Prepare for playback
     status = AudioDeviceAddIOProc(outputDevice, QuartzAudioIOProc, &data);
     if (status) {
-        ErrorF("QuartzAudioInit: AddIOProc returned %ld\n", status);
+        ErrorF("QuartzAudioInit: AddIOProc returned %d\n", status);
         return;
     }
 

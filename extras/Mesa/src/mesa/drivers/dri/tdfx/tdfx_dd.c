@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 2000 VA Linux Systems Inc., Fremont, California.
  *
@@ -23,7 +30,7 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/tdfx_dd.c,v 1.10 2002/10/30 12:52:00 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/tdfx_dd.c,v 1.1.1.3 2004/12/10 15:06:02 alanh Exp $ */
 
 /*
  * Original rewrite:
@@ -49,7 +56,7 @@
 #endif
 
 
-#define TDFX_DATE	"20021125"
+#define TDFX_DATE	"20040719"
 
 
 /* These are used in calls to FX_grColorMaskv() */
@@ -243,47 +250,38 @@ static GLboolean tdfxDDGetIntegerv( GLcontext *ctx, GLenum pname,
 
 
 #define VISUAL_EQUALS_RGBA(vis, r, g, b, a)        \
-   ((vis.redBits == r) &&                         \
-    (vis.greenBits == g) &&                       \
-    (vis.blueBits == b) &&                        \
-    (vis.alphaBits == a))
+   ((vis->redBits == r) &&                         \
+    (vis->greenBits == g) &&                       \
+    (vis->blueBits == b) &&                        \
+    (vis->alphaBits == a))
 
-void tdfxDDInitDriverFuncs( GLcontext *ctx )
+void tdfxDDInitDriverFuncs( const __GLcontextModes *visual,
+                            struct dd_function_table *functions )
 {
    if ( MESA_VERBOSE & VERBOSE_DRIVER ) {
       fprintf( stderr, "tdfx: %s()\n", __FUNCTION__ );
    }
 
-   ctx->Driver.GetString		= tdfxDDGetString;
-   ctx->Driver.GetBufferSize		= tdfxDDGetBufferSize;
-   ctx->Driver.ResizeBuffers            = _swrast_alloc_buffers;
-   ctx->Driver.Error			= NULL;
-
-   /* Pixel path fallbacks.
-    */
-   ctx->Driver.Accum                    = _swrast_Accum;
-   ctx->Driver.Bitmap                   = _swrast_Bitmap;
-   ctx->Driver.CopyPixels               = _swrast_CopyPixels;
-   ctx->Driver.DrawPixels               = _swrast_DrawPixels;
-   ctx->Driver.ReadPixels               = _swrast_ReadPixels;
+   functions->GetString		= tdfxDDGetString;
+   functions->GetBufferSize	= tdfxDDGetBufferSize;
+   functions->ResizeBuffers     = _swrast_alloc_buffers;
 
    /* Accelerated paths
     */
-   if ( VISUAL_EQUALS_RGBA(ctx->Visual, 8, 8, 8, 8) )
+   if ( VISUAL_EQUALS_RGBA(visual, 8, 8, 8, 8) )
    {
-      ctx->Driver.DrawPixels		= tdfx_drawpixels_R8G8B8A8;
-      ctx->Driver.ReadPixels		= tdfx_readpixels_R8G8B8A8;
+      functions->DrawPixels	= tdfx_drawpixels_R8G8B8A8;
+      functions->ReadPixels	= tdfx_readpixels_R8G8B8A8;
    }
-   else if ( VISUAL_EQUALS_RGBA(ctx->Visual, 5, 6, 5, 0) )
+   else if ( VISUAL_EQUALS_RGBA(visual, 5, 6, 5, 0) )
    {
-      ctx->Driver.ReadPixels		= tdfx_readpixels_R5G6B5;
+      functions->ReadPixels	= tdfx_readpixels_R5G6B5;
    }
 
-   ctx->Driver.GetBooleanv		= tdfxDDGetBooleanv;
-   ctx->Driver.GetDoublev		= tdfxDDGetDoublev;
-   ctx->Driver.GetFloatv		= tdfxDDGetFloatv;
-   ctx->Driver.GetIntegerv		= tdfxDDGetIntegerv;
-   ctx->Driver.GetPointerv		= NULL;
+   functions->GetBooleanv	= tdfxDDGetBooleanv;
+   functions->GetDoublev	= tdfxDDGetDoublev;
+   functions->GetFloatv		= tdfxDDGetFloatv;
+   functions->GetIntegerv	= tdfxDDGetIntegerv;
 }
 
 

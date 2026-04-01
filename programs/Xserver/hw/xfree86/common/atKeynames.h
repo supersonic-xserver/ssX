@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/atKeynames.h,v 3.24 2005/10/14 15:16:32 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/atKeynames.h,v 3.22 2004/02/13 23:58:35 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -68,13 +75,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* $XConsortium: atKeynames.h /main/11 1996/03/09 11:17:41 kaleb $ */
+
 #ifndef _ATKEYNAMES_H
 #define _ATKEYNAMES_H
 
 #define XK_TECHNICAL
 #define	XK_KATAKANA
-#include <X11/keysym.h>
-#include <X11/XF86keysym.h>
+#include "keysym.h"
+#include "XF86keysym.h"
 
 #define GLYPHS_PER_KEY	4
 #define NUM_KEYCODES	248

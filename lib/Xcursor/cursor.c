@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/Xcursor/cursor.c,v 1.4 2002/11/23 02:34:45 keithp Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/Xcursor/cursor.c,v 1.5 2003/01/26 03:22:42 eich Exp $
  *
  * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *

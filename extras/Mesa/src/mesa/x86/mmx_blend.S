@@ -1,4 +1,4 @@
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/x86/mmx_blend.S,v 1.2 2004/04/22 13:58:38 tsi Exp $ */
 
 /*
  * Written by José Fonseca <j_r_fonseca@yahoo.co.uk>

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
 ** Software License B, Version 1.1 (the "License"), the contents of this
@@ -31,7 +38,7 @@
 ** published by SGI, but has not been independently verified as being
 ** compliant with the OpenGL(R) version 1.2.1 Specification.
 */
-/* $XFree86: xc/lib/GL/glx/glxclient.h,v 1.25tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/glxclient.h,v 1.25 2004/12/10 16:06:56 alanh Exp $ */
 
 /**
  * \file glxclient.h
@@ -63,7 +70,7 @@
 #include "indirect.h"
 #endif
 #ifdef XTHREADS
-#include <X11/Xthreads.h>
+#include "Xthreads.h"
 #endif
 #ifdef GLX_BUILT_IN_XMESA
 #include "realglx.h"  /* just silences prototype warnings */

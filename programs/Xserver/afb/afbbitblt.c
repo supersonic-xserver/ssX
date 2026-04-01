@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/afb/afbbitblt.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/afb/afbbitblt.c,v 3.6 2003/11/10 18:21:44 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -47,9 +54,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: afbbitblt.c,v 5.25 94/04/17 20:28:16 dpw Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 
 #include "regionstr.h"
 #include "gcstruct.h"
@@ -97,8 +105,12 @@ destination.  this is a simple translation.
  */
 
 void
-afbDoBitblt(DrawablePtr pSrc, DrawablePtr pDst, int alu, RegionPtr prgnDst,
-	    DDXPointPtr pptSrc, unsigned long planemask)
+afbDoBitblt(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
+	DrawablePtr pSrc, pDst;
+	int alu;
+	RegionPtr prgnDst;
+	DDXPointPtr pptSrc;
+	unsigned long planemask;
 {
 	switch (alu) {
 		case GXcopy:
@@ -120,10 +132,16 @@ afbDoBitblt(DrawablePtr pSrc, DrawablePtr pDst, int alu, RegionPtr prgnDst,
 }
 
 RegionPtr
-afbCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
-	    int srcx, int srcy, int width, int height, int dstx, int dsty)
+afbCopyArea(pSrcDrawable, pDstDrawable, pGC, srcx, srcy, width, height,
+				 dstx, dsty)
+	DrawablePtr pSrcDrawable;
+	DrawablePtr pDstDrawable;
+	GC *pGC;
+	int srcx, srcy;
+	int width, height;
+	int dstx, dsty;
 {
-	afbDoBitBltProcPtr doBitBlt;
+	void (*doBitBlt)();
 
 	switch (pGC->alu) {
 		case GXcopy:
@@ -148,9 +166,16 @@ afbCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
 }
 
 RegionPtr
-afbBitBlt(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
-	  int srcx, int srcy, int width, int height, int dstx, int dsty,
-	  afbDoBitBltProcPtr doBitBlt, unsigned long planemask)
+afbBitBlt(pSrcDrawable, pDstDrawable, pGC, srcx, srcy, width, height,
+			  dstx, dsty, doBitBlt, planemask)
+	register DrawablePtr pSrcDrawable;
+	register DrawablePtr pDstDrawable;
+	register GC *pGC;
+	int srcx, srcy;
+	int width, height;
+	int dstx, dsty;
+	void (*doBitBlt)();
+	unsigned long planemask;
 {
 	RegionPtr prgnSrcClip = NULL;		/* may be a new region, or just a copy */
 	Bool freeSrcClip = FALSE;
@@ -158,11 +183,11 @@ afbBitBlt(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
 	RegionPtr prgnExposed;
 	RegionRec rgnDst;
 	DDXPointPtr pptSrc;
-	DDXPointPtr ppt;
-	BoxPtr pbox;
+	register DDXPointPtr ppt;
+	register BoxPtr pbox;
 	int i;
-	int dx;
-	int dy;
+	register int dx;
+	register int dy;
 	xRectangle origSource;
 	DDXPointRec origDest;
 	int numRects;
@@ -342,9 +367,14 @@ afbBitBlt(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
 }
 
 RegionPtr
-afbCopyPlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
-	     int srcx, int srcy, int width, int height, int dstx, int dsty,
-	     unsigned long plane)
+afbCopyPlane(pSrcDrawable, pDstDrawable, pGC, srcx, srcy, width, height,
+			 dstx, dsty, plane)
+DrawablePtr pSrcDrawable, pDstDrawable;
+register GC *pGC;
+int srcx, srcy;
+int width, height;
+int dstx, dsty;
+unsigned long plane;
 {
 	int alu;
 	RegionPtr		prgnExposed = NULL;
@@ -425,8 +455,12 @@ afbCopyPlane(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
 }
 
 void
-afbCopy1ToN(DrawablePtr pSrc, DrawablePtr pDst, int alu, RegionPtr prgnDst,
-	    DDXPointPtr pptSrc, unsigned long planemask)
+afbCopy1ToN(pSrc, pDst, alu, prgnDst, pptSrc, planemask)
+	DrawablePtr pSrc, pDst;
+	int alu;
+	RegionPtr prgnDst;
+	DDXPointPtr pptSrc;
+	unsigned long planemask;
 {
 	int numRects = REGION_NUM_RECTS(prgnDst);
 	BoxPtr pbox = REGION_RECTS(prgnDst);

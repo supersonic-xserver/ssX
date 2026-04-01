@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +33,7 @@
  *
  * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/help.c,v 1.8tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/help.c,v 1.8 2003/11/03 05:11:58 tsi Exp $
  */
 
 #include <X11/IntrinsicP.h>
@@ -162,7 +169,7 @@ HelpCancelAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
 }
 
 
-/* Below is a modified version of the html-mode.c I wrote for xedit
+/* bellow is a modified version of the html-mode.c I wrote for xedit
  * (at least) temporarily dead.
  */
 

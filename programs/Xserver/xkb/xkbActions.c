@@ -1,3 +1,11 @@
+/* $Xorg: xkbActions.c,v 1.3 2000/08/17 19:53:47 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbActions.c,v 3.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/xkbActions.c,v 3.14 2003/11/17 22:20:46 dawes Exp $ */
 
 #include <stdio.h>
 #include <math.h>
@@ -33,7 +41,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <X11/keysym.h>
 #include "misc.h"
 #include "inputstr.h"
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #include "xkb.h"
 #include <ctype.h>
 
@@ -155,8 +163,8 @@ static XkbAction 	fake;
     }
     type= XkbKeyKeyType(xkb,key,effectiveGroup);
     if (type->map!=NULL) {
-	unsigned		i,mods;
-	XkbKTMapEntryPtr	entry;
+	register unsigned		i,mods;
+	register XkbKTMapEntryPtr	entry;
 	mods= xkbState->mods&type->mods.mask;
 	for (entry= type->map,i=0;i<type->map_count;i++,entry++) {
 	    if ((entry->active)&&(entry->mods.mask==mods)) {
@@ -598,7 +606,7 @@ _XkbFilterPointerBtn(	XkbSrvInfoPtr	xkbi,
 		break;
 	    case XkbSA_PtrBtn:
 		{
-		    int i,nClicks;
+		    register int i,nClicks;
 		    AccessXCancelRepeatKey(xkbi,keycode);
 		    if (pAction->btn.count>0) {
 			nClicks= pAction->btn.count;
@@ -830,8 +838,6 @@ unsigned	mods,mask,oldCoreState = 0,oldCorePrevState = 0;
     ev.u.keyButtonPointer.rootX = x;
     ev.u.keyButtonPointer.rootY = y;
 
-    (void) memset(&old, 0, sizeof(old));
-
     if (filter->keycode==0) {		/* initial press */
 	if ((pAction->redirect.new_key<xkbi->desc->min_key_code)||
 	    (pAction->redirect.new_key>xkbi->desc->max_key_code)) {
@@ -1053,7 +1059,7 @@ _XkbNextFreeFilter(
 	void
 )
 {
-int	i;
+register int	i;
 
     if (szFilters==0) {
 	szFilters = 4;
@@ -1076,7 +1082,7 @@ int	i;
 static int
 _XkbApplyFilters(XkbSrvInfoPtr xkbi,unsigned kc,XkbAction *pAction)
 {
-int	i,send;
+register int	i,send;
 
     send= 1;
     for (i=0;i<szFilters;i++) {

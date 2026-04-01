@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/expat/expat_config.h,v 1.2 2003/04/12 13:50:16 tsi Exp $ */
+/* $XFree86: xc/lib/expat/expat_config.h,v 1.3 2003/05/19 18:12:11 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* config.h.  Generated automatically by configure.  */
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 

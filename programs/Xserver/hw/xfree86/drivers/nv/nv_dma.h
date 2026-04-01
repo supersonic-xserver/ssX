@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
  /***************************************************************************\
 |*                                                                           *|
@@ -38,7 +45,7 @@
 |*                                                                           *|
  \***************************************************************************/
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dma.h,v 1.3 2004/03/13 22:07:06 mvojkovi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/nv_dma.h,v 1.4 2004/03/20 01:52:16 mvojkovi Exp $ */
 
 #define SURFACE_FORMAT                                              0x00000300
 #define SURFACE_FORMAT_DEPTH8                                       0x00000001

@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xt/Functions.c,v 1.7 2005/03/29 04:00:30 tsi Exp $ */
+/* $Xorg: Functions.c,v 1.4 2001/02/09 02:03:54 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
 
@@ -210,86 +224,4 @@ String XtNewString(String str)
 	return NULL;
     else
 	return strcpy(__XtMalloc((unsigned)strlen(str) + 1), str);
-}
-
-
-/*
- * String manipulation functions
- */
-
-/* Allocates a new string. */
-char* XtNewStringEx(int encoding, char* string)
-{
-    size_t n;
-    char *p;
-
-    if (string == NULL)
-	return NULL;
-
-    if (encoding == XtTextEncodingChar2b) {
-	XChar2b *ptr;
-
-	n = XtStringLengthEx(encoding, string) + sizeof(XChar2b);
-	ptr = (XChar2b*) XtMalloc(n);
-	if (ptr == NULL)
-	    return NULL;
-
-	p = (char*) memmove(ptr, string, n);
-    } else
-	p = XtNewString(string);
-
-    return p;
-}
-
-#define IS_CHAR(p, c)         ((p)->byte1 == 0 && (p)->byte2 == c)
-#define IS_NOT_CHAR(p, c)     !IS_CHAR(p, c)
-#define IS_NUL(p)             IS_CHAR(p, 0)
-#define IS_NOT_NUL(p)         !IS_NUL(p)
-
-/* Returns an index of the character in the string, or NULL if not
- * found. */
-char* XtCharIndexEx(int encoding, char* string, char c)
-{
-    char *p;
-
-    if (string == NULL)
-	return NULL;
-
-    if (encoding == XtTextEncodingChar2b) {
-	XChar2b *ptr = (XChar2b*) string;
-
-	while (ptr != NULL && IS_NOT_NUL(ptr) &&
-	       IS_NOT_CHAR(ptr, c)) {
-	    ptr++;
-	}
-
-	if (ptr == NULL || IS_NUL(ptr))
-	    return NULL;
-
-	p = (char*) ptr;
-    } else
-	p = index(string, c);
-
-    return p;
-}
-
-/* Returns a number of bytes in a string. */
-size_t XtStringLengthEx(int encoding, char* string)
-{
-    size_t n = 0;
-
-    if (string == NULL)
-	return 0;
-
-    if (encoding == XtTextEncodingChar2b) {
-	XChar2b *ptr = (XChar2b*) string;
-
-	while (ptr != NULL && IS_NOT_NUL(ptr)) {
-	    ptr++;
-	    n += sizeof(XChar2b);
-	}
-    } else
-	n = strlen(string);
-
-    return n;
 }

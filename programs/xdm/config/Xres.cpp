@@ -1,3 +1,8 @@
+! $Xorg: Xresources,v 1.3 2000/08/17 19:54:17 cpqbld Exp $
+!
+!
+!
+!
 ! $XFree86: xc/programs/xdm/config/Xres.cpp,v 1.7 2003/11/15 03:25:22 dawes Exp $
 !
 #define BS \ /* cpp can be trickier than m4 */

@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/Xfontcache/Xfontcache.man,v 1.1 2003/10/13 21:19:28 herrb Exp $
+.\" $XFree86: xc/lib/Xfontcache/Xfontcache.man,v 1.1 2003/10/13 21:50:23 herrb Exp $
 .\"
 .\" Copyright (C) 2003 The XFree86 Project, Inc.  All Rights Reserved.
 .\" 

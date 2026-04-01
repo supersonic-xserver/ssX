@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/gfx_msr.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/gfx/gfx_msr.c,v 1.1 2002/12/10 15:12:25 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * $Workfile: gfx_msr.c $
  *
@@ -229,7 +236,6 @@ gfx_msr_read(unsigned int device, unsigned int msrRegister, Q_WORD * msrValue)
       ret_value = redcloud_msr_read(device, msrRegister, msrValue);
 #	endif
 
-   msrValue->high = msrValue->low = 0;
    return ret_value;
 }
 

@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/Xaw/MultiSink.c,v 1.20tsi Exp $ */
+/* $Xorg: MultiSink.c,v 1.4 2001/02/09 02:03:44 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1991 by OMRON Corporation
@@ -51,15 +65,15 @@ in this Software without prior written authorization from The Open Group.
 
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
 
-			All Rights Reserved
+                        All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name of Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -70,6 +84,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/lib/Xaw/MultiSink.c,v 1.20 2001/12/14 19:54:41 dawes Exp $ */
 
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
@@ -521,14 +536,13 @@ InsertCursor(Widget w, int x, int y, XawTextInsertState state)
 		    DisplayText(w, x, y - 1 - fheight,
 				position, position + 1, True);
 	    }
-	    else {
+	    else
 		XDrawRectangle(XtDisplay(ctx), XtWindow(ctx),
 			       sink->multi_sink.xorgc ?
 			       sink->multi_sink.xorgc : sink->multi_sink.normgc,
 			       x, y - 1 - fheight,
 			       CharWidth(sink, fontset, 0, *nchar) - 1,
 			       fheight - 1);
-	    }
 	  }
       }
 
@@ -662,7 +676,7 @@ GetGC(MultiSinkObject sink)
     values.clip_x_origin = (long)sink;
     values.clip_mask = None;
     values.graphics_exposures = False;
-
+    
     values.foreground = sink->text_sink.foreground;
     values.background = sink->text_sink.background;
 

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Imakefile,v 3.60tsi Exp $
+XCOMM $XFree86: xc/programs/Imakefile,v 3.58 2005/02/28 04:14:32 dawes Exp $
 
 #if BuildServer || BuildClients
 #define IHaveSubdirs
@@ -33,17 +33,12 @@ SCREENSAVESRCDIR = beforelight
 #if BuildLBX
   LBXPROXYSRCDIR = lbxproxy
 #endif
-#if BuildDBE
-       DBESRCDIR = dbedizzy
-#endif
   PROXYMGRSRCDIR = proxymngr
     RSTARTSRCDIR = rstart
    SMPROXYSRCDIR = smproxy
        TWMSRCDIR = twm
   XCONSOLESRCDIR = xconsole
-#if BuildXdm
        XDMSRCDIR = xdm
-#endif
 XFINDPROXYSRCDIR = xfindproxy
       XFWPSRCDIR = xfwp
 #if BuildXF86VidModeLibrary
@@ -104,10 +99,6 @@ XTRAPCLIENTDIRS = xtrap
    XCURSORGENDIR = xcursorgen
 #endif
 
-#if BuildXResLibrary
-      RESTESTDIR = restest
-#endif
-
 #if BuildFontconfigLibrary
           FCDIRS = fc-cache fc-list
 #endif
@@ -121,7 +112,7 @@ SUBDIRS = $(XSSRCDIR)
 SUBDIRS = \
 	appres bdftopcf fonttosfnt bitmap \
 	$(SCREENSAVESRCDIR) editres $(FCDIRS) $(FCLANGDIR) fslsfonts fstobdf \
-	$(DBESRCDIR) iceauth ico listres luit \
+	iceauth ico listres luit \
 	$(MAKEPSRESDIR) $(DPSCLIENTDIRS) \
 	$(MKCFMSRCDIR) \
 	mkfontdir $(MKFONTSCALEDIR) oclock $(PROXYMGRSRCDIR) \
@@ -136,7 +127,7 @@ SUBDIRS = \
 	xrefresh $(XRXSRCDIR) xset \
 	xsetroot $(XSMSRCDIR) xstdcmap $(XINPUTCLIENTDIRS) \
 	$(XTERMSRCDIR) $(XTRAPCLIENTDIRS) $(XVIDTUNESRCDIR) xwd xwininfo xwud \
-	$(XPMCLIENTDIRS) $(XVINFOSRCDIR) $(RESTESTDIR) \
+	$(XPMCLIENTDIRS) $(XVINFOSRCDIR) \
 	$(XSSRCDIR) $(LBXPROXYSRCDIR) $(SCRIPTSDIR) \
 	$(GLXCLIENTDIRS) $(XRANDRDIR) $(XCURSORGENDIR) 
 #endif

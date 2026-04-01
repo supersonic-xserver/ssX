@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1989-95 GROUPE BULL
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,7 +38,7 @@
 *                                                                             *
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
-/* $XFree86: xc/extras/Xpm/lib/CrDatFrI.c,v 1.3 2004/09/15 16:00:37 herrb Exp $ */
+/* $XFree86$ */
 
 /* October 2004, source code review by Thomas Biege <thomas@suse.de> */
 

@@ -1,3 +1,4 @@
+.\" $TOG: fsinfo.man /main/10 1998/02/09 13:43:12 kaleb $
 .\" Copyright 1991, Network Computing Devices, Inc
 .\" Copyright 1993, 1998  The Open Group
 .\" 

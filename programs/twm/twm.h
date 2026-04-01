@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/twm/twm.h,v 3.15tsi Exp $ */
 /*****************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
 /**                          Salt Lake City, Utah                           **/
 /**                                                                         **/
@@ -53,11 +59,15 @@ from The Open Group.
 
 
 /***********************************************************************
+ *
+ * $Xorg: twm.h,v 1.4 2001/02/09 02:05:37 xorgcvs Exp $
+ *
  * twm include file
  *
  * 28-Oct-87 Thomas E. LaStrange	File created
  * 10-Oct-90 David M. Sternlicht        Storeing saved colors on root
  ***********************************************************************/
+/* $XFree86: xc/programs/twm/twm.h,v 3.13 2003/04/21 11:46:14 herrb Exp $ */
 
 #ifndef _TWM_
 #define _TWM_
@@ -189,7 +199,7 @@ typedef struct _SqueezeInfo {
  * ICCCM property.
  */
 typedef struct TwmColormap
-{
+{	
     Colormap c;			/* Colormap id */
     int state;			/* install(ability) state */
     unsigned long install_req;	/* request number which installed it */
@@ -220,7 +230,7 @@ typedef struct Colormaps
 				       ((cm)->number_cwins - 1) / 2)
 
 /* for each window that is on the display, one of these structures
- * is allocated and linked into a list
+ * is allocated and linked into a list 
  */
 typedef struct TwmWindow
 {
@@ -405,10 +415,8 @@ extern Bool GetWMState ( Window w, int *statep, Window *iwp );
 
 extern void twmrc_error_prefix ( void );
 
-#if !defined(YYBISON) && !(defined(YYBYACC) && defined(__NetBSD__))
 extern int yyparse ( void );
-#endif
-extern int yylex ( void );
+extern int yylex ( void ); 
 extern void yyerror ( char *s );
 extern int doinput ( char *buf, int size );
 extern void RemoveDQuote ( char *str );

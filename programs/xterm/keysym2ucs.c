@@ -1,4 +1,11 @@
-/* $XFree86$
+/* $XFree86: xc/programs/xterm/keysym2ucs.c,v 1.5 2001/06/18 19:09:26 dickey Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * This module converts keysym values into the corresponding ISO 10646
  * (UCS, Unicode) values.
  *

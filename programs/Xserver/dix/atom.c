@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/dix/atom.c,v 3.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/atom.c,v 3.4 2002/02/19 11:09:21 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,8 +53,10 @@ SOFTWARE.
 
 ******************************************************************/
 
-#include <X11/X.h>
-#include <X11/Xatom.h>
+/* $Xorg: atom.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
+
+#include "X.h"
+#include "Xatom.h"
 #include "misc.h"
 #include "resource.h"
 #include "dix.h"
@@ -69,12 +78,15 @@ static NodePtr *nodeTable;
 void FreeAtom(NodePtr patom);
 
 Atom 
-MakeAtom(char *string, unsigned len, Bool makeit)
+MakeAtom(string, len, makeit)
+    char *string;
+    unsigned len;
+    Bool makeit;
 {
-    NodePtr * np;
+    register    NodePtr * np;
     unsigned i;
     int     comp;
-    unsigned int   fp = 0;
+    register unsigned int   fp = 0;
 
     np = &atomRoot;
     for (i = 0; i < (len+1)/2; i++)
@@ -101,7 +113,7 @@ MakeAtom(char *string, unsigned len, Bool makeit)
     }
     if (makeit)
     {
-	NodePtr nd;
+	register NodePtr nd;
 
 	nd = (NodePtr) xalloc(sizeof(NodeRec));
 	if (!nd)
@@ -146,13 +158,15 @@ MakeAtom(char *string, unsigned len, Bool makeit)
 }
 
 Bool
-ValidAtom(Atom atom)
+ValidAtom(atom)
+    Atom atom;
 {
     return (atom != None) && (atom <= lastAtom);
 }
 
 char *
-NameForAtom(Atom atom)
+NameForAtom(atom)
+    Atom atom;
 {
     NodePtr node;
     if (atom > lastAtom) return 0;

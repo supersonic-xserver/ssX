@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbline.c,v 3.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbline.c,v 3.6 2001/12/14 19:59:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: cfbline.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
+#include "X.h"
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -90,18 +97,26 @@ actual clipping.
 
 void
 #ifdef POLYSEGMENT
-cfbSegmentSS(DrawablePtr pDrawable, GCPtr pGC, int nseg, xSegment *pSeg)
+cfbSegmentSS (pDrawable, pGC, nseg, pSeg)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		nseg;
+    register xSegment	*pSeg;
 #else
-cfbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	  DDXPointPtr pptInit)
+cfbLineSS (pDrawable, pGC, mode, npt, pptInit)
+    DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int		mode;		/* Origin or Previous */
+    int		npt;		/* number of points */
+    DDXPointPtr pptInit;
 #endif
 {
     int nboxInit;
-    int nbox;
+    register int nbox;
     BoxPtr pboxInit;
-    BoxPtr pbox;
+    register BoxPtr pbox;
 #ifndef POLYSEGMENT
-    DDXPointPtr ppt;	/* pointer to list of translated points */
+    register DDXPointPtr ppt;	/* pointer to list of translated points */
 #endif
 
     unsigned int oc1;		/* outcode of point 1 */
@@ -123,8 +138,8 @@ cfbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 
 				/* a bunch of temporaries */
     int tmp;
-    int y1, y2;
-    int x1, x2;
+    register int y1, y2;
+    register int x1, x2;
     RegionPtr cclip;
     cfbPrivGCPtr    devPriv;
     CfbBits   xor, and;
@@ -180,7 +195,7 @@ cfbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 	    */
 	    if (y1 > y2)
 	    {
-		int tmp;
+		register int tmp;
 
 		tmp = y2;
 		y2 = y1 + 1;
@@ -234,7 +249,7 @@ cfbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 	    */
 	    if (x1 > x2)
 	    {
-		int tmp;
+		register int tmp;
 
 		tmp = x2;
 		x2 = x1 + 1;
@@ -425,8 +440,8 @@ cfbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 		CfbBits scrbits;
 
 #if PSZ == 24
-		mask = cfbmask[(x2 & (PGSZB - 1)) << 1];
-		addrl += (y2 * nlwidth) + ((x2 * PSZB) / PGSZB);
+		mask = cfbmask[(x2 & 3)<<1];
+		addrl += (y2 * nlwidth) + ((x2*3) >> 2);
 #else
 		mask = cfbmask[x2 & PIM];
 		addrl += (y2 * nlwidth) + (x2 >> PWSH);
@@ -449,22 +464,30 @@ cfbLineSS(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
 
 void
 #ifdef POLYSEGMENT
-cfbSegmentSD(DrawablePtr pDrawable, GCPtr pGC, int nseg, xSegment *pSeg)
+cfbSegmentSD (pDrawable, pGC, nseg, pSeg)
+    DrawablePtr	pDrawable;
+    register GCPtr	pGC;
+    int		nseg;
+    register xSegment	*pSeg;
 #else
-cfbLineSD(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	  DDXPointPtr pptInit)
+cfbLineSD( pDrawable, pGC, mode, npt, pptInit)
+    DrawablePtr pDrawable;
+    register GCPtr pGC;
+    int mode;		/* Origin or Previous */
+    int npt;		/* number of points */
+    DDXPointPtr pptInit;
 #endif
 {
     int nboxInit;
-    int nbox;
+    register int nbox;
     BoxPtr pboxInit;
-    BoxPtr pbox;
+    register BoxPtr pbox;
 #ifndef POLYSEGMENT
-    DDXPointPtr ppt;	/* pointer to list of translated points */
+    register DDXPointPtr ppt;	/* pointer to list of translated points */
 #endif
 
-    unsigned int oc1;		/* outcode of point 1 */
-    unsigned int oc2;		/* outcode of point 2 */
+    register unsigned int oc1;		/* outcode of point 1 */
+    register unsigned int oc2;		/* outcode of point 2 */
 
     CfbBits *addrl;		/* address of destination pixmap */
     int nlwidth;		/* width in longwords of destination pixmap */
@@ -720,8 +743,8 @@ dontStep:	;
 		if (dashIndex & 1)
 		    pix = 1;
 #if PSZ == 24
-		mask = cfbmask[(x2 & (PGSZB - 1)) << 1];
-		addrl += (y2 * nlwidth) + ((x2 * PSZB) / PGSZB);
+		mask = cfbmask[(x2 & 3)<<1];
+		addrl += (y2 * nlwidth) + ((x2 *3)>> 2);
 #else
 		mask = cfbmask[x2 & PIM];
 		addrl += (y2 * nlwidth) + (x2 >> PWSH);

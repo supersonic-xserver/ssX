@@ -194,10 +194,5 @@ FcPatternInsertElt
 FcCharSetFirstPage
 FcCharSetNextPage
 FcUtf16ToUcs4
-FcPatternEqual
-FcPatternHash
-FcPatternReference
-FcFontSort
-FcFontSetSortDestroy
 #endif
 /* $XFree86: xc/extras/fontconfig/src/fontconfig-def.cpp,v 1.2 2003/06/04 16:29:39 dawes Exp $ */

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1992-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,7 @@
  *
  * Author:  Alan Hourihane, alanh@fairlite.demon.co.uk
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/tridenthelper.c,v 1.20 2001/10/28 03:33:52 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/tridenthelper.c,v 1.21 2003/09/05 22:07:29 alanh Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

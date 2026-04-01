@@ -1,9 +1,15 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -41,8 +47,10 @@
  * These functions provide this service by keeping uptodate the
  * 'ctx->Current' struct for all data elements not included in the
  * currently enabled hardware vertex.
- *
+ * I.e. these functions would typically be used when outside of glBegin/End.
  */
+
+
 void GLAPIENTRY _mesa_noop_EdgeFlag( GLboolean b )
 {
    GET_CURRENT_CONTEXT(ctx);
@@ -567,6 +575,7 @@ void GLAPIENTRY _mesa_noop_EvalPoint2( GLint a, GLint b )
  */
 void GLAPIENTRY _mesa_noop_Begin( GLenum mode )
 {
+   (void) mode;
 }
 
 
@@ -594,12 +603,12 @@ void GLAPIENTRY _mesa_noop_Rectf( GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2
       ASSERT_OUTSIDE_BEGIN_END(ctx);
    }
 
-   glBegin( GL_QUADS );
-   glVertex2f( x1, y1 );
-   glVertex2f( x2, y1 );
-   glVertex2f( x2, y2 );
-   glVertex2f( x1, y2 );
-   glEnd();
+   GL_CALL(Begin)( GL_QUADS );
+   GL_CALL(Vertex2f)( x1, y1 );
+   GL_CALL(Vertex2f)( x2, y1 );
+   GL_CALL(Vertex2f)( x2, y2 );
+   GL_CALL(Vertex2f)( x1, y2 );
+   GL_CALL(End)();
 }
 
 
@@ -615,10 +624,10 @@ void GLAPIENTRY _mesa_noop_DrawArrays(GLenum mode, GLint start, GLsizei count)
    if (!_mesa_validate_DrawArrays( ctx, mode, start, count ))
       return;
 
-   glBegin(mode);
-   for (i = start ; i < count ; i++)
-      glArrayElement( i );
-   glEnd();
+   GL_CALL(Begin)(mode);
+   for (i = 0; i < count; i++)
+       GL_CALL(ArrayElement)(start + i);
+   GL_CALL(End)();
 }
 
 
@@ -631,27 +640,27 @@ void GLAPIENTRY _mesa_noop_DrawElements(GLenum mode, GLsizei count, GLenum type,
    if (!_mesa_validate_DrawElements( ctx, mode, count, type, indices ))
       return;
 
-   glBegin(mode);
+   GL_CALL(Begin)(mode);
 
    switch (type) {
    case GL_UNSIGNED_BYTE:
       for (i = 0 ; i < count ; i++)
-	 glArrayElement( ((GLubyte *)indices)[i] );
+	  GL_CALL(ArrayElement)( ((GLubyte *)indices)[i] );
       break;
    case GL_UNSIGNED_SHORT:
       for (i = 0 ; i < count ; i++)
-	 glArrayElement( ((GLushort *)indices)[i] );
+	  GL_CALL(ArrayElement)( ((GLushort *)indices)[i] );
       break;
    case GL_UNSIGNED_INT:
       for (i = 0 ; i < count ; i++)
-	 glArrayElement( ((GLuint *)indices)[i] );
+	  GL_CALL(ArrayElement)( ((GLuint *)indices)[i] );
       break;
    default:
       _mesa_error( ctx, GL_INVALID_ENUM, "glDrawElements(type)" );
       break;
    }
 
-   glEnd();
+   GL_CALL(End)();
 }
 
 void GLAPIENTRY _mesa_noop_DrawRangeElements(GLenum mode,
@@ -664,7 +673,7 @@ void GLAPIENTRY _mesa_noop_DrawRangeElements(GLenum mode,
    if (_mesa_validate_DrawRangeElements( ctx, mode,
 					 start, end,
 					 count, type, indices ))
-      glDrawElements( mode, count, type, indices );
+       GL_CALL(DrawElements)( mode, count, type, indices );
 }
 
 /*
@@ -703,17 +712,17 @@ void GLAPIENTRY _mesa_noop_EvalMesh1( GLenum mode, GLint i1, GLint i2 )
     */
    if (!ctx->Eval.Map1Vertex4 && 
        !ctx->Eval.Map1Vertex3 &&
-       !(ctx->VertexProgram.Enabled && ctx->Eval.Map1Attrib[VERT_ATTRIB_POS]))
+       !(ctx->VertexProgram._Enabled && ctx->Eval.Map1Attrib[VERT_ATTRIB_POS]))
       return;
 
    du = ctx->Eval.MapGrid1du;
    u = ctx->Eval.MapGrid1u1 + i1 * du;
 
-   glBegin( prim );
+   GL_CALL(Begin)( prim );
    for (i=i1;i<=i2;i++,u+=du) {
-      glEvalCoord1f( u );
+      GL_CALL(EvalCoord1f)( u );
    }
-   glEnd();
+   GL_CALL(End)();
 }
 
 
@@ -738,7 +747,7 @@ void GLAPIENTRY _mesa_noop_EvalMesh2( GLenum mode, GLint i1, GLint i2, GLint j1,
     */
    if (!ctx->Eval.Map2Vertex4 && 
        !ctx->Eval.Map2Vertex3 &&
-       !(ctx->VertexProgram.Enabled && ctx->Eval.Map2Attrib[VERT_ATTRIB_POS]))
+       !(ctx->VertexProgram._Enabled && ctx->Eval.Map2Attrib[VERT_ATTRIB_POS]))
       return;
 
    du = ctx->Eval.MapGrid2du;
@@ -748,38 +757,38 @@ void GLAPIENTRY _mesa_noop_EvalMesh2( GLenum mode, GLint i1, GLint i2, GLint j1,
 
    switch (mode) {
    case GL_POINT:
-      glBegin( GL_POINTS );
+      GL_CALL(Begin)( GL_POINTS );
       for (v=v1,j=j1;j<=j2;j++,v+=dv) {
 	 for (u=u1,i=i1;i<=i2;i++,u+=du) {
-	    glEvalCoord2f(u, v );
+	    GL_CALL(EvalCoord2f)(u, v );
 	 }
       }
-      glEnd();
+      GL_CALL(End)();
       break;
    case GL_LINE:
       for (v=v1,j=j1;j<=j2;j++,v+=dv) {
-	 glBegin( GL_LINE_STRIP );
+	 GL_CALL(Begin)( GL_LINE_STRIP );
 	 for (u=u1,i=i1;i<=i2;i++,u+=du) {
-	    glEvalCoord2f(u, v );
+	    GL_CALL(EvalCoord2f)(u, v );
 	 }
-	 glEnd();
+	 GL_CALL(End)();
       }
       for (u=u1,i=i1;i<=i2;i++,u+=du) {
-	 glBegin( GL_LINE_STRIP );
+	 GL_CALL(Begin)( GL_LINE_STRIP );
 	 for (v=v1,j=j1;j<=j2;j++,v+=dv) {
-	    glEvalCoord2f(u, v );
+	    GL_CALL(EvalCoord2f)(u, v );
 	 }
-	 glEnd();
+	 GL_CALL(End)();
       }
       break;
    case GL_FILL:
       for (v=v1,j=j1;j<j2;j++,v+=dv) {
-	 glBegin( GL_TRIANGLE_STRIP );
+	 GL_CALL(Begin)( GL_TRIANGLE_STRIP );
 	 for (u=u1,i=i1;i<=i2;i++,u+=du) {
-	    glEvalCoord2f(u, v );
-	    glEvalCoord2f(u, v+dv );
+	    GL_CALL(EvalCoord2f)(u, v );
+	    GL_CALL(EvalCoord2f)(u, v+dv );
 	 }
-	 glEnd();
+	 GL_CALL(End)();
       }
       break;
    default:

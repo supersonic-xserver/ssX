@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_memory.c,v 1.16 2006/01/29 01:51:49 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_memory.c,v 1.13 2005/01/09 20:47:19 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -90,7 +97,7 @@ AllocFromPool(ScrnInfoPtr pScrn, I830MemRange *result, I830MemPool *pool,
 	    end = pool->Free.End;
 
 	 start = ROUND_DOWN_TO(end - size, alignment);
-	 needed = end - start;
+	 needed = pool->Free.End - start;
       }
    }
    if (needed > pool->Free.Size) {
@@ -123,9 +130,10 @@ AllocFromPool(ScrnInfoPtr pScrn, I830MemRange *result, I830MemPool *pool,
       pool->Free.Start += needed;
       result->End = pool->Free.Start;
    } else {
-      result->Start = ROUND_DOWN_TO(pool->Free.End - size, alignment);
+      result->Start = ROUND_DOWN_TO(pool->Free.End - size, alignment) -
+			pool->Total.End;
+      result->End = pool->Free.End - pool->Total.End;
       pool->Free.End -= needed;
-      result->End = result->Start + needed;
    }
    pool->Free.Size = pool->Free.End - pool->Free.Start;
    result->Size = result->End - result->Start;
@@ -286,6 +294,7 @@ AllocateRingBuffer(ScrnInfoPtr pScrn, int flags)
    return TRUE;
 }
 
+#ifdef I830_XV
 /*
  * Note, the FORCE_LOW flag is currently not used or supported.
  */
@@ -301,9 +310,6 @@ AllocateOverlay(ScrnInfoPtr pScrn, int flags)
    /* Clear overlay info */
    memset(pI830->OverlayMem, 0, sizeof(I830MemRange));
    pI830->OverlayMem->Key = -1;
-
-   memset(&(pI830->LinearMem), 0, sizeof(I830MemRange));
-   pI830->LinearMem.Key = -1;
 
    if (!pI830->XvEnabled)
       return TRUE;
@@ -343,26 +349,9 @@ AllocateOverlay(ScrnInfoPtr pScrn, int flags)
 		     alloced / 1024, pI830->OverlayMem->Start,
 		     pI830->OverlayMem->Physical);
    }
-
-   /* Clear linearmem info */
-   if (pI830->LinearAlloc) {
-      size = KB(pI830->LinearAlloc);
-      alloced = I830AllocVidMem(pScrn, &(pI830->LinearMem), &(pI830->StolenPool),
-				size, GTT_PAGE_SIZE,
-				FROM_ANYWHERE | ALLOCATE_AT_TOP);
-      if (alloced < size) {
-         if (!dryrun) {
-            xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		       "Failed to allocate linear buffer space\n");
-         }
-      } else
-         xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, verbosity,
-		    "%sAllocated %ld kB for the linear buffer at 0x%lx\n", s,
-		    alloced / 1024, pI830->LinearMem.Start);
-   }
-
    return TRUE;
 }
+#endif
 
 static unsigned long
 GetFreeSpace(ScrnInfoPtr pScrn)
@@ -779,7 +768,9 @@ I830Allocate2DMemory(ScrnInfoPtr pScrn, const int flags)
       }
    }
 
+#ifdef I830_XV
    AllocateOverlay(pScrn, flags);
+#endif
 
    if (!pI830->NeedRingBufferLow)
       AllocateRingBuffer(pScrn, flags);
@@ -1207,10 +1198,11 @@ I830FixupOffsets(ScrnInfoPtr pScrn)
    FixOffset(pScrn, &(pI830->Scratch));
    if (pI830->entityPrivate && pI830->entityPrivate->pScrn_2)
       FixOffset(pScrn, &(pI830->Scratch2));
-   if (pI830->XvEnabled)
+#ifdef I830_XV
+   if (pI830->XvEnabled) {
       FixOffset(pScrn, pI830->OverlayMem);
-   if (pI830->LinearAlloc)
-      FixOffset(pScrn, &pI830->LinearMem);
+   }
+#endif
 #ifdef XF86DRI
    if (pI830->directRenderingEnabled) {
       FixOffset(pScrn, &(pI830->BackBuffer));
@@ -1245,13 +1237,13 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
 
    if (nr < 0 || nr > 7) {
       xf86DrvMsg(X_WARNING, pScrn->scrnIndex,
-		 "SetFence: fence %d out of range\n",nr);
+		 "SetFence: fence %d out of range\n", nr);
       return;
    }
 
    i830Reg->Fence[nr] = 0;
 
-   if (IS_I9XX(pI830))
+   if (IS_I915G(pI830) || IS_I915GM(pI830))
    	fence_mask = ~I915G_FENCE_START_MASK;
    else
    	fence_mask = ~I830_FENCE_START_MASK;
@@ -1259,7 +1251,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
    if (start & fence_mask) {
       xf86DrvMsg(X_WARNING, pScrn->scrnIndex,
 		 "SetFence: %d: start (0x%08x) is not %s aligned\n",
-		 nr, start, (IS_I9XX(pI830)) ? "1MB" : "512k");
+		 nr, start, (IS_I915G(pI830) || IS_I915GM(pI830)) ? "1MB" : "512k");
       return;
    }
 
@@ -1279,7 +1271,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
 
    val = (start | FENCE_X_MAJOR | FENCE_VALID);
 
-   if (IS_I9XX(pI830)) {
+   if (IS_I915G(pI830) || IS_I915GM(pI830)) {
    	switch (size) {
 	   case MB(1):
       		val |= I915G_FENCE_SIZE_1M;
@@ -1340,7 +1332,7 @@ SetFence(ScrnInfoPtr pScrn, int nr, unsigned int start, unsigned int pitch,
    	}
    }
 
-   if (IS_I9XX(pI830))
+   if (IS_I915G(pI830) || IS_I915GM(pI830))
 	fence_pitch = pitch / 512;
    else
 	fence_pitch = pitch / 128;
@@ -1528,10 +1520,10 @@ I830BindGARTMemory(ScrnInfoPtr pScrn)
       if (pI830->entityPrivate && pI830->entityPrivate->pScrn_2)
          if (!BindMemRange(pScrn, &(pI830->Scratch2)))
 	    return FALSE;
+#ifdef I830_XV
       if (!BindMemRange(pScrn, pI830->OverlayMem))
 	 return FALSE;
-      if (!BindMemRange(pScrn, &pI830->LinearMem))
-	 return FALSE;
+#endif
 #ifdef XF86DRI
       if (pI830->directRenderingEnabled) {
 	 if (!BindMemRange(pScrn, &(pI830->BackBuffer)))
@@ -1600,10 +1592,10 @@ I830UnbindGARTMemory(ScrnInfoPtr pScrn)
       if (pI830->entityPrivate && pI830->entityPrivate->pScrn_2)
          if (!UnbindMemRange(pScrn, &(pI830->Scratch2)))
 	    return FALSE;
+#ifdef I830_XV
       if (!UnbindMemRange(pScrn, pI830->OverlayMem))
 	 return FALSE;
-      if (!UnbindMemRange(pScrn, &pI830->LinearMem))
-	 return FALSE;
+#endif
 #ifdef XF86DRI
       if (pI830->directRenderingEnabled) {
 	 if (!UnbindMemRange(pScrn, &(pI830->BackBuffer)))

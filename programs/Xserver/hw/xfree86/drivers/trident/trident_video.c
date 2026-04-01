@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1992-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +28,7 @@
  *
  * Author:  Alan Hourihane, alanh@fairlite.demon.co.uk
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident_video.c,v 1.50 2005/11/29 17:22:51 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/trident/trident_video.c,v 1.47 2004/03/29 16:25:22 tsi Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"
@@ -35,7 +42,7 @@
 
 #include "trident.h"
 #include "trident_regs.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "xaa.h"
 #include "dixstruct.h"
 #include "fourcc.h"
@@ -666,11 +673,7 @@ TRIDENTDisplayVideo(
     OUTW(vgaIOBase + 4, ((width<<1) & 0xff00)      | 0x91);
     OUTW(vgaIOBase + 4, ((offset) & 0xff) << 8     | 0x92);
     OUTW(vgaIOBase + 4, ((offset) & 0xff00)        | 0x93);
-    if (pTrident->Chipset >= CYBER9397) {
-    	OUTW(vgaIOBase + 4, ((offset) & 0x0f0000) >> 8 | 0x94);
-    } else {
-    	OUTW(vgaIOBase + 4, ((offset) & 0x070000) >> 8 | 0x94);
-    }
+    OUTW(vgaIOBase + 4, ((offset) & 0x070000) >> 8 | 0x94);
     
     /* Horizontal Zoom */
     if (pTrident->videoFlags & VID_ZOOM_INV) {
@@ -1311,8 +1314,6 @@ WaitForVBlank(ScrnInfoPtr pScrn)
      * full vblank has passed. 
      * - Alan.
      */
-    if (!xf86IsPc98()) {
-       WAITFORVSYNC;
-       WAITFORVSYNC;
-    }
+    WAITFORVSYNC;
+    WAITFORVSYNC;
 }

@@ -1,3 +1,11 @@
+/* $Xorg: TMaction.c,v 1.5 2001/02/09 02:03:58 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*LINTLIBRARY*/
 
 /***********************************************************
@@ -58,7 +66,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
-/* $XFree86: xc/lib/Xt/TMaction.c,v 3.11 2005/11/13 21:25:00 dickey Exp $ */
+/* $XFree86: xc/lib/Xt/TMaction.c,v 3.10 2004/05/26 22:24:40 dickey Exp $ */
 
 /* TMaction.c -- maintains the state table of actions for the translation
  *              manager.
@@ -629,7 +637,6 @@ void _XtBindActions(
 		int			localUnbound;
 		TMBindCacheStatusRec	bcStatusRec;
 
-		bcStatusRec.refCount = 0;
 		procs = (XtActionProc *)
 		  XtStackAlloc(stateTree->numQuarks * sizeof(XtActionProc),
 			       stackProcs);

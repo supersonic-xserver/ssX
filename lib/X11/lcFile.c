@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/X11/lcFile.c,v 3.34tsi Exp $ */
+/* $Xorg: lcFile.c,v 1.5 2000/12/12 12:44:05 coskrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *
  * Copyright IBM Corporation 1993
@@ -23,6 +30,7 @@
  * SOFTWARE.
  *
 */
+/* $XFree86: xc/lib/X11/lcFile.c,v 3.33 2003/07/16 01:38:26 dawes Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,22 +38,11 @@
 #include "Xlibint.h"
 #include "XlcPubI.h"
 #include <X11/Xos.h>
-
-#ifdef HASGETRESUID
-# include <unistd.h>
-# if !defined(__GLIBC_PREREQ)
-#  define _NEED_GETRESUID_PROTO
-# else
-#  if !__GLIBC_PREREQ(2,3)
-#   define _NEED_GETRESUID_PROTO
-#  endif
-# endif
-# ifdef _NEED_GETRESUID_PROTO
-   extern int getresuid(uid_t *, uid_t *, uid_t *);
-   extern int getresgid(gid_t *, gid_t *, gid_t *);
-#  undef _NEED_GETRESUID_PROTO
-# endif
+#if 0
+#include <unistd.h>  /* in theory delivers getresuid/gid prototypes,
+		      * in practice only the Linux syscall wrapper is there. */
 #endif
+
 
 /************************************************************************/
 
@@ -366,7 +363,8 @@ _XlcFileName(
 	char buf[PATH_MAX], *name;
 
 	name = NULL;
-	if ((5 + (args[i] ? strlen (args[i]) : 0) + strlen (cat)) < PATH_MAX) {
+	if ((5 + (args[i] ? strlen (args[i]) : 0) +
+	    (cat ? strlen (cat) : 0)) < PATH_MAX) {
 	    sprintf(buf, "%s/%s.dir", args[i], cat);
 	    name = resolve_name(siname, buf, RtoL);
 	}

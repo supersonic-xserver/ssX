@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/doc/specs/programs/Imakefile,v 1.28 2005/03/29 17:33:22 tsi Exp $
+XCOMM $XFree86: xc/doc/specs/programs/Imakefile,v 1.27 2005/03/12 23:13:28 dawes Exp $
 /*
  * Copyright (c) 2000-2005 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -145,7 +145,7 @@ MANUALS = \
   $(TOP)/config/util/ccmakedep.man \
   $(TOP)/config/util/cleanlinks.man \
   $(TOP)/programs/Xserver/hw/sun/constype.man \
-  $(TOP)/extras/Xpm/cxpm/cxpm.man \
+  $(TOP)/programs/cxpm/cxpm.man \
   $(TOP)/programs/xf86dga/dga.man \
   $(TOP)/programs/dpsexec/dpsexec.man \
   $(TOP)/programs/dpsinfo/dpsinfo.man \
@@ -191,7 +191,7 @@ MANUALS = \
   $(TOP)/programs/rgb/showrgb.man \
   $(TOP)/programs/smproxy/smproxy.man \
   $(TOP)/programs/xinit/startx.man \
-  $(TOP)/extras/Xpm/sxpm/sxpm.man \
+  $(TOP)/programs/sxpm/sxpm.man \
   $(TOP)/programs/xrx/testplugin/testplugin.man \
   $(TOP)/programs/texteroids/texteroids.man \
   $(TOP)/programs/twm/twm.man \
@@ -284,5 +284,3 @@ MakeSimpleDoc(man,man.$(MANNEWSUFFIX))
 
 InstallRoffDoc(man)
 
-clean::
-	RemoveFile(man.$(MANSRCSUFFIX))

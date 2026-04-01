@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_accel.c,v 1.21tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_accel.c,v 1.21 2005/01/24 16:58:35 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1999, 2000 ATI Technologies Inc., Markham, Ontario,
  *                      Precision Insight, Inc., Cedar Park, Texas, and
@@ -82,7 +89,6 @@
 				/* Driver data structures */
 #include "r128.h"
 #include "r128_reg.h"
-#include "r128_probe.h"
 #ifdef XF86DRI
 #include "r128_sarea.h"
 #define _XF86DRI_SERVER_
@@ -117,8 +123,6 @@ static struct {
     { R128_ROP3_DSan, R128_ROP3_DPan }, /* GXnand         */
     { R128_ROP3_ONE,  R128_ROP3_ONE  }  /* GXset          */
 };
-
-extern int gR128EntityIndex;
 
 /* Flush all dirty data in the Pixel Cache to memory. */
 void R128EngineFlush(ScrnInfoPtr pScrn)
@@ -243,23 +247,17 @@ void R128CCEWaitForIdle(ScrnInfoPtr pScrn)
         i = 0;
         do {
             ret = drmCommandNone(info->drmFD, DRM_R128_CCE_IDLE);
-        } while ( ret && errno == EBUSY && i++ < (R128_IDLE_RETRY * R128_IDLE_RETRY) );
+        } while ( ret && errno == EBUSY && i++ < R128_IDLE_RETRY );
 
 	if (ret && ret != -EBUSY) {
 	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		       "%s: CCE idle %d\n", __FUNCTION__, ret);
 	}
 
-	if (i > R128_IDLE_RETRY) {
-	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		       "%s: (DEBUG) CCE idle took i = %d\n", __FUNCTION__, i);
-	}
-
 	if (ret == 0) return;
 
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		   "Idle timed out, resetting engine...\n");
-	R128CCE_STOP(pScrn, info);
 	R128EngineReset(pScrn);
 
 	/* Always restart the engine when doing CCE 2D acceleration */
@@ -1029,7 +1027,7 @@ void R128EngineInit(ScrnInfoPtr pScrn)
     R128TRACE(("Pitch for acceleration = %d\n", info->pitch));
 
     R128WaitForFifo(pScrn, 2);
-    OUTREG(R128_DEFAULT_OFFSET, pScrn->fbOffset);
+    OUTREG(R128_DEFAULT_OFFSET, 0);
     OUTREG(R128_DEFAULT_PITCH,  info->pitch);
 
     R128WaitForFifo(pScrn, 4);
@@ -1653,24 +1651,6 @@ void R128CCEReleaseIndirect( ScrnInfoPtr pScrn )
                          &indirect, sizeof(drmR128Indirect));
 }
 
-/* This callback is required for multihead cards using XAA */
-static
-void R128RestoreCCEAccelState(ScrnInfoPtr pScrn)
-{
-    R128InfoPtr info        = R128PTR(pScrn);
-/*    unsigned char *R128MMIO = info->MMIO;  needed for OUTREG below */
-    /*xf86DrvMsg(pScrn->scrnIndex, X_INFO, "===>RestoreCP\n");*/
-
-    R128WaitForFifo(pScrn, 1);
-/* is this needed on r128
-    OUTREG( R128_DEFAULT_OFFSET, info->frontPitchOffset);
-*/
-    R128WaitForIdle(pScrn);
-
-    /* FIXME: May need to restore other things, 
-       like BKGD_CLK FG_CLK...*/
-}
-
 static void R128CCEAccelInit(ScrnInfoPtr pScrn, XAAInfoRecPtr a)
 {
     R128InfoPtr info = R128PTR(pScrn);
@@ -1731,28 +1711,8 @@ static void R128CCEAccelInit(ScrnInfoPtr pScrn, XAAInfoRecPtr a)
 					   | HARDWARE_PATTERN_PROGRAMMED_ORIGIN
 					   | HARDWARE_PATTERN_SCREEN_ORIGIN
 					   | BIT_ORDER_IN_BYTE_LSBFIRST);
-
-    if(!info->IsSecondary && xf86IsEntityShared(pScrn->entityList[0]))
-        a->RestoreAccelState           = R128RestoreCCEAccelState;
 }
 #endif
-
-/* This callback is required for multihead cards using XAA */
-static
-void R128RestoreAccelState(ScrnInfoPtr pScrn)
-{
-    R128InfoPtr info        = R128PTR(pScrn);
-    unsigned char *R128MMIO = info->MMIO;
-
-    R128WaitForFifo(pScrn, 2);
-    OUTREG(R128_DEFAULT_OFFSET, pScrn->fbOffset);
-    OUTREG(R128_DEFAULT_PITCH,  info->pitch);
-
-    /* FIXME: May need to restore other things, 
-       like BKGD_CLK FG_CLK...*/
-
-    R128WaitForIdle(pScrn);
-}
 
 static void R128MMIOAccelInit(ScrnInfoPtr pScrn, XAAInfoRecPtr a)
 {
@@ -1832,20 +1792,6 @@ static void R128MMIOAccelInit(ScrnInfoPtr pScrn, XAAInfoRecPtr a)
 					  | LEFT_EDGE_CLIPPING
 					  | LEFT_EDGE_CLIPPING_NEGATIVE_X
 					  | SCANLINE_PAD_DWORD;
-
-    if(xf86IsEntityShared(pScrn->entityList[0]))
-    {
-        DevUnion* pPriv;
-        R128EntPtr pR128Ent;
-        pPriv = xf86GetEntityPrivate(pScrn->entityList[0], gR128EntityIndex);
-        pR128Ent = pPriv->ptr;
-        
-        /*if there are more than one devices sharing this entity, we
-          have to assign this call back, otherwise the XAA will be
-          disabled */
-        if(pR128Ent->HasSecondary || pR128Ent->BypassSecondary)
-           a->RestoreAccelState           = R128RestoreAccelState;
-    }
 }
 
 /* Initialize XAA for supported acceleration and also initialize the

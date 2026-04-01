@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/xedit/lisp/Imakefile,v 1.27tsi Exp $
+XCOMM $XFree86: xc/programs/xedit/lisp/Imakefile,v 1.26 2003/05/20 21:44:48 tsi Exp $
 
 #include "lisp.cf"
 #include "lisp.rules"
@@ -20,7 +20,7 @@ LinkSourceFile(snprintf.c, $(LIBSRC)/misc)
   SNPRINTF_OBJS = snprintf.o
 #endif
 
-#if defined(LynxOSArchitecture) || defined(SVR3Architecture)
+#if defined(LynxOSArchitecture) || defined(SVR3Architecture) || defined(LinuxArchitecture)
 #ifndef UseInstalled
 LinkSourceFile(realpath.c, $(TOP)/programs/xedit)
 #endif
@@ -97,8 +97,6 @@ OBJS		= $(SYS_OBJS) \
 		time.o \
 		write.o \
 		xedit.o
-
-LOCAL_INCLUDES = /* Don't use -I. */
 
 #include <Library.tmpl>
 

@@ -1,5 +1,5 @@
 .\" Use -ms and macros.t
-.\" $XFree86: xc/doc/specs/Xext/shape.ms,v 1.2tsi Exp $
+.\" $Xorg: shape.ms,v 1.3 2000/08/17 19:42:36 cpqbld Exp $
 .\" edited for DP edits and code consistency w/ core protocol/xlib 4/1/96
 .EH ''''
 .OH ''''
@@ -15,7 +15,7 @@
 Shape Extension Protocol\fP\s-2
 .sp 3
 .ce 3
-Version 1.1
+Version 1.0
 X Consortium Standard
 X Version 11, Release 6.4
 .sp 6
@@ -23,15 +23,11 @@ X Version 11, Release 6.4
 \s-1Keith Packard
 .sp 6p
 MIT X Consortium
-.br
-Intel Corporation
 .ps 9
 .nr PS 9
 .sp 8
 .LP
 Copyright \(co 1989 X Consortium
-.br
-Copyright \(co 2006 Keith Packard
 .LP
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the ``Software''), to deal
@@ -46,14 +42,13 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 .LP
-Except as contained in this notice, the name of the copyright holders shall not
-be used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from the copyright
-holders.
+Except as contained in this notice, the name of the X Consortium shall not be
+used in advertising or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization from the X Consortium.
 .ps 10
 .nr PS 10
 .bp 1
@@ -77,8 +72,8 @@ cursor shape, is not possible within the core X protocol.  As a final
 example, round clocks and nonrectangular icons are desirable visual addition
 to the desktop.
 .LP
-This extension provides mechanisms for changing both the visible and interactive shape of a
-window to arbitrary, possibly disjoint, nonrectangular forms.  The intent
+This extension provides mechanisms for changing the visible shape of a
+window to an arbitrary, possibly disjoint, nonrectangular form.  The intent
 of the extension is to supplement the existing semantics, not replace them.
 In particular, it is desirable for clients that are unaware of the
 extension to still be able to cope reasonably with shaped windows.  For
@@ -91,22 +86,19 @@ window manager.
 .NH 1
 Description
 .LP
-Each window (even with no shapes specified) is defined by three regions:  the
-\fIbounding region\fP, the \fIclip region\fP and the \fIinput region\fP.  The bounding region is the area of the
+Each window (even with no shapes specified) is defined by two regions:  the
+\fIbounding region\fP and the \fIclip region\fP.  The bounding region is the area of the
 parent window that the window will occupy (including border). The clip region
 is the subset of the bounding region that is available for subwindows and
 graphics.  The area between the bounding region and the clip region is defined
-to be the border of the window. The input region is the subset of the
-bounding region that can ``contain'' the pointer.
+to be the border of the window.
 .LP
 A nonshaped window will have a bounding region that is a rectangle
 spanning the window, including its border; the clip region will be a rectangle
-filling the inside dimensions (not including the border); the input
-region will match the bounding region.  In this document,
-these areas are referred to as the \fIdefault bounding region\fP, the
-\fIdefault clip region\fP and the \fIdefault input region\fP.  For a window with inside size of \fIwidth\fP by
-\fIheight\fP and border width \fIbwidth\fP, the default bounding, clip
-and input
+filling the inside dimensions (not including the border).  In this document,
+these areas are referred to as the \fIdefault bounding region\fP and the
+\fIdefault clip region\fP.  For a window with inside size of \fIwidth\fP by
+\fIheight\fP and border width \fIbwidth\fP, the default bounding and clip
 regions are the rectangles (relative to the window origin):
 .LP
 .sM
@@ -120,19 +112,13 @@ clip.x = 0
 clip.y = 0
 clip.width = \fIwidth\fP
 clip.height = \fIheight\fP
-
-input.x = -\fIbwidth\fP
-input.y = -\fIbwidth\fP
-input.width = \fIwidth\fP + 2 * \fIbwidth\fP
-input.height = \fIheight\fP + 2 * \fIbwidth\fP
-
 .De
 .LP
 .eM
-This extension allows a client to modify any combination of the bounding,
-clip or input regions by specifying new regions that combine with the default
-regions.  These new regions are called the \fIclient bounding region\fP,
-the \fIclient clip region\fP and the \fIclient input region\fP.  They are specified relative to the origin of
+This extension allows a client to modify either or both of the bounding or
+clip regions by specifying new regions that combine with the default
+regions.  These new regions are called the \fIclient bounding region\fP and
+the \fIclient clip region\fP.  They are specified relative to the origin of
 the window and are always defined by offsets relative to the window origin
 (that is, region adjustments are not required when the window is moved).
 Three mechanisms for specifying regions are provided:  a list of rectangles,
@@ -185,19 +171,6 @@ clipped to the effective clip region.  The server must not retain window
 contents beyond the effective bounding region with backing store.  The window's
 origin (for graphics operations, background tiling, and subwindow placement)
 is not affected by the existence of a bounding region or clip region.
-.LP
-The \fIeffective input region\fP of a window is defined to be the intersection of the
-client input region with both the default input region and the client bounding
-region.  Any portion of the client input region that is not included in both
-the default input region and the client bounding region will not be included in
-the effective input region on the screen.
-.LP
-Construction of the effective input region is dynamic; the client input region is
-not mutated to obtain the effective input region.  If a client input region is
-specified that extends beyond the current default input region and the
-window or its bounding region is later enlarged, the effective input region will
-be enlarged to include more of the client input region if it is included in
-the effective bounding region.
 .LP 
 Areas that are inside the default bounding region but outside the effective
 bounding region are not part of the window; these areas of the screen will
@@ -209,14 +182,14 @@ as for events that occur in a normal rectangular border.
 .LP
 An 
 .PN InputOnly
-window can have its bounding or input region set, but it is a
+window can have its bounding region set, but it is a
 .PN Match
 error to attempt to set a clip region on an
 .PN InputOnly
 window or to specify its clip region as a source to a request 
 in this extension.
 .LP
-The server must accept changes to the clip and input regions of a root window, but
+The server must accept changes to the clip region of a root window, but
 the server is permitted to ignore requested changes to the bounding region
 of a root window.  If the server accepts bounding region changes, the contents
 of the screen outside the bounding region are implementation dependent.
@@ -228,8 +201,7 @@ subsequent sections.
 .LP
 SHAPE_KIND:
 .Pn { Bounding ,
-.PN Clip ,
-.PN Input }
+.PN Clip }
 .LP
 SHAPE_OP:
 .Pn { Set ,
@@ -268,7 +240,7 @@ minorVersion: CARD16
 .eM
 This request can be used to ensure that the server version of the SHAPE
 extension is usable by the client.  This document defines major version one
-(1), minor version one (1).
+(1), minor version zero (0).
 .LP
 .sM
 .PN "ShapeRectangles"
@@ -486,7 +458,7 @@ Specifying enable as
 .PN True
 causes the server to send the requesting client a
 .PN ShapeNotify
-event whenever the bounding, clip or input region of the specified window is
+event whenever the bounding or clip region of the specified window is
 altered by any client.
 Specifying enable as
 .PN False
@@ -557,7 +529,7 @@ Events
 \fItime\fP\^: TIMESTAMP
 .LP
 .eM
-Whenever the client bounding, clip or input shape of a window is modified, a
+Whenever the client bounding or clip shape of a window is modified, a
 .PN ShapeNotify
 event is sent to each client that has used
 .PN ShapeSelectInput
@@ -592,7 +564,6 @@ New Types
 SHAPE_KIND
 	0	Bounding
 	1	Clip
-	2	Input
 .De
 .LP
 .Ds 0
@@ -853,13 +824,6 @@ and will clip any subwindows.
 .KE
 .LP
 .KS
-\fBinput region\fP
-.IP
-The subset of the bounding region which can ``contain'' the
-pointer.
-.KE
-.LP
-.KS
 \fBdefault bounding region\fP
 .IP
 The rectangular area, as described by the core protocol window size, that
@@ -871,13 +835,6 @@ covers the interior of the window and its border.
 .IP
 The rectangular area, as described by the core protocol window size, that
 covers the interior of the window and excludes the border.
-.KE
-.LP
-.KS
-\fBdefault input region\fP
-.IP
-The rectangular area, as described by the core protocol window size, that
-covers the interior of the window and its border.
 .KE
 .LP
 .KS
@@ -901,16 +858,6 @@ and the client bounding region to produce the effective clip region.
 .KE
 .LP
 .KS
-\fBclient input region\fP
-.IP
-The region associated with a window that is directly modified via this
-extension when specified by 
-.PN ShapeInput . 
-This region is used in conjunction with the default input region 
-and the client bounding region to produce the effective input region.
-.KE
-.LP
-.KS
 \fBeffective bounding region\fP
 .IP
 The actual shape of the window on the screen, including border and interior
@@ -929,15 +876,4 @@ a client bounding region, the effective clip region is the intersection of
 the default clip region, the client clip region (if any) and the client
 bounding region (if any).  Otherwise, the effective clip region is the
 same as the default clip region.
-.KE
-.LP
-.KS
-\fBeffective input region\fP
-.IP
-The actual shape of the window on the screen (excluding the effects of
-overlapping windows) which can ``contain'' the pointer.  When a window has a
-client input region or a client bounding region, the effective input region is
-the intersection of the default input region, the client input region (if any)
-and the client bounding region (if any).  Otherwise, the effective input region
-is the same as the default input region.
 .KE

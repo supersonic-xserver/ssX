@@ -86,3 +86,5 @@ LinkSourceFile(ttnameid.h,$(FREETYPEINC))
 LinkSourceFile(tttables.h,$(FREETYPEINC))
 LinkSourceFile(tttags.h,$(FREETYPEINC))
 LinkSourceFile(ttunpat.h,$(FREETYPEINC))
+
+DependSubdirs($(SUBDIRS))

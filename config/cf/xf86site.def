@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.193tsi Exp $
+XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.191 2004/07/07 03:46:21 martin Exp $
 /******************************************************************************/
 /*
  * This file is to provide a quick method for most people to change the
@@ -69,12 +69,6 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.193tsi Exp $
  */
 
 /*
- * To disable building Xdm, uncomment this.
- *
-#define BuildXdm NO
- */
-
-/*
  * Set the default server (ie the one that gets the sym-link to "X")
  *
 #define ServerToInstall		XFree86
@@ -101,14 +95,13 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.193tsi Exp $
  * will be included in it.  When building the loadable server each of these
  * modules will be built.
  *
-#define XF86CardDrivers		mga glint nv tga s3 s3virge sis xgi rendition \
+#define XF86CardDrivers		mga glint nv tga s3virge sis rendition \
 				neomagic i740 tdfx savage \
-				cirrus vmware tseng trident chips ast apm \
+				cirrus vmware tseng trident chips apm \
 				GlideDriver fbdev i128 \
-				ati i810 AgpGartDrivers DevelDrivers ark cyrix \
-				siliconmotion via \
-				vesa vga \
-				dummy XF86OSCardDrivers XF86ExtraCardDrivers
+				ati AgpGartDrivers DevelDrivers ark cyrix \
+				siliconmotion \
+				vesa vga XF86OSCardDrivers XF86ExtraCardDrivers
  */
 
 /*
@@ -298,6 +291,34 @@ XCOMM $XFree86: xc/config/cf/xf86site.def,v 3.193tsi Exp $
  *
 #define UseSeparateConfDir NO
  */
+
+/* 
+ * To enable building the glide driver, you need to define 
+ * HasGlide2 to YES and set the Glide2IncDir variable. 
+ * HasGlide2 is per default NO.
+ *
+#define HasGlide2 YES
+ */
+
+/*
+ * Set the path to your Glide include files.
+ *
+#define Glide2IncDir /usr/include/glide
+ */
+
+/* 
+ * Have glide 3?
+ *
+#define HasGlide3 YES
+ */
+
+/*
+ * Set the path to your Glide 3 include files.
+ *
+#define Glide3IncDir /usr/include/glide3
+ */
+
+
 
 /*
  * Unless you're a developer you shouldn't need to change anything

@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/xload/get_rload.c,v 1.4 2002/01/07 20:38:31 dawes Exp $ */
+/* $XFree86: xc/programs/xload/get_rload.c,v 1.5 2002/01/07 21:46:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <stdio.h>
 #include <X11/Intrinsic.h>

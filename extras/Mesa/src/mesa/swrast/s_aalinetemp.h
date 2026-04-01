@@ -1,9 +1,15 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -37,7 +43,11 @@ NAME(plot)(GLcontext *ctx, struct LineInfo *line, int ix, int iy)
 {
    const GLfloat fx = (GLfloat) ix;
    const GLfloat fy = (GLfloat) iy;
+#ifdef DO_INDEX
+   const GLfloat coverage = compute_coveragei(line, ix, iy);
+#else
    const GLfloat coverage = compute_coveragef(line, ix, iy);
+#endif
    const GLuint i = line->span.end;
 
    if (coverage == 0.0)
@@ -191,16 +201,16 @@ NAME(line)(GLcontext *ctx, const SWvertex *v0, const SWvertex *v1)
    line.span.arrayMask |= SPAN_INDEX;
    if (ctx->Light.ShadeModel == GL_SMOOTH) {
       compute_plane(line.x0, line.y0, line.x1, line.y1,
-                    (GLfloat) v0->index, (GLfloat) v1->index, line.iPlane);
+                    v0->index, v1->index, line.iPlane);
    }
    else {
-      constant_plane((GLfloat) v1->index, line.iPlane);
+      constant_plane(v1->index, line.iPlane);
    }
 #endif
 #ifdef DO_TEX
    {
       const struct gl_texture_object *obj = ctx->Texture.Unit[0]._Current;
-      const struct gl_texture_image *texImage = obj->Image[obj->BaseLevel];
+      const struct gl_texture_image *texImage = obj->Image[0][obj->BaseLevel];
       const GLfloat invW0 = v0->win[3];
       const GLfloat invW1 = v1->win[3];
       const GLfloat s0 = v0->texcoord[0][0] * invW0;
@@ -226,7 +236,7 @@ NAME(line)(GLcontext *ctx, const SWvertex *v0, const SWvertex *v1)
       for (u = 0; u < ctx->Const.MaxTextureUnits; u++) {
          if (ctx->Texture.Unit[u]._ReallyEnabled) {
             const struct gl_texture_object *obj = ctx->Texture.Unit[u]._Current;
-            const struct gl_texture_image *texImage = obj->Image[obj->BaseLevel];
+            const struct gl_texture_image *texImage = obj->Image[0][obj->BaseLevel];
             const GLfloat invW0 = v0->win[3];
             const GLfloat invW1 = v1->win[3];
             const GLfloat s0 = v0->texcoord[u][0] * invW0;

@@ -3,7 +3,7 @@ XCOMM	This file contains locale database file names
 XCOMM	The first word is the locale database file name and
 XCOMM	the second word is the full locale name.
 XCOMM
-XCOMM	$XFree86: xc/nls/locale.dir,v 1.50tsi Exp $
+XCOMM	$XFree86: xc/nls/locale.dir,v 1.49 2005/02/25 18:25:35 dawes Exp $
 XCOMM
 
 C/XLC_LOCALE:				C
@@ -192,9 +192,9 @@ iso8859-1/XLC_LOCALE:			rw_RW.ISO8859-1
 iso8859-2/XLC_LOCALE: 			sh_YU.ISO8859-2
 iso8859-2/XLC_LOCALE: 			sk_SK.ISO8859-2
 iso8859-2/XLC_LOCALE: 			sl_SI.ISO8859-2
+iso8859-5/XLC_LOCALE: 			sp_YU.ISO8859-5
 iso8859-2/XLC_LOCALE: 			sq_AL.ISO8859-2
-iso8859-2/XLC_LOCALE:			sr_CS.ISO8859-2
-iso8859-5/XLC_LOCALE:			sr_CS.ISO8859-5
+iso8859-2/XLC_LOCALE:			sr_SP.ISO8859-2
 iso8859-2/XLC_LOCALE:			sr_YU.ISO8859-2
 iso8859-5/XLC_LOCALE:			sr_YU.ISO8859-5
 microsoft-cp1251/XLC_LOCALE:		sr_YU.CP1251
@@ -365,9 +365,6 @@ en_US.UTF-8/XLC_LOCALE:			si_LK.UTF-8
 en_US.UTF-8/XLC_LOCALE:			sk_SK.UTF-8
 en_US.UTF-8/XLC_LOCALE:			sl_SI.UTF-8
 en_US.UTF-8/XLC_LOCALE:			sq_AL.UTF-8
-en_US.UTF-8/XLC_LOCALE:			sr_CS.UTF-8
-en_US.UTF-8/XLC_LOCALE:			sr_ME.UTF-8
-en_US.UTF-8/XLC_LOCALE:			sr_RS.UTF-8
 en_US.UTF-8/XLC_LOCALE:			sr_YU.UTF-8
 en_US.UTF-8/XLC_LOCALE:			ss_ZA.UTF-8
 en_US.UTF-8/XLC_LOCALE:			st_ZA.UTF-8

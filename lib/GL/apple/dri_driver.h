@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/apple/dri_driver.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/lib/GL/apple/dri_driver.h,v 1.2 2003/10/31 02:22:12 torrey Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -37,7 +44,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define _DRI_DRIVER_H_
 
 #include "Xplugin.h"
-#include <X11/Xthreads.h>
+#include "Xthreads.h"
 #include <CoreGraphics/CoreGraphics.h>
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLContext.h>

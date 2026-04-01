@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_mouse.c,v 3.19 2005/10/14 15:17:06 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_mouse.c,v 3.18 2003/03/25 04:18:24 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * (c) Copyright 1994,1999,2000 by Holger Veit
  *			<Holger.Veit@gmd.de>
@@ -27,11 +34,12 @@
  * in this Software without prior written authorization from Holger Veit.
  *
  */
+/* $XConsortium: os2_mouse.c /main/10 1996/10/27 11:48:51 kaleb $ */
 
 #define I_NEED_OS2_H
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "inputstr.h"
 #include "scrnintstr.h"

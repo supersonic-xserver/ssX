@@ -1,3 +1,19 @@
+/* $Xorg: dirfile.c,v 1.4 2001/02/09 02:04:03 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1991, 1998  The Open Group
@@ -40,6 +56,7 @@ in this Software without prior written authorization from The Open Group.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <limits.h>
 
 static Bool AddFileNameAliases ( FontDirectoryPtr dir );
 static int ReadFontAlias ( char *directory, Bool isFile,
@@ -367,6 +384,9 @@ lexAlias(FILE *file, char **lexToken)
 	    int         nsize;
 	    char       *nbuf;
 
+            if (tokenSize >= (INT_MAX >> 2))
+                /* Stop before we overflow */
+                return EALLOC;
 	    nsize = tokenSize ? (tokenSize << 1) : 64;
 	    nbuf = (char *) xrealloc(tokenBuf, nsize);
 	    if (!nbuf)

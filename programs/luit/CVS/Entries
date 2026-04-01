@@ -1,0 +1,16 @@
+/Imakefile/1.1.1.3/Fri Mar  5 14:26:47 2004//Tnetbsd-5-2-3-RELEASE
+/charset.c/1.1.1.4/Fri Mar 18 13:08:01 2005//Tnetbsd-5-2-3-RELEASE
+/charset.h/1.1.1.2/Fri Feb 28 13:19:20 2003//Tnetbsd-5-2-3-RELEASE
+/iso2022.c/1.1.1.2/Fri Feb 28 13:19:20 2003//Tnetbsd-5-2-3-RELEASE
+/iso2022.h/1.1.1.2/Fri Feb 28 13:19:20 2003//Tnetbsd-5-2-3-RELEASE
+/locale.c/1.1.1.1/Sat Jan 19 15:15:06 2002//Tnetbsd-5-2-3-RELEASE
+/luit.c/1.1.1.4/Fri Mar 18 13:08:01 2005//Tnetbsd-5-2-3-RELEASE
+/luit.h/1.1.1.1/Sat Jan 19 15:15:07 2002//Tnetbsd-5-2-3-RELEASE
+/luit.man/1.1.1.4/Fri Mar 18 13:08:01 2005//Tnetbsd-5-2-3-RELEASE
+/other.c/1.1.1.2/Fri Mar  5 14:26:47 2004//Tnetbsd-5-2-3-RELEASE
+/other.h/1.1.1.2/Fri Mar  5 14:26:47 2004//Tnetbsd-5-2-3-RELEASE
+/parser.c/1.1.1.2/Fri Feb 28 13:19:20 2003//Tnetbsd-5-2-3-RELEASE
+/parser.h/1.1.1.1/Sat Jan 19 15:15:07 2002//Tnetbsd-5-2-3-RELEASE
+/sys.c/1.1.1.3/Fri Mar 18 13:08:01 2005//Tnetbsd-5-2-3-RELEASE
+/sys.h/1.1.1.2/Fri Mar  5 14:26:47 2004//Tnetbsd-5-2-3-RELEASE
+D

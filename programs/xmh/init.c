@@ -1,4 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XConsortium: init.c,v 2.81 95/01/25 14:56:39 swick Exp $
+ *
+ *
  *		        COPYRIGHT 1987, 1989
  *		   DIGITAL EQUIPMENT CORPORATION
  *		       MAYNARD, MASSACHUSETTS
@@ -256,10 +266,7 @@ static void _Die(
 
 /* All the start-up initialization goes here. */
 
-#include <stdlib.h>
-#ifndef _GNU_SOURCE
-extern char **environ;
-#endif
+extern char** environ;	/* POSIX doesn't specify a .h for this */
 
 void InitializeWorld(int argc, char **argv)
 {

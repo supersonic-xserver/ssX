@@ -36,7 +36,7 @@ SortIconManager
 
 SqueezeTitle
 {
-	"XTerm"		center	0	0
+	"XTerm"		center	0	0 
 	"Xsol"		center	0	0
 	"Spider"	center	0	0
 }
@@ -119,16 +119,16 @@ NoTitle
 # buttons
 #
 
-Button1 =	: root	: f.menu "button1"
-Button2 =	: root	: f.menu "Util_menu"
-Button3 =	: root	: f.menu "Hosts_menu"
-Button1 =	: m	: f.iconify
-Button2 =	: m	: f.lower
-Button1 =	: t	: f.function "move-or-raise"
-Button2 =	: t	: f.lower
-Button3 =	: t	: f.menu "window-ops"
-Button1 =	: i	: f.iconify
-Button2 =	: i	: f.function "move-or-raise"
+Button1 = 	: root	: f.menu "button1"
+Button2 = 	: root	: f.menu "Util_menu"
+Button3 = 	: root	: f.menu "Hosts_menu"
+Button1 = 	: m	: f.iconify
+Button2 = 	: m	: f.lower
+Button1 = 	: t	: f.function "move-or-raise"
+Button2 = 	: t	: f.lower
+Button3 = 	: t	: f.menu "window-ops"
+Button1 = 	: i	: f.iconify
+Button2 = 	: i	: f.function "move-or-raise"
 
 "F1"    =	: w|t|i	: f.iconify
 "F2"    =	: all	: f.refresh
@@ -147,7 +147,7 @@ menu "button1"
 #"Notepad"		!"/usr/bin/dxnotepad -display $DISPLAY&"
 #"Calculator"		!"xcalc -display $DISPLAY&"
 "Mail Box"		!"/usr/bin/X11/xbiff -display $DISPLAY&"
-"Clock"			!"oclock -display $DISPLAY &"
+"Clock"        		!"oclock -display $DISPLAY &"
 "Xterm"			!"/usr/bin/X11/xterm -ls -display $DISPLAY &"
 "Big Xterm"		!"/usr/bin/X11/xterm -ls -fn 9x15 -display $DISPLAY &"
 "xsol"			!"$HOME/games/bin/`arch`/xsol &"
@@ -183,9 +183,9 @@ menu "Apps_menu"
 #"FrameMaker"		!"rsh indian -n /usr/local/xframemaker $DISPLAY& "
 #"Calendar"		!"/usr/bin/dxcalendar -display $DISPLAY &"
 "Clock"                 !"/usr/bin/X11/xclock -display $DISPLAY &"
-#"Rolodex"		!"/usr/bin/dxcardfiler -display $DISPLAY &"
-#"Paint"			!"/usr/bin/dxpaint -display $DISPLAY &"
-"Lock Screen"		!"/usr/bin/X11/xlock & "
+#"Rolodex"       	!"/usr/bin/dxcardfiler -display $DISPLAY &"
+#"Paint"        		!"/usr/bin/dxpaint -display $DISPLAY &"
+"Lock Screen"    	!"/usr/bin/X11/xlock & "
 "Preferences"		!"/usr/bin/X11/xpref -display $DISPLAY&"
 "Xterm"			!"/usr/bin/X11/xterm -ls -display $DISPLAY &"
 }

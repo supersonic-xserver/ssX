@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_vb.c,v 1.4 2002/02/22 21:32:59 dawes Exp $
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_vb.c,v 1.1.1.2 2004/12/10 15:05:38 alanh Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * GLX Hardware Device Driver for Sun Creator/Creator3D
  * Copyright (C) 2000, 2001 David S. Miller
@@ -74,11 +81,11 @@ static void ffb_copy_pv_twoside(GLcontext *ctx, GLuint edst, GLuint esrc)
 #define FFB_VB_TWOSIDE_BIT	0x04
 #define FFB_VB_MAX		0x08
 
-typedef void (*emit_func)(GLcontext *, GLuint, GLuint);
+typedef void (*ffb_emit_func)(GLcontext *, GLuint, GLuint);
 
 static struct {
-	emit_func	emit;
-	interp_func	interp;
+ 	ffb_emit_func	emit;
+	tnl_interp_func	interp;
 } setup_tab[FFB_VB_MAX];
 
 

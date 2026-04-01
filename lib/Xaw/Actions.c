@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 1998 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +32,7 @@
  * XFree86 Project.
  */
 
-/* $XFree86: xc/lib/Xaw/Actions.c,v 3.17 2003/03/25 04:18:10 dawes Exp $ */
+/* $XFree86: xc/lib/Xaw/Actions.c,v 3.18 2004/01/23 03:57:58 dawes Exp $ */
 
 #include <ctype.h>
 #include <stdio.h>

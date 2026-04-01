@@ -1,3 +1,11 @@
+/* $Xorg: imRm.c,v 1.4 2000/08/17 19:45:14 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************
 
 	  Copyright 1990, 1991, 1992,1993, 1994 by FUJITSU LIMITED
@@ -29,7 +37,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			       makoto@sm.sony.co.jp
 
 ******************************************************************/
-/* $XFree86: xc/lib/X11/imRm.c,v 3.14tsi Exp $ */
+/* $XFree86: xc/lib/X11/imRm.c,v 3.13 2003/11/17 22:20:12 dawes Exp $ */
 
 #include <stdio.h>
 #include <X11/Xlib.h>
@@ -508,7 +516,7 @@ _XimDefaultArea(
     if(XGetGeometry(im->core.display, (Drawable)ic->core.focus_window,
 		&root_return, &x_return, &y_return, &width_return,
 		&height_return, &border_width_return, &depth_return)
-		== Success) {
+		== (Status)NULL) {
 	return True;
     }
     area.x	= 0;
@@ -537,7 +545,7 @@ _XimDefaultColormap(
 	return True;
     }
     if(XGetWindowAttributes(im->core.display, ic->core.client_window,
-					&win_attr) == Success) {
+					&win_attr) == (Status)NULL) {
 	return True;
     }
    

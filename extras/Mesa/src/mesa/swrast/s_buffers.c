@@ -1,5 +1,11 @@
-/* $XFree86$ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -193,7 +199,6 @@ _swrast_Clear( GLcontext *ctx, GLbitfield mask,
          DD_AUX2_BIT |
          DD_AUX3_BIT;
       assert((mask & (~legalBits)) == 0);
-      (void)legalBits;
    }
 #endif
 

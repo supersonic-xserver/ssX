@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 2002 David Dawes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,12 +33,10 @@
  *
  * Authors: David Dawes <dawes@xfree86.org>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/vbe/vbeModes.h,v 1.1tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/vbe/vbeModes.h,v 1.1 2003/02/17 17:06:46 dawes Exp $
  */
 
 #ifndef _VBE_MODES_H
-
-#include "vbe.h"
 
 /*
  * This is intended to be stored in the DisplayModeRec's private area.

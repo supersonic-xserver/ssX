@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/base/ftmac.c,v 1.7tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftmac.c                                                                */
 /*                                                                         */
@@ -15,6 +21,7 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
+/* $XFree86: xc/extras/freetype2/src/base/ftmac.c,v 1.6 2004/04/26 16:15:54 dawes Exp $ */
 
   /*
     Notes
@@ -62,13 +69,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_INTERNAL_STREAM_H
-#include FT_INTERNAL_OBJECTS_H
 
 #ifdef __GNUC__
-#if 0
 #include "../truetype/ttobjs.h"
 #include "../type1/t1objs.h"
-#endif
   /* This is for Mac OS X.  Without redefinition, OS_INLINE */
   /* expands to `static inline' which doesn't survive the   */
   /* -ansi compilation flag of GCC.                         */
@@ -256,8 +260,8 @@
                   FSSpec*              spec )
   {
     FT_Error  error;
-    short     ref_num, v_ref_num = 0;
-    long      dir_id = 0;
+    short     ref_num, v_ref_num;
+    long      dir_id;
     Str255    fond_file_name;
 
 
@@ -265,12 +269,10 @@
 
     error = ResError();
     if ( !error )
-    {
       error = get_file_location( ref_num, &v_ref_num,
                                  &dir_id, fond_file_name );
-      if ( !error )
-        error = FSMakeFSSpec( v_ref_num, dir_id, file_name, spec );
-    }
+    if ( !error )
+      error = FSMakeFSSpec( v_ref_num, dir_id, file_name, spec );
 
     return error;
   }
@@ -438,7 +440,8 @@
     FT_Error       error = FT_Err_Ok;
     short          res_id;
     unsigned char  *buffer, *p, *size_p = NULL;
-    FT_ULong       total_size = 0, old_total_size = 0;
+    FT_ULong       total_size = 0;
+    FT_ULong	   old_total_size = 0;
     FT_ULong       post_size, pfb_chunk_size;
     Handle         post_data;
     char           code, last_code;
@@ -471,13 +474,13 @@
       last_code = code;
     }
 
-    /* Detect integer overflows */
+    /* detect integer overflows */
     if ( total_size < old_total_size )
     {
-      error = FT_Err_Array_Too_Large;
-      goto Error;
-    }
-
+       error = FT_Err_Array_Too_Large;
+       goto Error;
+     }
+  	 
     old_total_size = total_size;
 
     if ( FT_ALLOC( buffer, (FT_Long)total_size ) )
@@ -687,8 +690,8 @@
                          FT_Long        face_index,
                          FT_Face       *aface )
   {
-    FT_Byte*  pfb_data = NULL;
-    FT_ULong  pfb_size = 0;
+    FT_Byte*  pfb_data;
+    FT_ULong  pfb_size;
     FT_Error  error;
     short     res_ref;
 
@@ -856,8 +859,8 @@
     OSStatus              status = FMCreateFontFamilyIterator( NULL, NULL,
                                                                options,
                                                                &famIter );
-    FMFont                the_font = 0;
-    FMFontFamily          family   = 0;
+    FMFont                the_font = NULL;
+    FMFontFamily          family   = NULL;
 
 
     *face_index = 0;
@@ -1026,13 +1029,11 @@
                            FT_Long       face_index,
                            FT_Face      *aface )
   {
-    FT_Error      error;
-#if defined( __MWERKS__ ) && !TARGET_RT_MAC_MACHO
     FT_Open_Args  args;
+    FT_Error      error;
     FT_Stream     stream;
     FILE*         file;
     FT_Memory     memory;
-#endif
 
 
     /* test for valid `library' and `aface' delayed to FT_Open_Face() */

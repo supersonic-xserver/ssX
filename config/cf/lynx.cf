@@ -1,6 +1,6 @@
-XCOMM platform:  $XFree86: xc/config/cf/lynx.cf,v 3.54tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/lynx.cf,v 3.53 2005/01/16 00:09:45 dawes Exp $
 /*
- * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -417,6 +417,8 @@ install.man::                                                           @@\
 #ifdef SparcArchitecture
 # define XsunLynxServer			YES
 # define XsunLynxMonoServer		NO
+# define BuildPexExt			YES
+# define BuildXIE			YES
 # ifndef BuildScreenSaverLibrary
 #  define BuildScreenSaverLibrary	YES
 # endif
@@ -426,6 +428,15 @@ install.man::                                                           @@\
 # define BuildXInputExt			NO
 # define BuildXF86MiscExt		NO
 # define BuildXF86VidModeExt		NO
+/*
+ * XFree86 uses its own (more portable) database routines to speed up 
+ * the RGB database lookups
+ * However, if you want to use ndbm anyway, you can set that to NO in 
+ * site.def
+ */
+# ifndef UseRgbTxt
+#  define UseRgbTxt	YES
+# endif
 #endif
 
 #if !defined(i386Architecture) && !defined(PpcArchitecture)

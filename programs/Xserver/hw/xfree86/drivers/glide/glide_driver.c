@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glide/glide_driver.c,v 1.34tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
 /* 
    XFree86 driver for Glide(tm). (Mainly for Voodoo 1 and 2 cards)
 
@@ -45,7 +52,9 @@
    * Support static loading.  
 */
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glide/glide_driver.c,v 1.28 2002/01/04 21:22:30 tsi Exp $ */
 
+#include "xaa.h"
 #include "xf86Cursor.h"
 #include "colormapst.h"
 #include "xf86.h"
@@ -57,12 +66,12 @@
 #include "xf86DDC.h"
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 #include "fb.h"
 #include "xf86cmap.h"
 #include "shadowfb.h"
 
-#include "glide.h"      /* Now a local header file */
+#include <glide.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -77,8 +86,9 @@ typedef signed char        s8;
 typedef unsigned char      u8;
 typedef signed short int   s16;
 typedef unsigned short int u16;
-typedef signed int         s32;
-typedef unsigned int       u32;
+typedef signed long int    s32;
+typedef unsigned long int  u32;
+typedef u8                 bool;
  
 /* Card-specific driver information */
 
@@ -93,6 +103,9 @@ typedef FxBool (*pgrSstWinOpen_t)(FxU32, GrScreenResolution_t, GrScreenRefresh_t
 typedef void (*pgrRenderBuffer_t)(GrBuffer_t);
 typedef void (*pgrClipWindow_t)(FxU32, FxU32, FxU32, FxU32);
 typedef void (*pgrBufferClear_t)(GrColor_t, GrAlpha_t, FxU16);
+typedef FxBool (*pgrLfbLock_t)(GrLock_t, GrBuffer_t, GrLfbWriteMode_t, GrOriginLocation_t, 
+                               FxBool, GrLfbInfo_t*);
+typedef FxBool (*pgrLfbUnlock_t)(GrLock_t, GrBuffer_t);
 typedef void (*pgrGlideShutdown_t)(void);
 
 
@@ -126,6 +139,8 @@ static pgrSstWinOpen_t     pgrSstWinOpen;
 static pgrRenderBuffer_t   pgrRenderBuffer;
 static pgrClipWindow_t     pgrClipWindow;
 static pgrBufferClear_t    pgrBufferClear;
+static pgrLfbLock_t        pgrLfbLock;
+static pgrLfbUnlock_t      pgrLfbUnlock;
 static pgrGlideShutdown_t  pgrGlideShutdown;
 static pgrLfbWriteRegion_t pgrLfbWriteRegion;
 
@@ -133,8 +148,7 @@ static const OptionInfoRec * GLIDEAvailableOptions(int chipid, int busid);
 static void	GLIDEIdentify(int flags);
 static Bool	GLIDEProbe(DriverPtr drv, int flags);
 static Bool	GLIDEPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool	GLIDEScreenInit(int Index, ScreenPtr pScreen,
-				const int argc, const char **argv);
+static Bool	GLIDEScreenInit(int Index, ScreenPtr pScreen, int argc, char **argv);
 static Bool	GLIDEEnterVT(int scrnIndex, int flags);
 static void	GLIDELeaveVT(int scrnIndex, int flags);
 static Bool	GLIDECloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -199,8 +213,8 @@ static SymTabRec GLIDEChipsets[] = {
  * List of symbols from other modules that this module references.  This
  * list is used to tell the loader that it is OK for symbols here to be
  * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderModReqSymbols() or
- * xf86LoaderModReqSymLists().  The purpose is this is to avoid warnings about
+ * told that they are essential via a call to xf86LoaderReqSymbols() or
+ * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
  * unresolved symbols that are not required.
  */
 
@@ -236,7 +250,7 @@ static XF86ModuleVersionInfo glideVersRec =
 XF86ModuleData glideModuleData = { &glideVersRec, glideSetup, NULL };
 
 static pointer
-glideSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+glideSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
   static Bool setupDone = FALSE;
   pointer ret;
@@ -290,7 +304,7 @@ glideSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
      * Tell the loader about symbols from other modules that this module
      * might refer to.
      */
-    LoaderModRefSymLists(module, fbSymbols, shadowSymbols, NULL);
+    LoaderRefSymLists(fbSymbols, shadowSymbols, NULL);
 
     /*
      * The return value must be non-NULL on success even though there
@@ -410,7 +424,7 @@ GLIDEProbe(DriverPtr drv, int flags)
 	    pScrn->EnterVT	 = GLIDEEnterVT;
 	    pScrn->LeaveVT	 = GLIDELeaveVT;
 	    pScrn->FreeScreen    = GLIDEFreeScreen;
-	    pScrn->driverPrivate = (void *)(unsigned long)sst;
+	    pScrn->driverPrivate = (void*)sst;
 	    /*
 	     * XXX This is a hack because don't have the PCI info.  Set it as
 	     * an ISA entity with no resources.
@@ -439,7 +453,6 @@ GLIDEPreInit(ScrnInfoPtr pScrn, int flags)
   int i;
   ClockRangePtr clockRanges;
   int sst;
-  ModuleDescPtr pMod;
 
   if (flags & PROBE_DETECT) return FALSE;
 
@@ -447,7 +460,7 @@ GLIDEPreInit(ScrnInfoPtr pScrn, int flags)
   if (pScrn->numEntities != 1)
     return FALSE;
 
-  sst = (int)(unsigned long)pScrn->driverPrivate;
+  sst = (int)(pScrn->driverPrivate);
   pScrn->driverPrivate = NULL;
 
   /* Set pScrn->monitor */
@@ -622,19 +635,19 @@ GLIDEPreInit(ScrnInfoPtr pScrn, int flags)
   xf86SetDpi(pScrn, 0, 0);
     
   /* Load fb */
-  if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+  if (xf86LoadSubModule(pScrn, "fb") == NULL) {
     GLIDEFreeRec(pScrn);
     return FALSE;
   }
 
-  xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+  xf86LoaderReqSymLists(fbSymbols, NULL);
 
   /* Load the shadow framebuffer */
-  if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+  if (!xf86LoadSubModule(pScrn, "shadowfb")) {
     GLIDEFreeRec(pScrn);
     return FALSE;
   }
-  xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+  xf86LoaderReqSymLists(shadowSymbols, NULL);
 
   return TRUE;
 }
@@ -643,8 +656,7 @@ GLIDEPreInit(ScrnInfoPtr pScrn, int flags)
 /* Mandatory */
 /* This gets called at the start of each server generation */
 static Bool
-GLIDEScreenInit(int scrnIndex, ScreenPtr pScreen,
-		const int argc, const char **argv)
+GLIDEScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
   ScrnInfoPtr pScrn;
   GLIDEPtr pGlide;
@@ -745,7 +757,7 @@ GLIDEScreenInit(int scrnIndex, ScreenPtr pScreen,
   }
 
 #if 0
-  LoaderCheckUnresolved(0);
+  LoaderCheckUnresolved(LD_RESOLV_NOW);
   return FALSE;
 #endif
 
@@ -950,6 +962,12 @@ GLIDEModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
   pgrClipWindow(0, 0, 1024, 768);
   pgrBufferClear(0, 0, GR_ZDEPTHVALUE_FARTHEST);
 
+  if (!r)
+  {
+    xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Could not lock glide frame buffer\n");
+    return FALSE;
+  }
+
   pGlide->Blanked = FALSE;
   pGlide->GlideInitiated = TRUE;
   return TRUE;
@@ -990,6 +1008,8 @@ LoadGlide(void)
   GLIDE_FIND_FUNC(grRenderBuffer);
   GLIDE_FIND_FUNC(grClipWindow);
   GLIDE_FIND_FUNC(grBufferClear);
+  GLIDE_FIND_FUNC(grLfbLock);
+  GLIDE_FIND_FUNC(grLfbUnlock);
   GLIDE_FIND_FUNC(grGlideShutdown);
   GLIDE_FIND_FUNC(grLfbWriteRegion);
   return TRUE;

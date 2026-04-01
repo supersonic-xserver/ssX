@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1992-2003 by Alan Hourihane, North Wales, UK.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -506,7 +513,6 @@ TridentInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
     /* Enable Chipset specific options */
     switch (pTrident->Chipset) {
-	case XP5:
 	case CYBERBLADEXP4:
 	case CYBERBLADEXPAI1:
 	case BLADEXP:
@@ -589,7 +595,6 @@ TridentInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     	    pReg->tridentRegs3x4[PixelBusReg] = 0x29;
 	    pReg->tridentRegsDAC[0x00] = 0xD0;
 	    if (pTrident->Chipset == CYBERBLADEXP4 ||
-	        pTrident->Chipset == XP5 ||
 	        pTrident->Chipset == CYBERBLADEE4) {
     		OUTB(vgaIOBase+ 4, New32);
 		pReg->tridentRegs3x4[New32] = INB(vgaIOBase + 5) & 0x7F;
@@ -598,7 +603,6 @@ TridentInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	case 32:
 	    pReg->tridentRegs3CE[MiscExtFunc] |= 0x02;
 	    if (pTrident->Chipset != CYBERBLADEXP4
-	        && pTrident->Chipset != XP5
 	        && pTrident->Chipset != CYBERBLADEE4
 		&& pTrident->Chipset != CYBERBLADEXPAI1) {
 	        /* Clock Division by 2*/
@@ -609,7 +613,6 @@ TridentInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     	    pReg->tridentRegs3x4[PixelBusReg] = 0x09;
 	    pReg->tridentRegsDAC[0x00] = 0xD0;
 	    if (pTrident->Chipset == CYBERBLADEXP4
-	        || pTrident->Chipset == XP5
 	        || pTrident->Chipset == CYBERBLADEE4
 		|| pTrident->Chipset == CYBERBLADEXPAI1) {
     		OUTB(vgaIOBase+ 4, New32);
@@ -739,8 +742,7 @@ TridentInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     	OUTB(0x3C5, protect);
     }
  
-    if (pTrident->Chipset == CYBERBLADEXP4 ||
-        pTrident->Chipset == XP5)
+    if (pTrident->Chipset == CYBERBLADEXP4)
     	pReg->tridentRegs3CE[DisplayEngCont] = 0x08;
 
     /* Avoid lockup on Blade3D, PCI Retry is permanently on */
@@ -819,10 +821,8 @@ TridentRestore(ScrnInfoPtr pScrn, TRIDENTRegPtr tridentReg)
     if (pTrident->Chipset >= CYBER9385)    OUTW_3x4(Enhancement0);
     if (pTrident->Chipset >= BLADE3D)      OUTW_3x4(RAMDACTiming);
     if (pTrident->Chipset == CYBERBLADEXP4 ||
-        pTrident->Chipset == XP5 ||
         pTrident->Chipset == CYBERBLADEE4) OUTW_3x4(New32);
-    if (pTrident->Chipset == CYBERBLADEXP4 ||
-        pTrident->Chipset == XP5) OUTW_3CE(DisplayEngCont);
+    if (pTrident->Chipset == CYBERBLADEXP4) OUTW_3CE(DisplayEngCont);
     if (pTrident->IsCyber) {
 	CARD8 tmp;
 
@@ -953,10 +953,8 @@ TridentSave(ScrnInfoPtr pScrn, TRIDENTRegPtr tridentReg)
     if (pTrident->Chipset >= CYBER9385)    INB_3x4(Enhancement0);
     if (pTrident->Chipset >= BLADE3D)      INB_3x4(RAMDACTiming);
     if (pTrident->Chipset == CYBERBLADEXP4 ||
-        pTrident->Chipset == XP5 ||
         pTrident->Chipset == CYBERBLADEE4) INB_3x4(New32);
-    if (pTrident->Chipset == CYBERBLADEXP4 ||
-        pTrident->Chipset == XP5) INB_3CE(DisplayEngCont);
+    if (pTrident->Chipset == CYBERBLADEXP4) INB_3CE(DisplayEngCont);
     if (pTrident->IsCyber) {
 	CARD8 tmp;
 	INB_3CE(VertStretch);
@@ -1191,7 +1189,6 @@ TridentHWCursorInit(ScreenPtr pScreen)
 		HARDWARE_CURSOR_SWAP_SOURCE_AND_MASK |
 		HARDWARE_CURSOR_SOURCE_MASK_INTERLEAVE_32 |
                 ((pTrident->Chipset == CYBERBLADEXP4 ||
-                  pTrident->Chipset == XP5 ||
                   pTrident->Chipset == CYBERBLADEE4) ? 
                 HARDWARE_CURSOR_TRUECOLOR_AT_8BPP : 0);
     infoPtr->SetCursorColors = TridentSetCursorColors;

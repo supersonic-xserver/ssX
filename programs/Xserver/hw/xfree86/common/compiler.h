@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/compiler.h,v 3.114 2006/02/18 03:31:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/compiler.h,v 3.108 2004/04/03 22:26:23 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -22,7 +29,7 @@
  *
  */
 /*
- * Copyright (c) 1994-2005 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -67,6 +74,8 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/* $XConsortium: compiler.h /main/16 1996/10/25 15:38:34 kaleb $ */
 
 #ifndef _COMPILER_H
 
@@ -137,6 +146,7 @@ extern int ffs(unsigned long);
 # if defined(NO_INLINE) || defined(DO_PROTOTYPES)
 
 #  if !defined(__sparc__) && !defined(__arm32__) \
+      && !defined(__arm__) \
       && !(defined(__alpha__) && defined(linux))
 
 extern void outb(unsigned short, unsigned char);
@@ -146,7 +156,7 @@ extern unsigned int inb(unsigned short);
 extern unsigned int inw(unsigned short);
 extern unsigned int inl(unsigned short);
 
-#  else /* __sparc__,  __arm32__, __alpha__*/
+#  else /* __sparc__,  __arm32__, __arm__, __alpha__*/
 
 extern void outb(unsigned long, unsigned char);
 extern void outw(unsigned long, unsigned short);
@@ -155,7 +165,7 @@ extern unsigned int inb(unsigned long);
 extern unsigned int inw(unsigned long);
 extern unsigned int inl(unsigned long);
 
-#  endif /* __sparc__,  __arm32__, __alpha__ */
+#  endif /* __sparc__,  __arm32__, __arm__, __alpha__ */
 
 extern unsigned long ldq_u(unsigned long *);
 extern unsigned long ldl_u(unsigned int *);
@@ -170,38 +180,6 @@ extern void stw_brx(unsigned short, volatile unsigned char *, int);
 extern unsigned long ldl_brx(volatile unsigned char *, int);
 extern unsigned short ldw_brx(volatile unsigned char *, int);
 
-#  if (defined(linux) || defined(Lynx) || defined(sun) || defined(__OpenBSD__) || defined(__FreeBSD__)) && defined(__sparc__)
-unsigned char xf86ReadMmio8(__volatile__ void *base,
-			    const unsigned long offset);
-unsigned short xf86ReadMmio16Be(__volatile__ void *base,
-				const unsigned long offset);
-unsigned short xf86ReadMmio16Le(__volatile__ void *base,
-				const unsigned long offset);
-unsigned int xf86ReadMmio32Be(__volatile__ void *base,
-			      const unsigned long offset);
-unsigned int xf86ReadMmio32Le(__volatile__ void *base,
-			      const unsigned long offset);
-void xf86WriteMmio8(__volatile__ void *base, const unsigned long offset,
-		   const unsigned int val);
-void xf86WriteMmio16Be(__volatile__ void *base, const unsigned long offset,
-		       const unsigned int val);
-void xf86WriteMmio16Le(__volatile__ void *base, const unsigned long offset,
-		       const unsigned int val);
-void xf86WriteMmio32Be(__volatile__ void *base, const unsigned long offset,
-		       const unsigned int val);
-void xf86WriteMmio32Le(__volatile__ void *base, const unsigned long offset,
-		       const unsigned int val);
-void xf86WriteMmio8NB(__volatile__ void *base, const unsigned long offset,
-		      const unsigned int val);
-void xf86WriteMmio16BeNB(__volatile__ void *base, const unsigned long offset,
-			 const unsigned int val);
-void xf86WriteMmio16LeNB(__volatile__ void *base, const unsigned long offset,
-			 const unsigned int val);
-void xf86WriteMmio32BeNB(__volatile__ void *base, const unsigned long offset,
-			 const unsigned int val);
-void xf86WriteMmio32LeNB(__volatile__ void *base, const unsigned long offset,
-			 const unsigned int val);
-#  endif /* sparc */
 # endif
 
 # ifndef NO_INLINE
@@ -276,7 +254,29 @@ extern unsigned int inl(unsigned int port);
 
 
 #if defined(__NetBSD__)
+#if defined(XFree86Server)
+
+/*
+ * Wrapper functions for macros defined in "machine/pio.h" which we
+ * cannot use while building a XFree86 module because of type clashes.
+ */
+
+extern void netbsd_alpha_outb(unsigned long port, unsigned char val);
+extern void netbsd_alpha_outw(unsigned long port, unsigned short val);
+extern void netbsd_alpha_outl(unsigned long port, unsigned int val);
+extern unsigned char netbsd_alpha_inb(unsigned long port);
+extern unsigned short netbsd_alpha_inw(unsigned long port);
+extern unsigned int netbsd_alpha_inl(unsigned long port);
+
+#define	outb	netbsd_alpha_outb
+#define	outw	netbsd_alpha_outw
+#define	outl	netbsd_alpha_outl
+#define	inb	netbsd_alpha_inb
+#define	inw	netbsd_alpha_inw
+#define	inl	netbsd_alpha_inl
+#else
 #include <machine/pio.h>
+#endif
 #endif /* __NetBSD__ */
 
 /*
@@ -543,7 +543,7 @@ __ustw (unsigned long r5, unsigned short * r11)
 #    define outw(a,b)	_outw(b,a)
 #    define outl(a,b)	_outl(b,a) 
 
-#   elif defined(linux) && (defined(__amd64__) || defined(__x86_64__))
+#   elif defined(linux) && defined(__AMD64__) 
  
 #    include <inttypes.h>
 
@@ -609,25 +609,18 @@ inl(unsigned short port)
    return ret;
 }
 
-#   elif (defined(linux) || defined(Lynx) || defined(sun) || defined(__OpenBSD__) || defined(__FreeBSD__)) && defined(__sparc__)
+#   elif (defined(linux) || defined(Lynx) || defined(sun) || defined(__OpenBSD__) || defined(__FreeBSD__) || defined(__NetBSD__)) && defined(__sparc__)
 
 #    if !defined(Lynx)
 #     ifndef ASI_PL
 #      define ASI_PL 0x88
 #     endif
 
-/*
- * MEMBAR instruction coded to be acceptable even to an assembler not
- * expecting it in its input stream.  This has been changed to "membar"
- * everything and is now used to bracket most accesses for fault-isolation
- * purposes.
- */
-#     define barrier() __asm__ __volatile__(".word 0x8143e07f": : :"memory")
+#     define barrier() __asm__ __volatile__(".word 0x8143e00a": : :"memory")
 
 static __inline__ void
 outb(unsigned long port, unsigned char val)
 {
-	barrier();
 	__asm__ __volatile__("stba %0, [%1] %2"
 			     : /* No outputs */
 			     : "r" (val), "r" (port), "i" (ASI_PL));
@@ -637,7 +630,6 @@ outb(unsigned long port, unsigned char val)
 static __inline__ void
 outw(unsigned long port, unsigned short val)
 {
-	barrier();
 	__asm__ __volatile__("stha %0, [%1] %2"
 			     : /* No outputs */
 			     : "r" (val), "r" (port), "i" (ASI_PL));
@@ -647,7 +639,6 @@ outw(unsigned long port, unsigned short val)
 static __inline__ void
 outl(unsigned long port, unsigned int val)
 {
-	barrier();
 	__asm__ __volatile__("sta %0, [%1] %2"
 			     : /* No outputs */
 			     : "r" (val), "r" (port), "i" (ASI_PL));
@@ -658,12 +649,9 @@ static __inline__ unsigned int
 inb(unsigned long port)
 {
 	unsigned int ret;
-
-	barrier();
 	__asm__ __volatile__("lduba [%1] %2, %0"
 			     : "=r" (ret)
 			     : "r" (port), "i" (ASI_PL));
-	barrier();
 	return ret;
 }
 
@@ -671,12 +659,9 @@ static __inline__ unsigned int
 inw(unsigned long port)
 {
 	unsigned int ret;
-
-	barrier();
 	__asm__ __volatile__("lduha [%1] %2, %0"
 			     : "=r" (ret)
 			     : "r" (port), "i" (ASI_PL));
-	barrier();
 	return ret;
 }
 
@@ -684,12 +669,9 @@ static __inline__ unsigned int
 inl(unsigned long port)
 {
 	unsigned int ret;
-
-	barrier();
 	__asm__ __volatile__("lda [%1] %2, %0"
 			     : "=r" (ret)
 			     : "r" (port), "i" (ASI_PL));
-	barrier();
 	return ret;
 }
 
@@ -699,11 +681,9 @@ xf86ReadMmio8(__volatile__ void *base, const unsigned long offset)
 	unsigned long addr = ((unsigned long)base) + offset;
 	unsigned char ret;
 
-	barrier();
 	__asm__ __volatile__("lduba [%1] %2, %0"
 			     : "=r" (ret)
 			     : "r" (addr), "i" (ASI_PL));
-	barrier();
 	return ret;
 }
 
@@ -713,11 +693,9 @@ xf86ReadMmio16Be(__volatile__ void *base, const unsigned long offset)
 	unsigned long addr = ((unsigned long)base) + offset;
 	unsigned short ret;
 
-	barrier();
 	__asm__ __volatile__("lduh [%1], %0"
 			     : "=r" (ret)
 			     : "r" (addr));
-	barrier();
 	return ret;
 }
 
@@ -727,11 +705,9 @@ xf86ReadMmio16Le(__volatile__ void *base, const unsigned long offset)
 	unsigned long addr = ((unsigned long)base) + offset;
 	unsigned short ret;
 
-	barrier();
 	__asm__ __volatile__("lduha [%1] %2, %0"
 			     : "=r" (ret)
 			     : "r" (addr), "i" (ASI_PL));
-	barrier();
 	return ret;
 }
 
@@ -741,11 +717,9 @@ xf86ReadMmio32Be(__volatile__ void *base, const unsigned long offset)
 	unsigned long addr = ((unsigned long)base) + offset;
 	unsigned int ret;
 
-	barrier();
 	__asm__ __volatile__("ld [%1], %0"
 			     : "=r" (ret)
 			     : "r" (addr));
-	barrier();
 	return ret;
 }
 
@@ -755,11 +729,9 @@ xf86ReadMmio32Le(__volatile__ void *base, const unsigned long offset)
 	unsigned long addr = ((unsigned long)base) + offset;
 	unsigned int ret;
 
-	barrier();
 	__asm__ __volatile__("lda [%1] %2, %0"
 			     : "=r" (ret)
 			     : "r" (addr), "i" (ASI_PL));
-	barrier();
 	return ret;
 }
 
@@ -769,7 +741,6 @@ xf86WriteMmio8(__volatile__ void *base, const unsigned long offset,
 {
 	unsigned long addr = ((unsigned long)base) + offset;
 
-	barrier();
 	__asm__ __volatile__("stba %0, [%1] %2"
 			     : /* No outputs */
 			     : "r" (val), "r" (addr), "i" (ASI_PL));
@@ -782,7 +753,6 @@ xf86WriteMmio16Be(__volatile__ void *base, const unsigned long offset,
 {
 	unsigned long addr = ((unsigned long)base) + offset;
 
-	barrier();
 	__asm__ __volatile__("sth %0, [%1]"
 			     : /* No outputs */
 			     : "r" (val), "r" (addr));
@@ -795,7 +765,6 @@ xf86WriteMmio16Le(__volatile__ void *base, const unsigned long offset,
 {
 	unsigned long addr = ((unsigned long)base) + offset;
 
-	barrier();
 	__asm__ __volatile__("stha %0, [%1] %2"
 			     : /* No outputs */
 			     : "r" (val), "r" (addr), "i" (ASI_PL));
@@ -808,7 +777,6 @@ xf86WriteMmio32Be(__volatile__ void *base, const unsigned long offset,
 {
 	unsigned long addr = ((unsigned long)base) + offset;
 
-	barrier();
 	__asm__ __volatile__("st %0, [%1]"
 			     : /* No outputs */
 			     : "r" (val), "r" (addr));
@@ -821,7 +789,6 @@ xf86WriteMmio32Le(__volatile__ void *base, const unsigned long offset,
 {
 	unsigned long addr = ((unsigned long)base) + offset;
 
-	barrier();
 	__asm__ __volatile__("sta %0, [%1] %2"
 			     : /* No outputs */
 			     : "r" (val), "r" (addr), "i" (ASI_PL));
@@ -976,14 +943,16 @@ static __inline__ void stw_u(unsigned long val, unsigned short *p)
 #    define mem_barrier()         /* XXX: nop for now */
 #    define write_mem_barrier()   /* XXX: nop for now */
 
-#   elif defined(__mips__) || defined(__arm32__)
-#ifdef __arm32__
+#   elif defined(__mips__) || defined(__arm32__) || defined(__arm__) || defined(__sh__)
+#if defined(__sh__)
+#define PORT_SIZE int
+#elif defined(__arm32__) || defined(__arm__)
 #define PORT_SIZE long
 #else
 #define PORT_SIZE short
 #endif
 
-unsigned int IOPortBase;  /* Memory mapped I/O port area */
+extern unsigned int IOPortBase;  /* Memory mapped I/O port area */
 
 static __inline__ void
 outb(unsigned PORT_SIZE port, unsigned char val)
@@ -1130,11 +1099,26 @@ xf86WriteMmio32Be(__volatile__ void *base, const unsigned long offset,
 #      define stw_u(v,p)	(*(unsigned char *)(p)) = (v); \
 				(*(unsigned char *)(p)+1) = ((v) >> 8)
 
+#if defined(__NetBSD__)
+#      define mem_barrier() \
+        __asm__ __volatile__(					\
+		"# prevent instructions being moved around\n\t"	\
+       		".set\tnoreorder\n\t"				\
+		"# 8 nops to fool the R4400 pipeline\n\t"	\
+		"nop;nop;nop;nop;nop;nop;nop;nop\n\t"		\
+		".set\treorder"					\
+		: /* no output */				\
+		: /* no input */				\
+		: "memory")
+#      define write_mem_barrier() mem_barrier()
+#else
 #      define mem_barrier()   /* NOP */
+#endif
+
 #     endif /* !linux */
 #    endif /* __mips__ */
 
-#    if defined(__arm32__)
+#    if defined(__arm32__) || defined(__arm__) || defined(__sh__)
 #     define ldq_u(p)	(*((unsigned long  *)(p)))
 #     define ldl_u(p)	(*((unsigned int   *)(p)))
 #     define ldw_u(p)	(*((unsigned short *)(p)))
@@ -1143,7 +1127,7 @@ xf86WriteMmio32Be(__volatile__ void *base, const unsigned long offset,
 #     define stw_u(v,p)	(*(unsigned short *)(p)) = (v)
 #     define mem_barrier()	/* NOP */
 #     define write_mem_barrier()	/* NOP */
-#    endif /* __arm32__ */
+#    endif /* __arm32__ || __arm__ || __sh__ */
 
 #   elif (defined(Lynx) || defined(linux) || defined(__OpenBSD__) || defined(__NetBSD__)) && defined(__powerpc__)
 
@@ -1701,25 +1685,25 @@ extern void outl(unsigned port, unsigned val);
 
 # ifdef __alpha__
 /* entry points for Mmio memory access routines */
-extern int (*xf86ReadMmio8)(volatile void *, unsigned long);
-extern int (*xf86ReadMmio16)(volatile void *, unsigned long);
+extern int (*xf86ReadMmio8)(void *, unsigned long);
+extern int (*xf86ReadMmio16)(void *, unsigned long);
 #  ifndef STANDALONE_MMIO
-extern int (*xf86ReadMmio32)(volatile void *, unsigned long);
+extern int (*xf86ReadMmio32)(void *, unsigned long);
 #  else
 /* Some DRI 3D drivers need MMIO_IN32. */
 static __inline__ int
-xf86ReadMmio32(volatile void *Base, unsigned long Offset)
+xf86ReadMmio32(void *Base, unsigned long Offset)
 {
 	__asm__ __volatile__("mb"  : : : "memory");
 	return *(volatile CARD32*)((unsigned long)Base+(Offset));
 }
 #  endif
-extern void (*xf86WriteMmio8)(int, volatile void *, unsigned long);
-extern void (*xf86WriteMmio16)(int, volatile void *, unsigned long);
-extern void (*xf86WriteMmio32)(int, volatile void *, unsigned long);
-extern void (*xf86WriteMmioNB8)(int, volatile void *, unsigned long);
-extern void (*xf86WriteMmioNB16)(int, volatile void *, unsigned long);
-extern void (*xf86WriteMmioNB32)(int, volatile void *, unsigned long);
+extern void (*xf86WriteMmio8)(int, void *, unsigned long);
+extern void (*xf86WriteMmio16)(int, void *, unsigned long);
+extern void (*xf86WriteMmio32)(int, void *, unsigned long);
+extern void (*xf86WriteMmioNB8)(int, void *, unsigned long);
+extern void (*xf86WriteMmioNB16)(int, void *, unsigned long);
+extern void (*xf86WriteMmioNB32)(int, void *, unsigned long);
 extern void xf86JensenMemToBus(char *, long, long, int);
 extern void xf86JensenBusToMem(char *, char *, unsigned long, int);
 extern void xf86SlowBCopyFromBus(unsigned char *, unsigned char *, int);
@@ -1800,7 +1784,7 @@ extern void xf86SlowBCopyToBus(unsigned char *, unsigned char *, int);
 #  define MMIO_MOVE32(base, offset, val) \
        xf86WriteMmio32Be(base, offset, (CARD32)(val))
 
-static __inline__ void ppc_flush_icache(void *addr)
+static __inline__ void ppc_flush_icache(char *addr)
 {
 	__asm__ volatile (
 		"dcbf 0,%0;" 

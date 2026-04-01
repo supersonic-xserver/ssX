@@ -1,4 +1,9 @@
-/* $XFree86$ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -53,7 +58,7 @@ static char nuls[10];		/* place to point scanner in event of error */
 #define	NEXTn(n)	(p->next += (n))
 #define	GETNEXT()	(*p->next++)
 #define	SETERROR(e)	seterr(p, (e))
-#define	REQUIRE(co, e)	(void)((co) || SETERROR(e))
+#define	REQUIRE(co, e)	((co) || SETERROR(e))
 #define	MUSTSEE(c, e)	(REQUIRE(MORE() && PEEK() == (c), e))
 #define	MUSTEAT(c, e)	(REQUIRE(MORE() && GETNEXT() == (c), e))
 #define	MUSTNOTSEE(c, e)	(REQUIRE(!MORE() || PEEK() != (c), e))
@@ -194,8 +199,8 @@ register struct parse *p;
 int stop;			/* character this ERE should end at */
 {
 	register char c;
-	register sopno prevback = 0;
-	register sopno prevfwd = 0;
+	register sopno prevback;
+	register sopno prevfwd;
 	register sopno conc;
 	register int first = 1;		/* is this the first alternative? */
 
@@ -1171,10 +1176,9 @@ register char *cp;
 	cs->multis[cs->smultis - 1] = '\0';
 }
 
-#if 0
 /*
  - mcsub - subtract a collating element from a cset
- X== static void mcsub(register cset *cs, register char *cp);
+ == static void mcsub(register cset *cs, register char *cp);
  */
 static void
 mcsub(cs, cp)
@@ -1201,7 +1205,7 @@ register char *cp;
 
 /*
  - mcin - is a collating element in a cset?
- X== static int mcin(register cset *cs, register char *cp);
+ == static int mcin(register cset *cs, register char *cp);
  */
 static int
 mcin(cs, cp)
@@ -1213,7 +1217,7 @@ register char *cp;
 
 /*
  - mcfind - find a collating element in a cset
- X== static char *mcfind(register cset *cs, register char *cp);
+ == static char *mcfind(register cset *cs, register char *cp);
  */
 static char *
 mcfind(cs, cp)
@@ -1229,7 +1233,6 @@ register char *cp;
 			return(p);
 	return(NULL);
 }
-#endif
 
 /*
  - mcinvert - invert the list of collating elements in a cset
@@ -1499,8 +1502,8 @@ struct parse *p;
 register struct re_guts *g;
 {
 	register sop *scan;
-	sop *start = NULL;
-	register sop *newstart = NULL;
+	sop *start;
+	register sop *newstart;
 	register sopno newlen;
 	register sop s;
 	register char *cp;

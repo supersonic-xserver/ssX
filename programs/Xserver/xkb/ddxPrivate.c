@@ -1,11 +1,25 @@
-/* $XFree86: xc/programs/Xserver/xkb/ddxPrivate.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/ddxPrivate.c,v 1.3 2003/11/17 22:20:45 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <stdio.h>
 #define NEED_EVENTS 1
 #include <X11/X.h>
 #include "windowstr.h"
 #define XKBSRV_NEED_FILE_FUNCS
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 
 #ifdef XF86DDXACTIONS
 #include "xf86.h"

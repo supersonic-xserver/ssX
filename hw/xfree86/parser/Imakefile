@@ -1,0 +1,37 @@
+/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Imakefile,v 1.16 2006/08/09 20:53:15 dawes Exp $ */
+
+
+#include <Server.tmpl>
+
+SYS_LIBRARIES = MathLibrary
+
+XCONFIGFILE = XConfigFile
+XCONFIGDIR = XConfigDir
+XVERS = XFree86Version
+
+SRCS = Device.c Files.c Flags.c Input.c Keyboard.c Layout.c Module.c \
+	Video.c Monitor.c Pointer.c Screen.c Vendor.c read.c scan.c write.c \
+	cpconfig.c
+OBJS = Device.o Files.o Flags.o Input.o Keyboard.o Layout.o Module.o \
+	Video.o Monitor.o Pointer.o Screen.o Vendor.o read.o scan.o write.o \
+	DRI.o
+
+#if HasAsprintf
+ASPRINTF_DEFINES = -DHAS_ASPRINTF
+#endif
+
+CONFIG_DEFINES = -DXCONFIGDIR=\"$(XCONFIGDIR)\" \
+		 -DXCONFIGFILE=\"$(XCONFIGFILE)\" \
+		 -DXVERSION="$(XVERS)" $(ASPRINTF_DEFINES)
+
+NormalAsmObjectRule()
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(xf86config,$(OBJS))
+
+SpecialCObjectRule(scan,NullParameter,$(CONFIG_DEFINES) $(MODULEDEFINES) $(EXT_DEFINES))
+
+NormalProgramTarget(cpconfig,cpconfig.o $(OBJS),NullParameter,$(LOCAL_LIBRARIES),NullParameter)
+
+AllTarget(ProgramTargetName(cpconfig))
+DependTarget()

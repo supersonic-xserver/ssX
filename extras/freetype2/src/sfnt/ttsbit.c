@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ttsbit.c                                                               */
 /*                                                                         */
@@ -14,7 +21,7 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
-/* $XFree86: xc/extras/freetype2/src/sfnt/ttsbit.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/extras/freetype2/src/sfnt/ttsbit.c,v 1.4 2004/12/31 02:56:02 tsi Exp $ */
 
 
 #include <ft2build.h>

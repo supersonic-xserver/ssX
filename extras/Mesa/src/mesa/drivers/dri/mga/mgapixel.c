@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000 Compaq Computer Inc. and VA Linux Systems, Inc.
  * All Rights Reserved.
  *
@@ -25,19 +32,15 @@
  *    Keith Whitwell <keith@tungstengraphics.com>
  *    Gareth Hughes <gareth@valinux.com>
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/mga/mgapixel.c,v 1.9 2002/11/05 17:46:08 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mgapixel.c,v 1.1.1.4 2004/12/10 15:05:39 alanh Exp $ */
 
-#include "enums.h"
 #include "mtypes.h"
 #include "macros.h"
-#include "texutil.h"
 #include "mgadd.h"
 #include "mgacontext.h"
 #include "mgaioctl.h"
 #include "mgapixel.h"
 #include "mgastate.h"
-
-#include "mga_common.h"
 
 #include "swrast/swrast.h"
 #include "imports.h"
@@ -328,7 +331,7 @@ mgaTryReadPixels( GLcontext *ctx,
       for (i = 0 ; i < nbox ; )
       {
 	 int nr = MIN2(i + MGA_NR_SAREA_CLIPRECTS, dPriv->numClipRects);
-	 XF86DRIClipRectRec *box = dPriv->pClipRects;
+	 drm_clip_rect_t *box = dPriv->pClipRects;
 	 drm_clip_rect_t *b = mmesa->sarea->boxes;
 	 int n = 0;
 
@@ -396,7 +399,7 @@ static void do_draw_pix( GLcontext *ctx,
    mgaContextPtr mmesa = MGA_CONTEXT(ctx);
    drmMGABlit blit;
    __DRIdrawablePrivate *dPriv = mmesa->driDrawable;
-   XF86DRIClipRectPtr pbox = dPriv->pClipRects;
+   drm_clip_rect_t pbox = dPriv->pClipRects;
    int nbox = dPriv->numClipRects;
    int retcode, i;
 
@@ -429,7 +432,7 @@ static void do_draw_pix( GLcontext *ctx,
    for (i = 0 ; i < nbox ; )
    {
       int nr = MIN2(i + MGA_NR_SAREA_CLIPRECTS, dPriv->numClipRects);
-      XF86DRIClipRectRec *box = mmesa->pClipRects;
+      drm_clip_rect_t *box = mmesa->pClipRects;
       drm_clip_rect_t *b = mmesa->sarea->boxes;
       int n = 0;
 

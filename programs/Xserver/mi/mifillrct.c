@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mifillrct.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mifillrct.c,v 1.3 2001/12/14 20:00:22 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,9 +52,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mifillrct.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
 #include "pixmap.h"
@@ -64,20 +72,23 @@ SOFTWARE.
  * clipping to the destination
  */
 void
-miPolyFillRect(DrawablePtr pDrawable, GCPtr pGC, int nrectFill,
-	       xRectangle *prectInit)
+miPolyFillRect(pDrawable, pGC, nrectFill, prectInit)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		nrectFill; 	/* number of rectangles to fill */
+    xRectangle	*prectInit;  	/* Pointer to first rectangle to fill */
 {
     int i;
-    int	height;
-    int	width;
-    xRectangle *prect; 
+    register int	height;
+    register int	width;
+    register xRectangle *prect; 
     int			xorg;
-    int	yorg;
+    register int	yorg;
     int			maxheight;
     DDXPointPtr		pptFirst;
-    DDXPointPtr ppt;
+    register DDXPointPtr ppt;
     int			*pwFirst;
-    int 	*pw;
+    register int 	*pw;
 
     if (pGC->miTranslate)
     {

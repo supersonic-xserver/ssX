@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/GL/mesa/GLcore/GLcoremodule.c,v 1.1 2002/02/25 00:45:41 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -53,7 +60,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData GLcoreModuleData = { &VersRec, GLcoreSetup, NULL };
 
 static pointer
-GLcoreSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+GLcoreSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     /* Need a non-NULL return value to indicate success */
     return (pointer)1;

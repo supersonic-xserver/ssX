@@ -1,3 +1,4 @@
+.\" $Xorg: Standards.cpp,v 1.3 2000/08/17 19:42:04 cpqbld Exp $
 .\" Copyright (c) 1993, 1994, 1996  X Consortium
 .\" 
 .\" Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +25,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from the X Consortium.
 .\"
-.\" $XFree86: xc/doc/man/general/Standards.man,v 1.5tsi Exp $
+.\" $XFree86: xc/doc/man/general/Standards.man,v 1.5 2005/02/11 03:03:10 dawes Exp $
 .\"
 .\"
 .TH XSTANDARDS __miscmansuffix__ __vendorversion__
@@ -108,6 +109,14 @@ Version 2.0
 X Version 11, Release 6.4
 Jim Fulton
 
+PEX Protocol Specification
+Version 5.1
+Cheryl Huntington (architect), Paula Womack (editor)
+
+PEXlib Specification and C Language Binding
+Version 5.1
+Jeff Stevenson
+
 Inter-Client Exchange (ICE) Protocol
 Version 1.0
 X Version 11, Release 6.4
@@ -137,6 +146,11 @@ X Synchronization Extension
 Version 3.0
 X Version 11, Release 6.4
 Tim Glauert, Dave Carver, Jim Gettys, David P. Wiggins
+
+X Image Extension, Protocol Reference Manual
+Version 5.0
+X Version 11, Release 6.4
+Bob Shelley
 
 XTEST Extension
 Version 2.2
@@ -218,6 +232,23 @@ X Display Power Management (DPMS) Extension Protocol and Library
 Version 1.0
 Rob Lembree
 
+.SH "DRAFT STANDARDS"
+The following documents are currently draft standards of the X Consortium.
+.nf
+
+X Image Extension Library
+Public Review Draft
+Gary Rogers
+
+PEX Protocol Specification
+Version 5.2
+Jeff Stevenson (architect), Jane Sczechowski (editor)
+
+PEXlib Specification and C Language Binding
+Version 5.2
+Karl Schultz
+.fi
+
 .SH "INCLUDE FILES"
 The following include files are part of the Xlib standard.
 .PP
@@ -274,6 +305,16 @@ The following include files are part of the X Input Extension standard.
 <X11/extensions/XIproto.h>
 .fi
 .PP
+The following include files are part of the PEXlib standard.
+.PP
+.nf
+<X11/PEX5/PEX.h>
+<X11/PEX5/PEXlib.h>
+<X11/PEX5/PEXlibint.h>
+<X11/PEX5/PEXproto.h>
+<X11/PEX5/PEXprotost.h>
+.fi
+.PP
 The following include files are part of the ICElib standard.
 .PP
 .nf
@@ -297,6 +338,15 @@ The following include file is part of the Synchronization standard.
 .PP
 .nf
 <X11/extensions/sync.h>
+.fi
+.PP
+The following include files are part of the XIElib draft standard.
+.PP
+.nf
+<X11/extensions/XIE.h>
+<X11/extensions/XIElib.h>
+<X11/extensions/XIEproto.h>
+<X11/extensions/XIEprotost.h>
 .fi
 .PP
 The following include file is part of the XTEST standard.

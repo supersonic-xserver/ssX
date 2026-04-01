@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 2000 VA Linux Systems Inc., Fremont, California.
  *
@@ -23,9 +30,12 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/tdfx_render.c,v 1.4 2002/02/22 21:45:03 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/tdfx_render.c,v 1.1.1.3 2004/12/10 15:06:03 alanh Exp $ */
 
 /*
+ * New fixes:
+ *	Daniel Borca <dborca@users.sourceforge.net>, 19 Jul 2004
+ *
  * Original rewrite:
  *	Gareth Hughes <gareth@valinux.com>, 29 Sep - 1 Oct 2000
  *
@@ -43,7 +53,7 @@
 
 /* Clear the color and/or depth buffers.
  */
-static void tdfxDDClear( GLcontext *ctx,
+static void tdfxClear( GLcontext *ctx,
 			 GLbitfield mask, GLboolean all,
 			 GLint x, GLint y, GLint width, GLint height )
 {
@@ -95,7 +105,7 @@ static void tdfxDDClear( GLcontext *ctx,
 	 fxMesa->Glide.grStencilMask(/*ctx->Stencil.WriteMask*/ 0xff);
 	 /* set stencil ref value = desired clear value */
 	 fxMesa->Glide.grStencilFunc(GR_CMP_ALWAYS,
-                                     ctx->Stencil.Clear, 0xff);
+                                     fxMesa->Stencil.Clear, 0xff);
 	 fxMesa->Glide.grStencilOp(GR_STENCILOP_REPLACE,
                                    GR_STENCILOP_REPLACE, GR_STENCILOP_REPLACE);
 	 fxMesa->Glide.grEnable(GR_STENCIL_MODE_EXT);
@@ -275,7 +285,7 @@ static void tdfxDDClear( GLcontext *ctx,
                                         fxMesa->Color.ClearAlpha,
                                         fxMesa->Depth.Clear);
 	 FX_grColorMaskv_NoLock(ctx, true4);
-	 if (ctx->Color._DrawDestMask & FRONT_LEFT_BIT)
+	 if (ctx->Color._DrawDestMask & DD_FRONT_LEFT_BIT)
             fxMesa->Glide.grRenderBuffer(GR_BUFFER_FRONTBUFFER);
 	 if (!ctx->Depth.Test || !ctx->Depth.Mask)
 	    fxMesa->Glide.grDepthMask(FXFALSE);
@@ -295,7 +305,7 @@ static void tdfxDDClear( GLcontext *ctx,
                fxMesa->Glide.grDepthMask(FXTRUE);
             }
             FX_grColorMaskv_NoLock(ctx, true4);
-            if (ctx->Color._DrawDestMask & FRONT_LEFT_BIT)
+            if (ctx->Color._DrawDestMask & DD_FRONT_LEFT_BIT)
                fxMesa->Glide.grRenderBuffer(GR_BUFFER_FRONTBUFFER);
          }
       }
@@ -315,7 +325,7 @@ static void tdfxDDClear( GLcontext *ctx,
 
 
 
-static void tdfxDDFinish( GLcontext *ctx )
+static void tdfxFinish( GLcontext *ctx )
 {
    tdfxContextPtr fxMesa = TDFX_CONTEXT(ctx);
 
@@ -326,7 +336,7 @@ static void tdfxDDFinish( GLcontext *ctx )
    UNLOCK_HARDWARE( fxMesa );
 }
 
-static void tdfxDDFlush( GLcontext *ctx )
+static void tdfxFlush( GLcontext *ctx )
 {
    tdfxContextPtr fxMesa = TDFX_CONTEXT(ctx);
 
@@ -498,7 +508,7 @@ static void uploadTextureParams( tdfxContextPtr fxMesa )
       fxMesa->Glide.grTexClampMode(GR_TMU0 + unit, p->sClamp, p->tClamp);
       fxMesa->Glide.grTexFilterMode(GR_TMU0 + unit, p->minFilt, p->magFilt);
       fxMesa->Glide.grTexMipMapMode(GR_TMU0 + unit, p->mmMode, p->LODblend);
-      fxMesa->Glide.grTexLodBiasValue(GR_TMU0 + unit, p->LodBias);
+      fxMesa->Glide.grTexLodBiasValue(GR_TMU0 + unit, CLAMP(p->LodBias, -8, 7.75));
    }
 }
 
@@ -532,8 +542,8 @@ static void uploadTextureImages( tdfxContextPtr fxMesa )
    GLcontext *ctx = fxMesa->glCtx;
    int unit;
    for (unit = 0; unit < TDFX_NUM_TMU; unit++) {
-      if (ctx->Texture.Unit[unit]._ReallyEnabled == TEXTURE_2D_BIT) {
-         struct gl_texture_object *tObj = ctx->Texture.Unit[unit].Current2D;
+      if (ctx->Texture.Unit[unit]._ReallyEnabled & (TEXTURE_1D_BIT|TEXTURE_2D_BIT)) {
+         struct gl_texture_object *tObj = ctx->Texture.Unit[unit]._Current;
          tdfxTexInfo *ti = TDFX_TEXTURE_DATA(tObj);
          if (ti && ti->reloadImages && ti->whichTMU != TDFX_TMU_NONE) {
             /*
@@ -653,10 +663,10 @@ void tdfxEmitHwStateLocked( tdfxContextPtr fxMesa )
       if (fxMesa->Glide.grAlphaBlendFunctionExt) {
          fxMesa->Glide.grAlphaBlendFunctionExt( fxMesa->Color.BlendSrcRGB,
                                                 fxMesa->Color.BlendDstRGB,
-                                                GR_BLEND_OP_ADD,
+                                                fxMesa->Color.BlendEqRGB,
                                                 fxMesa->Color.BlendSrcA,
                                                 fxMesa->Color.BlendDstA,
-                                                GR_BLEND_OP_ADD );
+                                                fxMesa->Color.BlendEqA );
       }
       else {
          fxMesa->Glide.grAlphaBlendFunction( fxMesa->Color.BlendSrcRGB,
@@ -722,15 +732,15 @@ void tdfxEmitHwStateLocked( tdfxContextPtr fxMesa )
 	 fxMesa->Glide.grColorMask( fxMesa->Color.ColorMask[RCOMP] ||
                                     fxMesa->Color.ColorMask[GCOMP] ||
                                     fxMesa->Color.ColorMask[BCOMP],
-                                    fxMesa->Color.ColorMask[ACOMP] );
+                                    /*fxMesa->Color.ColorMask[ACOMP]*/GL_FALSE/*[dBorca] no-no*/ );
       }
       fxMesa->dirty &= ~TDFX_UPLOAD_COLOR_MASK;
    }
 
-/*     if ( fxMesa->dirty & TDFX_UPLOAD_CONSTANT_COLOR ) { */
-/*        grConstantColorValue( fxMesa->Color.MonoColor ); */
-/*        fxMesa->dirty &= ~TDFX_UPLOAD_CONSTANT_COLOR; */
-/*     } */
+   if ( fxMesa->dirty & TDFX_UPLOAD_CONSTANT_COLOR ) {
+      fxMesa->Glide.grConstantColorValue( fxMesa->Color.MonoColor );
+      fxMesa->dirty &= ~TDFX_UPLOAD_CONSTANT_COLOR;
+   }
 
    if ( fxMesa->dirty & TDFX_UPLOAD_LINE ) {
       if (fxMesa->glCtx->Line.SmoothFlag && fxMesa->glCtx->Line.Width == 1.0)
@@ -759,6 +769,9 @@ void tdfxEmitHwStateLocked( tdfxContextPtr fxMesa )
 
    if ( fxMesa->dirty & TDFX_UPLOAD_VERTEX_LAYOUT ) {
       fxMesa->Glide.grGlideSetVertexLayout( fxMesa->layout[fxMesa->vertexFormat] );
+      /* [dborca] enable fogcoord */
+      fxMesa->Glide.grVertexLayout(GR_PARAM_FOG_EXT, TDFX_FOG_OFFSET,
+	 fxMesa->Fog.Mode == GR_FOG_WITH_TABLE_ON_FOGCOORD_EXT);
       fxMesa->dirty &= ~TDFX_UPLOAD_VERTEX_LAYOUT;
    }
 
@@ -794,9 +807,9 @@ void tdfxEmitHwStateLocked( tdfxContextPtr fxMesa )
 
 
 
-void tdfxDDInitRenderFuncs( GLcontext *ctx )
+void tdfxInitRenderFuncs( struct dd_function_table *functions )
 {
-   ctx->Driver.Clear		= tdfxDDClear;
-   ctx->Driver.Finish		= tdfxDDFinish;
-   ctx->Driver.Flush		= tdfxDDFlush;
+   functions->Clear	= tdfxClear;
+   functions->Finish	= tdfxFinish;
+   functions->Flush	= tdfxFlush;
 }

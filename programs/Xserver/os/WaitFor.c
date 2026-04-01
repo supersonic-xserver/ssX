@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/WaitFor.c,v 3.49tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/WaitFor.c,v 3.47 2004/06/23 19:40:17 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -47,7 +54,7 @@ SOFTWARE.
 ******************************************************************/
 
 /*
- * Portions Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Portions Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -93,6 +100,8 @@ SOFTWARE.
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* $Xorg: WaitFor.c,v 1.4 2001/02/09 02:05:22 xorgcvs Exp $ */
+
 /*****************************************************************
  * OS Dependent input routines:
  *
@@ -104,10 +113,10 @@ SOFTWARE.
 #ifdef WIN32
 #include <X11/Xwinsock.h>
 #endif
-#include <X11/Xos.h>			/* for strings, fcntl, time */
+#include "Xos.h"			/* for strings, fcntl, time */
 #include <errno.h>
 #include <stdio.h>
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
 
 #ifdef __UNIXOS2__
@@ -118,12 +127,7 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "opaque.h"
 #ifdef DPMSExtension
-#define DPMS_SERVER
-#include <X11/extensions/dpms.h>
 #include "dpmsproc.h"
-#endif
-#ifdef XTESTEXT1
-#include "xtest1dd.h"
 #endif
 
 /* modifications by raphael */
@@ -141,6 +145,18 @@ mffs(fd_mask mask)
     }
     return i;
 }
+
+#ifdef DPMSExtension
+#define DPMS_SERVER
+#include "dpms.h"
+#endif
+
+#ifdef XTESTEXT1
+/*
+ * defined in xtestext1dd.c
+ */
+extern int playback_on;
+#endif /* XTESTEXT1 */
 
 struct _OsTimerRec {
     OsTimerPtr		next;
@@ -213,29 +229,31 @@ WaitForSomething(int *pClientsReady)
 	    }
 	}
 #ifdef SMART_SCHEDULE
-	SmartScheduleIdle = TRUE;
 	if (someReady)
 	{
 	    XFD_COPYSET(&AllSockets, &LastSelectMask);
 	    XFD_UNSET(&LastSelectMask, &ClientsWithInput);
 	}
 	else
-#endif
 	{
-	    wt = NULL;
-	    if (timers)
-	    {
-		now = GetTimeInMillis();
-		timeout = timers->expires - now;
-        	if (timeout < 0)
-		    timeout = 0;
-		waittime.tv_sec = timeout / MILLI_PER_SECOND;
-		waittime.tv_usec = (timeout % MILLI_PER_SECOND) *
-				   (1000000 / MILLI_PER_SECOND);
-		wt = &waittime;
-	    }
-	    XFD_COPYSET(&AllSockets, &LastSelectMask);
+#endif
+        wt = NULL;
+	if (timers)
+        {
+            now = GetTimeInMillis();
+	    timeout = timers->expires - now;
+            if (timeout < 0)
+                timeout = 0;
+	    waittime.tv_sec = timeout / MILLI_PER_SECOND;
+	    waittime.tv_usec = (timeout % MILLI_PER_SECOND) *
+		               (1000000 / MILLI_PER_SECOND);
+	    wt = &waittime;
 	}
+	XFD_COPYSET(&AllSockets, &LastSelectMask);
+#ifdef SMART_SCHEDULE
+	}
+	SmartScheduleIdle = TRUE;
+#endif
 	BlockHandler((pointer)&wt, (pointer)&LastSelectMask);
 	if (NewOutputPending)
 	    FlushAllOutput();
@@ -466,7 +484,7 @@ OsTimerPtr
 TimerSet(OsTimerPtr timer, int flags, CARD32 millis, 
     OsTimerCallback func, pointer arg)
 {
-    OsTimerPtr *prev;
+    register OsTimerPtr *prev;
     CARD32 now = GetTimeInMillis();
 
     if (!timer)

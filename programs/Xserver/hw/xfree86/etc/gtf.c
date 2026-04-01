@@ -1,4 +1,11 @@
 /* gtf.c  Generate mode timings using the GTF Timing Standard
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * gcc gtf.c -o gtf -lm -Wall
  *
@@ -102,7 +109,7 @@
  * o Error checking.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/gtf.c,v 1.2 2002/11/15 17:01:53 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/etc/gtf.c,v 1.3 2002/12/21 02:35:20 dawes Exp $ */
 
 
 #include <stdio.h>

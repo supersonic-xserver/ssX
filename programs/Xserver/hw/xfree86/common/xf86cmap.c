@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86cmap.c,v 1.26tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86cmap.c,v 1.26 2004/02/13 23:58:39 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1998-2001 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -54,9 +61,9 @@
 #undef _XOPEN_SOURCE
 #endif
 
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "colormapst.h"
 #include "scrnintstr.h"
 
@@ -69,7 +76,7 @@
 
 #ifdef XFreeXDGA
 #define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
+#include "extensions/xf86dgastr.h"
 #include "dgaproc.h"
 #endif
 

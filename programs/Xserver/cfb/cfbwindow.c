@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbwindow.c,v 1.7tsi Exp $ */
+/* $Xorg: cfbwindow.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,9 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/Xserver/cfb/cfbwindow.c,v 1.6 2003/11/10 18:21:45 tsi Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
 #include "cfb.h"
@@ -55,7 +63,8 @@ SOFTWARE.
 #include "cfbmskbits.h"
 
 Bool
-cfbCreateWindow(WindowPtr pWin)
+cfbCreateWindow(pWin)
+    WindowPtr pWin;
 {
     cfbPrivWin *pPrivWin;
 
@@ -77,7 +86,8 @@ cfbCreateWindow(WindowPtr pWin)
 }
 
 Bool
-cfbDestroyWindow(WindowPtr pWin)
+cfbDestroyWindow(pWin)
+    WindowPtr pWin;
 {
     cfbPrivWin *pPrivWin;
 
@@ -92,7 +102,8 @@ cfbDestroyWindow(WindowPtr pWin)
 
 /*ARGSUSED*/
 Bool
-cfbMapWindow(WindowPtr pWindow)
+cfbMapWindow(pWindow)
+    WindowPtr pWindow;
 {
     return(TRUE);
 }
@@ -106,7 +117,9 @@ in pPrivWin->pRotated*
 */
 /*ARGSUSED*/
 Bool
-cfbPositionWindow(WindowPtr pWin, int x, int y)
+cfbPositionWindow(pWin, x, y)
+    WindowPtr pWin;
+    int x, y;
 {
     cfbPrivWin *pPrivWin;
     int setxy = 0;
@@ -141,7 +154,8 @@ cfbPositionWindow(WindowPtr pWin, int x, int y)
 
 /*ARGSUSED*/
 Bool
-cfbUnmapWindow(WindowPtr pWindow)
+cfbUnmapWindow(pWindow)
+    WindowPtr pWindow;
 {
     return (TRUE);
 }
@@ -155,14 +169,17 @@ visible in the source.
 
 
 void 
-cfbCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
+cfbCopyWindow(pWin, ptOldOrg, prgnSrc)
+    WindowPtr pWin;
+    DDXPointRec ptOldOrg;
+    RegionPtr prgnSrc;
 {
     DDXPointPtr pptSrc;
-    DDXPointPtr ppt;
+    register DDXPointPtr ppt;
     RegionRec rgnDst;
-    BoxPtr pbox;
-    int dx, dy;
-    int i, nbox;
+    register BoxPtr pbox;
+    register int dx, dy;
+    register int i, nbox;
     WindowPtr pwinRoot;
 
     pwinRoot = WindowTable[pWin->drawable.pScreen->myNum];
@@ -202,10 +219,12 @@ routine (i.e. the pixmap is paddable to 32 bits), also pre-rotate a copy
 of it in devPrivates[cfbWindowPrivateIndex].ptr.
 */
 Bool
-cfbChangeWindowAttributes(WindowPtr pWin, unsigned long mask)
+cfbChangeWindowAttributes(pWin, mask)
+    WindowPtr pWin;
+    unsigned long mask;
 {
-    unsigned long index;
-    cfbPrivWin *pPrivWin;
+    register unsigned long index;
+    register cfbPrivWin *pPrivWin;
     int width;
     WindowPtr	pBgWin;
 

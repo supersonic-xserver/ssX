@@ -1,4 +1,19 @@
-/* $XFree86: xc/programs/Xserver/Xi/chgkmap.c,v 3.4tsi Exp $ */
+/* $Xorg: chgkmap.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -44,6 +59,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/Xi/chgkmap.c,v 3.3 2001/12/14 19:58:55 dawes Exp $ */
 
 /********************************************************************
  *
@@ -53,11 +69,11 @@ SOFTWARE.
 
 #define	 NEED_EVENTS			/* for inputstr.h    */
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "extnsionst.h"
 #include "extinit.h"			/* LookupDeviceIntRec */
 #include "exevents.h"
@@ -74,17 +90,22 @@ SOFTWARE.
 
 int
 SProcXChangeDeviceKeyMapping(client)
-    ClientPtr client;
+    register ClientPtr client;
     {
-    char n;
-    unsigned int count;
+    register char n;
+    register long *p;
+    register int i, count;
 
     REQUEST(xChangeDeviceKeyMappingReq);
     swaps(&stuff->length, n);
     REQUEST_AT_LEAST_SIZE(xChangeDeviceKeyMappingReq);
+    p = (long *) &stuff[1];
     count = stuff->keyCodes * stuff->keySymsPerKeyCode;
-    REQUEST_FIXED_SIZE(xChangeDeviceKeyMappingReq, count * sizeof(CARD32));
-    SwapLongs((CARD32 *)(&stuff[1]), count);
+    for (i = 0; i < count; i++)
+        {
+        swapl(p, n);
+	p++;
+        }
     return(ProcXChangeDeviceKeyMapping(client));
     }
 
@@ -101,13 +122,9 @@ ProcXChangeDeviceKeyMapping(client)
     int	ret;
     unsigned len;
     DeviceIntPtr dev;
-    unsigned int count;
 
     REQUEST(xChangeDeviceKeyMappingReq);
     REQUEST_AT_LEAST_SIZE(xChangeDeviceKeyMappingReq);
-
-    count = stuff->keyCodes * stuff->keySymsPerKeyCode;
-    REQUEST_FIXED_SIZE(xChangeDeviceKeyMappingReq, count * sizeof(CARD32));
 
     dev = LookupDeviceIntRec (stuff->deviceid);
     if (dev == NULL)

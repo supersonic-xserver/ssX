@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /**************************************************************************
 
@@ -26,7 +33,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_cursor.c,v 1.11 2006/03/10 12:44:20 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i830_cursor.c,v 1.9 2005/01/09 20:47:19 alanh Exp $ */
 
 /*
  * Reformatted with GNU indent (2.2.8), using the following options:
@@ -82,7 +89,7 @@ I830InitHWCursor(ScrnInfoPtr pScrn)
 
    DPRINTF(PFX, "I830InitHWCursor\n");
    /* Initialise the HW cursor registers, leaving the cursor hidden. */
-   if (IS_MOBILE(pI830) || IS_I9XX(pI830)) {
+   if (IS_MOBILE(pI830) || IS_I915G(pI830)) {
       temp = INREG(CURSOR_A_CONTROL);
       temp &= ~(CURSOR_MODE | MCURSOR_GAMMA_ENABLE | MCURSOR_MEM_TYPE_LOCAL |
 		MCURSOR_PIPE_SELECT);
@@ -108,8 +115,6 @@ I830InitHWCursor(ScrnInfoPtr pScrn)
       temp &= ~(CURSOR_FORMAT_MASK | CURSOR_GAMMA_ENABLE |
 		CURSOR_ENABLE  | CURSOR_STRIDE_MASK);
       temp |= (CURSOR_FORMAT_3C);
-      if (pI830->CursorIsARGB)
-         temp |= CURSOR_GAMMA_ENABLE;
       /* This initialises the format and leave the cursor disabled. */
       OUTREG(CURSOR_CONTROL, temp);
       /* Need to set address and size after disabling. */
@@ -137,8 +142,8 @@ I830CursorInit(ScreenPtr pScreen)
    if (!infoPtr)
       return FALSE;
 
-   infoPtr->MaxWidth = I810_CURSOR_X;
-   infoPtr->MaxHeight = I810_CURSOR_Y;
+   infoPtr->MaxWidth = 64;
+   infoPtr->MaxHeight = 64;
    infoPtr->Flags = (HARDWARE_CURSOR_TRUECOLOR_AT_8BPP |
 		     HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 		     HARDWARE_CURSOR_INVERT_MASK |
@@ -306,7 +311,7 @@ I830SetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
    }
 
    /* have to upload the base for the new position */
-   if (IS_I9XX(pI830)) {
+   if (IS_I915G(pI830) || IS_I915GM(pI830)) {
       if (pI830->CursorIsARGB)
          OUTREG(CURSOR_A_BASE, pI830->CursorMemARGB->Physical);
       else
@@ -337,11 +342,11 @@ I830ShowCursor(ScrnInfoPtr pScrn)
 	   pI830->CursorMemARGB->Physical, pI830->CursorMemARGB->Start);
 
    pI830->cursorOn = TRUE;
-   if (IS_MOBILE(pI830) || IS_I9XX(pI830)) {
+   if (IS_MOBILE(pI830) || IS_I915G(pI830)) {
       temp = INREG(CURSOR_A_CONTROL);
       temp &= ~(CURSOR_MODE | MCURSOR_PIPE_SELECT);
       if (pI830->CursorIsARGB)
-         temp |= CURSOR_MODE_64_ARGB_AX | MCURSOR_GAMMA_ENABLE;
+         temp |= CURSOR_MODE_64_ARGB_AX;
       else
          temp |= CURSOR_MODE_64_4C_AX;
       temp |= (pI830->pipe << 28); /* Connect to correct pipe */
@@ -365,7 +370,7 @@ I830ShowCursor(ScrnInfoPtr pScrn)
       temp &= ~(CURSOR_FORMAT_MASK);
       temp |= CURSOR_ENABLE;
       if (pI830->CursorIsARGB)
-         temp |= CURSOR_FORMAT_ARGB | CURSOR_GAMMA_ENABLE;
+         temp |= CURSOR_FORMAT_ARGB;
       else 
          temp |= CURSOR_FORMAT_3C;
       OUTREG(CURSOR_CONTROL, temp);
@@ -385,9 +390,9 @@ I830HideCursor(ScrnInfoPtr pScrn)
    DPRINTF(PFX, "I830HideCursor\n");
 
    pI830->cursorOn = FALSE;
-   if (IS_MOBILE(pI830) || IS_I9XX(pI830)) {
+   if (IS_MOBILE(pI830) || IS_I915G(pI830)) {
       temp = INREG(CURSOR_A_CONTROL);
-      temp &= ~(CURSOR_MODE|MCURSOR_GAMMA_ENABLE);
+      temp &= ~CURSOR_MODE;
       temp |= CURSOR_MODE_DISABLE;
       OUTREG(CURSOR_A_CONTROL, temp);
       /* This is needed to flush the above change. */
@@ -404,7 +409,7 @@ I830HideCursor(ScrnInfoPtr pScrn)
       }
    } else {
       temp = INREG(CURSOR_CONTROL);
-      temp &= ~(CURSOR_ENABLE|CURSOR_GAMMA_ENABLE);
+      temp &= ~CURSOR_ENABLE;
       OUTREG(CURSOR_CONTROL, temp);
    }
 }

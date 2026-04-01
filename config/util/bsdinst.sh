@@ -4,6 +4,7 @@
 #
 # This accepts bsd-style install arguments and makes the appropriate calls
 # to the System V install.
+# $Xorg: bsdinst.sh,v 1.3 2000/08/17 19:41:52 cpqbld Exp $
 
 flags=""
 dst=""

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbscrinit.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbscrinit.c,v 3.9 2003/02/18 21:30:01 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,10 +52,11 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mfbscrinit.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>	/* for xColorItem */
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xproto.h"	/* for xColorItem */
+#include "Xmd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "windowstr.h"
@@ -94,7 +102,9 @@ BSFuncRec mfbBSFuncRec = {
 #endif /* ifndef LOWMEMFTPT */
 
 Bool
-mfbAllocatePrivates(ScreenPtr pScreen, int *pWinIndex, int *pGCIndex)
+mfbAllocatePrivates(pScreen, pWinIndex, pGCIndex)
+    ScreenPtr pScreen;
+    int *pWinIndex, *pGCIndex;
 {
     if (mfbGeneration != serverGeneration)
     {
@@ -122,8 +132,12 @@ mfbAllocatePrivates(ScreenPtr pScreen, int *pWinIndex, int *pGCIndex)
 
 /* dts * (inch/dot) * (25.4 mm / inch) = mm */
 Bool
-mfbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
-	      int dpix, int dpiy, int width)
+mfbScreenInit(pScreen, pbits, xsize, ysize, dpix, dpiy, width)
+    register ScreenPtr pScreen;
+    pointer pbits;		/* pointer to screen bitmap */
+    int xsize, ysize;		/* in pixels */
+    int dpix, dpiy;		/* dots per inch */
+    int width;			/* pixel width of frame buffer */
 {
     if 	(!mfbAllocatePrivates(pScreen, (int *)NULL, (int *)NULL))
 	return FALSE;
@@ -164,7 +178,8 @@ mfbScreenInit(ScreenPtr pScreen, pointer pbits, int xsize, int ysize,
 #endif /* ifndef LOWMEMFTPT */
 
 PixmapPtr
-mfbGetWindowPixmap(WindowPtr pWin)
+mfbGetWindowPixmap(pWin)
+    WindowPtr pWin;
 {
 #ifdef PIXMAP_PER_WINDOW
     return (PixmapPtr)(pWin->devPrivates[frameWindowPrivateIndex].ptr);
@@ -176,7 +191,9 @@ mfbGetWindowPixmap(WindowPtr pWin)
 }
 
 void
-mfbSetWindowPixmap(WindowPtr pWin, PixmapPtr pPix)
+mfbSetWindowPixmap(pWin, pPix)
+    WindowPtr pWin;
+    PixmapPtr pPix;
 {
 #ifdef PIXMAP_PER_WINDOW
     pWin->devPrivates[frameWindowPrivateIndex].ptr = (pointer)pPix;

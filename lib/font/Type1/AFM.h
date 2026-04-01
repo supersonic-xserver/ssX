@@ -1,6 +1,11 @@
-/* $XFree86$ */
-/*
- * Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * The contents of this file are subject to the CID Font Code Public Licence
  * Version 1.0 (the "License"). You may not use this file except in compliance
@@ -48,8 +53,6 @@ typedef struct
     int wx;		/* key: WX or W0X */
     BBox charBBox;	/* key: B */
 } Metrics;
-
-#define MAX_CID_METRICS ((int)((unsigned int)(-1) / (2 * sizeof(Metrics))))
 
 typedef struct
 { 

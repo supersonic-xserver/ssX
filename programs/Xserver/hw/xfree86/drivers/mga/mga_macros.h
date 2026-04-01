@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_macros.h,v 1.22tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_macros.h,v 1.22 2002/02/20 17:17:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _MGA_MACROS_H_
 #define _MGA_MACROS_H_
@@ -94,8 +108,6 @@ while(INREG(MGAREG_DWGSYNC) != MGA_SYNC_XTAG) ; \
 #ifdef USEMGAHAL
 #define HAL_CHIPSETS ((pMga->Chipset == PCI_CHIP_MGAG200_PCI) || \
 		  (pMga->Chipset == PCI_CHIP_MGAG200) || \
-                  (pMga->Chipset == PCI_CHIP_MGAG200_SE_A_PCI) || \
-                  (pMga->Chipset == PCI_CHIP_MGAG200_SE_B_PCI) || \
 		  (pMga->Chipset == PCI_CHIP_MGAG400) || \
 		  (pMga->Chipset == PCI_CHIP_MGAG550))
     

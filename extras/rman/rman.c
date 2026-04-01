@@ -1,3 +1,14 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+#ifdef UNDEF
+static char cvsid[] = "Header: /usr/build/rman/rman-031225/phelps/RCS/rman.c,v 1.154 2003/07/26 19:00:48 phelps Exp $";
+#endif
+
 /*
    PolyglotMan by Thomas A. Phelps (phelps@ACM.org)
 
@@ -14,7 +25,7 @@
 	source interpretation added September 24, 1996
 	renamed PolyglotMan due to lawsuit by Rosetta, Inc. August 8, 1997
 */
-/* $XFree86: xc/extras/rman/rman.c,v 1.20 2006/01/09 14:57:00 dawes Exp $ */
+/* $XFree86: xc/extras/rman/rman.c,v 1.19 2004/01/01 00:47:45 dickey Exp $ */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -1288,7 +1299,7 @@ HTML(enum command cmd)
 	/* always respond to these signals */
 	switch (cmd) {
 	   case CHARNBSP:	printf("&nbsp;"); I++; break;
-	   case CHARTAB:	printf("&nbsp;&nbsp;&nbsp;&nbsp;");	break;
+	   case CHARTAB:	printf("<tt>&#32;</tt>&nbsp;<tt>&#32;</tt>&nbsp;");	break;
 #ifdef XFree86
 	   /* using named entities for ASCII quote characters is redundant */
 	   case CHARLQUOTE:
@@ -1527,8 +1538,8 @@ HTML(enum command cmd)
 		break;
 
 	   /* something better with CSS */
-	   case BEGININDENT:		printf("<dl>"); break;
-	   case ENDINDENT:			printf("</dl>\n"); break;
+	   case BEGININDENT:		printf("<blockquote>"); break;
+	   case ENDINDENT:			printf("</blockquote>\n"); break;
 
 	   case FONTSIZE:
 		/* HTML font step sizes are bigger than troff's */
@@ -3779,12 +3790,6 @@ source_command(char *p)
   char macrobuf[MAXBUF];		/* local so can have nested macros */
   static char ft='\0';
   static int fTableCenter=0;
-  static int doctype = 0;
-
-  if (fn == HTML && !doctype) {
-	doctype = 1;
-	printf("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 3.0//EN\">\n");
-  }
 
   /* should centralize command matching (binary search?), pointer bumping here
      if for no other reason than to catch conflicts -- and allow overrides? */
@@ -3876,13 +3881,6 @@ source_command(char *p)
 
   } else if (checkcmd("P") || checkcmd("PP") || checkcmd("LP")) {	 /* new paragraph */
     source_flush();
-    poppush(BEGINBODY);
-
-  } else if ((tphp = checkcmd("IP"))) {
-    source_flush();
-	if (listtype >= 0) {
-		source_struct(ENDBULPAIR);
-	}
     poppush(BEGINBODY);
 
   } else if ((tphp=checkcmd("TP")) || (tphp=checkcmd("HP")) || checkcmd("IP") || checkcmd("LI")) {
@@ -3977,7 +3975,7 @@ source_command(char *p)
 	 *q='\0';
 	 p++;
 	 cond = (strcmp(if0,if1)==0);
-    } else cond=0;	/* a guess, seems to be right better than half the time */
+    } else cond=0;	/* a guess, seems to be right bettern than half the time */
     if (invcond) cond=1-cond;
     while (isspace(*p)) p++;
 
@@ -4378,7 +4376,7 @@ source_command(char *p)
     fprintf(stderr, "macro \"%s\" not supported -- ignoring\n", cmd);
 #endif
 
-  } else if (*cmd) {		/* could be a macro definition */
+  } else {		/* could be a macro definition */
     supresseol=0;
 
     for (i=0; i<macrocnt; i++) {

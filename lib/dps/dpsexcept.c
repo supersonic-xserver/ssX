@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *  dpsexcept.c
  *
  * (c) Copyright 1984-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: $ */
+/* $XFree86: xc/lib/dps/dpsexcept.c,v 1.2 2000/02/18 12:18:55 tsi Exp $ */
 
 /*
 Original version: Jeffrey Mogul, Stanford, 18 February 1983

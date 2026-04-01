@@ -1,3 +1,11 @@
+/* $Xorg: XKBExtDev.c,v 1.3 2000/08/17 19:45:01 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/lib/X11/XKBExtDev.c,v 3.6tsi Exp $ */
+/* $XFree86: xc/lib/X11/XKBExtDev.c,v 3.5 2003/11/17 22:20:09 dawes Exp $ */
 
 #include <stdio.h>
 #define NEED_REPLIES
@@ -794,7 +802,6 @@ XkbSetDeviceButtonActions(	Display *		dpy,
     changes.leds.led_id=	XkbXINone;
     changes.leds.defined=	0;
     size= nLeds= 		0;
-    _InitLedStuff(&lstuff,changes.changed,devi);
     if (_XkbSetDeviceInfoSize(devi,&changes,NULL,&size,&nLeds)!=Success)
 	return False;
     LockDisplay(dpy);
@@ -816,6 +823,5 @@ XkbSetDeviceButtonActions(	Display *		dpy,
     }
     UnlockDisplay(dpy);
     SyncHandle();
-    _FreeLedStuff(&lstuff);
     return ok;
 }

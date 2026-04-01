@@ -1,4 +1,11 @@
 /* drmmodule.c -- Module initialization
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Created: Fri Jun  4 09:05:48 1999 by faith@precisioninsight.com
  *
  * Copyright 1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -50,7 +57,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData drmModuleData = { &VersRec, drmSetup, NULL };
 
 static pointer
-drmSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+drmSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     return (void *)1;
 }

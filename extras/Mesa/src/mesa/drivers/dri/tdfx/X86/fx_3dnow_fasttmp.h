@@ -1,4 +1,18 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/X86/fx_3dnow_fasttmp.h,v 1.2 2000/09/26 15:56:51 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/X86/fx_3dnow_fasttmp.h,v 1.1.1.1 2004/04/08 09:17:23 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #if !defined(NASM_ASSEMBLER) && !defined(MASM_ASSEMBLER)
 #define TAGLLBL(a) TAG(.L##a)

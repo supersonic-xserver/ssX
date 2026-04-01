@@ -1,0 +1,461 @@
+/* $NetBSD$ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*-------------------------------------------------------------------------
+ * Copyright (c) 1996 Yasushi Yamasaki
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *-----------------------------------------------------------------------*/
+
+/*-
+ * Copyright (c) 1987 by the Regents of the University of California
+ *
+ * Permission to use, copy, modify, and distribute this
+ * software and its documentation for any purpose and without
+ * fee is hereby granted, provided that the above copyright
+ * notice appear in all copies.  The University of California
+ * makes no representations about the suitability of this
+ * software for any purpose.  It is provided "as is" without
+ * express or implied warranty.
+ */
+
+/************************************************************
+Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
+
+                    All Rights Reserved
+
+Permission  to  use,  copy,  modify,  and  distribute   this
+software  and  its documentation for any purpose and without
+fee is hereby granted, provided that the above copyright no-
+tice  appear  in all copies and that both that copyright no-
+tice and this permission notice appear in  supporting  docu-
+mentation,  and  that the names of Sun or X Consortium
+not be used in advertising or publicity pertaining to
+distribution  of  the software  without specific prior
+written permission. Sun and X Consortium make no
+representations about the suitability of this software for
+any purpose. It is provided "as is" without any express or
+implied warranty.
+
+SUN DISCLAIMS ALL WARRANTIES WITH REGARD TO  THIS  SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FIT-
+NESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL SUN BE  LI-
+ABLE  FOR  ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,  DATA  OR
+PROFITS,  WHETHER  IN  AN  ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
+THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+********************************************************/
+
+#include "x68k.h"
+#include "mi.h"
+
+#include <X11/X.h>
+#include <X11/Xproto.h>
+#include <X11/keysym.h>
+#include "screenint.h"
+#include "inputstr.h"
+#include "eventstr.h"
+#include "misc.h"
+#include "scrnintstr.h"
+#include "servermd.h"
+
+#include <X11/extensions/XKB.h>
+#include "xkbsrv.h"
+
+#define MIN_KEYCODE     7       /* necessary to avoid the mouse buttons */
+#define MAX_KEYCODE     255     /* limited by the protocol */
+
+typedef struct _X68kKbdPriv {
+    int type;
+    int fd;
+    Leds leds;
+    Firm_event evbuf[X68K_MAXEVENTS];
+} X68kKbdPriv, *X68kKbdPrivPtr;
+
+DeviceIntPtr x68kKeyboardDevice = NULL;
+
+static void x68kKbdEvents(int, int, void *);
+static void x68kInitModMap(KeySymsRec *, CARD8 *);
+static void x68kInitKbdNames(XkbRMLVOSet *, X68kKbdPrivPtr);
+static int x68kKbdGetEvents(DeviceIntPtr);
+static void x68kKbdEnqueueEvent(DeviceIntPtr, Firm_event *);
+static void x68kKbdRingBell(DeviceIntPtr, int, int);
+static void x68kKbdBell(int, DeviceIntPtr, void *, int);
+static void x68kKbdCtrl(DeviceIntPtr, KeybdCtrl *);
+static void x68kSetLeds(X68kKbdPrivPtr, uint8_t);
+
+/*------------------------------------------------------------------------
+ * x68kKbdEvents --
+ *	When registered polled keyboard input event handler is invoked,
+ *	read device events and enqueue them using the mi event queue.
+ * Results:
+ *	None.
+ *
+ *----------------------------------------------------------------------*/
+static void
+x68kKbdEvents(int fd, int ready, void *data)
+{
+    int i, numEvents;
+    DeviceIntPtr device = (DeviceIntPtr)data;
+    DevicePtr pKeyboard = &device->public;
+    X68kKbdPrivPtr pPriv = pKeyboard->devicePrivate;
+
+    input_lock();
+
+    do {
+	numEvents = x68kKbdGetEvents(device);
+	for (i = 0; i < numEvents; i++) {
+	    x68kKbdEnqueueEvent(device, &pPriv->evbuf[i]);
+	}
+    } while (numEvents == X68K_MAXEVENTS);
+
+    input_unlock();
+}
+
+/*------------------------------------------------------------------------
+ * x68kKbdProc --
+ *	Handle the initialization, etc. of a keyboard.
+ *
+ * Results:
+ *	None.
+ *
+ *----------------------------------------------------------------------*/
+int
+x68kKbdProc(DeviceIntPtr device,	/* Keyboard to manipulate */
+            int what)			/* What to do to it */
+{
+    DevicePtr pKeyboard = &device->public;
+    X68kKbdPrivPtr pPriv;
+    CARD8 x68kModMap[MAP_LENGTH];
+    int mode;
+    XkbRMLVOSet rmlvo;
+
+    switch (what) {
+        case DEVICE_INIT:
+            pPriv = malloc(sizeof(*pPriv));
+            if (pPriv == NULL) {
+                LogMessage(X_ERROR,
+                    "Cannot allocate private data for keyboard\n");
+                return !Success;
+            }
+            pPriv->fd = open("/dev/kbd", O_RDONLY | O_NONBLOCK);
+            if (pPriv->fd == -1) {
+                LogMessage(X_ERROR, "Can't open keyboard device\n");
+                return !Success;
+            }
+            pPriv->type = x68kGetKbdType();
+            pPriv->leds = 0;
+            pKeyboard->devicePrivate = pPriv;
+            pKeyboard->on = FALSE;
+            x68kInitModMap(x68kKeySyms, x68kModMap);
+
+            x68kInitKbdNames(&rmlvo, pPriv);
+#if 0 /* XXX How should we setup XKB maps for non PS/2 keyboard!? */
+            InitKeyboardDeviceStruct(device, &rmlvo,
+                                     x68kKbdBell, x68kKbdCtrl);
+#else
+            InitKeyboardDeviceStruct(device, NULL,
+                                     x68kKbdBell, x68kKbdCtrl);
+	    XkbApplyMappingChange(device, x68kKeySyms,
+		x68kKeySyms->minKeyCode,
+		x68kKeySyms->maxKeyCode - x68kKeySyms->minKeyCode + 1,
+		x68kModMap, serverClient);
+#endif
+            break;
+
+        case DEVICE_ON:
+            pPriv = (X68kKbdPrivPtr)pKeyboard->devicePrivate;
+            mode = 1;
+            if (ioctl(pPriv->fd, KIOCSDIRECT, &mode) == -1) {
+                LogMessage(X_ERROR, "Failed to set keyboard direct mode\n");
+                return !Success;
+            }
+	    x68kSetLeds(pPriv, (uint8_t)pPriv->leds);
+            SetNotifyFd(pPriv->fd, x68kKbdEvents, X_NOTIFY_READ, device);
+            pKeyboard->on = TRUE;
+            break;
+
+        case DEVICE_OFF:
+            pPriv = (X68kKbdPrivPtr)pKeyboard->devicePrivate;
+            RemoveNotifyFd(pPriv->fd);
+            pKeyboard->on = FALSE;
+            break;
+
+        case DEVICE_CLOSE:
+            pPriv = (X68kKbdPrivPtr)pKeyboard->devicePrivate;
+            close(pPriv->fd);
+            free(pPriv);
+            break;
+
+        case DEVICE_ABORT:
+            break;
+    }
+    return Success;
+}
+
+/*-------------------------------------------------------------------------
+ * function "x68kInitModMap"
+ *
+ *  purpose:  initialize modmap with keysym table
+ *  argument: (KeySymsRec *)x68kKeySyms : keysym table
+ *            (CARD8 *)x68kModMap       : result
+ *  returns:  nothing
+ *-----------------------------------------------------------------------*/
+static void
+x68kInitModMap(KeySymsRec *KeySyms, CARD8 *x68kModMap)
+{
+    int i;
+
+    for (i = 0; i < MAP_LENGTH; i++)
+        x68kModMap[i] = NoSymbol;
+    if (KeySyms->minKeyCode < MIN_KEYCODE) {
+        KeySyms->minKeyCode += MIN_KEYCODE;
+        KeySyms->maxKeyCode += MIN_KEYCODE;
+    }
+    if (KeySyms->maxKeyCode > MAX_KEYCODE)
+        KeySyms->maxKeyCode = MAX_KEYCODE;
+    for (i = KeySyms->minKeyCode;
+         i < KeySyms->maxKeyCode; i++) {
+        switch (KeySyms->map[(i-KeySyms->minKeyCode)*4]) {
+            case XK_Shift_L:
+            case XK_Shift_R:
+                x68kModMap[i] = ShiftMask;
+                break;
+            case XK_Control_L:
+            case XK_Control_R:
+                x68kModMap[i] = ControlMask;
+                break;
+            case XK_Alt_L:
+            case XK_Alt_R:
+                x68kModMap[i] = Mod1Mask;
+                break;
+            case XK_Meta_L:
+            case XK_Meta_R:
+                x68kModMap[i] = Mod2Mask;
+                break;
+            case XK_Caps_Lock:
+                x68kModMap[i] = LockMask;
+                break;
+        }
+    }
+}
+
+/*-------------------------------------------------------------------------
+ * function "x68kInitKbdNames"
+ *
+ *  purpose:  store xkb database names
+ *  argument: (XkbRMLVOSet *)rmlvo
+ *            (X68kKbdPrivPtr)pKbd
+ *  returns:  nothing
+ *-----------------------------------------------------------------------*/
+static void
+x68kInitKbdNames(XkbRMLVOSet *rmlvo, X68kKbdPrivPtr pKbd)
+{
+#if 0 /* XXX How should we setup XKB maps for non PS/2 keyboard!? */
+    rmlvo->rules = "base";
+    rmlvo->model = "x68k";
+    switch (pKbd->type) {
+    case X68K_KB_STANDARD:
+        rmlvo->layout = "jp(standard)";
+        break;
+    case X68K_KB_ASCII:
+        rmlvo->layout = "jp(ascii)";
+        break;
+    }
+    rmlvo->variant = "basic";
+    rmlvo->options = "";
+#else
+    rmlvo->rules = "base";
+    rmlvo->model = NULL;
+    rmlvo->layout = NULL;
+    rmlvo->variant = NULL;
+    rmlvo->options = NULL;
+#endif
+}
+
+/*-
+ *-----------------------------------------------------------------------
+ * x68kKbdGetEvents --
+ *	Return the events waiting in the wings for the given keyboard.
+ *
+ * Results:
+ *	Update Firm_event buffer in DeviceIntPtr if events are received.
+ *	Return the number of received Firm_events in the buffer.
+ *
+ * Side Effects:
+ *	None.
+ *-----------------------------------------------------------------------
+ */
+static int
+x68kKbdGetEvents(DeviceIntPtr device)
+{
+    DevicePtr pKeyboard = &device->public;
+    X68kKbdPrivPtr pPriv = pKeyboard->devicePrivate;
+    int nBytes;		/* number of bytes of events available. */
+    int NumEvents = 0;
+
+    nBytes = read(pPriv->fd, pPriv->evbuf, sizeof(pPriv->evbuf));
+    if (nBytes == -1) {
+	if (errno != EWOULDBLOCK) {
+	    LogMessage(X_ERROR, "Unexpected error on reading keyboard\n");
+	    FatalError("Could not read the keyboard");
+	}
+    } else {
+	NumEvents = nBytes / sizeof(pPriv->evbuf[0]);
+    }
+    return NumEvents;
+}
+
+/*-
+ *-----------------------------------------------------------------------
+ * x68kKbdEnqueueEvent --
+ *
+ *-----------------------------------------------------------------------
+ */
+static void
+x68kKbdEnqueueEvent(DeviceIntPtr device, Firm_event *fe)
+{
+    BYTE		keycode;
+    int			type;
+
+    type = ((fe->value == VKEY_UP) ? KeyRelease : KeyPress);
+    keycode = (fe->id & 0x7f) + MIN_KEYCODE;
+    QueueKeyboardEvents(device, type, keycode);
+}
+
+/*-
+ *-----------------------------------------------------------------------
+ * x68kKbdBell --
+ *	Ring the terminal/keyboard bell
+ *
+ * Results:
+ *	Ring the keyboard bell for an amount of time proportional to
+ *	"loudness."
+ *
+ * Side Effects:
+ *	None, really...
+ *
+ *-----------------------------------------------------------------------
+ */
+
+static void
+x68kKbdRingBell(DeviceIntPtr device, int volume, int duration)
+{
+    int		    kbdCmd;	/* Command to give keyboard */
+    X68kKbdPrivPtr  pPriv = (X68kKbdPrivPtr)device->public.devicePrivate;
+
+    if (volume == 0)
+	return;
+
+    kbdCmd = KBD_CMD_BELL;
+    if (ioctl (pPriv->fd, KIOCCMD, &kbdCmd) == -1) {
+	ErrorF("Failed to activate bell\n");
+	return;
+    }
+    usleep (duration * 1000);
+    kbdCmd = KBD_CMD_NOBELL;
+    if (ioctl (pPriv->fd, KIOCCMD, &kbdCmd) == -1)
+	ErrorF("Failed to deactivate bell\n");
+}
+
+static void
+x68kKbdBell(int volume, DeviceIntPtr device, void *ctrl, int unused)
+{
+    KeybdCtrl*      kctrl = (KeybdCtrl*) ctrl;
+
+    if (kctrl->bell == 0)
+	return;
+
+    x68kKbdRingBell(device, volume, kctrl->bell_duration);
+}
+
+void
+DDXRingBell(int volume, int pitch, int duration)
+{
+    DeviceIntPtr device;
+    DevicePtr pKeyboard;
+
+    device = x68kKeyboardDevice;
+    if (device != NULL) {
+	pKeyboard = &device->public;
+	if (pKeyboard->on) {
+	    x68kKbdRingBell(device, volume, duration);
+	}
+    }
+}
+
+/*-
+ *-----------------------------------------------------------------------
+ * x68kKbdCtrl --
+ *	Alter some of the keyboard control parameters
+ *
+ * Results:
+ *	None.
+ *
+ * Side Effects:
+ *	Some...
+ *
+ *-----------------------------------------------------------------------
+ */
+#define	XKB_LED_ZENKAKU		0x40
+#define	XKB_LED_HIRAGANA	0x20
+#define	XKB_LED_INSERT		0x10
+#define	XKB_LED_CAPS_LOCK	0x08
+#define	XKB_LED_CODE_INPUT	0x04
+#define	XKB_LED_ROMAJI		0x02
+#define	XKB_LED_KANA_LOCK	0x01
+
+static void
+x68kKbdCtrl(DeviceIntPtr device, KeybdCtrl *ctrl)
+{
+    X68kKbdPrivPtr pPriv = (X68kKbdPrivPtr)device->public.devicePrivate;
+
+    if (pPriv->leds != ctrl->leds) {
+        x68kSetLeds(pPriv, (uint8_t)ctrl->leds);
+	pPriv->leds = ctrl->leds;
+    }
+}
+
+/*-------------------------------------------------------------------------
+ * function "x68kSetLeds"
+ *
+ *  purpose:  set keyboard leds to specified state
+ *  argument: (X68kKbdPrivPtr)pPriv
+ *            (uint8_t)data;
+ *  returns:  nothing
+ *-----------------------------------------------------------------------*/
+static void
+x68kSetLeds(X68kKbdPrivPtr pPriv, uint8_t data)
+{
+    /* bit sequence of led indicator in xkb and hardware are same */
+    if (ioctl(pPriv->fd, KIOCSLED, &data) == -1)
+        ErrorF("Failed to set keyboard lights\n");
+}
+
+/* EOF x68kKbd.c */

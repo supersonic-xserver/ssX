@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 VA Linux Systems, Inc.
  * (c) Copyright IBM Corporation 2002
  * All Rights Reserved.
@@ -28,7 +35,7 @@
  *    Kevin E. Martin <kem@users.sourceforge.net>
  *    Gareth Hughes <gareth@nvidia.com>
  */
-/* $XFree86:$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/common/texmem.h,v 1.1.1.3 2004/12/10 15:06:13 alanh Exp $ */
 
 /** \file texmem.h
  * Public interface to the DRI texture memory management routines.
@@ -89,16 +96,17 @@ struct dri_texture_object {
 					 * the framebuffer.  
 					 */
 
-        unsigned    firstLevel;         /**< Image in \c tObj->Image that
+        unsigned    firstLevel;         /**< Image in \c tObj->Image[0] that
 					 * corresponds to the base-level of
 					 * this texture object.
 					 */
 
-        unsigned    lastLevel;          /**< Last image in \c tObj->Image used
-					 * by the current LOD settings of this
-					 * texture object.  This value must be
-					 * greater than or equal to
-					 * \c firstLevel.
+        unsigned    lastLevel;          /**< Last image in \c tObj->Image[0] 
+					 * used by the
+					 * current LOD settings of
+					 * this texture object.  This
+					 * value must be greater than
+					 * or equal to \c firstLevel.
 					 */
 };
 
@@ -291,5 +299,19 @@ GLboolean driValidateTextureHeaps( driTexHeap * const * texture_heaps,
     unsigned nr_heaps, const driTextureObject * swapped );
 
 extern void driCalculateTextureFirstLastLevel( driTextureObject * t );
+
+
+extern const struct gl_texture_format *_dri_texformat_rgba8888;
+extern const struct gl_texture_format *_dri_texformat_argb8888;
+extern const struct gl_texture_format *_dri_texformat_rgb565;
+extern const struct gl_texture_format *_dri_texformat_argb4444;
+extern const struct gl_texture_format *_dri_texformat_argb1555;
+extern const struct gl_texture_format *_dri_texformat_al88;
+extern const struct gl_texture_format *_dri_texformat_a8;
+extern const struct gl_texture_format *_dri_texformat_ci8;
+extern const struct gl_texture_format *_dri_texformat_i8;
+extern const struct gl_texture_format *_dri_texformat_l8;
+
+extern void driInitTextureFormats( void );
 
 #endif /* DRI_TEXMEM_H */

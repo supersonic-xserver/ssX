@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/mesa/Imakefile,v 1.9tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/mesa/Imakefile,v 1.9 2004/12/10 16:07:00 alanh Exp $
 
 #define IHaveModules
 
@@ -13,8 +13,10 @@ XCOMM $XFree86: xc/programs/Xserver/GL/mesa/Imakefile,v 1.9tsi Exp $
 #define MesaBuildDir /**/
 #include "../../../../lib/GL/mesa/Imakefile.inc"
 
-     INCLUDES = -I$(MESASRCDIR)/include -I$(GLXLIBSRC)/include \
-		-I$(MESASRCDIR)/src/mesa -I$(SERVERSRC)/include
+     INCLUDES = -I$(INCLUDESRC) -I$(XINCLUDESRC) -I$(EXTINCSRC) \
+		-I$(MESASRCDIR)/include -I$(GLXLIBSRC)/include \
+		-I$(MESASRCDIR)/src/mesa \
+		-I$(SERVERSRC)/include
 
       DEFINES = $(GLX_DEFINES)
 

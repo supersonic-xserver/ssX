@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 
 /**************************************************************************
 
@@ -25,7 +32,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i740/i740_driver.c,v 1.61tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i740/i740_driver.c,v 1.53 2005/02/18 02:55:07 dawes Exp $ */
 
 /*
  * Authors:
@@ -75,12 +82,31 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "micmap.h"
 
+#define USE_FB
+
+#ifdef USE_FB
 #include "fb.h"
+#else
+/* Drivers using cfb need: */
+
+#define PSZ 8
+#include "cfb.h"
+#undef PSZ
+
+/* Drivers supporting bpp 16, 24 or 32 with cfb need one or more of: */
+
+#include "cfb16.h"
+#include "cfb24.h"
+#include "cfb32.h"
+#endif
+
+/* The driver's own header file: */
+
 
 #include "regionstr.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 #include "vbe.h"
 #include "i740_dga.h"
@@ -100,8 +126,7 @@ static Bool I740Probe(DriverPtr drv, int flags);
 static Bool I740PreInit(ScrnInfoPtr pScrn, int flags);
 
 /* Initialize a screen */
-static Bool I740ScreenInit(int Index, ScreenPtr pScreen,
-			   const int argc, const char **argv);
+static Bool I740ScreenInit(int Index, ScreenPtr pScreen, int argc, char **argv);
 
 /* Enter from a virtual terminal */
 static Bool I740EnterVT(int scrnIndex, int flags);
@@ -206,8 +231,17 @@ static const char *vgahwSymbols[] = {
 
 #ifdef XFree86LOADER
 static const char *fbSymbols[] = {
+#ifdef USE_FB
     "fbScreenInit",
     "fbPictureInit",
+#else
+    "cfbScreenInit",
+    "cfb16ScreenInit",
+    "cfb24ScreenInit",
+    "cfb32ScreenInit",
+#endif
+    "cfb8_32ScreenInit",
+    "cfb24_32ScreenInit",
     NULL
 };
 #endif
@@ -226,12 +260,14 @@ static const char *ramdacSymbols[] = {
     NULL
 };
 
+#ifdef XFree86LOADER
 static const char *vbeSymbols[] = {
     "VBEInit",
     "vbeDoEDID",
     "vbeFree",
     NULL
 };
+#endif
 
 #if USE_DDC2
 static const char *ddcSymbols[] = {
@@ -270,7 +306,7 @@ static XF86ModuleVersionInfo i740VersRec =
 XF86ModuleData i740ModuleData = {&i740VersRec, i740Setup, 0};
 
 static pointer
-i740Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+i740Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -289,12 +325,12 @@ i740Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, xaaSymbols, 
-			     ramdacSymbols, vbeSymbols,
+	LoaderRefSymLists(vgahwSymbols, fbSymbols, xaaSymbols, 
+			  ramdacSymbols, vbeSymbols,
 #if USE_DDC2
-			     ddcSymbols, i2cSymbols,
+			  ddcSymbols, i2cSymbols,
 #endif
-			     NULL);
+			  NULL);
 
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -450,14 +486,10 @@ static void
 I740ProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
 	pVbe = VBEInit(NULL,index);
 	ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 
@@ -475,9 +507,11 @@ I740PreInit(ScrnInfoPtr pScrn, int flags) {
   int i;
   MessageType from;
   int temp;
+#ifndef USE_FB
+  char *mod=0, *reqSym=0;
+#endif
   int flags24;
   rgb defaultWeight = {0, 0, 0};
-  ModuleDescPtr pMod;
 
   if (pScrn->numEntities != 1) return FALSE;
 
@@ -498,9 +532,9 @@ I740PreInit(ScrnInfoPtr pScrn, int flags) {
   }
 
   /* The vgahw module should be loaded here when needed */
-  if (!(pMod = xf86LoadSubModule(pScrn, "vgahw"))) return FALSE;
+  if (!xf86LoadSubModule(pScrn, "vgahw")) return FALSE;
 
-  xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+  xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
   /* Allocate a vgaHWRec */
   if (!vgaHWGetHWRec(pScrn)) return FALSE;
@@ -678,7 +712,7 @@ I740PreInit(ScrnInfoPtr pScrn, int flags) {
     }
   }
 
-  xf86DrvMsg(pScrn->scrnIndex, from, "VideoRAM: %d kByte %s\n",
+  xf86DrvMsg(pScrn->scrnIndex, from, "Steve was here! VideoRAM: %d kByte %s\n",
 	     pScrn->videoRam, (pI740->HasSGRAM)?"SGRAM":"SDRAM");
   pI740->FbMapSize = pScrn->videoRam*1024;
 
@@ -768,26 +802,52 @@ I740PreInit(ScrnInfoPtr pScrn, int flags) {
 
   xf86SetDpi(pScrn, 0, 0);
 
-  if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+#ifdef USE_FB
+  if (!xf86LoadSubModule(pScrn, "fb")) {
     I740FreeRec(pScrn);
     return FALSE;
   }
-  xf86LoaderModReqSymbols(pMod, "fbScreenInit","fbPictureInit", NULL);
+  xf86LoaderReqSymbols("fbScreenInit","fbPictureInit", NULL);
+#else
+  switch (pScrn->bitsPerPixel) {
+  case 8:
+    mod = "cfb";
+    reqSym = "cfbScreenInit";
+    break;
+  case 16:
+    mod = "cfb16";
+    reqSym = "cfb16ScreenInit";
+    break;
+  case 24:
+    mod = "cfb24";
+    reqSym = "cfb24ScreenInit";
+    break;
+  case 32:
+    mod = "cfb32";
+    reqSym = "cfb32ScreenInit";
+    break;
+  }
+  if (mod && !xf86LoadSubModule(pScrn, mod)) {
+    I740FreeRec(pScrn);
+    return FALSE;
+  }
+  xf86LoaderReqSymbols(reqSym, NULL);
+#endif
 
   if (!xf86ReturnOptValBool(pI740->Options, OPTION_NOACCEL, FALSE)) {
-    if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+    if (!xf86LoadSubModule(pScrn, "xaa")) {
       I740FreeRec(pScrn);
       return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+    xf86LoaderReqSymLists(xaaSymbols, NULL);
   }
 
   if (!xf86ReturnOptValBool(pI740->Options, OPTION_SW_CURSOR, FALSE)) {
-    if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+    if (!xf86LoadSubModule(pScrn, "ramdac")) {
       I740FreeRec(pScrn);
       return FALSE;
     }
-    xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+    xf86LoaderReqSymLists(ramdacSymbols, NULL);
   }
 
   /*  We wont be using the VGA access after the probe */
@@ -817,10 +877,10 @@ I740PreInit(ScrnInfoPtr pScrn, int flags) {
 #if USE_DDC2 /*DDC2*/
   { /*PL*/
 
-   if ((pMod = xf86LoadSubModule(pScrn, "ddc"))) {
-     xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
-     if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
-       xf86LoaderModReqSymLists(pMod, i2cSymbols,NULL);
+   if (xf86LoadSubModule(pScrn, "ddc")) {
+     xf86LoaderReqSymLists(ddcSymbols, NULL);
+     if ( xf86LoadSubModule(pScrn, "i2c") ) {
+       xf86LoaderReqSymLists(i2cSymbols,NULL);
 
        if (I740MapMem(pScrn))
 	 {
@@ -921,7 +981,7 @@ DoSave(ScrnInfoPtr pScrn, vgaRegPtr vgaReg, I740RegPtr i740Reg, Bool saveFonts)
    * in the generic VGA portion.
    */
   if (saveFonts)
-    vgaHWSave(pScrn, vgaReg, VGA_SR_ALL);
+    vgaHWSave(pScrn, vgaReg, VGA_SR_MODE|VGA_SR_FONTS);
   else
     vgaHWSave(pScrn, vgaReg, VGA_SR_MODE);
 
@@ -1033,7 +1093,7 @@ DoRestore(ScrnInfoPtr pScrn, vgaRegPtr vgaReg, I740RegPtr i740Reg,
    *		restore clock-select bits.
    */
   if (restoreFonts)
-    vgaHWRestore(pScrn, vgaReg, VGA_SR_ALL);
+    vgaHWRestore(pScrn, vgaReg, VGA_SR_FONTS|VGA_SR_MODE);
   else
     vgaHWRestore(pScrn, vgaReg, VGA_SR_MODE);
 
@@ -1514,8 +1574,7 @@ I740LoadPalette24(ScrnInfoPtr pScrn, int numColors, int *indices, LOCO *colors,
 }
 
 static Bool
-I740ScreenInit(int scrnIndex, ScreenPtr pScreen,
-	       const int argc, const char **argv) {
+I740ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv) {
   ScrnInfoPtr pScrn;
   vgaHWPtr hwp;
   I740Ptr pI740;
@@ -1545,9 +1604,12 @@ I740ScreenInit(int scrnIndex, ScreenPtr pScreen,
   if (!miSetVisualTypes(pScrn->depth, miGetDefaultVisualMask(pScrn->depth),
 			pScrn->rgbBits, pScrn->defaultVisual))
     return FALSE;
+#ifdef USE_FB
 	if (!miSetPixmapDepths ()) return FALSE;
+#endif
 
   switch (pScrn->bitsPerPixel) {
+#ifdef USE_FB
   case 8:
   case 16:
   case 24:
@@ -1558,13 +1620,45 @@ I740ScreenInit(int scrnIndex, ScreenPtr pScreen,
 		       pScrn->displayWidth,pScrn->bitsPerPixel))
       return FALSE;
     break;
+#else
+  case 8:
+    if (!cfbScreenInit(pScreen, pI740->FbBase, 
+		       pScrn->virtualX, pScrn->virtualY,
+		       pScrn->xDpi, pScrn->yDpi,
+		       pScrn->displayWidth))
+      return FALSE;
+    break;
+  case 16:
+    if (!cfb16ScreenInit(pScreen, pI740->FbBase, 
+			 pScrn->virtualX, pScrn->virtualY,
+			 pScrn->xDpi, pScrn->yDpi,
+			 pScrn->displayWidth))
+      return FALSE;
+    break;
+  case 24:
+    if (!cfb24ScreenInit(pScreen, pI740->FbBase, 
+			 pScrn->virtualX, pScrn->virtualY,
+			 pScrn->xDpi, pScrn->yDpi,
+			 pScrn->displayWidth))
+      return FALSE;
+    break;
+  case 32:
+    if (!cfb32ScreenInit(pScreen, pI740->FbBase, 
+			 pScrn->virtualX, pScrn->virtualY,
+			 pScrn->xDpi, pScrn->yDpi,
+			 pScrn->displayWidth))
+      return FALSE;
+    break;
+#endif
   default:
     xf86DrvMsg(scrnIndex, X_ERROR,
 	       "Internal error: invalid bpp (%d) in I740ScrnInit\n",
 	       pScrn->bitsPerPixel);
     return FALSE;
   }
+#ifdef USE_FB
   fbPictureInit(pScreen,0,0);
+#endif
 
   xf86SetBlackWhitePixels(pScreen);
 

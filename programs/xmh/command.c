@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/xmh/command.c,v 3.11 2005/03/23 03:11:30 dawes Exp $ */
+/* $XConsortium: command.c,v 2.49 95/04/05 19:59:06 kaleb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XFree86: xc/programs/xmh/command.c,v 3.10 2004/04/03 22:26:26 dawes Exp $ */
 
 /*
  *			  COPYRIGHT 1987, 1989
@@ -128,16 +136,16 @@ ChildDone(int n)
 static int _DoCommandToFileOrPipe(
   char **argv,			/* The command to execute, and its args. */
   int inputfd,			/* Input stream for command. */
-  volatile int outputfd,	/* Output stream; /dev/null if == -1 */
+  int outputfd,			/* Output stream; /dev/null if == -1 */
   char **bufP,			/* output buffer ptr if outputfd == -2 */
   int *lenP)			/* output length ptr if outputfd == -2 */
 {
     XtAppContext appCtx = XtWidgetToApplicationContext(toplevel);
     int return_status;
-    volatile int old_stdin = 0, old_stdout = 0, old_stderr = 0;
+    int old_stdin = 0, old_stdout = 0, old_stderr = 0;
     int pid;
     fd_set readfds, fds;
-    volatile Boolean output_to_pipe = False;
+    Boolean output_to_pipe = False;
     CommandStatus status = XtNew(CommandStatusRec);
     FD_ZERO(&fds);
     FD_SET(ConnectionNumber(theDisplay), &fds);

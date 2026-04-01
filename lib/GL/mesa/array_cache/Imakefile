@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/array_cache/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/array_cache/Imakefile,v 1.1 2004/04/08 10:07:34 alanh Exp $
 
 #include <Threads.tmpl>
 
@@ -39,7 +39,7 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 #if BuildXF86DRI
   DRI_DEFINES = GlxDefines
  DRI_INCLUDES = -I../../../dri -I../../../glx -I../../dri -I../../../include \
-		-I$(XF86OSSRC) -I$(SERVERSRC)/GL/dri
+		-I$(INCLUDESRC)/GL -I$(XF86OSSRC) -I$(SERVERSRC)/GL/dri
 #endif
 
 MESA_INCLUDES = -I$(MESASRCDIR)/src/mesa/main \
@@ -48,7 +48,7 @@ MESA_INCLUDES = -I$(MESASRCDIR)/src/mesa/main \
 		-I$(MESASRCDIR)/src/mesa/math \
 		-I$(MESASRCDIR)/src/mesa \
 		-I$(MESASRCDIR)/include \
-		-I../../../include
+		-I../../../include -I$(XINCLUDESRC)
 
      INCLUDES = $(MESA_INCLUDES) $(DRI_INCLUDES)
          SRCS = $(MESA_AC_SRCS)

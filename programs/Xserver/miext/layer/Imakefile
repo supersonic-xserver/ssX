@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/Xserver/miext/layer/Imakefile,v 1.8tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/miext/layer/Imakefile,v 1.6 2004/06/01 00:17:08 dawes Exp $
 /*
- * Copyright (c) 1994-2007 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -46,20 +46,14 @@ XCOMM $XFree86: xc/programs/Xserver/miext/layer/Imakefile,v 1.8tsi Exp $
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if DoLoadableServer
-#if !BuildModuleInSubdir
 #define IHaveModules
-#elif !defined(IHaveModules)
-#define IHaveSubdirs
-SUBDIRS= module
-#endif
-#endif
-
 #include <Server.tmpl>
 
-#if defined(IHaveModules)
+#ifdef XFree86Version
+#if DoLoadableServer
 XFMODSRC = laymodule.c
 XFMODOBJ = laymodule.o
+#endif
 #endif
 
 #if BuildRender
@@ -79,44 +73,21 @@ OBJS = layergc.o \
        layerwin.o \
        $(XFMODOBJ)
 
-   INCLUDES = -I$(SERVERSRC)/miext/layer -I$(SERVERSRC)/miext/shadow \
-	      -I$(SERVERSRC)/mi -I$(SERVERSRC)/fb -I$(SERVERSRC)/include \
-	      -I$(XF86SRC)/common $(EXTRAINCLUDES) -I$(SERVERSRC)/render
-   LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln \
-	      $(SERVERSRC)/mi/llib-lmi.ln
+   INCLUDES = -I. -I../shadow -I../../mi -I../../fb -I../../include -I$(XINCLUDESRC) \
+	      -I$(FONTINCSRC) -I$(XF86SRC)/common $(EXTRAINCLUDES) \
+	      -I../../render -I$(EXTINCSRC)
+   LINTLIBS = ../../dix/llib-ldix.ln ../../os/llib-los.ln \
+	     ../../mi/llib-lmi.ln
 
-#if defined(IHaveModules)
-ModuleObjectRule()
-LibraryModuleTarget(layer,$(OBJS),.)
-#else
 NormalLibraryObjectRule()
 LibraryModuleTarget(layer,$(OBJS),.)
-#endif
-
 LintLibraryTarget(layer,$(SRCS))
+
 NormalLintTarget($(SRCS))
 
-#if defined(IHaveModules)
 InstallLibraryModule(layer,$(MODULEDIR),.)
-InstallDriverSDKLibraryModule(layer,$(DRIVERSDKMODULEDIR),.)
-#endif
 
 DependTarget()
 
-#ifdef IHaveSubdirs
-MakeSubdirs($(SUBDIRS))
-DependSubdirs($(SUBDIRS))
-#endif
-
-#ifdef LinkDirectory
-LinkSourceFile(layergc.c,LinkDirectory)
-LinkSourceFile(layerinit.c,LinkDirectory)
-LinkSourceFile(layerwin.c,LinkDirectory)
-#if BuildRender
-LinkSourceFile($(RENDERSRC),LinkDirectory)
-#endif
-#endif
-
-#if !defined(IHaveModules) || !BuildModuleInSubdir
+InstallDriverSDKLibraryModule(layer,$(DRIVERSDKMODULEDIR),.)
 InstallDriverSDKNonExecFile(layer.h,$(DRIVERSDKINCLUDEDIR))
-#endif

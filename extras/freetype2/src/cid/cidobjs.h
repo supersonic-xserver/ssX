@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cidobjs.h                                                              */
 /*                                                                         */
 /*    CID objects manager (specification).                                 */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,18 +23,17 @@
 /***************************************************************************/
 
 
-#ifndef CIDOBJS_H
-#define CIDOBJS_H
-
-#include <freetype/internal/ftobjs.h>
-#include <freetype/config/ftconfig.h>
-#include <freetype/internal/t1errors.h>
-#include <freetype/internal/t1types.h>
+#ifndef __CIDOBJS_H__
+#define __CIDOBJS_H__
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#include <ft2build.h>
+#include FT_INTERNAL_OBJECTS_H
+#include FT_CONFIG_CONFIG_H
+#include FT_INTERNAL_TYPE1_TYPES_H
+
+
+FT_BEGIN_HEADER
 
 
   /* The following structures must be defined by the hinter */
@@ -112,30 +118,48 @@
   } CID_GlyphSlotRec;
 
 
-  FT_LOCAL
-  FT_Error  CID_Init_Face( FT_Stream      stream,
-                           CID_Face       face,
-                           FT_Int         face_index,
-                           FT_Int         num_params,
-                           FT_Parameter*  params );
+  FT_LOCAL( void )
+  cid_slot_done( CID_GlyphSlot  slot );
 
-  FT_LOCAL
-  void  CID_Done_Face( CID_Face  face );
+  FT_LOCAL( FT_Error )
+  cid_slot_init( CID_GlyphSlot   slot );
 
 
-  FT_LOCAL
-  FT_Error  CID_Init_Driver( CID_Driver  driver );
-
-  FT_LOCAL
-  void  CID_Done_Driver( CID_Driver  driver );
+  FT_LOCAL( void )
+  cid_size_done( CID_Size  size );
 
 
-#ifdef __cplusplus
-  }
-#endif
+  FT_LOCAL( FT_Error )
+  cid_size_init( CID_Size  size );
 
 
-#endif /* CIDOBJS_H */
+  FT_LOCAL( FT_Error )
+  cid_size_reset( CID_Size  size );
+
+
+  FT_LOCAL( FT_Error )
+  cid_face_init( FT_Stream      stream,
+                 CID_Face       face,
+                 FT_Int         face_index,
+                 FT_Int         num_params,
+                 FT_Parameter*  params );
+
+
+  FT_LOCAL( void )
+  cid_face_done( CID_Face  face );
+
+
+  FT_LOCAL( FT_Error )
+  cid_driver_init( CID_Driver  driver );
+
+
+  FT_LOCAL( void )
+  cid_driver_done( CID_Driver  driver );
+
+
+FT_END_HEADER
+
+#endif /* __CIDOBJS_H__ */
 
 
 /* END */

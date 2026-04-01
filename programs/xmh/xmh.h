@@ -1,4 +1,14 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XConsortium: xmh.h,v 2.32 93/09/08 15:31:11 kaleb Exp $
+ *
+ *
  *			  COPYRIGHT 1987
  *		   DIGITAL EQUIPMENT CORPORATION
  *		       MAYNARD, MASSACHUSETTS
@@ -21,7 +31,7 @@
  * used in advertising or publicity pertaining to distribution of the software
  * without specific, written prior permission.
  */
-/* $XFree86: xc/programs/xmh/xmh.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/xmh/xmh.h,v 1.3 2002/07/01 02:26:05 tsi Exp $ */
 
 #ifndef _xmh_h
 #define _xmh_h
@@ -60,8 +70,6 @@
 
 #define xMargin 2
 #define yMargin 2
-
-#undef DEBUG
 
 #define DEBUG(msg) \
 	if (app_resources.debug) \

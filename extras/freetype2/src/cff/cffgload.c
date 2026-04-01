@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/cff/cffgload.c,v 1.4tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffgload.c                                                             */
 /*                                                                         */
@@ -15,6 +21,9 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
+
+/* $XFree86: xc/extras/freetype2/src/cff/cffgload.c,v 1.4 2004/04/26 16:15:54 dawes Exp $ */
+
 
 #include <ft2build.h>
 #include FT_INTERNAL_DEBUG_H
@@ -2286,7 +2295,7 @@
   FT_LOCAL_DEF( FT_Error )
   cff_slot_load( CFF_GlyphSlot  glyph,
                  CFF_Size       size,
-                 FT_UInt        glyph_index,
+                 FT_UInt         glyph_index,
                  FT_Int32       load_flags )
   {
     FT_Error      error;
@@ -2401,6 +2410,7 @@
         else
           glyph_index = 0;
       }
+
 
       cff_decoder_init( &decoder, face, size, glyph, hinting,
                         FT_LOAD_TARGET_MODE( load_flags ) );

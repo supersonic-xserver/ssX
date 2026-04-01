@@ -1,3 +1,19 @@
+/* $Xorg: Convert.c,v 1.5 2001/02/09 02:03:54 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -30,7 +46,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Convert.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/lib/Xt/Convert.c,v 3.9 2004/05/05 00:07:02 dickey Exp $ */
 
 /*
 
@@ -501,9 +517,9 @@ void _XtConverterCacheStats(void)
 	    }
 	    (void) fprintf(stdout, "Index: %4d  Entries: %d\n", i, entries);
 	    for (p = cacheHashTable[i]; p; p = p->next) {
-		(void) fprintf(stdout, "    Size: %3d  Refs: %3ld  '",
+		(void) fprintf(stdout, "    Size: %3d  Refs: %3d  '",
 			       p->from.size,
-			       p->has_ext ? CEXT(p)->ref_count : 0L);
+			       p->has_ext ? CEXT(p)->ref_count : 0);
 		(void) fprintf(stdout, "'\n");
 	    }
 	    (void) fprintf(stdout, "\n");

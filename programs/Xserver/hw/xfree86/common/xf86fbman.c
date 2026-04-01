@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86fbman.c,v 1.33tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86fbman.c,v 1.31 2005/01/26 01:31:47 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (c) 1998-2001 by The XFree86 Project, Inc.
@@ -50,7 +64,7 @@
 #include "misc.h"
 #include "xf86.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "regionstr.h"
 #include "xf86fbman.h"
@@ -385,8 +399,10 @@ AllocateArea(
    /* look through the free boxes */
    for(i = 0; i < num; i++, boxp++) {
 	x = boxp->x1;
-	if (granularity > 1)
-	    x = ((x + granularity - 1) / granularity) * granularity;
+	if(granularity) {
+	    int tmp = x % granularity;
+	    if(tmp) x += (granularity - tmp);
+	}
 
 	if(((boxp->y2 - boxp->y1) < h) || ((boxp->x2 - x) < w))
 	   continue;
@@ -413,8 +429,10 @@ AllocateArea(
 
 	   boxp = &(link->area.box);
 	   x = boxp->x1;
- 	   if (granularity > 1)
-		x = ((x + granularity - 1) / granularity) * granularity;
+ 	   if(granularity) {
+		int tmp = x % granularity;
+		if(tmp) x += (granularity - tmp);
+	   }
 
 	   if(((boxp->y2 - boxp->y1) < h) || ((boxp->x2 - x) < w)) {
 		link = link->next;
@@ -698,8 +716,10 @@ localQueryLargestOffscreenArea(
 
     while(nbox--) {
 	x = pbox->x1;
-	if (granularity > 1)
-	   x = ((x + granularity - 1) / granularity) * granularity;
+	if(granularity) {
+	   int tmp = x % granularity;
+	   if(tmp) x += (granularity - tmp);
+        }
 
 	w = pbox->x2 - x;
 	h = pbox->y2 - pbox->y1;
@@ -856,9 +876,7 @@ AllocateLinear(
    while (linear) {
  	/* Make sure we get a free area that's not an XY fallback case */
       if (!linear->area && linear->free) {
-	 offset = linear->linear.offset;
-	 if (granularity > 1)
-	    offset = ((offset + granularity - 1) / granularity) * granularity;
+	 offset = (linear->linear.offset + granularity) & ~granularity;
 	 end = offset+size;
 	 if (end <= (linear->linear.offset + linear->linear.size))
 	    break;
@@ -948,20 +966,16 @@ localAllocateOffscreenLinear(
    extents = REGION_EXTENTS(pScreen, offman->InitialBoxes);
    pitch = extents->x2 - extents->x1;
 
-   if (gran > 1) {
-	if (gran > pitch) {
-	    /* we can't match the specified alignment with XY allocations */
-	    xfree(link);
-	    return NULL;
-	}
-
-	if (pitch % gran) {
-	    /*
-	     * pitch and granularity aren't a perfect match, allocate a bit
-	     * more and align later.
-	     */
-	    length += gran - 1;
-	}
+   if (gran && gran > pitch) {
+	/* we can't match the specified alignment with XY allocations */
+	xfree(link);
+	return NULL;
+   }
+   if (gran && (pitch % gran)) {
+       /* pitch and granularity aren't a perfect match, let's allocate
+	* a bit more so we can align later on
+	*/
+       length += gran - 1;
    }
 
    if(length < pitch) { /* special case */
@@ -985,8 +999,8 @@ localAllocateOffscreenLinear(
 	linear->pScreen = pScreen;
 	linear->size = h * w;
 	linear->offset = (pitch * area->box.y1) + area->box.x1;
-	if (gran > 1)
-	    linear->offset = ((linear->offset + gran - 1) / gran) * gran;
+	if (gran && linear->offset % gran)
+		linear->offset += gran - (linear->offset % gran);
 	linear->granularity = gran;
 	linear->MoveLinearCallback = moveCB;
 	linear->RemoveLinearCallback = removeCB;
@@ -1041,7 +1055,7 @@ localFreeOffscreenLinear(FBLinearPtr linear)
       FBLinearLinkPtr p = pLink->next;
       pLink->linear.size += p->linear.size;
       pLink->next = p->next;
-      xfree(p);
+      free(p);
    }
 
    if(pLinkPrev) {
@@ -1049,7 +1063,7 @@ localFreeOffscreenLinear(FBLinearPtr linear)
       	    FBLinearLinkPtr p = pLinkPrev->next;
       	    pLinkPrev->linear.size += p->linear.size;
       	    pLinkPrev->next = p->next;
-      	    xfree(p);
+      	    free(p);
     	}
    } 
    
@@ -1222,6 +1236,9 @@ xf86InitFBManager(
    BoxRec ScreenBox;
    Bool ret;
 
+   if (FullBox->y2 < FullBox->y1) return FALSE;
+   if (FullBox->x2 < FullBox->x1) return FALSE;
+
    ScreenBox.x1 = 0;
    ScreenBox.y1 = 0;
    ScreenBox.x2 = pScrn->virtualX;
@@ -1231,9 +1248,6 @@ xf86InitFBManager(
       (FullBox->x2 <  ScreenBox.x2) || (FullBox->y2 <  ScreenBox.y2)) {
 	return FALSE;   
    }
-
-   if (FullBox->y2 < FullBox->y1) return FALSE;
-   if (FullBox->x2 < FullBox->x2) return FALSE;
 
    REGION_INIT(pScreen, &ScreenRegion, &ScreenBox, 1); 
    REGION_INIT(pScreen, &FullRegion, FullBox, 1); 
@@ -1452,12 +1466,9 @@ xf86AllocateLinearOffscreenArea (
    extents = REGION_EXTENTS(pScreen, offman->InitialBoxes);
    w = extents->x2 - extents->x1;
 
-   if (gran > 1) {
-	if (gran > w)
-	    return NULL;
-
-	if (w % gran)
-	    length += gran - 1;
+   if(gran && ((gran > w) || (w % gran))) {
+	/* we can't match the specified alignment with XY allocations */
+	return NULL;
    }
 
    if(length <= w) { /* special case */

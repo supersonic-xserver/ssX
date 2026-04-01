@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/miext/layer/layerwin.c,v 1.8tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/miext/layer/layerwin.c,v 1.8 2003/11/10 18:22:49 tsi Exp $
  *
  * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -368,7 +375,6 @@ layerChangeWindowAttributes (WindowPtr pWin, unsigned long mask)
     LayerWinLoopRec loop;
     Bool	    ret = TRUE;
 
-    (void) memset(&loop, 0, sizeof(loop));
     for (pLay = LayerWindowFirst (pWin, &loop);
 	 pLay;
 	 pLay = LayerWindowNext (pWin, &loop))
@@ -389,7 +395,6 @@ layerPaintWindowBackground (WindowPtr pWin, RegionPtr pRegion, int what)
     LayerPtr	    pLay;
     LayerWinLoopRec loop;
 
-    (void) memset(&loop, 0, sizeof(loop));
     for (pLay = LayerWindowFirst (pWin, &loop);
 	 pLay;
 	 pLay = LayerWindowNext (pWin, &loop))
@@ -408,7 +413,6 @@ layerPaintWindowBorder (WindowPtr pWin, RegionPtr pRegion, int what)
     LayerPtr	    pLay;
     LayerWinLoopRec loop;
 
-    (void) memset(&loop, 0, sizeof(loop));
     for (pLay = LayerWindowFirst (pWin, &loop);
 	 pLay;
 	 pLay = LayerWindowNext (pWin, &loop))
@@ -428,7 +432,6 @@ layerCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
     LayerWinLoopRec loop;
     int		    dx = 0, dy = 0;
 
-    (void) memset(&loop, 0, sizeof(loop));
     for (pLay = LayerWindowFirst (pWin, &loop);
 	 pLay;
 	 pLay = LayerWindowNext (pWin, &loop))

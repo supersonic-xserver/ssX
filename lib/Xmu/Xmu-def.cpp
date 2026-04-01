@@ -140,4 +140,4 @@ XmuScanlineNot
 XmuScanlineOr
 XmuScanlineOrSegment
 
-/* $XFree86: xc/lib/Xmu/Xmu-def.cpp,v 1.2 2002/05/31 18:45:45 dawes Exp $ */
+/* $XFree86: xc/lib/Xmu/Xmu-def.cpp,v 1.3 2004/05/06 01:17:29 dawes Exp $ */

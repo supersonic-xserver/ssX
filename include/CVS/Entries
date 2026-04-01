@@ -1,0 +1,31 @@
+/DECkeysym.h/1.1.1.3/Sat Jan 19 14:59:22 2002//Tnetbsd-5-2-3-RELEASE
+/HPkeysym.h/1.1.1.3/Sat Jan 19 14:59:22 2002//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1.1.5/Fri Mar 18 13:05:09 2005//Tnetbsd-5-2-3-RELEASE
+/Sunkeysym.h/1.1.1.3/Sat Jan 19 14:59:22 2002//Tnetbsd-5-2-3-RELEASE
+/X.h/1.1.1.5/Fri Mar  5 14:24:44 2004//Tnetbsd-5-2-3-RELEASE
+/XF86keysym.h/1.1.1.5/Fri Feb 28 13:18:58 2003//Tnetbsd-5-2-3-RELEASE
+/XWDFile.h/1.1.1.3/Sat Jan 19 14:59:22 2002//Tnetbsd-5-2-3-RELEASE
+/Xalloca.h/1.1.1.5/Fri Feb 28 13:18:58 2003//Tnetbsd-5-2-3-RELEASE
+/Xarch.h/1.1.1.4/Fri Mar  5 14:24:44 2004//Tnetbsd-5-2-3-RELEASE
+/Xatom.h/1.1.1.1/Mon Jan  1 12:44:53 2001//Tnetbsd-5-2-3-RELEASE
+/Xdefs.h/1.1.1.4/Sat Jan 19 14:59:23 2002//Tnetbsd-5-2-3-RELEASE
+/Xfuncproto.h/1.1.1.3/Sat Jan 19 14:59:23 2002//Tnetbsd-5-2-3-RELEASE
+/Xfuncs.h/1.1.1.7/Fri Mar 18 13:05:09 2005//Tnetbsd-5-2-3-RELEASE
+/Xmd.h/1.5/Fri Mar  5 16:32:51 2004//Tnetbsd-5-2-3-RELEASE
+/Xos.h/1.1.1.7/Fri Mar 18 13:05:09 2005//Tnetbsd-5-2-3-RELEASE
+/Xos_r.h/1.1.1.6/Fri Mar  5 14:24:44 2004//Tnetbsd-5-2-3-RELEASE
+/Xosdefs.h/1.1.1.7/Fri Mar 18 13:05:09 2005//Tnetbsd-5-2-3-RELEASE
+/Xpoll.h/1.1.1.5/Fri Mar 18 13:05:09 2005//Tnetbsd-5-2-3-RELEASE
+/Xproto.h/1.1.1.3/Sat Jan 19 14:59:25 2002//Tnetbsd-5-2-3-RELEASE
+/Xprotostr.h/1.1.1.3/Sat Jan 19 14:59:25 2002//Tnetbsd-5-2-3-RELEASE
+/Xthreads.h/1.5/Sun Jan  9 09:55:35 2005//Tnetbsd-5-2-3-RELEASE
+/Xw32defs.h/1.1.1.2/Sat Jun  9 14:57:43 2001//Tnetbsd-5-2-3-RELEASE
+/Xwinsock.h/1.1.1.3/Sat Jan 19 14:59:25 2002//Tnetbsd-5-2-3-RELEASE
+/ap_keysym.h/1.1.1.1/Mon Jan  1 12:44:53 2001//Tnetbsd-5-2-3-RELEASE
+/keysym.h/1.1.1.4/Sat Jan 19 14:59:25 2002//Tnetbsd-5-2-3-RELEASE
+/keysymdef.h/1.1.1.5/Fri Mar 18 13:05:10 2005//Tnetbsd-5-2-3-RELEASE
+D/DPS////
+D/GL////
+D/bitmaps////
+D/extensions////
+D/fonts////

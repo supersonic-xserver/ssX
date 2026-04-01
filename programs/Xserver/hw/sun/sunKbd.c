@@ -1,5 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/sun/sunKbd.c,v 1.11tsi Exp $ */
-/*
+/* $Xorg: sunKbd.c,v 1.3 2000/08/17 19:48:30 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/*-
  * Copyright 1987 by the Regents of the University of California
  *
  * Permission to use, copy, modify, and distribute this
@@ -39,11 +46,12 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
+/* $XFree86: xc/programs/Xserver/hw/sun/sunKbd.c,v 1.9 2003/11/17 22:20:36 dawes Exp $ */
 
 #define NEED_EVENTS
 #include "sun.h"
-#include <X11/keysym.h>
-#include <X11/Sunkeysym.h>
+#include "keysym.h"
+#include "Sunkeysym.h"
 #include "mi.h"
 
 #ifdef XKB
@@ -54,6 +62,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define SUN_LED_MASK	0x0f
 #define MIN_KEYCODE	7	/* necessary to avoid the mouse buttons */
+#define MAX_KEYCODE	255	/* limited by the protocol */
 #ifndef KB_SUN4 
 #define KB_SUN4		4
 #endif
@@ -185,7 +194,7 @@ static void ModLight (device, on, led)
     SetLights (ctrl, pPriv->fd);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunBell --
  *	Ring the terminal/keyboard bell
@@ -362,7 +371,7 @@ static void DoLEDs(device, ctrl, pPriv)
     SetLights (ctrl, pPriv->fd);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunKbdCtrl --
  *	Alter some of the keyboard control parameters
@@ -396,7 +405,7 @@ static void sunKbdCtrl (
 	DoLEDs(device, ctrl, pPriv);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunInitKbdNames --
  *	Handle the XKB initialization
@@ -590,7 +599,7 @@ static void sunInitKbdNames (
 }
 #endif /* XKB */
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunKbdProc --
  *	Handle the initialization, etc. of a keyboard.
@@ -631,6 +640,8 @@ int sunKbdProc (
 		workingKeySyms->minKeyCode += MIN_KEYCODE;
 		workingKeySyms->maxKeyCode += MIN_KEYCODE;
 	    }
+	    if (workingKeySyms->maxKeyCode > MAX_KEYCODE)
+		workingKeySyms->maxKeyCode = MAX_KEYCODE;
 	}
 
 	if (!workingModMap) {
@@ -708,7 +719,7 @@ int sunKbdProc (
     return Success;
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunKbdGetEvents --
  *	Return the events waiting in the wings for the given keyboard.
@@ -752,7 +763,7 @@ Firm_event* sunKbdGetEvents (
     return evBuf;
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunKbdEnqueueEvent --
  *
@@ -920,7 +931,7 @@ void sunEnqueueAutoRepeat ()
 		    autoRepeatDeltaTv);
 }
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * sunChangeKbdTranslation
  *	Makes operating system calls to set keyboard translation 

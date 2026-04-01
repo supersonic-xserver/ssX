@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/iplan2p4/iplbresd.c,v 3.1 2005/10/14 15:17:18 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/iplan2p4/iplbresd.c,v 3.0 1996/08/18 01:54:38 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,11 +53,12 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: iplbresd.c,v 1.16 94/04/17 20:28:45 dpw Exp $ */
 
 /* Modified nov 94 by Martin Schaller (Martin_Schaller@maus.r.de) for use with
 interleaved planes */
 
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
 #include "ipl.h"
 #include "miline.h"

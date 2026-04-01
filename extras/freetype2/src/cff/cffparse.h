@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  cffparse.h                                                             */
 /*                                                                         */
 /*    CFF token stream parser (specification)                              */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003 by                                     */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -21,7 +28,7 @@
 
 
 #include <ft2build.h>
-#include FT_INTERNAL_CFF_TYPES_H
+#include "cfftypes.h"
 #include FT_INTERNAL_OBJECTS_H
 
 
@@ -34,7 +41,7 @@ FT_BEGIN_HEADER
 #define CFF_CODE_PRIVATE  0x2000
 
 
-  typedef struct  CFF_Parser_
+  typedef struct  CFF_ParserRec_
   {
     FT_Byte*   start;
     FT_Byte*   limit;
@@ -46,18 +53,18 @@ FT_BEGIN_HEADER
     FT_UInt    object_code;
     void*      object;
 
-  } CFF_Parser;
+  } CFF_ParserRec, *CFF_Parser;
 
 
-  FT_LOCAL
-  void  CFF_Parser_Init( CFF_Parser*  parser,
-                         FT_UInt     code,
-                         void*       object );
+  FT_LOCAL( void )
+  cff_parser_init( CFF_Parser  parser,
+                   FT_UInt     code,
+                   void*       object );
 
-  FT_LOCAL
-  FT_Error  CFF_Parser_Run( CFF_Parser*  parser,
-                            FT_Byte*     start,
-                            FT_Byte*     limit );
+  FT_LOCAL( FT_Error )
+  cff_parser_run( CFF_Parser  parser,
+                  FT_Byte*    start,
+                  FT_Byte*    limit );
 
 
 FT_END_HEADER

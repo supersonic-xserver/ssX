@@ -32,6 +32,10 @@ Binaries of XFree86 for LynxOS x86 are available from:
 <htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/LynxOS"
 url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/LynxOS">
 
+A list of mirror sites is provided by
+<htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/MIRRORS"
+url="ftp://ftp.XFree86.org/pub/XFree86/MIRRORS">
+
 The binaries on the FTP site were built on the latest released LynxOS
 version at the time XFree86 &relvers; was released. In this case it is
 `LynxOS x86 3.0.1'. Because of changes made to the object format they

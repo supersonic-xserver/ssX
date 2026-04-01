@@ -1,31 +1,35 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_vbe.c,v 1.18tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_vbe.c,v 1.15 2004/09/01 23:57:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "savage_driver.h"
+#include "savage_vbe.h"
 
-#define VBE_ATTR_MODE_SUPPORTED		(1 << 0)
-#define VBE_ATTR_TTY	(1 << 2)
-#define VBE_ATTR_COLOR	(1 << 3)
-#define VBE_ATTR_GRAPHICS	(1 << 4)
-#define VBE_ATTR_NOT_VGA	(1 << 5)
-#define VBE_ATTR_NOT_WINDOWED	(1 << 6)
-#define VBE_ATTR_LINEAR		(1 << 7)
-
-#define VBE_WIN_RELOCATABLE	(1 << 0)
-#define VBE_WIN_READABLE	(1 << 1)
-#define VBE_WIN_WRITEABLE	(1 << 2)
-
-#define VBE_MODEL_TEXT	0
-#define VBE_MODEL_CGA	1
-#define VBE_MODEL_HERCULES	2
-#define VBE_MODEL_PLANAR	3
-#define VBE_MODEL_PACKED	4
-#define VBE_MODEL_256	5
-#define VBE_MODEL_RGB	6
-#define VBE_MODEL_YUV	7
-
+#if X_BYTE_ORDER == X_LITTLE_ENDIAN
+#define B_O16(x)  (x) 
+#define B_O32(x)  (x)
+#else
+#define B_O16(x)  ((((x) & 0xff) << 8) | (((x) & 0xff) >> 8))
+#define B_O32(x)  ((((x) & 0xff) << 24) | (((x) & 0xff00) << 8) \
+                  | (((x) & 0xff0000) >> 8) | (((x) & 0xff000000) >> 24))
+#endif
 #define L_ADD(x)  (B_O32(x) & 0xffff) + ((B_O32(x) >> 12) & 0xffff00)
 
+Bool vbeModeInit( vbeInfoPtr, int );
 static int SavageGetDevice( SavagePtr psav );
+/*static int SavageGetTVType( SavagePtr psav );*/
 
 static void
 SavageClearVM86Regs( xf86Int10InfoPtr pInt )
@@ -121,6 +125,15 @@ SavageSetVESAMode( SavagePtr psav, int n, int Refresh )
 	    ErrorF("Set video mode failed\n");
 	}
     }
+#ifdef XFree86LOADER
+    else
+    {
+	if( !vbeModeInit( psav->pVbe, n ) )
+	{
+	    ErrorF("Set video mode failed\n");
+	}
+    }
+#endif
 }
 
 
@@ -181,8 +194,8 @@ SavageGetBIOSModeTable( SavagePtr psav, int iDepth )
     int nModes = SavageGetBIOSModes( psav, iDepth, NULL );
     SavageModeTablePtr pTable;
 
-    pTable = (SavageModeTablePtr)
-	xcalloc( 1, sizeof(SavageModeTableRec) +
+    pTable = (SavageModeTablePtr) 
+	xcalloc( 1, sizeof(SavageModeTableRec) + 
 		    (nModes-1) * sizeof(SavageModeEntry) );
     if( pTable ) {
 	pTable->NumModes = nModes;
@@ -194,16 +207,17 @@ SavageGetBIOSModeTable( SavagePtr psav, int iDepth )
 
 
 unsigned short
-SavageGetBIOSModes(
+SavageGetBIOSModes( 
     SavagePtr psav,
     int iDepth,
     SavageModeEntryPtr s3vModeTable )
 {
     unsigned short iModeCount = 0;
     unsigned short int *mode_list;
-    unsigned char *vbeLinear = NULL;
+    pointer vbeLinear = NULL;
     vbeControllerInfoPtr vbe = NULL;
     int vbeReal;
+    struct vbe_mode_info_block * vmib;
 
     if( !psav->pVbe )
 	return 0;
@@ -215,19 +229,19 @@ SavageGetBIOSModes(
 	ErrorF( "Cannot allocate scratch page in real mode memory." );
 	return 0;
     }
-
+    vmib = (struct vbe_mode_info_block *) vbeLinear;
+    
     for (
 	mode_list = xf86int10Addr( psav->pInt10, L_ADD(vbe->VideoModePtr) );
 	*mode_list != 0xffff;
 	mode_list++
     )
     {
-	int mode = B_O16(*mode_list);
 	/*
 	 * This is a HACK to work around what I believe is a BUG in the
 	 * Toshiba Satellite BIOSes in 08/2000 and 09/2000.  The BIOS
 	 * table for 1024x600 says it has six refresh rates, when in fact
-	 * it only has 3.  When I ask for rate #4, the BIOS goes into an
+	 * it only has 3.  When I ask for rate #4, the BIOS goes into an 
 	 * infinite loop until the user interrupts it, usually by pressing
 	 * Ctrl-Alt-F1.  For now, we'll just punt everything with a VESA
 	 * number greater than or equal to 0200.
@@ -235,25 +249,25 @@ SavageGetBIOSModes(
 	 * This also prevents some strange and unusual results seen with
 	 * the later ProSavage/PM133 BIOSes directly from S3/VIA.
 	 */
-	if( mode >= 0x0200 )
+	if( *mode_list >= 0x0200 )
 	    continue;
 
 	SavageClearVM86Regs( psav->pInt10 );
 
 	psav->pInt10->ax = 0x4f01;
-	psav->pInt10->cx = mode;
+	psav->pInt10->cx = *mode_list;
 	psav->pInt10->es = SEG_ADDR(vbeReal);
 	psav->pInt10->di = SEG_OFF(vbeReal);
 	psav->pInt10->num = 0x10;
 
 	xf86ExecX86int10( psav->pInt10 );
 
-	if(
-	   (vbeLinear[25] == iDepth) &&
+	if( 
+	   (vmib->bits_per_pixel == iDepth) &&
 	   (
-	      (vbeLinear[27] == VBE_MODEL_256) ||
-	      (vbeLinear[27] == VBE_MODEL_PACKED) ||
-	      (vbeLinear[27] == VBE_MODEL_RGB)
+	      (vmib->memory_model == VBE_MODEL_256) ||
+	      (vmib->memory_model == VBE_MODEL_PACKED) ||
+	      (vmib->memory_model == VBE_MODEL_RGB)
 	   )
 	)
 	{
@@ -265,15 +279,15 @@ SavageGetBIOSModes(
 
 	    if( s3vModeTable )
 	    {
-		int iRefresh = 0;
+	        int iRefresh = 0;
 
-		s3vModeTable->Width = B_O16(vbeLinear[18]);
-		s3vModeTable->Height = B_O16(vbeLinear[20]);
-		s3vModeTable->VesaMode = mode;
-
+		s3vModeTable->Width = vmib->x_resolution;
+		s3vModeTable->Height = vmib->y_resolution;
+		s3vModeTable->VesaMode = *mode_list;
+		
 		/* Query the refresh rates at this mode. */
 
-		psav->pInt10->cx = mode;
+		psav->pInt10->cx = *mode_list;
 		psav->pInt10->dx = 0;
 
 		do
@@ -283,7 +297,7 @@ SavageGetBIOSModes(
 			if( s3vModeTable->RefreshRate )
 			{
 			    s3vModeTable->RefreshRate = (unsigned char *)
-				xrealloc(
+				xrealloc( 
 				    s3vModeTable->RefreshRate,
 				    (iRefresh+8) * sizeof(unsigned char)
 				);
@@ -291,7 +305,7 @@ SavageGetBIOSModes(
 			else
 			{
 			    s3vModeTable->RefreshRate = (unsigned char *)
-				xcalloc(
+				xcalloc( 
 				    sizeof(unsigned char),
 				    (iRefresh+8)
 				);
@@ -309,7 +323,7 @@ SavageGetBIOSModes(
 
 		s3vModeTable->RefreshCount = iRefresh;
 
-		s3vModeTable++;
+	    	s3vModeTable++;
 	    }
 	}
     }

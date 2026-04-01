@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mifillarc.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mifillarc.c,v 3.8 2003/07/16 01:38:56 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1989, 1998  The Open Group
@@ -27,9 +34,11 @@ Author:  Bob Scheifler, MIT X Consortium
 
 ********************************************************/
 
+/* $Xorg: mifillarc.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
+
 #include <math.h>
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "regionstr.h"
 #include "gcstruct.h"
 #include "pixmapstr.h"
@@ -49,7 +58,9 @@ Author:  Bob Scheifler, MIT X Consortium
 #define Dcos(d)	cos((double)d*(M_PI/11520.0))
 
 void
-miFillArcSetup(xArc *arc, miFillArcRec *info)
+miFillArcSetup(arc, info)
+    register xArc *arc;
+    register miFillArcRec *info;
 {
     info->y = arc->height >> 1;
     info->dy = arc->height & 1;
@@ -102,7 +113,9 @@ miFillArcSetup(xArc *arc, miFillArcRec *info)
 }
 
 void
-miFillArcDSetup(xArc *arc, miFillArcDRec *info)
+miFillArcDSetup(arc, info)
+    register xArc *arc;
+    register miFillArcDRec *info;
 {
     /* h^2 * (2x - 2xorg)^2 = w^2 * h^2 - w^2 * (2y - 2yorg)^2 */
     /* even: xorg = yorg = 0   odd:  xorg = .5, yorg = -.5 */
@@ -133,13 +146,13 @@ miFillArcDSetup(xArc *arc, miFillArcDRec *info)
 
 static void
 miGetArcEdge(
-	     xArc *arc,
-	     miSliceEdgePtr edge,
+	     register xArc *arc,
+	     register miSliceEdgePtr edge,
 	     int k,
 	     Bool top, 
 	     Bool left )
 {
-    int xady, y;
+    register int xady, y;
 
     y = arc->height >> 1;
     if (!(arc->width & 1))
@@ -181,8 +194,14 @@ miGetArcEdge(
 }
 
 void
-miEllipseAngleToSlope(int angle, int width, int height,
-		      int *dxp, int *dyp, double *d_dxp, double *d_dyp)
+miEllipseAngleToSlope (angle, width, height, dxp, dyp, d_dxp, d_dyp)
+    int	    angle;
+    int	    width;
+    int	    height;
+    int	    *dxp;
+    int	    *dyp;
+    double  *d_dxp;
+    double  *d_dyp;
 {
     int	    dx, dy;
     double  d_dx, d_dy, scale;
@@ -257,13 +276,13 @@ miEllipseAngleToSlope(int angle, int width, int height,
 
 static void
 miGetPieEdge(
-	     xArc *arc,
-	     int angle,
-	     miSliceEdgePtr edge,
+	     register xArc *arc,
+	     register int angle,
+	     register miSliceEdgePtr edge,
 	     Bool top, 
 	     Bool left )
 {
-    int k;
+    register int k;
     int	dx, dy;
 
     miEllipseAngleToSlope (angle, arc->width, arc->height, &dx, &dy, 0, 0);
@@ -301,9 +320,12 @@ miGetPieEdge(
 }
 
 void
-miFillArcSliceSetup(xArc *arc, miArcSliceRec *slice, GCPtr pGC)
+miFillArcSliceSetup(arc, slice, pGC)
+    register xArc *arc;
+    register miArcSliceRec *slice;
+    GCPtr pGC;
 {
-    int angle1, angle2;
+    register int angle1, angle2;
 
     angle1 = arc->angle1;
     if (arc->angle2 < 0)
@@ -533,14 +555,14 @@ miFillEllipseI(
 	       GCPtr pGC,
 	       xArc *arc )
 {
-    int x, y, e;
+    register int x, y, e;
     int yk, xk, ym, xm, dx, dy, xorg, yorg;
     int slw;
     miFillArcRec info;
     DDXPointPtr points;
-    DDXPointPtr pts;
+    register DDXPointPtr pts;
     int *widths;
-    int *wids;
+    register int *wids;
 
     points = (DDXPointPtr)ALLOCATE_LOCAL(sizeof(DDXPointRec) * arc->height);
     if (!points)
@@ -576,14 +598,14 @@ miFillEllipseD(
 	       GCPtr pGC,
 	       xArc *arc )
 {
-    int x, y;
+    register int x, y;
     int xorg, yorg, dx, dy, slw;
     double e, yk, xk, ym, xm;
     miFillArcDRec info;
     DDXPointPtr points;
-    DDXPointPtr pts;
+    register DDXPointPtr pts;
     int *widths;
-    int *wids;
+    register int *wids;
 
     points = (DDXPointPtr)ALLOCATE_LOCAL(sizeof(DDXPointRec) * arc->height);
     if (!points)
@@ -642,14 +664,14 @@ miFillArcSliceI(
 		xArc *arc )
 {
     int yk, xk, ym, xm, dx, dy, xorg, yorg, slw;
-    int x, y, e;
+    register int x, y, e;
     miFillArcRec info;
     miArcSliceRec slice;
     int ya, xl, xr, xc;
     DDXPointPtr points;
-    DDXPointPtr pts;
+    register DDXPointPtr pts;
     int *widths;
-    int *wids;
+    register int *wids;
 
     miFillArcSetup(arc, &info);
     miFillArcSliceSetup(arc, &slice, pGC);
@@ -704,16 +726,16 @@ miFillArcSliceD(
 		GCPtr pGC,
 		xArc *arc )
 {
-    int x, y;
+    register int x, y;
     int dx, dy, xorg, yorg, slw;
     double e, yk, xk, ym, xm;
     miFillArcDRec info;
     miArcSliceRec slice;
     int ya, xl, xr, xc;
     DDXPointPtr points;
-    DDXPointPtr pts;
+    register DDXPointPtr pts;
     int *widths;
-    int *wids;
+    register int *wids;
 
     miFillArcDSetup(arc, &info);
     miFillArcSliceSetup(arc, &slice, pGC);
@@ -767,10 +789,14 @@ miFillArcSliceD(
  * fill each arc as it comes.
  */
 void
-miPolyFillArc(DrawablePtr pDraw, GCPtr pGC, int narcs, xArc *parcs)
+miPolyFillArc(pDraw, pGC, narcs, parcs)
+    DrawablePtr	pDraw;
+    GCPtr	pGC;
+    int		narcs;
+    xArc	*parcs;
 {
-    int i;
-    xArc *arc;
+    register int i;
+    register xArc *arc;
 
     for(i = narcs, arc = parcs; --i >= 0; arc++)
     {

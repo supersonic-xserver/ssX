@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v_driver.c,v 1.101tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v_driver.c,v 1.96 2005/01/17 03:07:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright (C) 1994-1999 The XFree86 Project, Inc.
@@ -71,13 +85,13 @@
  */
 
 
-/* Most xf86 commons are already in s3v.h */
+	/* Most xf86 commons are already in s3v.h */
 #include	"s3v.h"
 		
 
 #include "globals.h"
 #define DPMS_SERVER
-#include <X11/extensions/dpms.h>
+#include "extensions/dpms.h"
 
 #ifndef USE_INT10
 #define USE_INT10 0
@@ -107,7 +121,7 @@ static void S3VWriteMode (ScrnInfoPtr pScrn, vgaRegPtr, S3VRegPtr);
 static void S3VSaveSTREAMS(ScrnInfoPtr pScrn, unsigned int *streams);
 static void S3VRestoreSTREAMS(ScrnInfoPtr pScrn, unsigned int *streams);
 static void S3VDisableSTREAMS(ScrnInfoPtr pScrn);
-static Bool S3VScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **argv);
+static Bool S3VScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv);
 static int S3VInternalScreenInit( int scrnIndex, ScreenPtr pScreen);
 static void S3VPrintRegs(ScrnInfoPtr);
 static ModeStatus S3VValidMode(int index, DisplayModePtr mode, Bool verbose, int flags);
@@ -234,6 +248,7 @@ typedef enum {
    OPTION_HWCURSOR,
    OPTION_SHADOW_FB,
    OPTION_ROTATE,
+   OPTION_FB_DRAW,
    OPTION_MX_CR3A_FIX,
    OPTION_XVIDEO
 } S3VOpts;
@@ -264,6 +279,7 @@ static const OptionInfoRec S3VOptions[] =
    { OPTION_SWCURSOR,		"SWCursor",     OPTV_BOOLEAN,	{0}, FALSE },
    { OPTION_SHADOW_FB,          "ShadowFB",	OPTV_BOOLEAN,	{0}, FALSE },
    { OPTION_ROTATE, 	        "Rotate",	OPTV_ANYSTR,	{0}, FALSE },
+   { OPTION_FB_DRAW,            "UseFB",	OPTV_BOOLEAN,	{0}, FALSE },
    { OPTION_MX_CR3A_FIX,        "mxcr3afix",	OPTV_BOOLEAN,	{0}, FALSE },
    { OPTION_XVIDEO,             "XVideo",	OPTV_BOOLEAN,	{0}, FALSE },
    {-1, NULL, OPTV_NONE,	{0}, FALSE}
@@ -365,6 +381,19 @@ static const char *int10Symbols[] = {
 #endif
 
 #ifdef XFree86LOADER
+static const char *cfbSymbols[] = {
+    "cfbScreenInit",
+    "cfb16ScreenInit",
+    "cfb24ScreenInit",
+    "cfb24_32ScreenInit",
+    "cfb32ScreenInit",
+    "cfBresS",
+    "cfb16BresS",
+    "cfb24BresS",
+    "cfb32BresS",
+    NULL
+};
+
 static MODULESETUPPROTO(s3virgeSetup);
 
 static XF86ModuleVersionInfo S3VVersRec =
@@ -390,7 +419,7 @@ static XF86ModuleVersionInfo S3VVersRec =
 XF86ModuleData s3virgeModuleData = { &S3VVersRec, s3virgeSetup, NULL };
 
 static pointer
-s3virgeSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+s3virgeSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -407,13 +436,13 @@ s3virgeSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
 	 * Tell the loader about symbols from other modules that this module
 	 * might refer to.
 	 */
-	LoaderModRefSymLists(module, vgahwSymbols, xaaSymbols,
-			     ramdacSymbols, ddcSymbols, i2cSymbols,
+	LoaderRefSymLists(vgahwSymbols, cfbSymbols, xaaSymbols,
+			  ramdacSymbols, ddcSymbols, i2cSymbols,
 #if USE_INT10
-			     int10Symbols,
+			  int10Symbols,
 #endif
-			     vbeSymbols, shadowSymbols, 
-			     fbSymbols, NULL);
+			  vbeSymbols, shadowSymbols, 
+			  fbSymbols, NULL);
 			  
 	/*
 	 * The return value must be non-NULL on success even though there
@@ -586,8 +615,9 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
     int i;
     double real;
     ClockRangePtr clockRanges;
+    char *mod = NULL;
+    const char *reqSym = NULL;
     char *s;
-    ModuleDescPtr pMod;
     
     unsigned char config1, config2, m, n, n1, n2, cr66 = 0;
     int mclk;
@@ -617,10 +647,10 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
 
     /* The vgahw module should be loaded here when needed */
     
-    if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+    if (!xf86LoadSubModule(pScrn, "vgahw"))
 	return FALSE;
 	   
-    xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+    xf86LoaderReqSymLists(vgahwSymbols, NULL);
 	
     /*
      * Allocate a vgaHWRec
@@ -879,6 +909,18 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
 	ps3v->hwcursor = FALSE;
     }
 
+    if (xf86IsOptionSet(ps3v->Options, OPTION_FB_DRAW)) 
+      {
+	if (xf86GetOptValBool(ps3v->Options, OPTION_FB_DRAW ,&ps3v->UseFB))
+	  xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Using %s.\n",
+		     ps3v->UseFB ? "fb (not cfb)" : "cfb (not fb)");
+      }
+    else
+      {
+	ps3v->UseFB = TRUE;
+	xf86DrvMsg(pScrn->scrnIndex, X_DEFAULT, "Using fb.\n");
+      }
+
     if (xf86IsOptionSet(ps3v->Options, OPTION_MX_CR3A_FIX)) 
       {
 	if (xf86GetOptValBool(ps3v->Options, OPTION_MX_CR3A_FIX ,&ps3v->mx_cr3a_fix))
@@ -910,9 +952,9 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
 #if USE_INT10
-    if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
+    if (xf86LoadSubModule(pScrn, "int10")) {
  	xf86Int10InfoPtr pInt;
- 	xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+ 	xf86LoaderReqSymLists(int10Symbols, NULL);
 #if 1
 	xf86DrvMsg(pScrn->scrnIndex,X_INFO,"initializing int10\n");
 	pInt = xf86InitInt10(pEnt->index);
@@ -920,9 +962,9 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
 #endif
     }
 #endif
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
-	ps3v->pVbe =  VBEInit(NULL, pEnt->index);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
+	xf86LoaderReqSymLists(vbeSymbols, NULL);
+	ps3v->pVbe =  VBEInit(NULL,pEnt->index);
     }
 
     ps3v->PciInfo = xf86GetPciInfoForEntity(pEnt->index);
@@ -959,13 +1001,6 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
     }
     xfree(pEnt);
     
-#define VBECLEAN do {						\
-			if (ps3v->pVbe) {			\
-			    vbeFree(ps3v->pVbe);		\
-			    ps3v->pVbe = NULL;			\
-			}					\
-		    } while (0)
-
     /*
      * This shouldn't happen because such problems should be caught in
      * S3VProbe(), but check it just in case.
@@ -973,13 +1008,15 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
     if (pScrn->chipset == NULL) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		   "ChipID 0x%04X is not recognised\n", ps3v->Chipset);
-	VBECLEAN;
+	vbeFree(ps3v->pVbe);
+	ps3v->pVbe = NULL;
 	return FALSE;
     }
     if (ps3v->Chipset < 0) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		   "Chipset \"%s\" is not recognised\n", pScrn->chipset);
-	VBECLEAN;
+	vbeFree(ps3v->pVbe);
+	ps3v->pVbe = NULL;
 	return FALSE;
     }
 
@@ -1036,19 +1073,22 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
    VGAOUT8(vgaCRIndex, 0x37);           /* for register CR37 (CONFG_REG2),*/
    config2 = VGAIN8(vgaCRReg);          /* get amount of off-screen ram   */
 
-   if ((pMod = xf86LoadSubModule(pScrn, "ddc"))) {
+   if (xf86LoadSubModule(pScrn, "ddc")) {
        xf86MonPtr pMon = NULL;
        
-       xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+       xf86LoaderReqSymLists(ddcSymbols, NULL);
        if ((ps3v->pVbe) 
-	   && ((pMon = xf86PrintEDID(vbeDoEDID(ps3v->pVbe, pMod))) != NULL))
+	   && ((pMon = xf86PrintEDID(vbeDoEDID(ps3v->pVbe, NULL))) != NULL))
 	   xf86SetDDCproperties(pScrn,pMon);
        else if (!S3Vddc1(pScrn->scrnIndex)) {
 	   S3Vddc2(pScrn->scrnIndex);
        }
    }
-   VBECLEAN;
-
+   if (ps3v->pVbe) {
+       vbeFree(ps3v->pVbe);
+       ps3v->pVbe = NULL;
+   }
+   
    /*
     * If the driver can do gamma correction, it should call xf86SetGamma()
     * here. (from MGA, no ViRGE gamma support yet, but needed for 
@@ -1500,37 +1540,72 @@ S3VPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /* Load bpp-specific modules */
-    if (!(pMod = xf86LoadSubModule(pScrn, "fb")))
+    if( ps3v->UseFB )
       {
-	 S3VFreeRec(pScrn);
-	 return FALSE;
-      }	       
-    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);       
+	if( xf86LoadSubModule(pScrn, "fb") == NULL )
+	  {
+	      S3VFreeRec(pScrn);
+	      return FALSE;
+	  }	       
+	xf86LoaderReqSymLists(fbSymbols, NULL);       
+      }
+    else
+      {
+	switch (pScrn->bitsPerPixel) {
+	case 8:
+	  mod = "cfb";
+	  reqSym = "cfbScreenInit";
+	  break;
+	case 16:
+	  mod = "cfb16";
+	  reqSym = "cfb16ScreenInit";
+	  break;
+	case 24:
+	  if (pix24bpp == 24) {
+	    mod = "cfb24";
+	    reqSym = "cfb24ScreenInit";
+	  } else {
+	    mod = "xf24_32bpp";
+	    reqSym = "cfb24_32ScreenInit";
+	  }
+	  break;
+	case 32:
+	  mod = "cfb32";
+	  reqSym = "cfb32ScreenInit";
+	  break;
+	}
+	if (mod && xf86LoadSubModule(pScrn, mod) == NULL) {
+	    S3VFreeRec(pScrn);
+	    return FALSE;
+	}	       
+    
+	xf86LoaderReqSymbols(reqSym, NULL);
+      }
 
     /* Load XAA if needed */
     if (!ps3v->NoAccel || ps3v->hwcursor ) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+	if (!xf86LoadSubModule(pScrn, "xaa")) {
 	    S3VFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
     }
 
     /* Load ramdac if needed */
     if (ps3v->hwcursor) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+	if (!xf86LoadSubModule(pScrn, "ramdac")) {
 	    S3VFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
     }
 
     if (ps3v->shadowFB) {
-	if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 	    S3VFreeRec(pScrn);
 	    return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	xf86LoaderReqSymLists(shadowSymbols, NULL);
     }
 
     /* Setup WAITFIFO() for accel and ModeInit() */
@@ -2465,7 +2540,7 @@ S3VUnmapMem(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 static Bool
-S3VScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **argv)
+S3VScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
   ScrnInfoPtr pScrn;
   S3VPtr ps3v;
@@ -2497,7 +2572,7 @@ S3VScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
      * function.  If not, the visuals will need to be setup before calling
      * a fb ScreenInit() function and fixed up after.
      *
-     * For most PC hardware at depths >= 8, the defaults that fb uses
+     * For most PC hardware at depths >= 8, the defaults that cfb uses
      * are not appropriate.  In this driver, we fixup the visuals after.
      */
 
@@ -2555,7 +2630,8 @@ S3VScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
   }
 
   /* must be after RGB ordering fixed */
-  fbPictureInit (pScreen, 0, 0);
+  if (ps3v->UseFB)
+    fbPictureInit (pScreen, 0, 0);
     
   	      				/* Initialize acceleration layer */
   if (!ps3v->NoAccel) {
@@ -2688,22 +2764,70 @@ S3VInternalScreenInit( int scrnIndex, ScreenPtr pScreen)
      * pScreen fields.
      */
 
-  switch (pScrn->bitsPerPixel) 
+  if( ps3v->UseFB )
     {
-    case 8:
-    case 16:
-    case 24:
-      ret = fbScreenInit(pScreen, FBStart, pScrn->virtualX,
-			 pScrn->virtualY, pScrn->xDpi, pScrn->yDpi,
-			 displayWidth, pScrn->bitsPerPixel);
-      break;
-    default:
-      xf86DrvMsg(scrnIndex, X_ERROR,
-		 "Internal error: invalid bpp (%d) in S3VScreenInit\n",
-		 pScrn->bitsPerPixel);
-      ret = FALSE;
-      break;
+      xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Using FB\n");
+
+      switch (pScrn->bitsPerPixel) 
+	{
+	case 8:
+	case 16:
+	case 24:
+	  ret = fbScreenInit(pScreen, FBStart, pScrn->virtualX,
+			     pScrn->virtualY, pScrn->xDpi, pScrn->yDpi,
+			     displayWidth, pScrn->bitsPerPixel);
+	  break;
+	default:
+	  xf86DrvMsg(scrnIndex, X_ERROR,
+		     "Internal error: invalid bpp (%d) in S3VScreenInit\n",
+		     pScrn->bitsPerPixel);
+	  ret = FALSE;
+	  break;
+	}
     }
+  else
+    {
+      xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Using CFB\n");
+      switch (pScrn->bitsPerPixel) {
+      case 8:
+	ret = cfbScreenInit(pScreen, FBStart,
+			    width,height,
+			    pScrn->xDpi, pScrn->yDpi,
+			    displayWidth);
+	break;
+      case 16:
+	ret = cfb16ScreenInit(pScreen, FBStart,
+			      width,height,
+			      pScrn->xDpi, pScrn->yDpi,
+			      displayWidth);
+	break;
+      case 24:
+	if (pix24bpp ==24) {
+	  ret = cfb24ScreenInit(pScreen, FBStart,
+			    width,height,
+				  pScrn->xDpi, pScrn->yDpi,
+				  displayWidth);
+	} else {
+	  ret = cfb24_32ScreenInit(pScreen, FBStart,
+				     width,height,
+				     pScrn->xDpi, pScrn->yDpi,
+				     displayWidth);
+	}
+	break;
+      case 32:
+	ret = cfb32ScreenInit(pScreen, FBStart,
+			      width,height,
+			      pScrn->xDpi, pScrn->yDpi,
+			      displayWidth);
+	break;
+      default:
+	xf86DrvMsg(scrnIndex, X_ERROR,
+		   "Internal error: invalid bpp (%d) in S3VScreenInit\n",
+		   pScrn->bitsPerPixel);
+	ret = FALSE;
+	break;
+      } /*switch*/
+    } /*if(fb)*/
   return ret;
 }
 
@@ -3901,10 +4025,9 @@ S3Vddc2(int scrnIndex)
 {
     ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
     S3VPtr ps3v = S3VPTR(pScrn);
-    ModuleDescPtr pMod;
     
-    if ((pMod = xf86LoadSubModule(pScrn, "i2c"))) {
-	xf86LoaderModReqSymLists(pMod, i2cSymbols,NULL);
+    if ( xf86LoadSubModule(pScrn, "i2c") ) {
+	xf86LoaderReqSymLists(i2cSymbols,NULL);
 	if (S3V_I2CInit(pScrn)) {
 	    CARD32 tmp = (INREG(DDC_REG));
 	    OUTREG(DDC_REG,(tmp | 0x13));
@@ -3921,14 +4044,10 @@ static void
 S3VProbeDDC(ScrnInfoPtr pScrn, int index)
 {
     vbeInfoPtr pVbe;
-    ModuleDescPtr pMod;
-
-    if ((pMod = xf86LoadVBEModule(pScrn))) {
-	xf86LoaderModReqSymLists(pMod, vbeSymbols, NULL);
+    if (xf86LoadSubModule(pScrn, "vbe")) {
         pVbe = VBEInit(NULL,index);
         ConfiguredMonitor = vbeDoEDID(pVbe, NULL);
 	vbeFree(pVbe);
-	xf86UnloadSubModule(pMod);
     }
 }
 

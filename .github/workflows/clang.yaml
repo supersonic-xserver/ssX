@@ -1,0 +1,80 @@
+name: Clang-Tidy on Clang + LLVM (OpenMandriva)
+on:
+  push:
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+    container:
+      image: openmandriva/cooker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          echo "max_parallel_downloads=10" >> /etc/dnf/dnf.conf
+          dnf install -y --setopt=protected_packages=bash,glibc,dnf \
+            task-c-devel clang clang-tools llvm lld meson ninja pkgconfig bison flex python3-mako \
+            xkbcomp xkbcomp-devel x11-font-util lib64udev-devel \
+            lib64xau-devel lib64xdmcp-devel gawk \
+            mesa-common-devel lib64gbm-devel lib64GL-devel lib64EGL_mesa-devel \
+            'pkgconfig(xproto)' 'pkgconfig(xtrans)' 'pkgconfig(xkbfile)' \
+            'pkgconfig(xfont2)' 'pkgconfig(nettle)' 'pkgconfig(libbsd)' \
+            'pkgconfig(dbus-1)' 'pkgconfig(xkbcommon)' 'pkgconfig(pixman-1)' \
+            'pkgconfig(epoxy)' 'pkgconfig(pciaccess)' 'pkgconfig(libdrm)' \
+            'pkgconfig(xshmfence)' 'pkgconfig(resourceproto)'
+
+      - name: Create .clang-tidy configuration
+        run: |
+          cat <<EOF > .clang-tidy
+          ---
+          Checks: >
+            -*,
+            bugprone-*,
+            clang-analyzer-*,
+            performance-*,
+            portability-*,
+            -bugprone-reserved-identifier,
+            -bugprone-exception-escape,
+            readability-braces-around-statements,
+            readability-redundant-address-of,
+            readability-redundant-control-flow
+          WarningsAsErrors: 'bugprone-*,clang-analyzer-core.*'
+          ...
+          EOF
+
+      - name: Configure with Meson
+        run: |
+          export CC=clang
+          export CXX=clang++
+          
+          rm -rf builddir
+          meson setup builddir --buildtype=debug \
+            -Dstatic_loader=true \
+            -Dxorg=true \
+            -Dglamor=true \
+            -Ddri3=true \
+            -Dhal=false \
+            -Dsecure-rpc=false \
+            -Dxephyr=false \
+            -Dxnest=false \
+            -Dxwin=false \
+            -Ddmx=false || (cat builddir/meson-logs/meson-log.txt && exit 1)
+      
+      - name: Build ssX Monolith
+        run: |
+          # ninja -C builddir executes the build
+          # -j$(nproc) ensures we use all available CI cores
+          ninja -C builddir -v -j$(nproc)
+            
+      - name: Run clang-tidy
+        run: |
+          # The -p builddir uses the compile_commands.json Meson just made
+          run-clang-tidy -p builddir -header-filter='.*' -export-fixes=clang-tidy-fixes.yaml || true
+
+      - name: Upload clang-tidy results
+        uses: actions/upload-artifact@v4
+        with:
+          name: clang-tidy-report
+          path: clang-tidy-fixes.yaml

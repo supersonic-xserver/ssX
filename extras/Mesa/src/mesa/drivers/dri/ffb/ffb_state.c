@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/ffb/ffb_state.c,v 1.5 2002/10/30 12:51:27 alanh Exp $
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/ffb/ffb_state.c,v 1.1.1.3 2004/12/10 15:05:37 alanh Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * GLX Hardware Device Driver for Sun Creator/Creator3D
  * Copyright (C) 2000, 2001 David S. Miller
@@ -93,23 +100,31 @@ static void ffbDDAlphaFunc(GLcontext *ctx, GLenum func, GLfloat ref)
 	}
 }
 
-static void ffbDDBlendEquation(GLcontext *ctx, GLenum mode)
+static void ffbDDBlendEquationSeparate(GLcontext *ctx, 
+				       GLenum modeRGB, GLenum modeA)
 {
 
 #ifdef STATE_TRACE
-	fprintf(stderr, "ffbDDBlendEquation: mode(%s)\n", _mesa_lookup_enum_by_nr(mode));
+	fprintf(stderr, "ffbDDBlendEquation: mode(%s)\n", 
+		_mesa_lookup_enum_by_nr(modeRGB));
 #endif
-	FALLBACK( ctx, (mode != GL_FUNC_ADD_EXT), FFB_BADATTR_BLENDEQN);
+	assert( modeRGB == modeA );
+	FALLBACK( ctx, (modeRGB != GL_FUNC_ADD), FFB_BADATTR_BLENDEQN);
 }
 
-static void ffbDDBlendFunc(GLcontext *ctx, GLenum sfactor, GLenum dfactor)
+static void ffbDDBlendFuncSeparate(GLcontext *ctx, GLenum sfactorRGB,
+				   GLenum dfactorRGB, GLenum sfactorA,
+				   GLenum dfactorA)
 {
 	ffbContextPtr fmesa = FFB_CONTEXT(ctx);
 	unsigned int blendc = 1 << 4;
 
 #ifdef STATE_TRACE
-	fprintf(stderr, "ffbDDBlendFunc: sfactor(%s) dfactor(%s)\n",
-		_mesa_lookup_enum_by_nr(sfactor), _mesa_lookup_enum_by_nr(dfactor));
+	fprintf(stderr, "ffbDDBlendFuncSeparate: sRGB(%s) dRGB(%s) sA(%s) dA(%s)\n",
+		_mesa_lookup_enum_by_nr(sfactorRGB),
+		_mesa_lookup_enum_by_nr(dfactorRGB),
+		_mesa_lookup_enum_by_nr(sfactorA),
+		_mesa_lookup_enum_by_nr(dfactorA));
 #endif
 	switch (ctx->Color.BlendSrcRGB) {
 	case GL_ZERO:
@@ -177,21 +192,6 @@ static void ffbDDBlendFunc(GLcontext *ctx, GLenum sfactor, GLenum dfactor)
 		fmesa->blendc = blendc;
 		FFB_MAKE_DIRTY(fmesa, FFB_STATE_BLEND, 1);
 	}
-}
-
-static void ffbDDBlendFuncSeparate(GLcontext *ctx, GLenum sfactorRGB,
-				   GLenum dfactorRGB, GLenum sfactorA,
-				   GLenum dfactorA)
-{
-#ifdef STATE_TRACE
-	fprintf(stderr, "ffbDDBlendFuncSeparate: sRGB(%s) dRGB(%s) sA(%s) dA(%s)\n",
-		_mesa_lookup_enum_by_nr(sfactorRGB),
-		_mesa_lookup_enum_by_nr(dfactorRGB),
-		_mesa_lookup_enum_by_nr(sfactorA),
-		_mesa_lookup_enum_by_nr(dfactorA));
-#endif
-
-	ffbDDBlendFunc(ctx, sfactorRGB, dfactorRGB);
 }
 
 static void ffbDDDepthFunc(GLcontext *ctx, GLenum func)
@@ -476,21 +476,21 @@ static void ffbDDDrawBuffer(GLcontext *ctx, GLenum buffer)
 #endif
 	fbc &= ~(FFB_FBC_WB_AB | FFB_FBC_RB_MASK);
 	switch (buffer) {
-	case FRONT_LEFT_BIT:
+	case GL_FRONT:
 		if (fmesa->back_buffer == 0)
 			fbc |= FFB_FBC_WB_B | FFB_FBC_RB_B;
 		else
 			fbc |= FFB_FBC_WB_A | FFB_FBC_RB_A;
 		break;
 
-	case BACK_LEFT_BIT:
+	case GL_BACK:
 		if (fmesa->back_buffer == 0)
 			fbc |= FFB_FBC_WB_A | FFB_FBC_RB_A;
 		else
 			fbc |= FFB_FBC_WB_B | FFB_FBC_RB_B;
 		break;
 
-	case BACK_LEFT_BIT | FRONT_LEFT_BIT:
+	case GL_FRONT_AND_BACK:
 		fbc |= FFB_FBC_WB_AB;
 		break;
 
@@ -526,14 +526,14 @@ static void ffbDDSetBuffer(GLcontext *ctx, GLframebuffer *colorBuffer,
 #endif
 	fbc &= ~(FFB_FBC_RB_MASK);
 	switch (bufferBit) {
-	case FRONT_LEFT_BIT:
+	case DD_FRONT_LEFT_BIT:
 		if (fmesa->back_buffer == 0)
 			fbc |= FFB_FBC_RB_B;
 		else
 			fbc |= FFB_FBC_RB_A;
 		break;
 
-	case BACK_LEFT_BIT:
+	case DD_BACK_LEFT_BIT:
 		if (fmesa->back_buffer == 0)
 			fbc |= FFB_FBC_RB_A;
 		else
@@ -541,6 +541,7 @@ static void ffbDDSetBuffer(GLcontext *ctx, GLframebuffer *colorBuffer,
 		break;
 
 	default:
+		_mesa_problem(ctx, "Unexpected buffer in ffbDDSetBuffer()");
 		return;
 	};
 
@@ -817,7 +818,7 @@ static void ffbDDEnable(GLcontext *ctx, GLenum cap, GLboolean state)
 		if (fmesa->ppc != tmp) {
 			fmesa->ppc = tmp;
 			FFB_MAKE_DIRTY(fmesa, FFB_STATE_PPC, 1);
-			ffbDDBlendFunc(ctx, 0, 0);
+			ffbDDBlendFuncSeparate(ctx, 0, 0, 0, 0 );
 		}
 		break;
 
@@ -1061,10 +1062,8 @@ void ffbDDInitStateFuncs(GLcontext *ctx)
 	ctx->Driver.UpdateState = ffbDDUpdateState;
 
 	ctx->Driver.Enable = ffbDDEnable;
-	ctx->Driver.LightModelfv = NULL;
 	ctx->Driver.AlphaFunc = ffbDDAlphaFunc;
-	ctx->Driver.BlendEquation = ffbDDBlendEquation;
-	ctx->Driver.BlendFunc = ffbDDBlendFunc;
+	ctx->Driver.BlendEquationSeparate = ffbDDBlendEquationSeparate;
 	ctx->Driver.BlendFuncSeparate = ffbDDBlendFuncSeparate;
 	ctx->Driver.DepthFunc = ffbDDDepthFunc;
 	ctx->Driver.DepthMask = ffbDDDepthMask;
@@ -1072,8 +1071,6 @@ void ffbDDInitStateFuncs(GLcontext *ctx)
 	ctx->Driver.LineStipple = ffbDDLineStipple;
 	ctx->Driver.PolygonStipple = ffbDDPolygonStipple;
 	ctx->Driver.Scissor = ffbDDScissor;
-	ctx->Driver.CullFace = NULL;
-	ctx->Driver.FrontFace = NULL;
 	ctx->Driver.ColorMask = ffbDDColorMask;
 	ctx->Driver.LogicOpcode = ffbDDLogicOp;
 	ctx->Driver.Viewport = ffbDDViewport;
@@ -1083,10 +1080,6 @@ void ffbDDInitStateFuncs(GLcontext *ctx)
 		ctx->Driver.StencilFunc = ffbDDStencilFunc;
 		ctx->Driver.StencilMask = ffbDDStencilMask;
 		ctx->Driver.StencilOp = ffbDDStencilOp;
-	} else {
-		ctx->Driver.StencilFunc = NULL;
-		ctx->Driver.StencilMask = NULL;
-		ctx->Driver.StencilOp = NULL;
 	}
 
 	ctx->Driver.DrawBuffer = ffbDDDrawBuffer;
@@ -1096,25 +1089,10 @@ void ffbDDInitStateFuncs(GLcontext *ctx)
 	ctx->Driver.ClearStencil = ffbDDClearStencil;
 
 	/* We will support color index modes later... -DaveM */
+        /*
 	ctx->Driver.ClearIndex = 0;
 	ctx->Driver.IndexMask = 0;
-
-
-
-	/* Pixel path fallbacks.
-	 */
-	ctx->Driver.Accum = _swrast_Accum;
-	ctx->Driver.CopyPixels = _swrast_CopyPixels;
-	ctx->Driver.DrawPixels = _swrast_DrawPixels;
-	ctx->Driver.ReadPixels = _swrast_ReadPixels;
-	ctx->Driver.ResizeBuffers = _swrast_alloc_buffers;
-
-	/* Swrast hooks for imaging extensions:
-	 */
-	ctx->Driver.CopyColorTable = _swrast_CopyColorTable;
-	ctx->Driver.CopyColorSubTable = _swrast_CopyColorSubTable;
-	ctx->Driver.CopyConvolutionFilter1D = _swrast_CopyConvolutionFilter1D;
-	ctx->Driver.CopyConvolutionFilter2D = _swrast_CopyConvolutionFilter2D;
+        */
 
 	{
 		struct swrast_device_driver *swdd = 

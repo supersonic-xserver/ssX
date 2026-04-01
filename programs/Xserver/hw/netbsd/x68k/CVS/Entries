@@ -1,0 +1,15 @@
+/Imakefile/1.1.1.1/Wed Jan  7 12:51:46 2004//Tnetbsd-5-2-3-RELEASE
+/X68k.man/1.2/Wed Apr 30 13:48:30 2008//Tnetbsd-5-2-3-RELEASE
+/X68kConfig/1.1.1.1/Wed Jan  7 12:51:46 2004//Tnetbsd-5-2-3-RELEASE
+/x68k.h/1.1.1.1/Wed Jan  7 12:51:46 2004//Tnetbsd-5-2-3-RELEASE
+/x68kConfig.c/1.2/Thu Aug  3 20:16:39 2006//Tnetbsd-5-2-3-RELEASE
+/x68kFb.c/1.2/Fri Dec  9 05:44:51 2005//Tnetbsd-5-2-3-RELEASE
+/x68kGraph.c/1.2/Wed Jan  7 12:55:00 2004//Tnetbsd-5-2-3-RELEASE
+/x68kInit.c/1.4/Mon Mar 28 13:04:06 2005//Tnetbsd-5-2-3-RELEASE
+/x68kIo.c/1.1.1.1/Wed Jan  7 12:51:45 2004//Tnetbsd-5-2-3-RELEASE
+/x68kKbd.c/1.2/Wed Jan  7 12:55:00 2004//Tnetbsd-5-2-3-RELEASE
+/x68kKeyMap.c/1.1.1.1/Wed Jan  7 12:51:44 2004//Tnetbsd-5-2-3-RELEASE
+/x68kMouse.c/1.1.1.1/Wed Jan  7 12:51:44 2004//Tnetbsd-5-2-3-RELEASE
+/x68kReg.h/1.1.1.1/Wed Jan  7 12:51:43 2004//Tnetbsd-5-2-3-RELEASE
+/x68kText.c/1.1.1.1/Wed Jan  7 12:51:45 2004//Tnetbsd-5-2-3-RELEASE
+D

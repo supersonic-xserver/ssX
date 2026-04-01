@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +33,7 @@
  *
  * Authors: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vesa/vesa.h,v 1.16 2005/08/25 13:27:51 tsi Exp $
+ * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vesa/vesa.h,v 1.14 2003/01/16 16:09:10 eich Exp $
  */
 
 #ifndef _VESA_H_
@@ -58,6 +65,9 @@
 /* ShadowFB support */
 #include "shadow.h"
 
+/* Int 10 support */
+#include "xf86int10.h"
+
 /* bank switching */
 #include "mibank.h"
 
@@ -72,6 +82,7 @@
 #include "fb.h"
 #include "afb.h"
 #include "mfb.h"
+#include "cfb24_32.h"
 
 #define VESA_VERSION		4000
 #define VESA_NAME		"VESA"
@@ -100,7 +111,7 @@ typedef struct _VESARec
     int statePage, stateSize, stateMode;
     int page;
     CARD32 *pal, *savedPal;
-    CARD8 *planes;
+    CARD8 *fonts;
     xf86MonPtr monitor;
     Bool shadowFB, primary;
     CARD8 *shadowPtr;

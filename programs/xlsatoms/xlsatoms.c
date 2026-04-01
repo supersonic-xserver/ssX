@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: xlsatoms.c,v 1.4 2001/02/09 02:05:54 xorgcvs Exp $
  *
 Copyright 1989, 1998  The Open Group
 
@@ -24,7 +32,7 @@ in this Software without prior written authorization from The Open Group.
  *
  * Author:  Jim Fulton, MIT X Consortium
  */
-/* $XFree86: xc/programs/xlsatoms/xlsatoms.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/xlsatoms/xlsatoms.c,v 1.6 2001/12/14 20:02:08 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -175,7 +183,7 @@ static void
 do_range(Display *dpy, char *format, char *range)
 {
     int mask;
-    long low = 0, high = 0;
+    long low, high;
 
     mask = parse_range (range, &low, &high);
     list_atoms (dpy, format, mask, low, high);

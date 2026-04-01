@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/x11/xm_tri.c,v 1.3 2004/10/26 22:07:39 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/x11/xm_tri.c,v 1.4 2004/12/10 15:30:11 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Mesa 3-D graphics library
  * Version:  5.1

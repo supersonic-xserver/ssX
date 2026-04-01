@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcPolyPnt.c,v 1.4 1999/09/25 14:38:17 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1987  X Consortium
@@ -68,6 +75,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
+/* $XConsortium: ppcPolyPnt.c /main/5 1996/02/21 17:58:07 kaleb $ */
 
 #include "xf4bpp.h"
 #include "mfbmap.h"
@@ -78,10 +86,14 @@ SOFTWARE.
 #include "ibmTrace.h"
 
 void
-xf4bppPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-		xPoint *pptInit)
+xf4bppPolyPoint( pDrawable, pGC, mode, npt, pptInit )
+DrawablePtr	pDrawable ;
+GCPtr		pGC ;
+int		mode ;				/* Origin or Previous */
+int		npt ;
+xPoint		*pptInit ;
 {
-xPoint *ppt ;
+register xPoint *ppt ;
 ppcPrivGC *devPriv ;
 int alu ;
 int nptTmp ;
@@ -108,8 +120,8 @@ if ( mode == CoordModePrevious )
 	}
 
 if ( pGC->miTranslate ) {
-	int xorg = pDrawable->x ;
-	int yorg = pDrawable->y ;
+	register int xorg = pDrawable->x ;
+	register int yorg = pDrawable->y ;
 	for ( ppt = pptInit, nptTmp = npt ; nptTmp-- ; ppt++ ) {
 		ppt->x += xorg ;
 		ppt->y += yorg ;
@@ -117,9 +129,9 @@ if ( pGC->miTranslate ) {
 }
 
 {
-	RegionPtr pRegion = pGC->pCompositeClip ;
-	unsigned long int fg = devPriv->colorRrop.fgPixel ;
-	unsigned long int pm = devPriv->colorRrop.planemask ;
+	register RegionPtr pRegion = pGC->pCompositeClip ;
+	register unsigned long int fg = devPriv->colorRrop.fgPixel ;
+	register unsigned long int pm = devPriv->colorRrop.planemask ;
 	BoxRec box ; /* Scratch Space */
 
 	if ( ! REGION_NUM_RECTS(pRegion))

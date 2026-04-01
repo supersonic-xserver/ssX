@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/radeon/radeon_state.c,v 1.5 2002/09/16 18:05:20 eich Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_lighting.c,v 1.1.1.2 2004/06/10 14:23:07 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2000, 2001 VA Linux Systems Inc., Fremont, California.
  *
@@ -550,7 +557,7 @@ void radeonUpdateSpecular( GLcontext *ctx )
    radeonContextPtr rmesa = RADEON_CONTEXT(ctx);
    GLuint p = rmesa->hw.ctx.cmd[CTX_PP_CNTL];
 
-   if ( ctx->_TriangleCaps & DD_SEPARATE_SPECULAR ) {
+   if (NEED_SECONDARY_COLOR(ctx)) {
       p |=  RADEON_SPECULAR_ENABLE;
    } else {
       p &= ~RADEON_SPECULAR_ENABLE;

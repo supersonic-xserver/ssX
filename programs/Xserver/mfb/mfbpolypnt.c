@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbpolypnt.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbpolypnt.c,v 1.5 2001/12/14 20:00:11 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -46,9 +53,10 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: mfbpolypnt.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xprotostr.h>
+#include "X.h"
+#include "Xprotostr.h"
 #include "pixmapstr.h"
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -60,22 +68,26 @@ SOFTWARE.
 #include "maskbits.h"
 
 void
-mfbPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
-	     xPoint *pptInit)
+mfbPolyPoint(pDrawable, pGC, mode, npt, pptInit)
+    register DrawablePtr pDrawable;
+    GCPtr	pGC;
+    int		mode;		/* Origin or Previous */
+    int		npt;
+    xPoint 	*pptInit;
 {
 
-    BoxPtr pbox;
-    int nbox;
+    register BoxPtr pbox;
+    register int nbox;
 
-    PixelType *addrl;
+    register PixelType *addrl;
     int nlwidth;
 
     int nptTmp;
-    xPoint *ppt;
+    register xPoint *ppt;
 
-    int x;
-    int y;
-    int rop;
+    register int x;
+    register int y;
+    register int rop;
     mfbPrivGC	*pGCPriv;
 
     if (!(pGC->planemask & 1))

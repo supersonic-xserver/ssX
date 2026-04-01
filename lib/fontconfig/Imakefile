@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.21tsi Exp $
+XCOMM $XFree86: xc/lib/fontconfig/Imakefile,v 1.19 2004/04/05 02:33:14 dawes Exp $
 
 #define DoNormalLib NormalLibFontconfig
 #define DoSharedLib SharedLibFontconfig
@@ -20,9 +20,10 @@ InstallMultipleFlags($(HEADERS),$(INCDIR)/IncSubdir,$(INSTINCFLAGS))
 
 FONTCONFIGSRC=$(TOP)/extras/fontconfig
 
-INCLUDES=$(EXPATINCLUDES) $(FREETYPE2INCLUDES) -I$(FONTCONFIGSRC)/src
+INCLUDES=$(EXPATINCLUDES) $(FREETYPE2INCLUDES) -I$(FONTCONFIGSRC)/src \
+	-I$(XBUILDINCDIR)
 
-DEFINES=-DFC_DEFAULT_FONTS='"$(FC_DEFAULT_FONTS)"' -DHAVE_EXPAT
+DEFINES=-DFC_DEFAULT_FONTS='"$(FC_DEFAULT_FONTS)"' -DHAVE_EXPAT -DXFREE86_FT2
 
 REQUIREDLIBS=$(LDPRELIBS) $(FREETYPE2LIB) $(EXPATLIB)
 
@@ -109,7 +110,7 @@ fontconfig.pc: fontconfig.pc.in
 	RemoveFile($@)
 	$(CONFIG_SUBST_PROG) $(SUBSTVARS) < fontconfig.pc.in > $@
 
-InstallNonExecFile(fontconfig.pc,$(PKGCONFIGDIR))
+InstallNonExecFile(fontconfig.pc,$(USRLIBDIR)/pkgconfig)
 
 clean::
 	RemoveFile(fontconfig.pc)

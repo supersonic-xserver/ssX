@@ -1,4 +1,10 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86XKB.c,v 3.14 2005/10/14 15:16:33 tsi Exp $ */
+/* $XConsortium: xf86XKB.c /main/4 1996/02/04 09:28:04 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
@@ -72,6 +78,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86XKB.c,v 3.13 2004/02/13 23:58:38 dawes Exp $ */
+
 #include <stdio.h>
 #define	NEED_EVENTS 1
 #include <X11/X.h>
@@ -80,7 +88,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "windowstr.h"
-#include <X11/extensions/XI.h>
+#include "XI.h"
 
 #include "compiler.h"
 
@@ -89,7 +97,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define XF86_OS_PRIVS
 #include "xf86_OSlib.h"
 
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 
 void
 xf86InitXkb(void)

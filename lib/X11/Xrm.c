@@ -1,15 +1,31 @@
+/* $Xorg: Xrm.c,v 1.7 2001/02/09 02:03:39 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988, 1990 by Digital Equipment Corporation, Maynard
 
-			All Rights Reserved
+                        All Rights Reserved
 
-Permission to use, copy, modify, and distribute this software and its
-documentation for any purpose and without fee is hereby granted,
+Permission to use, copy, modify, and distribute this software and its 
+documentation for any purpose and without fee is hereby granted, 
 provided that the above copyright notice appear in all copies and that
-both that copyright notice and this permission notice appear in
+both that copyright notice and this permission notice appear in 
 supporting documentation, and that the name Digital not be
 used in advertising or publicity pertaining to distribution of the
-software without specific, written prior permission.
+software without specific, written prior permission.  
 
 DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
 ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
@@ -47,7 +63,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/Xrm.c,v 3.26tsi Exp $ */
+/* $XFree86: xc/lib/X11/Xrm.c,v 3.24 2004/03/30 10:34:05 eich Exp $ */
 
 #include	<stdio.h>
 #include	<ctype.h>
@@ -57,7 +73,7 @@ from The Open Group.
 #ifdef XTHREADS
 #include	"locking.h"
 #endif
-#include	"XrmI.h"
+#include 	"XrmI.h"
 #include	<X11/Xos.h>
 #include "Xresinternal.h"
 #include "Xresource.h"
@@ -302,11 +318,11 @@ static XrmBits const xrmtypes[256] = {
     EOS,0,0,0,0,0,0,0,
     0,SPACE,EOL,0,0,
 #if defined(WIN32) || defined(__UNIXOS2__)
-		    EOL,	/* treat CR the same as LF, just in case */
+                    EOL,	/* treat CR the same as LF, just in case */
 #else
-		    0,
+                    0,
 #endif
-		      0,0,
+                      0,0,
     0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,
     SPACE,NORMAL,NORMAL,NORMAL,NORMAL,NORMAL,NORMAL,NORMAL,
@@ -362,9 +378,9 @@ XrmStringToQuarkList(
     register XrmQuarkList quarks)   /* RETURN */
 {
     register XrmBits		bits;
-    register Signature		sig = 0;
-    register char		ch, *tname;
-    register int		i = 0;
+    register Signature  	sig = 0;
+    register char       	ch, *tname;
+    register int 		i = 0;
 
     if ((tname = (char *)name)) {
 	tname--;
@@ -396,10 +412,10 @@ XrmStringToBindingQuarkList(
     register XrmQuarkList   quarks)     /* RETURN */
 {
     register XrmBits		bits;
-    register Signature		sig = 0;
-    register char		ch, *tname;
-    register XrmBinding		binding;
-    register int		i = 0;
+    register Signature  	sig = 0;
+    register char       	ch, *tname;
+    register XrmBinding 	binding;
+    register int 		i = 0;
 
     if ((tname = (char *)name)) {
 	tname--;
@@ -434,7 +450,7 @@ XrmStringToBindingQuarkList(
 
 #ifdef DEBUG
 
-void PrintQuarkList(
+static void PrintQuarkList(
     XrmQuarkList    quarks,
     FILE	    *stream)
 {
@@ -1065,20 +1081,20 @@ XrmQPutStringResource(
  */
 
 /*
- * This function is highly optimized to inline as much as possible.
- * Be very careful with modifications, or simplifications, as they
+ * This function is highly optimized to inline as much as possible. 
+ * Be very careful with modifications, or simplifications, as they 
  * may adversely affect the performance.
  *
  * Chris Peterson, MIT X Consortium		5/17/90.
  */
 
-/*
+/* 
  * Xlib spec says max 100 quarks in a lookup, will stop and return if
  * return if any single production's lhs has more than 100 components.
  */
 #define QLIST_SIZE 100
 
-/*
+/* 
  * This should be big enough to handle things like the XKeysymDB or biggish
  * ~/.Xdefaults or app-defaults files. Anything bigger will be allocated on
  * the heap.
@@ -1119,14 +1135,14 @@ static void GetDatabase(
     if (!db)
 	return;
 
-    /*
-     * if strlen (str) < DEF_BUFF_SIZE allocate buffers on the stack for
+    /* 
+     * if strlen (str) < DEF_BUFF_SIZE allocate buffers on the stack for 
      * speed otherwise malloc the buffer. From a buffer overflow standpoint
      * we can be sure that neither: a) a component on the lhs, or b) a
      * value on the rhs, will be longer than the overall length of str,
      * i.e. strlen(str).
      *
-     * This should give good performance when parsing "*foo: bar" type
+     * This should give good performance when parsing "*foo: bar" type 
      * databases as might be passed with -xrm command line options; but
      * with larger databases, e.g. .Xdefaults, app-defaults, or KeysymDB
      * files, the size of the buffers will be overly large. One way
@@ -1137,7 +1153,7 @@ static void GetDatabase(
 
     str_len = strlen (str);
     if (DEF_BUFF_SIZE > str_len) lhs = lhs_s;
-    else if ((lhs = (char*) Xmalloc (str_len)) == NULL)
+    else if ((lhs = (char*) Xmalloc (str_len)) == NULL) 
 	return;
 
     alloc_chars = DEF_BUFF_SIZE < str_len ? str_len : DEF_BUFF_SIZE;
@@ -1153,7 +1169,7 @@ static void GetDatabase(
 	dolines = doall;
 
 	/*
-	 * First: Remove extra whitespace.
+	 * First: Remove extra whitespace. 
 	 */
 
 	do {
@@ -1225,13 +1241,13 @@ static void GetDatabase(
 	 * Third: loop through the LHS of the resource specification
 	 * storing characters and converting this to a Quark.
 	 */
-
+	
 	num_quarks = 0;
 	t_bindings = bindings;
 
 	sig = 0;
 	ptr = lhs;
-	*t_bindings = XrmBindTightly;
+	*t_bindings = XrmBindTightly;	
 	for(;;) {
 	    if (!is_binding(bits)) {
 		while (!is_EOQ(bits)) {
@@ -1240,7 +1256,7 @@ static void GetDatabase(
 		    bits = next_char(c, str);
 		}
 
-		quarks[num_quarks++] =
+		quarks[num_quarks++] = 
 			_XrmInternalStringToQuark(lhs, ptr - lhs, sig, False);
 
 		if (num_quarks > QLIST_SIZE) {
@@ -1260,9 +1276,9 @@ static void GetDatabase(
 			sig = (sig << 1) + c; /* Compute the signature. */
 		    } while (is_space(bits = next_char(c, str)));
 
-		    /*
+		    /* 
 		     * The spec doesn't permit it, but support spaces
-		     * internal to resource name/class
+		     * internal to resource name/class 
 		     */
 
 		    if (is_separator(bits))
@@ -1286,7 +1302,7 @@ static void GetDatabase(
 		 * If two separators appear with no Text between them then
 		 * ignore them.
 		 *
-		 * If anyone of those separators is a '*' then the binding
+		 * If anyone of those separators is a '*' then the binding 
 		 * will be loose, otherwise it will be tight.
 		 */
 
@@ -1331,7 +1347,7 @@ static void GetDatabase(
 	 * the right hand side.
 	 */
 
-	/*
+	/* 
 	 * Fourth: Remove more whitespace
 	 */
 
@@ -1349,7 +1365,7 @@ static void GetDatabase(
 	    break;
 	}
 
-	/*
+	/* 
 	 * Fifth: Process the right hand side.
 	 */
 
@@ -1450,8 +1466,8 @@ static void GetDatabase(
 		    else {
 			int tcount;
 
-			/*
-			 * Otherwise just insert those characters into the
+			/* 
+			 * Otherwise just insert those characters into the 
 			 * string, since no special processing is needed on
 			 * numerics we can skip the special processing.
 			 */
@@ -1474,7 +1490,7 @@ static void GetDatabase(
 		}
 	    }
 
-	    /*
+	    /* 
 	     * It is important to make sure that there is room for at least
 	     * four more characters in the buffer, since I can add that
 	     * many characters into the buffer after a backslash has occured.
@@ -1483,7 +1499,7 @@ static void GetDatabase(
 	    if (ptr + len > ptr_max) {
 		char * temp_str;
 
-		alloc_chars += BUFSIZ/10;
+		alloc_chars += BUFSIZ/10;		
 		temp_str = Xrealloc(rhs, sizeof(char) * alloc_chars);
 
 		if (!temp_str) {
@@ -1500,8 +1516,8 @@ static void GetDatabase(
 	}
 
 	/*
-	 * Lastly: Terminate the value string, and store this entry
-	 *	   into the database.
+	 * Lastly: Terminate the value string, and store this entry 
+	 * 	   into the database.
 	 */
 
 	*ptr++ = '\0';
@@ -1509,7 +1525,7 @@ static void GetDatabase(
 	/* Store it in database */
 	value.size = ptr - rhs;
 	value.addr = (XPointer) rhs;
-
+	
 	PutEntry(db, bindings, quarks, XrmQString, &value);
     }
 
@@ -1705,7 +1721,7 @@ XrmCombineFileDatabase(
 static Bool EnumLTable(
     LTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     register int	level,
     register EClosure	closure)
 {
@@ -1785,7 +1801,7 @@ static Bool EnumAllNTable(
 static Bool EnumNTable(
     NTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     register int	level,
     register EClosure	closure)
 {
@@ -1793,11 +1809,11 @@ static Bool EnumNTable(
     register XrmQuark	q;
     register unsigned int leaf;
     Bool (*get)(
-	    NTable		table,
-	    XrmNameList		names,
-	    XrmClassList	classes,
-	    register int	level,
-	    EClosure		closure);
+            NTable		table,
+            XrmNameList		names,
+            XrmClassList 	classes,
+            register int	level,
+            EClosure		closure);
     Bool bilevel;
 
 /* find entries named ename, leafness leaf, tight or loose, and call get */
@@ -2137,7 +2153,7 @@ XrmPutFileDatabase(
 static Bool AppendLEntry(
     LTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     register SClosure	closure)
 {
     /* check for duplicate */
@@ -2156,7 +2172,7 @@ static Bool AppendLEntry(
 static Bool AppendLooseLEntry(
     LTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     register SClosure	closure)
 {
     /* check for duplicate */
@@ -2176,17 +2192,17 @@ static Bool AppendLooseLEntry(
 static Bool SearchNEntry(
     NTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     SClosure		closure)
 {
     register NTable	entry;
     register XrmQuark	q;
     register unsigned int leaf;
     Bool		(*get)(
-	    NTable		table,
-	    XrmNameList		names,
-	    XrmClassList	classes,
-	    SClosure		closure);
+            NTable		table,
+            XrmNameList		names,
+            XrmClassList 	classes,
+            SClosure		closure);
 
     if (names[1]) {
 	get = SearchNEntry; /* recurse */
@@ -2274,7 +2290,7 @@ Bool XrmQGetSearchList(
 	} else {
 	    if (table && !table->leaf)
 		table = table->next;
-	    if (table &&
+	    if (table && 
 		AppendLEntry((LTable)table, names, classes, &closure)) {
 		_XUnlockMutex(&db->linfo);
 		return False;
@@ -2290,8 +2306,8 @@ Bool XrmQGetSearchResource(
 	     XrmSearchList	searchList,
     register XrmName		name,
     register XrmClass		class,
-	     XrmRepresentation	*pType,  /* RETURN */
-	     XrmValue		*pValue) /* RETURN */
+    	     XrmRepresentation	*pType,  /* RETURN */
+    	     XrmValue		*pValue) /* RETURN */
 {
     register LTable *list;
     register LTable table;
@@ -2378,7 +2394,7 @@ Bool XrmQGetSearchResource(
 static Bool GetVEntry(
     LTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     VClosure		closure)
 {
     register VEntry entry;
@@ -2413,7 +2429,7 @@ static Bool GetVEntry(
 static Bool GetLooseVEntry(
     LTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     VClosure		closure)
 {
     register VEntry	entry;
@@ -2455,17 +2471,17 @@ static Bool GetLooseVEntry(
 static Bool GetNEntry(
     NTable		table,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     VClosure		closure)
 {
     register NTable	entry;
     register XrmQuark	q;
     register unsigned int leaf;
     Bool		(*get)(
-	    NTable              table,
-	    XrmNameList         names,
-	    XrmClassList        classes,
-	    VClosure            closure);
+            NTable              table,
+            XrmNameList         names,
+            XrmClassList        classes,
+            VClosure            closure);
     NTable		otable;
 
     if (names[2]) {
@@ -2527,7 +2543,7 @@ static Bool GetNEntry(
 Bool XrmQGetResource(
     XrmDatabase         db,
     XrmNameList		names,
-    XrmClassList	classes,
+    XrmClassList 	classes,
     XrmRepresentation	*pType,  /* RETURN */
     XrmValuePtr		pValue)  /* RETURN */
 {

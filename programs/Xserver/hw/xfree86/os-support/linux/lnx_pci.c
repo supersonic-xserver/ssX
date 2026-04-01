@@ -1,7 +1,21 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_pci.c,v 3.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_pci.c,v 3.10 2004/12/31 03:30:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include <stdio.h>
-#include <X11/X.h>
+#include "X.h"
 #include "os.h"
 #include "xf86.h"
 #include "xf86Priv.h"
@@ -28,55 +42,49 @@ xf86GetPciSizeFromOS(PCITAG tag, int index, int* bits)
     unsigned int num;
     signed PCIADDR_TYPE Size;
 
-    if ((index < 0) || (index > 7))
+    if (index >= 7)
 	return FALSE;
-
-    if (!(file = fopen("/proc/bus/pci/devices", "r")))
+    
+    if (!(file = fopen("/proc/bus/pci/devices","r")))
 	return FALSE;
-
-    while ((res = fgets(c, sizeof(c) - 1, file))) {
-	num = sscanf(res,
-		     /*bus+dev vendorid deviceid irq */
-		     "%02x%02x\t%*04x%*04x\t%*x"
-		     /* 7 resource base addresses */
-		     "\t%*x\t%*x\t%*x\t%*x\t%*x\t%*x\t%*x"
-		     /* 7 resource sizes, and then an optional driver name */
-		     "\t" PCIADDR_FMT
-		     "\t" PCIADDR_FMT
-		     "\t" PCIADDR_FMT
-		     "\t" PCIADDR_FMT
-		     "\t" PCIADDR_FMT
-		     "\t" PCIADDR_FMT
-		     "\t" PCIADDR_FMT,
-		     &bus, &devfn, &size[0], &size[1], &size[2], &size[3],
-		     &size[4], &size[5], &size[6]);
-
-	if (num != 9)	/* apparently not 2.3 style */
-	    break;
-
-	dev = devfn >> 3;
-	fn = devfn & 0x7;
-	if (tag == pciTag(bus, dev, fn)) {
-	    fclose(file);
-	    *bits = 0;
-
-	    if (index == 7)	/* P2P bridge ROM pointer */
-		index = 6;
-
-	    if (size[index] == 0)
-		return TRUE;
-
-	    Size = size[index] - ((PCIADDR_TYPE) 1);
-	    if (Size & size[index])
+    do {
+	res = fgets(c,0x1ff,file);
+	if (res) {
+	    num = sscanf(res,
+			 /*bus+dev vendorid deviceid irq */
+			 "%02x%02x\t%*04x%*04x\t%*x"
+			 /* 7 PCI resource base addresses */
+			 "\t%*x\t%*x\t%*x\t%*x\t%*x\t%*x\t%*x"
+			 /* 7 PCI resource sizes, and then optionally a driver name */
+			 "\t" PCIADDR_FMT
+			 "\t" PCIADDR_FMT
+			 "\t" PCIADDR_FMT
+			 "\t" PCIADDR_FMT
+			 "\t" PCIADDR_FMT
+			 "\t" PCIADDR_FMT
+			 "\t" PCIADDR_FMT,
+			 &bus,&devfn,&size[0],&size[1],&size[2],&size[3],
+			 &size[4],&size[5],&size[6]);
+	    if (num != 9) {  /* apparantly not 2.3 style */ 
+		fclose(file);
 		return FALSE;
-
-	    while (Size & ((PCIADDR_TYPE) 0x01)) {
-		Size >>= 1;
-		(*bits)++;
-
-	    return TRUE;
+	    }
+	    dev = devfn >> 3;
+	    fn = devfn & 0x7;
+	    if (tag == pciTag(bus,dev,fn)) {
+		*bits = 0;
+		if (size[index] != 0) {
+		    Size = size[index] - ((PCIADDR_TYPE) 1);
+		    while (Size & ((PCIADDR_TYPE) 0x01)) {
+			Size = Size >> ((PCIADDR_TYPE) 1);
+			(*bits)++;
+		    }
+		}
+		fclose(file);
+		return TRUE;
+	    }
 	}
-    }
+    } while (res);
 
     fclose(file);
     return FALSE;

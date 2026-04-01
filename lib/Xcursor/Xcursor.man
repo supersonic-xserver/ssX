@@ -1,5 +1,5 @@
 .\"
-.\" $XFree86: xc/lib/Xcursor/Xcursor.man,v 1.4 2003/06/12 14:12:27 eich Exp $
+.\" $XFree86: xc/lib/Xcursor/Xcursor.man,v 1.5 2003/11/23 05:40:36 dawes Exp $
 .\"
 .\" Copyright 2002 Keith Packard, member of The XFree86 Project, Inc..\"
 .\" Permission to use, copy, modify, distribute, and sell this software and its

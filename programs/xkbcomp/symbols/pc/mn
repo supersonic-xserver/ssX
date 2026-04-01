@@ -2,7 +2,7 @@
 // Mongolian standard keyboard
 // Author Sanlig Badral <badral@chinggis.com>
 // 2002/12/7 Version 1.0
-// $XFree86$
+// $XFree86: xc/programs/xkbcomp/symbols/pc/mn,v 1.1 2004/05/08 07:26:54 pascal Exp $
 
 partial default alphanumeric_keys
 xkb_symbols "basic" {

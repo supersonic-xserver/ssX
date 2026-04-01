@@ -1,0 +1,20 @@
+-- Only Once, calling order --
+ChipIdentify (SMIIdentify)
+ChipProbe (SMIProbe)
+	Passive only, no ram determination, no writing
+	
+-- For each ScrnInfoRec, still calling order --
+ChipPreInit (SMIPreInit)
+	Allows probing and mapping, hardware must remain unchanged
+  ChipGetRec
+  
+ChipScreenInit
+  ChipMapMem
+  ChipSave
+    vgaHWSaveMMIO
+  ChipModeInit
+    vtSema=TRUE
+    ChipWriteMode
+      vgaHWRestoreMMIO
+
+$XFree86: xc/programs/Xserver/hw/xfree86/drivers/siliconmotion/CALLMAP,v 1.2 2006/01/09 14:59:58 dawes Exp $

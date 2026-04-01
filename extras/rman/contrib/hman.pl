@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 #!/citi/gtfd/mach/bin/perl -w
 ###############
+# $Id: hman.pl,v 1.1.1.3 2001/06/09 15:21:16 tron Exp $
+# $Source: /cvsroot/xsrc/xfree/xc/extras/rman/contrib/hman.pl,v $
 ############################################
 # TODO:
 #	reorganize location of man pages - move 3x stuff from man3 to man3x

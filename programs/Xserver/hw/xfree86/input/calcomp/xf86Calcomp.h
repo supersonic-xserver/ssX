@@ -1,4 +1,11 @@
 /* 
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2000-2001 Martin Kroeker (mk@daveg.com)
  * code derived from sample driver
  * Copyright (c) 1998  Metro Link Incorporated
@@ -26,7 +33,7 @@
  * in this Software without prior written authorization from Metro Link.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/xf86Calcomp.h,v 1.1 2001/08/12 22:48:43 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/calcomp/xf86Calcomp.h,v 1.2 2001/10/28 03:33:55 tsi Exp $ */
 
 #ifndef	_CALCOMP_H_
 #define _CALCOMP_H_

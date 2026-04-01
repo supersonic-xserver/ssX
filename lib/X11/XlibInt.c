@@ -1,3 +1,11 @@
+/* $Xorg: XlibInt.c,v 1.8 2001/02/09 02:03:38 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1985, 1986, 1987, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/X11/XlibInt.c,v 3.40tsi Exp $ */
+/* $XFree86: xc/lib/X11/XlibInt.c,v 3.39 2003/11/17 22:20:10 dawes Exp $ */
 
 /*
  *	XlibInt.c - Internal support routines for the C subroutine
@@ -3192,21 +3200,18 @@ int _XGetHostname (
     if (maxlen <= 0 || buf == NULL)
 	return 0;
 
-    len = 0;
-    if (uname(&name) >= 0) {
-	len = strlen(name.nodename);
-	if (len >= maxlen)
-	    len = maxlen - 1;
-	strncpy(buf, name.nodename, len);
-    }
+    uname (&name);
+    len = strlen (name.nodename);
+    if (len >= maxlen) len = maxlen - 1;
+    strncpy (buf, name.nodename, len);
     buf[len] = '\0';
 #else
     if (maxlen <= 0 || buf == NULL)
 	return 0;
 
     buf[0] = '\0';
-    (void) gethostname(buf, maxlen);
-    buf[maxlen - 1] = '\0';
+    (void) gethostname (buf, maxlen);
+    buf [maxlen - 1] = '\0';
     len = strlen(buf);
 #endif /* NEED_UTSNAME */
     return len;

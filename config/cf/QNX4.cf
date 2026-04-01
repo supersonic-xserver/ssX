@@ -4,7 +4,6 @@ XCOMM platform:  $XFree86: xc/config/cf/QNX4.cf,v 1.5 2004/06/02 22:42:53 dawes 
 #define BuildServer 		YES
 #define DoLoadableServer	NO     /* sorry, are u listenning QSSL? */
 #define BuildLBX  		YES    /* For now */
-#define BuildGlxExt		NO     /* from miinitext.c */
 #define ExpandManNames		YES
 #define ByteOrder		X_LITTLE_ENDIAN
 

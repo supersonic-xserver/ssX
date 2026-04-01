@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/mkfontscale/mkfontscale.man,v 1.5 2003/07/04 16:24:30 eich Exp $
+.\" $XFree86: xc/programs/mkfontscale/mkfontscale.man,v 1.6 2005/02/09 17:06:55 dawes Exp $
 .\"
 .TH MKFONTSCALE 1 __vendorversion__
 .SH NAME

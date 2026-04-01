@@ -1,8 +1,5 @@
 .XFree86_Version
 bin
-lib/libAppleWM.so.1.0
-lib/libAppleWM.so.1
-lib/libAppleWM.so
 lib/libFS.so.6.0
 lib/libFS.so.6
 lib/libFS.so
@@ -35,7 +32,7 @@ lib/libXTrap.so.6
 lib/libXTrap.so
 lib/libXaw.so.6.1
 lib/libXaw.so.6
-lib/libXaw.so.7.1
+lib/libXaw.so.7.0
 lib/libXaw.so.7
 lib/libXaw.so
 lib/libXcursor.so.1.0
@@ -82,7 +79,7 @@ lib/libXrender.so
 lib/libXss.so.1.0
 lib/libXss.so.1
 lib/libXss.so
-lib/libXt.so.6.1
+lib/libXt.so.6.0
 lib/libXt.so.6
 lib/libXt.so
 lib/libXtst.so.6.1

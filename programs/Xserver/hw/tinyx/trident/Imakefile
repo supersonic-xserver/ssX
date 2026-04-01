@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/trident/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/trident/Imakefile,v 1.1 2004/06/02 22:43:02 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -54,7 +54,7 @@ OBJS = 	trident.o tridentdraw.o tridentcurs.o tridentstub.o
 
 DEFINES = -DVESA /* -DUSE_PCI*/
 
-INCLUDES = $(TINYXINCLUDES) -I$(TINYXSRC)/fbdev -I$(TINYXSRC)/vesa
+INCLUDES = -I. $(TINYXINCLUDES) -I$(TINYXSRC)/fbdev -I$(TINYXSRC)/vesa
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(trident,$(OBJS))

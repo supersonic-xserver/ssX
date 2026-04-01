@@ -1,10 +1,23 @@
 /* $XFree86: xc/lib/XvMC/XvMC.c,v 1.5 2002/10/16 00:37:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #define NEED_REPLIES
 
 #include <stdio.h>
 #include "XvMClibint.h"
-#include "XvMChooks.h"
 #include <X11/extensions/Xext.h>
 #include <X11/extensions/extutil.h>
 

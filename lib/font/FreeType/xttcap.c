@@ -1,4 +1,11 @@
 /* ===EmacsMode: -*- Mode: C; tab-width:4; c-basic-offset: 4; -*- === */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* ===FileName: ===
    Copyright (c) 1998 Takuya SHIOZAKI, All Rights reserved.
    Copyright (c) 1998 X-TrueType Server Project, All rights reserved. 
@@ -30,7 +37,7 @@
 
 Notice===
  */
-/* $XFree86: xc/lib/font/FreeType/xttcap.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/lib/font/FreeType/xttcap.c,v 1.2 2004/02/24 01:13:04 dawes Exp $ */
 
 /*
 #include "xttversion.h"
@@ -45,8 +52,8 @@ static char const * const releaseID =
 #include <ctype.h>
 #include <math.h>
 #else
-#include <X11/Xmd.h>
-#include <X11/Xdefs.h>
+#include "Xmd.h"
+#include "Xdefs.h"
 #include "xf86_ansic.h"
 #endif
 /*

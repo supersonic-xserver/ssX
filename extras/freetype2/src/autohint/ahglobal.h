@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahglobal.h                                                             */
 /*                                                                         */
 /*    Routines used to compute global metrics automatically                */
 /*    (specification).                                                     */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001, 2002, 2003 Catharon Productions Inc.              */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -20,43 +27,40 @@
 /***************************************************************************/
 
 
-#ifndef AHGLOBAL_H
-#define AHGLOBAL_H
+#ifndef __AHGLOBAL_H__
+#define __AHGLOBAL_H__
 
-#ifdef FT_FLAT_COMPILE
 
+#include <ft2build.h>
 #include "ahtypes.h"
-
-#else
-
-#include <autohint/ahtypes.h>
-
-#endif
+#include FT_INTERNAL_OBJECTS_H
 
 
-#include <freetype/internal/ftobjs.h>  /* for FT_LOCAL/FT_LOCAL_DEF */
+FT_BEGIN_HEADER
 
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
+#ifdef  FT_CONFIG_CHESTER_SMALL_F
 
+#define AH_IS_TOP_BLUE( b )  ( (b) == AH_BLUE_CAPITAL_TOP || \
+                               (b) == AH_BLUE_SMALL_F_TOP || \
+                               (b) == AH_BLUE_SMALL_TOP   )
 
-#define AH_IS_TOP_BLUE( b )  ( (b) == ah_blue_capital_top || \
-                               (b) == ah_blue_small_top   )
+#else /* !FT_CONFIG_CHESTER_SMALL_F */
+
+#define AH_IS_TOP_BLUE( b )  ( (b) == AH_BLUE_CAPITAL_TOP || \
+                               (b) == AH_BLUE_SMALL_TOP   )
+
+#endif /* !FT_CONFIG_CHESTER_SMALL_F */
 
 
   /* compute global metrics automatically */
-  FT_LOCAL
-  FT_Error  ah_hinter_compute_globals( AH_Hinter*  hinter );
+  FT_LOCAL( FT_Error )
+  ah_hinter_compute_globals( AH_Hinter  hinter );
 
 
-#ifdef __cplusplus
-  }
-#endif
+FT_END_HEADER
 
-
-#endif /* AHGLOBAL_H */
+#endif /* __AHGLOBAL_H__ */
 
 
 /* END */

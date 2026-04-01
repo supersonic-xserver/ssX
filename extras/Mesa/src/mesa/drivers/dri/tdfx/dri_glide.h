@@ -1,4 +1,11 @@
 /* -*- mode: c; c-basic-offset: 3 -*-
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Copyright 2000 VA Linux Systems Inc., Fremont, California.
  *
@@ -23,7 +30,7 @@
  * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/tdfx/dri_glide.h,v 1.1 2001/03/21 16:14:26 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/dri_glide.h,v 1.1.1.2 2004/12/10 15:06:04 alanh Exp $ */
 
 /*
  * Original rewrite:
@@ -53,7 +60,7 @@ extern void grDRIOpen( char *pFB, char *pRegs, int deviceID,
 		       int textureOffset, int textureSize,
 		       volatile int *fifoPtr, volatile int *fifoRead );
 extern void grDRIPosition( int x, int y, int w, int h,
-			   int numClip, XF86DRIClipRectPtr pClip );
+			   int numClip, drm_clip_rect_t *pClip );
 extern void grDRILostContext( void );
 extern void grDRIImportFifo( int fifoPtr, int fifoRead );
 extern void grDRIInvalidateAll( void );

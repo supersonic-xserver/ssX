@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbimggblt.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mfb/mfbimggblt.c,v 3.6 2003/11/03 05:11:59 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
 
@@ -46,12 +53,12 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+/* $Xorg: mfbimggblt.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"mfb.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"dixfontstr.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
@@ -97,8 +104,13 @@ xoff, pdst, pglyph, and tmpSrc seem like the right things, though.
 */
 
 void
-MFBIMAGEGLYPHBLT(DrawablePtr pDrawable, GC *pGC, int x, int y,
-		 unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+MFBIMAGEGLYPHBLT(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer	pglyphBase;	/* start of array of glyphs */
 {
     ExtentInfoRec info;	/* used by QueryGlyphExtents() */
     BoxRec bbox;	/* string's bounding box */
@@ -117,23 +129,23 @@ MFBIMAGEGLYPHBLT(DrawablePtr pDrawable, GC *pGC, int x, int y,
     int xchar;		/* xorigin of char (mod 32) */
 
 			/* these are used for placing the glyph */
-    int xoff;	/* x offset of left edge of glyph (mod 32) */
-    PixelType *pdst;
+    register int xoff;	/* x offset of left edge of glyph (mod 32) */
+    register PixelType *pdst;
 			/* pointer to current longword in dst */
 
     int w;		/* width of glyph in bits */
     int h;		/* height of glyph */
     int widthGlyph;	/* width of glyph, in bytes */
-    unsigned char *pglyph;
+    register unsigned char *pglyph;
 			/* pointer to current row of glyph */
 
 			/* used for putting down glyph */    
-    PixelType tmpSrc;
+    register PixelType tmpSrc;
 			/* for getting bits from glyph */
-    PixelType startmask;
-    PixelType endmask;
+    register PixelType startmask;
+    register PixelType endmask;
 
-    int nFirst;/* bits of glyph in current longword */
+    register int nFirst;/* bits of glyph in current longword */
     mfbPrivGC *pPrivGC;
     mfbFillAreaProcPtr oldFillArea;
 			/* we might temporarily usurp this

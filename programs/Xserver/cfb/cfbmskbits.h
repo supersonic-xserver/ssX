@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/cfb/cfbmskbits.h,v 3.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbmskbits.h,v 3.14 2003/10/29 22:44:53 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 
@@ -28,11 +35,17 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
 
+/* $Xorg: cfbmskbits.h,v 1.3 2000/08/17 19:48:14 cpqbld Exp $ */
 /* Optimizations for PSZ == 32 added by Kyle Marvin (marvin@vitec.com) */
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
+#include	"X.h"
+#include	"Xmd.h"
 #include	"servermd.h"
+#if defined(XFREE86) || ( defined(__OpenBSD__) && defined(__alpha__) ) \
+	|| (defined(__bsdi__))
+#include	"xf86_ansic.h"
+#include	"compiler.h"
+#endif
 
 /*
  * ==========================================================================
@@ -53,7 +66,6 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * name	    explanation
  * ----	    -----------
  * PSZ	    pixel size (in bits)
- * PSZB     pixel size (in bytes)
  * PGSZ     pixel group size (in bits)
  * PGSZB    pixel group size (in bytes)
  * PGSZBMSK mask with lowest PGSZB bits set to 1
@@ -123,16 +135,11 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define PixelGroup CARD32
 #define PGSZB 4
 #endif /* PixelGroup */
-
-#if !defined(PGSZB) || (PGSZB != 4)
-# error "PGSZB is unspecified or no longer supported."
-#endif
     
 #ifndef CfbBits
 #define CfbBits	CARD32
 #endif
 
-#define PSZB	(PSZ >> 3)
 #define PGSZ	(PGSZB << 3)
 #define PPW	(PGSZ/PSZ)
 #define PLST	(PPW-1)
@@ -317,8 +324,8 @@ getleftbits(psrc, w, dst)
 */
 
 #if	(BITMAP_BIT_ORDER == MSBFirst)
-#define BitRight(lw,n)	((lw) >> (n))
-#define BitLeft(lw,n)	((lw) << (n))
+#define BitRight(lw,n)	((PixelGroup)(lw) >> (n))
+#define BitLeft(lw,n)	((PixelGroup)(lw) << (n))
 #else	/* (BITMAP_BIT_ORDER == LSBFirst) */
 #define BitRight(lw,n)	((lw) << (n))
 #define BitLeft(lw,n)	((lw) >> (n))
@@ -410,31 +417,30 @@ getleftbits(psrc, w, dst)
 
 # if (PSZ == 24 && PPW == 1)
 #define maskbits(x, w, startmask, endmask, nlw) {\
-    startmask = cfbstarttab[(x) & (PGSZB - 1)]; \
-    endmask = cfbendtab[((x) + (w)) & (PGSZB - 1)]; \
-    nlw = ((((x) + (w)) * PSZB) / PGSZB) - ((((x) + 1) * PSZB) / PGSZB); \
+    startmask = cfbstarttab[(x)&3]; \
+    endmask = cfbendtab[((x)+(w)) & 3]; \
+    nlw = ((((x)+(w))*3)>>2) - (((x)*3 +3)>>2); \
 }
 
 #define mask32bits(x, w, startmask, endmask) \
-    startmask = cfbstarttab[(x) & (PGSZB - 1)]; \
-    endmask = cfbendtab[((x) + (w)) & (PGSZB - 1)];
+    startmask = cfbstarttab[(x)&3]; \
+    endmask = cfbendtab[((x)+(w)) & 3];
 
 #define maskpartialbits(x, w, mask) \
-    mask = cfbstartpartial[(x) & (PGSZB - 1)] & \
-	   cfbendpartial[((x) + (w)) & (PGSZB - 1)];
+    mask = cfbstartpartial[(x) & 3] & cfbendpartial[((x)+(w)) & 3];
 
 #define maskbits24(x, w, startmask, endmask, nlw) \
-    startmask = cfbstarttab24[(x) & (PGSZB - 1)]; \
-    endmask = cfbendtab24[((x) + (w)) & (PGSZB - 1)]; \
+    startmask = cfbstarttab24[(x) & 3]; \
+    endmask = cfbendtab24[((x)+(w)) & 3]; \
     if (startmask){ \
-	nlw = (((w) - (PGSZB - ((x) & (PGSZB - 1)))) / PGSZB); \
+	nlw = (((w) - (4 - ((x) & 3))) >> 2); \
     } else { \
-	nlw = (w) / PGSZB; \
+	nlw = (w) >> 2; \
     }
 
 #define getbits24(psrc, dst, index) {\
-    int idx; \
-    switch(idx = ((index) & (PGSZB - 1)) << 1){ \
+    register int idx; \
+    switch(idx = ((index)&3)<<1){ \
     	case 0: \
 		dst = (*(psrc) &cfbmask[idx]); \
 		break; \
@@ -448,9 +454,9 @@ getleftbits(psrc, w, dst)
 }
 
 #define putbits24(src, w, pdst, planemask, index) {\
-    PixelGroup dstpixel; \
-    unsigned int idx; \
-    switch(idx = ((index) & (PGSZB - 1)) << 1){ \
+    register PixelGroup dstpixel; \
+    register unsigned int idx; \
+    switch(idx = ((index)&3)<<1){ \
     	case 0: \
 		dstpixel = (*(pdst) &cfbmask[idx]); \
 		break; \
@@ -482,8 +488,8 @@ getleftbits(psrc, w, dst)
 
 #define putbitsrop24(src, x, pdst, planemask, rop) \
 { \
-    PixelGroup t1, dstpixel; \
-    unsigned int idx; \
+    register PixelGroup t1, dstpixel; \
+    register unsigned int idx; \
     switch(idx = (x)<<1){ \
     	case 0: \
 		dstpixel = (*(pdst) &cfbmask[idx]); \
@@ -576,10 +582,8 @@ else \
 #if defined(__GNUC__) && defined(mc68020)
 #undef getbits
 #define FASTGETBITS(psrc, x, w, dst) \
-    __asm__ __volatile__ ( \
-	"bfextu %3{%1:%2},%0" \
-	: "=d" (dst) \
-	: "di" (x), "di" (w), "o" (*(char *)(psrc)))
+    asm ("bfextu %3{%1:%2},%0" \
+	 : "=d" (dst) : "di" (x), "di" (w), "o" (*(char *)(psrc)))
 
 #define getbits(psrc,x,w,dst) \
 { \
@@ -588,10 +592,9 @@ else \
 }
 
 #define FASTPUTBITS(src, x, w, pdst) \
-    __asm__ __volatile__ ( \
-	"bfins %3,%0{%1:%2}" \
-	: "+o" (*(char *)(pdst)) \
-	: "di" (x), "di" (w), "d" (src))
+    asm ("bfins %3,%0{%1:%2}" \
+	 : "+o" (*(char *)(pdst)) \
+	 : "di" (x), "di" (w), "d" (src))
 
 #undef putbits
 #define putbits(src, x, w, pdst, planemask) \
@@ -731,21 +734,85 @@ if ((x) + (w) <= PPW) {\
     putbitsmroplong(src,x,w,pdst); \
 }
 
+#if     (BITMAP_BIT_ORDER == MSBFirst)
 #if GETLEFTBITS_ALIGNMENT == 1
-#define getleftbits(psrc, w, dst) dst = *((unsigned int *) psrc)
+#if PGSZ == 64
+#define sh64(x)		BitLeft((x), 32)
+#else
+#define sh64(x)		(x)
+#endif
+#define getleftbits(psrc, w, dst)	 dst = sh64(*((unsigned int *) psrc))
 #define getleftbits24(psrc, w, dst, idx){	\
 	regiseter int index; \
-	switch(index = ((idx) & (PGSZB - 1)) << 1){ \
+	switch(index = ((idx)&3)<<1){ \
 	case 0: \
-	dst = *((unsigned int *) psrc) & cfbmask[index]; \
+	dst = sh64((*((unsigned int *) psrc))&cfbmask[index]; \
 	break; \
 	case 2: \
 	case 4: \
-	dst = BitLeft((*((unsigned int *) psrc) & cfbmask[index]), cfb24Shift[index]); \
-	dst |= BitRight(((*((unsigned int *) psrc) + 1) & cfbmask[index]), cfb4Shift[index]); \
+	dst = BitLeft((sh64(*((unsigned int *) psrc))&cfbmask[index]), cfb24Shift[index]); \
+	dst |= BitRight((sh64(*((unsigned int *) psrc)+1)&cfbmask[index]), cfb4Shift[index]); \
 	break; \
 	case 6: \
-	dst = BitLeft(*((unsigned int *) psrc), cfb24Shift[index]); \
+	dst = BitLeft(sh64(*((unsigned int *) psrc)),cfb24Shift[index]); \
+	break; \
+	}; \
+}
+#endif /* GETLEFTBITS_ALIGNMENT == 1 */
+
+#if PGSZ == 64
+#define getglyphbits(psrc, x, w, dst) \
+{ \
+    dst = BitLeft((unsigned) *(psrc), (x)+32); \
+    if ( ((x) + (w)) > 32) \
+	dst |= (BitLeft((unsigned) *((psrc)+1), 32-(x))); \
+}
+#else /* PGSZ == 64 */
+#define getglyphbits(psrc, x, w, dst) \
+{ \
+    dst = BitLeft((unsigned) *(psrc), (x)); \
+    if ( ((x) + (w)) > 32) \
+	dst |= (BitRight((unsigned) *((psrc)+1), 32-(x))); \
+}
+#endif /* PGSZ == 64 */
+
+#if GETLEFTBITS_ALIGNMENT == 2
+#define getleftbits(psrc, w, dst) \
+    { \
+	if ( ((int)(psrc)) & 0x01 ) \
+		getglyphbits( ((unsigned int *)(((char *)(psrc))-1)), 8, (w), (dst) ); \
+	else \
+		dst = sh64(*((unsigned int *) psrc); \
+    }
+#endif /* GETLEFTBITS_ALIGNMENT == 2 */
+
+#if GETLEFTBITS_ALIGNMENT == 4
+#define getleftbits(psrc, w, dst) \
+    { \
+	int off, off_b; \
+	off_b = (off = ( ((int)(psrc)) & (PGSZB-1))) << 3; \
+	getglyphbits( \
+		(unsigned PixelType *)( ((char *)(psrc)) - off), \
+		(off_b), (w), (dst) \
+	       ); \
+    }
+#endif /* GETLEFTBITS_ALIGNMENT == 4 */
+#else /* (BITMAP_BIT_ORDER == MSBFirst) */
+#if GETLEFTBITS_ALIGNMENT == 1
+#define getleftbits(psrc, w, dst)	dst = *((unsigned int *) psrc)
+#define getleftbits24(psrc, w, dst, idx){	\
+	regiseter int index; \
+	switch(index = ((idx)&3)<<1){ \
+	case 0: \
+	dst = (*((unsigned int *) psrc))&cfbmask[index]; \
+	break; \
+	case 2: \
+	case 4: \
+	dst = BitLeft(((*((unsigned int *) psrc))&cfbmask[index]), cfb24Shift[index]); \
+	dst |= BitRight(((*((unsigned int *) psrc)+1)&cfbmask[index]), cfb4Shift[index]); \
+	break; \
+	case 6: \
+	dst = BitLeft((*((unsigned int *) psrc)),cfb24Shift[index]); \
 	break; \
 	}; \
 }
@@ -754,17 +821,16 @@ if ((x) + (w) <= PPW) {\
 #define getglyphbits(psrc, x, w, dst) \
 { \
     dst = BitLeft((unsigned) *(psrc), (x)); \
-    if (((x) + (w)) > 32) \
+    if ( ((x) + (w)) > 32) \
 	dst |= (BitRight((unsigned) *((psrc)+1), 32-(x))); \
 }
 #if GETLEFTBITS_ALIGNMENT == 2
 #define getleftbits(psrc, w, dst) \
     { \
-	if (((int)(psrc)) & 0x01 ) \
-	    getglyphbits(((unsigned int *)(((char *)(psrc)) - 1)), 8, (w), \
-			 (dst)); \
+	if ( ((int)(psrc)) & 0x01 ) \
+		getglyphbits( ((unsigned int *)(((char *)(psrc))-1)), 8, (w), (dst) ); \
 	else \
-	    dst = *((unsigned int *) psrc); \
+		dst = *((unsigned int *) psrc); \
     }
 #endif /* GETLEFTBITS_ALIGNMENT == 2 */
 
@@ -772,11 +838,14 @@ if ((x) + (w) <= PPW) {\
 #define getleftbits(psrc, w, dst) \
     { \
 	int off, off_b; \
-	off_b = (off = (((int)(psrc)) & (PGSZB - 1))) << 3; \
-	getglyphbits((unsigned int *)(((char *)(psrc)) - off), (off_b), (w), \
-		     (dst)); \
+	off_b = (off = ( ((int)(psrc)) & 0x03)) << 3; \
+	getglyphbits( \
+		(unsigned int *)( ((char *)(psrc)) - off), \
+		(off_b), (w), (dst) \
+	       ); \
     }
 #endif /* GETLEFTBITS_ALIGNMENT == 4 */
+#endif /* (BITMAP_BIT_ORDER == MSBFirst) */
 
 /*
  * getstipplepixels( psrcstip, x, w, ones, psrcpix, destpix )
@@ -827,15 +896,15 @@ if ((x) + (w) <= PPW) {\
 }
 #else /* BITMAP_BIT_ORDER == LSB */
 
+/* this must load 32 bits worth; for most machines, thats an int */
+#define CfbFetchUnaligned(x)	ldl_u((unsigned int *)x)
+
 #define getstipplepixels( psrcstip, xt, w, ones, psrcpix, destpix ) \
 { \
-    PixelGroup q, tmp; \
-    memmove(&tmp, psrcstip, sizeof(PixelGroup)); \
-    q = tmp >> (xt); \
-    if ( ((xt)+(w)) > (PPW*PSZ) ) { \
-        memmove(&tmp, (psrcstip) + 1, sizeof(PixelGroup)); \
-        q |= tmp << ((PPW*PSZ)-(xt)); \
-    } \
+    PixelGroup q; \
+    q = CfbFetchUnaligned(psrcstip) >> (xt); \
+    if ( ((xt)+(w)) > (PPW*PSZ) ) \
+        q |= (CfbFetchUnaligned((psrcstip)+1)) << ((PPW*PSZ)-(xt)); \
     q = QuartetBitsTable[(w)] & ((ones) ? q : ~q); \
     *(destpix) = (*(psrcpix)) & QuartetPixelMaskTable[q]; \
 }
@@ -845,14 +914,14 @@ if ((x) + (w) <= PPW) {\
 { \
     PixelGroup q; \
     CfbBits src; \
-    unsigned int sidx; \
-    unsigned int didx; \
-    sidx = ((srcindex) & (PGSZB - 1)) << 1; \
-    didx = ((dstindex) & (PGSZB - 1)) << 1; \
+    register unsigned int sidx; \
+    register unsigned int didx; \
+    sidx = ((srcindex) & 3)<<1; \
+    didx = ((dstindex) & 3)<<1; \
     q = *(psrcstip) >> (xt); \
-/*    if((srcindex)!=0) */ \
-/*    src = (((*(psrcpix)) << cfb24Shift[sidx]) & (cfbmask[sidx])) | */ \
-/*	(((*((psrcpix)+1)) << cfb24Shift[sidx+1]) & (cfbmask[sidx+1])); */ \
+/*    if((srcindex)!=0)*/ \
+/*    src = (((*(psrcpix)) << cfb24Shift[sidx]) & (cfbmask[sidx])) |*/ \
+/*	(((*((psrcpix)+1)) << cfb24Shift[sidx+1]) & (cfbmask[sidx+1])); */\
 /*    else */\
 	src = (*(psrcpix))&0xFFFFFF; \
     if ( ((xt)+(w)) > PGSZ ) \

@@ -26,7 +26,7 @@
 .\"
 .\" Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
 .\"
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/xf86cfg.man,v 1.10tsi Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/xf86cfg.man,v 1.10 2003/05/29 21:48:10 herrb Exp $
 .\"
 .TH xf86cfg 1 __vendorversion__
 .SH NAME
@@ -145,7 +145,7 @@ Copyright 2000, The XFree86 Project
 
 .SH AUTHORS
 .TP 8
-Paulo C\('esar Pereira de Andrade \fI<pcpa@conectiva.com.br>\fP
+Paulo César Pereira de Andrade \fI<pcpa@conectiva.com.br>\fP
 The XFree86 Project
 
 .SH BUGS

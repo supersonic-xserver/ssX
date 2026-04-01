@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_swtcl.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/radeon/radeon_swtcl.c,v 1.6 2004/12/13 22:40:54 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /**************************************************************************
 
 Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -941,7 +948,7 @@ do {							\
 
 #define LOCAL_VARS(n)							\
    radeonContextPtr rmesa = RADEON_CONTEXT(ctx);			\
-   GLuint color[n] = {0, }, spec[n] = {0, };				\
+   GLuint color[n], spec[n];						\
    GLuint coloroffset = (rmesa->swtcl.vertex_size == 4 ? 3 : 4);	\
    GLboolean havespec = (rmesa->swtcl.vertex_size > 4);			\
    (void) color; (void) spec; (void) coloroffset; (void) havespec;

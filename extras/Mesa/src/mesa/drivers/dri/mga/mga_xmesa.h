@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mga_xmesa.h,v 1.2tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 VA Linux Systems, Inc.
  * All Rights Reserved.
  *
@@ -25,6 +31,7 @@
  * Authors:
  *    Keith Whitwell <keith@tungstengraphics.com>
  */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mga_xmesa.h,v 1.2 2004/12/13 22:40:52 tsi Exp $ */
 
 #ifndef _MGA_INIT_H_
 #define _MGA_INIT_H_
@@ -47,7 +54,7 @@ typedef struct mga_screen_private_s {
 
    int cpp;			/* for front and back buffers */
    GLint agpMode;
-   int irq;			/* IRQ number (0 means none) */
+   unsigned int irq;		/* IRQ number (0 means none) */
    GLboolean  linecomp_sane;    /* GL_TRUE if line comp. programmed correctly
 				 * by the DDX driver.
 				 */

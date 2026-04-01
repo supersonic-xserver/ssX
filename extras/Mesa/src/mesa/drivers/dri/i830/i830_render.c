@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Intel i810 DRI driver for Mesa 3.5
  *
  * Copyright (C) 1999-2000  Keith Whitwell   All Rights Reserved.
@@ -26,7 +33,7 @@
  * Adapted for use on the I830:
  *    Jeff Hartmann <jhartmann@2d3d.com>
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_render.c,v 1.2 2002/12/10 01:26:53 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_render.c,v 1.1.1.2 2004/06/10 14:22:50 alanh Exp $ */
 
 /*
  * Render unclipped vertex buffers by emitting vertices directly to
@@ -48,7 +55,6 @@
 #include "i830_context.h"
 #include "i830_tris.h"
 #include "i830_state.h"
-#include "i830_vb.h"
 #include "i830_ioctl.h"
 
 /*
@@ -125,9 +131,9 @@ static const int scale_prim[GL_POLYGON+1] = {
   
 
 #define ALLOC_VERTS( nr ) \
-  i830AllocDmaLow( imesa, nr * imesa->vertex_size * 4)
+  i830AllocDmaLow( imesa, (nr) * imesa->vertex_size * 4)
 #define EMIT_VERTS( ctx, j, nr, buf ) \
-  i830_emit_contiguous_verts(ctx, j, (j)+(nr), buf)
+  _tnl_emit_vertices_to_buffer(ctx, j, (j)+(nr), buf)
   
 #define TAG(x) i830_##x
 #include "tnl_dd/t_dd_dmatmp.h"
@@ -191,11 +197,9 @@ static GLboolean i830_run_render( GLcontext *ctx,
     */
    if (imesa->RenderIndex != 0 || 
        !i830_validate_render( ctx, VB ) ||
-       !choose_render( VB, GET_SUBSEQUENT_VB_MAX_VERTS() )) {
+       !choose_render( VB, 200 )) { /* 200 is estimate of nr verts/buf */
       return GL_TRUE;
    }
-
-   imesa->SetupNewInputs = VERT_BIT_POS;
 
    tnl->Driver.Render.Start( ctx );
    

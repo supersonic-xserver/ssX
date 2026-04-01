@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/dmxgc.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/dmxgc.c,v 1.1 2004/06/30 20:21:39 martin Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2004 Red Hat Inc., Durham, North Carolina.
  *
@@ -381,19 +388,18 @@ void dmxChangeClip(GCPtr pGC, int type, pointer pvalue, int nrects)
 	}
 	break;
 
-#if 0	/* Leave in for reference */
+#ifdef notdef
     case CT_PIXMAP:
     case CT_UNSORTED:
     case CT_YSORTED:
     case CT_YXSORTED:
     case CT_YXBANDED:
-	/*
-	 * These clip types are condensed down to either NONE or REGION in
-	 * the mi code, and therefore could not have been set as the GC's
-	 * clientClipType.
-	 */
-#endif
+#else
+    /* clientClipType is only 2 bits so this does not fit! */
     default:
+#endif
+	/* These clip types are condensed down to either NONE or REGION
+           in the mi code */
 	break;
     }
 

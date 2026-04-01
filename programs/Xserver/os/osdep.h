@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/osdep.h,v 3.21 2006/01/09 15:00:38 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/os/osdep.h,v 3.20 2004/06/24 02:21:16 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $Xorg: osdep.h,v 1.5 2001/02/09 02:05:23 xorgcvs Exp $ */
 
 #ifndef _OSDEP_H_
 #define _OSDEP_H_ 1
@@ -310,7 +318,7 @@ extern XID AuthSecurityCheck (AuthCheckArgs);
 
 /* in xdmcp.c  & xdmauth.c */
 extern void XdmcpUseMsg (void);
-extern int XdmcpOptions(int argc, const char **argv, int i);
+extern int XdmcpOptions(int argc, char **argv, int i);
 extern void XdmcpSetAuthentication (ARRAY8Ptr name);
 extern void XdmcpRegisterConnection (
     int	    type,
@@ -318,7 +326,7 @@ extern void XdmcpRegisterConnection (
     int	    addrlen);
 extern void XdmcpRegisterAuthorizations (void);
 extern void XdmcpRegisterAuthorization (char *name, int namelen);
-extern void XdmcpRegisterDisplayClass (const char *name, int length);
+extern void XdmcpRegisterDisplayClass (char *name, int length);
 extern void XdmcpInit (void);
 extern void XdmcpReset (void);
 extern void XdmcpOpenDisplay(int sock);
@@ -338,6 +346,6 @@ extern int XdmcpAddAuthorization (ARRAY8Ptr name, ARRAY8Ptr data);
 struct sockaddr_in;
 extern void XdmcpRegisterBroadcastAddress (struct sockaddr_in *addr);
 
-extern void XdmAuthenticationInit (const char *cookie, int cookie_length);
+extern void XdmAuthenticationInit (char *cookie, int cookie_length);
 
 #endif /* _OSDEP_H_ */

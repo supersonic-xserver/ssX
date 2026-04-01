@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copied from os2_io.c which is
  *
  * (c) Copyright 1994,1999 by Holger Veit
@@ -28,11 +35,11 @@
  * in this Software without prior written authorization from Holger Veit.
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_kbd.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/os2/os2_kbd.c,v 1.2 2003/11/03 05:36:33 tsi Exp $ */
 
 #define I_NEED_OS2_H
-#include <X11/X.h>
-#include <X11/Xpoll.h>
+#include "X.h"
+#include "Xpoll.h"
 #include "compiler.h"
 #include <time.h>
 

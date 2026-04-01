@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/sis/Imakefile.inc,v 1.4tsi Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/sis/Imakefile.inc,v 1.4 2005/03/01 03:48:50 dawes Exp $
 
 #ifndef MesaDrvSrcDir
 #define MesaDrvSrcDir $(MESASRCDIR)/src/mesa/drivers/dri
@@ -18,6 +18,7 @@ ALLOC_DEFINES = -DMALLOC_0_RETURNS_NULL
 #if BuildXF86DRI
   DRI_DEFINES = GlxDefines $(SIS_DEFINES) -DX_BYTE_ORDER=$(X_BYTE_ORDER)
  DRI_INCLUDES = -I$(GLXLIBSRC)/dri \
+		-I$(XINCLUDESRC) \
 		-I$(GLXLIBSRC)/glx \
 		-I$(GLXLIBSRC)/include \
 		-I$(SERVERSRC)/GL/dri \
@@ -34,6 +35,7 @@ MESA_INCLUDES = -I$(MESASRCDIR)/src/mesa \
 		-I$(MESASRCDIR)/include \
 		-I$(MESADRVSRCDIR)/common \
 		-I$(MESADRVSRCDIR)/sis
+   X_INCLUDES = -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
 #if 0
  DEBUG_SRC = $(MESADRVSISBUILDDIR)sis_debug.c

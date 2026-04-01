@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/swrast/s_triangle.c,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -555,8 +561,6 @@ affine_span(GLcontext *ctx, struct sw_span *span,
       info.eg = FloatToFixed(unit->EnvColor[GCOMP] * CHAN_MAXF);	\
       info.eb = FloatToFixed(unit->EnvColor[BCOMP] * CHAN_MAXF);	\
       info.ea = FloatToFixed(unit->EnvColor[ACOMP] * CHAN_MAXF);	\
-   } else {								\
-      info.er = info.eg = info.eb = info.ea = 0;			\
    }									\
    if (!info.texture) {							\
       /* this shouldn't happen */					\
@@ -824,8 +828,6 @@ fast_persp_span(GLcontext *ctx, struct sw_span *span,
       info.eg = FloatToFixed(unit->EnvColor[GCOMP] * CHAN_MAXF);	\
       info.eb = FloatToFixed(unit->EnvColor[BCOMP] * CHAN_MAXF);	\
       info.ea = FloatToFixed(unit->EnvColor[ACOMP] * CHAN_MAXF);	\
-   } else {								\
-      info.er = info.eg = info.eb = info.ea = 0;			\
    }									\
    if (!info.texture) {							\
       /* this shouldn't happen */					\

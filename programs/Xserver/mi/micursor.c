@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/mi/micursor.c,v 1.3 2001/12/14 20:00:21 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
+/* $Xorg: micursor.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
 #include "scrnintstr.h"
 #include "cursor.h"
 #include "misc.h"
@@ -54,7 +61,10 @@ SOFTWARE.
 extern Bool Must_have_memory;
 
 void
-miRecolorCursor(ScreenPtr pScr, CursorPtr pCurs, Bool displayed)
+miRecolorCursor( pScr, pCurs, displayed)
+    ScreenPtr	pScr;
+    CursorPtr	pCurs;
+    Bool	displayed;
 {
     /*
      * This is guaranteed to correct any color-dependent state which may have

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -19,7 +26,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/hw/tinyx/itsy/itsy.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/tinyx/itsy/itsy.c,v 1.1 2004/06/02 22:43:01 dawes Exp $ */
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -267,13 +274,13 @@ InitCard (void)
 }
 
 void
-InitOutput (ScreenInfo *pScreenInfo, const int argc, const char **argv)
+InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 {
     KdInitOutput (pScreenInfo, argc, argv);
 }
 
 void
-InitInput (const int argc, const char **argv)
+InitInput (int argc, char **argv)
 {
     KdInitInput (&itsyTsMouseFuncs, &itsyKeyboardFuncs);
 }
@@ -361,7 +368,7 @@ OsVendorInit (void)
 }
 
 int
-ddxProcessArgument (int argc, const char **argv, int i)
+ddxProcessArgument (int argc, char **argv, int i)
 {
     return KdProcessArgument (argc, argv, i);
 }

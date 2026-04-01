@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Xplugin rootless implementation functions for AppleWM extension
  */
 /*
@@ -27,13 +34,13 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprAppleWM.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprAppleWM.c,v 1.1 2003/09/16 00:36:15 torrey Exp $ */
 
 #include "xpr.h"
 #include "applewmExt.h"
 #include "rootless.h"
 #include "Xplugin.h"
-#include <X11/X.h>
+#include "X.h"
 
 
 static int xprSetWindowLevel(
@@ -65,7 +72,7 @@ static int xprFrameDraw(
     const BoxRec *outer,
     const BoxRec *inner,
     unsigned int title_len,
-    const char *title_bytes)
+    const unsigned char *title_bytes)
 {
     xp_window_id wid;
 

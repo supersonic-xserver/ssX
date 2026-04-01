@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/emulTile.c,v 1.4 2003/11/03 05:11:56 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,6 +28,7 @@
  * SOFTWARE.
  *
 */
+/* $XConsortium: emulTile.c /main/4 1996/02/21 17:56:23 kaleb $ */
 
 /* ppc Tile
  * P. Shupak 11/87
@@ -34,11 +42,22 @@
 #include "ibmTrace.h"
 
 static void
-DrawFirstTile(WindowPtr pWin, PixmapPtr pTile, int x, int y, int w, int h,
-	      int alu, unsigned long planes, int xOffset, int yOffset)
+DrawFirstTile
+(
+	WindowPtr pWin, /* GJA */
+	register PixmapPtr pTile,
+	register int x,
+	register int y,
+	int w,
+	int h,
+	int alu,
+	unsigned long int planes,
+	int xOffset,
+	int yOffset
+)
 {
-int htarget ;
-int vtarget ;
+register int htarget ;
+register int vtarget ;
 
 	if ( xOffset ) { /* Not X-Aligned */
 		if ( yOffset ) { /* Nor Y-Aligned */
@@ -157,9 +176,14 @@ int vtarget ;
  * robustness.
  */
 void
-xf4bppTileRect(WindowPtr pWin, PixmapPtr pTile, const int alu,
-	       const unsigned long planes, int x0, int y0, int w, int h,
-	       int xSrc, int ySrc)
+xf4bppTileRect( pWin, pTile, alu, planes, x0, y0, w, h, xSrc, ySrc )
+WindowPtr pWin; /* GJA */
+register PixmapPtr pTile ;
+const int alu ;
+const unsigned long int planes ;
+register int x0, y0, w, h ;
+int xSrc ;
+int ySrc ;
 {
 int xOffset ;
 int yOffset ;
@@ -217,8 +241,8 @@ TRACE( ( "xf4bppTileRect(pTile=x%x,alu=x%x,planes=x%02x,x0=%d,y0=%d,w=%d,h=%d,xS
 	case GXor:		/* 0x7 src OR dst */
 	default:
 		{
-		unsigned char *data ;
-		int hcount, vcount ; /* Number of tiles in center */
+		register unsigned char *data ;
+		register int hcount, vcount ; /* Number of tiles in center */
 		int xcount, ycount;	/* Temporaries */
 		int x1, y1;	/* Left upper corner of center */
 		int x2, y2;	/* Left upper corner of lower right margin */

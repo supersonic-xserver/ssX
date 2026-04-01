@@ -1,4 +1,18 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1993, 1998  The Open Group
 
@@ -26,7 +40,7 @@ from The Open Group.
 
 */
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -81,7 +95,7 @@ from The Open Group.
  *
  */
 
-/* $XFree86: xc/programs/Xserver/hw/vfb/InitOutput.c,v 3.36tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/vfb/InitOutput.c,v 3.31 2005/01/30 17:48:44 tsi Exp $ */
 
 #if defined(WIN32)
 #include <X11/Xwinsock.h>
@@ -165,7 +179,7 @@ static int vfbNumScreens;
 static vfbScreenInfo vfbScreens[MAXSCREENS];
 static Bool vfbPixmapDepths[33];
 #ifdef HAS_MMAP
-static const char *pfbdir = NULL;
+static char *pfbdir = NULL;
 #endif
 typedef enum { NORMAL_MEMORY_FB, SHARED_MEMORY_FB, MMAPPED_FILE_FB } fbMemType;
 static fbMemType fbmemtype = NORMAL_MEMORY_FB;
@@ -278,15 +292,15 @@ AbortDDX()
 
 #ifdef __DARWIN__
 void
-DarwinHandleGUI(int argc, const char *argv[], char *envp[])
+DarwinHandleGUI(int argc, char *argv[])
 {
 }
 
-void GlxExtensionInit(INITARGS);
+void GlxExtensionInit();
 void GlxWrapInitVisuals(void *procPtr);
 
 void
-DarwinGlxExtensionInit(INITARGS)
+DarwinGlxExtensionInit()
 {
     GlxExtensionInit();
 }
@@ -319,8 +333,10 @@ ddxUseMsg()
 {
     ErrorF("-screen n WxHxD[@x,y]  set screen's width, height, depth, origin\n");
     ErrorF("-pixdepths list-of-int support given pixmap depths\n");
+#ifdef RENDER
     ErrorF("+/-render		   turn on/of RENDER extension support"
 	   "(default on)\n");
+#endif
     ErrorF("-linebias n            adjust thin line pixelization\n");
     ErrorF("-blackpixel n          pixel value for black\n");
     ErrorF("-whitepixel n          pixel value for white\n");
@@ -335,7 +351,7 @@ ddxUseMsg()
 }
 
 int
-ddxProcessArgument(int argc, const char *argv[], int i)
+ddxProcessArgument(int argc, char *argv[], int i)
 {
     static Bool firstTime = TRUE;
 
@@ -349,29 +365,22 @@ ddxProcessArgument(int argc, const char *argv[], int i)
     if (strcmp (argv[i], "-screen") == 0)	/* -screen n WxHxD */
     {
 	int screenNum;
-	char *arg2;
  	char *s;
-	if (i + 2 >= argc) return 0;
+	if (i + 2 >= argc) UseMsg();
 	screenNum = atoi(argv[i+1]);
 	if (screenNum < 0 || screenNum >= MAXSCREENS)
 	{
 	    ErrorF("Invalid screen number %d\n", screenNum);
-	    return 0;
+	    UseMsg();
 	}
-	arg2 = xstrdup(argv[i+2]);
-	if (!arg2) {
-	    ErrorF("Memory allocation error\n");
-	    return 0;
-	}
-	s = strtok(arg2, "@");
+	s = strtok(argv[i+2], "@");
 	if (3 != sscanf(s, "%dx%dx%d",
 			&vfbScreens[screenNum].width,
 			&vfbScreens[screenNum].height,
 			&vfbScreens[screenNum].depth))
 	{
-	    xfree(arg2);
 	    ErrorF("Invalid screen configuration %s\n", s);
-	    return 0;
+	    UseMsg();
 	}
 	s = strtok(NULL, "@");
 	if (s)
@@ -380,9 +389,8 @@ ddxProcessArgument(int argc, const char *argv[], int i)
 			    &vfbScreens[screenNum].xOrigin,
 			    &vfbScreens[screenNum].yOrigin))
 	    {
-		xfree(arg2);
 		ErrorF("Invalid screen position %s\n", s);
-		return 0;
+		UseMsg();
 	    }
 	}
 	else
@@ -394,7 +402,6 @@ ddxProcessArgument(int argc, const char *argv[], int i)
 	if (screenNum >= vfbNumScreens)
 	    vfbNumScreens = screenNum + 1;
 	lastScreen = screenNum;
-	xfree(arg2);
 	return 3;
     }
 
@@ -402,13 +409,13 @@ ddxProcessArgument(int argc, const char *argv[], int i)
     {
 	int depth, ret = 1;
 
-	if (++i >= argc) return 0;
+	if (++i >= argc) UseMsg();
 	while ((i < argc) && (depth = atoi(argv[i++])) != 0)
 	{
 	    if (depth < 0 || depth > 32)
 	    {
 		ErrorF("Invalid pixmap depth %d\n", depth);
-		return 0;
+		UseMsg();
 	    }
 	    vfbPixmapDepths[depth] = TRUE;
 	    ret++;
@@ -431,7 +438,7 @@ ddxProcessArgument(int argc, const char *argv[], int i)
     if (strcmp (argv[i], "-blackpixel") == 0)	/* -blackpixel n */
     {
 	Pixel pix;
-	if (++i >= argc) return 0;
+	if (++i >= argc) UseMsg();
 	pix = atoi(argv[i]);
 	if (-1 == lastScreen)
 	{
@@ -451,7 +458,7 @@ ddxProcessArgument(int argc, const char *argv[], int i)
     if (strcmp (argv[i], "-whitepixel") == 0)	/* -whitepixel n */
     {
 	Pixel pix;
-	if (++i >= argc) return 0;
+	if (++i >= argc) UseMsg();
 	pix = atoi(argv[i]);
 	if (-1 == lastScreen)
 	{
@@ -471,7 +478,7 @@ ddxProcessArgument(int argc, const char *argv[], int i)
     if (strcmp (argv[i], "-linebias") == 0)	/* -linebias n */
     {
 	unsigned int linebias;
-	if (++i >= argc) return 0;
+	if (++i >= argc) UseMsg();
 	linebias = atoi(argv[i]);
 	if (-1 == lastScreen)
 	{
@@ -491,7 +498,7 @@ ddxProcessArgument(int argc, const char *argv[], int i)
 #ifdef HAS_MMAP
     if (strcmp (argv[i], "-fbdir") == 0)	/* -fbdir directory */
     {
-	if (++i >= argc) return 0;
+	if (++i >= argc) UseMsg();
 	pfbdir = argv[i];
 	fbmemtype = MMAPPED_FILE_FB;
 	return 2;
@@ -982,7 +989,7 @@ vfbCloseScreen(int index, ScreenPtr pScreen)
 }
 
 static Bool
-vfbScreenInit(int index, ScreenPtr pScreen, const int argc, const char **argv)
+vfbScreenInit(int index, ScreenPtr pScreen, int argc, char **argv)
 {
     vfbScreenInfoPtr pvfb = &vfbScreens[index];
     int dpix = 100, dpiy = 100;
@@ -1013,8 +1020,10 @@ vfbScreenInit(int index, ScreenPtr pScreen, const int argc, const char **argv)
     case 32:
 	ret = fbScreenInit(pScreen, pbits, pvfb->width, pvfb->height,
 			      dpix, dpiy, pvfb->paddedWidth,pvfb->bitsPerPixel);
+#ifdef RENDER
 	if (ret && Render) 
 	    fbPictureInit (pScreen, 0, 0);
+#endif
 	break;
     default:
 	return FALSE;
@@ -1066,7 +1075,7 @@ vfbScreenInit(int index, ScreenPtr pScreen, const int argc, const char **argv)
 
 
 void
-InitOutput(ScreenInfo *screenInfo, const int argc, const char **argv)
+InitOutput(ScreenInfo *screenInfo, int argc, char **argv)
 {
     int i;
     int NumFormats = 0;

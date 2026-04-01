@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/ts300/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/ts300/Imakefile,v 1.1 2004/06/02 22:43:03 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,7 +52,7 @@ SRCS = 	ts300.c
 
 OBJS = 	ts300.o
 
-INCLUDES = $(TINYXINCLUDES) -I$(TINYXSRC)/trio -I$(TINYXSRC)/sis530
+INCLUDES = -I. $(TINYXINCLUDES) -I$(TINYXSRC)/trio -I$(TINYXSRC)/sis530
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(ts300,$(OBJS))

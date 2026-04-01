@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/include/globals.h,v 1.4 2000/06/28 18:21:22 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _XSERV_GLOBAL_H_
 #define _XSERV_GLOBAL_H_
@@ -12,8 +26,8 @@ extern CARD32 defaultScreenSaverInterval;
 extern CARD32 ScreenSaverTime;
 extern CARD32 ScreenSaverInterval;
 
-extern const char *defaultFontPath;
-extern const char *rgbPath;
+extern char *defaultFontPath;
+extern char *rgbPath;
 extern int monitorResolution;
 extern Bool loadableFonts;
 extern int defaultColorVisualClass;

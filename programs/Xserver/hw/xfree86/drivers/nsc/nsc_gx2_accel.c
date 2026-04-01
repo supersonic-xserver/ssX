@@ -1,5 +1,16 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nsc/nsc_gx2_accel.c,v 1.6 2004/03/29 16:25:17 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
+ * $Workfile: nsc_gx2_accel.c $
+ * $Revision: 1.1.1.3 $
+ * $Author: tron $
+ *
  * File Contents: This file is consists of main Xfree
  *                acceleration supported routines like solid fill used
  *                here.

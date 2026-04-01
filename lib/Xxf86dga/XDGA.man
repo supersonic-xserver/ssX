@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $XFree86: xc/lib/Xxf86dga/XDGA.man,v 1.1 2003/11/22 01:33:31 dawes Exp $
 .\" 
 .TH XDGA 3 __vendorversion__ "XFree86"
 .SH NAME

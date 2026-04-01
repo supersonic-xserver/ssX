@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ttcmap0.h                                                              */
 /*                                                                         */
 /*    TrueType new character mapping table (cmap) support (specification). */
 /*                                                                         */
-/*  Copyright 2002 by                                                      */
+/*  Copyright 2002, 2003 by                                                */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -23,7 +30,7 @@
 #include <ft2build.h>
 #include FT_INTERNAL_TRUETYPE_TYPES_H
 #include FT_INTERNAL_OBJECTS_H
-
+#include FT_SERVICE_TT_CMAP_H
 
 FT_BEGIN_HEADER
 
@@ -46,6 +53,7 @@ FT_BEGIN_HEADER
     FT_CMap_ClassRec      clazz;
     FT_UInt               format;
     TT_CMap_ValidateFunc  validate;
+    TT_CMap_Info_GetFunc  get_cmap_info;
 
   } TT_CMap_ClassRec;
 
@@ -54,7 +62,7 @@ FT_BEGIN_HEADER
   {
     FT_ValidatorRec  validator;
     FT_UInt          num_glyphs;
-    
+
   } TT_ValidatorRec, *TT_Validator;
 
 
@@ -62,12 +70,13 @@ FT_BEGIN_HEADER
 #define TT_VALID_GLYPH_COUNT( x )  TT_VALIDATOR( x )->num_glyphs
 
 
-#ifdef FT_CONFIG_OPTION_USE_CMAPS
-
   FT_LOCAL( FT_Error )
-  TT_Build_CMaps( TT_Face  face );
+  tt_face_build_cmaps( TT_Face  face );
 
-#endif
+  /* used in tt-cmaps service */
+  FT_LOCAL( FT_Error )
+  tt_get_cmap_info( FT_CharMap    charmap,
+                    TT_CMapInfo  *cmap_info );
 
 
 FT_END_HEADER

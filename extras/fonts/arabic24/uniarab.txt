@@ -1,5 +1,5 @@
 #
-# $XFree86$
+# From: Id: uniarab.txt,v 1.1 1999/02/08 22:21:52 mleisher Exp $
 #
 # Copyright 1996, 1997, 1998, 1999 Computing Research Labs,
 # New Mexico State University

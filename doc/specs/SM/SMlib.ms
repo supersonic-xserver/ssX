@@ -1,4 +1,4 @@
-.\" $XFree86$
+.\" $Xorg: SMlib.ms,v 1.3 2000/08/17 19:42:19 cpqbld Exp $
 .\" 
 .\" Use tbl, -ms, and macros.t
 .\" edited for DP edits and code consistency w/ core protocol/xlib 4/18/96

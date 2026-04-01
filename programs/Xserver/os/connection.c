@@ -1,3 +1,11 @@
+/* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -44,7 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.70 2006/03/06 16:06:23 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.67 2004/06/23 19:40:17 tsi Exp $ */
 /*****************************************************************
  *  Stuff to create connections --- OS dependent
  *
@@ -65,8 +73,8 @@ SOFTWARE.
 #ifdef WIN32
 #include <X11/Xwinsock.h>
 #endif
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include <X11/Xtrans.h>
 #include <errno.h>
 #include <signal.h>
@@ -140,11 +148,11 @@ extern __const__ int _nfiles;
 #include "opaque.h"
 #include "dixstruct.h"
 #ifdef XAPPGROUP
-#include <X11/extensions/Xagsrv.h>
+#include "extensions/Xagsrv.h"
 #endif
 #ifdef XCSECURITY
 #define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#include "extensions/security.h"
 #endif
 #ifdef LBX
 #include "colormapst.h"
@@ -351,7 +359,7 @@ CreateWellKnownSockets(void)
     OsSignal (SIGPIPE, SIG_IGN);
     OsSignal (SIGHUP, AutoResetServer);
 #endif
-    OsSignal (SIGINT, AbortServer);
+    OsSignal (SIGINT, GiveUp);
     OsSignal (SIGTERM, GiveUp);
     XFD_COPYSET (&WellKnownConnections, &AllSockets);
     ResetHosts(display);
@@ -471,14 +479,15 @@ AuthAudit (ClientPtr client, Bool letin,
     struct sockaddr *saddr, int len, 
     unsigned int proto_n, char *auth_proto, int auth_id)
 {
-    char *prefix = "";
-    char *addr = NULL;
+    char addr[128];
+    char *out = addr;
 
     if (!((OsCommPtr)client->osPrivate)->trans_conn) {
-	prefix = "LBX proxy at ";
+	strcpy(addr, "LBX proxy at ");
+	out += strlen(addr);
     }
     if (!len)
-	addr = xstrdup("local host");
+        strcpy(out, "local host");
     else
 	switch (saddr->sa_family)
 	{
@@ -486,11 +495,11 @@ AuthAudit (ClientPtr client, Bool letin,
 #if defined(UNIXCONN) || defined(LOCALCONN) || defined(OS2PIPECONN)
 	case AF_UNIX:
 #endif
-	    addr = xstrdup("local host");
+	    strcpy(out, "local host");
 	    break;
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
 	case AF_INET:
-	    xasprintf(&addr, "IP %s",
+	    sprintf(out, "IP %s",
 		inet_ntoa(((struct sockaddr_in *) saddr)->sin_addr));
 	    break;
 #if defined(IPv6) && defined(AF_INET6)
@@ -498,33 +507,28 @@ AuthAudit (ClientPtr client, Bool letin,
 	    char ipaddr[INET6_ADDRSTRLEN];
 	    inet_ntop(AF_INET6, &((struct sockaddr_in6 *) saddr)->sin6_addr,
 	      ipaddr, sizeof(ipaddr));
-	    xasprintf(&addr, "IP %s", ipaddr);
+	    sprintf(out, "IP %s", ipaddr);
 	}
 	    break;
 #endif
 #endif
 #ifdef DNETCONN
 	case AF_DECnet:
-	    xasprintf(&addr, "DN %s",
+	    sprintf(out, "DN %s",
 		    dnet_ntoa(&((struct sockaddr_dn *) saddr)->sdn_add));
 	    break;
 #endif
 	default:
-	    /* unknown address */
-	    addr = NULL;
+	    strcpy(out, "unknown address");
 	}
     
     if (proto_n)
-	AuditF("client %d %s from %s%s\n  Auth name: %.*s ID: %d\n", 
-	       client->index, letin ? "connected" : "rejected", prefix,
-	       addr ? addr : "unknown address",
+	AuditF("client %d %s from %s\n  Auth name: %.*s ID: %d\n", 
+	       client->index, letin ? "connected" : "rejected", addr,
 	       (int)proto_n, auth_proto, auth_id);
     else 
-	AuditF("client %d %s from %s%s\n", 
-	       client->index, letin ? "connected" : "rejected", prefix,
-	       addr ? addr : "unknown address");
-    if (addr)
-	xfree(addr);
+	AuditF("client %d %s from %s\n", 
+	       client->index, letin ? "connected" : "rejected", addr);
 }
 
 XID
@@ -827,11 +831,11 @@ EstablishNewConnections(ClientPtr clientUnused, pointer closure)
 {
     fd_set  readyconnections;     /* set of listeners that are ready */
     int curconn;                  /* fd of listener that's ready */
-    int newconn;         /* fd of new client */
+    register int newconn;         /* fd of new client */
     CARD32 connect_time;
-    int i;
-    ClientPtr client;
-    OsCommPtr oc;
+    register int i;
+    register ClientPtr client;
+    register OsCommPtr oc;
     fd_set tmask;
 
     XFD_ANDSET (&tmask, (fd_set*)closure, &WellKnownConnections);

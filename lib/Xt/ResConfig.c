@@ -1,3 +1,11 @@
+/* $Xorg: ResConfig.c,v 1.5 2001/02/09 02:03:56 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1988, 1998  The Open Group
@@ -51,7 +59,7 @@ dealings in this Software without prior written authorization from the IBM
 Corporation.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/ResConfig.c,v 3.11tsi Exp $ */
+/* $XFree86: xc/lib/Xt/ResConfig.c,v 3.9 2004/05/05 00:07:03 dickey Exp $ */
 
 #include "Intrinsic.h"
 #include "IntrinsicI.h"
@@ -658,7 +666,6 @@ _get_last_part (
 		return ('*');
 	}
 
-	*part = 0;
 	return ('0');	/* error - return 0 */
 }
 
@@ -930,12 +937,10 @@ _XtResourceConfigurationEH (
 	XtPerDisplay	pd;
 
 #ifdef DEBUG
-	fprintf (stderr, "in _XtResourceConfiguationEH atom = %ld\n",
-		 event->xproperty.atom);
-	fprintf (stderr, "    window = %lx\n", (unsigned long)XtWindow (w));
+	fprintf (stderr, "in _XtResourceConfiguationEH atom = %d\n",event->xproperty.atom);
+	fprintf (stderr, "    window = %x\n", XtWindow (w));
 	if (XtIsWidget (w))
-		fprintf (stderr, "    widget = %lx   name = %s\n",
-			 (unsigned long)w, w->core.name);
+		fprintf (stderr, "    widget = %x   name = %s\n", w, w->core.name);
 #endif
 
 	pd = _XtGetPerDisplay (XtDisplay (w));
@@ -1001,7 +1006,7 @@ _XtResourceConfigurationEH (
 			resource = XtNewString (data_ptr);
 			value = XtNewString (&data_ptr[resource_len + 1]);
 #ifdef DEBUG
-			fprintf (stderr, "resource_len=%ld\n",resource_len);
+			fprintf (stderr, "resource_len=%d\n",resource_len);
 			fprintf (stderr, "resource = %s\t value = %s\n",
 					resource, value);
 #endif

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdMach.c,v 3.9 2005/10/14 15:16:33 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdMach.c,v 3.8 1998/07/25 16:55:09 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  *****************************************************************************
  * HISTORY
@@ -35,9 +42,10 @@
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
+/* $XConsortium: xf86KbdMach.c /main/9 1996/02/21 17:38:43 kaleb $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 

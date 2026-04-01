@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/fc/fsio.c,v 3.17tsi Exp $ */
+/* $Xorg: fsio.c,v 1.3 2000/08/17 19:46:36 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices
  *
@@ -23,6 +30,7 @@
  *
  * Author:  	Dave Lemke, Network Computing Devices, Inc
  */
+/* $XFree86: xc/lib/font/fc/fsio.c,v 3.17 2003/05/27 22:26:49 tsi Exp $ */
 /*
  * font server i/o routines
  */
@@ -33,10 +41,10 @@
 
 #include 	"X11/Xtrans.h"
 #include	"X11/Xpoll.h"
-#include	<X11/fonts/FS.h>
-#include	<X11/fonts/FSproto.h>
+#include	"FS.h"
+#include	"FSproto.h"
 #include	"fontmisc.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"fservestr.h"
 
 #include	<stdio.h>

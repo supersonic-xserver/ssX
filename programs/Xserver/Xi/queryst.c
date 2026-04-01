@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xi/queryst.c,v 3.5tsi Exp $ */
+/* $Xorg: queryst.c,v 1.4 2001/02/09 02:04:34 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1998, 1998  The Open Group
@@ -26,6 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
+/* $XFree86: xc/programs/Xserver/Xi/queryst.c,v 3.5 2001/12/14 19:58:58 dawes Exp $ */
 
 /***********************************************************************
  *
@@ -35,12 +43,12 @@ from The Open Group.
 
 #define	 NEED_EVENTS
 #define	 NEED_REPLIES
-#include <X11/X.h>				/* for inputstr.h    */
-#include <X11/Xproto.h>			/* Request macro     */
+#include "X.h"				/* for inputstr.h    */
+#include "Xproto.h"			/* Request macro     */
 #include "inputstr.h"			/* DeviceIntPtr	     */
 #include "windowstr.h"			/* window structure  */
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "extnsionst.h"
 #include "extinit.h"			/* LookupDeviceIntRec */
 #include "exevents.h"

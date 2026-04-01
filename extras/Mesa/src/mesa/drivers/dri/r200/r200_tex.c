@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_tex.c,v 1.2 2002/11/05 17:46:08 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_tex.c,v 1.1.1.3 2004/12/10 15:06:00 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -41,7 +48,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "simple_list.h"
 #include "texformat.h"
 #include "texstore.h"
-#include "texutil.h"
 #include "texmem.h"
 #include "teximage.h"
 #include "texobj.h"
@@ -325,15 +331,15 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
       switch ( type ) {
       case GL_UNSIGNED_INT_10_10_10_2:
       case GL_UNSIGNED_INT_2_10_10_10_REV:
-	 return do32bpt ? &_mesa_texformat_argb8888 : &_mesa_texformat_argb1555;
+	 return do32bpt ? _dri_texformat_argb8888 : _dri_texformat_argb1555;
       case GL_UNSIGNED_SHORT_4_4_4_4:
       case GL_UNSIGNED_SHORT_4_4_4_4_REV:
-	 return &_mesa_texformat_argb4444;
+	 return _dri_texformat_argb4444;
       case GL_UNSIGNED_SHORT_5_5_5_1:
       case GL_UNSIGNED_SHORT_1_5_5_5_REV:
-	 return &_mesa_texformat_argb1555;
+	 return _dri_texformat_argb1555;
       default:
-         return do32bpt ? &_mesa_texformat_rgba8888 : &_mesa_texformat_argb4444;
+         return do32bpt ? _dri_texformat_rgba8888 : _dri_texformat_argb4444;
       }
 
    case 3:
@@ -342,15 +348,15 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
       switch ( type ) {
       case GL_UNSIGNED_SHORT_4_4_4_4:
       case GL_UNSIGNED_SHORT_4_4_4_4_REV:
-	 return &_mesa_texformat_argb4444;
+	 return _dri_texformat_argb4444;
       case GL_UNSIGNED_SHORT_5_5_5_1:
       case GL_UNSIGNED_SHORT_1_5_5_5_REV:
-	 return &_mesa_texformat_argb1555;
+	 return _dri_texformat_argb1555;
       case GL_UNSIGNED_SHORT_5_6_5:
       case GL_UNSIGNED_SHORT_5_6_5_REV:
-	 return &_mesa_texformat_rgb565;
+	 return _dri_texformat_rgb565;
       default:
-         return do32bpt ? &_mesa_texformat_rgba8888 : &_mesa_texformat_rgb565;
+         return do32bpt ? _dri_texformat_rgba8888 : _dri_texformat_rgb565;
       }
 
    case GL_RGBA8:
@@ -358,25 +364,25 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
    case GL_RGBA12:
    case GL_RGBA16:
       return !force16bpt ?
-	  &_mesa_texformat_rgba8888 : &_mesa_texformat_argb4444;
+	  _dri_texformat_rgba8888 : _dri_texformat_argb4444;
 
    case GL_RGBA4:
    case GL_RGBA2:
-      return &_mesa_texformat_argb4444;
+      return _dri_texformat_argb4444;
 
    case GL_RGB5_A1:
-      return &_mesa_texformat_argb1555;
+      return _dri_texformat_argb1555;
 
    case GL_RGB8:
    case GL_RGB10:
    case GL_RGB12:
    case GL_RGB16:
-      return !force16bpt ? &_mesa_texformat_rgba8888 : &_mesa_texformat_rgb565;
+      return !force16bpt ? _dri_texformat_rgba8888 : _dri_texformat_rgb565;
 
    case GL_RGB5:
    case GL_RGB4:
    case GL_R3_G3_B2:
-      return &_mesa_texformat_rgb565;
+      return _dri_texformat_rgb565;
 
    case GL_ALPHA:
    case GL_ALPHA4:
@@ -384,7 +390,7 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
    case GL_ALPHA12:
    case GL_ALPHA16:
    case GL_COMPRESSED_ALPHA:
-      return &_mesa_texformat_al88;
+      return _dri_texformat_a8;
 
    case 1:
    case GL_LUMINANCE:
@@ -393,7 +399,7 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
    case GL_LUMINANCE12:
    case GL_LUMINANCE16:
    case GL_COMPRESSED_LUMINANCE:
-      return &_mesa_texformat_al88;
+      return _dri_texformat_l8;
 
    case 2:
    case GL_LUMINANCE_ALPHA:
@@ -404,7 +410,7 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
    case GL_LUMINANCE12_ALPHA12:
    case GL_LUMINANCE16_ALPHA16:
    case GL_COMPRESSED_LUMINANCE_ALPHA:
-      return &_mesa_texformat_al88;
+      return _dri_texformat_al88;
 
    case GL_INTENSITY:
    case GL_INTENSITY4:
@@ -412,21 +418,19 @@ r200ChooseTextureFormat( GLcontext *ctx, GLint internalFormat,
    case GL_INTENSITY12:
    case GL_INTENSITY16:
    case GL_COMPRESSED_INTENSITY:
-      /* At the moment, glean & conform both fail using the i8 internal
-       * format.
-       */
-      return &_mesa_texformat_al88;
-/*       return &_mesa_texformat_i8; */
+       return _dri_texformat_i8;
 
    case GL_YCBCR_MESA:
       if (type == GL_UNSIGNED_SHORT_8_8_APPLE ||
-	  type == GL_UNSIGNED_BYTE)
+          type == GL_UNSIGNED_BYTE)
          return &_mesa_texformat_ycbcr;
       else
          return &_mesa_texformat_ycbcr_rev;
 
    default:
-      _mesa_problem(ctx, "unexpected texture format in %s", __FUNCTION__);
+      _mesa_problem(ctx,
+         "unexpected internalFormat 0x%x in r200ChooseTextureFormat",
+         (int) internalFormat);
       return NULL;
    }
 
@@ -445,7 +449,6 @@ r200ValidateClientStorage( GLcontext *ctx, GLenum target,
 
 {
    r200ContextPtr rmesa = R200_CONTEXT(ctx);
-   int texelBytes;
 
    if (0)
       fprintf(stderr, "intformat %s format %s type %s\n",
@@ -467,8 +470,7 @@ r200ValidateClientStorage( GLcontext *ctx, GLenum target,
    switch ( internalFormat ) {
    case GL_RGBA:
       if ( format == GL_BGRA && type == GL_UNSIGNED_INT_8_8_8_8_REV ) {
-	 texImage->TexFormat = &_mesa_texformat_argb8888;
-	 texelBytes = 4;
+	 texImage->TexFormat = _dri_texformat_argb8888;
       }
       else
 	 return 0;
@@ -476,8 +478,7 @@ r200ValidateClientStorage( GLcontext *ctx, GLenum target,
 
    case GL_RGB:
       if ( format == GL_RGB && type == GL_UNSIGNED_SHORT_5_6_5 ) {
-	 texImage->TexFormat = &_mesa_texformat_rgb565;
-	 texelBytes = 2;
+	 texImage->TexFormat = _dri_texformat_rgb565;
       }
       else
 	 return 0;
@@ -487,19 +488,16 @@ r200ValidateClientStorage( GLcontext *ctx, GLenum target,
       if ( format == GL_YCBCR_MESA && 
 	   type == GL_UNSIGNED_SHORT_8_8_REV_APPLE ) {
 	 texImage->TexFormat = &_mesa_texformat_ycbcr_rev;
-	 texelBytes = 2;
       }
       else if ( format == GL_YCBCR_MESA && 
 		(type == GL_UNSIGNED_SHORT_8_8_APPLE || 
 		 type == GL_UNSIGNED_BYTE)) {
 	 texImage->TexFormat = &_mesa_texformat_ycbcr;
-	 texelBytes = 2;
       }
       else
 	 return 0;
       break;
-      
-	 
+
    default:
       return 0;
    }
@@ -538,7 +536,8 @@ r200ValidateClientStorage( GLcontext *ctx, GLenum target,
        */
       texImage->Data = (void *)pixels;
       texImage->IsClientData = GL_TRUE;
-      texImage->RowStride = srcRowStride / texelBytes;
+      texImage->RowStride = srcRowStride / texImage->TexFormat->TexelBytes;
+
       return 1;
    }
 }
@@ -683,7 +682,6 @@ static void r200TexSubImage2D( GLcontext *ctx, GLenum target, GLint level,
    driTextureObject * t = (driTextureObject *) texObj->DriverData;
    GLuint face;
 
-
    /* which cube face or ordinary 2D image */
    switch (target) {
    case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
@@ -735,7 +733,7 @@ static void r200TexImage3D( GLcontext *ctx, GLenum target, GLint level,
       driSwapOutTextureObject( t );
    }
    else {
-      t = r200AllocTexObj( texObj );
+      t = (driTextureObject *) r200AllocTexObj( texObj );
       if (!t) {
          _mesa_error(ctx, GL_OUT_OF_MEMORY, "glTexImage3D");
          return;
@@ -796,7 +794,7 @@ r200TexSubImage3D( GLcontext *ctx, GLenum target, GLint level,
       driSwapOutTextureObject( t );
    }
    else {
-      t = r200AllocTexObj(texObj);
+      t = (driTextureObject *) r200AllocTexObj( texObj );
       if (!t) {
          _mesa_error(ctx, GL_OUT_OF_MEMORY, "glTexSubImage3D");
          return;
@@ -889,10 +887,6 @@ static void r200TexParameter( GLcontext *ctx, GLenum target,
 	       _mesa_lookup_enum_by_nr( pname ) );
    }
 
-   if ( ( target != GL_TEXTURE_2D ) &&
-	( target != GL_TEXTURE_1D ) )
-      return;
-
    switch ( pname ) {
    case GL_TEXTURE_MIN_FILTER:
    case GL_TEXTURE_MAG_FILTER:
@@ -942,12 +936,17 @@ static void r200BindTexture( GLcontext *ctx, GLenum target,
 	       ctx->Texture.CurrentUnit );
    }
 
-   if ( target == GL_TEXTURE_2D || target == GL_TEXTURE_1D ) {
-      if ( texObj->DriverData == NULL ) {
-	 r200AllocTexObj( texObj );
-      }
+   if ( (target == GL_TEXTURE_1D)
+	|| (target == GL_TEXTURE_2D) 
+#if ENABLE_HW_3D_TEXTURE
+	|| (target == GL_TEXTURE_3D)
+#endif
+	|| (target == GL_TEXTURE_CUBE_MAP)
+	|| (target == GL_TEXTURE_RECTANGLE_NV) ) {
+      assert( texObj->DriverData != NULL );
    }
 }
+
 
 static void r200DeleteTexture( GLcontext *ctx,
 				 struct gl_texture_object *texObj )
@@ -991,59 +990,64 @@ static void r200TexGen( GLcontext *ctx,
    rmesa->recheck_texgen[unit] = GL_TRUE;
 }
 
-/* Fixup MaxAnisotropy according to user preference.
+
+/**
+ * Allocate a new texture object.
+ * Called via ctx->Driver.NewTextureObject.
+ * Note: this function will be called during context creation to
+ * allocate the default texture objects.
+ * Note: we could use containment here to 'derive' the driver-specific
+ * texture object from the core mesa gl_texture_object.  Not done at this time.
+ * Fixup MaxAnisotropy according to user preference.
  */
-static struct gl_texture_object *r200NewTextureObject ( GLcontext *ctx,
-							GLuint name,
-							GLenum target ) {
-    struct gl_texture_object *obj;
-    obj = _mesa_new_texture_object (ctx, name, target);
-    obj->MaxAnisotropy = driQueryOptionf (&R200_CONTEXT(ctx)->optionCache,
-					  "def_max_anisotropy");
-    return obj;
+static struct gl_texture_object *
+r200NewTextureObject( GLcontext *ctx, GLuint name, GLenum target )
+{
+   r200ContextPtr rmesa = R200_CONTEXT(ctx);
+   struct gl_texture_object *obj;
+   obj = _mesa_new_texture_object(ctx, name, target);
+   if (!obj)
+      return NULL;
+   obj->MaxAnisotropy = rmesa->initialMaxAnisotropy;
+   r200AllocTexObj( obj );
+   return obj;
 }
 
 
-void r200InitTextureFuncs( GLcontext *ctx )
+void r200InitTextureFuncs( struct dd_function_table *functions )
 {
+   /* Note: we only plug in the functions we implement in the driver
+    * since _mesa_init_driver_functions() was already called.
+    */
+   functions->ChooseTextureFormat	= r200ChooseTextureFormat;
+   functions->TexImage1D		= r200TexImage1D;
+   functions->TexImage2D		= r200TexImage2D;
+#if ENABLE_HW_3D_TEXTURE
+   functions->TexImage3D		= r200TexImage3D;
+#else
+   functions->TexImage3D		= _mesa_store_teximage3d;
+#endif
+   functions->TexSubImage1D		= r200TexSubImage1D;
+   functions->TexSubImage2D		= r200TexSubImage2D;
+#if ENABLE_HW_3D_TEXTURE
+   functions->TexSubImage3D		= r200TexSubImage3D;
+#else
+   functions->TexSubImage3D		= _mesa_store_texsubimage3d;
+#endif
+   functions->NewTextureObject		= r200NewTextureObject;
+   functions->BindTexture		= r200BindTexture;
+   functions->DeleteTexture		= r200DeleteTexture;
+   functions->IsTextureResident		= driIsTextureResident;
+
+   functions->TexEnv			= r200TexEnv;
+   functions->TexParameter		= r200TexParameter;
+   functions->TexGen			= r200TexGen;
+
+   driInitTextureFormats();
+
+#if 000
+   /* moved or obsolete code */
    r200ContextPtr rmesa = R200_CONTEXT(ctx);
-
-
-   ctx->Driver.ChooseTextureFormat	= r200ChooseTextureFormat;
-   ctx->Driver.TexImage1D		= r200TexImage1D;
-   ctx->Driver.TexImage2D		= r200TexImage2D;
-#if ENABLE_HW_3D_TEXTURE
-   ctx->Driver.TexImage3D		= r200TexImage3D;
-#else
-   ctx->Driver.TexImage3D		= _mesa_store_teximage3d;
-#endif
-   ctx->Driver.TexSubImage1D		= r200TexSubImage1D;
-   ctx->Driver.TexSubImage2D		= r200TexSubImage2D;
-#if ENABLE_HW_3D_TEXTURE
-   ctx->Driver.TexSubImage3D		= r200TexSubImage3D;
-#else
-   ctx->Driver.TexSubImage3D		= _mesa_store_texsubimage3d;
-#endif
-   ctx->Driver.CopyTexImage1D		= _swrast_copy_teximage1d;
-   ctx->Driver.CopyTexImage2D		= _swrast_copy_teximage2d;
-   ctx->Driver.CopyTexSubImage1D	= _swrast_copy_texsubimage1d;
-   ctx->Driver.CopyTexSubImage2D	= _swrast_copy_texsubimage2d;
-   ctx->Driver.CopyTexSubImage3D 	= _swrast_copy_texsubimage3d;
-   ctx->Driver.TestProxyTexImage	= _mesa_test_proxy_teximage;
-
-   ctx->Driver.NewTextureObject         = r200NewTextureObject;
-   ctx->Driver.BindTexture		= r200BindTexture;
-   ctx->Driver.CreateTexture		= NULL; /* FIXME: Is this used??? */
-   ctx->Driver.DeleteTexture		= r200DeleteTexture;
-   ctx->Driver.IsTextureResident	= driIsTextureResident;
-   ctx->Driver.PrioritizeTexture	= NULL;
-   ctx->Driver.ActiveTexture		= NULL;
-   ctx->Driver.UpdateTexturePalette	= NULL;
-
-   ctx->Driver.TexEnv			= r200TexEnv;
-   ctx->Driver.TexParameter		= r200TexParameter;
-   ctx->Driver.TexGen                   = r200TexGen;
-
    driInitTextureObjects( ctx, & rmesa->swapped,
 			  DRI_TEXMGR_DO_TEXTURE_1D
 			  | DRI_TEXMGR_DO_TEXTURE_2D );
@@ -1053,4 +1057,5 @@ void r200InitTextureFuncs( GLcontext *ctx )
     * default 2D texture now. */
    ctx->Shared->Default2D->MaxAnisotropy = driQueryOptionf (&rmesa->optionCache,
 							    "def_max_anisotropy");
+#endif
 }

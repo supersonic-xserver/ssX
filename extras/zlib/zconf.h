@@ -1,9 +1,16 @@
 /* zconf.h -- configuration of the zlib compression library
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* $XFree86: xc/lib/zlib/zconf.h,v 1.9 2002/05/31 18:45:52 dawes Exp $ */
+/* $XFree86: xc/extras/zlib/zconf.h,v 1.2 2003/06/01 21:05:50 herrb Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H

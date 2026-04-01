@@ -1,9 +1,13 @@
-XCOMM $XFree86: xc/config/cf/OpenBSDLib.rules,v 1.18tsi Exp $
+XCOMM $OpenBSD: OpenBSDLib.rules,v 1.1 2000/10/09 20:43:58 matthieu Exp $
+
+
+
 
 /*
  * OpenBSD shared library rules
  */
 
+XCOMM $XFree86: xc/config/cf/OpenBSDLib.rules,v 1.17 2004/06/01 00:16:53 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -143,7 +147,7 @@ install::								@@\
 #define SharedLibraryTarget(libname,rev,solist,down,up)			@@\
 AllTarget(Concat($(LIBPREFIX),libname.so.rev))				@@\
 									@@\
-Concat($(LIBPREFIX),libname.so.rev):  solist $(EXTRALIBRARYDEPS)	@@\
+Concat($(LIBPREFIX),libname.so.rev):  solist				@@\
 	$(RM) $@~							@@\
 	set -x; \							@@\
 		(cd down; $(CC) -o up/$@~ $(SHLIBLDFLAGS) -Wl,-soname,$@\ @@\

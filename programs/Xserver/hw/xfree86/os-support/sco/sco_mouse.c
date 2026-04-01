@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sco/sco_mouse.c,v 3.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sco/sco_mouse.c,v 3.14 2005/02/03 03:32:54 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001 by J. Kean Johnston <jkj@sco.com>
  *
@@ -21,7 +28,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "compiler.h"
 
 #include "xf86.h"

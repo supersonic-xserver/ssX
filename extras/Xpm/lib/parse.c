@@ -1,3 +1,11 @@
+/* $XdotOrg: xc/extras/Xpm/lib/parse.c,v 1.4 2004/11/25 21:19:11 herrb Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (C) 1989-95 GROUPE BULL
  *
@@ -22,7 +30,7 @@
  * used in advertising or otherwise to promote the sale, use or other dealings
  * in this Software without prior written authorization from GROUPE BULL.
  */
-/* $XFree86: xc/extras/Xpm/lib/parse.c,v 1.6 2004/11/18 21:30:51 herrb Exp $ */
+/* $XFree86: xc/extras/Xpm/lib/parse.c,v 1.2 2000/09/26 15:56:43 tsi Exp $ */
 
 /*****************************************************************************\
 * parse.c:                                                                    *
@@ -33,6 +41,7 @@
 *                                                                             *
 *  Developed by Arnaud Le Hors                                                *
 \*****************************************************************************/
+/* $XFree86$ */
 
 /*
  * The code related to FOR_MSW has been added by

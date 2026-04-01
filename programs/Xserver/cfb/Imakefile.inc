@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/cfb/Imakefile.inc,v 1.14tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/cfb/Imakefile.inc,v 1.8 2005/02/09 19:41:59 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -67,20 +67,20 @@ PSZOBJS = cfb8bit.o cfbteblt8.o cfbglrop8.o cfbpush8.o cfbrctstp8.o
 #if defined(MipsArchitecture) && \
     !defined(ArcArchitecture) && \
     !defined(Mips64Architecture)
-STIPPLESRC = stipmips.S stipmipste.S
+STIPPLESRC = stipmips.s stipmipste.s
 STIPPLEOBJ = stipmips.o stipmipste.o
 STIPPLEDEF = -DHAS_STIPPLE_CODE
 #endif
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-STIPPLESRC = stipsparc.S stipsparcte.S
+#if defined(SparcArchitecture) && !defined(__arch64__)
+STIPPLESRC = stipsparc.s stipsparcte.s
 STIPPLEOBJ = stipsparc.o stipsparcte.o
 STIPPLEDEF = -DHAS_STIPPLE_CODE
 #endif
 #endif
 
 #if PixelSize == 32
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-STIPPLESRC = stipsprc32.S stipsprcte32.S
+#if defined(SparcArchitecture) && !defined(__arch64__)
+STIPPLESRC = stipsprc32.s stipsprcte32.s
 STIPPLEOBJ = stipsprc32.o stipsprcte32.o
 STIPPLEDEF = -DHAS_STIPPLE_CODE
 #endif
@@ -91,42 +91,57 @@ XFMODSRC = cfbmodule.c
 XFMODOBJ = cfbmodule.o
 #endif
 
-#if !defined(IHaveModules) || (PixelSize == 8)
-CFBCMAPSRC = cfbcmap.c
-CFBCMAPOBJ = cfbcmap.o
+#if !(defined(IHaveModules) && PixelSize != 8)
+CFBCMAP = cfbcmap.o
 #endif
 
-SRCS = cfb8lineCO.c cfb8lineCP.c cfb8lineG.c cfb8lineX.c cfb8segC.c \
-       cfb8segCS.c cfb8segG.c cfb8segX.c cfballpriv.c cfbbitblt.c cfbbltC.c \
-       cfbbltG.c cfbbltO.c cfbbltX.c cfbbres.c cfbbresd.c cfbbstore.c \
-       cfbcppl.c cfbfillarcC.c cfbfillarcG.c cfbfillrct.c cfbfillsp.c cfbgc.c \
-       cfbgetsp.c cfbglblt8.c cfbhrzvert.c cfbigblt8.c cfbimage.c cfbline.c \
-       cfbmskbits.c cfbpixmap.c cfbply1rctC.c cfbply1rctG.c cfbpntwin.c \
-       cfbpolypnt.c cfbrrop.c cfbscrinit.c cfbseg.c cfbsetsp.c cfbsolidC.c \
-       cfbsolidG.c cfbsolidX.c cfbtegblt.c cfbtile32C.c cfbtile32G.c \
-       cfbtileoddC.c cfbtileoddG.c cfbwindow.c cfbzerarcC.c cfbzerarcG.c \
-       cfbzerarcX.c $(PSZSRCS) $(CFBCMAPSRC) $(STIPPLESRC) $(XFMODSRC)
+SRCS =	 cfbgc.c cfbrrop.c cfbwindow.c \
+	 cfbpntwin.c cfbmskbits.c cfbpixmap.c cfbbitblt.c \
+	 cfbfillsp.c cfbsetsp.c cfbscrinit.c cfballpriv.c \
+	 cfbgetsp.c cfbfillrct.c \
+	 cfbsolidC.c cfbsolidX.c cfbsolidG.c \
+	 cfbtileoddC.c cfbtileoddG.c cfbtile32C.c cfbtile32G.c \
+	 cfbcmap.c cfbzerarcC.c cfbzerarcX.c cfbzerarcG.c \
+	 cfbfillarcC.c cfbfillarcG.c \
+	 cfbigblt8.c cfbglblt8.c cfbtegblt.c cfbbstore.c \
+	 cfbbltC.c cfbbltX.c cfbbltO.c cfbbltG.c \
+	 cfbpolypnt.c \
+	 cfbbres.c cfbline.c cfbhrzvert.c cfbbresd.c cfbimage.c cfbseg.c \
+	 cfb8lineCO.c cfb8lineX.c cfb8lineG.c cfb8lineCP.c \
+	 cfb8segC.c cfb8segX.c cfb8segG.c cfb8segCS.c \
+	 cfbply1rctC.c cfbply1rctG.c cfbcppl.c $(PSZSRCS) $(XFMODSRC)
 
-OBJS = cfb8lineCO.o cfb8lineCP.o cfb8lineG.o cfb8lineX.o cfb8segC.o \
-       cfb8segCS.o cfb8segG.o cfb8segX.o cfballpriv.o cfbbitblt.o cfbbltC.o \
-       cfbbltG.o cfbbltO.o cfbbltX.o cfbbres.o cfbbresd.o cfbbstore.o \
-       cfbcppl.o cfbfillarcC.o cfbfillarcG.o cfbfillrct.o cfbfillsp.o cfbgc.o \
-       cfbgetsp.o cfbglblt8.o cfbhrzvert.o cfbigblt8.o cfbimage.o cfbline.o \
-       cfbmskbits.o cfbpixmap.o cfbply1rctC.o cfbply1rctG.o cfbpntwin.o \
-       cfbpolypnt.o cfbrrop.o cfbscrinit.o cfbseg.o cfbsetsp.o cfbsolidC.o \
-       cfbsolidG.o cfbsolidX.o cfbtegblt.o cfbtile32C.o cfbtile32G.o \
-       cfbtileoddC.o cfbtileoddG.o cfbwindow.o cfbzerarcC.o cfbzerarcG.o \
-       cfbzerarcX.o $(PSZOBJS) $(CFBCMAPOBJ) $(STIPPLEOBJ) $(XFMODOBJ)
+OBJS =   cfbgc.o cfbrrop.o cfbwindow.o \
+	 cfbgetsp.o cfbfillrct.o \
+	 cfbsolidC.o cfbsolidX.o cfbsolidG.o \
+	 cfbtileoddC.o cfbtileoddG.o cfbtile32C.o cfbtile32G.o \
+	 cfbfillsp.o cfbsetsp.o cfbscrinit.o cfballpriv.o \
+	 cfbpntwin.o cfbmskbits.o cfbpixmap.o \
+	 $(CFBCMAP) cfbzerarcC.o cfbzerarcX.o cfbzerarcG.o \
+	 cfbfillarcC.o cfbfillarcG.o \
+	 cfbigblt8.o cfbglblt8.o cfbtegblt.o cfbbstore.o \
+	 cfbpolypnt.o \
+	 cfbbres.o cfbline.o cfbhrzvert.o cfbbresd.o cfbimage.o cfbseg.o \
+	 cfb8lineCO.o cfb8lineX.o cfb8lineG.o cfb8lineCP.o \
+	 cfb8segCS.o cfb8segX.o cfb8segG.o cfb8segC.o \
+	 cfbbitblt.o cfbbltC.o cfbbltX.o cfbbltO.o cfbbltG.o \
+	 cfbply1rctC.o cfbply1rctG.o cfbcppl.o $(PSZOBJS) $(STIPPLEOBJ) \
+	 $(XFMODOBJ)
+
+#ifdef XFree86Version
+PLATFORMDEFS = -DXFREE86
+#endif
 
 #if BuildLowMem
   LMDEFINES = -ULOWMEMFTPT
 #endif
 
    INCLUDES = -I$(SERVERSRC)/cfb -I$(SERVERSRC)/mfb -I$(SERVERSRC)/mi \
-	      -I$(SERVERSRC)/cfb24 -I$(SERVERSRC)/include -I$(SERVERSRC)/Xext
+	      -I$(SERVERSRC)/cfb24 -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+	      -I$(FONTINCSRC) -I$(EXTINCSRC) -I$(SERVERSRC)/Xext
    LINTLIBS = $(SERVERSRC)/dix/llib-ldix.ln $(SERVERSRC)/os/llib-los.ln \
 	     $(SERVERSRC)/mfb/llib-lmfb.ln $(SERVERSRC)/mi/llib-lmi.ln
-    DEFINES = $(LMDEFINES) -DPSZ=PixelSize
+    DEFINES = $(LMDEFINES) -DPSZ=PixelSize $(PLATFORMDEFS)
 
 #if PixelSize == 8
 CFBNAME = cfb
@@ -193,15 +208,15 @@ LinkSourceFile(cfbteblt8.c,LinkDirectory)
 #if defined(MipsArchitecture) && \
     !defined(ArcArchitecture) && \
     !defined(Mips64Architecture)
-LinkSourceFile(stipmips.S,LinkDirectory)
+LinkSourceFile(stipmips.s,LinkDirectory)
 #endif
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-LinkSourceFile(stipsparc.S,LinkDirectory)
+#ifdef SparcArchitecture
+LinkSourceFile(stipsparc.s,LinkDirectory)
 #endif
 #endif
 #if PixelSize == 32
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-LinkSourceFile(stipsprc32.S,LinkDirectory)
+#ifdef SparcArchitecture
+LinkSourceFile(stipsprc32.s,LinkDirectory)
 #endif
 #endif
 #endif
@@ -257,26 +272,54 @@ ObjectFromSpecialSource(cfbglrop8,cfbglblt8,-DGLYPHROP)
 #if defined(MipsArchitecture) && \
     !defined(ArcArchitecture) && \
     !defined(Mips64Architecture)
-ObjectFromSpecialAsmSource(stipmipste,stipmips,-DTETEXT)
-NormalAsmObjectRule()
+stipmipste.s: stipmips.s
+	$(RM) $@
+	$(LN) stipmips.s stipmipste.s
+clean::
+	$(RM) stipmipste.s
+
+stipmips.o: stipmips.s
+	$(CPP) -I$(XINCLUDESRC) -DX_BYTE_ORDER=$(X_BYTE_ORDER) AsmDefines \
+		stipmips.s | $(AS) -o $@ -
+
+stipmipste.o: stipmipste.s
+	$(CPP) -DTETEXT -I$(XINCLUDESRC) -DX_BYTE_ORDER=$(X_BYTE_ORDER) \
+		AsmDefines stipmipste.s | $(AS) -o $@ -
 #endif
 
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-ObjectFromSpecialAsmSource(stipsparcte,stipsparc,-DTETEXT)
-NormalAsmObjectRule()
+#ifdef SparcArchitecture
+stipsparcte.s: stipsparc.s
+	$(RM) $@
+	$(LN) stipsparc.s stipsparcte.s
+clean::
+	$(RM) stipsparcte.s
+
+stipsparc.o: stipsparc.s
+	$(CPP) stipsparc.s AsmDefines | $(AS) -o $@ -
+
+stipsparcte.o: stipsparcte.s
+	$(CPP) -DTETEXT stipsparcte.s AsmDefines | $(AS) -o $@ -
 #endif
 #endif
 
 #if PixelSize == 32
-#if defined(SparcArchitecture) && !defined(Sparc64Architecture)
-ObjectFromSpecialAsmSource(stipsprcte32,stipsprc32,-DTETEXT)
-NormalAsmObjectRule()
+#ifdef SparcArchitecture
+stipsprcte32.s: stipsprc32.s
+	$(RM) $@
+	$(LN) stipsprc32.s stipsprcte32.s
+clean::
+	$(RM) stipsprcte32.s
+
+stipsprc32.o: stipsprc32.s
+	$(CPP) stipsprc32.s AsmDefines | $(AS) -o $@ -
+
+stipsprcte32.o: stipsprcte32.s
+	$(CPP) -DTETEXT stipsprcte32.s AsmDefines | $(AS) -o $@ -
 #endif
 #endif
 
 #ifdef IHaveModules
 InstallLibraryModule($(CFBNAME),$(MODULEDIR),.)
-InstallDriverSDKLibraryModule($(CFBNAME),$(DRIVERSDKMODULEDIR),.)
 #endif
 
 DependTarget()
@@ -286,7 +329,8 @@ MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
 #endif
 
-#if !defined(IHaveModules) || !BuildModuleInSubdir
+InstallDriverSDKLibraryModule($(CFBNAME),$(DRIVERSDKMODULEDIR),.)
+
 #if PixelSize == 8
 InstallDriverSDKNonExecFile(cfb.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(cfb16.h,$(DRIVERSDKINCLUDEDIR))
@@ -294,5 +338,4 @@ InstallDriverSDKNonExecFile(cfb24.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(cfb32.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(cfbmap.h,$(DRIVERSDKINCLUDEDIR))
 InstallDriverSDKNonExecFile(cfbunmap.h,$(DRIVERSDKINCLUDEDIR))
-#endif
 #endif

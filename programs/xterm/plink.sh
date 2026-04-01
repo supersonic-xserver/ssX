@@ -1,9 +1,8 @@
 #!/bin/sh
-# $XTermId: plink.sh,v 1.3 2005/05/01 13:16:44 tom Exp $
 # $XFree86: xc/programs/xterm/plink.sh,v 3.1 2001/03/13 09:48:43 dickey Exp $
 #
 # Reduce the number of dynamic libraries used to link an executable.
-LINKIT=
+CMD=
 while test $# != 0
 do
 	OPT="$1"
@@ -11,17 +10,17 @@ do
 	case $OPT in
 	-l*)
 		echo "testing if $OPT is needed"
-		if ( eval $LINKIT $* >/dev/null 2>/dev/null )
+		if ( eval $CMD $* >/dev/null 2>/dev/null )
 		then
 			: echo ...no
 		else
 			echo ...yes
-			LINKIT="$LINKIT $OPT"
+			CMD="$CMD $OPT"
 		fi
 		;;
 	*)
-		LINKIT="$LINKIT $OPT"
+		CMD="$CMD $OPT"
 		;;
 	esac
 done
-eval $LINKIT
+eval $CMD

@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbfont.c,v 1.3tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -45,25 +58,29 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 */
-
-#include <X11/X.h>
-#include <X11/Xmd.h>
-#include <X11/Xproto.h>
+/* $Xorg: mfbfont.c,v 1.4 2001/02/09 02:05:18 xorgcvs Exp $ */
+#include "X.h"
+#include "Xmd.h"
+#include "Xproto.h"
 #include "mfb.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "scrnintstr.h"
 
 /*ARGSUSED*/
 Bool
-mfbRealizeFont(ScreenPtr pscr, FontPtr pFont)
+mfbRealizeFont( pscr, pFont)
+    ScreenPtr	pscr;
+    FontPtr	pFont;
 {
     return (TRUE);
 }
 
 /*ARGSUSED*/
 Bool
-mfbUnrealizeFont(ScreenPtr pscr, FontPtr pFont)
+mfbUnrealizeFont( pscr, pFont)
+    ScreenPtr	pscr;
+    FontPtr	pFont;
 {
     return (TRUE);
 }

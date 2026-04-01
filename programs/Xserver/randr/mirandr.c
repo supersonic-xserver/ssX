@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/randr/mirandr.c,v 1.7tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/randr/mirandr.c,v 1.7 2002/10/14 18:01:42 keithp Exp $
  *
  * Copyright © 2000, Compaq Computer Corporation, 
  * Copyright © 2002, Hewlett Packard, Inc.
@@ -27,7 +34,7 @@
 
 #include "scrnintstr.h"
 #include "mi.h"
-#include <X11/extensions/randr.h>
+#include "randr.h"
 #include "randrstr.h"
 #include <stdio.h>
 

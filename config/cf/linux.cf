@@ -1,7 +1,7 @@
-XCOMM platform:  $XFree86: xc/config/cf/linux.cf,v 3.245tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/linux.cf,v 3.235 2005/02/09 19:49:09 dawes Exp $
 
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -204,13 +204,6 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 # define HasThreadSafeAPI	YES
 # define ThreadsLibraries	-lpthread
 # define SystemMTDefines	-D_REENTRANT
-# define InstallXtermSetGID	YES
-# if 1	/* XXX - This isn't dependent on [g]libc version. */
-#  ifndef InstUtmpFlags
-#   define InstUtmpFlags	-m 2755 -g utmp
-#  endif
-# endif
-
 # ifndef HasLibCrypt
 #  define HasLibCrypt		YES
 # endif
@@ -229,11 +222,10 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 # ifndef HasBasename
 #  define HasBasename		NO
 # endif
-#endif
-
-/* Proliferation of C99isms makes -ansi unpalatable... */
-#if !defined(DefaultCCOptions) && !defined(UseInstalled) && HasGcc
-# define DefaultCCOptions	GccWarningOptions
+  /* Proliferation of C99isms makes -ansi unpalatable... */
+# if !defined(DefaultCCOptions) && !defined(UseInstalled) && HasGcc
+#  define DefaultCCOptions	GccWarningOptions
+# endif
 #endif
 
 #ifndef InstallXloadSetGID
@@ -421,16 +413,10 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
  * Defaults for the TinyX servers on Linux.
  */
 #ifndef HaveTinyXSupport
-/* XXX This is provisional */
-# define HaveTinyXSupport	YES
-#endif
-#ifndef HaveTinyXIOPortSupport
-# if defined(i386Architecture) || defined(AlphaArchitecture) || \
-     defined(AMD64Architecture) || defined(SuperHArchitecture) || \
-     defined(ia64Architecture)
-#  define HaveTinyXIOPortSupport YES
+# if defined(i386Architecture)
+#  define HaveTinyXSupport	YES
 # else
-#  define HaveTinyXIOPortSupport NO
+#  define HaveTinyXSupport	NO
 # endif
 #endif
 #ifndef HaveTinyXVBESupport
@@ -741,9 +727,7 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 #define YaccCmd			bison -y
 #define LexCmd			flex -l
 #define HasFlex			YES
-#ifndef LexLib
-# define LexLib			-lfl
-#endif
+#define LexLib			-lfl
 #define PreProcessCmd		CcCmd -E
 #define PostIncDir		DefaultGccIncludeDir
 #define LdCombineFlags		-r
@@ -927,7 +911,7 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 # ifndef OptimizedCDebugFlags
 #  define OptimizedCDebugFlags	DefaultGcc2AMD64Opt
 # endif
-# define LinuxMachineDefines   -D__amd64__
+# define LinuxMachineDefines   -D__AMD64__
 # define ServerOSDefines	XFree86ServerOSDefines
 # define ServerExtraDefines	-DGCCUSESGAS XFree86ServerDefines -D_XSERVER64
 #endif /* AMD64Architecture */
@@ -952,30 +936,12 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 
 #define ServerExtraSysLibs	/**/
 
-/*
- * Note:  Leave the setting of HasPam and UsePam to distribution maintainers
- *        (in their host.def, for example), because a binary generated with PAM
- *        support will not run on a system without PAM.
- */
-#ifndef HasPam
-#define HasPam			NO
-#endif
-
 #ifndef PamLibraries
-#if HasPam
 #define PamLibraries		-lpam DlLibrary
-#else
-#define PamLibraries		/**/
-#endif
 #endif
 
-/* libpam_misc includes a generic conversation function */
-#ifndef ServerPamLibraries
-#if HasPam
-#define ServerPamLibraries	-lpam_misc -lpam DlLibrary
-#else
-#define ServerPamLibraries	PamLibraries
-#endif
+#ifndef PamMiscLibraries
+#define PamMiscLibraries	-lpam_misc
 #endif
 
 #ifndef HasDECnet
@@ -1023,7 +989,7 @@ InstallNamedTargetNoClobber(install,file.ad,$(INSTAPPFLAGS),$(XAPPLOADDIR),class
 #define HasGnuMake		YES
 
 #define MakeNamedTargetSubdir(dir,flags,subname)\
-	$(MAKE) -C dir $(PASSMFLAGS) $(PARALLELMFLAGS) flags subname
+	$(MAKE) -C dir $(MFLAGS) $(PARALLELMFLAGS) flags subname
 
 #define ArchitectureDefines	-DLINUX_ARCHITECTURE
 

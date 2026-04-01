@@ -1,4 +1,12 @@
 /* x-list.c
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+   $Id: x-list.c,v 1.1.1.1 2004/03/05 14:28:16 tron Exp $
 
    Copyright (c) 2002 Apple Computer, Inc. All rights reserved.
 
@@ -26,7 +34,7 @@
    copyright holders shall not be used in advertising or otherwise to
    promote the sale, use or other dealings in this Software without
    prior written authorization. */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/x-list.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/x-list.c,v 1.2 2003/06/30 01:45:13 torrey Exp $ */
 
 #include "x-list.h"
 #include <stdlib.h>
@@ -162,25 +170,6 @@ X_PFX (list_nth) (x_list *lst, int n)
 {
     while (n-- > 0 && lst != NULL)
 	lst = lst->next;
-
-    return lst;
-}
-
-X_EXTERN x_list *
-X_PFX (list_pop) (x_list *lst, void **data_ret)
-{
-    void *data = NULL;
-
-    if (lst != NULL)
-    {
-        x_list *tem = lst;
-        data = lst->data;
-        lst = lst->next;
-        X_PFX (list_free_1) (tem);
-    }
-
-    if (data_ret != NULL)
-        *data_ret = data;
 
     return lst;
 }

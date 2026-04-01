@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  sfnt.h                                                                 */
 /*                                                                         */
@@ -14,7 +21,7 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
-/* $XFree86: xc/extras/freetype2/include/freetype/internal/sfnt.h,v 1.3 2004/04/26 16:15:53 dawes Exp $ */
+/* $XFree86: xc/extras/freetype2/include/freetype/internal/sfnt.h,v 1.4 2004/04/26 21:07:50 dawes Exp $ */
 
 #ifndef __SFNT_H__
 #define __SFNT_H__

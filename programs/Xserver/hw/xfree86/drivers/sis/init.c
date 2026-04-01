@@ -1,4 +1,12 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/init.c,v 1.57 2004/06/29 10:17:45 twini Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Mode initializing code (CRT1 section) for
  * for SiS 300/305/540/630/730 and
@@ -3493,7 +3501,7 @@ SiSSetMode(SiS_Private *SiS_Pr, PSIS_HW_INFO HwInfo,USHORT ModeNo)
    SiSRegInit(SiS_Pr, BaseAddr);
    SiS_GetSysFlags(SiS_Pr, HwInfo);
 
-#if defined(LINUX_XF86) && (defined(i386) || defined(__i386) || defined(__i386__) || defined(__amd64__) || defined(__x86_64__))
+#if defined(LINUX_XF86) && (defined(i386) || defined(__i386) || defined(__i386__) || defined(__AMD64__))
    if(pScrn) SiS_Pr->SiS_VGAINFO = SiS_GetSetBIOSScratch(pScrn, 0x489, 0xff);
    else
 #endif

@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/fc/fsconvert.c,v 1.15tsi Exp $ */
+/* $Xorg: fsconvert.c,v 1.3 2000/08/17 19:46:36 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices
  *
@@ -22,6 +29,7 @@
  *
  * Author:  	Dave Lemke, Network Computing Devices, Inc
  */
+/* $XFree86: xc/lib/font/fc/fsconvert.c,v 1.15 2003/09/01 20:50:43 herrb Exp $ */
 /*
  * FS data conversion
  */
@@ -29,10 +37,10 @@
 #include        <X11/X.h>
 #include 	<X11/Xtrans.h>
 #include	<X11/Xpoll.h>
-#include	<X11/fonts/FS.h>
-#include	<X11/fonts/FSproto.h>
+#include	"FS.h"
+#include	"FSproto.h"
 #include	"fontmisc.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"fservestr.h"
 #include	"fontutil.h"
 #include	"fslibos.h"
@@ -119,6 +127,10 @@ _fs_convert_props(fsPropInfo *pi, fsPropOffset *po, pointer pd,
     for (i = 0; i < nprops; i++, dprop++, is_str++) 
     {
 	memcpy(&local_off, off_adr, SIZEOF(fsPropOffset));
+	if ((local_off.name.position >= pi->data_len) ||
+		(local_off.name.length >
+		(pi->data_len - local_off.name.position)))
+	    goto bail; 
 	dprop->name = MakeAtom(&pdc[local_off.name.position],
 			       local_off.name.length, 1);
 	if (local_off.type != PropTypeString) {
@@ -126,10 +138,15 @@ _fs_convert_props(fsPropInfo *pi, fsPropOffset *po, pointer pd,
 	    dprop->value = local_off.value.position;
 	} else {
 	    *is_str = TRUE;
+	    if ((local_off.name.position >= pi->data_len) ||
+		    (local_off.name.length >
+		    (pi->data_len - local_off.name.position)))
+		goto bail; 
 	    dprop->value = (INT32) MakeAtom(&pdc[local_off.value.position],
 					    local_off.value.length, 1);
 	    if (dprop->value == BAD_RESOURCE)
 	    {
+	      bail:
 		xfree (pfi->props);
 		pfi->nprops = 0;
 		pfi->props = 0;
@@ -749,7 +766,12 @@ fs_alloc_glyphs (FontPtr pFont, int size)
     FSGlyphPtr	glyphs;
     FSFontPtr	fsfont = (FSFontPtr) pFont->fontPrivate;
 
-    glyphs = xalloc (sizeof (FSGlyphRec) + size);
+    if (size < (INT_MAX - sizeof (FSGlyphRec)))
+	glyphs = xalloc (sizeof (FSGlyphRec) + size);
+    else
+        glyphs = NULL;
+    if (glyphs == NULL)
+        return NULL;
     glyphs->next = fsfont->glyphs;
     fsfont->glyphs = glyphs;
     return (pointer) (glyphs + 1);

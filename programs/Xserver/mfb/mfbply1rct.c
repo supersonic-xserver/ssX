@@ -1,5 +1,12 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbply1rct.c,v 1.9tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: mfbply1rct.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 
@@ -26,8 +33,9 @@ in this Software without prior written authorization from The Open Group.
  * Author:  Keith Packard, MIT X Consortium
  */
 
+/* $XFree86: xc/programs/Xserver/mfb/mfbply1rct.c,v 1.8 2002/12/09 04:10:57 tsi Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -58,14 +66,19 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 void
-MFBFILLPOLY1RECT(DrawablePtr pDrawable, GCPtr pGC, int shape, int mode,
-		 int count, DDXPointPtr ptsIn)
+MFBFILLPOLY1RECT (pDrawable, pGC, shape, mode, count, ptsIn)
+    DrawablePtr	pDrawable;
+    GCPtr	pGC;
+    int		shape;
+    int		mode;
+    int		count;
+    DDXPointPtr	ptsIn;
 {
     int		    nlwidth;
     PixelType	    *addrl, *addr;
     int		    maxy;
     int		    origin;
-    int		    vertex1, vertex2;
+    register int    vertex1, vertex2;
     int		    c;
     BoxPtr	    extents;
     int		    clip;

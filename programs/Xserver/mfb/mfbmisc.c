@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/mfb/mfbmisc.c,v 1.3tsi Exp $ */
 /***********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -45,8 +58,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mfbmisc.c,v 1.4 2001/02/09 02:05:19 xorgcvs Exp $ */
+#include "X.h"
 #include "misc.h"
 #include "cursor.h"
 #include "scrnintstr.h"
@@ -55,8 +68,11 @@ SOFTWARE.
 
 /*ARGSUSED*/
 void
-mfbQueryBestSize(int class, unsigned short *pwidth, unsigned short *pheight,
-		 ScreenPtr pScreen)
+mfbQueryBestSize(class, pwidth, pheight, pScreen)
+int class;
+unsigned short *pwidth;
+unsigned short *pheight;
+ScreenPtr pScreen;
 {
     unsigned width, test;
 

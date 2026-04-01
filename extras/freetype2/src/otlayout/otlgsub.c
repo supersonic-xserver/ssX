@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #include "otlgsub.h"
 #include "otlcommn.h"
 
@@ -8,6 +15,28 @@
  /*****                                                              *****/
  /************************************************************************/
  /************************************************************************/
+
+ /*
+  *  1: Single Substitution - Table format(s)
+  *
+  *  This table is used to substiture individual glyph indices
+  *  with another one. There are only two sub-formats:
+  *
+  *   Name         Offset    Size       Description
+  *   ------------------------------------------
+  *   format       0         2          sub-table format (1)
+  *   offset       2         2          offset to coverage table
+  *   delta        4         2          16-bit delta to apply on all
+  *                                     covered glyph indices
+  *
+  *   Name         Offset    Size       Description
+  *   ------------------------------------------
+  *   format       0         2          sub-table format (2)
+  *   offset       2         2          offset to coverage table
+  *   count        4         2          coverage table count
+  *   substs[]     6         2*count    substituted glyph indices,
+  *
+  */
 
   static void
   otl_gsub_lookup1_validate( OTL_Bytes      table,
@@ -42,6 +71,10 @@
           otl_coverage_validate( table + coverage, valid );
 
           OTL_CHECK( 2*count );
+
+          /* NB: we don't check that there are at most 'count'   */
+          /*     elements in the coverage table. This is delayed */
+          /*     to the lookup function...                       */
         }
         break;
 
@@ -51,6 +84,63 @@
   }
 
 
+  static OTL_Bool
+  otl_gsub_lookup1_apply( OTL_Bytes   table,
+                          OTL_Parser  parser )
+  {
+    OTL_Bytes  p = table;
+    OTL_Bytes  coverage;
+    OTL_UInt   format, gindex, property;
+    OTL_Int    index;
+    OTL_Bool   subst = 0;
+
+    if ( parser->context_len != 0xFFFFU && parser->context_len < 1 )
+      goto Exit;
+
+    gindex = otl_parser_get_gindex( parser );
+
+    if ( !otl_parser_check_property( parser, gindex, &property ) )
+      goto Exit;
+
+    format   = OTL_NEXT_USHORT(p);
+    coverage = table + OTL_NEXT_USHORT(p);
+    index    = otl_coverage_lookup( coverage, gindex );
+
+    if ( index >= 0 )
+    {
+      switch ( format )
+      {
+        case 1:
+          {
+            OTL_Int  delta = OTL_NEXT_SHORT(p);
+
+            gindex = ( gindex + delta ) & 0xFFFFU;
+            otl_parser_replace_1( parser, gindex );
+            subst = 1;
+          }
+          break;
+
+        case 2:
+          {
+            OTL_UInt  count = OTL_NEXT_USHORT(p);
+
+            if ( (OTL_UInt) index < count )
+            {
+              p += index*2;
+              otl_parser_replace_1( parser, OTL_PEEK_USHORT(p) );
+              subst = 1;
+            }
+          }
+          break;
+
+        default:
+          ;
+      }
+    }
+  Exit:
+    return subst;
+  }
+
  /************************************************************************/
  /************************************************************************/
  /*****                                                              *****/
@@ -58,6 +148,26 @@
  /*****                                                              *****/
  /************************************************************************/
  /************************************************************************/
+
+ /*
+  *  2: Multiple Substitution - Table format(s)
+  *
+  *  Replaces a single glyph with one or more glyphs.
+  *
+  *   Name         Offset    Size       Description
+  *   -----------------------------------------------------------
+  *   format       0         2          sub-table format (1)
+  *   offset       2         2          offset to coverage table
+  *   count        4         2          coverage table count
+  *   sequencess[] 6         2*count    offsets to sequence items
+  *
+  *   each sequence item has the following format:
+  *
+  *   Name         Offset    Size       Description
+  *   -----------------------------------------------------------
+  *   count        0         2          number of replacement glyphs
+  *   gindices[]   2         2*count    string of glyph indices
+  */
 
   static void
   otl_seq_validate( OTL_Bytes      table,
@@ -68,6 +178,9 @@
 
     OTL_CHECK( 2 );
     count = OTL_NEXT_USHORT( p );
+
+    /* XXX: according to the spec, 'count' should be > 0     */
+    /*      we can deal with these cases pretty well however */
 
     OTL_CHECK( 2*count );
     /* check glyph indices */
@@ -106,6 +219,45 @@
     }
   }
 
+
+  static OTL_Bool
+  otl_gsub_lookup2_apply( OTL_Bytes    table,
+                          OTL_Parser   parser )
+  {
+    OTL_Bytes  p = table;
+    OTL_Bytes  coverage, sequence;
+    OTL_UInt   format, gindex, index, property;
+    OTL_Int    index;
+    OTL_Bool   subst = 0;
+
+    if ( context_len != 0xFFFFU && context_len < 1 )
+      goto Exit;
+
+    gindex = otl_parser_get_gindex( parser );
+
+    if ( !otl_parser_check_property( parser, gindex, &property ) )
+      goto Exit;
+
+    p        += 2;  /* skip format */
+    coverage  = table + OTL_NEXT_USHORT(p);
+    seq_count = OTL_NEXT_USHORT(p);
+    index     = otl_coverage_lookup( coverage, gindex );
+
+    if ( (OTL_UInt) index >= seq_count )
+      goto Exit;
+
+    p       += index*2;
+    sequence = table + OTL_PEEK_USHORT(p);
+    p        = sequence;
+    count    = OTL_NEXT_USHORT(p);
+
+    otl_parser_replace_n( parser, count, p );
+    subst = 1;
+
+   Exit:
+    return subst;
+  }
+
  /************************************************************************/
  /************************************************************************/
  /*****                                                              *****/
@@ -113,6 +265,28 @@
  /*****                                                              *****/
  /************************************************************************/
  /************************************************************************/
+
+ /*
+  *  3: Alternate Substitution - Table format(s)
+  *
+  *  Replaces a single glyph by another one taken liberally
+  *  in a list of alternatives
+  *
+  *   Name         Offset    Size       Description
+  *   -----------------------------------------------------------
+  *   format       0         2          sub-table format (1)
+  *   offset       2         2          offset to coverage table
+  *   count        4         2          coverage table count
+  *   alternates[] 6         2*count    offsets to alternate items
+  *
+  *   each alternate item has the following format:
+  *
+  *   Name         Offset    Size       Description
+  *   -----------------------------------------------------------
+  *   count        0         2          number of replacement glyphs
+  *   gindices[]   2         2*count    string of glyph indices, each one
+  *                                     is a valid alternative
+  */
 
   static void
   otl_alternate_set_validate( OTL_Bytes      table,
@@ -161,6 +335,52 @@
     }
   }
 
+
+  static OTL_Bool
+  otl_gsub_lookup3_apply( OTL_Bytes    table,
+                          OTL_Parser   parser )
+  {
+    OTL_Bytes  p = table;
+    OTL_Bytes  coverage, alternates;
+    OTL_UInt   format, gindex, index, property;
+    OTL_Int    index;
+    OTL_Bool   subst = 0;
+
+    OTL_GSUB_Alternate  alternate = parser->alternate;
+
+    if ( context_len != 0xFFFFU && context_len < 1 )
+      goto Exit;
+
+    if ( alternate == NULL )
+      goto Exit;
+
+    gindex = otl_parser_get_gindex( parser );
+
+    if ( !otl_parser_check_property( parser, gindex, &property ) )
+      goto Exit;
+
+    p        += 2;  /* skip format */
+    coverage  = table + OTL_NEXT_USHORT(p);
+    seq_count = OTL_NEXT_USHORT(p);
+    index     = otl_coverage_lookup( coverage, gindex );
+
+    if ( (OTL_UInt) index >= seq_count )
+      goto Exit;
+
+    p         += index*2;
+    alternates = table + OTL_PEEK_USHORT(p);
+    p          = alternates;
+    count      = OTL_NEXT_USHORT(p);
+
+    gindex = alternate->handler_func(
+                 gindex, count, p, alternate->handler_data );
+
+    otl_parser_replace_1( parser, gindex );
+    subst = 1;
+
+   Exit:
+    return subst;
+  }
 
  /************************************************************************/
  /************************************************************************/

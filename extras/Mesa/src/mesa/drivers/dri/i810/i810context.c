@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 All Rights Reserved.
@@ -24,7 +38,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/mesa/src/drv/i810/i810context.c,v 1.3 2002/10/30 12:51:33 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i810/i810context.c,v 1.1.1.3 2004/12/10 15:05:44 alanh Exp $ */
 
 /*
  * Authors:
@@ -46,6 +60,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "array_cache/acache.h"
 
 #include "tnl/t_pipeline.h"
+
+#include "drivers/common/driverfuncs.h"
 
 #include "i810screen.h"
 #include "i810_dri.h"
@@ -152,6 +168,7 @@ i810CreateContext( const __GLcontextModes *mesaVis,
    i810ScreenPrivate *i810Screen = (i810ScreenPrivate *)sPriv->private;
    I810SAREAPtr saPriv = (I810SAREAPtr)
       (((GLubyte *)sPriv->pSAREA) + i810Screen->sarea_priv_offset);
+   struct dd_function_table functions;
 
    /* Allocate i810 context */
    imesa = (i810ContextPtr) CALLOC_STRUCT(i810_context_t);
@@ -159,22 +176,32 @@ i810CreateContext( const __GLcontextModes *mesaVis,
       return GL_FALSE;
    }
 
-   /* Allocate the Mesa context */
-   if (sharedContextPrivate)
-      shareCtx = ((i810ContextPtr) sharedContextPrivate)->glCtx;
-   else
-      shareCtx = NULL;
-   imesa->glCtx = _mesa_create_context(mesaVis, shareCtx, (void*) imesa, GL_TRUE);
-   if (!imesa->glCtx) {
-      FREE(imesa);
-      return GL_FALSE;
-   }
    driContextPriv->driverPrivate = imesa;
 
    imesa->i810Screen = i810Screen;
    imesa->driScreen = sPriv;
    imesa->sarea = saPriv;
    imesa->glBuffer = NULL;
+
+   /* Init default driver functions then plug in our I810-specific functions
+    * (the texture functions are especially important)
+    */
+   _mesa_init_driver_functions( &functions );
+   i810InitIoctlFuncs( &functions );
+   i810InitTextureFuncs( &functions );
+
+
+   /* Allocate the Mesa context */
+   if (sharedContextPrivate)
+      shareCtx = ((i810ContextPtr) sharedContextPrivate)->glCtx;
+   else
+      shareCtx = NULL;
+   imesa->glCtx = _mesa_create_context(mesaVis, shareCtx,
+                                       &functions, (void*) imesa);
+   if (!imesa->glCtx) {
+      FREE(imesa);
+      return GL_FALSE;
+   }
 
    (void) memset( imesa->texture_heaps, 0, sizeof( imesa->texture_heaps ) );
    make_empty_list( & imesa->swapped );
@@ -185,7 +212,7 @@ i810CreateContext( const __GLcontextModes *mesaVis,
 	    12,
 	    I810_NR_TEX_REGIONS,
 	    imesa->sarea->texList,
-	    & imesa->sarea->texAge,
+	    (unsigned *) & imesa->sarea->texAge, /* XXX we shouldn't cast! */
 	    & imesa->swapped,
 	    sizeof( struct i810_texture_object_t ),
 	    (destroy_texture_object_t *) i810DestroyTexObj );
@@ -252,10 +279,12 @@ i810CreateContext( const __GLcontextModes *mesaVis,
    _tnl_destroy_pipeline( ctx );
    _tnl_install_pipeline( ctx, i810_pipeline );
 
-   /* Configure swrast to match hardware characteristics:
+   /* Configure swrast and T&L to match hardware characteristics:
     */
    _swrast_allow_pixel_fog( ctx, GL_FALSE );
    _swrast_allow_vertex_fog( ctx, GL_TRUE );
+   _tnl_allow_pixel_fog( ctx, GL_FALSE );
+   _tnl_allow_vertex_fog( ctx, GL_TRUE );
 
    /* Dri stuff
     */
@@ -274,11 +303,10 @@ i810CreateContext( const __GLcontextModes *mesaVis,
    _math_matrix_ctr( &imesa->ViewportMatrix );
 
    driInitExtensions( ctx, card_extensions, GL_TRUE );
+   /* XXX these should really go right after _mesa_init_driver_functions() */
    i810InitStateFuncs( ctx );
-   i810InitTextureFuncs( ctx );
    i810InitTriFuncs( ctx );
    i810InitSpanFuncs( ctx );
-   i810InitIoctlFuncs( ctx );
    i810InitVB( ctx );
    i810InitState( ctx );
 
@@ -327,7 +355,7 @@ i810DestroyContext(__DRIcontextPrivate *driContextPriv)
 	 assert( is_empty_list( & imesa->swapped ) );
       }
 
-      Xfree(imesa);
+      FREE(imesa);
    }
 }
 
@@ -371,13 +399,12 @@ void i810XMesaSetBackClipRects( i810ContextPtr imesa )
 static void i810XMesaWindowMoved( i810ContextPtr imesa )
 {
    switch (imesa->glCtx->Color._DrawDestMask) {
-   case FRONT_LEFT_BIT:
+   case DD_FRONT_LEFT_BIT:
       i810XMesaSetFrontClipRects( imesa );
       break;
-   case BACK_LEFT_BIT:
+   case DD_BACK_LEFT_BIT:
       i810XMesaSetBackClipRects( imesa );
       break;
-   case GL_FRONT_LEFT:
    default:
       /* glDrawBuffer(GL_NONE or GL_FRONT_AND_BACK): software fallback */
       i810XMesaSetFrontClipRects( imesa );
@@ -436,10 +463,10 @@ i810UpdatePageFlipping( i810ContextPtr imesa )
    int front = 0;
 
    switch (ctx->Color._DrawDestMask) {
-   case FRONT_LEFT_BIT:
+   case DD_FRONT_LEFT_BIT:
       front = 1;
       break;
-   case BACK_LEFT_BIT:
+   case DD_BACK_LEFT_BIT:
       front = 0;
       break;
    default:

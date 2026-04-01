@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * dpsassert.h
  *
  * (c) Copyright 1991-1994 Adobe Systems Incorporated.
@@ -35,18 +42,18 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86$ */
 
 #ifndef DPSASSERT_H
 #define DPSASSERT_H
 
 #include "DPS/dpsclient.h"
 
-extern void DPSWarnProc(DPSContext ctxt, char *msg);
-extern void DPSFatalProc(DPSContext ctxt, char *msg);
-
 #define DPSAssertWarn(cndtn, cntxt, mssg)\
 	if (!(cndtn)) DPSWarnProc((DPSContext)(cntxt),(mssg))
+
+extern void DPSWarnProc(DPSContext ctxt, char *msg);
+extern void DPSFatalProc(DPSContext ctxt, char *msg);
+extern void DPSCantHappen(void);
 
 #define DPSAssert(condition) \
   if (! (condition)) DPSCantHappen();

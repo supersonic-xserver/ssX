@@ -1,6 +1,6 @@
 .\" Record Extension Protocol, v1.13
 .\" Use tbl, -ms and macros.t
-.\" $XFree86$
+.\" $Xorg: record.ms,v 1.3 2000/08/17 19:42:36 cpqbld Exp $
 .\" -----------------------------------------------
 .de Ip
 .IP \(bu 3

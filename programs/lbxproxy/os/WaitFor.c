@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/lbxproxy/os/WaitFor.c,v 1.10tsi Exp $ */
+/* $Xorg: WaitFor.c,v 1.4 2001/02/09 02:05:33 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,6 +52,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XFree86: xc/programs/lbxproxy/os/WaitFor.c,v 1.10 2004/04/03 22:38:55 tsi Exp $ */
 
 /*****************************************************************
  * OS Dependent input routines:
@@ -54,7 +62,7 @@ SOFTWARE.
  *
  *****************************************************************/
 
-#include <X11/Xos.h>			/* for strings, fcntl, time */
+#include "Xos.h"			/* for strings, fcntl, time */
 
 #include <errno.h>
 #include <stdio.h>

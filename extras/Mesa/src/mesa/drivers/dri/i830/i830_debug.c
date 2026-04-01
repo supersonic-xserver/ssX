@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2001 2d3d Inc., Delray Beach, FL
 
@@ -25,7 +39,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
 
-/* $XFree86: xc/lib/GL/mesa/src/drv/i830/i830_debug.c,v 1.3 2002/12/10 01:26:53 dawes Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i830/i830_debug.c,v 1.1.1.3 2004/12/10 15:05:46 alanh Exp $ */
 
 /*
  * Author:
@@ -46,7 +60,6 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "i830_context.h"
 #include "i830_state.h"
 #include "i830_tex.h"
-#include "i830_vb.h"
 #include "i830_tris.h"
 #include "i830_ioctl.h"
 #include "i830_debug.h"
@@ -292,7 +305,7 @@ void i830VertexSanity( i830ContextPtr imesa, drmI830Vertex vertex )
 		 remaining / vfmt_size);
       }
    }
-   if (1) {
+   if (vfmt_size) {
       fprintf(stderr, "\n\nPrim name (%s), vertices (%d)\n",
 	      prim_name,
 	      size / vfmt_size);
@@ -319,9 +332,26 @@ void i830EmitHwStateLockedDebug( i830ContextPtr imesa )
 
    for(i = 0; i < I830_TEXTURE_COUNT; i++) {
       if ((imesa->dirty & I830_UPLOAD_TEX_N(i)) && imesa->CurrentTexObj[i]) {
+	 unsigned * TexState;
+
 	 imesa->sarea->dirty |= I830_UPLOAD_TEX_N(i);
-	 memcpy(imesa->sarea->TexState[i],
-		imesa->CurrentTexObj[i]->Setup,
+
+	 switch( i ) {
+	 case 0:
+	 case 1:
+	    TexState = imesa->sarea->TexState[i];
+	    break;
+
+	 case 2:
+	    TexState = imesa->sarea->TexState2;
+	    break;
+
+	 case 3:
+	    TexState = imesa->sarea->TexState3;
+	    break;
+	 }
+
+	 memcpy(TexState, imesa->CurrentTexObj[i]->Setup,
 		sizeof(imesa->sarea->TexState[i]));
 	 i830DumpTextureState(imesa, i);
       }
@@ -330,11 +360,33 @@ void i830EmitHwStateLockedDebug( i830ContextPtr imesa )
 
    for(i = 0; i < I830_TEXBLEND_COUNT; i++) {
       if (imesa->dirty & I830_UPLOAD_TEXBLEND_N(i)) {
+	 unsigned * TexBlendState;
+	 unsigned * words_used;
+	 
 	 imesa->sarea->dirty |= I830_UPLOAD_TEXBLEND_N(i);
-	 memcpy(imesa->sarea->TexBlendState[i],imesa->TexBlend[i],
+
+	 switch( i ) {
+	 case 0:
+	 case 1:
+	    TexBlendState = imesa->sarea->TexBlendState[i];
+	    words_used = & imesa->sarea->TexBlendStateWordsUsed[i];
+	    break;
+
+	 case 2:
+	    TexBlendState = imesa->sarea->TexBlendState2;
+	    words_used = & imesa->sarea->TexBlendStateWordsUsed2;
+	    break;
+
+	 case 3:
+	    TexBlendState = imesa->sarea->TexBlendState3;
+	    words_used = & imesa->sarea->TexBlendStateWordsUsed3;
+	    break;
+	 }
+
+	 memcpy(TexBlendState, imesa->TexBlend[i],
 		imesa->TexBlendWordsUsed[i] * 4);
-	 imesa->sarea->TexBlendStateWordsUsed[i] =
-	   imesa->TexBlendWordsUsed[i];
+	 *words_used = imesa->TexBlendWordsUsed[i];
+
 	 i830DumpTextureBlendState(imesa, i);
       }
    }

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/Xmuu/Imakefile,v 1.4tsi Exp $
+XCOMM $XFree86: xc/lib/Xmuu/Imakefile,v 1.5 2004/04/26 16:24:26 tsi Exp $
 XCOMM Mini Xmu library: pull out just those things that are used by apps 
 XCOMM that do not use Xt and Xaw in the core applications
 XCOMM 

@@ -3,7 +3,7 @@
  * WHEN WRITING A NEW INPUT DRIVER.
  */
 
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/sample/Imakefile,v 1.7tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/input/sample/Imakefile,v 1.7 2004/03/18 07:07:04 dawes Exp $
 
 #define IHaveModules
 #include <Server.tmpl>
@@ -13,7 +13,8 @@ OBJS = sample.o
 
 DRIVER = sample
 
-INCLUDES = -I$(XF86COMSRC) -I$(XF86OSSRC) -I$(SERVERSRC)/include
+INCLUDES = -I. -I$(XF86COMSRC) -I$(XF86SRC)/loader -I$(XF86OSSRC) \
+			-I$(SERVERSRC)/include -I$(XINCLUDESRC) -I$(EXTINCSRC)
 
 #if MakeHasPosixVariableSubstitutions
 SubdirLibraryRule($(OBJS))

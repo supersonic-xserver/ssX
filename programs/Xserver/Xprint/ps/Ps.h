@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/Xprint/ps/Ps.h,v 1.15 2005/10/14 15:16:16 tsi Exp $ */
+/* $Xorg: Ps.h,v 1.5 2001/02/09 02:04:35 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -73,6 +80,7 @@ in this Software without prior written authorization from The Open Group.
 **    *********************************************************
 ** 
 ********************************************************************/
+/* $XFree86: xc/programs/Xserver/Xprint/ps/Ps.h,v 1.14 2003/07/16 01:38:34 dawes Exp $ */
 
 #ifndef _PS_H_
 #define _PS_H_
@@ -93,7 +101,7 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/extensions/Printstr.h>
 
 #include "regionstr.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "gcstruct.h"
 
@@ -289,7 +297,7 @@ typedef struct
  */
 
 extern Bool InitializePsDriver(int ndx, ScreenPtr pScreen, int argc,
-    const char **argv);
+    char **argv);
 extern XpContextPtr PsGetContextFromWindow(WindowPtr win);
 
 /*

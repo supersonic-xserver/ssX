@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/Xserver/render/mitri.c,v 1.6tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/Xserver/render/mitri.c,v 1.6 2002/08/12 04:03:21 keithp Exp $
  *
  * Copyright © 2002 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -151,7 +158,7 @@ miTriangles (CARD8	    op,
 	     xTriangle	    *tris)
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
-    BoxRec		bounds = {0, };
+    BoxRec		bounds;
     PicturePtr		pPicture = 0;
     INT16		xDst, yDst;
     INT16		xRel, yRel;
@@ -218,7 +225,7 @@ miTriStrip (CARD8	    op,
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
     xTriangle		tri;
-    BoxRec		bounds = {0, };
+    BoxRec		bounds;
     PicturePtr		pPicture = 0;
     INT16		xDst, yDst;
     INT16		xRel, yRel;
@@ -289,7 +296,7 @@ miTriFan (CARD8		op,
 {
     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
     xTriangle		tri;
-    BoxRec		bounds = {0, };
+    BoxRec		bounds;
     PicturePtr		pPicture = 0;
     xPointFixed		*first;
     INT16		xDst, yDst;

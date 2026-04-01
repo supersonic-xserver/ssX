@@ -1,4 +1,11 @@
 /* infblock.c -- interpret and process block types to last block
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1995-2002 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
@@ -156,7 +163,8 @@ int r )
             uInt bl, bd;
             inflate_huft *tl, *td;
 
-            inflate_trees_fixed(&bl, &bd, &tl, &td, z);
+            inflate_trees_fixed(&bl, &bd, (const inflate_huft**)&tl,
+                                          (const inflate_huft**)&td, z);
             s->sub.decode.codes = inflate_codes_new(bl, bd, tl, td, z);
             if (s->sub.decode.codes == Z_NULL)
             {

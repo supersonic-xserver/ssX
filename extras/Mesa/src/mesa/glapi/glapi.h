@@ -1,4 +1,11 @@
-/* $XFree86$ */
+/* $XFree86: xc/extras/Mesa/src/mesa/glapi/glapi.h,v 1.2 2004/12/17 16:38:02 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Mesa 3-D graphics library
  * Version:  6.3

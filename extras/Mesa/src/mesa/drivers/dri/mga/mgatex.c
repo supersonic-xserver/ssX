@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000-2001 VA Linux Systems, Inc.
  * All Rights Reserved.
  *
@@ -24,7 +31,7 @@
  * Authors:
  *    Keith Whitwell <keith@tungstengraphics.com>
  */
-/* $XFree86: xc/lib/GL/mesa/src/drv/mga/mgatex.c,v 1.14 2002/10/30 12:51:36 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/mga/mgatex.c,v 1.1.1.2 2004/06/10 14:22:56 alanh Exp $ */
 
 #include "glheader.h"
 #include "mm.h"
@@ -43,6 +50,7 @@
 #include "texformat.h"
 #include "texstore.h"
 #include "teximage.h"
+#include "texobj.h"
 
 #include "swrast/swrast.h"
 
@@ -336,7 +344,7 @@ mgaAllocTexObj( struct gl_texture_object *tObj )
 }
 
 
-static void mgaDDTexEnv( GLcontext *ctx, GLenum target,
+static void mgaTexEnv( GLcontext *ctx, GLenum target,
 			 GLenum pname, const GLfloat *param )
 {
    GLuint unit = ctx->Texture.CurrentUnit;
@@ -364,7 +372,6 @@ static void mgaTexImage2D( GLcontext *ctx, GLenum target, GLint level,
 			    struct gl_texture_image *texImage )
 {
    driTextureObject * t = (driTextureObject *) texObj->DriverData;
-
 
    if ( t != NULL ) {
       driSwapOutTextureObject( t );
@@ -398,8 +405,7 @@ static void mgaTexSubImage2D( GLcontext *ctx,
 {
    driTextureObject * t = (driTextureObject *) texObj->DriverData;
 
-
-   assert( t != NULL ); /* this _should_ be true */
+   assert( t ); /* this _should_ be true */
    if ( t != NULL ) {
       driSwapOutTextureObject( t );
    } 
@@ -426,20 +432,17 @@ static void mgaTexSubImage2D( GLcontext *ctx,
  */
 
 static void
-mgaDDTexParameter( GLcontext *ctx, GLenum target,
+mgaTexParameter( GLcontext *ctx, GLenum target,
 		   struct gl_texture_object *tObj,
 		   GLenum pname, const GLfloat *params )
 {
-   mgaContextPtr       mmesa = MGA_CONTEXT( ctx );
-   mgaTextureObjectPtr t;
-
-   t = (mgaTextureObjectPtr) tObj->DriverData;
+   mgaContextPtr mmesa = MGA_CONTEXT( ctx );
+   mgaTextureObjectPtr t = (mgaTextureObjectPtr) tObj->DriverData;
 
    /* If we don't have a hardware texture, it will be automatically
     * created with current state before it is used, so we don't have
     * to do anything now 
     */
-
    if ( (t == NULL) ||
         (target != GL_TEXTURE_2D &&
          target != GL_TEXTURE_RECTANGLE_NV) ) {
@@ -485,20 +488,16 @@ mgaDDTexParameter( GLcontext *ctx, GLenum target,
 
 
 static void
-mgaDDBindTexture( GLcontext *ctx, GLenum target,
+mgaBindTexture( GLcontext *ctx, GLenum target,
 		  struct gl_texture_object *tObj )
 {
-   if ( target == GL_TEXTURE_2D ||
-        target == GL_TEXTURE_RECTANGLE_NV ) {
-      if ( tObj->DriverData == NULL ) {
-	 mgaAllocTexObj( tObj );
-      }
-   }
+   assert( (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_NV) ||
+           (tObj->DriverData != NULL) );
 }
 
 
 static void
-mgaDDDeleteTexture( GLcontext *ctx, struct gl_texture_object *tObj )
+mgaDeleteTexture( GLcontext *ctx, struct gl_texture_object *tObj )
 {
    mgaContextPtr mmesa = MGA_CONTEXT( ctx );
    driTextureObject * t = (driTextureObject *) tObj->DriverData;
@@ -513,38 +512,34 @@ mgaDDDeleteTexture( GLcontext *ctx, struct gl_texture_object *tObj )
 }
 
 
-void
-mgaDDInitTextureFuncs( GLcontext *ctx )
+/**
+ * Allocate a new texture object.
+ * Called via ctx->Driver.NewTextureObject.
+ * Note: this function will be called during context creation to
+ * allocate the default texture objects.
+ * Note: we could use containment here to 'derive' the driver-specific
+ * texture object from the core mesa gl_texture_object.  Not done at this time.
+ */
+static struct gl_texture_object *
+mgaNewTextureObject( GLcontext *ctx, GLuint name, GLenum target )
 {
-   mgaContextPtr mmesa = MGA_CONTEXT(ctx);
+   struct gl_texture_object *obj;
+   obj = _mesa_new_texture_object(ctx, name, target);
+   mgaAllocTexObj( obj );
+   return obj;
+}
 
 
-   ctx->Driver.ChooseTextureFormat	= mgaChooseTextureFormat;
-   ctx->Driver.TexImage1D		= _mesa_store_teximage1d;
-   ctx->Driver.TexImage2D		= mgaTexImage2D;
-   ctx->Driver.TexImage3D		= _mesa_store_teximage3d;
-   ctx->Driver.TexSubImage1D		= _mesa_store_texsubimage1d;
-   ctx->Driver.TexSubImage2D		= mgaTexSubImage2D;
-   ctx->Driver.TexSubImage3D		= _mesa_store_texsubimage3d;
-   ctx->Driver.CopyTexImage1D		= _swrast_copy_teximage1d;
-   ctx->Driver.CopyTexImage2D		= _swrast_copy_teximage2d;
-   ctx->Driver.CopyTexSubImage1D	= _swrast_copy_texsubimage1d;
-   ctx->Driver.CopyTexSubImage2D	= _swrast_copy_texsubimage2d;
-   ctx->Driver.CopyTexSubImage3D	= _swrast_copy_texsubimage3d;
-   ctx->Driver.TestProxyTexImage	= _mesa_test_proxy_teximage;
-
-   ctx->Driver.BindTexture		= mgaDDBindTexture;
-   ctx->Driver.CreateTexture		= NULL; /* FIXME: Is this used??? */
-   ctx->Driver.DeleteTexture		= mgaDDDeleteTexture;
-   ctx->Driver.IsTextureResident	= driIsTextureResident;
-   ctx->Driver.PrioritizeTexture	= NULL;
-   ctx->Driver.ActiveTexture		= NULL;
-   ctx->Driver.UpdateTexturePalette	= NULL;
-
-   ctx->Driver.TexEnv			= mgaDDTexEnv;
-   ctx->Driver.TexParameter		= mgaDDTexParameter;
-
-   driInitTextureObjects( ctx, & mmesa->swapped,
-                          (DRI_TEXMGR_DO_TEXTURE_2D |
-                           DRI_TEXMGR_DO_TEXTURE_RECT) );
+void
+mgaInitTextureFuncs( struct dd_function_table *functions )
+{
+   functions->ChooseTextureFormat	= mgaChooseTextureFormat;
+   functions->TexImage2D		= mgaTexImage2D;
+   functions->TexSubImage2D		= mgaTexSubImage2D;
+   functions->BindTexture		= mgaBindTexture;
+   functions->NewTextureObject		= mgaNewTextureObject;
+   functions->DeleteTexture		= mgaDeleteTexture;
+   functions->IsTextureResident		= driIsTextureResident;
+   functions->TexEnv			= mgaTexEnv;
+   functions->TexParameter		= mgaTexParameter;
 }

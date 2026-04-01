@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/font/util/patcache.c,v 3.6 2005/10/14 15:16:06 tsi Exp $ */
+/* $Xorg: patcache.c,v 1.4 2001/02/09 02:04:04 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1991, 1998  The Open Group
@@ -24,13 +39,14 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
+/* $XFree86: xc/lib/font/util/patcache.c,v 3.5 2001/12/14 19:56:57 dawes Exp $ */
 
 /*
  * Author:  Keith Packard, MIT X Consortium
  */
 
 #include    <fontmisc.h>
-#include    <X11/fonts/fontstruct.h>
+#include    <fontstruct.h>
 
 /*
  * Static sized hash table for looking up font name patterns
@@ -126,7 +142,7 @@ Hash (const char *string, int len)
 /* add entry */
 void
 CacheFontPattern (FontPatternCachePtr cache, 
-		  const char *pattern, 
+		  char *pattern, 
 		  int patlen, 
 		  FontPtr pFont)
 {
@@ -172,7 +188,7 @@ CacheFontPattern (FontPatternCachePtr cache,
 /* find matching entry */
 FontPtr
 FindCachedFontPattern (FontPatternCachePtr cache, 
-		       const char *pattern, 
+		       char *pattern, 
 		       int patlen)
 {
     int				hash;

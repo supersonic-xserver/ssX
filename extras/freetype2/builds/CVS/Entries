@@ -1,0 +1,18 @@
+/detect.mk/1.1.1.6/Fri Mar 18 13:07:19 2005//Tnetbsd-5-2-3-RELEASE
+/freetype.mk/1.1.1.6/Fri Mar 18 13:07:19 2005//Tnetbsd-5-2-3-RELEASE
+/link_dos.mk/1.1.1.5/Fri Mar 18 13:07:19 2005//Tnetbsd-5-2-3-RELEASE
+/link_std.mk/1.1.1.5/Fri Mar 18 13:07:19 2005//Tnetbsd-5-2-3-RELEASE
+/modules.mk/1.1.1.4/Fri Mar 18 13:07:19 2005//Tnetbsd-5-2-3-RELEASE
+/newline/1.1.1.1/Sat Jan 19 15:25:39 2002//Tnetbsd-5-2-3-RELEASE
+/toplevel.mk/1.1.1.5/Fri Mar 18 13:07:19 2005//Tnetbsd-5-2-3-RELEASE
+D/amiga////
+D/ansi////
+D/atari////
+D/beos////
+D/compiler////
+D/dos////
+D/mac////
+D/os2////
+D/unix////
+D/vms////
+D/win32////

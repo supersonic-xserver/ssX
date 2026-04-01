@@ -1,3 +1,11 @@
+/* $Xorg: Xtrans.c,v 1.4 2001/02/09 02:04:06 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1994, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/lib/xtrans/Xtrans.c,v 3.37 2006/06/19 13:43:24 tsi Exp $ */
+/* $XFree86: xc/lib/xtrans/Xtrans.c,v 3.35 2004/04/03 22:26:21 dawes Exp $ */
 
 /* Copyright 1993, 1994 NCR Corporation - Dayton, Ohio, USA
  *
@@ -158,7 +166,7 @@ TRANS(FreeConnInfo) (XtransConnInfo ciptr)
 #define PROTOBUFSIZE	20
 
 static Xtransport *
-TRANS(SelectTransport) (const char *protocol)
+TRANS(SelectTransport) (char *protocol)
 
 {
     char 	protobuf[PROTOBUFSIZE];
@@ -774,7 +782,7 @@ TRANS(CreateListener) (XtransConnInfo ciptr, char *port, unsigned int flags)
 }
 
 int
-TRANS(NoListen) (const char * protocol)
+TRANS(NoListen) (char * protocol)
 	
 {
    Xtransport *trans;
@@ -1381,24 +1389,15 @@ int TRANS(GetHostname) (char *buf, int maxlen)
 #ifdef NEED_UTSNAME
     struct utsname name;
 
-    if ((maxlen <= 0) || (buf == NULL))
-	return 0;
-
-    len = 0;
-    if (uname(&name) >= 0) {
-	len = strlen(name.nodename);
-	if (len >= maxlen)
-	    len = maxlen - 1;
-	strncpy(buf, name.nodename, len);
-    }
+    uname (&name);
+    len = strlen (name.nodename);
+    if (len >= maxlen) len = maxlen - 1;
+    strncpy (buf, name.nodename, len);
     buf[len] = '\0';
 #else
-    if ((maxlen <= 0) || (buf == NULL))
-	return 0;
-
     buf[0] = '\0';
-    (void) gethostname(buf, maxlen);
-    buf[maxlen - 1] = '\0';
+    (void) gethostname (buf, maxlen);
+    buf [maxlen - 1] = '\0';
     len = strlen(buf);
 #endif /* NEED_UTSNAME */
     return len;

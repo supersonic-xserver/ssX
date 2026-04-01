@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.21tsi Exp $
+XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.18 2004/06/02 22:42:53 dawes Exp $
 
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
@@ -130,6 +130,14 @@ XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.21tsi Exp $
 
 #define LogDirectory		/var/adm
 
+#ifndef PexDynamicModule
+#define PexDynamicModule        YES
+#endif
+
+#ifndef XieDynamicModule
+#define XieDynamicModule        YES
+#endif
+
 #ifndef HasSymLinks
 # define HasSymLinks            YES
 #endif
@@ -201,7 +209,7 @@ XCOMM $XFree86: xc/config/cf/sco5.cf,v 3.21tsi Exp $
 #define MesaUseX86Asm		NO
 
 #define MakeNamedTargetSubdir(dir,flags,subname)\
-	$(MAKE) -C dir $(PASSMFLAGS) $(PARALLELMFLAGS) flags subname
+	$(MAKE) -C dir $(MFLAGS) $(PARALLELMFLAGS) flags subname
 
 #define ArCmdBase               ar
 #define AsCmd                   CcCmd
@@ -258,8 +266,9 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedXfontReqs     $(LDPRELIB) $(FONTSTUBLIB) GzipLibrary $(FREETYPE2LIB) $(XLIB)
 #define SharedFontencReqs   $(LDPRELIB) GzipLibrary
 #define SharedGLReqs        $(LDPRELIB) $(XLIB)
-#define SharedGLUReqs       $(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) $(XLIB)
-#define SharedOSMesaReqs    $(LDPRELIB) $(GLXLIB) $(XXF86VMLIB) $(XLIB)
+#define SharedGLUReqs       $(LDPRELIB) $(XLIB) $(GLXLIB)
+#define SharedOSMesaReqs    $(LDPRELIB) $(XLIB) $(GLXLIB)
+#define SharedPexReqs       $(LDPRELIB) $(XONLYLIB) MathLibrary
 #define SharedSMReqs        $(LDPRELIB) $(ICELIB)
 #define SharedX11Reqs       $(LDPRELIB) -lsocket
 #define SharedXawReqs       $(LDPRELIB) $(XMULIB) $(XTOOLLIB) $(XPMLIB) $(XLIB)
@@ -267,6 +276,7 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 #define SharedXcursorReqs   $(LDPRELIB) $(XRENDERLIB) $(XLIB)
 #define SharedXextReqs      $(LDPRELIB) $(XONLYLIB)
 #define SharedXiReqs        $(LDPRELIB) $(XLIB)
+#define SharedXieReqs       $(LDPRELIB) $(XONLYLIB)
 #define SharedXmuReqs       $(LDPRELIB) $(XTOOLLIB) $(XLIB)
 #define SharedXmuuReqs      $(LDPRELIB) $(XONLYLIB)
 #define SharedXpReqs        $(LDPRELIB) $(XLIB)
@@ -298,7 +308,7 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 									@@\
 src.o: src.S								@@\
 	RemoveFile(src.o)						@@\
-	$(CC) -c AsmDefines $(ALLDEFINES) flags src.S
+	$(CC) -c AsmDefines $(DEFINES) $(INCLUDES) flags src.S
 
 #include <scoLib.rules>  /* minor changes to sv4Lib.rules */
 #include <sv4Lib.rules>

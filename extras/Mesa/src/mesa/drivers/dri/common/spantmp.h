@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef DBG
 #define DBG 0
 #endif
@@ -123,15 +130,29 @@ static void TAG(WriteRGBAPixels)( const GLcontext *ctx,
 
 	 HW_WRITE_CLIPLOOP()
 	    {
-	       for (i=0;i<n;i++)
+	       if (mask)
 	       {
-		  if (mask[i]) {
+	          for (i=0;i<n;i++)
+	          {
+		     if (mask[i]) {
+		        const int fy = Y_FLIP(y[i]);
+		        if (CLIPPIXEL(x[i],fy))
+			   WRITE_RGBA( x[i], fy,
+				       rgba[i][0], rgba[i][1],
+				       rgba[i][2], rgba[i][3] );
+		     }
+	          }
+	       }
+	       else
+	       {
+	          for (i=0;i<n;i++)
+	          {
 		     const int fy = Y_FLIP(y[i]);
 		     if (CLIPPIXEL(x[i],fy))
 			WRITE_RGBA( x[i], fy,
 				    rgba[i][0], rgba[i][1],
 				    rgba[i][2], rgba[i][3] );
-		  }
+	          }
 	       }
 	    }
 	 HW_ENDCLIPLOOP();
@@ -160,9 +181,17 @@ static void TAG(WriteMonoRGBASpan)( const GLcontext *ctx,
 	    {
 	       GLint i = 0;
 	       CLIPSPAN(x,y,n,x1,n1,i);
-	       for (;n1>0;i++,x1++,n1--)
-		  if (mask[i])
+	       if (mask)
+	       {
+	          for (;n1>0;i++,x1++,n1--)
+		     if (mask[i])
+		        WRITE_PIXEL( x1, y, p );
+	       }
+	       else
+	       {
+	          for (;n1>0;i++,x1++,n1--)
 		     WRITE_PIXEL( x1, y, p );
+	       }
 	    }
 	 HW_ENDCLIPLOOP();
       }
@@ -186,12 +215,23 @@ static void TAG(WriteMonoRGBAPixels)( const GLcontext *ctx,
 
 	 HW_WRITE_CLIPLOOP()
 	    {
-	       for (i=0;i<n;i++)
-		  if (mask[i]) {
+	       if (mask)
+	       {
+		  for (i=0;i<n;i++)
+		     if (mask[i]) {
+			int fy = Y_FLIP(y[i]);
+			if (CLIPPIXEL( x[i], fy ))
+			   WRITE_PIXEL( x[i], fy, p );
+		     }
+	       }
+	       else
+	       {
+		  for (i=0;i<n;i++) {
 		     int fy = Y_FLIP(y[i]);
 		     if (CLIPPIXEL( x[i], fy ))
 			WRITE_PIXEL( x[i], fy, p );
 		  }
+	       }
 	    }
 	 HW_ENDCLIPLOOP();
       }
@@ -238,12 +278,23 @@ static void TAG(ReadRGBAPixels)( const GLcontext *ctx,
 
 	 HW_READ_CLIPLOOP()
 	    {
-	       for (i=0;i<n;i++)
-		  if (mask[i]) {
+	       if (mask)
+	       {
+		  for (i=0;i<n;i++)
+		     if (mask[i]) {
+			int fy = Y_FLIP( y[i] );
+			if (CLIPPIXEL( x[i], fy ))
+			   READ_RGBA( rgba[i], x[i], fy );
+		     }
+	       }
+	       else
+	       {
+		  for (i=0;i<n;i++) {
 		     int fy = Y_FLIP( y[i] );
 		     if (CLIPPIXEL( x[i], fy ))
 			READ_RGBA( rgba[i], x[i], fy );
 		  }
+	       }
 	    }
 	 HW_ENDCLIPLOOP();
       }

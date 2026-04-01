@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
 (c) Copyright 1996 Sun Microsystems, Inc.
@@ -30,7 +37,7 @@ dealings in this Software without prior written authorization from said
 copyright holders.
 */
 /*
- * Copyright (c) 1996-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1996-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -76,17 +83,16 @@ copyright holders.
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $XFree86: xc/programs/Xserver/Xprint/ddxInit.c,v 1.20tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xprint/ddxInit.c,v 1.16 2004/06/02 22:42:56 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "windowstr.h"
 #include "servermd.h"
-#include <X11/Xos.h>
+#include "Xos.h"
 #include "DiPrint.h"
-#include "mipointer.h"
 
-/*
+/*-
  *-----------------------------------------------------------------------
  * InitOutput --
  *	If this is built as a print-only server, then we must supply
@@ -116,8 +122,8 @@ copyright holders.
 void 
 InitOutput(
     ScreenInfo 	  *pScreenInfo,
-    const int     argc,
-    const char    **argv)
+    int     	  argc,
+    char    	  **argv)
 {
     pScreenInfo->imageByteOrder = IMAGE_BYTE_ORDER;
     pScreenInfo->bitmapScanlineUnit = BITMAP_SCANLINE_UNIT;
@@ -126,7 +132,9 @@ InitOutput(
 
     pScreenInfo->numPixmapFormats = 0; /* get them in PrinterInitOutput */
     screenInfo.numVideoScreens = 0;
+#ifdef PRINT_ONLY_SERVER
     PrinterInitOutput(pScreenInfo, argc, argv);
+#endif
 }
 
 static void
@@ -151,7 +159,9 @@ static CARD8 printModMap[256];
 static int
 KeyboardProc(
     DevicePtr pKbd,
-    int what)
+    int what,
+    int argc,
+    char *argv[])
 {
     KeySymsRec keySyms;
 
@@ -177,10 +187,13 @@ KeyboardProc(
     return Success;
 }
 
+#include "../mi/mipointer.h"
 static int
 PointerProc(
      DevicePtr pPtr,
-     int what)
+     int what,
+     int argc,
+     char *argv[])
 {
 #define NUM_BUTTONS 1
     CARD8 map[NUM_BUTTONS];
@@ -208,8 +221,8 @@ PointerProc(
 
 void
 InitInput(
-     const int	argc,
-     const char **argv)
+     int	argc,
+     char **argv)
 {
     DeviceIntPtr ptr, kbd;
 
@@ -236,7 +249,7 @@ ProcessInputEvents(void)
 
 #ifdef __DARWIN__
 void
-DarwinHandleGUI(int argc, const char *argv[], char *envp[])
+DarwinHandleGUI(int argc, char *argv[])
 {
 }
 #endif
@@ -294,11 +307,118 @@ void ddxGiveUp(void)	/* Called by GiveUp() */
 int
 ddxProcessArgument (
     int argc,
-    const char *argv[],
+    char *argv[],
     int i)
 {
+#ifdef PRINT_ONLY_SERVER
     return XprintOptions(argc, argv, i) - i;
+#else
+    return(0);
+#endif
 }
+
+#ifdef XINPUT
+
+#include "XI.h"
+#include "XIproto.h"
+#include "XIstubs.h"
+
+extern  int     BadDevice;
+
+int
+ChangePointerDevice (
+    DeviceIntPtr        old_dev,
+    DeviceIntPtr        new_dev,
+    unsigned char	x,
+    unsigned char	y)
+{
+    return (BadDevice);
+}
+
+int
+ChangeDeviceControl (
+    register    ClientPtr       client,
+    DeviceIntPtr dev,
+    xDeviceCtl  *control)
+{
+    return BadMatch;
+}
+
+void
+OpenInputDevice (
+    DeviceIntPtr dev,
+    ClientPtr client,
+    int *status)
+{
+    return;
+}
+
+void
+AddOtherInputDevices (void)
+{
+    return;
+}
+
+void
+CloseInputDevice (
+    DeviceIntPtr        dev,
+    ClientPtr           client)
+{
+    return;
+}
+
+int
+ChangeKeyboardDevice (
+    DeviceIntPtr        old_dev,
+    DeviceIntPtr        new_dev)
+{
+    return (Success);
+}
+
+int
+SetDeviceMode (
+    register    ClientPtr       client,
+    DeviceIntPtr dev,
+    int         mode)
+{
+    return BadMatch;
+}
+
+int
+SetDeviceValuators (
+    register    ClientPtr       client,
+    DeviceIntPtr dev,
+    int         *valuators,
+    int         first_valuator,
+    int         num_valuators)
+{
+    return BadMatch;
+}
+
+
+#endif /* XINPUT */
+
+#ifdef XTESTEXT1
+
+void
+XTestJumpPointer(int x, int y, int dev)
+{
+    return;
+}
+
+void
+XTestGetPointerPos(int x, int y)
+{
+    return;
+}
+
+void
+XTestGenerateEvent(int dev, int keycode, int keystate, int x, int y)
+{
+    return;
+}
+
+#endif /* XTESTEXT1 */
 
 #ifdef AIXV3
 /*

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
    Copyright (C) 1999.  The XFree86 Project Inc.
 
    Written by David S. Miller (davem@redhat.com)
@@ -7,10 +14,10 @@
    Mark Vojkovich's work.
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/cfbscrinit.c,v 1.2 2005/10/14 15:17:14 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32wid/cfbscrinit.c,v 1.1 2000/05/21 01:02:43 mvojkovi Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "misc.h"
 #include "servermd.h"
 #include "scrnintstr.h"
@@ -38,6 +45,7 @@
 int cfb8_32WidScreenPrivateIndex;
 
 static unsigned long cfb8_32WidGeneration = 0;
+extern WindowPtr *WindowTable;
 
 static PixmapPtr cfb8_32WidGetWindowPixmap(WindowPtr pWin);
 
@@ -153,11 +161,11 @@ cfb8_32WidSetupScreen(
 	pScreen->UnrealizeFont = mfbUnrealizeFont;
 	pScreen->CreateGC = cfb8_32WidCreateGC;
 	pScreen->CreateColormap = miInitializeColormap;
-	pScreen->DestroyColormap = (DestroyColormapProcPtr)NoopDDA;
+	pScreen->DestroyColormap = (void (*)())NoopDDA;
 	pScreen->InstallColormap = miInstallColormap;
 	pScreen->UninstallColormap = miUninstallColormap;
 	pScreen->ListInstalledColormaps = miListInstalledColormaps;
-	pScreen->StoreColors = (StoreColorsProcPtr)NoopDDA;
+	pScreen->StoreColors = (void (*)())NoopDDA;
 	pScreen->ResolveColor = miResolveColor;
 	pScreen->BitmapToRegion = mfbPixmapToRegion;
 

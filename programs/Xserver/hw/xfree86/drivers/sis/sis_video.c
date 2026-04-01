@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_video.c,v 1.55 2005/10/14 15:16:45 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis_video.c,v 1.54 2004/06/29 10:17:46 twini Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Xv driver for SiS 300, 315 and 330 series.
  *
@@ -103,7 +111,7 @@
 
 #include "sis.h"
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "xaa.h"
 #include "dixstruct.h"
 #include "fourcc.h"

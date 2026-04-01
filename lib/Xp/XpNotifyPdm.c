@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/Xp/XpNotifyPdm.c,v 1.9tsi Exp $ */
+/* $Xorg: XpNotifyPdm.c,v 1.4 2000/08/17 19:46:07 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -41,6 +48,7 @@
  **
  ******************************************************************************
  *****************************************************************************/
+/* $XFree86: xc/lib/Xp/XpNotifyPdm.c,v 1.8 2003/12/22 17:48:04 tsi Exp $ */
 
 #include <X11/extensions/Print.h>
 #include <X11/Xlibint.h>
@@ -49,7 +57,6 @@
 #include <X11/Xauth.h>
 #include <stdlib.h>
 #include <X11/Xos.h>
-#include "Xpint.h"
 
 /*
  * Alternate selection environment variables.
@@ -65,8 +72,7 @@
 /*
  * str_dup using Xmalloc
  */
-char *
-_xpstrdup(char * str)
+char *_xpstrdup(char * str)
 {
     int len;
     char *newstr;
@@ -229,7 +235,7 @@ XpGetPdmStartParams (
 	/*
 	 * Error - cannot determine or establish a selection_display.
 	 */
-	return( (Status) 0 );
+	return( (Status) NULL );
     }
 
     /*
@@ -266,7 +272,7 @@ XpGetPdmStartParams (
 	    XCloseDisplay( *selection_display );
 	    *selection_display = (Display *) NULL;
 	}
-	return( (Status) 0 );
+	return( (Status) NULL );
     }
 
     status = XmbTextListToTextProperty( *selection_display, list, 6,
@@ -281,7 +287,7 @@ XpGetPdmStartParams (
 	    XCloseDisplay( *selection_display );
 	    *selection_display = (Display *) NULL;
 	}
-	return( (Status) 0 );
+	return( (Status) NULL );
     }
 
     *type              = text_prop.encoding;
@@ -361,7 +367,7 @@ Status XpSendOneTicket(
 	return( (Status) 0 );
 
     if (!ticket)
-	return( (Status) 1 );
+	return( (Status) 1 );;
 
     /*
      * Break down the remaining ticket data and build the
@@ -410,8 +416,7 @@ Status XpSendOneTicket(
     return( (Status) 1 );
 }
 
-Status
-XpSendAuth( Display *display, Window window )
+Status XpSendAuth( Display *display, Window window )
 {
 
     FILE    *auth_file;

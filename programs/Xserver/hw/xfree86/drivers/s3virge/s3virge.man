@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3virge.man,v 1.4tsi Exp $
+.\" $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3virge.man,v 1.4 2003/02/13 03:21:33 dawes Exp $
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH s3virge __drivermansuffix__ __vendorversion__
@@ -155,6 +155,12 @@ option to try if your server runs but you see graphic corruption on the screen.
 Using it decreases performance, as it uses software emulation for drawing
 operations the video driver can accelerate with hardware.
 Default: acceleration is enabled.
+.TP
+.B "Option \*qUseFB\*q"
+There are two framebuffer rendering methods.  fb and cfb.  Both are
+available in the driver.  fb is the newer and default method.  To switch
+back to cfb use this option with no, off or other negative parameter.
+Default: on.
 .TP
 .BR "Option \*qfifo_aggressive " | " fifo_moderate " | " fifo_conservative\*q"
 alter the settings

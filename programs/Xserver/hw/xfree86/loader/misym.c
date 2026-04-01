@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/misym.c,v 1.40 2006/02/19 15:51:27 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/misym.c,v 1.39 2004/02/13 23:58:45 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *
@@ -24,7 +38,7 @@
  */
 
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -84,6 +98,10 @@
 #include "mifillarc.h"
 #include "micmap.h"
 #include "mioverlay.h"
+#ifdef PANORAMIX
+#include "resource.h"
+#include "panoramiX.h"
+#endif
 #ifdef RENDER
 #include "mipict.h"
 #endif
@@ -221,5 +239,5 @@ LOOKUP miLookupTab[] = {
     SYMVAR(miGlyphExtents)
 #endif
 
-    LOOKUP_TERMINATOR
+    {0, 0}
 };

@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 #
-# Copyright 2003-2006 by David H. Dawes.
-# Copyright 2003-2006 by X-Oz Technologies.
+# Copyright 2003-2005 by David H. Dawes.
+# Copyright 2003-2005 by X-Oz Technologies.
 # All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -188,11 +188,7 @@ if ($debug) {
 
 # ARK
 ['$vendor == 0xedd8',
-	'ark'],
-
-# ASPEED Technology
-['$vendor == 0x1a03',
-	'aspeed'],
+	'apm'],
 
 # ATI
 ['$vendor == 0x1002',
@@ -205,10 +201,6 @@ if ($debug) {
 # Cirrus
 ['$vendor == 0x1013',
 	'cirrus'],
-
-# Integrated Micro Solutions
-['$vendor == 0x10e0',
-	'imstt'],
 
 # Intel
 ['$vendor == 0x8086',
@@ -223,10 +215,6 @@ if ($debug) {
 # Neomagic
 ['$vendor == 0x10c8',
 	'neomagic'],
-
-# National Semiconductor Corp
-['$vendor == 0x100b',
-	'nsc'],
 
 # Number Nine
 ['$vendor == 0x105d',
@@ -301,10 +289,6 @@ if ($debug) {
 # VMware
 ['$vendor == 0x15ad',
 	'vmware'],
-
-# Xabre Graphics
-['$vendor == 0x18ca',
-	'xgi'],
 
 # Sun ffb
 ['$sbuspath =~ /,ffb\@/',

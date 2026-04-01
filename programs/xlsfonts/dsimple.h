@@ -1,3 +1,11 @@
+/* $Xorg: dsimple.h,v 1.4 2001/02/09 02:05:54 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -25,7 +33,7 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/xlsfonts/dsimple.h,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/xlsfonts/dsimple.h,v 1.9 2003/11/17 22:20:54 dawes Exp $ */
 
 /*
  * Just_display.h: This file contains the definitions needed to use the
@@ -74,7 +82,6 @@ void usage(void);
 
 unsigned long Resolve_Color(Window, char *);
 Pixmap Bitmap_To_Pixmap(Display *, Drawable, GC, Pixmap, int, int);
-XRectangle Select_Rect(Display *);
 Window Select_Window(Display *);
 void blip(void);
 Window Window_With_Name(Display *, Window, char *);

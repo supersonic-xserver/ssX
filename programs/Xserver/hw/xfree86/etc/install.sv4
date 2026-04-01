@@ -24,6 +24,8 @@
 # Author:  Thomas Roell, roell@informatik.tu-muenchen.de
 #
 
+# $XConsortium: install.sv4 /main/3 1996/02/21 17:47:37 kaleb $
+
 #
 # install addtional termcap & terminfo entries
 #

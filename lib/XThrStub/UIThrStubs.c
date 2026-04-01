@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/XThrStub/UIThrStubs.c,v 3.7tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/lib/XThrStub/UIThrStubs.c,v 3.6 2004/06/01 00:16:57 dawes Exp $
  *
  * Copyright (c) 1995 David E. Wexelblat.  All rights reserved
  *
@@ -143,13 +150,9 @@ typedef pthread_t xthread_t;
 #pragma weak tis_cond_signal = _Xthr_zero_stub_
 #pragma weak tis_cond_broadcast = _Xthr_zero_stub_
 #else
-#ifdef sgi
-#include <sys/pthread.h>
-#else
 #include <pthread.h>
-#endif
 typedef pthread_t xthread_t;
-#if defined(__GNUC__) && (__GNUC__ >= 3)
+#if __GNUC__ >= 3
 xthread_t pthread_self()    __attribute__ ((weak, alias ("_Xthr_self_stub_")));
 int pthread_mutex_init()    __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
 int pthread_mutex_destroy() __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
@@ -161,12 +164,8 @@ int pthread_cond_wait()     __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
 int pthread_cond_signal()   __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
 int pthread_cond_broadcast() __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
 int pthread_key_create()    __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
-void *pthread_getspecific() __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
+void *pthread_getspecific()  __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
 int pthread_setspecific()   __attribute__ ((weak, alias ("_Xthr_zero_stub_")));
-#if defined(_DECTHREADS_) || defined(linux)
-/* See Xthreads.h! */
-int pthread_equal()         __attribute__ ((weak, alias ("_Xthr_equal_stub_")));
-#endif /* _DECTHREADS_ || linux */
 #else	/* __GNUC__ */
 #pragma weak pthread_self = _Xthr_self_stub_
 #pragma weak pthread_mutex_init = _Xthr_zero_stub_
@@ -182,13 +181,11 @@ int pthread_equal()         __attribute__ ((weak, alias ("_Xthr_equal_stub_")));
 #pragma weak pthread_key_create = _Xthr_zero_stub_
 #pragma weak pthread_getspecific = _Xthr_zero_stub_
 #pragma weak pthread_setspecific = _Xthr_zero_stub_
-#if defined(_DECTHREADS_) || defined(linux)
-#pragma weak pthread_equal = _Xthr_equal_stub_	/* See Xthreads.h! */
-#endif /* _DECTHREADS_ || linux */
 #endif	/* __GNUC__ */
 #if defined(_DECTHREADS_) || defined(linux)
+#pragma weak pthread_equal = _Xthr_equal_stub_	/* See Xthreads.h! */
 int
-_Xthr_equal_stub_(xthread_t a, xthread_t b)
+_Xthr_equal_stub_()
 {
     return(1);
 }
@@ -198,9 +195,7 @@ _Xthr_equal_stub_(xthread_t a, xthread_t b)
 #endif /* SVR4 */
 #endif /* CTHREADS */
 
-
-xthread_t _Xthr_self_stub_(void);
-xthread_t 
+static xthread_t 
 _Xthr_self_stub_(void)
 {
     static xthread_t _X_no_thread_id;
@@ -208,10 +203,8 @@ _Xthr_self_stub_(void)
     return(_X_no_thread_id);	/* defined by <X11/Xthreads.h> */
 }
 
-int _Xthr_zero_stub_(void);
-int 
+static int 
 _Xthr_zero_stub_(void)
 {
     return(0);
 }
-

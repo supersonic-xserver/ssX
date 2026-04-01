@@ -1,4 +1,11 @@
 /* Copyright (c) 1994-1999 Silicon Graphics, Inc. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * The contents of this file are subject to the CID Font Code Public Licence
  * Version 1.0 (the "License"). You may not use this file except in compliance
@@ -15,7 +22,7 @@
  * The Original Software is CID font code that was developed by Silicon
  * Graphics, Inc.
  */
-/* $XFree86: xc/lib/font/Type1/afm.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/lib/font/Type1/afm.c,v 1.4 2004/10/23 15:29:26 dawes Exp $ */
 
 #ifdef BUILDCID
 #ifndef FONTMODULE
@@ -23,12 +30,14 @@
 #include <string.h>
 #include <stdlib.h>
 #else
-#include <X11/Xmd.h>        /* For INT32 declaration */
-#include <X11/Xdefs.h>      /* For Bool */
+#include "Xmd.h"        /* For INT32 declaration */
+#include "Xdefs.h"      /* For Bool */
 #include "xf86_ansic.h"
 #endif
-#include "fontmisc.h"       /* for xalloc/xfree */
+#include "fontmisc.h"			/* for xalloc/xfree */
 #include "AFM.h"
+
+#include <limits.h>
 
 #define PBUF 256
 #define KBUF 20
@@ -111,12 +120,11 @@ int CIDAFM(FILE *fd, FontInfo **pfi) {
             
             fi->nChars = atoi(p);
 
-            if ((fi->nChars <= 0) || (fi->nChars > MAX_CID_METRICS)) {
-                xfree(afmbuf);
-                xfree(fi);
-                return(1);
-            }
-
+	    if (fi->nChars < 0 || fi->nChars > INT_MAX / sizeof(Metrics)) {
+		xfree(afmbuf);
+		xfree(fi);
+		return(1);
+	    }
             fi->metrics = (Metrics *)xalloc(fi->nChars * 
                 sizeof(Metrics));
             if (fi->metrics == NULL) {

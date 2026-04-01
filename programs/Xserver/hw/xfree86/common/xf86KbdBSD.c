@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdBSD.c,v 3.25 2006/01/09 14:59:52 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86KbdBSD.c,v 3.23 2004/02/13 23:58:37 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Derived from xf86Kbd.c by S_ren Schmidt (sos@login.dkuug.dk)
  * which is Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
@@ -69,8 +76,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+/* $XConsortium: xf86KbdBSD.c /main/6 1996/10/23 13:12:27 kaleb $ */
+
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 

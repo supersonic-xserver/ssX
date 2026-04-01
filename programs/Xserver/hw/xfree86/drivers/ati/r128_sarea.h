@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_sarea.h,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/r128_sarea.h,v 1.10 2004/12/10 16:07:01 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1999, 2000 ATI Technologies Inc., Markham, Ontario,
  *                      Precision Insight, Inc., Cedar Park, Texas, and
@@ -38,7 +45,7 @@
 #ifndef _R128_SAREA_H_
 #define _R128_SAREA_H_
 
-#include <X11/Xmd.h>
+#include "Xmd.h"
 
 /* WARNING: If you change any of these defines, make sure to change the
  * defines in the kernel file (r128_drm.h)

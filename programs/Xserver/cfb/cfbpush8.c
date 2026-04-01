@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Push Pixels for 8 bit displays.
  */
 
-/* $XFree86: xc/programs/Xserver/cfb/cfbpush8.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/cfb/cfbpush8.c,v 1.6 2001/12/14 19:59:24 dawes Exp $ */
 
 /*
 
@@ -28,12 +35,13 @@ Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 */
+/* $Xorg: cfbpush8.c,v 1.4 2001/02/09 02:04:38 xorgcvs Exp $ */
 
 #if PSZ == 8
 
-#include	<X11/X.h>
-#include	<X11/Xmd.h>
-#include	<X11/Xproto.h>
+#include	"X.h"
+#include	"Xmd.h"
+#include	"Xproto.h"
 #include	"gcstruct.h"
 #include	"windowstr.h"
 #include	"scrnintstr.h"
@@ -46,12 +54,15 @@ in this Software without prior written authorization from The Open Group.
 #include	"maskbits.h"
 
 void
-cfbPushPixels8(GCPtr pGC, PixmapPtr pBitmap, DrawablePtr pDrawable,
-	       int dx, int dy, int xOrg, int yOrg)
+cfbPushPixels8 (pGC, pBitmap, pDrawable, dx, dy, xOrg, yOrg)
+    GCPtr	pGC;
+    PixmapPtr	pBitmap;
+    DrawablePtr	pDrawable;
+    int		dx, dy, xOrg, yOrg;
 {
-    CfbBits   *src, *dst;
-    CfbBits   pixel;
-    CfbBits   c, bits;
+    register CfbBits   *src, *dst;
+    register CfbBits   pixel;
+    register CfbBits   c, bits;
     CfbBits   *pdstLine, *psrcLine;
     CfbBits   *pdstBase;
     int		    srcWidth;

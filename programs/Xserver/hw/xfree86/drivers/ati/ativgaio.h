@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/ativgaio.h,v 1.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/ativgaio.h,v 1.7 2004/12/31 16:07:07 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -34,6 +41,8 @@
 #include "atipriv.h"
 #include "atiproto.h"
 
+#ifndef AVOID_CPIO
+
 extern void ATISetVGAIOBase FunctionPrototype((ATIPtr, const CARD8));
 
 /* Odds and ends to ease reading and writting of indexed registers */
@@ -48,5 +57,7 @@ extern void ATISetVGAIOBase FunctionPrototype((ATIPtr, const CARD8));
         outb(_Register, _Index);          \
         outb((_Register) + 1, _Value);    \
     } while (0)
+
+#endif /* AVOID_CPIO */
 
 #endif /* ___ATIVGAIO_H___ */

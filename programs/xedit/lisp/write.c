@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (c) 2002 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +34,7 @@
  * Author: Paulo César Pereira de Andrade
  */
 
-/* $XFree86: xc/programs/xedit/lisp/write.c,v 1.32 2003/05/27 22:27:04 tsi Exp $ */
+/* $XFree86: xc/programs/xedit/lisp/write.c,v 1.33 2004/10/23 15:29:33 dawes Exp $ */
 
 #include "lisp/write.h"
 #include "lisp/hash.h"

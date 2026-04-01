@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/Xserver/Xext/extmod/Imakefile,v 1.26tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/Xext/extmod/Imakefile,v 1.24 2004/06/01 00:16:59 dawes Exp $
 /*
- * Copyright (c) 1994-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -90,6 +90,9 @@ LinkSourceFile(dpms.c,..)
 #if BuildFontCache
    FONTCACHESRCS = fontcache.c
    FONTCACHEOBJS = fontcache.o
+#if 0
+   FONTCACHEINCLUDES = -I$(XF86SRC)/os-support
+#endif
 LinkSourceFile(fontcache.c,..)
 #endif
 
@@ -103,8 +106,8 @@ LinkSourceFile(xvmc.c,..)
 #endif
 
 #if BuildXResExt
-        XRESSRCS = xres.c
-        XRESOBJS = xres.o
+   XRESSRCS = xres.c
+   XRESOBJS = xres.o
 LinkSourceFile(xres.c,..)
 #endif
 
@@ -121,56 +124,34 @@ LinkSourceFile(sampleEVI.c,..)
 LinkSourceFile(cup.c,..)
 #endif
 
-#if BuildShapeExt
-       SHAPESRCS = shape.c
-       SHAPEOBJS = shape.o
-LinkSourceFile(shape.c,..)
-#endif
-
-#if BuildMITMiscExt
-     MITMISCSRCS = mitmisc.c
-     MITMISCOBJS = mitmisc.o
-LinkSourceFile(mitmisc.c,..)
-#endif
-
-#if BuildBigReqsExt
-      BIGREQSRCS = bigreq.c
-      BIGREQOBJS = bigreq.o
-LinkSourceFile(bigreq.c,..)
-#endif
-
-#if BuildSyncExt
-        SYNCSRCS = sync.c
-        SYNCOBJS = sync.o
-LinkSourceFile(sync.c,..)
-#endif
-
-#if BuildXCMiscExt
-      XCMISCSRCS = xcmisc.c
-      XCMISCOBJS = xcmisc.o
-LinkSourceFile(xcmisc.c,..)
-#endif
-
      MODINITSRCS = modinit.c 
      MODINITOBJS = modinit.o
 
-            SRCS = $(MODINITSRCS) $(SHAPESRCS) $(MULTIBUFSRC) $(MITMISCSRCS) \
-		   $(BIGREQSRCS) $(SYNCSRCS) $(SCRNSAVSRC) $(XCMISCSRCS) \
-		   $(VIDMODESRCS) $(XF86MISCSRCS) $(XF86DGASRCS) $(CUPSRCS) \
-		   $(DPMSSRCS) $(FONTCACHESRCS) $(EVISRCS) $(XVSRCS) \
-		   $(XRESSRCS)
+       SRCS = shape.c $(MULTIBUFSRC) \
+              mitmisc.c \
+	      bigreq.c sync.c $(SCRNSAVSRC) xcmisc.c $(VIDMODESRCS) \
+	      $(XF86MISCSRCS) $(XF86DGASRCS) \
+	      $(CUPSRCS) $(DPMSSRCS) $(FONTCACHESRCS)  \
+	      $(EVISRCS) $(XVSRCS) $(MODINITSRCS) $(XRESSRCS)
 
-           MOBJS = $(MODINITOBJS) $(SHAPEOBJS) $(MULTIBUFOBJ) $(MITMISCOBJS) \
-		   $(BIGREQOBJS) $(SYNCOBJS) $(SCRNSAVOBJ) $(XCMISCOBJS) \
-		   $(VIDMODEOBJS) $(XF86MISCOBJS) $(XF86DGAOBJS) $(CUPOBJS) \
-		   $(DPMSOBJS) $(FONTCACHEOBJS) $(EVIOBJS) $(XVOBJS) \
-		   $(XRESOBJS)
+      MOBJS = $(MODINITOBJS) shape.o $(MULTIBUFOBJ) mitmisc.o \
+	      bigreq.o sync.o $(SCRNSAVOBJ) xcmisc.o \
+	      $(VIDMODEOBJS) $(XF86MISCOBJS) $(XF86DGAOBJS) \
+              $(CUPOBJS) $(DPMSOBJS) $(FONTCACHEOBJS) \
+	      $(EVIOBJS) $(XVOBJS) $(XRESOBJS)
 
-         DEFINES = -DEXTMODULE $(EXT_DEFINES)
+    DEFINES = -DEXTMODULE $(EXT_DEFINES)
 
-    XF86INCLUDES = -I$(XF86COMSRC)
-        INCLUDES = -I.. -I../../include $(XF86INCLUDES)
-        LINTLIBS = ../../dix/llib-ldix.ln ../../os/llib-los.ln
+XF86INCLUDES = -I$(XF86COMSRC)
+    INCLUDES = -I.. -I../../include -I$(XINCLUDESRC) -I$(EXTINCSRC) \
+	       $(XF86INCLUDES) $(FONTCACHEINCLUDES) -I$(FONTINCSRC)
+    LINTLIBS = ../../dix/llib-ldix.ln ../../os/llib-los.ln
+
+LinkSourceFile(shape.c,..)
+LinkSourceFile(mitmisc.c,..)
+LinkSourceFile(bigreq.c,..)
+LinkSourceFile(sync.c,..)
+LinkSourceFile(xcmisc.c,..)
 
 ModuleObjectRule()
 
@@ -181,7 +162,7 @@ ModuleObjectRule()
 SpecialCObjectRule(xf86vmode,NullParameter,-O0)
 #endif
 
-SpecialCObjectRule(modinit,$(ICONFIGFILES),NullParameter)
+SpecialCObjectRule(modinit,$(ICONFIGFILES),$(EXT_DEFINES))
 LibraryModuleTarget(extmod,$(MOBJS),extensions)
 NormalLintTarget($(SRCS))
 

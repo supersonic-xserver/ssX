@@ -1,3 +1,11 @@
+/* $XConsortium: xcalc.c,v 1.16 94/04/17 20:43:31 converse Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright (c) 1989  X Consortium
@@ -40,8 +48,7 @@ from the X Consortium.
 
 #include <stdio.h>
 #include <math.h>
-#include <stdlib.h>
-#include <setjmp.h>
+#include <signal.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Xatom.h>
@@ -53,14 +60,18 @@ from the X Consortium.
 #include <X11/Xaw/Toggle.h>
 #include <X11/cursorfont.h>
 #include "xcalc.h"
-#include "xcmath.h"
-#define DEFINE_ACTIONS
 #include "actions.h"
+
+#ifndef IEEE
+extern signal_t fperr();
+extern signal_t illerr();
+#endif
 
 /*
  *	global data
  */
 int	rpn = 0;		/* Reverse Polish Notation (HP mode) flag */
+#define LCD_STR_LEN	32
 char	dispstr[LCD_STR_LEN];		/* string to show up in the LCD */
 Atom	wm_delete_window;		/* see ICCCM section 5.2.2 */
 
@@ -106,15 +117,17 @@ static XtResource Resources[] = {
 };
 #undef offset
 
-static void Syntax(int argc, char **argv);
-static void create_calculator(Widget shell);
-static void create_display(Widget parent);
-static void create_keypad(Widget parent);
 
 int
-main(int argc, char **argv)
+main(argc, argv)
+    int		argc;
+    char	**argv;
 {
     Arg		args[3];
+
+    void create_calculator();
+    void Quit(), Syntax();
+
 
     XtSetLanguageProc(NULL, (XtLanguageProc) NULL, NULL);
 
@@ -156,15 +169,22 @@ main(int argc, char **argv)
 	XtSetValues(calculator, args, ONE);
     }
 
+#ifndef IEEE
+    signal(SIGFPE,fperr);
+    signal(SIGILL,illerr);
+#endif
     ResetCalc();
     XtAppMainLoop(xtcontext);
 
     return 0;
 }
 
-static void
-create_calculator(Widget shell)
+void create_calculator(shell)
+    Widget	shell;
 {
+    void create_display();
+    void create_keypad();
+
     rpn = appResources.rpn;
     calculator = XtCreateManagedWidget(rpn ? "hp" : "ti", formWidgetClass,
 				       shell, (ArgList) NULL, ZERO);
@@ -176,8 +196,8 @@ create_calculator(Widget shell)
 /*
  *	Do the calculator data display widgets.
  */
-static void
-create_display(Widget parent)
+void create_display(parent)
+    Widget	parent;
 {
     Widget	bevel, screen;
     static Arg	args[] = {
@@ -229,8 +249,8 @@ create_display(Widget parent)
  *      these defaults in an environment-specific resource file.
  */
 
-static void
-create_keypad(Widget parent)
+void create_keypad(parent)
+    Widget	parent;
 {
     static char	*Keyboard[] = {
 	"button1", "button2", "button3", "button4", "button5",
@@ -259,8 +279,8 @@ create_keypad(Widget parent)
 /*
  * 	called by math routines to write to the liquid crystal display.
  */
-void
-draw(char *string)
+void draw(string)
+    char	*string;
 {
     Arg	args[1];
 
@@ -270,8 +290,9 @@ draw(char *string)
 /*
  *	called by math routines to turn on and off the display indicators.
  */
-void
-setflag(int indicator, Boolean on)
+void setflag(indicator, on)
+    int		indicator;
+    Boolean	on;
 {
     if (on) XtMapWidget(ind[indicator]);
     else XtUnmapWidget(ind[indicator]);
@@ -280,8 +301,7 @@ setflag(int indicator, Boolean on)
 /*
  *	ring the bell.
  */
-void
-ringbell()
+void ringbell()
 {
     XBell(dpy, 0);
 }
@@ -289,9 +309,9 @@ ringbell()
 /*
  *	die.
  */
-void
-Quit()
+void Quit()
 {
+    extern void exit();
     XtDestroyApplicationContext(xtcontext);
     exit(0);
 }
@@ -299,10 +319,12 @@ Quit()
 /*  
  *	recite and die.
  */
-static void
-Syntax(int argc, char **argv)	
+void Syntax(argc, argv)	
+    int		argc;
+    char	**argv;
 {
     register int i;
+    extern void exit();
     (void) fprintf(stderr, "%s: unknown options:", argv[0]);
     for (i=1; i <argc; i++)
 	(void) fprintf(stderr, " %s", argv[i]);
@@ -324,9 +346,14 @@ Syntax(int argc, char **argv)
  */
 
 /*ARGSUSED*/
-static Boolean
-convert(Widget w, Atom *selection, Atom *target, Atom *type, XtPointer *value,
-	unsigned long *length, int *format)
+Boolean convert(w, selection, target, type, value, length, format)
+    Widget	w;
+    Atom	*selection;
+    Atom	*target;
+    Atom	*type;
+    XtPointer	*value;
+    unsigned long	*length;
+    int		*format;
 {
     if (*target == XA_STRING)
     {
@@ -344,8 +371,9 @@ convert(Widget w, Atom *selection, Atom *target, Atom *type, XtPointer *value,
  * called when xcalc loses ownership of the selection.
  */
 /*ARGSUSED*/
-static void
-lose(Widget w, Atom *selection)
+void lose(w, selection)
+    Widget	w;
+    Atom	*selection;
 {
     XawToggleUnsetCurrent(LCD);
 }
@@ -354,8 +382,10 @@ lose(Widget w, Atom *selection)
  * called when some other client got the selection.
  */
 /*ARGSUSED*/
-static void
-done(Widget w, Atom *selection, Atom *target)
+void done(w, selection, target)
+    Widget	w;
+    Atom	*selection;
+    Atom	*target;
 {
     selstr[0] = '\0';
 }
@@ -363,8 +393,8 @@ done(Widget w, Atom *selection, Atom *target)
 /*
  * called by the selection() action routine, in response to user action.
  */
-void
-do_select(Time time)
+void do_select(time)
+    Time	time;
 {
     Boolean	state;
     Arg		args[1];

@@ -1,29 +1,13 @@
 /*
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
  *
-Copyright 1989, 1998  The Open Group
-
-Permission to use, copy, modify, distribute, and sell this software and its
-documentation for any purpose is hereby granted without fee, provided that
-the above copyright notice appear in all copies and that both that
-copyright notice and this permission notice appear in supporting
-documentation.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of The Open Group shall not be
-used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from The Open Group.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-/* $XFree86: xc/include/extensions/multibuf.h,v 3.5 2003/11/17 22:20:03 dawes Exp $ */
 
 #ifndef _MULTIBUF_H_
 #define _MULTIBUF_H_
@@ -273,19 +257,16 @@ _XFUNCPROTOEND
 
 #include "scrnintstr.h"
 
-struct _mbufScreen;		/* declared in multibufst.h */
-struct _mbufWindow;
+typedef Bool	(* mbInitFunc)();
 
-typedef Bool (* mbInitFunc)(ScreenPtr pScreen, struct _mbufScreen *pMBScreen);
-typedef void (*mbufCopyBufferBitsFunc)(struct _mbufWindow *pMBWindow,
-				       int srcBufferNum, int dstBufferNum);
-typedef void (*mbufDrawSelectPlaneFunc)(ScreenPtr pScreen,
-					DevUnion selectPlane, RegionPtr prgn,
-					long bufferNum);
+struct _mbufScreen;		/* declared in multibufst.h */
 
 extern void	RegisterMultibufferInit(
     ScreenPtr			/* pScreen */,
-    mbInitFunc			/* bufMultibufferInit */
+    Bool (* /* bufMultibufferInit */)(
+	ScreenPtr		/* pScreen */,
+	struct _mbufScreen *	/* pMBScreen */
+    )
 );
 
 struct xMbufBufferInfo;		/* declared in multibufst.h */
@@ -296,8 +277,8 @@ extern void	RegisterDoubleBufferHardware(
     struct xMbufBufferInfo *	/* pInfo */,
     DevUnion *			/* frameBuffer */,
     DevUnion			/* selectPlane */,
-    mbufCopyBufferBitsFunc	/* CopyBufferBitsFunc */,
-    mbufDrawSelectPlaneFunc	/* DrawSelectPlaneFunc */
+    void (* /* CopyBufferBitsFunc */ )(),
+    void (* /* DrawSelectPlaneFunc */ )()
 );
 
 extern int	CreateImageBuffers (

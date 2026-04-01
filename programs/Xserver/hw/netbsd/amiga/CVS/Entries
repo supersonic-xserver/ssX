@@ -1,0 +1,20 @@
+/INSTALL.X11/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/README/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/Xamiga.man/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amiga.h/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amigaC.c/1.3/Thu Aug  3 20:08:58 2006//Tnetbsd-5-2-3-RELEASE
+/amigaCC.h/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amigaCfb.c/1.2/Thu Aug  3 20:07:09 2006//Tnetbsd-5-2-3-RELEASE
+/amigaCursor.c/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amigaFbs.c/1.2/Fri Dec  9 05:44:50 2005//Tnetbsd-5-2-3-RELEASE
+/amigaInit.c/1.2/Wed Mar 30 09:50:44 2005//Tnetbsd-5-2-3-RELEASE
+/amigaIo.c/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amigaKbd.c/1.2/Wed Dec  7 23:23:01 2005//Tnetbsd-5-2-3-RELEASE
+/amigaKeyMap.c/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amigaMfb.c/1.1/Thu Jan 15 12:07:41 2004//Tnetbsd-5-2-3-RELEASE
+/amigaMouse.c/1.2/Wed Dec  7 23:23:01 2005//Tnetbsd-5-2-3-RELEASE
+D/afb////
+D/cirrus////
+D/retina////
+D/s3////

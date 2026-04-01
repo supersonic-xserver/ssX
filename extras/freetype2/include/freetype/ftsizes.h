@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftsizes.h                                                              */
 /*                                                                         */
 /*    FreeType size objects management (specification).                    */
 /*                                                                         */
-/*  Copyright 1996-2001 by                                                 */
+/*  Copyright 1996-2001, 2003 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -32,6 +39,12 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#ifdef FREETYPE_H
+#error "freetype.h of FreeType 1 has been loaded!"
+#error "Please fix the directory search order for header files"
+#error "so that freetype.h of FreeType 2 is found first."
+#endif
+
 
 FT_BEGIN_HEADER
 
@@ -57,7 +70,7 @@ FT_BEGIN_HEADER
   /*    mostly in order to manage several character pixel sizes of the     */
   /*    same font family and style.  See @FT_New_Size and @FT_Done_Size.   */
   /*                                                                       */
-  /*    Note that @FT_Set_Pixel_Sizes and @FT_Set_Character_Size only      */
+  /*    Note that @FT_Set_Pixel_Sizes and @FT_Set_Char_Size only           */
   /*    modify the contents of the current "active" size; you thus need    */
   /*    to use @FT_Activate_Size to change it.                             */
   /*                                                                       */
@@ -101,7 +114,9 @@ FT_BEGIN_HEADER
   /*    FT_Done_Size                                                       */
   /*                                                                       */
   /* <Description>                                                         */
-  /*    Discards a given size object.                                      */
+  /*    Discards a given size object.  Note that @FT_Done_Face             */
+  /*    automatically discards all size objects allocated with             */
+  /*    @FT_New_Size.                                                      */
   /*                                                                       */
   /* <Input>                                                               */
   /*    size :: A handle to a target size object.                          */

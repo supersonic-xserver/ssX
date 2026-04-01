@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xnest/Pixmap.c,v 3.9tsi Exp $ */
+/* $Xorg: Pixmap.c,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993 by Davor Matic
@@ -12,9 +19,10 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
+/* $XFree86: xc/programs/Xserver/hw/xnest/Pixmap.c,v 3.8 2003/11/16 05:05:20 dawes Exp $ */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "regionstr.h"
 #include "pixmapstr.h"
 #include "scrnintstr.h"
@@ -99,7 +107,6 @@ xnestPixmapToRegion(PixmapPtr pPixmap)
   pTmpReg = REGION_CREATE(pPixmap->drawable.pScreen, NULL, 1);
   if(!pReg || !pTmpReg) return NullRegion;
   
-  Box.x1 = 0;
   for (y = 0; y < pPixmap->drawable.height; y++) {
     Box.y1 = y;
     Box.y2 = y + 1;

@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcCpArea.c,v 1.7 2003/11/10 18:22:42 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -21,6 +28,8 @@
  * SOFTWARE.
  *
 */
+
+/* $XConsortium: ppcCpArea.c /main/6 1996/02/21 17:57:24 kaleb $ */
 
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
@@ -59,8 +68,15 @@ SOFTWARE.
  * Graft in the DoBitblt from cfb. It does everything correctly.
  */
 static void
-vga16DoBitblt(DrawablePtr pSrc, DrawablePtr pDst, int alu,
-	      RegionPtr prgnDst, DDXPointPtr pptSrc, unsigned long planemask)
+vga16DoBitblt
+(
+    DrawablePtr	    pSrc,
+    DrawablePtr	    pDst,
+    int		    alu,
+    RegionPtr	    prgnDst,
+    DDXPointPtr	    pptSrc,
+    unsigned long   planemask
+)
 {
     int widthSrc, widthDst;	/* add to get to same position in next line */
     BoxPtr pbox;
@@ -212,8 +228,14 @@ vga16DoBitblt(DrawablePtr pSrc, DrawablePtr pDst, int alu,
  */
 
 RegionPtr
-xf4bppCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
-	       int srcx, int srcy, int width, int height, int dstx, int dsty)
+xf4bppCopyArea(pSrcDrawable, pDstDrawable,
+	    pGC, srcx, srcy, width, height, dstx, dsty)
+register DrawablePtr pSrcDrawable;
+register DrawablePtr pDstDrawable;
+register GC *pGC;
+int srcx, srcy;
+int width, height;
+int dstx, dsty;
 {
     RegionPtr prgnSrcClip = NULL;   /* may be a new region, or just a copy */
     Bool freeSrcClip = FALSE;
@@ -221,11 +243,11 @@ xf4bppCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GC *pGC,
     RegionPtr prgnExposed;
     RegionRec rgnDst;
     DDXPointPtr pptSrc;
-    DDXPointPtr ppt;
-    BoxPtr pbox;
+    register DDXPointPtr ppt;
+    register BoxPtr pbox;
     int i;
-    int dx;
-    int dy;
+    register int dx;
+    register int dy;
     xRectangle origSource;
     DDXPointRec origDest;
     int numRects;

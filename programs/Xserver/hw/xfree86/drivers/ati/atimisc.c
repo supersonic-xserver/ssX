@@ -1,6 +1,13 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimisc.c,v 1.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/ati/atimisc.c,v 1.10 2004/12/31 16:07:06 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright 2000 through 2008 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
+ * Copyright 2000 through 2005 by Marc Aurele La France (TSI @ UQV), tsi@xfree86.org
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -51,10 +58,10 @@ static XF86ModuleVersionInfo ATIVersionRec =
 static pointer
 ATISetup
 (
-    ModuleDescPtr Module,
-    pointer       Options,
-    int           *ErrorMajor,
-    int           *ErrorMinor
+    pointer Module,
+    pointer Options,
+    int     *ErrorMajor,
+    int     *ErrorMinor
 )
 {
     static Bool Inited = FALSE;
@@ -99,12 +106,18 @@ ATISetup
          * Tell loader about symbols from other modules that this module might
          * refer to.
          */
-        xf86LoaderModRefSymLists(Module,
+        xf86LoaderRefSymLists(
             ATIint10Symbols,
             ATIddcSymbols,
             ATIvbeSymbols,
+
+#ifndef AVOID_CPIO
+
             ATIxf1bppSymbols,
             ATIxf4bppSymbols,
+
+#endif /* AVOID_CPIO */
+
             ATIfbSymbols,
             ATIshadowfbSymbols,
             ATIxaaSymbols,
@@ -123,18 +136,6 @@ XF86ModuleData atimiscModuleData =
 {
     &ATIVersionRec,
     ATISetup,
-    NULL
-};
-
-const char *atimiscExportedSymbols[] = {
-    "ATIPreInit",
-    "ATIScreenInit",
-    "ATISwitchMode",
-    "ATIAdjustFrame",
-    "ATIEnterVT",
-    "ATILeaveVT",
-    "ATIFreeScreen",
-    "ATIValidMode",
     NULL
 };
 

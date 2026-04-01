@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/mi/mizerline.c,v 3.8tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/mi/mizerline.c,v 3.7 2001/12/14 20:00:29 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,8 +52,8 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-
-#include <X11/X.h>
+/* $Xorg: mizerline.c,v 1.4 2001/02/09 02:05:22 xorgcvs Exp $ */
+#include "X.h"
 
 #include "misc.h"
 #include "scrnintstr.h"
@@ -96,8 +103,12 @@ SOFTWARE.
 }
 
 void
-miZeroLine(DrawablePtr pDraw, GCPtr pGC, int mode, int npt,
-	   DDXPointPtr pptInit)
+miZeroLine(pDraw, pGC, mode, npt, pptInit)
+    DrawablePtr pDraw;
+    GCPtr	pGC;
+    int		mode;		/* Origin or Previous */
+    int		npt;		/* number of points */
+    DDXPointPtr pptInit;
 {
     int Nspans, current_y = 0;
     DDXPointPtr ppt; 
@@ -358,8 +369,12 @@ miZeroLine(DrawablePtr pDraw, GCPtr pGC, int mode, int npt,
 }
 
 void
-miZeroDashLine(DrawablePtr dst, GCPtr pgc, int mode, int nptInit,
-	       DDXPointPtr pptInit)
+miZeroDashLine(dst, pgc, mode, nptInit, pptInit)
+DrawablePtr dst;
+GCPtr pgc;
+int mode;
+int nptInit;		/* number of points in polyline */
+DDXPointRec *pptInit;	/* points in the polyline */
 {
     /* XXX kludge until real zero-width dash code is written */
     pgc->lineWidth = 1;

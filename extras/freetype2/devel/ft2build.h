@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ft2build.h                                                             */
 /*                                                                         */
 /*    FreeType 2 build and setup macros.                                   */
 /*    (Generic version)                                                    */
 /*                                                                         */
-/*  Copyright 1996-2001 by                                                 */
+/*  Copyright 1996-2001, 2003 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,24 +25,24 @@
 
 
  /*
-  *  this is a development version of <ft2build.h> that is used
-  *  to build the library in debug mode. Its only difference with
-  *  the reference is that is forces the use of the local "ftoption.h"
-  *  which contains different settings for all configuration macros
+  *  This is a development version of <ft2build.h> that is used
+  *  to build the library in debug mode.  Its only difference with
+  *  the reference is that it forces the use of the local "ftoption.h"
+  *  which contains different settings for all configuration macros.
   *
-  *  to use it, you must define the environment variable FT2_BUILD_INCLUDE
+  *  To use it, you must define the environment variable FT2_BUILD_INCLUDE
   *  to point to the directory containing these two files ("ft2build.h" and
-  *  "ftoption.h"), then invoke Jam as usual
+  *  "ftoption.h"), then invoke Jam as usual.
   */
 
-#ifndef __FT2_BUILD_GENERIC_H__
-#define __FT2_BUILD_GENERIC_H__
+#ifndef __FT2_BUILD_DEVEL_H__
+#define __FT2_BUILD_DEVEL_H__
 
 #define  FT_CONFIG_OPTIONS_H   <ftoption.h>
 
 #include <freetype/config/ftheader.h>
 
-#endif /* __FT2_BUILD_GENERIC_H__ */
+#endif /* __FT2_BUILD_DEVEL_H__ */
 
 
 /* END */

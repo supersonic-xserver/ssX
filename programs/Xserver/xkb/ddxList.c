@@ -1,3 +1,11 @@
+/* $Xorg: ddxList.c,v 1.3 2000/08/17 19:53:46 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,7 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/ddxList.c,v 3.10tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/xkb/ddxList.c,v 3.9 2003/11/17 22:20:45 dawes Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -37,8 +45,8 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "scrnintstr.h"
 #include "windowstr.h"
 #define	XKBSRV_NEED_FILE_FUNCS
-#include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XI.h>
+#include "XKBsrv.h"
+#include "XI.h"
 
 #ifndef PATH_MAX
 #ifdef MAXPATHLEN
@@ -97,7 +105,7 @@ char *		tmp;
     wire16[1]= slen;
     memcpy(wire8,str,slen);
     if (client->swapped) {
-	int n;
+	register int n;
 	swaps(&wire16[0],n);
 	swaps(&wire16[1],n);
     }
@@ -210,7 +218,7 @@ char tmpname[32];
     list->nFound[what]= 0;
     while ((status==Success)&&((tmp=fgets(buf,PATH_MAX,in))!=NULL)) {
 	unsigned flags;
-	unsigned int i;
+	register unsigned int i;
 	if (*tmp=='#') /* comment, skip it */
 	    continue;
 	if (!strncmp(tmp, "Warning:", 8) || !strncmp(tmp, "        ", 8))

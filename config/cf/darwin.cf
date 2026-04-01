@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/darwin.cf,v 1.58tsi Exp $
+XCOMM platform:  $XFree86: xc/config/cf/darwin.cf,v 1.53 2005/02/15 00:57:23 dawes Exp $
 
 /* Darwin / Mac OS X configuration by John Carmack <johnc@idsoftware.com> */
 
@@ -49,19 +49,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #endif
 #ifndef HasGcc3
 # define HasGcc3                NO
-#endif
-#ifndef HasGcc4
-# define HasGcc4                NO
-#endif
-#if OSMajorVersion >= 7
-#define HasPam                  YES
-#ifndef PamLibraries
-#define PamLibraries            -lpam
-#endif
-
-#ifndef PamMiscLibraries
-#define PamMiscLibraries        -lpam_misc
-#endif
 #endif
 
 /* Older versions don't really support IPv6, but #define AF_INET6. */
@@ -168,44 +155,26 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 /*
  * Our cpp isn't in /lib/cpp and early versions don't like -undef.
- * We support gcc 3.3 and 4.0 as the default compiler
+ * The gcc 3.3 cpp that Apple ships inserts spurious #pragmas,
+ * so we use the 3.1-based version in this case.
  */
 #if (GccMajorVersion == 3) && (GccMinorVersion == 3)
-# define CppCmd                 /usr/bin/cpp-3.3
-# define StandardCppOptions     -traditional -P
-# define RawCppCmd              CppCmd -undef
-#else
-#if (GccMajorVersion > 3)
-# define CppCmd                 /usr/bin/cpp-4.0
-# define StandardCppOptions     -traditional -P
-# define RawCppCmd              CppCmd -undef
+# define CppCmd                 /usr/bin/cpp3
 #else
 # define CppCmd                 /usr/bin/cpp
-# define StandardCppOptions     -traditional
-# define RawCppCmd              CppCmd
 #endif
+#if (GccMajorVersion == 3) && (GccMinorVersion == 3) || (GccMajorVersion > 3)
+# define StandardCppOptions	-traditional -D__GNUC__
+#endif
+#if HasGcc3
+# define RawCppCmd              CppCmd -undef
+#else
+# define RawCppCmd              CppCmd
 #endif
 
 /* we have a gcc compatible compiler, but its not called gcc */
 #define CcCmd                   /usr/bin/cc
 #define CplusplusCmd            /usr/bin/c++
-
-/*
- * makedepend doesn't understand ObjectiveC's #import directives, frameworks,
- * and perhaps other things...
- */
-#if HasGcc
-# ifndef UseGccMakeDepend
-#  define UseGccMakeDepend	YES
-# endif
-# ifndef PostIncDir
-#  define PostIncDir		DefaultGccIncludeDir
-# endif
-#else
-# ifndef UseCCMakeDepend
-#  define UseCCMakeDepend	YES
-# endif
-#endif
 
 /* default flags to pass to cc */
 #ifndef DefaultCCOptions
@@ -233,7 +202,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #ifdef PpcDarwinArchitecture
 # define DarwinMachineDefines   -D__powerpc__
 # if HasGcc3
-#  define OptimizedCDebugFlags  -Os GccAliasingArgs
+#  define OptimizedCDebugFlags  -Os
 # else
 #  define OptimizedCDebugFlags  -O2
 # endif
@@ -243,7 +212,7 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 #ifdef i386DarwinArchitecture
 # define DarwinMachineDefines   -D__i386__
 # if HasGcc3
-#  define OptimizedCDebugFlags  -Os GccAliasingArgs
+#  define OptimizedCDebugFlags  -Os
 # else
 #  define OptimizedCDebugFlags  -O2 -fno-strength-reduce
 # endif
@@ -266,15 +235,6 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
  */
 #define StandardDefines         DarwinMachineDefines -D__DARWIN__ \
                                 -DNO_ALLOCA -DCSRG_BASED DarwinLocaleDefines
-#define StandardCppDefines      StandardDefines
-
-/*
- * Ensure locally built static libraries are found before dynamic libraries
- * in system library search paths.
- */
-#ifndef  ExtraLoadOptions
-# define ExtraLoadOptions       -Wl,-search_paths_first
-#endif
 
 /*
  * Set this to NO to just build the client libs, which should work without
@@ -315,75 +275,27 @@ XCOMM operating system:  OSName (OSMajorVersion./**/OSMinorVersion./**/OSTeenyVe
 
 #define BuildLibPathVar         DYLD_LIBRARY_PATH
 
-#ifndef DefaultUserPath
-#define DefaultUserPath         /bin:/sbin:/usr/bin:/usr/sbin:$(BINDIR)
-#endif
-#define DefaultSystemPath       DefaultUserPath
-
 /* include rules to build shared libraries */
 #include <darwinLib.rules>
-
-#ifndef NothingOutsideProjectRoot
-#define NothingOutsideProjectRoot NO
-#endif
-
-#if NothingOutsideProjectRoot
-     XDARWINAPPDIR = $(BINDIR)/XDarwin.app/Contents
-#else
-     XDARWINAPPDIR = /Applications/XDarwin.app/Contents
-#endif
 
 /*
  * BundleProgramTarget - Generate rules for compiling, linking and
  * installing a bundle executable. 
  */
 #ifndef BundleProgramTarget
-#define BundleProgramTarget(program,loader,subdirs,objs,deplib,syslib)	@@\
+#define BundleProgramTarget(program,loader,subdirs,objs,deplib,syslib,dstdir) @@\
                                                                         @@\
 AllTarget(program)							@@\
 									@@\
 program: loader subdirs objs deplib					@@\
 	RemoveTargetProgram($@)						@@\
-	LinkRule($@,-bundle $(LDOPTIONS),objs,deplib $(LDLIBS) syslib -bundle_loader loader)	@@\
+	LinkRule($@,-bundle $(LDOPTIONS),objs,deplib $(LDLIBS) syslib -bundle_loader loader) @@\
 									@@\
-InstallProgram(program,$(XDARWINAPPDIR)/Resources/program.bundle/Contents/MacOS)	@@\
+InstallProgram(program,dstdir/program.bundle/Contents/MacOS)		@@\
 									@@\
 clean::									@@\
 	RemoveFile(program)
 #endif /* BundleProgramTarget */
-
-/*
- * BundleSymbolicLink - Generate 'unsymlink' and 'resymlink' rules to
- * temporarily replace symbolic links with the files they reference.
- */
-#ifndef BundleSymbolicLink
-#define BundleSymbolicLink(symdir,subdir,target)			@@\
-									@@\
-unsymlink::								@@\
-	MakeDir(symdir/subdir)						@@\
-	@if [ -h target ]; then \					@@\
-	    set -x; \							@@\
-	    $(MV) target symdir/target; \				@@\
-	    touch target; \						@@\
-	    $(CP) symdir/target target; \				@@\
-	fi								@@\
-									@@\
-resymlink clean::							@@\
-	@if [ -h symdir/target ]; then \				@@\
-	    set -x; \							@@\
-	    $(MV) symdir/target target; \				@@\
-	fi
-#endif /* BundleSymbolicLink */
-
-/*
- * BundleSymbolicLinkSubdirs - Subdirectory recursion for 'unsymlink' and
- * 'resymlink' targets.
- */
-#ifndef BundleSymbolicLinkSubdirs
-#define BundleSymbolicLinkSubdirs(dirs)					@@\
-NamedTargetSubdirs(unsymlink,dirs,"unsymlinking",NullParameter,unsymlink)	@@\
-NamedTargetSubdirs(resymlink,dirs,"resymlinking",NullParameter,resymlink)
-#endif /* BundleSymbolicLinkSubdirs */
 
 /*
  * Darwin specific Imake Config files

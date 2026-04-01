@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *Copyright (C) 1994-2000 The XFree86 Project, Inc. All Rights Reserved.
  *
  *Permission is hereby granted, free of charge, to any person obtaining
@@ -27,7 +34,7 @@
  *
  * Authors:	Harold Hunt
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winclipboard.h,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xwin/winclipboard.h,v 1.3 2003/10/02 13:30:10 eich Exp $ */
 
 
 #ifndef _WINCLIPBOARD_H_
@@ -44,15 +51,15 @@
 #include <pthread.h>
 
 /* X headers */
-#include <X11/X.h>
-#include <X11/Xatom.h>
+#include "X.h"
+#include "Xatom.h"
 /* NOTE: For some unknown reason, including Xproto.h solves
  * tons of problems with including windows.h.  Unknowns reasons
  * are usually bad, so someone should investigate this.
  */
-#include <X11/Xproto.h>
-#include <X11/Xutil.h>
-#include <X11/Xlocale.h>
+#include "Xproto.h"
+#include "Xutil.h"
+#include "Xlocale.h"
 
 /* Fixups to prevent collisions between Windows and X headers */
 #define ATOM			DWORD

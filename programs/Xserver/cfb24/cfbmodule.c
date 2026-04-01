@@ -1,6 +1,13 @@
 /* $XFree86: xc/programs/Xserver/cfb24/cfbmodule.c,v 1.9 2004/02/13 23:58:31 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (C) 1998-2006 The XFree86 Project, Inc.
+ * Copyright (C) 1998 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -70,7 +77,7 @@ static XF86ModuleVersionInfo VersRec =
 XF86ModuleData cfb24ModuleData = { &VersRec, cfb24Setup, NULL };
 
 static pointer
-cfb24Setup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+cfb24Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     /* This modules requires cfb, so load it */
     return LoadSubModule(module, "cfb", NULL, NULL, NULL, NULL,

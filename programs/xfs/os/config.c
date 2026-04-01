@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 Copyright 1987, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -42,6 +49,8 @@ in this Software without prior written authorization from The Open Group.
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * $NCDXorg: @(#)config.c,v 4.6 1991/07/09 14:08:09 lemke Exp $
  *
  */
 /* $XFree86: xc/programs/xfs/os/config.c,v 3.17 2004/06/02 22:43:06 dawes Exp $ */

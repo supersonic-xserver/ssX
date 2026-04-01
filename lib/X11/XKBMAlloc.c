@@ -1,3 +1,11 @@
+/* $Xorg: XKBMAlloc.c,v 1.4 2000/08/17 19:45:02 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -23,55 +31,7 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/*
- * Copyright (c) 2005 by The XFree86 Project, Inc.
- * Copyright (c) 2005 by Michal Maruska.
- * All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject
- * to the following conditions:
- *
- *   1.  Redistributions of source code must retain the above copyright
- *       notice, this list of conditions, and the following disclaimer.
- *
- *   2.  Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer
- *       in the documentation and/or other materials provided with the
- *       distribution, and in the same place and form as other copyright,
- *       license and disclaimer information.
- *
- *   3.  The end-user documentation included with the redistribution,
- *       if any, must include the following acknowledgment: "This product
- *       includes software developed by The XFree86 Project, Inc
- *       (http://www.xfree86.org/) and its contributors", in the same
- *       place and form as other third-party acknowledgments.  Alternately,
- *       this acknowledgment may appear in the software itself, in the
- *       same form and location as other such third-party acknowledgments.
- *
- *   4.  Except as contained in this notice, the name of The XFree86
- *       Project, Inc shall not be used in advertising or otherwise to
- *       promote the sale, use or other dealings in this Software without
- *       prior written authorization from The XFree86 Project, Inc.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE XFREE86 PROJECT, INC OR ITS CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/* $XFree86: xc/lib/X11/XKBMAlloc.c,v 3.13tsi Exp $ */
+/* $XFree86: xc/lib/X11/XKBMAlloc.c,v 3.12 2003/11/17 22:20:09 dawes Exp $ */
 
 #ifndef XKB_IN_SERVER
 
@@ -86,15 +46,15 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #else 
 
 #include <stdio.h>
-#include <X11/X.h>
+#include "X.h"
 #define	NEED_EVENTS
 #define	NEED_REPLIES
-#include <X11/Xproto.h>
+#include "Xproto.h"
 #include "misc.h"
 #include "inputstr.h"
 #include <X11/keysym.h>
 #define	XKBSRV_NEED_FILE_FUNCS
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 
 #endif /* XKB_IN_SERVER */
 
@@ -410,7 +370,7 @@ XkbClientMapPtr	map;
 Status
 XkbResizeKeyType(	XkbDescPtr	xkb,
 			int		type_ndx,
-			int		map_count, /* number of mappings: modifier-set -> level  */
+			int		map_count,
 			Bool		want_preserve,
 			int		new_num_lvls)
 {
@@ -643,7 +603,6 @@ KeySym	*newSyms;
 	int nCopy;
 
 	nCopy= nKeySyms= XkbKeyNumSyms(xkb,i);
-        /* i could invert these following 2 IFs: */
 	if ((nKeySyms==0)&&(i!=key))
 	    continue;
 	if (i==key)
@@ -658,25 +617,6 @@ KeySym	*newSyms;
     _XkbFree(xkb->map->syms);
     xkb->map->syms = newSyms;
     xkb->map->num_syms = nSyms;
-
-
-    /*
-     * mmc: We grow the table when needed, and never shrink it.
-     * So i decided to test & shrink here:
-     */
-
-    if (xkb->map->size_syms > 2 * xkb->map->num_syms + 64) {
-#ifdef  XKB_IN_SERVER          
-#ifdef DEBUG
-	ErrorF("%s: reduction! %d ->%d\n", __FUNCTION__, xkb->map->size_syms, 2 * xkb->map->num_syms + 64);
-#endif 
-#endif 
-	xkb->map->size_syms = 2 * xkb->map->num_syms + 64;
-	/* xkb->map->num_syms remains! */
-	/* todo: if this fails....!!  hopefully never, we just shrink. */
-	xkb->map->syms = _XkbTypedRealloc(xkb->map->syms, xkb->map->size_syms,
-					  KeySym);
-    }
     return &xkb->map->syms[xkb->map->key_sym_map[key].offset];
 }
 
@@ -769,7 +709,7 @@ int	tmp;
 		if (changes) {
 		    changes->map.changed= _ExtendRange(changes->map.changed,
 		    			XkbVirtualModMapMask,minKC,
-		    			&changes->map.first_vmodmap_key,
+		    			&changes->map.first_modmap_key,
     					&changes->map.num_vmodmap_keys);
 		}
 	    }
@@ -799,7 +739,7 @@ int	tmp;
 		    _XkbFree(prev_key_sym_map);
 		    return BadAlloc;
 		}
-		bzero((char *)&xkb->map->key_sym_map[xkb->max_key_code+1],
+		bzero((char *)&xkb->map->key_sym_map[xkb->max_key_code],
 					tmp*sizeof(XkbSymMapRec));
 		if (changes) {
 		    changes->map.changed= _ExtendRange(changes->map.changed,
@@ -817,7 +757,7 @@ int	tmp;
 		    _XkbFree(prev_modmap);
 		    return BadAlloc;
 		}
-		bzero((char *)&xkb->map->modmap[xkb->max_key_code + 1],tmp);
+		bzero((char *)&xkb->map->modmap[xkb->max_key_code],tmp);
 		if (changes) {
 		    changes->map.changed= _ExtendRange(changes->map.changed,
 		    				XkbModifierMapMask,maxKC,
@@ -836,7 +776,7 @@ int	tmp;
 		    _XkbFree(prev_behaviors);
 		    return BadAlloc;
 		}
-		bzero((char *)&xkb->server->behaviors[xkb->max_key_code +1],
+		bzero((char *)&xkb->server->behaviors[xkb->max_key_code],
 						tmp*sizeof(XkbBehavior));
 		if (changes) {
 		    changes->map.changed= _ExtendRange(changes->map.changed,
@@ -854,7 +794,7 @@ int	tmp;
 		    _XkbFree(prev_key_acts);
 		    return BadAlloc;
 		}
-		bzero((char *)&xkb->server->key_acts[xkb->max_key_code + 1],
+		bzero((char *)&xkb->server->key_acts[xkb->max_key_code],
 						tmp*sizeof(unsigned short));
 		if (changes) {
 		    changes->map.changed= _ExtendRange(changes->map.changed,
@@ -872,32 +812,13 @@ int	tmp;
 		    _XkbFree(prev_vmodmap);
 		    return BadAlloc;
 		}
-		bzero((char *)&xkb->server->vmodmap[xkb->max_key_code + 1],
+		bzero((char *)&xkb->server->vmodmap[xkb->max_key_code],
 						tmp*sizeof(unsigned short));
 		if (changes) {
 		    changes->map.changed= _ExtendRange(changes->map.changed,
 		    			XkbVirtualModMapMask,maxKC,
-		    			&changes->map.first_vmodmap_key,
+		    			&changes->map.first_modmap_key,
     					&changes->map.num_vmodmap_keys);
-		}
-	    }
-	    /* mmc: We have to resize server->explicit too. */
-	    if (xkb->server->explicit) {
-		unsigned char *prev_explicit = xkb->server->explicit;
-		xkb->server->explicit= _XkbTypedRealloc(xkb->server->explicit,
-						(maxKC+1),unsigned char);
-		if (!xkb->server->explicit) {
-		    _XkbFree(prev_explicit);
-		    return BadAlloc;
-		}
-		bzero((char *)&xkb->server->explicit[xkb->max_key_code + 1],
-						tmp*sizeof(unsigned char));
-		if (changes) {
-		    changes->map.changed= _ExtendRange(changes->map.changed,
-		    			XkbExplicitComponentsMask,maxKC,
-                                                       /* ???? */
-		    			&changes->map.first_key_explicit,
-    					&changes->map.num_key_explicit);
 		}
 	    }
 	}
@@ -910,7 +831,7 @@ int	tmp;
 		_XkbFree(prev_keys);
 		return BadAlloc;
 	    }
-	    bzero((char *)&xkb->names->keys[xkb->max_key_code +1],
+	    bzero((char *)&xkb->names->keys[xkb->max_key_code],
 	    					tmp*sizeof(XkbKeyNameRec));
 	    if (changes) {
 		changes->names.changed= _ExtendRange(changes->names.changed,
@@ -971,25 +892,6 @@ XkbAction *newActs;
     _XkbFree(xkb->server->acts);
     xkb->server->acts = newActs;
     xkb->server->num_acts= nActs;
-
-    /*
-     * mmc: Again (see above for keysyms), we grow the table when needed,
-     * and never shrink it. So i decided to test & shrink here:
-     */
-    if (xkb->server->size_acts > 2 * xkb->server->num_acts + 64) {
-#ifdef XKB_IN_SERVER
-#ifdef DEBUG
-	ErrorF("%s: reduction! %d ->%d\n", __FUNCTION__,
-		xkb->server->size_acts, 2 * xkb->server->num_acts + 64);
-#endif 
-#endif 
-	xkb->server->size_acts = 2 * xkb->server->num_acts + 64;
-
-	/* xkb->server->num_acts remains! */
-	/* fixme: if this fails....! */
-	xkb->server->acts = _XkbTypedRealloc(xkb->server->acts,
-					     xkb->server->size_acts, XkbAction);
-    }
     return &xkb->server->acts[xkb->server->key_acts[key]];
 }
 

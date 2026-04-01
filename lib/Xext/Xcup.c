@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/Xext/Xcup.c,v 1.9 2003/11/17 22:20:21 dawes Exp $ */
+/* $XFree86: xc/lib/Xext/Xcup.c,v 1.10 2005/01/27 02:28:59 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1987, 1988, 1998  The Open Group

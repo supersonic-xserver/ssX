@@ -1,6 +1,6 @@
 
 //
-// $XFree86$
+// $XFree86: xc/programs/xkbcomp/symbols/pc/ca,v 1.1 2004/05/08 07:26:54 pascal Exp $
 
 default partial
 xkb_symbols "fr" {

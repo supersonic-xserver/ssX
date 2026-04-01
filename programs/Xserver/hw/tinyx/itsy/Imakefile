@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/itsy/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/itsy/Imakefile,v 1.1 2004/06/02 22:43:01 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,7 +52,7 @@ SRCS = 	itsy.c ts.c kbd.c
 
 OBJS = 	itsy.o ts.o kbd.o
 
-INCLUDES = $(TINYXINCLUDES)
+INCLUDES = -I. $(TINYXINCLUDES)
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(itsy,$(OBJS))

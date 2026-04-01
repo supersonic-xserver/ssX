@@ -1,6 +1,14 @@
 /* **********************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright (C) 1998-2001 VMware, Inc.
  * All Rights Reserved
+ * Id: vmware.h,v 1.6 2001/01/30 18:13:47 bennett Exp $
  * **********************************************************/
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vmware/vmware.h,v 1.13 2004/07/25 20:49:16 dawes Exp $ */
 

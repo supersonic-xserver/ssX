@@ -1,11 +1,25 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/ar.h,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/ar.h,v 1.4 2003/10/15 16:29:02 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _AR_H
 #define _AR_H
 
-#define ARMAG "!<arch>\012"
+#define ARMAG "!<arch>\n"
 #define SARMAG 8
-#define ARFMAG "`\012"
+#define ARFMAG "`\n"
 
 #if !(defined(__powerpc__) && defined(Lynx))
 struct ar_hdr {

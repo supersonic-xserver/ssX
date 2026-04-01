@@ -1,5 +1,12 @@
 /*
- * Copyright (C) 1998-2006 The XFree86 Project, Inc.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright (C) 1998 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -48,8 +55,8 @@
 
 #include "misc.h"
 
-#include "xf86Module.h"
 #include "fontmod.h"
+#include "xf86Module.h"
 
 static MODULESETUPPROTO(bitmapSetup);
 
@@ -76,14 +83,14 @@ XF86ModuleData bitmapModuleData = { &VersRec, bitmapSetup, NULL };
 
 extern void BitmapRegisterFontFileFunctions(void);
 
-static FontModule bitmapModule = {
+FontModule bitmapModule = {
     BitmapRegisterFontFileFunctions,
     "Bitmap",
     NULL
 };
 
 static pointer
-bitmapSetup(ModuleDescPtr mod, pointer opts, int *errmaj, int *errmin)
+bitmapSetup(pointer mod, pointer opts, int *errmaj, int *errmin)
 {
     bitmapModule.module = mod;
     LoadFont(&bitmapModule);

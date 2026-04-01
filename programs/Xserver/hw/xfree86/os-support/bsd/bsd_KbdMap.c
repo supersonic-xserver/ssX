@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_KbdMap.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_KbdMap.c,v 1.1 2002/10/11 01:40:34 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Slightly modified xf86KbdBSD.c which is
@@ -8,8 +22,8 @@
  * and from xf86KbdCODrv.c by Holger Veit
  */
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xmd.h"
 #include "input.h"
 #include "scrnintstr.h"
 
@@ -17,16 +31,14 @@
 
 #include "xf86.h"
 #include "xf86Priv.h"
-#include "xf86_OSlib.h"
+#include "xf86_OSlib.h" 
 #include "xf86Xinput.h"
 #include "xf86OSKbd.h"
 #include "atKeynames.h"
 #include "xf86Keymap.h"
 #include "bsd_kbd.h"
 
-#ifdef WSKBD_TYPE_ADB
-static Bool ADBScanCode(InputInfoPtr, int *);
-#endif
+Bool ADBScanCode(InputInfoPtr, int *);
 
 #if (defined(SYSCONS_SUPPORT) || defined(PCVT_SUPPORT)) && defined(GIO_KEYMAP)
 #define KD_GET_ENTRY(i,n) \
@@ -51,7 +63,7 @@ static unsigned char remap[NUM_KEYCODES] = {
      0,    0,    0,    0,    0,    0,    0,    0,   /* 0x78 - 0x7f */
 };
 
-/* This table assumes the ibm code page 437 coding for characters
+/* This table assumes the ibm code page 437 coding for characters 
  * > 0x80. They are returned in this form by PCVT */
 static KeySym eascii_to_x[512] = {
 	NoSymbol,	NoSymbol,	NoSymbol,	NoSymbol,
@@ -111,7 +123,7 @@ static KeySym eascii_to_x[512] = {
 	NoSymbol,	NoSymbol,	NoSymbol,	NoSymbol,
 	NoSymbol,	NoSymbol,	NoSymbol,	NoSymbol,
 	XK_Greek_alpha,	XK_ssharp,	XK_Greek_GAMMA,	XK_Greek_pi,
-	XK_Greek_SIGMA,	XK_Greek_sigma,	XK_mu,		XK_Greek_tau,
+	XK_Greek_SIGMA,	XK_Greek_sigma,	XK_mu,	        XK_Greek_tau,
 	XK_Greek_PHI,	XK_Greek_THETA,	XK_Greek_OMEGA,	XK_Greek_delta,
 	XK_infinity,	XK_Ooblique,	XK_Greek_epsilon, XK_intersection,
 	XK_identical,	XK_plusminus,	XK_greaterthanequal, XK_lessthanequal,
@@ -119,7 +131,7 @@ static KeySym eascii_to_x[512] = {
 	XK_degree,	NoSymbol,	NoSymbol,	XK_radical,
 	XK_Greek_eta,	XK_twosuperior,	XK_periodcentered, NoSymbol,
 
-	/*
+	/* 
 	 * special marked entries (256 + x)
 	 */
 
@@ -191,7 +203,7 @@ static KeySym eascii_to_x[512] = {
 };
 
 #ifdef __OpenBSD__
-/* don't mark AltR and  CtrlR for remapping, since they
+/* don't mark AltR and  CtrlR for remapping, since they 
  * cannot be remapped by pccons */
 static unsigned char pccons_remap[128] = {
      0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,   /* 0x00 - 0x07 */
@@ -212,7 +224,7 @@ static unsigned char pccons_remap[128] = {
      0,    0,    0,    0,    0,    0,    0,    0,   /* 0x78 - 0x7f */
 };
 
-/* This table assumes an iso8859_1 encoding for the characters
+/* This table assumes an iso8859_1 encoding for the characters 
  * > 80, as returned by pccons */
 static KeySym latin1_to_x[256] = {
 	NoSymbol,	NoSymbol,	NoSymbol,	NoSymbol,
@@ -272,13 +284,13 @@ static KeySym latin1_to_x[256] = {
 	XK_Ooblique,	XK_Ugrave,	XK_Uacute,	XK_Ucircumflex,
 	XK_Udiaeresis,	XK_Yacute,	XK_THORN,	XK_ssharp,
 	XK_agrave,	XK_aacute,	XK_acircumflex,	XK_atilde,
-	XK_adiaeresis,	XK_aring,	XK_ae,		XK_ccedilla,
+	XK_adiaeresis,	XK_aring,	XK_ae,	        XK_ccedilla,
 	XK_egrave,	XK_eacute,	XK_ecircumflex,	XK_ediaeresis,
 	XK_igrave,	XK_iacute,	XK_icircumflex, XK_idiaeresis,
-	XK_eth,		XK_ntilde,	XK_ograve,	XK_oacute,
+	XK_eth,		XK_ntilde,	XK_ograve, 	XK_oacute,
 	XK_ocircumflex,	XK_otilde,	XK_odiaeresis,	XK_division,
 	XK_oslash,	XK_ugrave,	XK_uacute,	XK_ucircumflex,
-	XK_udiaeresis,	XK_yacute,	XK_thorn,	XK_ydiaeresis
+	XK_udiaeresis,	XK_yacute,	XK_thorn, 	XK_ydiaeresis
       };
 #endif
 
@@ -307,7 +319,7 @@ static CARD8 wsUsbMap[] = {
 	/* 1 */ KEY_NOTUSED,
 	/* 2 */ KEY_NOTUSED,
 	/* 3 */ KEY_NOTUSED,
-	/* 4 */ KEY_A,
+	/* 4 */ KEY_A,		
 	/* 5 */ KEY_B,
 	/* 6 */ KEY_C,
 	/* 7 */ KEY_D,
@@ -546,6 +558,239 @@ TransMapRec wsUsb = {
     wsUsbMap
 };
 
+static CARD8 wsXtMap[] = {
+	/* 0 */ KEY_NOTUSED,
+	/* 1 */ KEY_Escape,
+	/* 2 */ KEY_1,
+	/* 3 */ KEY_2,
+	/* 4 */ KEY_3,		
+	/* 5 */ KEY_4,
+	/* 6 */ KEY_5,
+	/* 7 */ KEY_6,
+	/* 8 */ KEY_7,
+	/* 9 */ KEY_8,
+	/* 10 */ KEY_9,
+	/* 11 */ KEY_0,
+	/* 12 */ KEY_Minus,
+	/* 13 */ KEY_Equal,
+	/* 14 */ KEY_BackSpace,
+	/* 15 */ KEY_Tab,
+	/* 16 */ KEY_Q,
+	/* 17 */ KEY_W,
+	/* 18 */ KEY_E,
+	/* 19 */ KEY_R,
+	/* 20 */ KEY_T,
+	/* 21 */ KEY_Y,
+	/* 22 */ KEY_U,
+	/* 23 */ KEY_I,
+	/* 24 */ KEY_O,
+	/* 25 */ KEY_P,
+	/* 26 */ KEY_LBrace,
+	/* 27 */ KEY_RBrace,
+	/* 28 */ KEY_Enter,
+	/* 29 */ KEY_LCtrl,
+	/* 30 */ KEY_A,
+	/* 31 */ KEY_S,
+	/* 32 */ KEY_D,
+	/* 33 */ KEY_F,
+	/* 34 */ KEY_G,
+	/* 35 */ KEY_H,
+	/* 36 */ KEY_J,
+	/* 37 */ KEY_K,
+	/* 38 */ KEY_L,
+	/* 39 */ KEY_SemiColon,
+	/* 40 */ KEY_Quote,
+	/* 41 */ KEY_Tilde,
+	/* 42 */ KEY_ShiftL,
+	/* 43 */ KEY_BSlash,
+	/* 44 */ KEY_Z,
+	/* 45 */ KEY_X,
+	/* 46 */ KEY_C,
+	/* 47 */ KEY_V,
+	/* 48 */ KEY_B,
+	/* 49 */ KEY_N,
+	/* 50 */ KEY_M,
+	/* 51 */ KEY_Comma,
+	/* 52 */ KEY_Period,
+	/* 53 */ KEY_Slash,
+	/* 54 */ KEY_ShiftR,
+	/* 55 */ KEY_KP_Multiply,
+	/* 56 */ KEY_Alt,
+	/* 57 */ KEY_Space,
+	/* 58 */ KEY_CapsLock,
+	/* 59 */ KEY_F1,
+	/* 60 */ KEY_F2,
+	/* 61 */ KEY_F3,
+	/* 62 */ KEY_F4,
+	/* 63 */ KEY_F5,
+	/* 64 */ KEY_F6,
+	/* 65 */ KEY_F7,
+	/* 66 */ KEY_F8,
+	/* 67 */ KEY_F9,
+	/* 68 */ KEY_F10,
+	/* 69 */ KEY_NumLock,
+	/* 70 */ KEY_ScrollLock,
+	/* 71 */ KEY_KP_7,
+	/* 72 */ KEY_KP_8,
+	/* 73 */ KEY_KP_9,
+	/* 74 */ KEY_KP_Minus,
+	/* 75 */ KEY_KP_4,
+	/* 76 */ KEY_KP_5,
+	/* 77 */ KEY_KP_6,
+	/* 78 */ KEY_KP_Plus,
+	/* 79 */ KEY_KP_1,
+	/* 80 */ KEY_KP_2,
+	/* 81 */ KEY_KP_3,
+	/* 82 */ KEY_KP_0,
+	/* 83 */ KEY_KP_Decimal,
+	/* 84 */ KEY_NOTUSED,
+	/* 85 */ KEY_NOTUSED,
+	/* 86 */ KEY_Less,	/* backslash on uk, < on german */
+	/* 87 */ KEY_F11,
+	/* 88 */ KEY_F12,
+	/* 89 */ KEY_NOTUSED,
+	/* 90 */ KEY_NOTUSED,
+	/* 91 */ KEY_NOTUSED,
+	/* 92 */ KEY_NOTUSED,
+	/* 93 */ KEY_NOTUSED,
+	/* 94 */ KEY_NOTUSED,
+	/* 95 */ KEY_NOTUSED,
+	/* 96 */ KEY_NOTUSED,
+	/* 97 */ KEY_NOTUSED,
+	/* 98 */ KEY_NOTUSED,
+	/* 99 */ KEY_NOTUSED,
+	/* 100 */ KEY_NOTUSED,
+	/* 101 */ KEY_NOTUSED,
+	/* 102 */ KEY_NOTUSED,
+	/* 103 */ KEY_NOTUSED,
+	/* 104 */ KEY_NOTUSED,
+	/* 105 */ KEY_NOTUSED,
+	/* 106 */ KEY_NOTUSED,
+	/* 107 */ KEY_NOTUSED,
+	/* 108 */ KEY_NOTUSED,
+	/* 109 */ KEY_NOTUSED,
+	/* 110 */ KEY_NOTUSED,
+	/* 111 */ KEY_NOTUSED,
+	/* 112 */ KEY_NOTUSED,
+	/* 113 */ KEY_NOTUSED,
+	/* 114 */ KEY_NOTUSED,
+	/* 115 */ KEY_NOTUSED,
+	/* 116 */ KEY_NOTUSED,
+	/* 117 */ KEY_NOTUSED,
+	/* 118 */ KEY_NOTUSED,
+	/* 119 */ KEY_NOTUSED,
+	/* 120 */ KEY_NOTUSED,
+	/* 121 */ KEY_NOTUSED,
+	/* 122 */ KEY_NOTUSED,
+	/* 123 */ KEY_NOTUSED,
+	/* 124 */ KEY_NOTUSED,
+	/* 125 */ KEY_NOTUSED,
+	/* 126 */ KEY_NOTUSED,
+	/* 127 */ KEY_Pause,
+	/* 128 */ KEY_NOTUSED,
+	/* 129 */ KEY_NOTUSED,
+	/* 130 */ KEY_NOTUSED,
+	/* 131 */ KEY_NOTUSED,
+	/* 132 */ KEY_NOTUSED,
+	/* 133 */ KEY_NOTUSED,
+	/* 134 */ KEY_NOTUSED,
+	/* 135 */ KEY_NOTUSED,
+	/* 136 */ KEY_NOTUSED,
+	/* 137 */ KEY_NOTUSED,
+	/* 138 */ KEY_NOTUSED,
+	/* 139 */ KEY_NOTUSED,
+	/* 140 */ KEY_NOTUSED,
+	/* 141 */ KEY_NOTUSED,
+	/* 142 */ KEY_NOTUSED,
+	/* 143 */ KEY_NOTUSED,
+	/* 144 */ KEY_NOTUSED,
+	/* 145 */ KEY_NOTUSED,
+	/* 146 */ KEY_NOTUSED,
+	/* 147 */ KEY_NOTUSED,
+	/* 148 */ KEY_NOTUSED,
+	/* 149 */ KEY_NOTUSED,
+	/* 150 */ KEY_NOTUSED,
+	/* 151 */ KEY_NOTUSED,
+	/* 152 */ KEY_NOTUSED,
+	/* 153 */ KEY_NOTUSED,
+	/* 154 */ KEY_NOTUSED,
+	/* 155 */ KEY_NOTUSED,
+	/* 156 */ KEY_KP_Enter,
+	/* 157 */ KEY_RCtrl,
+	/* 158 */ KEY_NOTUSED,
+	/* 159 */ KEY_NOTUSED,
+	/* 160 */ KEY_Mute,
+	/* 161 */ KEY_NOTUSED,
+	/* 162 */ KEY_NOTUSED,
+	/* 163 */ KEY_NOTUSED,
+	/* 164 */ KEY_NOTUSED,
+	/* 165 */ KEY_NOTUSED,
+	/* 166 */ KEY_NOTUSED,
+	/* 167 */ KEY_NOTUSED,
+	/* 168 */ KEY_NOTUSED,
+	/* 169 */ KEY_NOTUSED,
+	/* 170 */ KEY_Print,
+	/* 171 */ KEY_NOTUSED,
+	/* 172 */ KEY_NOTUSED,
+	/* 173 */ KEY_NOTUSED,
+	/* 174 */ KEY_AudioLower,
+	/* 175 */ KEY_AudioRaise,
+	/* 176 */ KEY_NOTUSED,
+	/* 177 */ KEY_NOTUSED,
+	/* 178 */ KEY_NOTUSED,
+	/* 179 */ KEY_NOTUSED,
+	/* 180 */ KEY_NOTUSED,
+	/* 181 */ KEY_KP_Divide,
+	/* 182 */ KEY_NOTUSED,
+	/* 183 */ KEY_Print,
+	/* 184 */ KEY_AltLang,
+	/* 185 */ KEY_NOTUSED,
+	/* 186 */ KEY_NOTUSED,
+	/* 187 */ KEY_NOTUSED,
+	/* 188 */ KEY_NOTUSED,
+	/* 189 */ KEY_NOTUSED,
+	/* 190 */ KEY_NOTUSED,
+	/* 191 */ KEY_NOTUSED,
+	/* 192 */ KEY_NOTUSED,
+	/* 193 */ KEY_NOTUSED,
+	/* 194 */ KEY_NOTUSED,
+	/* 195 */ KEY_NOTUSED,
+	/* 196 */ KEY_NOTUSED,
+	/* 197 */ KEY_NOTUSED,
+	/* 198 */ KEY_NOTUSED,
+	/* 199 */ KEY_Home,
+	/* 200 */ KEY_Up,
+	/* 201 */ KEY_PgUp,
+	/* 202 */ KEY_NOTUSED,
+	/* 203 */ KEY_Left,
+	/* 204 */ KEY_NOTUSED,
+	/* 205 */ KEY_Right,
+	/* 206 */ KEY_NOTUSED,
+	/* 207 */ KEY_End,
+	/* 208 */ KEY_Down,
+	/* 209 */ KEY_PgDown,
+	/* 210 */ KEY_Insert,
+	/* 211 */ KEY_Delete,
+	/* 212 */ KEY_NOTUSED,
+	/* 213 */ KEY_NOTUSED,
+	/* 214 */ KEY_NOTUSED,
+	/* 215 */ KEY_NOTUSED,
+	/* 216 */ KEY_NOTUSED,
+	/* 217 */ KEY_NOTUSED,
+	/* 218 */ KEY_NOTUSED,
+	/* 219 */ KEY_LMeta,
+	/* 220 */ KEY_RMeta,
+	/* 221 */ KEY_Menu,
+};
+#define WS_XT_MAP_SIZE (sizeof(wsXtMap)/sizeof(unsigned char))
+
+static
+TransMapRec wsXt = {
+    0,
+    WS_XT_MAP_SIZE,
+    wsXtMap
+};
+
 /* Map for adb keyboards  */
 static CARD8 wsAdbMap[] = {
 	/* 0 */ KEY_A,
@@ -620,7 +865,7 @@ static CARD8 wsAdbMap[] = {
 	/* 69 */ KEY_KP_Plus,
 	/* 70 */ KEY_NOTUSED,
 	/* 71 */ KEY_NumLock,	/* Clear */
-	/* 72 */ KEY_NOTUSED,
+	/* 72 */ KEY_NOTUSED, 
 	/* 73 */ KEY_NOTUSED,
 	/* 74 */ KEY_NOTUSED,
 	/* 75 */ KEY_KP_Divide,
@@ -854,7 +1099,7 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
     {
       pccons_keymap_t keymap[KB_NUM_KEYS];
       if (ioctl(pInfo->fd, CONSOLE_GET_KEYMAP, &keymap) != -1) {
-	for (i = 0; i < KB_NUM_KEYS; i++)
+	for (i = 0; i < KB_NUM_KEYS; i++) 
 	  if (pccons_remap[i]) {
 	    k = map + (pccons_remap[i] << 2);
 	    switch (keymap[i].type) {
@@ -959,7 +1204,7 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
   case PCVT:
     {
       keymap_t keymap;
-
+    
       if (ioctl(pInfo->fd, GIO_KEYMAP, &keymap) != -1) {
 	for (i = 0; i < keymap.n_keys && i < NUM_KEYCODES; i++)
 	  if (remap[i]) {
@@ -978,8 +1223,8 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
     }
     break;
 #endif /* SYSCONS || PCVT */
-
-  }
+    
+  } 
 #endif /* !bsdi */
 
   /*
@@ -987,32 +1232,32 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
    */
   for (i = 0; i < MAP_LENGTH; i++)
     pModMap[i] = NoSymbol;  /* make sure it is restored */
-
+  
   for (k = map, i = MIN_KEYCODE;
        i < (NUM_KEYCODES + MIN_KEYCODE);
        i++, k += 4)
-
+    
     switch(*k) {
-
+      
     case XK_Shift_L:
     case XK_Shift_R:
       pModMap[i] = ShiftMask;
       break;
-
+      
     case XK_Control_L:
     case XK_Control_R:
       pModMap[i] = ControlMask;
       break;
-
+      
     case XK_Caps_Lock:
       pModMap[i] = LockMask;
       break;
-
+      
     case XK_Alt_L:
     case XK_Alt_R:
       pModMap[i] = AltMask;
       break;
-
+      
     case XK_Num_Lock:
       pModMap[i] = NumLockMask;
       break;
@@ -1033,63 +1278,62 @@ KbdGetMapping (InputInfoPtr pInfo, KeySymsPtr pKeySyms, CARD8 *pModMap)
       break;
 
     }
-
+  
   pKbd->kbdType = 0;
 
   pKeySyms->map        = map;
   pKeySyms->mapWidth   = GLYPHS_PER_KEY;
   pKeySyms->minKeyCode = MIN_KEYCODE;
-  pKeySyms->maxKeyCode = MAX_KEYCODE;
+  pKeySyms->maxKeyCode = MAX_KEYCODE; 
 
   switch(pKbd->consType) {
 #ifdef SYSCONS_SUPPORT
       case SYSCONS:
-	   if (pKbd->CustomKeycodes)
-	      pKbd->scancodeMap = &sysconsCODE;
-	   else
-	      pKbd->RemapScanCode = ATScancode;
-	   break;
+           if (pKbd->CustomKeycodes)
+              pKbd->scancodeMap = &sysconsCODE;
+           else
+              pKbd->RemapScanCode = ATScancode;
+           break;
 #endif
 #if defined(PCCONS_SUPPORT) || defined (PCVT_SUPPORT)
       case PCCONS:
       case PCVT:
-	   pKbd->RemapScanCode = ATScancode;
+           pKbd->RemapScanCode = ATScancode;
 #endif
 #ifdef WSCONS_SUPPORT
       case WSCONS:
-	   switch (pKbd->wsKbdType) {
+           switch (pKbd->wsKbdType) {
 	       case WSKBD_TYPE_PC_XT:
 	       case WSKBD_TYPE_PC_AT:
-		    pKbd->RemapScanCode = ATScancode;
-		    break;
+                    pKbd->scancodeMap = &wsXt;
+                    break;
 	       case WSKBD_TYPE_USB:
-		    pKbd->scancodeMap = &wsUsb;
-		    break;
-#ifdef WSKBD_TYPE_ADB
+                    pKbd->scancodeMap = &wsUsb;
+                    break;
+#ifdef WSKBD_TYPE_ADB	
 	       case WSKBD_TYPE_ADB:
-		    pKbd->RemapScanCode = ADBScanCode;
-		    break;
+	            pKbd->RemapScanCode = ADBScanCode;
+                    break;
 #endif
 #ifdef WSKBD_TYPE_SUN
 #ifdef WSKBD_TYPE_SUN5
 	       case WSKBD_TYPE_SUN5:
 #endif /* WSKBD_TYPE_SUN5 */
 	       case WSKBD_TYPE_SUN:
-		    pKbd->scancodeMap = &wsSun;
-		    break;
+                    pKbd->scancodeMap = &wsSun;
+                    break;
 #endif /* WSKBD_TYPE_SUN */
 	       default:
-		    pKbd->RemapScanCode = ATScancode;
-		    break;
-	   }
+                    pKbd->RemapScanCode = ATScancode;
+                    break;
+           }
       break;
 #endif
   }
   return;
 }
 
-#ifdef WSKBD_TYPE_ADB
-static Bool
+Bool
 ADBScanCode(InputInfoPtr pInfo, int *scanCode)
 {
     KbdDevPtr pKbd = (KbdDevPtr) pInfo->private;
@@ -1099,19 +1343,18 @@ ADBScanCode(InputInfoPtr pInfo, int *scanCode)
      * 0 following every caps-lock which would otherwise result in spurious 'A's
      */
     if (*scanCode == 0) {
-	/* drop this event when the previous one was caps-lock */
-	if (pKbd->scanPrefix == 57) {
+        /* drop this event when the previous one was caps-lock */
+        if (pKbd->scanPrefix == 57) {
 	    pKbd->scanPrefix = 0;
 	    return TRUE;	/* let the input handler stop right here */
 	}
     }
-
+    
     /* record the scancode */
     pKbd->scanPrefix = (*scanCode) & 0x7f;
-
+    
     /* do the normal remapping */
     if (*scanCode >= wsAdb.begin && *scanCode < wsAdb.end)
-	*scanCode = wsAdb.map[*scanCode - wsAdb.begin];
+        *scanCode = wsAdb.map[*scanCode - wsAdb.begin];
     return FALSE;	/* continue normal processing */
 }
-#endif

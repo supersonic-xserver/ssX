@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -81,7 +81,7 @@ Unmap windows
 .IP \(bu 5
 Configure windows
 .IP \(bu 5
-Change the stacking order
+Change window stacking order
 .IP \(bu 5
 Change window attributes
 .LP
@@ -94,8 +94,8 @@ Toolkits generally adhere to these conventions for you,
 relieving you of the burden.
 Toolkits also often supersede many functions in this chapter
 with versions of their own.
-Refer to the documentation for the toolkit you are using
-for more information.
+For more information,
+refer to the documentation for the toolkit that you are using.
 .NH 2
 Visual Types
 .XS
@@ -202,7 +202,7 @@ The RGB values can be changed dynamically.
 is treated the same way as 
 .PN DirectColor 
 except that the colormap has predefined, read-only RGB values.
-These RGB values are server-dependent but provide linear or near-linear
+These RGB values are server dependent but provide linear or near-linear
 ramps in each primary.  
 .IP \(bu 5
 .PN StaticColor
@@ -1250,7 +1250,7 @@ Window XCreateWindow\^(\^\fIdisplay\fP, \fIparent\fP\^, \fIx\fP\^, \fIy\fP\^, \f
 .br
       unsigned int \fIclass\fP\^;
 .br
-      Visual *\fIvisual\fP\^
+      Visual *\fIvisual\fP\^;
 .br
       unsigned long \fIvaluemask\fP\^;
 .br
@@ -1612,7 +1612,7 @@ windows and then decide to map the window to its final location.
 A window manager that wants to provide decoration might
 reparent the child into a frame first.
 For further information,
-see section 3.2.8 and section 10.10.
+see sections 3.2.8 and 10.10.
 Only a single client at a time can select for 
 .PN SubstructureRedirectMask .
 .LP
@@ -2691,7 +2691,7 @@ on the parent, the X server generates
 .PN ConfigureRequest 
 events for each window whose override-redirect flag is not set, 
 and no further processing is performed.
-Otherwise, the windows will be restacked in top to bottom order.
+Otherwise, the windows will be restacked in top-to-bottom order.
 .LP
 .PN XRestackWindows
 can generate a

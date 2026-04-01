@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *	Copyright 2001	Ani Joshi <ajoshi@unixbox.com>
  *
  *	XFree86 4.x driver for S3 chipsets
@@ -34,7 +41,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_driver.c,v 1.31tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3/s3_driver.c,v 1.27 2005/03/15 21:39:20 tsi Exp $ */
 
 
 #include "xf86.h"
@@ -47,7 +54,6 @@
 #include "xf86fbman.h"
 #include "xf86cmap.h"
 #include "xf86RAC.h"
-#include "xf86int10.h"
 #include "compiler.h"
 #include "xaa.h"
 #include "mipointer.h"
@@ -95,8 +101,8 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags);
 static Bool S3EnterVT(int scrnIndex, int flags);
 static void S3LeaveVT(int scrnIndex, int flags);
 static void S3Save(ScrnInfoPtr pScrn);
-static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
-			 const int argc, const char **argv);
+static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc,
+			 char **argv);
 static Bool S3MapMem(ScrnInfoPtr pScrn);
 static void S3UnmapMem(ScrnInfoPtr pScrn);
 static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode);
@@ -105,8 +111,8 @@ Bool S3CloseScreen(int scrnIndex, ScreenPtr pScreen);
 Bool S3SaveScreen(ScreenPtr pScreen, int mode);
 static void S3FreeScreen(int scrnIndex, int flags);
 static void S3GenericLoadPalette(ScrnInfoPtr pScrn, int numColors,
-				 int *indicies, LOCO *colors,
-				 VisualPtr pVisual);
+                                 int *indicies, LOCO *colors,
+                                 VisualPtr pVisual);
 static void S3Restore(ScrnInfoPtr pScrn);
 void S3BankZero(ScrnInfoPtr pScrn);
 void S3Regdump(ScrnInfoPtr pScrn);
@@ -131,9 +137,9 @@ static SymTabRec S3Chipsets[] = {
 	{ PCI_CHIP_964_0,	"964-0"},
 	{ PCI_CHIP_964_1,	"964-1"},
 	{ PCI_CHIP_968,		"968" },
-	{ PCI_CHIP_TRIO,	"Trio32/64" },
+	{ PCI_CHIP_TRIO, 	"Trio32/64" },
 	{ PCI_CHIP_AURORA64VP,	"Aurora64V+" },
-	{ PCI_CHIP_TRIO64UVP,		"Trio64UV+" },
+	{ PCI_CHIP_TRIO64UVP, 		"Trio64UV+" },
 	{ PCI_CHIP_TRIO64V2_DXGX,	"Trio64V2/DX/GX" },
 	{ -1, NULL }
 };
@@ -142,12 +148,12 @@ static SymTabRec S3Chipsets[] = {
 static PciChipsets S3PciChipsets[] = {
 	{ PCI_CHIP_964_0,	PCI_CHIP_964_0,		RES_SHARED_VGA },
 	{ PCI_CHIP_964_1,	PCI_CHIP_964_1,		RES_SHARED_VGA },
-	{ PCI_CHIP_968,		PCI_CHIP_968,		RES_SHARED_VGA },
-	{ PCI_CHIP_TRIO,	PCI_CHIP_TRIO,		RES_SHARED_VGA },
-	{ PCI_CHIP_AURORA64VP,	PCI_CHIP_AURORA64VP,	RES_SHARED_VGA },
-	{ PCI_CHIP_TRIO64UVP,	PCI_CHIP_TRIO64UVP,	RES_SHARED_VGA },
-	{ PCI_CHIP_TRIO64V2_DXGX,	PCI_CHIP_TRIO64V2_DXGX,		RES_SHARED_VGA },
-	{ -1,			-1,			RES_UNDEFINED }
+	{ PCI_CHIP_968, 	PCI_CHIP_968, 		RES_SHARED_VGA },
+	{ PCI_CHIP_TRIO, 	PCI_CHIP_TRIO, 		RES_SHARED_VGA },
+	{ PCI_CHIP_AURORA64VP,	PCI_CHIP_AURORA64VP, 	RES_SHARED_VGA },
+	{ PCI_CHIP_TRIO64UVP,	PCI_CHIP_TRIO64UVP, 	RES_SHARED_VGA },
+	{ PCI_CHIP_TRIO64V2_DXGX,	PCI_CHIP_TRIO64V2_DXGX, 	RES_SHARED_VGA },
+	{ -1,			-1,	      		RES_UNDEFINED }
 };
 
 typedef enum {
@@ -183,26 +189,36 @@ static const char *fbSymbols[] = {
 };
 
 static const char *vgaHWSymbols[] = {
-	"vgaHWGetHWRec",
-	"vgaHWFreeHWRec",
-	"vgaHWGetIOBase",
-	"vgaHWSave",
-	"vgaHWProtect",
-	"vgaHWRestore",
-	"vgaHWMapMem",
-	"vgaHWUnmapMem",
-	"vgaHWSaveScreen",
-	"vgaHWLock",
+        "vgaHWGetHWRec",
+        "vgaHWFreeHWRec",
+        "vgaHWGetIOBase",
+        "vgaHWSave",
+        "vgaHWProtect",
+        "vgaHWRestore",
+        "vgaHWMapMem",
+        "vgaHWUnmapMem",
+        "vgaHWSaveScreen",
+        "vgaHWLock",
 	"vgaHWInit",
 	"vgaHWDPMSSet",
 	"vgaHWHBlankKGA",
-	NULL
+        NULL
+};
+
+static const char *vbeSymbols[] = {
+    	"VBEInit",
+    	"vbeDoEDID",
+    	"vbeFree",
+    	NULL
 };
 
 static const char *int10Symbols[] = {
-	"xf86FreeInt10",
-	"xf86InitInt10",
-	NULL
+    	"xf86ExecX86int10",
+    	"xf86FreeInt10",
+    	"xf86InitInt10",
+    	"xf86Int10AllocPages",
+    	"xf86Int10FreePages",
+    	NULL
 };
 
 static const char *ramdacSymbols[] = {
@@ -233,70 +249,71 @@ static int s3AccelLinePitches[] = { 640, 800, 1024, 1280, 1600 };
 MODULESETUPPROTO(S3Setup);
 
 static XF86ModuleVersionInfo S3VersRec = {
-	"s3",
-	MODULEVENDORSTRING,
-	MODINFOSTRING1,
-	MODINFOSTRING2,
-	XF86_VERSION_CURRENT,
-	VERSION_MAJOR, VERSION_MINOR, PATCHLEVEL,
-	ABI_CLASS_VIDEODRV,
-	ABI_VIDEODRV_VERSION,
-	MOD_CLASS_VIDEODRV,
-	{0, 0, 0, 0}
+        "s3",
+        MODULEVENDORSTRING,
+        MODINFOSTRING1,
+        MODINFOSTRING2,
+        XF86_VERSION_CURRENT,
+        VERSION_MAJOR, VERSION_MINOR, PATCHLEVEL,
+        ABI_CLASS_VIDEODRV,
+        ABI_VIDEODRV_VERSION,
+        MOD_CLASS_VIDEODRV,
+        {0, 0, 0, 0}
 };
 
 
 XF86ModuleData s3ModuleData = { &S3VersRec, S3Setup, NULL };
 
-pointer S3Setup (ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+pointer S3Setup (pointer module, pointer opts, int *errmaj, int *errmin)
 {
 	static Bool setupDone = FALSE;
 
-	if (!setupDone) {
-		setupDone = TRUE;
-		xf86AddDriver(&S3, module, 0);
-		LoaderModRefSymLists(module, vgaHWSymbols, int10Symbols,
-				     ramdacSymbols, fbSymbols, xaaSymbols,
-				     NULL);
-		return (pointer) 1;
-	} else {
-		if (errmaj)
-			*errmaj = LDR_ONCEONLY;
-		return NULL;
-	}
-}
+        if (!setupDone) {  
+                setupDone = TRUE;
+                xf86AddDriver(&S3, module, 0);
+                LoaderRefSymLists(vgaHWSymbols,
+				  vbeSymbols, int10Symbols, ramdacSymbols,
+				  fbSymbols, xaaSymbols,
+				  NULL);
+                return (pointer) 1;
+        } else {
+                if (errmaj)  
+                        *errmaj = LDR_ONCEONLY;
+                return NULL;
+        }
+}               
 
 #endif /* XFree86LOADER */
 
 
 static Bool S3GetRec(ScrnInfoPtr pScrn)
-{
-	if (pScrn->driverPrivate)
-		return TRUE;
-
-	pScrn->driverPrivate = xnfcalloc(sizeof(S3Rec), 1);
-
-	return TRUE;
+{       
+        if (pScrn->driverPrivate)
+                return TRUE;
+                
+        pScrn->driverPrivate = xnfcalloc(sizeof(S3Rec), 1);
+                
+        return TRUE;
 }
-
+                        
 static void S3FreeRec(ScrnInfoPtr pScrn)
 {
-	if (!pScrn->driverPrivate)
-		return;
+        if (!pScrn->driverPrivate)
+                return;
 
-	xfree(pScrn->driverPrivate);
-	pScrn->driverPrivate = NULL;
+        xfree(pScrn->driverPrivate);
+        pScrn->driverPrivate = NULL;
 }
 
 static const OptionInfoRec * S3AvailableOptions(int chipid, int busid)
 {
-	return S3Options;
+        return S3Options;
 }
-
+                
 static void S3Identify(int flags)
 {
-	xf86PrintChipsets("S3", "driver (version " DRIVER_VERSION " for S3 chipset",
-			  S3Chipsets);
+        xf86PrintChipsets("S3", "driver (version " DRIVER_VERSION " for S3 chipset",
+                          S3Chipsets);  
 }
 
 static Bool S3Probe(DriverPtr drv, int flags)
@@ -307,7 +324,7 @@ static Bool S3Probe(DriverPtr drv, int flags)
 
 	/* sanity check */
 	if ((numDevSections = xf86MatchDevice("s3", &devSections)) <= 0)
-		return FALSE;
+                return FALSE;
 
 	/* XXX do ISA later...  some day in the distant future... */
 	numUsed = xf86MatchPciInstances("s3", PCI_VENDOR_S3,
@@ -327,25 +344,25 @@ static Bool S3Probe(DriverPtr drv, int flags)
 
 		pScrn->driverVersion = VERSION_MAJOR;
 		pScrn->driverName = DRIVER_NAME;
-		pScrn->name = "s3";
-		pScrn->Probe = S3Probe;
-		pScrn->PreInit = S3PreInit;
-		pScrn->ScreenInit = S3ScreenInit;
-		pScrn->SwitchMode = S3SwitchMode;
-		pScrn->AdjustFrame = S3AdjustFrame;
-		pScrn->EnterVT = S3EnterVT;
-		pScrn->LeaveVT = S3LeaveVT;
+                pScrn->name = "s3";
+                pScrn->Probe = S3Probe;
+                pScrn->PreInit = S3PreInit;
+                pScrn->ScreenInit = S3ScreenInit;  
+                pScrn->SwitchMode = S3SwitchMode;
+                pScrn->AdjustFrame = S3AdjustFrame;
+                pScrn->EnterVT = S3EnterVT;
+                pScrn->LeaveVT = S3LeaveVT;
 		pScrn->FreeScreen = S3FreeScreen;
 
 		foundScreen = TRUE;
 
-		xf86ConfigActivePciEntity(pScrn, usedChips[i], S3PciChipsets,
-					  NULL, NULL, NULL, NULL, NULL);
-	}
-
-	xfree(usedChips);
-
-	return foundScreen;
+                xf86ConfigActivePciEntity(pScrn, usedChips[i], S3PciChipsets,
+                                          NULL, NULL, NULL, NULL, NULL);
+        }
+                
+        xfree(usedChips);
+                
+        return foundScreen;
 }
 
 static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
@@ -358,72 +375,71 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 	Gamma gzeros = {0.0, 0.0, 0.0};
 	int i, vgaCRIndex, vgaCRReg;
 	unsigned char tmp;
-	ModuleDescPtr pMod;
 
-	if (flags & PROBE_DETECT)
-		return FALSE;
+        if (flags & PROBE_DETECT)
+                return FALSE;
+        
+        if (!xf86LoadSubModule(pScrn, "vgahw"))
+                return FALSE;
+        
+        xf86LoaderReqSymLists(vgaHWSymbols, NULL);  
+ 
+        if (!vgaHWGetHWRec(pScrn))
+                return FALSE;
+        
+        hwp = VGAHWPTR(pScrn);
+        vgaHWGetIOBase(hwp);
+        
+        pScrn->monitor = pScrn->confScreen->monitor;
+        
+        if (!xf86SetDepthBpp(pScrn, 0, 0, 0, Support24bppFb | Support32bppFb))
+                return FALSE;
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
-		return FALSE;
+        switch (pScrn->depth) {
+            	case 8:
+                case 15:
+                case 16:
+                case 24:
+      	               /* OK */
+                       break;
+                default:
+                       xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+                                  "Given depth (%d) is not  supported by this driver\n",
+                                   pScrn->depth);
+	                       return FALSE;
+        }
 
-	xf86LoaderModReqSymLists(pMod, vgaHWSymbols, NULL);
+        xf86PrintDepthBpp(pScrn);
+        
+        if (pScrn->depth > 8) {
+                if (!xf86SetWeight(pScrn, zeros, zeros))
+                        return FALSE;
+        }
 
-	if (!vgaHWGetHWRec(pScrn))
-		return FALSE;
-
-	hwp = VGAHWPTR(pScrn);
-	vgaHWGetIOBase(hwp);
-
-	pScrn->monitor = pScrn->confScreen->monitor;
-
-	if (!xf86SetDepthBpp(pScrn, 0, 0, 0, Support24bppFb | Support32bppFb))
-		return FALSE;
-
-	switch (pScrn->depth) {
-		case 8:
-		case 15:
-		case 16:
-		case 24:
-		       /* OK */
-		       break;
-		default:
-		       xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-				  "Given depth (%d) is not  supported by this driver\n",
-				   pScrn->depth);
-			       return FALSE;
-	}
-
-	xf86PrintDepthBpp(pScrn);
-
-	if (pScrn->depth > 8) {
-		if (!xf86SetWeight(pScrn, zeros, zeros))
-			return FALSE;
-	}
-
-	if (!xf86SetDefaultVisual(pScrn, -1))
-		return FALSE;
-
-	pScrn->progClock = TRUE;
-
-	if (!S3GetRec(pScrn))
-		return FALSE;
+        if (!xf86SetDefaultVisual(pScrn, -1))
+                return FALSE;
+                                           
+        pScrn->progClock = TRUE;
+                 
+        if (!S3GetRec(pScrn))
+                return FALSE;
 
 	pS3 = S3PTR(pScrn);
 
 	pS3->s3Bpp = (pScrn->bitsPerPixel >> 3);
 
-	xf86CollectOptions(pScrn, NULL);
-	xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, S3Options);
-
-	if (xf86ReturnOptValBool(S3Options, OPTION_NOACCEL, FALSE)) {
-		pS3->NoAccel = TRUE;
-		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Option: NoAccel - acceleration disabled\n");
-	} else
-		pS3->NoAccel = FALSE;
+        xf86CollectOptions(pScrn, NULL);
+        xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, S3Options);
+         
+        if (xf86ReturnOptValBool(S3Options, OPTION_NOACCEL, FALSE)) {
+                pS3->NoAccel = TRUE;
+                xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Option: NoAccel - acceleration disabled\n");
+        } else          
+                pS3->NoAccel = FALSE;
 	if (xf86ReturnOptValBool(S3Options, OPTION_SWCURS, FALSE)) {
 		pS3->SWCursor = TRUE;
 		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Option: SWCursor - using software cursor\n");
-	} else
+        } else
 		pS3->SWCursor = FALSE;
 	if (xf86ReturnOptValBool(S3Options, OPTION_SLOW_DRAM_REFRESH, FALSE)) {
 		pS3->SlowDRAMRefresh = TRUE;
@@ -446,61 +462,63 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 	} else
 		pS3->SlowVRAM = FALSE;
 
-	if (pScrn->numEntities > 1) {
-		S3FreeRec(pScrn);
-		return FALSE;
+        if (pScrn->numEntities > 1) {      
+                S3FreeRec(pScrn);
+                return FALSE;
+        }
+                
+        pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
+        if (pEnt->resources) {
+                xfree(pEnt);
+                S3FreeRec(pScrn);
+                return FALSE;
+        }
+
+	if (xf86LoadSubModule(pScrn, "int10")) {
+		xf86LoaderReqSymLists(int10Symbols, NULL);
+		pS3->pInt10 = xf86InitInt10(pEnt->index);
 	}
 
-	pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
-	if (pEnt->resources) {
-		xfree(pEnt);
-		S3FreeRec(pScrn);
-		return FALSE;
+	if (xf86LoadSubModule(pScrn, "vbe")) {
+		xf86LoaderReqSymLists(vbeSymbols, NULL);
+		pS3->pVBE = VBEInit(pS3->pInt10, pEnt->index);
 	}
-
-	if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
-		xf86Int10InfoPtr pInt10;
-		xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
-		pInt10 = xf86InitInt10(pEnt->index);
-		if (pInt10)
-			xf86FreeInt10(pInt10);
-	}
-
+	
 	if (!xf86SetGamma(pScrn, gzeros))
 		return FALSE;
 
-	pS3->PciInfo = xf86GetPciInfoForEntity(pEnt->index);
-	xf86RegisterResources(pEnt->index, NULL, ResNone);
+        pS3->PciInfo = xf86GetPciInfoForEntity(pEnt->index);
+        xf86RegisterResources(pEnt->index, NULL, ResNone);
 	/* don't disable PIO funcs */
-	xf86SetOperatingState(resVgaMemShared, pEnt->index, ResDisableOpr);
+        xf86SetOperatingState(resVgaMemShared, pEnt->index, ResDisableOpr);
 
-	if (pEnt->device->chipset && *pEnt->device->chipset) {
-		pScrn->chipset = pEnt->device->chipset;
-		pS3->Chipset = xf86StringToToken(S3Chipsets, pScrn->chipset);
-	} else if (pEnt->device->chipID >= 0) {
-		pS3->Chipset = pEnt->device->chipID;
-		pScrn->chipset = (char *)xf86TokenToString(S3Chipsets,
-							   pS3->Chipset);
-		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "ChipID override: 0x%04X\n",
-			   pS3->Chipset);
-	} else {
-		pS3->Chipset = pS3->PciInfo->chipType;
-		pScrn->chipset = (char *)xf86TokenToString(S3Chipsets,
-							   pS3->Chipset);
-	}
-	if (pEnt->device->chipRev >= 0) {
-		pS3->ChipRev = pEnt->device->chipRev;
-		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "ChipRev override: %d\n",
-			   pS3->ChipRev);
-	} else
-		pS3->ChipRev = pS3->PciInfo->chipRev;
-
-	xfree(pEnt);
-
-	xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Chipset: \"%s\"\n", pScrn->chipset);
-
-	pS3->PciTag = pciTag(pS3->PciInfo->bus, pS3->PciInfo->device,
-			     pS3->PciInfo->func);
+        if (pEnt->device->chipset && *pEnt->device->chipset) {
+                pScrn->chipset = pEnt->device->chipset;
+                pS3->Chipset = xf86StringToToken(S3Chipsets, pScrn->chipset);
+        } else if (pEnt->device->chipID >= 0) {            
+                pS3->Chipset = pEnt->device->chipID;
+                pScrn->chipset = (char *)xf86TokenToString(S3Chipsets,
+                                                           pS3->Chipset);
+                xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "ChipID override: 0x%04X\n",
+                           pS3->Chipset);
+        } else {
+                pS3->Chipset = pS3->PciInfo->chipType;   
+                pScrn->chipset = (char *)xf86TokenToString(S3Chipsets,
+                                                           pS3->Chipset);
+        }                                                  
+        if (pEnt->device->chipRev >= 0) {
+                pS3->ChipRev = pEnt->device->chipRev;
+                xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "ChipRev override: %d\n",
+                           pS3->ChipRev);
+        } else
+                pS3->ChipRev = pS3->PciInfo->chipRev;    
+        
+        xfree(pEnt);
+        
+        xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "Chipset: \"%s\"\n", pScrn->chipset);
+        
+        pS3->PciTag = pciTag(pS3->PciInfo->bus, pS3->PciInfo->device,
+                             pS3->PciInfo->func);        
 
 	switch (pS3->Chipset) {
 	case PCI_CHIP_964_0:
@@ -564,7 +582,7 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 	{
 	  outb (0x3d4, 0x86);
 	  outb (0x3d5, 0x80);
-
+	  
 	  outb (0x3d4, 0x90);
 	  outb (0x3d5, 0x00);
 	}
@@ -601,9 +619,9 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 			   "videoRam = %d Kb\n", pScrn->videoRam);
 	}
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "ramdac")))
+	if (!xf86LoadSubModule(pScrn, "ramdac"))
 		return FALSE;
-	xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+	xf86LoaderReqSymLists(ramdacSymbols, NULL);
 
 	pScrn->rgbBits = 8;	/* set default */
 
@@ -655,7 +673,7 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 			pS3->MaxClock = 50000;
 			break;
 		}
-		pScrn->rgbBits = 6;
+	        pScrn->rgbBits = 6;
 		pS3->LoadPalette = S3GenericLoadPalette;
 	}
 
@@ -685,49 +703,48 @@ static Bool S3PreInit(ScrnInfoPtr pScrn, int flags)
 	clockRanges->clockIndex = -1;
 	clockRanges->interlaceAllowed = TRUE;	/* not yet */
 	clockRanges->doubleScanAllowed = TRUE;	/* not yet */
-
-	i = xf86ValidateModes(pScrn, pScrn->monitor->Modes,
-			      pScrn->display->modes, clockRanges,
-			      pS3->NoAccel ? NULL : s3AccelLinePitches,
+	
+        i = xf86ValidateModes(pScrn, pScrn->monitor->Modes,
+                              pScrn->display->modes, clockRanges,
+                              pS3->NoAccel ? NULL : s3AccelLinePitches,
 			      256, 2048,
 			      pScrn->bitsPerPixel, 128, 2048,
 			      pScrn->display->virtualX,
 			      pScrn->display->virtualY, pScrn->videoRam * 1024,
-			      LOOKUP_BEST_REFRESH);
+                              LOOKUP_BEST_REFRESH);
 
-	if (i == -1) {
-		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "no valid modes left\n");
-		S3FreeRec(pScrn);
+        if (i == -1) {
+                xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "no valid modes left\n");
+                S3FreeRec(pScrn);
+                return FALSE; 
+        }
+        
+        xf86PruneDriverModes(pScrn);
+
+        if (i == 0 || pScrn->modes == NULL) {
+                xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "no valid modes found\n");
+                S3FreeRec(pScrn);
+                return FALSE;
+        }
+
+        xf86SetCrtcForModes(pScrn, 0);
+        pScrn->currentMode = pScrn->modes;
+        xf86PrintModes(pScrn);
+        xf86SetDpi(pScrn, 0, 0);
+ 
+        xf86LoadSubModule(pScrn, "fb");
+        xf86LoaderReqSymLists(fbSymbols, NULL);
+
+	if (!xf86LoadSubModule(pScrn, "xaa"))
 		return FALSE;
-	}
-
-	xf86PruneDriverModes(pScrn);
-
-	if (i == 0 || pScrn->modes == NULL) {
-		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "no valid modes found\n");
-		S3FreeRec(pScrn);
-		return FALSE;
-	}
-
-	xf86SetCrtcForModes(pScrn, 0);
-	pScrn->currentMode = pScrn->modes;
-	xf86PrintModes(pScrn);
-	xf86SetDpi(pScrn, 0, 0);
-
-	if (!(pMod = xf86LoadSubModule(pScrn, "fb")))
-		return FALSE;
-	xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
-
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa")))
-		return FALSE;
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
 
 	return TRUE;
 }
 
 
-static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
-			 const int argc, const char **argv)
+static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen, int argc,
+			 char **argv)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	S3Ptr pS3 = S3PTR(pScrn);
@@ -749,51 +766,51 @@ static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
 	S3Regdump(pScrn);
 #endif
 	pScrn->vtSema = TRUE;
-
+	
 	S3SaveScreen(pScreen, SCREEN_SAVER_ON);
 
-	miClearVisualTypes();
-	if (pScrn->bitsPerPixel > 8) {
-		if (!miSetVisualTypes(pScrn->depth, TrueColorMask,
-				      pScrn->rgbBits, pScrn->defaultVisual))
-			return FALSE;
-	} else {
-		if (!miSetVisualTypes(pScrn->depth, miGetDefaultVisualMask(pScrn->depth),
-				      pScrn->rgbBits, pScrn->defaultVisual))
-			return FALSE;
-	}
+        miClearVisualTypes();
+        if (pScrn->bitsPerPixel > 8) {
+                if (!miSetVisualTypes(pScrn->depth, TrueColorMask,
+                                      pScrn->rgbBits, pScrn->defaultVisual))
+                        return FALSE;
+        } else {
+                if (!miSetVisualTypes(pScrn->depth, miGetDefaultVisualMask(pScrn->depth),
+                                      pScrn->rgbBits, pScrn->defaultVisual))
+                        return FALSE; 
+        }       
+        
+        miSetPixmapDepths ();
 
-	miSetPixmapDepths ();
-
-	if (!fbScreenInit(pScreen, pS3->FBBase, pScrn->virtualX,
-			  pScrn->virtualY, pScrn->xDpi, pScrn->yDpi,
-			  pScrn->displayWidth, pScrn->bitsPerPixel))
-		return FALSE;
-
-	xf86SetBlackWhitePixels(pScreen);
-
-	if (pScrn->bitsPerPixel > 8) {
-		VisualPtr pVis;
-
-		pVis = pScreen->visuals + pScreen->numVisuals;
-		while (--pVis >= pScreen->visuals) {
-			if ((pVis->class | DynamicClass) == DirectColor) {
-				pVis->offsetRed = pScrn->offset.red;
-				pVis->offsetGreen = pScrn->offset.green;
-				pVis->offsetBlue = pScrn->offset.blue;
-				pVis->redMask = pScrn->mask.red;
-				pVis->greenMask = pScrn->mask.green;
-				pVis->blueMask = pScrn->mask.blue;
-			}
-		}
-	}
+        if (!fbScreenInit(pScreen, pS3->FBBase, pScrn->virtualX,
+                          pScrn->virtualY, pScrn->xDpi, pScrn->yDpi,
+                          pScrn->displayWidth, pScrn->bitsPerPixel))
+                return FALSE;
+        
+        xf86SetBlackWhitePixels(pScreen);
+                        
+        if (pScrn->bitsPerPixel > 8) {
+                VisualPtr pVis;
+                         
+                pVis = pScreen->visuals + pScreen->numVisuals;
+                while (--pVis >= pScreen->visuals) {
+                        if ((pVis->class | DynamicClass) == DirectColor) {
+                                pVis->offsetRed = pScrn->offset.red;
+                                pVis->offsetGreen = pScrn->offset.green;
+                                pVis->offsetBlue = pScrn->offset.blue;
+                                pVis->redMask = pScrn->mask.red;
+                                pVis->greenMask = pScrn->mask.green;
+                                pVis->blueMask = pScrn->mask.blue;
+                        }
+                } 
+        }
 
 	fbPictureInit (pScreen, 0, 0);
 
 	S3DGAInit(pScreen);
 
-	miInitializeBackingStore(pScreen);
-	xf86SetBackingStore(pScreen);
+        miInitializeBackingStore(pScreen);
+        xf86SetBackingStore(pScreen);
 
 	if (!pS3->NoAccel) {
 		if (pS3->S3NewMMIO) {
@@ -817,7 +834,7 @@ static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
 		xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Acceleration disabled by option\n");
 	}
 
-	miDCInitialize(pScreen, xf86GetPointerScreenFuncs());
+        miDCInitialize(pScreen, xf86GetPointerScreenFuncs());
 
 	/* hw cursor setup */
 	if (pS3->CursorInit) {
@@ -833,19 +850,19 @@ static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
 
 
 
-	if (!miCreateDefColormap(pScreen))
-		return FALSE;
+        if (!miCreateDefColormap(pScreen))
+                return FALSE;
 
-	if (!xf86HandleColormaps(pScreen, 256, pScrn->rgbBits,
+        if (!xf86HandleColormaps(pScreen, 256, pScrn->rgbBits,
 				 pS3->LoadPalette, NULL,
-				 CMAP_RELOAD_ON_MODE_SWITCH))
-		return FALSE;
+                                 CMAP_RELOAD_ON_MODE_SWITCH))
+                return FALSE;
 
 	vgaHWBlankScreen(pScrn, FALSE);
 
-	pScreen->SaveScreen = S3SaveScreen;
-	pS3->CloseScreen = pScreen->CloseScreen;
-	pScreen->CloseScreen = S3CloseScreen;
+        pScreen->SaveScreen = S3SaveScreen;
+        pS3->CloseScreen = pScreen->CloseScreen;
+        pScreen->CloseScreen = S3CloseScreen;
 
 	xf86DPMSInit(pScreen, S3DisplayPowerManagementSet, 0);
 
@@ -856,9 +873,9 @@ static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
 #if 0
 	S3InitVideo(pScreen);
 #endif
-
-	return TRUE;
-}
+	
+        return TRUE;
+}                 
 
 
 
@@ -868,7 +885,7 @@ static void S3Save(ScrnInfoPtr pScrn)
 	S3Ptr pS3 = S3PTR(pScrn);
 	S3RegPtr save = &pS3->SavedRegs;
 	vgaHWPtr hwp = VGAHWPTR(pScrn);
-	vgaRegPtr pVga = &hwp->SavedReg;
+        vgaRegPtr pVga = &hwp->SavedReg;
 	int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
 	int i;
 	unsigned char cr5c = 0;
@@ -924,7 +941,7 @@ static void S3Save(ScrnInfoPtr pScrn)
 	}
 
 	if (pS3->RamDac->RamDacType == TI3025_RAMDAC)
-		save->s3syssave[0x0c + 16] = cr5c;
+		save->s3syssave[0x0c + 16] = cr5c;	
 
 	for(i=32; i<46; i++) {
 		outb(vgaCRIndex, 0x40 + i);
@@ -941,58 +958,58 @@ Bool S3SaveScreen(ScreenPtr pScreen, int mode)
 
 static void S3FreeScreen(int scrnIndex, int flags)
 {
-	ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
-
-	vgaHWFreeHWRec(pScrn);
-
-	S3FreeRec(pScrn);
+        ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
+                           
+        vgaHWFreeHWRec(pScrn);
+        
+        S3FreeRec(pScrn);
 }
 
 
 Bool S3CloseScreen(int scrnIndex, ScreenPtr pScreen)
 {
-	ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
-	S3Ptr pS3 = S3PTR(pScrn);
-	vgaHWPtr hwp = VGAHWPTR(pScrn);
+        ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
+        S3Ptr pS3 = S3PTR(pScrn);
+        vgaHWPtr hwp = VGAHWPTR(pScrn);
 
-	if (pScrn->vtSema) {
-		vgaHWUnlock(hwp);
+        if (pScrn->vtSema) {
+                vgaHWUnlock(hwp);
 		S3Restore(pScrn);
-		vgaHWLock(hwp);
-		S3UnmapMem(pScrn);
-	}
+                vgaHWLock(hwp);
+                S3UnmapMem(pScrn);
+        }
 
 	if (pS3->DGAModes)
 		xfree(pS3->DGAModes);
 	pS3->DGAModes = NULL;
 
-	pScrn->vtSema = FALSE;
-	pScreen->CloseScreen = pS3->CloseScreen;
-
-	return (*pScreen->CloseScreen)(scrnIndex, pScreen);
+        pScrn->vtSema = FALSE;
+        pScreen->CloseScreen = pS3->CloseScreen;
+                
+        return (*pScreen->CloseScreen)(scrnIndex, pScreen);
 }
 
 
 Bool S3SwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
-{
+{    
 	return S3ModeInit(xf86Screens[scrnIndex], mode);
 
 }
 
 
 static void S3GenericLoadPalette(ScrnInfoPtr pScrn, int numColors,
-				 int *indicies, LOCO *colors,
-				 VisualPtr pVisual)
-{
-	int i, index;
-
-	for (i=0; i<numColors; i++) {
-		index = indicies[i];
-		outb(0x3c8, index);
-		outb(0x3c9, colors[index].red);
-		outb(0x3c9, colors[index].green);
-		outb(0x3c9, colors[index].blue);
-	}
+                                 int *indicies, LOCO *colors,
+                                 VisualPtr pVisual)
+{               
+        int i, index;
+	
+        for (i=0; i<numColors; i++) {
+                index = indicies[i];
+                outb(0x3c8, index);
+                outb(0x3c9, colors[index].red);
+                outb(0x3c9, colors[index].green);
+                outb(0x3c9, colors[index].blue);
+        }
 }
 
 
@@ -1047,9 +1064,9 @@ static int S3GetPixMuxShift(ScrnInfoPtr pScrn)
 
 	if (pS3->Chipset == PCI_CHIP_968)
 		shift = 1;	/* XXX IBMRGB */
-	else if (pS3->Chipset == PCI_CHIP_TRIO ||
-		 pS3->Chipset == PCI_CHIP_TRIO64UVP ||
-		 pS3->Chipset == PCI_CHIP_TRIO64V2_DXGX)
+	else if (pS3->Chipset == PCI_CHIP_TRIO || 
+	         pS3->Chipset == PCI_CHIP_TRIO64UVP || 
+	         pS3->Chipset == PCI_CHIP_TRIO64V2_DXGX)
 		shift = -(pS3->s3Bpp >> 1);
 
 	return shift;
@@ -1059,12 +1076,12 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
 	S3Ptr pS3 = S3PTR(pScrn);
 	S3RegPtr new = &pS3->ModeRegs;
-	vgaHWPtr hwp = VGAHWPTR(pScrn);
-	vgaRegPtr pVga = &hwp->ModeReg;
-	int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
+        vgaHWPtr hwp = VGAHWPTR(pScrn);
+        vgaRegPtr pVga = &hwp->ModeReg;
+        int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
 	int vgaIOBase = hwp->IOBase;
 	int interlacedived = mode->Flags & V_INTERLACE ? 1 : 0;
-	CARD32 HBlankEnd;
+	CARD32 HBlankEnd; 
 	int r, n, m;
 	unsigned char tmp;
 
@@ -1080,7 +1097,7 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	if (mode->HTotal == mode->CrtcHTotal) {
 		if (pS3->pixMuxShift > 0) {
 			/* XXX hack */
-/*			mode->Flags |= V_PIXMUX; */
+/* 			mode->Flags |= V_PIXMUX; */
 
 			mode->CrtcHTotal >>= pS3->pixMuxShift;
 			mode->CrtcHDisplay >>= pS3->pixMuxShift;
@@ -1090,7 +1107,7 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 			mode->CrtcHBlankStart >>= pS3->pixMuxShift;
 			mode->CrtcHBlankEnd >>= pS3->pixMuxShift;
 		} else if (pS3->pixMuxShift < 0) {
-/*			mode->Flags |= V_PIXMUX; */
+/* 			mode->Flags |= V_PIXMUX; */
 
 			mode->CrtcHTotal <<= -pS3->pixMuxShift;
 			mode->CrtcHDisplay <<= -pS3->pixMuxShift;
@@ -1188,7 +1205,7 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	    (pS3->Chipset == PCI_CHIP_964_1))
 		new->cr33 = 0x20;
 	outb(vgaCRReg, new->cr33);
-
+	
 	new->cr34 = 0x10;
 	outb(vgaCRIndex, 0x34);
 	outb(vgaCRReg, new->cr34);
@@ -1513,7 +1530,7 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 	pScrn->AdjustFrame(pScrn->scrnIndex, pScrn->frameX0, pScrn->frameY0, 0);
 
-	vgaHWProtect(pScrn, FALSE);
+       	vgaHWProtect(pScrn, FALSE);
 
 	if (pScrn->displayWidth == 1024)
 		outw(ADVFUNC_CNTL, 0x0007);
@@ -1527,7 +1544,7 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 	inw(SUBSYS_STAT);
 
-	outw(0xbee8, 0x5000 | 0x0004 | 0x000c);
+	outw(0xbee8, 0x5000 | 0x0004 | 0x000c);	
 
 	outb(0x3c6, 0xff);
 
@@ -1559,7 +1576,7 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	outb(vgaCRIndex, 0x6f);
 
 #if 0
-	if (((pScrn->bitsPerPixel == 16) ||
+	if (((pScrn->bitsPerPixel == 16) || 
 	     (pScrn->bitsPerPixel == 24)) && (pS3->S3NewMMIO))
 		S3InitStreams(pScrn, mode);
 #endif
@@ -1569,24 +1586,24 @@ static Bool S3ModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 
 static Bool S3EnterVT(int scrnIndex, int flags)
-{
-	ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
-	vgaHWPtr hwp = VGAHWPTR(pScrn);
+{       
+        ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
+        vgaHWPtr hwp = VGAHWPTR(pScrn);
 
-	vgaHWUnlock(hwp);
-	if (!S3ModeInit(pScrn, pScrn->currentMode))
-		return FALSE;
-
-	return TRUE;
-}
+        vgaHWUnlock(hwp);
+        if (!S3ModeInit(pScrn, pScrn->currentMode))
+                return FALSE;
+        
+        return TRUE;
+}               
 
 
 static void S3Restore(ScrnInfoPtr pScrn)
 {
-	S3Ptr pS3 = S3PTR(pScrn);
-	S3RegPtr restore = &pS3->SavedRegs;
-	vgaHWPtr hwp = VGAHWPTR(pScrn);
-	int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
+        S3Ptr pS3 = S3PTR(pScrn);
+        S3RegPtr restore = &pS3->SavedRegs;
+        vgaHWPtr hwp = VGAHWPTR(pScrn);
+        int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
 	int i;
 
 	vgaHWProtect(pScrn, TRUE);
@@ -1644,7 +1661,7 @@ static void S3Restore(ScrnInfoPtr pScrn)
 	for(i=4; i<8; i++)
 		outb(vgaCRReg, restore->color_stack[i]);
 
-	vgaHWRestore(pScrn, &hwp->SavedReg, VGA_SR_ALL);
+        vgaHWRestore(pScrn, &hwp->SavedReg, VGA_SR_ALL);
 
 	outb(0x3c2, restore->clock);
 
@@ -1655,22 +1672,22 @@ static void S3Restore(ScrnInfoPtr pScrn)
 
 static void S3LeaveVT(int scrnIndex, int flags)
 {
-	ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
-	vgaHWPtr hwp = VGAHWPTR(pScrn);
+        ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
+        vgaHWPtr hwp = VGAHWPTR(pScrn);
 
-	S3Restore(pScrn);
-	vgaHWLock(hwp);
+        S3Restore(pScrn);
+        vgaHWLock(hwp);
 
-	return;
-}
+        return;
+}       
 
 
 static void S3AdjustFrame(int scrnIndex, int x, int y, int flags)
 {
-	ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
-	S3Ptr pS3 = S3PTR(pScrn);
+        ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
+        S3Ptr pS3 = S3PTR(pScrn);
 	S3RegPtr regs = &pS3->ModeRegs;
-	int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
+        int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
 	int base, orig_base;
 	unsigned char tmp;
 
@@ -1711,8 +1728,8 @@ static void S3AdjustFrame(int scrnIndex, int x, int y, int flags)
 
 void S3Regdump(ScrnInfoPtr pScrn)
 {
-	S3Ptr pS3 = S3PTR(pScrn);
-	int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
+        S3Ptr pS3 = S3PTR(pScrn);
+        int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
 
 #if 1
 	outb(vgaCRIndex, 0x31);
@@ -1761,7 +1778,7 @@ void S3Regdump(ScrnInfoPtr pScrn)
 	ErrorF("cr5d = 0x%x\n", inb(vgaCRReg));
 	outb(vgaCRIndex, 0x5e);
 	ErrorF("cr5e = 0x%x\n", inb(vgaCRReg));
-
+	
 	outb(vgaCRIndex, 0x60);
 	ErrorF("cr60 = 0x%x\n", inb(vgaCRReg));
 	outb(vgaCRIndex, 0x61);
@@ -1807,9 +1824,9 @@ void S3Regdump(ScrnInfoPtr pScrn)
 
 void S3BankZero(ScrnInfoPtr pScrn)
 {
-	S3Ptr pS3 = S3PTR(pScrn);
+        S3Ptr pS3 = S3PTR(pScrn);
 	unsigned char tmp;
-	int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
+        int vgaCRIndex = pS3->vgaCRIndex, vgaCRReg = pS3->vgaCRReg;
 
 	outb(vgaCRIndex, 0x35);
 	tmp = inb(vgaCRReg) & 0xf0;

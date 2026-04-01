@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/Xserver/hw/tinyx/TinyX.man,v 1.2tsi Exp $
+.\" $XFree86: xc/programs/Xserver/hw/tinyx/TinyX.man,v 1.2 2005/03/12 23:36:27 dawes Exp $
 .\"
 .TH TinyX 1 __vendorversion__
 .SH NAME
@@ -71,39 +71,35 @@ Xserver(1)), all the
 servers accept the following options:
 .TP 8
 .B \-card \fIpcmcia\fP
-Use pcmcia card as additional screen.
+use pcmcia card as additional screen.
 .TP 8
 .B \-dumb
-Disable hardware acceleration.
+disable hardware acceleration.
 .TP 8
 .B \-origin \fIX\fP,\fIY\fP
 Locates the next screen in the Xinerama virtual screen.
 .TP 8
 .B \-screen \fIwidth\fBx\fIheight\fR[\fBx\fIdepth\fR[\fBx\fIfreq\fR]]\fR[\fB@\fIrotation\fR]\fB
-Use a screen of the specified \fIwidth\fP, \fIheight\fP, screen \fIdepth\fP, \fIfrequency\fP, and \fIrotation\fP (0, 90, 180 and 270 are legal values).
+use a screen of the specified \fIwidth\fP, \fIheight\fP, screen \fIdepth\fP, \fIfrequency\fP, and \fIrotation\fP (0, 90, 180 and 270 are legal values).
 .TP 8
 .B \-softCursor
-Disable the hardware cursor.
+disable the hardware cursor.
 .TP 8
 .B \-videoTest
-Start the server, pause momentarily, and exit.
+start the server, pause momentarily, and exit.
 .TP 8
 .B \-zaphod
-Disable switching screens by moving the pointer across a screen boundary.
+disable switching screens by moving the pointer across a screen boundary.
 .TP 8
 .B \-2button
-Enable emulation of a middle mouse button by chording.
+enable emulation of a middle mouse button by chording.
 .TP 8
 .B \-3button
-Disable emulation of a middle mouse button by chording.
-.TP 8
-.B \-noserialmouse
-Do not probe for a serial mouse.
+disable emulation of a middle mouse button by chording.
 .SH SEE ALSO
 X(__miscmansuffix__), Xserver(1), xdm(1), xinit(1), Xvesa(1), Xfbdev(1),
 XFree86(1).
 .SH AUTHORS
 The TinyX common core was written by Keith Packard, based on XFree86
-which, in turn, is loosely based on the X11R6 Sample Implementation.
-It was integrated into the XFree86 build process by David Dawes and
-X-Oz Technologies.
+which.  It was integrated into the XFree86 build process by David Dawes
+and X-Oz Technologies.

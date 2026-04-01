@@ -1,3 +1,11 @@
+/* $Xorg: pixmap.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -25,9 +33,9 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/dix/pixmap.c,v 3.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/pixmap.c,v 3.5 2001/12/14 19:59:32 dawes Exp $ */
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "misc.h"
 #include "os.h"
@@ -47,8 +55,15 @@ from The Open Group.
 
 /* callable by ddx */
 PixmapPtr
-GetScratchPixmapHeader(ScreenPtr pScreen, int width, int height, int depth,
-		       int bitsPerPixel, int devKind, pointer pPixData)
+GetScratchPixmapHeader(pScreen, width, height, depth, bitsPerPixel, devKind,
+		       pPixData)
+    ScreenPtr   pScreen;
+    int		width;
+    int		height;
+    int		depth;
+    int		bitsPerPixel;
+    int		devKind;
+    pointer     pPixData;
 {
     PixmapPtr pPixmap = pScreen->pScratchPixmap;
 
@@ -70,7 +85,8 @@ GetScratchPixmapHeader(ScreenPtr pScreen, int width, int height, int depth,
 
 /* callable by ddx */
 void
-FreeScratchPixmapHeader(PixmapPtr pPixmap)
+FreeScratchPixmapHeader(pPixmap)
+    PixmapPtr pPixmap;
 {
     if (pPixmap)
     {
@@ -86,7 +102,8 @@ FreeScratchPixmapHeader(PixmapPtr pPixmap)
 
 
 Bool
-CreateScratchPixmapsForScreen(int scrnum)
+CreateScratchPixmapsForScreen(scrnum)
+    int scrnum;
 {
     /* let it be created on first use */
     screenInfo.screens[scrnum]->pScratchPixmap = NULL;
@@ -95,7 +112,8 @@ CreateScratchPixmapsForScreen(int scrnum)
 
 
 void
-FreeScratchPixmapsForScreen(int scrnum)
+FreeScratchPixmapsForScreen(scrnum)
+    int scrnum;
 {
     FreeScratchPixmapHeader(screenInfo.screens[scrnum]->pScratchPixmap);
 }
@@ -103,7 +121,9 @@ FreeScratchPixmapsForScreen(int scrnum)
 
 /* callable by ddx */
 PixmapPtr
-AllocatePixmap(ScreenPtr pScreen, int pixDataSize)
+AllocatePixmap(pScreen, pixDataSize)
+    ScreenPtr pScreen;
+    int pixDataSize;
 {
     PixmapPtr pPixmap;
 #ifdef PIXPRIV

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_kbdEv.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_kbdEv.c,v 1.7 2005/01/24 21:27:11 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  * Copyright 1993 by David Dawes <dawes@xfree86.org>
@@ -29,8 +36,8 @@
 #include "xf86_OSlib.h"
 
 #ifdef XINPUT
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
+#include "XI.h"
+#include "XIproto.h"
 #include "xf86Xinput.h"
 #else
 #include "inputstr.h"
@@ -55,7 +62,7 @@ extern Bool noXkbExtension;
 
 #ifdef XTESTEXT1
 #define	XTestSERVER_SIDE
-#include <X11/extensions/xtestext1.h>
+#include "xtestext1.h"
 
 extern short xtest_mousex;
 extern short xtest_mousey;

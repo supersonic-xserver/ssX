@@ -1,0 +1,22 @@
+/460gxPCI.c/1.1.1.2/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/460gxPCI.h/1.1.1.2/Fri Mar  5 14:29:17 2004//Tnetbsd-5-2-3-RELEASE
+/Imakefile/1.19/Sat Mar 29 23:10:37 2008//Tnetbsd-5-2-3-RELEASE
+/Pci.c/1.1.1.8/Fri Mar 18 13:12:34 2005//Tnetbsd-5-2-3-RELEASE
+/Pci.h/1.19/Tue Dec 19 03:58:21 2006//Tnetbsd-5-2-3-RELEASE
+/Sbus.c/1.1.1.4/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/axpPci.c/1.1.1.5/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/e8870PCI.c/1.1.1.2/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+/e8870PCI.h/1.1.1.2/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+/freebsdPci.c/1.1.1.5/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+/ia64Pci.c/1.1.1.2/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+/ix86Pci.c/1.1.1.6/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/linuxPci.c/1.1.1.6/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/netbsdPci.c/1.13/Sat Apr 19 20:31:10 2008//Tnetbsd-5-2-3-RELEASE
+/netbsdSbus.c/1.3/Thu Aug 30 04:09:26 2007//Tnetbsd-5-2-3-RELEASE
+/ppcPci.c/1.1.1.4/Fri Feb 28 13:20:20 2003//Tnetbsd-5-2-3-RELEASE
+/sparcPci.c/1.1.1.7/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/xf86Pci.h/1.1.1.8/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/xf86Sbus.h/1.8/Thu Aug 30 04:09:26 2007//Tnetbsd-5-2-3-RELEASE
+/zx1PCI.c/1.1.1.3/Fri Mar 18 13:12:35 2005//Tnetbsd-5-2-3-RELEASE
+/zx1PCI.h/1.1.1.2/Fri Mar  5 14:29:18 2004//Tnetbsd-5-2-3-RELEASE
+D

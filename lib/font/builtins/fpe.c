@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/lib/font/builtins/fpe.c,v 1.5tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Id: fpe.c,v 1.2 1999/11/02 06:16:48 keithp Exp $
  *
  * Copyright 1999 SuSE, Inc.
  *
@@ -17,69 +24,77 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL SuSE
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
+/* $XFree86: xc/lib/font/builtins/fpe.c,v 1.4 2000/02/23 20:29:36 dawes Exp $ */
 
-#include "fntfilst.h"
-#include "builtin.h"
+#include    "fntfilst.h"
 
-const char builtin_fonts[] = "built-ins";
+static int  font_file_type;
+
+const char	builtin_fonts[] = "built-ins";
 
 int
-BuiltinNameCheck(char *name)
+BuiltinNameCheck (name)
+    char    *name;
 {
-    return (strcmp(name, builtin_fonts) == 0);
+    return (strcmp (name, builtin_fonts) == 0);
 }
 
 int
-BuiltinInitFPE(FontPathElementPtr fpe)
+BuiltinInitFPE (fpe)
+    FontPathElementPtr	fpe;
 {
     int			status;
     FontDirectoryPtr	dir;
 
-    status = BuiltinReadDirectory(fpe->name, &dir);
+    status = BuiltinReadDirectory (fpe->name, &dir);
 
     if (status == Successful)
-	fpe->private = dir;
+	fpe->private = (pointer) dir;
     return status;
 }
 
 /* ARGSUSED */
 int
-BuiltinResetFPE(FontPathElementPtr fpe)
+BuiltinResetFPE (fpe)
+    FontPathElementPtr	fpe;
 {
+    FontDirectoryPtr	dir;
+
+    dir = (FontDirectoryPtr) fpe->private;
     /* builtins can't change! */
     return Successful;
 }
 
 int
-BuiltinFreeFPE(FontPathElementPtr fpe)
+BuiltinFreeFPE (fpe)
+    FontPathElementPtr	fpe;
 {
-    FontFileFreeDir(fpe->private);
+    FontFileFreeDir ((FontDirectoryPtr) fpe->private);
     return Successful;
 }
 
-void
-BuiltinRegisterFpeFunctions(void)
+BuiltinRegisterFpeFunctions()
 {
-    BuiltinRegisterFontFileFunctions();
+    BuiltinRegisterFontFileFunctions ();
 
-    RegisterFPEFunctions(BuiltinNameCheck,
-			 BuiltinInitFPE,
-			 BuiltinFreeFPE,
-			 BuiltinResetFPE,
-			 FontFileOpenFont,
-			 FontFileCloseFont,
-			 FontFileListFonts,
-			 FontFileStartListFontsWithInfo,
-			 FontFileListNextFontWithInfo,
-			 (WakeupFpeFunc)0,
-			 (ClientDiedFunc)0,
-			 (LoadGlyphsFunc)0,
-			 (StartLaFunc)0,
-			 (NextLaFunc)0,
-			 (SetPathFunc)0);
+    font_file_type = RegisterFPEFunctions(BuiltinNameCheck,
+					  BuiltinInitFPE,
+					  BuiltinFreeFPE,
+					  BuiltinResetFPE,
+					  FontFileOpenFont,
+					  FontFileCloseFont,
+					  FontFileListFonts,
+					  FontFileStartListFontsWithInfo,
+					  FontFileListNextFontWithInfo,
+					  (WakeupFpeFunc) 0,
+					  (ClientDiedFunc) 0,
+					  (LoadGlyphsFunc) 0,
+					  (StartLaFunc) 0,
+					  (NextLaFunc) 0,
+					  (SetPathFunc) 0);
 }

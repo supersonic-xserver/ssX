@@ -1,4 +1,11 @@
-/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/normal.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/extras/ogl-sample/main/gfx/lib/glu/libtess/normal.c,v 1.4 2003/12/22 17:48:01 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free

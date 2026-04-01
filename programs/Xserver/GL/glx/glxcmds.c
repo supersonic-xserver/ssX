@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/GL/glx/glxcmds.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/GL/glx/glxcmds.c,v 1.14 2004/12/10 16:06:59 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -494,8 +501,8 @@ int DoMakeCurrent( __GLXclientState *cl,
 		   GLXContextID contextId, GLXContextTag tag )
 {
     ClientPtr client = cl->client;
-    DrawablePtr pDraw = NULL;
-    DrawablePtr pRead = NULL;
+    DrawablePtr pDraw;
+    DrawablePtr pRead;
     xGLXMakeCurrentReply reply;
     __GLXpixmap *drawPixmap = NULL;
     __GLXpixmap *readPixmap = NULL;

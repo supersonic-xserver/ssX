@@ -1,4 +1,18 @@
 /**************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
 Copyright 2003 Eric Anholt
@@ -24,7 +38,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **************************************************************************/
-/* $XFree86: xc/lib/GL/mesa/src/drv/sis/sis_clear.c,v 1.5 2000/09/26 15:56:48 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/sis/sis_clear.c,v 1.1.1.2 2004/12/10 15:05:43 alanh Exp $ */
 
 /*
  * Authors:
@@ -66,7 +80,7 @@ set_color_pattern( sisContextPtr smesa, GLubyte red, GLubyte green,
       smesa->clearColorPattern |= smesa->clearColorPattern << 16;
       break;
    default:
-      assert(0);
+      sis_fatal_error("Bad dst color format\n");
    }
 }
 
@@ -89,7 +103,7 @@ sisUpdateZStencilPattern( sisContextPtr smesa, GLclampd z, GLint stencil )
       zPattern = FLOAT_TO_UINT(z);
       break;
    default:
-      assert(0);
+      sis_fatal_error("Bad Z format\n");
    }
    smesa->clearZStencilPattern = zPattern;
 }
@@ -117,19 +131,21 @@ sisDDClear( GLcontext * ctx, GLbitfield mask, GLboolean all,
    }
    /* XXX: Scissoring */
 
-   LOCK_HARDWARE();
-
    /* Mask out any non-existent buffers */
    if (ctx->Visual.depthBits == 0 || !ctx->Depth.Mask)
       mask &= ~DD_DEPTH_BIT;
    if (ctx->Visual.stencilBits == 0)
       mask &= ~DD_STENCIL_BIT;
 
-   /* The 3d clear code is use for masked clears because I don't know how to do
-    * masked clears with the 2d functions.  3d isn't used in general because
-    * it's slower, even in the case of clearing multiple buffers
+   LOCK_HARDWARE();
+
+   /* The 3d clear code is use for masked clears because apparently the SiS
+    * 300-series can't do write masks for 2d blits.  3d isn't used in general
+    * because it's slower, even in the case of clearing multiple buffers.
     */
-   if ((smesa->current.hwDstMask != 0xffffffff &&
+   /* XXX: Appears to be broken with stencil. */
+   if ((smesa->current.hwCapEnable2 & (MASK_AlphaMaskWriteEnable |
+      MASK_ColorMaskWriteEnable) &&
       (mask & (DD_BACK_LEFT_BIT | DD_FRONT_LEFT_BIT)) != 0) ||
       (ctx->Stencil.WriteMask[0] < 0xff && (mask & DD_STENCIL_BIT) != 0) )
    {
@@ -200,7 +216,7 @@ sis_3D_Clear( GLcontext * ctx, GLbitfield mask,
    GLint dirtyflags = GFLAG_ENABLESETTING | GFLAG_ENABLESETTING2 |
       GFLAG_CLIPPING | GFLAG_DESTSETTING;
    int count;
-   XF86DRIClipRectPtr pExtents;
+   drm_clip_rect_t *pExtents;
 
    bClrColor = (mask & (DD_BACK_LEFT_BIT | DD_FRONT_LEFT_BIT)) != 0;
    bClrDepth = (mask & DD_DEPTH_BIT) != 0;
@@ -214,7 +230,8 @@ sis_3D_Clear( GLcontext * ctx, GLbitfield mask,
          (ctx->Stencil.Clear << 8) | 0xff;
       dwSten2 = SiS_SFAIL_REPLACE | SiS_SPASS_ZFAIL_REPLACE |
          SiS_SPASS_ZPASS_REPLACE;
-      dwEnable1 = MASK_ZWriteEnable | MASK_StencilTestEnable;
+      dwEnable1 = MASK_ZWriteEnable | MASK_StencilWriteEnable |
+	MASK_StencilTestEnable;
       dwEnable2 |= MASK_ZMaskWriteEnable;
       dwDepthMask |= ctx->Stencil.WriteMask[0] << 24;
    } else if (bClrDepth) {
@@ -358,7 +375,7 @@ sis_clear_color_buffer( GLcontext *ctx, GLenum mask, GLint x, GLint y,
 
    int count;
    GLuint depth = smesa->bytesPerPixel;
-   XF86DRIClipRectPtr pExtents = NULL;
+   drm_clip_rect_t *pExtents = NULL;
    GLint xx, yy;
    GLint x0, y0, width0, height0;
 

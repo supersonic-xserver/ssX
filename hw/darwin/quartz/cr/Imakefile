@@ -1,0 +1,37 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/quartz/cr/Imakefile,v 1.5 2007/04/03 00:21:10 tsi Exp $
+
+#include <Server.tmpl>
+
+XCOMM Ensure any old/duplicate copy is removed
+Makefiles::
+	-RemoveFiles(quartzCursor.c quartzCursor.h)
+
+LinkSourceFile(quartzCursor.c,..)
+LinkSourceFile(quartzCursor.h,..)
+
+SRCS =  crAppleWM.m \
+        crFrame.m \
+        crScreen.m \
+        quartzCursor.c \
+        XView.m
+
+OBJS =  crAppleWM.o \
+        crFrame.o \
+        crScreen.o \
+        quartzCursor.o \
+        XView.o
+
+INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
+           -I$(SERVERSRC)/render -I$(SERVERSRC)/miext/rootless -I.. -I../.. \
+           -I$(SERVERSRC)/miext/rootless/safeAlpha -I$(SERVERSRC)/Xext \
+           -I$(APPLEWMLIBSRC)
+
+#if OSMajorVersion < 6
+DEFINES = -DDEFER_NSWINDOW
+#endif
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(cr,$(OBJS))
+
+DependTarget()
+

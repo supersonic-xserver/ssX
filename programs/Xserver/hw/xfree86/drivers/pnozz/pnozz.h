@@ -1,5 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/pnozz/pnozz.h,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * SBus Weitek P9100 driver - defines
  *
  * Copyright (C) 2005 Michael Lorenz
@@ -30,11 +36,23 @@
 #include "xf86_OSproc.h"
 #include "xf86_ansic.h"
 #include "xf86RamDac.h"
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include "gcstruct.h"
 #include "pnozz_regs.h"
 #include "xf86sbusBus.h"
 #include "xaa.h"
+
+typedef struct {
+	unsigned int fg, bg;			/* FG/BG colors for stipple */
+	unsigned int patalign;                  /* X/Y alignment of bits */
+        unsigned int alu;			/* Transparent/Opaque + rop */
+        unsigned int bits[32];                  /* The stipple bits themselves */
+} PnozzStippleRec, *PnozzStipplePtr;
+
+typedef struct {
+	int type;
+	PnozzStipplePtr stipple;
+} PnozzPrivGCRec, *PnozzPrivGCPtr;
 
 typedef struct {
 	unsigned char	*fb;	/* 2MB framebuffer */
@@ -48,15 +66,13 @@ typedef struct {
 	Bool		HWCursor;
 	Bool		NoAccel;
 	CloseScreenProcPtr CloseScreen;
-
+	
 	xf86CursorInfoPtr CursorInfoRec;
-	int		fg, bg, enabled, x, y;
-
+	struct fbcursor Cursor;
+	unsigned char pal[9];
+	
 	OptionInfoPtr	Options;
-
-	volatile CARD32	Scratch;
 	XAAInfoRecPtr	pXAA;
-	CARD32		MaxClip;
 	unsigned char	*buffers[2];
 	/*
 	 * XXX this is enough for everything a SPARCbook could do on it's
@@ -75,16 +91,38 @@ typedef struct {
 	unsigned char	SvDAC_MC3;	/* DAC Misc Control 3 */
 	unsigned char	SvVCO;		/* DAC System PLL VCO divider */
 	unsigned char	SvPLL;		/* clock multiplier / divider */
-
+	
 } PnozzRec, *PnozzPtr;
+
+extern int  PnozzScreenPrivateIndex;
+extern int  PnozzGCPrivateIndex;
+extern int  PnozzWindowPrivateIndex;
 
 #define GET_PNOZZ_FROM_SCRN(p)    ((p->driverPrivate))
 
+#define PnozzGetScreenPrivate(s)						\
+((PnozzPtr) (s)->devPrivates[PnozzScreenPrivateIndex].ptr)
+
+#define PnozzGetGCPrivate(g)						\
+((PnozzPrivGCPtr) (g)->devPrivates [PnozzGCPrivateIndex].ptr)
+
+#define PnozzGetWindowPrivate(w)						\
+((PnozzStipplePtr) (w)->devPrivates[PnozzWindowPrivateIndex].ptr)
+                            
+#define PnozzSetWindowPrivate(w,p) 					\
+((w)->devPrivates[PnozzWindowPrivateIndex].ptr = (pointer) p)
+
 void pnozz_write_4(PnozzPtr, int, unsigned int);
 unsigned int pnozz_read_4(PnozzPtr, int);
+void pnozz_write_dac(PnozzPtr, int, unsigned char);
+unsigned char pnozz_read_dac(PnozzPtr, int);
+void pnozz_write_dac_ctl_reg(PnozzPtr, int, unsigned char);
+void pnozz_write_dac_ctl_reg_2(PnozzPtr, int, unsigned short);
+unsigned char pnozz_read_dac_ctl_reg(PnozzPtr, int);
+void pnozz_write_dac_cmap_reg(PnozzPtr, int, unsigned int);
 
 int PnozzAccelInit(ScrnInfoPtr);
 void PnozzHideCursor(ScrnInfoPtr);
-extern Bool PnozzHWCursorInit(ScreenPtr pScreen);
+void PnozzShowCursor(ScrnInfoPtr);
 
 #endif /* CG6_H */

@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/Configint.h,v 1.24 2005/01/07 23:03:14 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -27,7 +34,7 @@
  * 
  */
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -136,7 +143,7 @@
 typedef struct
 {
 	int num;		/* returned number */
-	const char *str;	/* the return-string (not a private copy!) */
+	char *str;		/* private copy of the return-string */
 	double realnum;		/* returned number as a real */
 }
 LexRec, *LexPtr;

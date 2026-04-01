@@ -18,7 +18,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The XFree86 Project.
 .\"
-.\" $XFree86: xc/programs/xgamma/xgamma.man,v 1.6 2001/01/24 00:06:45 dawes Exp $
+.\" $XFree86: xc/programs/xgamma/xgamma.man,v 1.7 2001/01/27 18:21:14 dawes Exp $
 .\"
 .TH xgamma 1 __vendorversion__
 .SH NAME

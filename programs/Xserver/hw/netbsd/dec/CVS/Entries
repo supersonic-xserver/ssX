@@ -1,0 +1,19 @@
+/Imakefile/1.2/Fri Feb  4 18:37:26 2005//Tnetbsd-5-2-3-RELEASE
+/TODO/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/atKeynames.h/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/dec.h/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/decColormap.c/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/decCursor.c/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/decFbs.c/1.2/Fri Dec  9 05:44:50 2005//Tnetbsd-5-2-3-RELEASE
+/decInit.c/1.2/Mon Mar 28 00:07:41 2005//Tnetbsd-5-2-3-RELEASE
+/decIo.c/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/decKbd.c/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/decKeyMap.c/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/decMouse.c/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/lk201Keymap.h/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+/xf86Keymap.h/1.1/Sun Jan 18 05:21:41 2004//Tnetbsd-5-2-3-RELEASE
+D/cfb////
+D/mfb////
+D/px////
+D/sfb////
+D/tga////

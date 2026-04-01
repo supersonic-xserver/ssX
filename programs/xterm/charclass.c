@@ -1,4 +1,18 @@
-/* $XTermId: charclass.c,v 1.13 2006/02/11 12:01:35 tom Exp $ */
+/* $XTermId: charclass.c,v 1.9 2005/01/11 00:06:05 tom Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Compact and efficient reimplementation of the
@@ -22,7 +36,7 @@
  * but merging in new intervals is significantly more hassle and
  * not worth the effort here.
  */
-/* $XFree86: xc/programs/xterm/charclass.c,v 1.6 2006/01/04 02:10:19 dickey Exp $ */
+/* $XFree86: xc/programs/xterm/charclass.c,v 1.5 2005/01/14 01:50:02 dickey Exp $ */
 
 #include <xterm.h>
 #include <charclass.h>
@@ -138,16 +152,5 @@ CharacterClass(int c)
 
     return cclass;
 }
-
-#ifdef NO_LEAKS
-void
-noleaks_CharacterClass(void)
-{
-    if (classtab != 0) {
-	free(classtab);
-	classtab = 0;
-    }
-}
-#endif
 
 #endif /* OPT_WIDE_CHARS */

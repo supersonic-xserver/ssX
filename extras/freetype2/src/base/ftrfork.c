@@ -1,4 +1,11 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftrfork.c                                                              */
 /*                                                                         */
@@ -22,7 +29,7 @@
 /* Development of the code in this file is support of                      */
 /* Information-technology Promotion Agency, Japan.                         */
 /***************************************************************************/
-/* $XFree86$ */
+/* $XFree86: xc/extras/freetype2/src/base/ftrfork.c,v 1.2 2004/06/09 18:52:02 tsi Exp $ */
 
 
 #include <ft2build.h>

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 2000 by Richard A. Hecker, California, United States
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -26,7 +33,9 @@
  *          Dirk H. Hohndel (hohndel@suse.de),
  *          Portions: the GGI project & confidential CYRIX databooks.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_bank.c,v 1.3tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cyrix/cyrix_bank.c,v 1.3 2002/11/06 11:38:59 alanh Exp $ */
+
+#define PSZ 8
 
 /* All drivers should typically include these */
 #include "xf86.h"

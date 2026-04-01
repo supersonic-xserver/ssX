@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1999 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -363,8 +370,7 @@ typedef volatile struct _s3 {
     int	__loop = 1000000; \
     while (((s3)->alt_status_0 & (mask)) != (value)) \
 	if (--__loop == 0) { \
-	    ErrorF ("savage wait loop failed 0x%lx\n", \
-		    (unsigned long)s3->alt_status_0); \
+	    ErrorF ("savage wait loop failed 0x%lx\n", s3->alt_status_0); \
 	    break; \
 	} \
 }
@@ -375,8 +381,7 @@ typedef volatile struct _s3 {
     int __loop = 1000000; \
     while (((s3)->alt_status_0 & S3_SAVAGE4_SLOTS) >= S3_SAVAGE4_ROOM-(n)) \
 	if (--__loop == 0) { \
-	    ErrorF ("savage wait loop failed 0x%lx\n", \
-		    (unsigned long)s3->alt_status_0); \
+	    ErrorF ("savage wait loop failed 0x%lx\n", s3->alt_status_0); \
 	    break; \
 	} \
 }

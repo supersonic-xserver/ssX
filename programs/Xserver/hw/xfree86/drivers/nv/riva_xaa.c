@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  /***************************************************************************\
 |*                                                                           *|
 |*       Copyright 1993-1999 NVIDIA, Corporation.  All rights reserved.      *|
@@ -40,7 +47,7 @@
 /* Hacked together from mga driver and 3.3.4 NVIDIA driver by
    Jarno Paananen <jpaana@s2.org> */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_xaa.c $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/nv/riva_xaa.c,v 1.1 2003/07/31 20:24:31 mvojkovi Exp $ */
 
 #include "riva_include.h"
 #include "xaalocal.h"

@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/os/lbxio.c,v 3.19tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/os/lbxio.c,v 3.19 2004/06/02 22:43:06 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1996, 1998  The Open Group
@@ -98,7 +105,7 @@ SOFTWARE.
 
 #include <stdio.h>
 #include <X11/Xtrans.h>
-#include <X11/Xmd.h>
+#include "Xmd.h"
 #include <errno.h>
 #ifndef Lynx
 #include <sys/param.h>
@@ -108,10 +115,10 @@ SOFTWARE.
 #else
 #include <uio.h>
 #endif
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "os.h"
-#include <X11/Xpoll.h>
+#include "Xpoll.h"
 #include "osdep.h"
 #include "opaque.h"
 #include "dixstruct.h"

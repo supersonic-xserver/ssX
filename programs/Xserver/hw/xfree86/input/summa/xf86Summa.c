@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Copyright 1996 by Steven Lang <tiger@tyger.org>
  *
  * AceCad tablet support ported by Arpad Gereoffy <arpi@esp-team.scene.hu>
@@ -24,7 +31,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/input/summa/xf86Summa.c,v 1.20 2005/10/14 15:16:57 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/input/summa/xf86Summa.c,v 1.19 2004/10/23 15:29:31 dawes Exp $ */
 
 #ifndef XFree86LOADER
 #include <unistd.h>
@@ -41,7 +48,7 @@
 #include "xf86_OSproc.h"
 #include "xf86Xinput.h"
 #include "exevents.h"		/* Needed for InitValuator/Proximity stuff */
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "mipointer.h"
 
 #include "xf86Module.h"
@@ -1134,8 +1141,6 @@ InputDriverRec SUMMA = {
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULETEARDOWNPROTO(xf86SumUnplug);
-
 static void
 xf86SumUnplug(pointer	p)
 {
@@ -1146,10 +1151,8 @@ xf86SumUnplug(pointer	p)
  *
  * called when the module subsection is found in XF86Config
  */
-static MODULESETUPPROTO(xf86SumPlug);
-
 static pointer
-xf86SumPlug(ModuleDescPtr	module,
+xf86SumPlug(pointer	module,
 	    pointer	options,
 	    int		*errmaj,
 	    int		*errmin)

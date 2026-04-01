@@ -1,7 +1,8 @@
-XCOMM $XFree86: xc/lib/font/fontfile/module/Imakefile,v 1.4tsi Exp $
+XCOMM $XFree86: xc/lib/font/fontfile/module/Imakefile,v 1.4 2002/02/13 21:32:49 dawes Exp $
 #include <Server.tmpl>
 
-   INCLUDES = -I../../include -I$(SERVERSRC)/include
+   INCLUDES = -I$(FONTINCSRC) -I../../include -I$(SERVERSRC)/include \
+	      -I$(XINCLUDESRC)
 
     DEFINES = -DLOADABLEFONTS
 

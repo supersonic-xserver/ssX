@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vmodes.c,v 1.14tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/vmodes.c,v 1.14 2004/02/24 01:13:10 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * file vmodes.c
  *
@@ -215,7 +222,7 @@ verite_setmode(ScrnInfoPtr pScreenInfo, struct verite_modeinfo_t *mode)
 
     int tmp;
     int doubleclock=0;
-    int M = 0, N = 0, P = 0;
+    int M, N, P;
     int iob=pRendition->board.io_base;
 
 #ifdef DEBUG

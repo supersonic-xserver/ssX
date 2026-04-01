@@ -1,9 +1,23 @@
-/* $XFree86: xc/programs/Xserver/Xext/xvmc.c,v 1.11tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/Xext/xvmc.c,v 1.9 2003/07/17 16:04:33 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #define NEED_REPLIES
 #define NEED_EVENTS
-#include <X11/X.h>
-#include <X11/Xproto.h>
+#include "X.h"
+#include "Xproto.h"
 #include "misc.h"
 #include "os.h"
 #include "dixstruct.h"
@@ -11,11 +25,11 @@
 #include "scrnintstr.h"
 #include "extnsionst.h"
 #include "servermd.h"
-#include <X11/Xfuncproto.h>
+#include "Xfuncproto.h"
 #include "xvdix.h"
-#include <X11/extensions/XvMC.h>
-#include <X11/extensions/Xvproto.h>
-#include <X11/extensions/XvMCproto.h>
+#include "XvMC.h"
+#include "Xvproto.h"
+#include "XvMCproto.h"
 #include "xvmcext.h"
 
 int XvMCScreenIndex = -1;
@@ -557,7 +571,7 @@ int (*ProcXvMCVector[xvmcNumRequest])(ClientPtr) = {
 };
 
 static int
-ProcXvMCDispatch(ClientPtr client)
+ProcXvMCDispatch (ClientPtr client)
 {
     REQUEST(xReq);
     
@@ -568,14 +582,14 @@ ProcXvMCDispatch(ClientPtr client)
 }
 
 static int
-SProcXvMCDispatch(ClientPtr client)
+SProcXvMCDispatch (ClientPtr client)
 {
     /* We only support local */
     return BadImplementation;
 }
 
 void 
-XvMCExtensionInit(INITARGS)
+XvMCExtensionInit()
 {
    ExtensionEntry *extEntry;
 
@@ -603,7 +617,7 @@ XvMCExtensionInit(INITARGS)
 }
 
 static Bool
-XvMCCloseScreen(int i, ScreenPtr pScreen)
+XvMCCloseScreen (int i, ScreenPtr pScreen)
 {
     XvMCScreenPtr pScreenPriv = XVMC_GET_PRIVATE(pScreen);
 
@@ -641,8 +655,7 @@ XvMCScreenInit(ScreenPtr pScreen, int num, XvMCAdaptorPtr pAdapt)
    return Success;
 }
 
-XvImagePtr
-XvMCFindXvImage(XvPortPtr pPort, CARD32 id)
+XvImagePtr XvMCFindXvImage(XvPortPtr pPort, CARD32 id)
 {
     XvImagePtr pImage = NULL;
     ScreenPtr pScreen = pPort->pAdaptor->pScreen;

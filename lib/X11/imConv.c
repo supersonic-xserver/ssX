@@ -1,3 +1,11 @@
+/* $TOG: imConv.c /main/20 1998/06/17 15:46:41 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************
 
               Copyright 1991, 1992 by Fuji Xerox Co.,Ltd.

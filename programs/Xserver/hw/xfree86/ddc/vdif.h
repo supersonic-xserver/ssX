@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/vdif.h,v 1.5tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/vdif.h,v 1.5 2003/11/06 18:37:58 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #ifndef _VDIF_H
 #define _VDIF_H
@@ -22,7 +36,7 @@
 #define VDIF_POLARITY_NEGATIVE 0
 #define VDIF_POLARITY_POSITIVE 1
 
-#include <X11/Xmd.h>
+#include "Xmd.h"
 
 #undef  CARD32
 #define CARD32 unsigned int	/* ... on all supported platforms */

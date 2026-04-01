@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/tinyx/linux/agp.h,v 1.2tsi Exp $ */
 /* COPYRIGHT AND PERMISSION NOTICE
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright (c) 2000, 2001 Nokia Home Communications
 
@@ -41,7 +54,7 @@ X Window System is a trademark of The Open Group */
 #ifndef _AGP_H_
 #define _AGP_H_
 
-#include <X11/Xdefs.h>
+#include "Xdefs.h"
 
 /* These two definitions must be consistent with the kernel's,
    but using 1 or 2 in driver code is even uglier */

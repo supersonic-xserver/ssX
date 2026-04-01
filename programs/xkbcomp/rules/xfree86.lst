@@ -1,8 +1,10 @@
-//  $XFree86: xc/programs/xkbcomp/rules/xfree86.lst,v 3.87 2005/02/25 18:25:36 dawes Exp $
+// $Xorg: xfree86.lst,v 1.3 2000/08/17 19:54:42 cpqbld Exp $
+
 //
 //  Rules descriptions for XFree86
 //  Copyright 1996 by Joseph Moss
 //
+//  $XFree86: xc/programs/xkbcomp/rules/xfree86.lst,v 3.87 2005/02/25 18:25:36 dawes Exp $
 
 ! model
   pc101		Generic 101-key PC
@@ -40,7 +42,7 @@
   presario	Laptop/notebook Compaq (eg. Presario) Internet Keyboard
   ipaq		Compaq iPaq Keyboard
   dell		Dell
-  inspiron	Laptop/notebook Dell Inspiron 6xxx, 8xxx
+  inspiron	Laptop/notebook Dell Inspiron 8xxx
   dexxa		Dexxa Wireless Desktop Keyboard
   diamond	Diamond 9801 / 9802 series
   dtk2000	DTK2000

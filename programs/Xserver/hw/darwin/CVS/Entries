@@ -1,0 +1,13 @@
+/Imakefile/1.1.1.8/Fri Mar 18 13:10:51 2005//Tnetbsd-5-2-3-RELEASE
+/XDarwin.man/1.1.1.2/Sat Jan 19 15:04:53 2002//Tnetbsd-5-2-3-RELEASE
+/darwin.c/1.1.1.7/Fri Mar 18 13:10:51 2005//Tnetbsd-5-2-3-RELEASE
+/darwin.h/1.1.1.6/Fri Mar  5 14:28:13 2004//Tnetbsd-5-2-3-RELEASE
+/darwinClut8.h/1.1.1.3/Fri Mar  5 14:28:13 2004//Tnetbsd-5-2-3-RELEASE
+/darwinEvents.c/1.1.1.3/Fri Mar 18 13:10:51 2005//Tnetbsd-5-2-3-RELEASE
+/darwinKeyboard.c/1.1.1.8/Fri Mar 18 13:10:51 2005//Tnetbsd-5-2-3-RELEASE
+/darwinKeyboard.h/1.1.1.1/Fri Mar  5 14:28:13 2004//Tnetbsd-5-2-3-RELEASE
+/darwinXinput.c/1.1.1.1/Fri Mar 18 13:10:51 2005//Tnetbsd-5-2-3-RELEASE
+D/bundle////
+D/iokit////
+D/quartz////
+D/utils////

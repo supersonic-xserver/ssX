@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX Hardware Device Driver for Intel i810
  * Copyright (C) 1999 Keith Whitwell
  *
@@ -323,7 +330,7 @@ static void init_setup_tab( void )
 
 
 
-void i810PrintSetupFlags(const char *msg, GLuint flags )
+void i810PrintSetupFlags(char *msg, GLuint flags )
 {
    fprintf(stderr, "%s(%x): %s%s%s%s%s%s\n",
 	   msg,

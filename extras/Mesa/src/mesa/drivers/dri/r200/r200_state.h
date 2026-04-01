@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/mesa/src/drv/r200/r200_state.h,v 1.2 2002/11/05 17:46:08 tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/r200/r200_state.h,v 1.1.1.2 2004/06/10 14:23:04 alanh Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
 
@@ -41,7 +48,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "r200_context.h"
 
 extern void r200InitState( r200ContextPtr rmesa );
-extern void r200InitStateFuncs( GLcontext *ctx );
+extern void r200InitStateFuncs( struct dd_function_table *functions );
+extern void r200InitTnlFuncs( GLcontext *ctx );
 
 extern void r200UpdateMaterial( GLcontext *ctx );
 

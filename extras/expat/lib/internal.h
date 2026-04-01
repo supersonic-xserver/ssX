@@ -1,4 +1,18 @@
 /* internal.h
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
    Internal definitions used by Expat.  This is not needed to compile
    client code.
@@ -21,11 +35,7 @@
 */
 /* $XFree86: xc/extras/expat/lib/internal.h,v 1.2 2003/11/06 18:37:54 tsi Exp $ */
 
-#if defined(__GNUC__) && \
-    !defined(ia64) && !defined(__ia64__) && \
-    !defined(__sparc__) && !defined(__sparc_v9__) && !defined(sparc) && \
-    !defined(__sparc64__) && !defined(__arch64__) && !defined(__alpha__) && \
-    !defined(__powerpc__)
+#if defined(__GNUC__) && defined(__i386__)
 
 /* Instability reported with egcs on a RedHat Linux 7.3.
    Let's comment it out:

@@ -1,0 +1,45 @@
+name: "CodeQL Advanced (Display Server Optimized)"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Analyze C/C++
+    runs-on: self-hosted  # Use my 5800X3D rig instead of the slow GitHub VM
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: c-cpp
+        # Use 'none' if you want a fast scan of all source files
+        # Use 'autobuild' if you want to ensure it compiles (more accurate but slower)
+        build-mode: none 
+        
+        # This is the "Magic Sauce" for ssX to prevent the 10MB SARIF error:
+        paths-ignore: |
+          - 'extras/**'
+          - 'fonts/**'
+          - 'doc/**'
+          - 'man/**'
+          - '**/test/**'
+          - '**/testing/**'
+          - '**/examples/**'
+        
+        # We use security-extended rather than security-and-quality.
+        # Quality queries add thousands of "style" alerts that bloat the SARIF file.
+        queries: security-extended
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:c-cpp"
+        # If the file is STILL too large, this flag can help compress diagnostics
+        upload: true

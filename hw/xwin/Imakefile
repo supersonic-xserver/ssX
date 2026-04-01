@@ -1,0 +1,169 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/xwin/Imakefile,v 1.21 2007/01/04 02:02:19 tsi Exp $
+
+#include <Server.tmpl>
+
+#if HasShm
+SHMDEF = -DHAS_SHM
+#endif
+
+MMAPDEF = -DHAS_MMAP
+
+
+SRCS =	InitInput.c \
+	InitOutput.c \
+	stubs.c \
+	wingc.c \
+	winpolyline.c \
+	winfillsp.c \
+	wingetsp.c \
+	winsetsp.c \
+	winwindow.c \
+	winpntwin.c \
+	winpixmap.c \
+	winfont.c \
+	wincmap.c \
+	winclip.c \
+	winallpriv.c \
+	winscrinit.c \
+	winmisc.c \
+	winblock.c \
+	winwakeup.c \
+	wincursor.c \
+	winwndproc.c \
+	winshadgdi.c \
+	winshaddd.c \
+	winshadddnl.c \
+	winpfbdd.c \
+	winkeybd.c \
+	winmouse.c \
+	wincutpaste.c \
+	winnativegdi.c \
+	winlayer.c \
+	winerror.c \
+	winengine.c \
+	wincreatewnd.c \
+	winregistry.c \
+	winconfig.c \
+	winmsg.c \
+	winmultiwindowclass.c \
+	winmultiwindowicons.c \
+	winmultiwindowshape.c \
+	winmultiwindowwindow.c \
+	winmultiwindowwm.c \
+	winmultiwindowwndproc.c \
+	winclipboardinit.c \
+	winclipboardtextconv.c \
+	winclipboardthread.c \
+	winclipboardunicode.c \
+	winclipboardwndproc.c \
+	winclipboardxevents.c \
+	wintrayicon.c \
+	windialogs.c \
+	winrop.c \
+	winpushpxl.c \
+	winprefsyacc.y \
+	winprefslex.l \
+	winprefs.c
+
+winprefsyacc.c: winprefsyacc.y
+	bison -d -o winprefsyacc.c winprefsyacc.y
+
+winprefsyacc.h: winprefsyacc.c
+
+winprefslex.c: winprefsyacc.y winprefslex.l winprefsyacc.h
+	flex -owinprefslex.c winprefslex.l
+
+clean::
+	$(RM) winprefslex.c winprefsyacc.h winprefsyacc.c
+
+depend:: winprefslex.c winprefsyacc.h winprefsyacc.c
+
+/*
+ * NOTE: The XWin.rc file is compiled into XWin.res.
+ * This compiled-resource file must be directly linked into XWin.exe
+ * by the commands in xc/programs/Xserver/Imakefile; it cannot be
+ * linked into libXwin.a because it will not be correctly positioned
+ * in the XWin.exe image for Windows to be able to find the resources.
+ */
+
+OBJS =	InitInput.o \
+	InitOutput.o \
+	stubs.o \
+	wingc.o \
+	winpolyline.o \
+	winfillsp.o \
+	wingetsp.o \
+	winsetsp.o \
+	winwindow.o \
+	winpntwin.o \
+	winpixmap.o \
+	winfont.o \
+	wincmap.o \
+	winclip.o \
+	winallpriv.o \
+	winscrinit.o \
+	winmisc.o \
+	winblock.o \
+	winwakeup.o \
+	wincursor.o \
+	winwndproc.o \
+	winshadgdi.o \
+	winshaddd.o \
+	winshadddnl.o \
+	winpfbdd.o \
+	winkeybd.o \
+	winmouse.o \
+	wincutpaste.o \
+	winnativegdi.o \
+	winlayer.o \
+	winerror.o \
+	winengine.o \
+	wincreatewnd.o \
+	winregistry.o \
+	winconfig.o \
+	winmsg.o \
+	winmultiwindowclass.o \
+	winmultiwindowicons.o \
+	winmultiwindowshape.o \
+	winmultiwindowwindow.o \
+	winmultiwindowwm.o \
+	winmultiwindowwndproc.o \
+	winclipboardinit.o \
+	winclipboardtextconv.o \
+	winclipboardthread.o \
+	winclipboardunicode.o \
+	winclipboardwndproc.o \
+	winclipboardxevents.o \
+	wintrayicon.o \
+	windialogs.o \
+	winrop.o \
+	winpushpxl.o \
+	winprefs.o \
+	winprefsyacc.o \
+	winprefslex.o
+
+INCLUDES = -I$(SERVERSRC)/fb -I$(SERVERSRC)/mi -I$(SERVERSRC)/mfb \
+	   -I$(SERVERSRC)/miext/shadow -I$(SERVERSRC)/miext/layer \
+	   -I$(SERVERSRC)/include -I$(SERVERSRC)/Xext -I$(SERVERSRC)/os  \
+	   -I$(SERVERSRC)/render -I$(SERVERSRC)/randr \
+	   -I$(XF86COMSRC) -I$(XF86PARSERSRC)
+
+DEFINES = $(OS_DEFINES) $(SHMDEF) $(MMAPDEF) -UXFree86LOADER -UXF86DRI \
+          -DPROJECTROOT="\"$(PROJECTROOT)\""
+
+LinkSourceFile(stubs.c,$(SERVERSRC)/Xi)
+SpecialCObjectRule(stubs,$(ICONFIGFILES),$(EXT_DEFINES))
+
+
+/*
+ * Build the Windows resource file (contains the program icon, etc.)
+ */
+
+ResourceObjectRule(XWin,X.ico,)
+
+NormalLibraryObjectRule()
+NormalLibraryTarget(Xwin,$(OBJS))
+
+InstallManPage(XWin,$(MANDIR))
+
+DependTarget()

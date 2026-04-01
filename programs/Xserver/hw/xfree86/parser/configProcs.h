@@ -1,6 +1,13 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/parser/configProcs.h,v 1.20 2005/01/26 05:31:50 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
- * Copyright (c) 1997-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1997-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -102,7 +109,6 @@ void xf86printFileSection(FILE *cf, XF86ConfFilesPtr ptr);
 /* Flags.c */
 XF86ConfFlagsPtr xf86parseFlagsSection(void);
 void xf86printServerFlagsSection(FILE *f, XF86ConfFlagsPtr flags);
-char *xf86uLongToString(unsigned long i);
 /* Input.c */
 XF86ConfInputPtr xf86parseInputSection(void);
 void xf86printInputSection(FILE *f, XF86ConfInputPtr ptr);
@@ -114,10 +120,10 @@ XF86ConfLayoutPtr xf86parseLayoutSection(void);
 void xf86printLayoutSection(FILE *cf, XF86ConfLayoutPtr ptr);
 int xf86validateLayout(XF86ConfigPtr p);
 /* Module.c */
-XF86LoadPtr xf86parseModuleSubSection(XF86LoadPtr head, const char *name);
+XF86LoadPtr xf86parseModuleSubSection(XF86LoadPtr head, char *name);
 XF86ConfModulePtr xf86parseModuleSection(void);
 void xf86printModuleSection(FILE *cf, XF86ConfModulePtr ptr);
-XF86LoadPtr xf86addNewLoadDirective(XF86LoadPtr head, const char *name, int type, XF86OptionPtr opts);
+XF86LoadPtr xf86addNewLoadDirective(XF86LoadPtr head, char *name, int type, XF86OptionPtr opts);
 /* Monitor.c */
 XF86ConfModeLinePtr xf86parseModeLine(void);
 XF86ConfModeLinePtr xf86parseVerboseMode(void);
@@ -135,10 +141,10 @@ void xf86printScreenSection(FILE *cf, XF86ConfScreenPtr ptr);
 int xf86validateScreen(XF86ConfigPtr p);
 /* Vendor.c */
 XF86ConfVendorPtr xf86parseVendorSection(void);
-XF86ConfVendSubPtr xf86parseVendorSubSection (XF86ConfVendSubPtr head, const char *name);
+XF86ConfVendSubPtr xf86parseVendorSubSection (XF86ConfVendSubPtr head, char *name);
 void xf86printVendorSection(FILE * cf, XF86ConfVendorPtr ptr);
 /* Video.c */
-XF86ConfVideoPortPtr xf86parseVideoPortSubSection(const char *name);
+XF86ConfVideoPortPtr xf86parseVideoPortSubSection(char *name);
 XF86ConfVideoAdaptorPtr xf86parseVideoAdaptorSection(void);
 void xf86printVideoAdaptorSection(FILE *cf, XF86ConfVideoAdaptorPtr ptr);
 /* scan.c */
@@ -148,14 +154,11 @@ int xf86getSubToken(char **comment);
 int xf86getSubTokenWithTab(char **comment, xf86ConfigSymTabRec *tab);
 void xf86unGetToken(int token);
 char *xf86tokenString(void);
-void xf86parseError(const char *format, ...);
-void xf86parseWarning(const char *format, ...);
-void xf86validationError(const char *format, ...);
-void xf86setSection(const char *section);
+void xf86parseError(char *format, ...);
+void xf86parseWarning(char *format, ...);
+void xf86validationError(char *format, ...);
+void xf86setSection(char *section);
 int xf86getStringToken(xf86ConfigSymTabRec *tab);
-char *xf86configStrdup (const char *s);
-int xf86configAsprintf (char **ret, const char *format, ...);
-
 /* write.c */
 /* DRI.c */
 XF86ConfBuffersPtr xf86parseBuffers (void);

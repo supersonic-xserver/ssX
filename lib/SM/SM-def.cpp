@@ -38,4 +38,4 @@ EXPORTS
  SmsSaveYourselfPhase2
  SmsSetErrorHandler
  SmsShutdownCancelled
-/* $XFree86$ */
+/* $Xorg: SM-def.cpp,v 1.3 2000/08/17 19:44:28 cpqbld Exp $ */

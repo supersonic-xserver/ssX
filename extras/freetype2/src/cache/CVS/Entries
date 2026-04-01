@@ -1,0 +1,15 @@
+/Jamfile/1.1.1.3/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/descrip.mms/1.1.1.3/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcache.c/1.1.1.4/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcbasic.c/1.1.1.1/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftccache.c/1.1.1.4/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftccback.h/1.1.1.1/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftccmap.c/1.1.1.4/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcerror.h/1.1.1.1/Sat Jan 19 15:26:16 2002//Tnetbsd-5-2-3-RELEASE
+/ftcglyph.c/1.1.1.4/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcimage.c/1.1.1.6/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcmanag.c/1.1.1.5/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcmru.c/1.1.1.1/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/ftcsbits.c/1.1.1.6/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+/rules.mk/1.1.1.5/Fri Mar 18 13:07:32 2005//Tnetbsd-5-2-3-RELEASE
+D

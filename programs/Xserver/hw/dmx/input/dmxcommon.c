@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxcommon.c,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/input/dmxcommon.c,v 1.2 2005/01/27 03:03:57 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2001-2003 Red Hat Inc., Durham, North Carolina.
  *
@@ -50,7 +57,7 @@
 
 #include "inputstr.h"
 #include "input.h"
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "mipointer.h"
 #include "scrnintstr.h"
 

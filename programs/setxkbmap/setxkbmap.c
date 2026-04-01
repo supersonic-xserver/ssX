@@ -1,4 +1,11 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  Copyright (c) 1996 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -23,7 +30,7 @@
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  ********************************************************/
-/* $XFree86: xc/programs/setxkbmap/setxkbmap.c,v 3.9tsi Exp $ */
+/* $XFree86: xc/programs/setxkbmap/setxkbmap.c,v 3.8 2003/11/17 22:20:50 dawes Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -467,8 +474,6 @@ char *			tmp= NULL;
         tmp = DFLT_XKB_RULES_FILE;
         vd.model = DFLT_XKB_MODEL;
         vd.layout = DFLT_XKB_LAYOUT;
-	vd.variant = NULL;
-	vd.options = NULL;
         VMSG3(3,"Use defaults: rules - '%s' model - '%s' layout - '%s'\n",
                 tmp, vd.model, vd.layout);
     }
@@ -723,7 +728,7 @@ char *	rfName;
 
 /* Primitive sanity check - filter out 'map names' (inside parenthesis) */
 /* that can confuse xkbcomp parser */
-static Bool
+Bool
 checkName(char *name, char* string)
 {
    char *i = name, *opar = NULL;

@@ -1,4 +1,18 @@
 /************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -45,6 +59,11 @@ SOFTWARE.
 
 ********************************************************/
 
+/* $Xorg: resource.c,v 1.5 2001/02/09 02:04:40 xorgcvs Exp $ */
+
+
+/* $TOG: resource.c /main/41 1998/02/09 14:20:31 kaleb $ */
+
 /*	Routines to manage various kinds of resources:
  *
  *	CreateNewResourceType, CreateNewResourceClass, InitClientResources,
@@ -67,10 +86,10 @@ SOFTWARE.
  *      1, and an otherwise arbitrary ID in the low 22 bits, we can create a
  *      resource "owned" by the client.
  */
-/* $XFree86: xc/programs/Xserver/dix/resource.c,v 3.16tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/resource.c,v 3.14 2003/11/17 22:20:34 dawes Exp $ */
 
 #define NEED_EVENTS
-#include <X11/X.h>
+#include "X.h"
 #include "misc.h"
 #include "os.h"
 #include "resource.h"
@@ -123,12 +142,11 @@ RESTYPE TypeMask;
 
 static DeleteType *DeleteFuncs = (DeleteType *)NULL;
 
-#ifdef RES
+#ifdef XResExtension
 
 Atom * ResourceNames = NULL;
 
-void
-RegisterResourceName(RESTYPE type, char *name)
+void RegisterResourceName (RESTYPE type, char *name)
 {
     ResourceNames[type & TypeMask] =  MakeAtom(name, strlen(name), TRUE);
 }
@@ -136,7 +154,8 @@ RegisterResourceName(RESTYPE type, char *name)
 #endif
 
 RESTYPE
-CreateNewResourceType(DeleteType deleteFunc)
+CreateNewResourceType(deleteFunc)
+    DeleteType deleteFunc;
 {
     RESTYPE next = lastResourceType + 1;
     DeleteType *funcs;
@@ -148,7 +167,7 @@ CreateNewResourceType(DeleteType deleteFunc)
     if (!funcs)
 	return 0;
 
-#ifdef RES
+#ifdef XResExtension
     {
        Atom *newnames;
        newnames = xrealloc(ResourceNames, (next + 1) * sizeof(Atom));
@@ -186,9 +205,10 @@ ClientResourceRec clientTable[MAXCLIENTS];
  *****************/
 
 Bool
-InitClientResources(ClientPtr client)
+InitClientResources(client)
+    ClientPtr client;
 {
-    int i, j;
+    register int i, j;
  
     if (client == serverClient)
     {
@@ -212,7 +232,7 @@ InitClientResources(ClientPtr client)
 	DeleteFuncs[RT_OTHERCLIENT & TypeMask] = OtherClientGone;
 	DeleteFuncs[RT_PASSIVEGRAB & TypeMask] = DeletePassiveGrab;
 
-#ifdef RES
+#ifdef XResExtension
         if(ResourceNames)
             xfree(ResourceNames);
         ResourceNames = xalloc((lastResourceType + 1) * sizeof(Atom));
@@ -245,7 +265,7 @@ InitClientResources(ClientPtr client)
 
 
 static int
-Hash(int client, XID id)
+Hash(int client, register XID id)
 {
     id &= RESOURCE_ID_MASK;
     switch (clientTable[client].hashsize)
@@ -267,9 +287,13 @@ Hash(int client, XID id)
 }
 
 static XID
-AvailableID(int client, XID id, XID maxid, XID goodid)
+AvailableID(
+    register int client,
+    register XID id,
+    register XID maxid,
+    register XID goodid)
 {
-    ResourcePtr res;
+    register ResourcePtr res;
 
     if ((goodid >= id) && (goodid <= maxid))
 	return goodid;
@@ -285,12 +309,15 @@ AvailableID(int client, XID id, XID maxid, XID goodid)
 }
 
 void
-GetXIDRange(int client, Bool server, XID *minp, XID *maxp)
+GetXIDRange(client, server, minp, maxp)
+    int client;
+    Bool server;
+    XID *minp, *maxp;
 {
-    XID id, maxid;
-    ResourcePtr *resp;
-    ResourcePtr res;
-    int i;
+    register XID id, maxid;
+    register ResourcePtr *resp;
+    register ResourcePtr res;
+    register int i;
     XID goodid;
 
     id = (Mask)client << CLIENTOFFSET;
@@ -335,7 +362,10 @@ GetXIDRange(int client, Bool server, XID *minp, XID *maxp)
  */
 
 unsigned int
-GetXIDList(ClientPtr pClient, unsigned int count, XID *pids)
+GetXIDList(pClient, count, pids)
+    ClientPtr pClient;
+    unsigned int count;
+    XID *pids;
 {
     unsigned int found = 0;
     XID id = pClient->clientAsMask;
@@ -362,7 +392,8 @@ GetXIDList(ClientPtr pClient, unsigned int count, XID *pids)
  */
 
 XID
-FakeClientID(int client)
+FakeClientID(client)
+    register int client;
 {
     XID id, maxid;
 
@@ -383,11 +414,14 @@ FakeClientID(int client)
 }
 
 Bool
-AddResource(XID id, RESTYPE type, pointer value)
+AddResource(id, type, value)
+    XID id;
+    RESTYPE type;
+    pointer value;
 {
     int client;
-    ClientResourceRec *rrec;
-    ResourcePtr res, *head;
+    register ClientResourceRec *rrec;
+    register ResourcePtr res, *head;
     	
     client = CLIENT_ID(id);
     rrec = &clientTable[client];
@@ -419,12 +453,13 @@ AddResource(XID id, RESTYPE type, pointer value)
 }
 
 static void
-RebuildTable(int client)
+RebuildTable(client)
+    int client;
 {
-    int j;
-    ResourcePtr res, next;
+    register int j;
+    register ResourcePtr res, next;
     ResourcePtr **tails, *resources;
-    ResourcePtr **tptr, *rptr;
+    register ResourcePtr **tptr, *rptr;
 
     /*
      * For now, preserve insertion order, since some ddx layers depend
@@ -468,12 +503,14 @@ RebuildTable(int client)
 }
 
 void
-FreeResource(XID id, RESTYPE skipDeleteFuncType)
+FreeResource(id, skipDeleteFuncType)
+    XID id;
+    RESTYPE skipDeleteFuncType;
 {
     int		cid;
-    ResourcePtr res;
-    ResourcePtr *prev, *head;
-    int *eltptr;
+    register    ResourcePtr res;
+    register	ResourcePtr *prev, *head;
+    register	int *eltptr;
     int		elements;
     Bool	gotOne = FALSE;
 
@@ -515,11 +552,14 @@ FreeResource(XID id, RESTYPE skipDeleteFuncType)
 
 
 void
-FreeResourceByType(XID id, RESTYPE type, Bool skipFree)
+FreeResourceByType(id, type, skipFree)
+    XID id;
+    RESTYPE type;
+    Bool    skipFree;
 {
     int		cid;
-    ResourcePtr res;
-    ResourcePtr *prev, *head;
+    register    ResourcePtr res;
+    register	ResourcePtr *prev, *head;
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
     {
 	head = &clientTable[cid].resources[Hash(cid, id)];
@@ -555,10 +595,13 @@ FreeResourceByType(XID id, RESTYPE type, Bool skipFree)
  */
 
 Bool
-ChangeResourceValue(XID id, RESTYPE rtype, pointer value)
+ChangeResourceValue (id, rtype, value)
+    XID	id;
+    RESTYPE rtype;
+    pointer value;
 {
     int    cid;
-    ResourcePtr res;
+    register    ResourcePtr res;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) && clientTable[cid].buckets)
     {
@@ -589,10 +632,10 @@ FindClientResourcesByType(
     FindResType func,
     pointer cdata
 ){
-    ResourcePtr *resources;
-    ResourcePtr this, next;
+    register ResourcePtr *resources;
+    register ResourcePtr this, next;
     int i, elements;
-    int *eltptr;
+    register int *eltptr;
 
     if (!client)
 	client = serverClient;
@@ -620,10 +663,10 @@ FindAllClientResources(
     FindAllRes func,
     pointer cdata
 ){
-    ResourcePtr *resources;
-    ResourcePtr this, next;
+    register ResourcePtr *resources;
+    register ResourcePtr this, next;
     int i, elements;
-    int *eltptr;
+    register int *eltptr;
 
     if (!client)
         client = serverClient;
@@ -704,10 +747,11 @@ FreeClientNeverRetainResources(ClientPtr client)
 }
 
 void
-FreeClientResources(ClientPtr client)
+FreeClientResources(client)
+    ClientPtr client;
 {
-    ResourcePtr *resources;
-    ResourcePtr this;
+    register ResourcePtr *resources;
+    register ResourcePtr this;
     int j;
 
     /* This routine shouldn't be called with a null client, but just in
@@ -762,7 +806,9 @@ FreeAllResources()
 }
 
 Bool
-LegalNewID(XID id, ClientPtr client)
+LegalNewID(id, client)
+    XID id;
+    register ClientPtr client;
 {
 
 #ifdef PANORAMIX
@@ -783,8 +829,7 @@ LegalNewID(XID id, ClientPtr client)
 
 #ifdef XCSECURITY
 
-/*
- * SecurityLookupIDByType and SecurityLookupIDByClass:
+/* SecurityLookupIDByType and SecurityLookupIDByClass:
  * These are the heart of the resource ID security system.  They take
  * two additional arguments compared to the old LookupID functions:
  * the client doing the lookup, and the access mode (see resource.h).
@@ -793,10 +838,14 @@ LegalNewID(XID id, ClientPtr client)
  */
 
 pointer
-SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
+SecurityLookupIDByType(client, id, rtype, mode)
+    ClientPtr client;
+    XID id;
+    RESTYPE rtype;
+    Mask mode;
 {
     int    cid;
-    ResourcePtr res;
+    register    ResourcePtr res;
     pointer retval = NULL;
 
     assert(client == NullClient ||
@@ -822,10 +871,14 @@ SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
 
 
 pointer
-SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)
+SecurityLookupIDByClass(client, id, classes, mode)
+    ClientPtr client;
+    XID id;
+    RESTYPE classes;
+    Mask mode;
 {
     int    cid;
-    ResourcePtr res = NULL;
+    register ResourcePtr res = NULL;
     pointer retval = NULL;
 
     assert(client == NullClient ||
@@ -849,20 +902,23 @@ SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)
     return retval;
 }
 
-/*
- * We can't replace the LookupIDByType and LookupIDByClass functions with
+/* We can't replace the LookupIDByType and LookupIDByClass functions with
  * macros because of compatibility with loadable servers.
  */
 
 pointer
-LookupIDByType(XID id, RESTYPE rtype)
+LookupIDByType(id, rtype)
+    XID id;
+    RESTYPE rtype;
 {
     return SecurityLookupIDByType(NullClient, id, rtype,
 				  SecurityUnknownAccess);
 }
 
 pointer
-LookupIDByClass(XID id, RESTYPE classes)
+LookupIDByClass(id, classes)
+    XID id;
+    RESTYPE classes;
 {
     return SecurityLookupIDByClass(NullClient, id, classes,
 				   SecurityUnknownAccess);
@@ -874,10 +930,12 @@ LookupIDByClass(XID id, RESTYPE classes)
  *  LookupIDByType returns the object with the given id and type, else NULL.
  */ 
 pointer
-LookupIDByType(XID id, RESTYPE rtype)
+LookupIDByType(id, rtype)
+    XID id;
+    RESTYPE rtype;
 {
     int    cid;
-    ResourcePtr res;
+    register    ResourcePtr res;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) &&
 	clientTable[cid].buckets)
@@ -896,10 +954,12 @@ LookupIDByType(XID id, RESTYPE rtype)
  *  given classes, else NULL.
  */ 
 pointer
-LookupIDByClass(XID id, RESTYPE classes)
+LookupIDByClass(id, classes)
+    XID id;
+    RESTYPE classes;
 {
     int    cid;
-    ResourcePtr res;
+    register    ResourcePtr res;
 
     if (((cid = CLIENT_ID(id)) < MAXCLIENTS) &&
 	clientTable[cid].buckets)
@@ -911,18 +971,6 @@ LookupIDByClass(XID id, RESTYPE classes)
 		return res->value;
     }
     return (pointer)NULL;
-}
-
-pointer
-SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
-{
-    return LookupIDByType(id, rtype);
-}
-
-pointer
-SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)
-{
-    return LookupIDByClass(id, classes);
 }
 
 #endif /* XCSECURITY */

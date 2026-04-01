@@ -1,4 +1,9 @@
-XCOMM $XFree86: xc/include/extensions/Imakefile,v 3.61tsi Exp $
+XCOMM $Xorg: Imakefile,v 1.3 2000/08/18 04:05:44 coskrey Exp $
+
+
+
+
+XCOMM $XFree86: xc/include/extensions/Imakefile,v 3.59 2004/07/07 03:46:22 martin Exp $
 
 #if BuildScreenSaverExt || BuildScreenSaverLibrary
 SCREENSAVERHEADERS = saver.h saverproto.h scrnsaver.h
@@ -40,8 +45,8 @@ RENDERHEADERS = render.h renderproto.h
 RANDRHEADERS = randr.h randrproto.h
 #endif
 #if BuildXTrap || BuildXTrapLibrary
-XTRAPHEADERS = xtrapbits.h xtrapdi.h xtrapemacros.h xtraplib.h \
-	xtraplibp.h
+XTRAPHEADERS = xtrapbits.h xtrapddmi.h xtrapdi.h xtrapemacros.h xtraplib.h \
+	xtraplibp.h xtrapproto.h
 #endif
 #if BuildXResExt || BuildXResLibrary
 XRESHEADERS = XRes.h XResproto.h
@@ -88,24 +93,19 @@ BuildIncludes($(HEADERS),X11/extensions,../..)
 InstallMultipleFlags($(HEADERS),$(INCDIR)/X11/extensions,$(INSTINCFLAGS))
 #endif
 
-InstallDriverSDKNonExecFile(XI.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(XIproto.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(XKB.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(XKBproto.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(XKBsrv.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(XKBstr.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
+InstallDriverSDKNonExecFile(XI.h,$(DRIVERSDKINCLUDEDIR)/extensions)
+InstallDriverSDKNonExecFile(XIproto.h,$(DRIVERSDKINCLUDEDIR)/extensions)
+InstallDriverSDKNonExecFile(Xv.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(Xvproto.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(dpms.h,$(DRIVERSDKINCLUDEDIR)/extensions)
+InstallDriverSDKNonExecFile(xf86dga1str.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(xf86dgastr.h,$(DRIVERSDKINCLUDEDIR)/extensions)
+InstallDriverSDKNonExecFile(xf86rush.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(xf86rushstr.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(renderproto.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(Xv.h,$(DRIVERSDKINCLUDEDIR)/extensions)
+InstallDriverSDKNonExecFile(XvMC.h,$(DRIVERSDKINCLUDEDIR))
+InstallDriverSDKNonExecFile(Xvlib.h,$(DRIVERSDKINCLUDEDIR)/extensions)
 InstallDriverSDKNonExecFile(Xv.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(XvMC.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(Xvproto.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(dpms.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(panoramiXproto.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(randr.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(render.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(renderproto.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86dga.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86dga1.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86dga1str.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86dgastr.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86misc.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86rush.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
-InstallDriverSDKNonExecFile(xf86rushstr.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
+InstallDriverSDKNonExecFile(Xvlib.h,$(DRIVERSDKINCLUDEDIR)/X11/extensions)
+

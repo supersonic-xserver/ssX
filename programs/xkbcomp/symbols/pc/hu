@@ -17,7 +17,7 @@
 //             - Fixed abovedot
 //             - Added adiaeresis
 //             - Added EuroSign and cent symbol
-// $XFree86$
+// $XFree86: xc/programs/xkbcomp/symbols/pc/hu,v 1.1 2004/05/08 07:26:54 pascal Exp $
 
 // Default layout
 default partial

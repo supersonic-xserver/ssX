@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.2
  *
@@ -224,7 +231,7 @@ extern void _ext_mesa_free_pixelbuffer( void *pb );
  ***/
 #if defined(__i386__) || defined(__386__) || defined(__sparc__) || \
     defined(__s390x__) || defined(__powerpc__) || \
-    defined(__amd64__) || defined(__x86_64__) || \
+    defined(__amd64__) || \
     defined(ia64) || defined(__ia64__) || \
     defined(__hppa__) || defined(hpux) || \
     defined(__mips) || defined(_MIPS_ARCH) || \

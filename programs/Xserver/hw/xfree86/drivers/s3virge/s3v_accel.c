@@ -1,7 +1,21 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v_accel.c,v 1.28 2005/08/28 17:48:02 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/s3virge/s3v_accel.c,v 1.27 2004/03/29 16:25:18 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
- * Copyright (C) 1994-2006 The XFree86 Project, Inc.
+ * Copyright (C) 1994-1999 The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -72,7 +86,6 @@ static void S3VSetupForScreenToScreenCopy(ScrnInfoPtr, int, int, int,
 				unsigned int, int); 
 static void S3VSubsequentScreenToScreenCopy(ScrnInfoPtr, int, int, int, int, 
 				int, int);
-#ifndef __alpha__
 static void S3VSetupForCPUToScreenColorExpand(ScrnInfoPtr, int, int, int, 
 				unsigned int);
 static void S3VSubsequentCPUToScreenColorExpand(ScrnInfoPtr, int, int, int, 
@@ -80,10 +93,16 @@ static void S3VSubsequentCPUToScreenColorExpand(ScrnInfoPtr, int, int, int,
 static void S3VSetupForImageWrite(ScrnInfoPtr, int, unsigned int, int, 
 				int, int);
 static void S3VSubsequentImageWriteRect(ScrnInfoPtr, int, int, int, int, int);
-#endif
 static void S3VSubsequentSolidHorVertLine(ScrnInfoPtr, int, int, int, int);
 static void S3VSubsequentSolidHorVertLinePlaneMask(ScrnInfoPtr, int, int, 
 				int, int);
+#if 0
+static void S3VSubsequentSolidBresenhamLine(ScrnInfoPtr, int, int, int, 
+				int, int, int, int);
+static void S3VPolylinesThinSolidWrapper(DrawablePtr, GCPtr, int, int, 
+				DDXPointPtr);
+static void S3VPolySegmentThinSolidWrapper(DrawablePtr, GCPtr, int, xSegment*);
+#endif
 static void S3VNopAllCmdSets(ScrnInfoPtr pScrn);
 
 
@@ -188,6 +207,26 @@ S3VAccelInit(ScreenPtr pScreen)
     infoPtr->SetupForImageWrite = S3VSetupForImageWrite;
     infoPtr->SubsequentImageWriteRect = S3VSubsequentImageWriteRect;
     
+    /* on alpha, I see corruption in the xscreensaver program "hypercube"
+       as the line acceleration is just stubs, it loses us nothing to
+       disable it on alphas */
+    
+    /* Lines */
+#if 0
+    /* Bresenham lines are broken when passed through fb to xaa
+       so I pulled all the line functions.  This shouldn't hurt us
+       a whole lot, since the Subsequent..Bresen stuff doesn't have
+       any hardware accel yet anyway...  And xaa will do horiz/vert
+       lines with the rect fill (like we are doing here) anyway.
+       KJB 9/11/00
+    */
+    infoPtr->SetupForSolidLine = S3VSetupForSolidFill;
+    infoPtr->SubsequentSolidHorVertLine = S3VSubsequentSolidHorVertLine;
+    infoPtr->SubsequentSolidBresenhamLine = S3VSubsequentSolidBresenhamLine;
+    infoPtr->PolySegmentThinSolid = S3VPolySegmentThinSolidWrapper;
+    infoPtr->PolylinesThinSolid = S3VPolylinesThinSolidWrapper;
+#endif
+
 #endif /* !__alpha__ */
     
     /* And these are screen parameters used to setup the GE */
@@ -760,7 +799,6 @@ S3VSubsequentMono8x8PatternFillRectPlaneMask(
 	\*********************************/
 
 
-#ifndef __alpha__
 static void
 S3VSetupForCPUToScreenColorExpand(
     ScrnInfoPtr pScrn, 
@@ -864,13 +902,51 @@ S3VSubsequentImageWriteRect(
     WAITCMD();
     OUTREG(RDEST_XY, (x << 16) | y);
 }
-#endif /* !__alpha__ */
 
 
 	/***********\
 	|   Lines   |
 	\***********/
 
+
+#if 0   /* Some line funcs are disabled at the moment */
+
+static void 
+S3VPolylinesThinSolidWrapper(
+   DrawablePtr     pDraw,
+   GCPtr           pGC,
+   int             mode,
+   int             npt,
+   DDXPointPtr     pPts
+){
+    XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_GC(pGC);
+    S3VPtr ps3v = S3VPTR(infoRec->pScrn);
+    ps3v->CurrentGC = pGC;
+    /* fb support */
+    ps3v->CurrentDrawable = pDraw;
+    if(infoRec->NeedToSync) 
+	S3VAccelSync(infoRec->pScrn);
+    XAAPolyLines(pDraw, pGC, mode, npt, pPts);
+}
+
+static void 
+S3VPolySegmentThinSolidWrapper(
+   DrawablePtr     pDraw,
+   GCPtr           pGC,
+   int             nseg,
+   xSegment        *pSeg
+){
+    XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_GC(pGC);
+    S3VPtr ps3v = S3VPTR(infoRec->pScrn);
+    ps3v->CurrentGC = pGC;
+    /* fb support */
+    ps3v->CurrentDrawable = pDraw;
+    if(infoRec->NeedToSync) 
+	S3VAccelSync(infoRec->pScrn);
+    XAAPolySegment(pDraw, pGC, nseg, pSeg);
+}
+
+#endif
 
 static void
 S3VSubsequentSolidHorVertLine(
@@ -920,6 +996,89 @@ S3VSubsequentSolidHorVertLinePlaneMask(
     S3VWriteMask((CARD32*)ps3v->MapBaseDense, dwords);
 }
 
+
+#if 0   /* Line funcs are disabled at the moment */
+
+static void (*LineFuncs[3])() = {
+  cfbBresS,
+  cfb16BresS,
+  cfb24BresS
+};
+
+static void 
+S3VSubsequentSolidBresenhamLine( 
+   ScrnInfoPtr pScrn,
+   int x, int y, 
+   int dmaj, int dmin, 
+   int e, int len, int octant
+){
+    S3VPtr ps3v = S3VPTR(pScrn);
+    cfbPrivGCPtr devPriv;
+    int Bpp = pScrn->bitsPerPixel >> 3;
+
+    if( ps3v->UseFB )
+      {
+#if 1
+	/*
+void
+fbBres (DrawablePtr     pDrawable,
+        GCPtr           pGC,
+        int             dashOffset,
+        int             signdx,
+        int             signdy,
+        int             axis,
+        int             x1,
+        int             y1,
+        int             e,
+        int             e1,
+        int             e3,
+        int             len)
+
+	from cfb, e3 = e2-e1.
+	for the cfb call e2 = dmin - dmaj
+	e1 = dmin
+	e3 = e2-e1 = dmin-dmaj-dmin
+	*/
+
+
+	fbBres(ps3v->CurrentDrawable, ps3v->CurrentGC, 0,
+           (octant & XDECREASING) ? -1 : 1,
+           (octant & YDECREASING) ? -1 : 1,
+           (octant & YMAJOR) ? Y_AXIS : X_AXIS,
+	       /*   x, y, dmin + e, dmin, dmin-dmaj, len); */
+	 x, y, dmin + e, dmin, -dmaj, len); 
+#endif
+#if 0
+	xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, VERBLEV, 
+		       "Bresenham dmaj=%i, -dmaj=%i, -1*dmaj=%i.\n", 
+		       dmaj, -dmaj, -1*dmaj );
+#endif
+
+      }
+    else
+      {
+	devPriv = cfbGetGCPrivate(ps3v->CurrentGC);
+
+	/* you could trap for lines you could do here and accelerate them */
+
+	/*
+	 * void
+	 * cfbBresS(rop, and, xor, addrl, nlwidth, signdx, signdy, axis, 
+	 * x1, y1, e, e1, e2, len)
+	 */
+
+	(*LineFuncs[Bpp - 1])
+		(devPriv->rop, devPriv->and, devPriv->xor, 
+                (unsigned long*)ps3v->FBBase,
+		 (pScrn->displayWidth * Bpp) >> LOG2_BYTES_PER_SCANLINE_PAD, 
+                (octant & XDECREASING) ? -1 : 1, 
+                (octant & YDECREASING) ? -1 : 1, 
+                (octant & YMAJOR) ? Y_AXIS : X_AXIS,
+                x, y, dmin + e, dmin, dmin - dmaj, len);
+      } /*if(fb)*/
+}
+
+#endif
 
 
 void

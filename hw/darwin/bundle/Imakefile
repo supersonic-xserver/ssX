@@ -1,0 +1,20 @@
+XCOMM $XFree86: xc/programs/Xserver/hw/darwin/bundle/Imakefile,v 1.26 2007/04/22 00:37:19 tsi Exp $
+
+#include <Server.tmpl>
+#define IHaveSubdirs
+
+SUBDIRS = Dutch.lproj English.lproj French.lproj German.lproj Japanese.lproj \
+          ko.lproj Portuguese.lproj Spanish.lproj Swedish.lproj
+
+SYMLINKDIR = ../symlinks
+
+BundleSymbolicLink($(SYMLINKDIR),.,XDarwin.icns)
+BundleSymbolicLinkSubdirs($(SUBDIRS))
+
+MakeSubdirs($(SUBDIRS))
+
+AllTarget(startXClients)
+MakeScriptFromCpp(startXClients, -DXINITDIR=$(XINITDIR) -DXBINDIR=$(BINDIR))
+
+depend::	/* Nothing to do */
+

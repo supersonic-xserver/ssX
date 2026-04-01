@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcDepth.c,v 1.3 1999/06/06 08:48:58 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -22,6 +29,8 @@
  *
 */
 
+/* $XConsortium: ppcDepth.c /main/3 1996/02/21 17:57:31 kaleb $ */
+
 /* Check to see if the alleged depth is acceptable for the Screen  
  *
  * T. Paquin 9/87
@@ -32,10 +41,12 @@
 #include "scrnintstr.h"
 
 Bool
-xf4bppDepthOK(DrawablePtr pDraw, int depth)
+xf4bppDepthOK(pDraw,depth)
+register DrawablePtr pDraw;
+register int depth;
 {
-ScreenPtr pScreen= pDraw->pScreen;
-int i = pScreen->numDepths;
+register ScreenPtr pScreen= pDraw->pScreen;
+register int i = pScreen->numDepths;
 
     if ( ( pDraw->type == DRAWABLE_PIXMAP ) && ( depth == 1 ) )
 	return TRUE ;

@@ -1,3 +1,19 @@
+/* $Xorg: sm_process.c,v 1.4 2001/02/09 02:03:30 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -61,10 +77,19 @@ in this Software without prior written authorization from The Open Group.
     }
 
 
+
 void
-_SmcProcessMessage(IceConn iceConn, IcePointer clientData, int opcode,
-		   unsigned long length, Bool swap,
-		   IceReplyWaitInfo *replyWait, Bool *replyReadyRet)
+_SmcProcessMessage (iceConn, clientData, opcode,
+    length, swap, replyWait, replyReadyRet)
+
+IceConn		 iceConn;
+IcePointer	 clientData;
+int		 opcode;
+unsigned long	 length;
+Bool		 swap;
+IceReplyWaitInfo *replyWait;
+Bool		 *replyReadyRet;
+
 {
     SmcConn	smcConn = (SmcConn) clientData;
 
@@ -407,9 +432,16 @@ _SmcProcessMessage(IceConn iceConn, IcePointer clientData, int opcode,
 }
 
 
+
 void
-_SmsProcessMessage(IceConn iceConn, IcePointer clientData, int opcode,
-		   unsigned long length, Bool swap)
+_SmsProcessMessage (iceConn, clientData, opcode, length, swap)
+
+IceConn		 iceConn;
+IcePointer       clientData;
+int		 opcode;
+unsigned long	 length;
+Bool		 swap;
+
 {
     SmsConn	smsConn = (SmsConn) clientData;
 

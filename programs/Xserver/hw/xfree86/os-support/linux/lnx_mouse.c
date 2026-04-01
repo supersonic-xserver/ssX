@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_mouse.c,v 1.7tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_mouse.c,v 1.6 2005/02/04 02:55:49 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  * Copyright 1999-2005 by The XFree86 Project, Inc.
@@ -47,7 +61,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <X11/X.h>
+#include "X.h"
 #include "xf86.h"
 #include "xf86Xinput.h"
 #include "xf86OSmouse.h"
@@ -72,20 +86,20 @@ DefaultProtocol(void)
 #define DEFAULT_PS2_DEV			"/dev/psaux"
 #define DEFAULT_GPM_DATA_DEV		"/dev/gpmdata"
 #define DEFAULT_GPM_CTL_DEV		"/dev/gpmctl"
+#define DEFAULT_INPUT_MICE_DEV		"/dev/input/mice"
 #ifdef __sparc__
 #define DEFAULT_SUNMOUSE_DEV		"/dev/sunmouse"
 #endif
-#define DEFAULT_INPUT_MICE_DEV		"/dev/input/mice"
 #define DEFAULT_INPUT_MOUSE_PREFIX	"/dev/input/mouse"
 
 static const char *mouseDevs[] = {
 	DEFAULT_MOUSE_DEV,
 	DEFAULT_PS2_DEV,
 	DEFAULT_GPM_DATA_DEV,
+	DEFAULT_INPUT_MICE_DEV,
 #ifdef __sparc__
 	DEFAULT_SUNMOUSE_DEV,
 #endif
-	DEFAULT_INPUT_MICE_DEV,
 	NULL
 };
 

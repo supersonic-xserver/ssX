@@ -1,3 +1,11 @@
+/* $Xorg: sunIo.c,v 1.4 2001/03/07 17:34:19 pookie Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*-
  * sunIo.c --
  *	Functions to handle input from the keyboard and mouse.
@@ -14,7 +22,7 @@
  *
  *
  */
-/* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.12tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/sun/sunIo.c,v 3.10 2003/11/17 22:20:36 dawes Exp $ */
 
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
@@ -195,10 +203,11 @@ ddxGiveUp()
 int
 ddxProcessArgument (argc, argv, i)
     int	argc;
-    const char *argv[];
+    char *argv[];
     int	i;
 {
     extern void UseMsg();
+    extern int XprintOptions(int, char **, int);
 
 #ifdef XKB
     int noxkb = 0, n;
@@ -271,6 +280,9 @@ ddxProcessArgument (argc, argv, i)
 	sunNoGX = TRUE;
 	return 1;
     }
+    if (strcmp(argv[i], "-XpFile") == 0) {
+	return XprintOptions(argc, argv, i) - i;
+    }
     return 0;
 }
 
@@ -291,4 +303,5 @@ ddxUseMsg()
     ErrorF("-cg4frob            don't use the mono plane of the cgfour\n");
     ErrorF("-noGX               treat the GX as a dumb frame buffer\n");
 #endif
+    ErrorF("-XpFile             specifies an alternate `Xprinters' file (Xprt only)\n");
 }

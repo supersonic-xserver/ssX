@@ -1,3 +1,5 @@
+/* $Id: common_x86_asm.S,v 1.1.1.1 2005/03/18 13:07:00 tron Exp $ */
+
 /*
  * Mesa 3-D graphics library
  * Version:  5.1

@@ -1,4 +1,12 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis6326_video.c,v 1.22 2005/10/14 15:16:44 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/sis/sis6326_video.c,v 1.21 2004/06/21 00:43:22 twini Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+/* $XdotOrg$ */
 /*
  * Xv driver for SiS 5597/5598, 6236 and 530/620.
  *
@@ -43,7 +51,7 @@
 #include "regionstr.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 #include "xaa.h"
 #include "dixstruct.h"
 #include "fourcc.h"

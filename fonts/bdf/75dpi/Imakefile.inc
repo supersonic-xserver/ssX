@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/fonts/bdf/75dpi/Imakefile.inc,v 1.8 2004/03/14 02:54:21 dawes Exp $
+XCOMM $XFree86: xc/fonts/bdf/75dpi/Imakefile.inc,v 1.9 2004/06/01 00:16:55 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.

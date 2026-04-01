@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * GLX Hardware Device Driver for Intel i810
  * Copyright (C) 1999 Keith Whitwell
  *
@@ -21,7 +28,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i810/i810context.h,v 1.1.1.2 2004/12/10 15:05:44 alanh Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/i810/i810context.h,v 1.2 2005/03/01 03:48:45 dawes Exp $ */
 
 #ifndef I810CONTEXT_INC
 #define I810CONTEXT_INC

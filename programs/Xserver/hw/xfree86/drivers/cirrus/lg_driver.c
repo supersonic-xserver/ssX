@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Driver for CL-GD546x -- The Laguna family
  *
  * lg_driver.c
@@ -13,7 +20,7 @@
  *	David Dawes, Andrew E. Mileski, Leonard N. Zubkoff,
  *	Guy DESBIEF, Itai Nahshon.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg_driver.c,v 1.55tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/lg_driver.c,v 1.52 2005/02/18 02:55:07 dawes Exp $ */
 
 #define EXPERIMENTAL
 
@@ -63,7 +70,7 @@
 #include "lg.h"
 
 #include "xf86xv.h"
-#include <X11/extensions/Xv.h>
+#include "Xv.h"
 
 /*
  * Forward definitions for the functions that make up the driver.
@@ -71,7 +78,7 @@
 
 /* Mandatory functions */
 Bool LgPreInit(ScrnInfoPtr pScrn, int flags);
-Bool LgScreenInit(int Index, ScreenPtr pScreen, const int argc, const char **argv);
+Bool LgScreenInit(int Index, ScreenPtr pScreen, int argc, char **argv);
 Bool LgEnterVT(int scrnIndex, int flags);
 void LgLeaveVT(int scrnIndex, int flags);
 static Bool	LgCloseScreen(int scrnIndex, ScreenPtr pScreen);
@@ -162,8 +169,8 @@ static int LgLinePitches[4][11] = {
  * List of symbols from other modules that this module references.  This
  * list is used to tell the loader that it is OK for symbols here to be
  * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderModReqSymbols() or
- * xf86LoaderModReqSymLists().  The purpose is this is to avoid warnings about
+ * told that they are essential via a call to xf86LoaderReqSymbols() or
+ * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
  * unresolved symbols that are not required.
  */
 
@@ -262,15 +269,15 @@ static XF86ModuleVersionInfo lgVersRec =
 XF86ModuleData cirrus_lagunaModuleData = { &lgVersRec, lgSetup, NULL };
 
 static pointer
-lgSetup(ModuleDescPtr module, pointer opts, int *errmaj, int *errmin)
+lgSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
     
     if (!setupDone) {
 	setupDone = TRUE;
-	LoaderModRefSymLists(module, vgahwSymbols, fbSymbols, xaaSymbols,
-			     ramdacSymbols, ddcSymbols, i2cSymbols,
-			     int10Symbols, NULL);
+	LoaderRefSymLists(vgahwSymbols, fbSymbols, xaaSymbols,
+			  ramdacSymbols, ddcSymbols, i2cSymbols,
+			  int10Symbols, NULL);
     }
     return (pointer)1;
 }
@@ -406,7 +413,6 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 	ClockRangePtr clockRanges;
 	int fbPCIReg, ioPCIReg;
 	char *s;
-	ModuleDescPtr pMod;
 
 	if (flags & PROBE_DETECT)  {
 	  cirProbeDDC( pScrn, xf86GetEntityInfo(pScrn->entityList[0])->index );
@@ -422,10 +428,10 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 		return FALSE;
 
 	/* The vgahw module should be loaded here when needed */
-	if (!(pMod = xf86LoadSubModule(pScrn, "vgahw")))
+	if (!xf86LoadSubModule(pScrn, "vgahw"))
 		return FALSE;
 
-	xf86LoaderModReqSymLists(pMod, vgahwSymbols, NULL);
+	xf86LoaderReqSymLists(vgahwSymbols, NULL);
 
 	/*
 	 * Allocate a vgaHWRec
@@ -456,9 +462,9 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 								pCir->PciInfo->device,
 								pCir->PciInfo->func);
 
-	if ((pMod = xf86LoadSubModule(pScrn, "int10"))) {
+	if (xf86LoadSubModule(pScrn, "int10")) {
 	    xf86Int10InfoPtr int10InfoPtr;
-	    xf86LoaderModReqSymLists(pMod, int10Symbols, NULL);
+	    xf86LoaderReqSymLists(int10Symbols, NULL);
 	    
 	    int10InfoPtr = xf86InitInt10(pCir->pEnt->index);
 
@@ -657,18 +663,18 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 		return FALSE;
 	}
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "ddc"))) {
+	if (!xf86LoadSubModule(pScrn, "ddc")) {
 		LgFreeRec(pScrn);
 		return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, ddcSymbols, NULL);
+	xf86LoaderReqSymLists(ddcSymbols, NULL);
 
 #if LGuseI2C
-	if (!(pMod = xf86LoadSubModule(pScrn, "i2c"))) {
+	if (!xf86LoadSubModule(pScrn, "i2c")) {
 		LgFreeRec(pScrn);
 		return FALSE;
 	}
-	xf86LoaderModReqSymLists(pMod, i2cSymbols, NULL);
+	xf86LoaderReqSymLists(i2cSymbols, NULL);
 #endif
 
 	/* Read and print the monitor DDC information */
@@ -857,38 +863,38 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 	case 16:
 	case 24:
 	case 32: 
-	    if (!(pMod = xf86LoadSubModule(pScrn, "fb"))) {
+	    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
 	         LgFreeRec(pScrn);
 		 return FALSE;
 	    }
-	    xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	    xf86LoaderReqSymLists(fbSymbols, NULL);
 	    break;
 	}
 
 	/* Load XAA if needed */
 	if (!pCir->NoAccel) {
-		if (!(pMod = xf86LoadSubModule(pScrn, "xaa"))) {
+		if (!xf86LoadSubModule(pScrn, "xaa")) {
 			LgFreeRec(pScrn);
 			return FALSE;
 		}
-		xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+		xf86LoaderReqSymLists(xaaSymbols, NULL);
 	}
 
 	/* Load ramdac if needed */
 	if (pCir->HWCursor) {
-		if (!(pMod = xf86LoadSubModule(pScrn, "ramdac"))) {
+		if (!xf86LoadSubModule(pScrn, "ramdac")) {
 			LgFreeRec(pScrn);
 			return FALSE;
 		}
-		xf86LoaderModReqSymLists(pMod, ramdacSymbols, NULL);
+		xf86LoaderReqSymLists(ramdacSymbols, NULL);
 	}
 
 	if (pCir->shadowFB) {
-	    if (!(pMod = xf86LoadSubModule(pScrn, "shadowfb"))) {
+	    if (!xf86LoadSubModule(pScrn, "shadowfb")) {
 		LgFreeRec(pScrn);
 		return FALSE;
 	    }
-	    xf86LoaderModReqSymLists(pMod, shadowSymbols, NULL);
+	    xf86LoaderReqSymLists(shadowSymbols, NULL);
 	}
 	
 	return TRUE;
@@ -1304,7 +1310,7 @@ LgRestore(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 Bool
-LgScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **argv)
+LgScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
 {
 	/* The vgaHW references will disappear one day */
 	ScrnInfoPtr pScrn;

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/chips/Imakefile,v 1.1tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/tinyx/chips/Imakefile,v 1.1 2004/06/02 22:43:01 dawes Exp $
 /*
  * Copyright (c) 2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -52,7 +52,7 @@ SRCS = 	chips.c chipsdraw.c chipsstub.c
 
 OBJS = 	chips.o chipsdraw.o chipsstub.o
 
-INCLUDES = $(TINYXINCLUDES) -I$(TINYXSRC)/vesa
+INCLUDES = -I. $(TINYXINCLUDES) -I$(TINYXSRC)/vesa
 
 NormalLibraryObjectRule()
 NormalLibraryTarget(chips,$(OBJS))

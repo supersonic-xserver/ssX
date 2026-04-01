@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/font/Speedo/spfont.c,v 3.13tsi Exp $ */
+/* $Xorg: spfont.c,v 1.4 2001/02/09 02:04:00 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990, 1991 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -21,6 +28,7 @@
  *
  * Author: Dave Lemke, Network Computing Devices Inc
  */
+/* $XFree86: xc/lib/font/Speedo/spfont.c,v 3.13 2003/05/27 22:26:44 tsi Exp $ */
 
 /*
 
@@ -54,7 +62,7 @@ from The Open Group.
  * Speedo font loading
  */
 
-#include	<X11/fonts/FSproto.h>
+#include	"FSproto.h"
 #include	"spint.h"
 #include	"servermd.h"
 #include	"fontutil.h"

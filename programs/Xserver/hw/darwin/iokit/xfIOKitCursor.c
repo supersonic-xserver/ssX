@@ -1,4 +1,11 @@
 /**************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  *
  * Cursor support for Darwin X Server
  *
@@ -57,7 +64,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKitCursor.c,v 1.1tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/iokit/xfIOKitCursor.c,v 1.1 2003/05/14 05:27:56 torrey Exp $ */
 
 #include "scrnintstr.h"
 #include "cursorstr.h"
@@ -477,19 +484,19 @@ XFIOKitSetCursor(
         if (dfb->bitsPerPixel == 8) {
             cursorPrivPtr newCursor =
                     (cursorPrivPtr) pCursor->devPriv[pScreen->myNum];
-            memcpy((void *)cshmem->cursor.bw8.image[0], newCursor->image,
+            memcpy(cshmem->cursor.bw8.image[0], newCursor->image,
                         CURSORWIDTH*CURSORHEIGHT);
-            memcpy((void *)cshmem->cursor.bw8.mask[0], newCursor->mask,
+            memcpy(cshmem->cursor.bw8.mask[0], newCursor->mask,
                         CURSORWIDTH*CURSORHEIGHT);
         } else if (dfb->bitsPerPixel == 16) {
             unsigned short *newCursor =
                     (unsigned short *) pCursor->devPriv[pScreen->myNum];
-            memcpy((void *)cshmem->cursor.rgb.image[0], newCursor,
+            memcpy(cshmem->cursor.rgb.image[0], newCursor,
                         2*CURSORWIDTH*CURSORHEIGHT);
         } else {
             unsigned int *newCursor =
                     (unsigned int *) pCursor->devPriv[pScreen->myNum];
-            memcpy((void *)cshmem->cursor.rgb24.image[0], newCursor,
+            memcpy(cshmem->cursor.rgb24.image[0], newCursor,
                         4*CURSORWIDTH*CURSORHEIGHT);
         }
 

@@ -1,4 +1,4 @@
-.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994 X Consortium
+.\" Copyright \(co 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1994, 1996 X Consortium
 .\"
 .\" Permission is hereby granted, free of charge, to any person obtaining
 .\" a copy of this software and associated documentation files (the
@@ -1298,6 +1298,8 @@ of the procedure that failed, as defined in
 .hN X11/Xproto.h .
 The following error codes can be returned by the functions described in this
 chapter:
+.br
+.ne 13
 .IN "Debugging" "error numbers"
 .IN "Error" "codes"
 .\".CP T 3
@@ -1431,7 +1433,7 @@ T{
 .PN BadMatch
 T}	T{
 In a graphics request,
-the root and depth of the graphics context does not match that of the drawable.
+the root and depth of the graphics context do not match those of the drawable.
 .sp 3p
 An 
 .PN InputOnly 
@@ -1588,7 +1590,7 @@ is in the encoding of the current locale.
 The name argument should generally be the name of your application.
 The message argument should indicate which type of error message you want.
 If the name and message are not in the Host Portable Character Encoding,
-the result is implementation dependent.
+the result is implementation-dependent.
 Xlib uses three predefined ``application names'' to report errors.
 In these names,
 uppercase and lowercase matter.

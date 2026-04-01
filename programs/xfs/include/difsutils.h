@@ -1,5 +1,12 @@
 /*
- * $XFree86: xc/programs/xfs/include/difsutils.h,v 1.6tsi Exp $
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $XFree86: xc/programs/xfs/include/difsutils.h,v 1.6 2005/01/22 16:38:41 tsi Exp $
  */
 
 /************************************************************
@@ -32,9 +39,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <misc.h>
 #include <auth.h>
-#include <X11/fonts/font.h>
+#include <font.h>
 #include <accstr.h>
-#include <X11/fonts/fontstruct.h>
+#include <fontstruct.h>
 
 typedef void (*DifsWakeupFunc)(pointer data, int result, unsigned long * pReadmask);
 typedef Bool (*DifsWorkFunc) (ClientPtr, pointer);

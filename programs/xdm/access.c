@@ -1,4 +1,12 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * $Xorg: access.c,v 1.5 2001/02/09 02:05:40 xorgcvs Exp $
  *
 Copyright 1990, 1998  The Open Group
 Copyright 2002 Sun Microsystems, Inc.  All rights reserved.
@@ -26,7 +34,7 @@ in this Software without prior written authorization from the copyright holder.
  * Author:  Keith Packard, MIT X Consortium
  */
 
-/* $XFree86: xc/programs/xdm/access.c,v 3.17 2006/01/09 15:01:03 dawes Exp $ */
+/* $XFree86: xc/programs/xdm/access.c,v 3.16 2004/04/01 19:18:24 tsi Exp $ */
 
 /*
  * Access control for XDMCP - keep a database of allowable display addresses
@@ -308,7 +316,7 @@ tryagain:
 	void *addr=NULL;
 	size_t addr_length=0;
 #if defined(IPv6) && defined(AF_INET6)
-	struct addrinfo *ai = NULL;
+	struct addrinfo *ai;
 #else
 	struct hostent  *hostent = gethostbyname (hostOrAlias);
 #endif	
@@ -344,26 +352,17 @@ tryagain:
 	    Debug ("No such host %s\n", hostOrAlias);
 	    LogError ("Access file \"%s\", host \"%s\" not found\n", accessFile, hostOrAlias);
 	    free ((char *) h);
-#if defined(IPv6) && defined(AF_INET6)
-	    if (ai)
-		freeaddrinfo(ai);
-#endif
 	    goto tryagain;
 	}
 	if (!XdmcpAllocARRAY8 (&h->entry.hostAddress, addr_length))
 	{
 	    LogOutOfMem ("ReadHostEntry\n");
 	    free ((char *) h);
-#if defined(IPv6) && defined(AF_INET6)
-	    if (ai)
-		freeaddrinfo(ai);
-#endif
 	    return NULL;
 	}
 	memmove( h->entry.hostAddress.data, addr, addr_length);
 #if defined(IPv6) && defined(AF_INET6)
-	if (ai)
-	    freeaddrinfo(ai);
+	freeaddrinfo(ai);
 #endif
     }
     return h;
@@ -437,7 +436,7 @@ ReadDisplayEntry (FILE *file)
 	    int addrtype = 0;
 
 #if defined(IPv6) && defined(AF_INET6)
-	    struct addrinfo *ai = NULL;
+	    struct addrinfo *ai;
 
 	    if (getaddrinfo(displayOrAlias, NULL, NULL, &ai) == 0) {
 		addrtype = ai->ai_addr->sa_family;
@@ -464,10 +463,6 @@ ReadDisplayEntry (FILE *file)
 	    {
 		LogError ("Access file %s, display %s unknown\n", accessFile, displayOrAlias);
 		free ((char *) d);
-#if defined(IPv6) && defined(AF_INET6)
-		if (ai)
-		    freeaddrinfo(ai);
-#endif
 		return NULL;
 	    }
 	    d->type = DISPLAY_ADDRESS;
@@ -475,17 +470,9 @@ ReadDisplayEntry (FILE *file)
 	    if (!XdmcpAllocARRAY8 (&display->clientAddress, addr_length))
 	    {
 	    	free ((char *) d);
-#if defined(IPv6) && defined(AF_INET6)
-		if (ai)
-		    freeaddrinfo(ai);
-#endif
 	    	return NULL;
 	    }
 	    memmove( display->clientAddress.data, addr, addr_length);
-#if defined(IPv6) && defined(AF_INET6)
-	    if (ai)
-		freeaddrinfo(ai);
-#endif
 	    switch (addrtype)
 	    {
 #ifdef AF_UNIX

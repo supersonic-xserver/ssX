@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga.h,v 1.89tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga.h,v 1.89 2004/09/11 01:33:06 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * MGA Millennium (MGA2064W) functions
  *
@@ -117,14 +124,6 @@ void MGAdbg_outreg32(ScrnInfoPtr, int,int, char*);
 #define OUTREG16(addr,val) MGAdbg_outreg16(pScrn, addr, val, __FUNCTION__)
 #define OUTREG(addr,val) MGAdbg_outreg32(pScrn, addr, val, __FUNCTION__)
 #endif /* EXTRADEBUG */
-
-#ifndef PCI_CHIP_MGAG200_SE_A_PCI
-#define PCI_CHIP_MGAG200_SE_A_PCI 0x0522
-#endif
-
-#ifndef PCI_CHIP_MGAG200_SE_B_PCI
-#define PCI_CHIP_MGAG200_SE_B_PCI 0x0524
-#endif
 
 /*
  * Read/write to the DAC via MMIO 
@@ -608,8 +607,6 @@ void MGAG450PrintPLL(ScrnInfoPtr pScrn);
 #endif
 long MGAG450SavePLLFreq(ScrnInfoPtr pScrn);
 void MGAprintDac(ScrnInfoPtr pScrn);
-void MGAG200SESaveFonts(ScrnInfoPtr, vgaRegPtr);
-void MGAG200SERestoreFonts(ScrnInfoPtr, vgaRegPtr);
 
 #ifdef USEMGAHAL
 /************ ESC Call Definition ***************/

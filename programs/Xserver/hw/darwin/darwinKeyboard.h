@@ -1,5 +1,12 @@
 /*
- * Copyright (c) 2003-2004 Torrey T. Lyons. All Rights Reserved.
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ * Copyright (c) 2003 Torrey T. Lyons. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,14 +30,14 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/darwinKeyboard.h,v 1.2tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/darwinKeyboard.h,v 1.1 2003/11/01 08:13:08 torrey Exp $ */
 
 #ifndef DARWIN_KEYBOARD_H
 #define DARWIN_KEYBOARD_H 1
 
 #define XK_TECHNICAL		// needed to get XK_Escape
 #define XK_PUBLISHING
-#include <X11/keysym.h>
+#include "keysym.h"
 #include "inputstr.h"
 
 // Each key can generate 4 glyphs. They are, in order:
@@ -45,8 +52,6 @@ typedef struct darwinKeyboardInfo_struct {
     unsigned char modifierKeycodes[32][2];
 } darwinKeyboardInfo;
 
-void DarwinKeyboardReload(DeviceIntPtr pDev);
-unsigned int DarwinModeSystemKeymapSeed(void);
 Bool DarwinModeReadSystemKeymap(darwinKeyboardInfo *info);
 
 #endif /* DARWIN_KEYBOARD_H */

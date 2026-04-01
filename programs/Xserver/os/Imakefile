@@ -1,6 +1,6 @@
-XCOMM $XFree86: xc/programs/Xserver/os/Imakefile,v 3.47tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/os/Imakefile,v 3.44 2005/02/03 02:01:14 dawes Exp $
 /*
- * Copyright (c) 1996-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1996-2004 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -45,6 +45,13 @@ XCOMM $XFree86: xc/programs/Xserver/os/Imakefile,v 3.47tsi Exp $
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+
+
+#if BuildSeparateTinyDIX && !BuildTinyDIX
+#define IHaveSubdirs
+SUBDIRS = tiny
+#endif
 
 #include <Server.tmpl>
 
@@ -110,13 +117,7 @@ KRB5SRCS = k5auth.c k5encode.c
    LBX_OBJS =
 #endif
 
-#if BuiltinRGB
-BUILTIN_RGB_SRC = builtinrgb.c
-BUILTIN_RGB_OBJ = builtinrgb.o
-RGB_DEFINES = -DBUILTIN_RGB
-#endif
-
-#if !defined(DDXOsColor) || !DDXOsColor
+#if !defined(DDXOsColor)
 COLOR_SRCS=oscolor.c
 COLOR_OBJS=oscolor.o
 #endif
@@ -146,17 +147,15 @@ GETPEEREID_DEFINES = -DHAS_GETPEEREID
 
 BOOTSTRAPCFLAGS = 
            SRCS = WaitFor.c access.c connection.c io.c $(COLOR_SRCS) \
-		  $(BUILTIN_RGB_SRC) \
                   osinit.c utils.c log.c auth.c mitauth.c secauth.c \
                   $(XDMAUTHSRCS) $(RPCSRCS) $(KRB5SRCS) xdmcp.c OtherSources \
                   transport.c $(SNPRINTF_SRCS) $(STRLCAT_SRCS) \
-		  $(MALLOC_SRCS) $(LBX_SRCS)
+		  GetTimeInMillis.c $(MALLOC_SRCS) $(LBX_SRCS)
            OBJS = WaitFor.o access.o connection.o io.o $(COLOR_OBJS) \
-		  $(BUILTIN_RGB_OBJ) \
                   osinit.o utils.o log.o auth.o mitauth.o secauth.o \
                   $(XDMAUTHOBJS) $(RPCOBJS) $(KRB5OBJS) xdmcp.o OtherObjects \
                   transport.o $(SNPRINTF_OBJS) $(STRLCAT_OBJS) \
-		  $(MALLOC_OBJS) $(LBX_OBJS)
+		  GetTimeInMillis.o $(MALLOC_OBJS) $(LBX_OBJS)
 
 #if SpecialMalloc
      MEM_DEFINES = -DSPECIAL_MALLOC
@@ -167,15 +166,26 @@ BOOTSTRAPCFLAGS =
 #if UseMemLeak
      MEM_DEFINES = -DMEMBUG
 #endif
+#if UseRgbTxt
+    RGB_DEFINES = -DUSE_RGB_TXT
+#endif
     DBM_DEFINES = NdbmDefines
     ADM_DEFINES = -DADMPATH=\"$(ADMDIR)/X\%smsgs\"
   XDMCP_DEFINES = ServerXdmcpDefines
    KRB5_DEFINES = Krb5Defines
  XALLOC_DEFINES = XallocDefines
   ERROR_DEFINES = ServerErrorDefines
+#ifdef HasArc4random
+ RANDOM_DEFINES = -DHAVE_ARC4RANDOM
+#else
+ RANDOM_DEFINES =
+#endif
+#if HasPam && HasPamMisc
+    PAM_DEFINES = -DUSE_PAM
+#endif
 
-#ifndef LinkDefines
-#define LinkDefines /**/
+#if BuildTinyDIX
+TINY_DEFINES = TinyDIXDefines
 #endif
 
 #if !HasStrlcat
@@ -184,13 +194,13 @@ STRLCAT_DEFINES = -DNEED_STRLCAT
         DEFINES = -DXSERV_t -DTRANS_SERVER $(CONNECTION_FLAGS) $(MEM_DEFINES) \
 		  $(XDMAUTHDEFS) $(RPCDEFS) $(SIGNAL_DEFINES) $(OS_DEFINES) \
 		  $(KRB5_DEFINES) $(RGB_DEFINES) $(GETPEEREID_DEFINES) \
-		  $(STRLCAT_DEFINES) $(RANDOM_DEFINES) $(ASPRINTF_DEFINES) \
-		  $(EXT_DEFINES) $(PAMDEFINES) LinkDefines
-       INCLUDES = -I$(SERVERSRC)/include -I$(SERVERSRC)/os \
-		  -I$(SERVERSRC)/Xext -I$(SERVERSRC)/render \
-		  -I$(SERVERSRC)/lbx -I$(SERVERSRC)/Xprint \
-		  -I$(TOP)/lib/Xau Krb5Includes
- DEPEND_DEFINES = $(DBM_DEFINES) $(XDMCP_DEFINES) \
+		  $(STRLCAT_DEFINES) $(RANDOM_DEFINES) $(TINY_DEFINES) \
+		  $(ASPRINTF_DEFINES)
+       INCLUDES = -I$(SERVERSRC)/os -I$(SERVERSRC)/include -I$(XINCLUDESRC) \
+		  -I$(EXTINCSRC) \
+		  -I$(SERVERSRC)/Xext -I$(FONTINCSRC) -I$(SERVERSRC)/render \
+		  -I$(TOP)/lib/Xau -I$(SERVERSRC)/lbx Krb5Includes
+ DEPEND_DEFINES = $(DBM_DEFINES) $(XDMCP_DEFINES) $(EXT_DEFINES) \
 		  $(TRANS_INCLUDES) $(CONNECTION_FLAGS) DependDefines
        LINTLIBS = ../dix/llib-ldix.ln
 
@@ -214,19 +224,19 @@ alloca.o:  $(PWLIB)
 #endif /* NEED_ALLOCA_FROM_LIBPW */
 
 SpecialCObjectRule(access,$(ICONFIGFILES),$(XDMCP_DEFINES) $(SOCK_DEFINES) $(IFADDRS_DEFINES))
-SpecialCObjectRule(auth,$(ICONFIGFILES),$(XDMCP_DEFINES))
+SpecialCObjectRule(auth,$(ICONFIGFILES),$(XDMCP_DEFINES) $(RANDOM_DEFINES))
 SpecialCObjectRule(xdmauth,$(ICONFIGFILES),$(XDMCP_DEFINES))
 SpecialCObjectRule(xdmcp,$(ICONFIGFILES),$(SOCK_DEFINES) $(XDMCP_DEFINES))
 SpecialCObjectRule(connection,$(ICONFIGFILES),$(SOCK_DEFINES) $(XDMCP_DEFINES))
 SpecialCObjectRule(transport,$(ICONFIGFILES),$(TRANS_INCLUDES) $(CONN_DEFINES) $(SOCK_DEFINES))
 LinkSourceFile(transport.c,$(TRANSCOMMSRC))
 SpecialCObjectRule(osinit,$(ICONFIGFILES),$(ADM_DEFINES))
-SpecialCObjectRule(WaitFor,$(ICONFIGFILES),NullParameter)
-SpecialCObjectRule(io,$(ICONFIGFILES),NullParameter)
+SpecialCObjectRule(WaitFor,$(ICONFIGFILES),$(EXT_DEFINES) $(TINY_DEFINES))
+SpecialCObjectRule(io,$(ICONFIGFILES),$(EXT_DEFINES) $(TINY_DEFINES))
 #if BuildLBX
-SpecialCObjectRule(lbxio,$(ICONFIGFILES),NullParameter)
+SpecialCObjectRule(lbxio,$(ICONFIGFILES),$(EXT_DEFINES) $(TINY_DEFINES))
 #endif
-SpecialCObjectRule(utils,$(ICONFIGFILES),$(XDMCP_DEFINES) $(ERROR_DEFINES))
+SpecialCObjectRule(utils,$(ICONFIGFILES),$(XDMCP_DEFINES) $(EXT_DEFINES) $(TINY_DEFINES) $(ERROR_DEFINES) $(PAM_DEFINES))
 SpecialCObjectRule(xalloc,$(ICONFIGFILES),$(XALLOC_DEFINES))
 #if defined(SparcArchitecture) && HasGcc && !HasGcc2
 oscolor.o: oscolor.c $(ICONFIGFILES)
@@ -249,24 +259,12 @@ LinkSourceFile(strlcat.c,$(LIBSRC)/misc)
 LinkSourceFile(strlcpy.c,$(LIBSRC)/misc)
 #endif
 
-#if BuiltinRGB
-#if HasPerl5
-RGBTXTSRCS = $(RGBSRC)/rgb.txt
-
-includes:: $(BUILTIN_RGB_SRC)
-
-$(BUILTIN_RGB_SRC): $(RGBTXTSRCS) rgbBuiltin.pl
-	RemoveFile($@)
-	RunPerlScript(rgbBuiltin.pl, < $(RGBTXTSRCS) > $@)
-
-clean::
-	RemoveFile($(BUILTIN_RGB_SRC))
-#else
-LinkFile($(BUILTIN_RGB_SRC),stdrgb.c)
-#endif
-#endif
-
 DependTarget()
+
+#ifdef IHaveSubdirs
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+#endif
 
 #ifdef LinkDirectory
 LinkSourceFile(WaitFor.c,LinkDirectory)
@@ -281,10 +279,8 @@ LinkSourceFile(log.c,LinkDirectory)
 LinkSourceFile(mitauth.c,LinkDirectory)
 LinkSourceFile(oscolor.c,LinkDirectory)
 LinkSourceFile(osinit.c,LinkDirectory)
-LinkSourceFile(rgbBuiltin.pl,LinkDirectory)
 LinkSourceFile(rpcauth.c,LinkDirectory)
 LinkSourceFile(secauth.c,LinkDirectory)
-LinkSourceFile(stdrgb.c,LinkDirectory)
 LinkSourceFile(utils.c,LinkDirectory)
 LinkSourceFile(xalloc.c,LinkDirectory)
 LinkSourceFile(xdmauth.c,LinkDirectory)

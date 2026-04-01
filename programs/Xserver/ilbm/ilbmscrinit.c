@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/ilbm/ilbmscrinit.c,v 3.6 2005/10/14 15:17:17 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/ilbm/ilbmscrinit.c,v 3.5 1998/11/22 10:37:40 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 
 Copyright (c) 1987  X Consortium
@@ -46,13 +53,14 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ilbmscrinit.c,v 5.17 94/04/17 20:28:34 dpw Exp $ */
 
 /* Modified jun 95 by Geert Uytterhoeven (Geert.Uytterhoeven@cs.kuleuven.ac.be)
    to use interleaved bitplanes instead of normal bitplanes */
 
-#include <X11/X.h>
-#include <X11/Xproto.h>		/* for xColorItem */
-#include <X11/Xmd.h>
+#include "X.h"
+#include "Xproto.h"		/* for xColorItem */
+#include "Xmd.h"
 #include "scrnintstr.h"
 #include "pixmapstr.h"
 #include "windowstr.h"

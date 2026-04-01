@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.2
  *
@@ -541,8 +548,7 @@ _mesa_fetch_state(GLcontext *ctx, const enum state_index state[],
             _mesa_problem(ctx, "Invalid material state in fetch_state");
             return;
          }
-      };
-      return;
+      }
    case STATE_LIGHT:
       {
          /* state[1] is the light number */
@@ -590,7 +596,6 @@ _mesa_fetch_state(GLcontext *ctx, const enum state_index state[],
             return;
          }
       }
-      return;
    case STATE_LIGHTMODEL_AMBIENT:
       COPY_4V(value, ctx->Light.Model.Ambient);
       return;
@@ -650,7 +655,6 @@ _mesa_fetch_state(GLcontext *ctx, const enum state_index state[],
                return;
          }
       }
-      return;
    case STATE_TEXGEN:
       {
          /* state[1] is the texture unit */
@@ -686,7 +690,6 @@ _mesa_fetch_state(GLcontext *ctx, const enum state_index state[],
             return;
          }
       }
-      return;
    case STATE_TEXENV_COLOR:
       {		
          /* state[1] is the texture unit */

@@ -1,3 +1,4 @@
+.\" $XConsortium: xbiff.man,v 1.22 94/04/17 20:43:28 gildea Exp $
 .\" Copyright (c) 1988  X Consortium
 .\" 
 .\" Permission is hereby granted, free of charge, to any person obtaining

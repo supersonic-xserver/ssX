@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  t1afm.h                                                                */
 /*                                                                         */
 /*    AFM support for Type 1 fonts (specification).                        */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002 by                                           */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,24 +23,14 @@
 /***************************************************************************/
 
 
-#ifndef T1AFM_H
-#define T1AFM_H
+#ifndef __T1AFM_H__
+#define __T1AFM_H__
 
-
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "t1objs.h"
 
-#else
 
-#include <type1/t1objs.h>
-
-#endif
-
-
-#ifdef __cplusplus
-  extern "C" {
-#endif
+FT_BEGIN_HEADER
 
 
   typedef struct  T1_Kern_Pair_
@@ -53,27 +50,24 @@
   } T1_AFM;
 
 
-  FT_LOCAL
-  FT_Error  T1_Read_AFM( FT_Face    face,
-                         FT_Stream  stream );
+  FT_LOCAL( FT_Error )
+  T1_Read_AFM( FT_Face    face,
+               FT_Stream  stream );
 
-  FT_LOCAL
-  void  T1_Done_AFM( FT_Memory  memory,
-                     T1_AFM*    afm );
+  FT_LOCAL( void )
+  T1_Done_AFM( FT_Memory  memory,
+               T1_AFM*    afm );
 
-  FT_LOCAL
-  void  T1_Get_Kerning( T1_AFM*     afm,
-                        FT_UInt     glyph1,
-                        FT_UInt     glyph2,
-                        FT_Vector*  kerning );
-
-
-#ifdef __cplusplus
-  }
-#endif
+  FT_LOCAL( void )
+  T1_Get_Kerning( T1_AFM*     afm,
+                  FT_UInt     glyph1,
+                  FT_UInt     glyph2,
+                  FT_Vector*  kerning );
 
 
-#endif /* T1AFM_H */
+FT_END_HEADER
+
+#endif /* __T1AFM_H__ */
 
 
 /* END */

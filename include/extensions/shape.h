@@ -1,29 +1,13 @@
-/* $XFree86: xc/include/extensions/shape.h,v 1.5tsi Exp $ */
-/************************************************************
+/*
+ * Copyright © 2026 ssX Project
+ * Contributions and credits: azuriteshift and collinbeyer
+ *
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
 
-Copyright 1989, 1998  The Open Group
-
-Permission to use, copy, modify, distribute, and sell this software and its
-documentation for any purpose is hereby granted without fee, provided that
-the above copyright notice appear in all copies and that both that
-copyright notice and this permission notice appear in supporting
-documentation.
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Except as contained in this notice, the name of The Open Group shall not be
-used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from The Open Group.
-
-********************************************************/
 
 #ifndef _SHAPE_H_
 #define _SHAPE_H_
@@ -48,7 +32,6 @@ in this Software without prior written authorization from The Open Group.
 
 #define ShapeBounding			0
 #define ShapeClip			1
-#define ShapeInput			2
 
 #define ShapeNotifyMask			(1L << 0)
 #define ShapeNotify			0

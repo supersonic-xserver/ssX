@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * psw.c
  *
  * (c) Copyright 1988-1994 Adobe Systems Incorporated.
@@ -35,7 +42,7 @@
  * 
  * Author:  Adobe Systems Incorporated
  */
-/* $XFree86: xc/config/pswrap/psw.c,v 1.5 2000/06/07 21:36:56 tsi Exp $ */
+/* $XFree86: xc/config/pswrap/psw.c,v 1.6 2000/09/26 15:56:27 tsi Exp $ */
 
 /***********/
 /* Imports */

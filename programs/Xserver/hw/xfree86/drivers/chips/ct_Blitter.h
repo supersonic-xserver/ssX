@@ -1,3 +1,23 @@
+/* $XConsortium: ct_Blitter.h /main/2 1996/10/25 10:28:37 kaleb $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+
+
+
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/chips/ct_Blitter.h,v 1.4 2002/01/25 21:55:58 tsi Exp $ */
 
 /* Definitions for the Chips and Technology BitBLT engine communication. */

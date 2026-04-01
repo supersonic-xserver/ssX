@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/dix/globals.c,v 1.14 2005/10/14 15:16:21 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/dix/globals.c,v 1.13 2003/12/03 17:11:29 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,8 +53,10 @@ SOFTWARE.
 
 ********************************************************/
 
-#include <X11/X.h>
-#include <X11/Xmd.h>
+/* $Xorg: globals.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
+
+#include "X.h"
+#include "Xmd.h"
 #include "misc.h"
 #include "windowstr.h"
 #include "scrnintstr.h"
@@ -116,11 +125,11 @@ int  defaultScreenSaverAllowExposures = DEFAULT_SCREEN_SAVER_EXPOSURES;
 int  logoScreenSaver = DEFAULT_LOGO_SCREEN_SAVER;
 #endif
 
-const char *defaultFontPath = COMPILEDDEFAULTFONTPATH;
-const char *defaultTextFont = COMPILEDDEFAULTFONT;
-const char *defaultCursorFont = COMPILEDCURSORFONT;
-const char *rgbPath = RGB_DB;
-const char *defaultDisplayClass = COMPILEDDISPLAYCLASS;
+char *defaultFontPath = COMPILEDDEFAULTFONTPATH;
+char *defaultTextFont = COMPILEDDEFAULTFONT;
+char *defaultCursorFont = COMPILEDCURSORFONT;
+char *rgbPath = RGB_DB;
+char *defaultDisplayClass = COMPILEDDISPLAYCLASS;
 FontPtr defaultFont;   /* not declared in dix.h to avoid including font.h in
 			every compilation of dix code */
 Bool loadableFonts = FALSE;
@@ -138,10 +147,10 @@ Bool permitOldBugs = FALSE; /* turn off some error checking, to permit certain
 int defaultColorVisualClass = -1;
 int monitorResolution = 0;
 
-const char *display;
+char *display;
 
 CARD32 TimeOutValue = DEFAULT_TIMEOUT * MILLI_PER_SECOND;
 int	argcGlobal;
-const char	**argvGlobal;
+char	**argvGlobal;
 
 DDXPointRec dixScreenOrigins[MAXSCREENS];

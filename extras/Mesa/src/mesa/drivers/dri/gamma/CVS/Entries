@@ -1,0 +1,25 @@
+/Makefile/1.1.1.1/Fri Mar 18 13:06:23 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_client.h/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_context.c/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_context.h/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_dd.c/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_inithw.c/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_lock.c/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_lock.h/1.1.1.1/Fri Mar 18 13:06:24 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_macros.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_regs.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_render.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_screen.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_screen.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_span.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_state.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_tex.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_texmem.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_texstate.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_tris.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_tris.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_tritmp.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_vb.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_vb.h/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+/gamma_xmesa.c/1.1.1.1/Fri Mar 18 13:06:25 2005//Tnetbsd-5-2-3-RELEASE
+D

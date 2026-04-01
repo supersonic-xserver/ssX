@@ -1,3 +1,19 @@
+/* $Xorg: Intrinsic.c,v 1.4 2001/02/09 02:03:55 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts,
 Copyright 1993 by Sun Microsystems, Inc. Mountain View, CA.
@@ -30,7 +46,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/lib/Xt/Intrinsic.c,v 3.26tsi Exp $ */
+/* $XFree86: xc/lib/Xt/Intrinsic.c,v 3.24 2004/05/05 00:07:03 dickey Exp $ */
 
 /*
 
@@ -70,10 +86,6 @@ in this Software without prior written authorization from The Open Group.
 #endif /* VMS */
 
 #include <stdlib.h>
-
-#ifdef XT_GEO_TATTLER
-#include <stdio.h>
-#endif
 
 String XtCXtToolkitError = "XtToolkitError";
 
@@ -949,7 +961,7 @@ static Boolean TestFile(
 #ifndef X_NOT_POSIX
 	    S_ISDIR(status.st_mode) == 0);	/* not a directory */
 #else
-	    (status.st_mode & S_IFMT) != S_IFDIR);	/* not a directory */
+	    (status.st_mode & S_IFDIR) == 0);	/* not a directory */
 #endif /* X_NOT_POSIX else */
 #if defined(WIN32)
     XtStackFree ((XtPointer)bufp, buf);

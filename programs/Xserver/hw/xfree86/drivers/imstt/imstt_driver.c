@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt_driver.c,v 1.23tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/imstt/imstt_driver.c,v 1.21 2003/08/23 15:03:02 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /*
  *	Copyright 2000	Ani Joshi <ajoshi@unixbox.com>
@@ -72,8 +86,8 @@ static Bool IMSTTEnterVT(int scrnIndex, int flags);
 static void IMSTTLeaveVT(int scrnIndex, int flags);
 static void IMSTTSave(ScrnInfoPtr pScrn);
 #endif
-static Bool IMSTTScreenInit(int scrnIndex, ScreenPtr pScreen,
-			    const int argc, const char **argv);
+static Bool IMSTTScreenInit(int scrnIndex, ScreenPtr pScreen, int argc,
+			    char **argv);
 #if 0
 static int IMSTTInternalScreenInit(int scrnIndex, ScreenPtr pScreen);
 static ModeStatus IMSTTValidMode(int index, DisplayModePtr mode,
@@ -182,6 +196,11 @@ static const char *fbdevHWSymbols[] = {
 
 MODULESETUPPROTO(IMSTTSetup);
 
+/*
+pointer IMSTTSetup(pointer module, pointer opts, int *errmaj,
+			  int *errmin);
+*/
+
 static XF86ModuleVersionInfo IMSTTVersRec = {
 	"imstt",
 	MODULEVENDORSTRING,
@@ -197,7 +216,7 @@ static XF86ModuleVersionInfo IMSTTVersRec = {
 
 XF86ModuleData imsttModuleData = { &IMSTTVersRec, IMSTTSetup, NULL };
 
-pointer IMSTTSetup(ModuleDescPtr module, pointer opts, int *errmaj,
+pointer IMSTTSetup(pointer module, pointer opts, int *errmaj,
 			  int *errmin)
 {
 	static Bool setupDone = FALSE;
@@ -206,8 +225,7 @@ pointer IMSTTSetup(ModuleDescPtr module, pointer opts, int *errmaj,
 	if (!setupDone) {
 		setupDone = TRUE;
 		xf86AddDriver(&IMSTT, module, 0);
-		LoaderModRefSymLists(module, fbSymbols, xaaSymbols,
-				     fbdevHWSymbols, NULL);
+		LoaderRefSymLists(fbSymbols, xaaSymbols, fbdevHWSymbols, NULL);
 		return (pointer) 1;
 	} else {
 		if (errmaj)
@@ -319,7 +337,6 @@ static Bool IMSTTPreInit(ScrnInfoPtr pScrn, int flags)
 	ClockRangePtr clockRanges;
 	rgb zeros = {0, 0, 0};
 	Gamma gzeros = {0.0, 0.0, 0.0};
-	ModuleDescPtr pMod;
 
 
 	if (flags & PROBE_DETECT)
@@ -409,9 +426,9 @@ static Bool IMSTTPreInit(ScrnInfoPtr pScrn, int flags)
 	iptr->FBDev = TRUE;
 
 	if (iptr->FBDev) {
-		if (!(pMod = xf86LoadSubModule(pScrn, "fbdevhw")))
+		if (!xf86LoadSubModule(pScrn, "fbdevhw"))
 			return FALSE;
-		xf86LoaderModReqSymLists(pMod, fbdevHWSymbols, NULL);
+		xf86LoaderReqSymLists(fbdevHWSymbols, NULL);
 		if (!fbdevHWInit(pScrn, iptr->PciInfo, NULL))
 			return FALSE;
 		pScrn->SwitchMode = fbdevHWSwitchMode;
@@ -542,15 +559,15 @@ static Bool IMSTTPreInit(ScrnInfoPtr pScrn, int flags)
 	xf86PrintModes(pScrn);
 	xf86SetDpi(pScrn, 0, 0);
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "fb")))
+	if (!xf86LoadSubModule(pScrn, "fb"))
 		return FALSE;
 
-	xf86LoaderModReqSymLists(pMod, fbSymbols, NULL);
+	xf86LoaderReqSymLists(fbSymbols, NULL);
 
-	if (!(pMod = xf86LoadSubModule(pScrn, "xaa")))
+	if (!xf86LoadSubModule(pScrn, "xaa"))
 		return FALSE;
 
-	xf86LoaderModReqSymLists(pMod, xaaSymbols, NULL);
+	xf86LoaderReqSymLists(xaaSymbols, NULL);
 
 	IMSTTTRACE("PreInit -- END\n");
 
@@ -659,7 +676,7 @@ static void IMSTTGetVideoMemSize(ScrnInfoPtr pScrn)
 
 
 static Bool IMSTTScreenInit(int scrnIndex, ScreenPtr pScreen,
-			    const int argc, const char **argv)
+			    int argc, char **argv)
 {
 	ScrnInfoPtr pScrn;
 	IMSTTPtr iptr;

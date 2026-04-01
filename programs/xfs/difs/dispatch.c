@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/dispatch.c,v 3.13tsi Exp $ */
+/* $Xorg: dispatch.c,v 1.6 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * protocol dispatcher
  */
@@ -46,14 +53,15 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/dispatch.c,v 3.13 2002/10/15 01:45:02 dawes Exp $ */
 
 #include	<stdlib.h>
 #include	"dispatch.h"
 #include	"swapreq.h"
 #include	"swaprep.h"
 
-#include	<X11/fonts/FS.h>
-#include	<X11/fonts/FSproto.h>
+#include	"FS.h"
+#include	"FSproto.h"
 #include	"clientstr.h"
 #include	"authstr.h"
 #include	"osstruct.h"
@@ -61,7 +69,7 @@ in this Software without prior written authorization from The Open Group.
 #include	"globals.h"
 #include	"fsresource.h"
 #include	"difsfnst.h"
-#include	<X11/fonts/fontstruct.h>
+#include	"fontstruct.h"
 #include	"site.h"
 #include	"fsevents.h"
 #include	"cache.h"

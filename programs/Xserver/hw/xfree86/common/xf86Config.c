@@ -1,4 +1,18 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.294 2007/02/13 18:30:09 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.289 2005/03/02 19:17:43 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 
 /*
@@ -8,7 +22,7 @@
  */
 
 /*
- * Copyright (c) 1992-2006 by The XFree86 Project, Inc.
+ * Copyright (c) 1992-2005 by The XFree86 Project, Inc.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -153,7 +167,7 @@
 
 #ifdef XKB
 #define XKB_IN_SERVER
-#include <X11/extensions/XKBsrv.h>
+#include "XKBsrv.h"
 #endif
 
 #ifdef RENDER
@@ -1455,8 +1469,7 @@ configFiles(ConfigHandle handle, const XF86ConfFilesRec *filesConf,
 	fp = xf86ValidateFontPath(xf86FilePaths->fontPath);
 	xfree(xf86FilePaths->fontPath);
 	if (fp && *fp) {
-	    xf86FilePaths->fontPath = fp;
-	    defaultFontPath = fp;
+	    xf86FilePaths->fontPath = defaultFontPath = fp;
 	} else {
 	    xf86Msg(X_WARNING, "FontPath is completely invalid.  "
 			       "Using compiled-in default.\n");
@@ -1982,10 +1995,12 @@ configServerFlags(ConfigHandle handle, const XF86ConfFlagsPtr flagsConf,
 	xf86Info.randRFrom = X_CONFIG;
     }
 #endif
-
-    /* Allow negative values */
-    xf86GetOptValInteger(FlagOptions, FLAG_ESTIMATE_SIZES_AGGRESSIVELY,
-	&xf86Info.estimateSizesAggressively);
+    i = -1;
+    xf86GetOptValInteger(FlagOptions, FLAG_ESTIMATE_SIZES_AGGRESSIVELY, &i);
+    if (i >= 0)
+	xf86Info.estimateSizesAggressively = i;
+    else
+	xf86Info.estimateSizesAggressively = 0;
 	
     i = -1;
     xf86GetOptValInteger(FlagOptions, FLAG_SAVER_BLANKTIME, &i);
@@ -6850,7 +6865,7 @@ xf86LoadConfigFile(const char *filename, Bool append)
 	xf86Info.config = pConfig = NULL;
     }
 
-    if (!PRIVS_ELEVATED)
+    if (getuid() == 0)
 	searchpath = ROOT_CONFIGPATH;
     else
 	searchpath = USER_CONFIGPATH;

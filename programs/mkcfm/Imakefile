@@ -1,8 +1,9 @@
-XCOMM $XFree86: xc/programs/mkcfm/Imakefile,v 1.4tsi Exp $
+XCOMM $XFree86: xc/programs/mkcfm/Imakefile,v 1.4 2000/11/15 01:36:16 dawes Exp $
 
 SYS_LIBRARIES = MathLibrary
 
-INCLUDES = -I$(FONTLIBSRC)/Type1 -I$(FONTLIBSRC)/include -I$(SERVERSRC)/include
+INCLUDES = -I$(FONTLIBSRC)/Type1 -I$(FONTINCSRC) -I$(FONTLIBSRC)/include \
+	-I$(XINCLUDESRC) -I$(SERVERSRC)/include
 
 DEFINES = -DBUILDCID -DCID_ALL_CHARS
 

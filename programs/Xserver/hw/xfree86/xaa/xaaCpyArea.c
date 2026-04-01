@@ -1,11 +1,25 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaCpyArea.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaCpyArea.c,v 1.12 2000/09/28 20:47:59 mvojkovi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 #include "misc.h"
 #include "xf86.h"
 #include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
-#include <X11/X.h>
+#include "X.h"
 #include "scrnintstr.h"
 #include "xf86str.h"
 #include "xaa.h"
@@ -30,7 +44,8 @@ XAACopyArea(
 {
     XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_GC(pGC);
 
-    if(pDstDrawable->type == DRAWABLE_WINDOW) {
+    if((pDstDrawable->type == DRAWABLE_WINDOW) ||
+      IS_OFFSCREEN_PIXMAP(pDstDrawable)) {
 	if((pSrcDrawable->type == DRAWABLE_WINDOW) ||
 		IS_OFFSCREEN_PIXMAP(pSrcDrawable)){
 	    if(infoRec->ScreenToScreenBitBlt &&
@@ -54,16 +69,16 @@ XAACopyArea(
 		pGC, srcx, srcy, width, height, dstx, dsty,
 		XAADoImageWrite, 0L));
 	}
-    } else if(IS_OFFSCREEN_PIXMAP(pDstDrawable)){
-	if((pSrcDrawable->type == DRAWABLE_WINDOW) ||
-		IS_OFFSCREEN_PIXMAP(pSrcDrawable)){
-	    if(infoRec->ScreenToScreenBitBlt &&
-	     CHECK_ROP(pGC,infoRec->ScreenToScreenBitBltFlags) &&
-	     CHECK_ROPSRC(pGC,infoRec->ScreenToScreenBitBltFlags) &&
-	     CHECK_PLANEMASK(pGC,infoRec->ScreenToScreenBitBltFlags))
+    } else if((pSrcDrawable->type == DRAWABLE_WINDOW) ||
+	       IS_OFFSCREEN_PIXMAP(pSrcDrawable)) {
+	if(infoRec->ReadPixmap && (pGC->alu == GXcopy) &&
+	   (pSrcDrawable->bitsPerPixel == pDstDrawable->bitsPerPixel) &&
+	  ((pGC->planemask & infoRec->FullPlanemasks[pSrcDrawable->depth - 1])
+              == infoRec->FullPlanemasks[pSrcDrawable->depth - 1]))
+	{
             return (XAABitBlt( pSrcDrawable, pDstDrawable,
 		pGC, srcx, srcy, width, height, dstx, dsty,
-		XAADoBitBlt, 0L));
+		XAADoImageRead, 0L));	
 	}
     }
 
@@ -234,11 +249,10 @@ XAADoImageRead(
     BoxPtr pbox = REGION_RECTS(prgnDst);
     int nbox = REGION_NUM_RECTS(prgnDst);
     XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_GC(pGC);
-    int Bpp = pSrc->bitsPerPixel >> 3;  /* wouldn't get here unless both
-                                           src and dst have same bpp */
+    int Bpp = pSrc->bitsPerPixel >> 3; 
 
     pdstBase = (unsigned char *)((PixmapPtr)pDst)->devPrivate.ptr;
-    dstwidth = (int)((PixmapPtr)pDst)->devKind;
+    dstwidth = (int)((PixmapPtr)pSrc)->devKind;
 
     for(; nbox; pbox++, pptSrc++, nbox--) {
         dstPntr = pdstBase + (pbox->y1 * dstwidth) + (pbox->x1 * Bpp);

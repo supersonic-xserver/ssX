@@ -1,11 +1,18 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ahangles.h                                                             */
 /*                                                                         */
 /*    A routine used to compute vector angles with limited accuracy        */
 /*    and very high speed (body).                                          */
 /*                                                                         */
-/*  Copyright 2000 Catharon Productions Inc.                               */
+/*  Copyright 2000-2001, 2002 Catharon Productions Inc.                    */
 /*  Author: David Turner                                                   */
 /*                                                                         */
 /*  This file is part of the Catharon Typography Project and shall only    */
@@ -20,15 +27,8 @@
 /***************************************************************************/
 
 
-#ifdef FT_FLAT_COMPILE
-
+#include <ft2build.h>
 #include "ahangles.h"
-
-#else
-
-#include <autohint/ahangles.h>
-
-#endif
 
 
   /* the following table has been automatically generated with */
@@ -71,8 +71,8 @@
   };
 
 
-  FT_LOCAL_DEF
-  AH_Angle  ah_angle( FT_Vector*  v )
+  FT_LOCAL_DEF( AH_Angle )
+  ah_angle( FT_Vector*  v )
   {
     FT_Pos    dx, dy;
     AH_Angle  angle;
@@ -133,5 +133,22 @@
     return angle;
   }
 
+
+  FT_LOCAL_DEF( AH_Angle )
+  ah_angle_diff( AH_Angle  angle1,
+                 AH_Angle  angle2 )
+  {
+    AH_Angle  delta;
+    
+
+    delta = ( angle2 - angle1 );
+    if ( delta < 0 )
+      delta += AH_2PI;
+    
+    if ( delta > AH_PI )
+      delta -= AH_2PI;
+    
+    return delta;
+  }                 
 
 /* END */

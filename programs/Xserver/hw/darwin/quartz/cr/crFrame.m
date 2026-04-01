@@ -27,7 +27,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/cr/crFrame.m,v 1.9tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/darwin/quartz/cr/crFrame.m,v 1.9 2004/03/19 02:05:29 torrey Exp $ */
 
 #include "quartzCommon.h"
 #include "cr.h"
@@ -35,7 +35,6 @@
 #undef BOOL
 #define BOOL xBOOL
 #include "rootless.h"
-#include "applewmExt.h"
 #include "windowstr.h"
 #undef BOOL
 
@@ -389,17 +388,6 @@ CRDamageRects(RootlessFrameID wid, int count, const BoxRec *rects,
 }
 
 
-/*
- * Called to check if the frame should be reordered when it is restacked.
- */
-Bool CRDoReorderWindow(RootlessWindowPtr pFrame)
-{
-    WindowPtr pWin = pFrame->win;
-
-    return AppleWMDoReorderWindow(pWin);
-}
-
-
 static RootlessFrameProcsRec CRRootlessProcs = {
     CRCreateFrame,
     CRDestroyFrame,
@@ -412,8 +400,6 @@ static RootlessFrameProcsRec CRRootlessProcs = {
     CRStopDrawing,
     CRUpdateRegion,
     CRDamageRects,
-    NULL,
-    CRDoReorderWindow,
     NULL,
     NULL,
     NULL,

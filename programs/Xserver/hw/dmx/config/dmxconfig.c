@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/Xserver/hw/dmx/config/dmxconfig.c,v 1.4tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/dmx/config/dmxconfig.c,v 1.2 2005/01/30 17:48:44 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 2002-2003 Red Hat Inc., Durham, North Carolina.
  *
@@ -46,6 +53,7 @@
 #include "dmxstat.h"
 #include "parser.h"
 
+extern int  yyparse(void);
 extern FILE *yyin;
 
 static char *dmxXkbRules;
@@ -69,6 +77,7 @@ typedef struct DMXConfigCmdStruct {
     DMXConfigList *xinputs;
 } DMXConfigCmd, *DMXConfigCmdPtr;
 
+extern DMXConfigEntryPtr    dmxConfigEntry;
 static DMXConfigCmd  dmxConfigCmd;
 
 static int dmxDisplaysFromCommandLine;
@@ -296,7 +305,7 @@ static void dmxConfigCopyFromOption(DMXConfigOptionPtr o)
 {
     DMXConfigStringPtr pt;
     int                argc   = 0;
-    char               const **argv = NULL;
+    char               **argv = NULL;
 
     if (serverGeneration != 1) return; /* FIXME: only do once, for now */
     if (!o || !o->string) return;
@@ -307,9 +316,8 @@ static void dmxConfigCopyFromOption(DMXConfigOptionPtr o)
             argv[argc] = (char *)pt->string;
         }
     }
-    argc++;
-    argv[0] = argv[argc] = NULL;
-    ProcessCommandLine(argc, argv);
+    argv[0] = NULL;
+    ProcessCommandLine(argc+1, argv);
     free(argv);
 }
 

@@ -1,5 +1,18 @@
-/* $XFree86: xc/programs/Xserver/dix/glyphcurs.c,v 1.3tsi Exp $ */
 /************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 1987, 1998  The Open Group
 
@@ -46,8 +59,10 @@ SOFTWARE.
 
 ************************************************************************/
 
+/* $Xorg: glyphcurs.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
+
 #include "misc.h"
-#include <X11/fonts/fontstruct.h>
+#include "fontstruct.h"
 #include "dixfontstr.h"
 #include "scrnintstr.h"
 #include "gcstruct.h"
@@ -70,11 +85,14 @@ cursor metrics.
 */
 
 int
-ServerBitsFromGlyph(FontPtr pfont, unsigned int ch, CursorMetricPtr cm,
-		    unsigned char **ppbits)
+ServerBitsFromGlyph(pfont, ch, cm, ppbits)
+    FontPtr	pfont;
+    unsigned int ch;
+    register CursorMetricPtr cm;
+    unsigned char **ppbits;
 {
-    ScreenPtr pScreen;
-    GCPtr pGC;
+    register ScreenPtr pScreen;
+    register GCPtr pGC;
     xRectangle rect;
     PixmapPtr ppix;
     long nby;
@@ -137,7 +155,10 @@ ServerBitsFromGlyph(FontPtr pfont, unsigned int ch, CursorMetricPtr cm,
 
 
 Bool
-CursorMetricsFromGlyph(FontPtr pfont, unsigned ch, CursorMetricPtr cm)
+CursorMetricsFromGlyph( pfont, ch, cm)
+    register FontPtr 	pfont;
+    unsigned		ch;
+    register CursorMetricPtr cm;
 {
     CharInfoPtr 	pci;
     unsigned long	nglyphs;

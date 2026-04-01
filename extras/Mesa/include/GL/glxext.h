@@ -1,3 +1,10 @@
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 #ifndef __glxext_h_
 #define __glxext_h_
 
@@ -674,54 +681,6 @@ typedef int ( * PFNGLXQUERYHYPERPIPEATTRIBSGIXPROC) (Display *dpy, int timeSlice
 extern unsigned int glXGetAGPOffsetMESA (const void *);
 #endif /* GLX_GLXEXT_PROTOTYPES */
 typedef unsigned int ( * PFNGLXGETAGPOFFSETMESAPROC) (const void *pointer);
-#endif
-
-#ifndef GLX_MESA_swap_interval
-#define GLX_MESA_swap_interval 1
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXSwapIntervalMESA(unsigned interval);
-#endif
-typedef int ( * PFNGLXSWAPINTERVALMESAPROC) (unsigned interval);
-#endif
-
-#ifndef GLX_MESA_get_swap_interval
-#define GLX_MESA_get_swap_interval 1
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXGetSwapIntervalMESA(void);
-#endif
-typedef int ( * PFNGLXGETSWAPINTERVALMESAPROC) (void);
-#endif
-
-#ifndef GLX_MESA_begin_frame_tracking
-#define GLX_MESA_begin_frame_tracking 1
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXBeginFrameTrackingMESA(Display *dpy, GLXDrawable drawable);
-#endif
-typedef int ( * PFNGLXBEGINFRAMETRACKINGMESAPROC) (Display *dpy, GLXDrawable drawable);
-#endif
-
-#ifndef GLX_MESA_end_frame_tracking
-#define GLX_MESA_end_frame_tracking 1
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXEndFrameTrackingMESA(Display *dpy, GLXDrawable drawable);
-#endif
-typedef int ( * PFNGLXENDFRAMETRACKINGMESAPROC) (Display *dpy, GLXDrawable drawable);
-#endif
-
-#ifndef GLX_MESA_get_frame_usage
-#define GLX_MESA_get_frame_usage 1
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXGetFrameUsageMESA(Display *dpy, GLXDrawable drawable, float *usage);
-#endif
-typedef int ( * PFNGLXGETFRAMEUSAGEMESAPROC) (Display *dpy, GLXDrawable drawable, float *usage);
-#endif
-
-#ifndef GLX_MESA_query_frame_tracking
-#define GLX_MESA_query_frame_tracking 1
-#ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXQueryFrameTrackingMESA(Display *dpy, GLXDrawable drawable, int64_t *sbc, int64_t *missedFrames, float *lastMissedUsage);
-#endif
-typedef int ( * PFNGLXQUERYFRAMETRACKINGMESAPROC) (Display *dpy, GLXDrawable drawable, int64_t *sbc, int64_t *missedFrames, float *lastMissedUsage);
 #endif
 
 #ifdef __cplusplus

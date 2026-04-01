@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bus/axpPci.c,v 1.16 2004/12/31 03:30:41 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1998 by Concurrent Computer Corporation
  *
@@ -45,7 +52,6 @@
 #include "compiler.h"
 #include "xf86.h"
 #include "xf86Priv.h"
-#define NEED_OS_RAC_PROTOS
 #include "xf86_OSlib.h"
 #include "Pci.h"
 

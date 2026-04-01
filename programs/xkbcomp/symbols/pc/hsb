@@ -1,7 +1,7 @@
 
 // based on a keyboard map from an 'xkb/symbols/de' file
 // Written by Eduard Werner.
-// $XFree86: xc/programs/xkbcomp/symbols/pc/hsb,v 1.1 2004/04/03 13:43:43 pascal Exp $
+// $XFree86: xc/programs/xkbcomp/symbols/pc/hsb,v 1.2 2004/05/08 07:26:54 pascal Exp $
 
 partial default alphanumeric_keys
 xkb_symbols "qwertz" {

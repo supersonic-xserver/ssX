@@ -1,9 +1,15 @@
-
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
- * Version:  5.1
+ * Version:  6.1
  *
- * Copyright (C) 1999-2003  Brian Paul   All Rights Reserved.
+ * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -76,7 +82,7 @@ static GLboolean run_point_stage( GLcontext *ctx,
  */
 static void check_point_size( GLcontext *ctx, struct tnl_pipeline_stage *d )
 {
-   d->active = ctx->Point._Attenuated && !ctx->VertexProgram.Enabled;
+   d->active = ctx->Point._Attenuated && !ctx->VertexProgram._Enabled;
 }
 
 static GLboolean alloc_point_data( GLcontext *ctx,
@@ -111,10 +117,10 @@ static void free_point_data( struct tnl_pipeline_stage *stage )
 const struct tnl_pipeline_stage _tnl_point_attenuation_stage =
 {
    "point size attenuation",	/* name */
-   _NEW_POINT,			/* build_state_change */
-   _NEW_POINT,			/* run_state_change */
+   _NEW_POINT|_NEW_PROGRAM,	/* check_state */
+   _NEW_POINT,			/* run_state */
    GL_FALSE,			/* active */
-   _TNL_BIT_POS,			/* inputs */
+   _TNL_BIT_POS,		/* inputs */
    _TNL_BIT_POS,		/* outputs */
    0,				/* changed_inputs (temporary value) */
    NULL,			/* stage private data */

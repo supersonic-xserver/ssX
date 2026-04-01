@@ -30,12 +30,16 @@ The sources for XFree86 &relvers; are available by anonymous ftp from:
 
 <htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;"
 url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;">
-]]>
 
 Binaries for OpenBSD/i386 3.4 and later are available from:
 
 <htmlurl name="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/OpenBSD"
 url="ftp://ftp.XFree86.org/pub/XFree86/&relvers;/binaries/OpenBSD">
+
+A list of mirror sites is provided by
+<htmlurl name="http://www.xfree86.org/MIRRORS.shtml"
+url="http://www.xfree86.org/MIRRORS.shtml">
+]]>
 
 <p>
 

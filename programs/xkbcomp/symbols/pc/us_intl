@@ -26,9 +26,6 @@
 // dead_circumflex
 // dead_tilde
 // dead_diaeresis
-//
-// Conrad Schuler conrad_schuler@yahoo.com 
-// added Eszett (ssharp) on AltGr-s
 
 partial default alphanumeric_keys
 xkb_symbols "basic" {
@@ -46,7 +43,6 @@ xkb_symbols "basic" {
 
   key <AD03> { [          e, E,		     EuroSign,         cent	    ] };
 
-  key <AC02> { [          s, S,		     ssharp   			    ] };
   key <AC10> { [  semicolon, colon,	     dead_ogonek,   dead_diaeresis  ] };
   key <AC11> { [ dead_acute, dead_diaeresis, apostrophe,    quotedbl	    ] };
 

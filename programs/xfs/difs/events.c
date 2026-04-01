@@ -1,4 +1,11 @@
-/* $XFree86: xc/programs/xfs/difs/events.c,v 3.8tsi Exp $ */
+/* $Xorg: events.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * event handling stuff
  */
@@ -46,11 +53,12 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/events.c,v 3.8 2003/05/23 15:03:11 tsi Exp $ */
 
 #include	<swaprep.h>
 
 #include	"clientstr.h"
-#include	<X11/fonts/FSproto.h>
+#include	"FSproto.h"
 #include	"globals.h"
 #include	"fsevents.h"
 #include	"dispatch.h"

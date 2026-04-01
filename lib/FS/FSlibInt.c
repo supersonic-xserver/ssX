@@ -1,3 +1,19 @@
+/* $Xorg: FSlibInt.c,v 1.5 2001/02/09 02:03:25 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright 1990 Network Computing Devices;
  * Portions Copyright 1987 by Digital Equipment Corporation
@@ -22,7 +38,6 @@
  * ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS 
  * SOFTWARE.
  */
-/* $XFree86: xc/lib/FS/FSlibInt.c,v 3.13 2006/06/19 13:43:23 tsi Exp $ */
 
 /*
 
@@ -49,6 +64,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 
 */
+/* $XFree86: xc/lib/FS/FSlibInt.c,v 3.11 2003/05/23 14:38:26 tsi Exp $ */
 
 /*
  *	FSlibInt.c - Internal support routines for the C subroutine
@@ -126,7 +142,8 @@ static fsReq _dummy_request = {
  * This routine may have to be reworked if int < long.
  */
 void 
-_FSFlush(FSServer *svr)
+_FSFlush(svr)
+    register FSServer *svr;
 {
     register long size,
                 todo;
@@ -171,7 +188,9 @@ _FSFlush(FSServer *svr)
 }
 
 int
-_FSEventsQueued(FSServer *svr, int mode)
+_FSEventsQueued(svr, mode)
+    register FSServer *svr;
+    int         mode;
 {
     register BytesReadable_t len;
     BytesReadable_t pend;
@@ -208,7 +227,8 @@ _FSEventsQueued(FSServer *svr, int mode)
  * then read as many events as possible (but at least 1) and enqueue them
  */
 void 
-_FSReadEvents(FSServer *svr)
+_FSReadEvents(svr)
+    register FSServer *svr;
 {
     char        buf[BUFSIZE];
     BytesReadable_t pend_not_register;	/* because can't "&" a register
@@ -265,7 +285,10 @@ _FSReadEvents(FSServer *svr)
  * reads.  This routine may have to be reworked if int < long.
  */
 void 
-_FSRead(FSServer *svr, char *data, long size)
+_FSRead(svr, data, size)
+    register FSServer *svr;
+    register char *data;
+    register long size;
 {
     register long bytes_read;
 #if defined(SVR4) && defined(i386)
@@ -337,7 +360,11 @@ _FSRead(FSServer *svr, char *data, long size)
  *
  */
 static void 
-_doFSRead32(FSServer *svr, long *data, long size, char *packbuffer)
+_doFSRead32(svr, data, size, packbuffer)
+    register FSServer *svr;
+    register long *data;
+    register long size;
+    register char *packbuffer;
 {
     long       *lpack,
                *lp;
@@ -365,7 +392,10 @@ _doFSRead32(FSServer *svr, long *data, long size, char *packbuffer)
 }
 
 void
-_FSRead32(FSServer *svr, long *data, long len)
+_FSRead32(svr, data, len)
+    FSServer   *svr;
+    long       *data;
+    long        len;
 {
     char        packbuffer[PACKBUFFERSIZE];
     unsigned    nwords = (PACKBUFFERSIZE >> 2);	/* bytes to CARD32 */
@@ -384,7 +414,11 @@ _FSRead32(FSServer *svr, long *data, long len)
  *
  */
 static void 
-_doFSRead16(FSServer *svr, short *data, long size, char *packbuffer)
+_doFSRead16(svr, data, size, packbuffer)
+    register FSServer *svr;
+    register short *data;
+    register long size;
+    char       *packbuffer;
 {
     long       *lpack,
                *lp;
@@ -412,7 +446,10 @@ _doFSRead16(FSServer *svr, short *data, long size, char *packbuffer)
 }
 
 void 
-_FSRead16(FSServer *svr, short *data, long len)
+_FSRead16(svr, data, len)
+    FSServer   *svr;
+    short      *data;
+    long        len;
 {
     char        packbuffer[PACKBUFFERSIZE];
     unsigned    nwords = (PACKBUFFERSIZE >> 1);	/* bytes to CARD16 */
@@ -424,7 +461,10 @@ _FSRead16(FSServer *svr, short *data, long len)
 }
 
 void 
-_FSRead16Pad(FSServer *svr, short *data, long size)
+_FSRead16Pad(svr, data, size)
+    FSServer   *svr;
+    short      *data;
+    long        size;
 {
     int         slop = (size & 3);
     short       slopbuf[3];
@@ -444,7 +484,10 @@ _FSRead16Pad(FSServer *svr, short *data, long size)
  * bytes. This routine may have to be reworked if int < long.
  */
 void 
-_FSReadPad(FSServer *svr, char *data, long size)
+_FSReadPad(svr, data, size)
+    register FSServer *svr;
+    register char *data;
+    register long size;
 {
     register long bytes_read;
     struct iovec iov[2];
@@ -506,7 +549,10 @@ _FSReadPad(FSServer *svr, char *data, long size)
  * This routine may have to be reworked if int < long;
  */
 void 
-_FSSend(FSServer *svr, char *data, long size)
+_FSSend(svr, data, size)
+    register FSServer *svr;
+    char       *data;
+    register long size;
 {
     struct iovec iov[3];
     static char pad[3] = {0, 0, 0};
@@ -598,7 +644,8 @@ _FSSend(FSServer *svr, char *data, long size)
  * follow the rules.
  */
 FSID
-_FSAllocID(FSServer *svr)
+_FSAllocID(svr)
+    register FSServer *svr;
 {
     return (svr->resource_base + (svr->resource_id++ << svr->resource_shift));
 }
@@ -615,7 +662,9 @@ _FSAllocID(FSServer *svr)
  */
 
 unsigned long
-_FSSetLastRequestRead(FSServer *svr, fsGenericReply *rep)
+_FSSetLastRequestRead(svr, rep)
+    register FSServer *svr;
+    register fsGenericReply *rep;
 {
     register unsigned long newseq,
                 lastseq;
@@ -645,12 +694,14 @@ _FSSetLastRequestRead(FSServer *svr, fsGenericReply *rep)
  * we may encounter.
  */
 Status
-_FSReply(FSServer *svr, fsReply *rep, int extra, Bool discard)
+_FSReply(svr, rep, extra, discard)
+    register FSServer *svr;
+    register fsReply *rep;
+    int         extra;		/* number of 32-bit words expected after the
+				 * reply */
+    Bool        discard;	/* should I discard data followind "extra"
+				 * words? */
 {
-    /*
-     * extra:    number of 32-bit words expected after the reply.
-     * discard:	 should I discard data following "extra" words?
-     */
     /*
      * Pull out the serial number now, so that (currently illegal) requests
      * generated by an error handler don't confuse us.
@@ -767,7 +818,9 @@ _FSReply(FSServer *svr, fsReply *rep, int extra, Bool discard)
 /* Read and discard "n" 8-bit bytes of data */
 
 void
-_FSEatData(FSServer *svr, unsigned long n)
+_FSEatData(svr, n)
+    FSServer   *svr;
+    register unsigned long n;
 {
 #define SCRATCHSIZE 2048
     char        buf[SCRATCHSIZE];
@@ -785,7 +838,9 @@ _FSEatData(FSServer *svr, unsigned long n)
 /* Read and discard "n" 32-bit words. */
 
 static void
-_EatData32(FSServer *svr, unsigned long n)
+_EatData32(svr, n)
+    FSServer   *svr;
+    unsigned long n;
 {
     _FSEatData(svr, n << 2);
 }
@@ -797,7 +852,9 @@ _EatData32(FSServer *svr, unsigned long n)
  * is pointer motion hints....
  */
 void 
-_FSEnq(FSServer *svr, fsEvent *event)
+_FSEnq(svr, event)
+    register FSServer *svr;
+    register fsEvent *event;
 {
     register _FSQEvent *qelt;
 
@@ -834,7 +891,11 @@ _FSEnq(FSServer *svr, fsEvent *event)
 
 /*ARGSUSED*/
 Bool
-_FSUnknownWireEvent(FSServer *svr, FSEvent *re, fsEvent *event)
+_FSUnknownWireEvent(svr, re, event)
+    register FSServer *svr;	/* pointer to display structure */
+    register FSEvent *re;	/* pointer to where event should be
+				 * reformatted */
+    register fsEvent *event;	/* wire protocol event */
 {
 
 #ifdef notdef
@@ -848,7 +909,11 @@ _FSUnknownWireEvent(FSServer *svr, FSEvent *re, fsEvent *event)
 
 /*ARGSUSED*/
 Status
-_FSUnknownNativeEvent(FSServer *svr, FSEvent *re, fsEvent *event)
+_FSUnknownNativeEvent(svr, re, event)
+    register FSServer *svr;	/* pointer to display structure */
+    register FSEvent *re;	/* pointer to where event should be
+				 * reformatted */
+    register fsEvent *event;	/* wire protocol event */
 {
 
 #ifdef notdef
@@ -864,7 +929,11 @@ _FSUnknownNativeEvent(FSServer *svr, FSEvent *re, fsEvent *event)
  * reformat a wire event into an FSEvent structure of the right type.
  */
 Bool
-_FSWireToEvent(FSServer *svr, FSEvent *re, fsEvent *event)
+_FSWireToEvent(svr, re, event)
+    register FSServer *svr;	/* pointer to display structure */
+    register FSEvent *re;	/* pointer to where event should be
+				 * reformatted */
+    register fsEvent *event;	/* wire protocol event */
 {
 
     re->type = event->type & 0x7f;
@@ -886,7 +955,8 @@ _FSWireToEvent(FSServer *svr, FSEvent *re, fsEvent *event)
 
 
 static char *
-_SysErrorMsg(int n)
+_SysErrorMsg(n)
+    int         n;
 {
     char       *s = strerror(n);
 
@@ -898,7 +968,8 @@ _SysErrorMsg(int n)
  * when an X internal system error is encountered.
  */
 int
-_FSDefaultIOError(FSServer *svr)
+_FSDefaultIOError(svr)
+    FSServer   *svr;
 {
     (void) fprintf(stderr,
 		   "FSIO:  fatal IO error %d (%s) on font server \"%s\"\r\n",
@@ -927,7 +998,9 @@ _FSDefaultIOError(FSServer *svr)
  * FS_Error packet is encountered in the input stream.
  */
 int
-_FSError(FSServer *svr, fsError *rep)
+_FSError(svr, rep)
+    FSServer   *svr;
+    fsError    *rep;
 {
     FSErrorEvent event;
 
@@ -950,7 +1023,10 @@ _FSError(FSServer *svr, fsError *rep)
 }
 
 int
-_FSPrintDefaultError(FSServer *svr, FSErrorEvent *event, FILE *fp)
+_FSPrintDefaultError(svr, event, fp)
+    FSServer   *svr;
+    FSErrorEvent *event;
+    FILE       *fp;
 {
     char        buffer[BUFSIZ];
     char        mesg[BUFSIZ];
@@ -1005,7 +1081,9 @@ _FSPrintDefaultError(FSServer *svr, FSErrorEvent *event, FILE *fp)
 }
 
 int
-_FSDefaultError(FSServer *svr, FSErrorEvent *event)
+_FSDefaultError(svr, event)
+    FSServer   *svr;
+    FSErrorEvent *event;
 {
     if (_FSPrintDefaultError(svr, event, stderr) == 0)
 	return 0;
@@ -1022,8 +1100,10 @@ FSErrorHandler _FSErrorFunction = _FSDefaultError;
  * Xlib routine for scratch space.  It is reallocated from the same place
  * each time, unless the library needs a large scratch space.
  */
-char *
-_FSAllocScratch(FSServer *svr, unsigned long nbytes)
+char       *
+_FSAllocScratch(svr, nbytes)
+    register FSServer *svr;
+    unsigned long nbytes;
 {
     if (nbytes > svr->scratch_length) {
 	if (svr->scratch_buffer != NULL)
@@ -1035,21 +1115,26 @@ _FSAllocScratch(FSServer *svr, unsigned long nbytes)
 }
 
 int 
-FSFree(char *data)
+FSFree(data)
+    char       *data;
 {
     FSfree(data);
     return 1;
 }
 
 unsigned char *
-FSMalloc(unsigned size)
+FSMalloc(size)
+    unsigned    size;
 {
     return (unsigned char *) FSmalloc(size);
 }
 
 #ifdef DataRoutineIsProcedure
 void
-Data(FSServer *svr, char *data, long len)
+Data(svr, data, len)
+    FSServer   *svr;
+    char       *data;
+    long        len;
 {
     if (svr->bufptr + (len) <= svr->bufmax) {
 	bcopy(data, svr->bufptr, (int) len);
@@ -1077,7 +1162,11 @@ Data(FSServer *svr, char *data, long len)
  */
 
 static void
-doData16(FSServer *svr, short *data, unsigned len, char *packbuffer)
+doData16(svr, data, len, packbuffer)
+    register FSServer *svr;
+    short      *data;
+    unsigned    len;
+    char       *packbuffer;
 {
     long       *lp,
                *lpack;
@@ -1111,7 +1200,10 @@ doData16(FSServer *svr, short *data, unsigned len, char *packbuffer)
 }
 
 void
-Data16(FSServer *svr, short *data, unsigned len)
+Data16(svr, data, len)
+    FSServer   *svr;
+    short      *data;
+    unsigned    len;
 {
     char        packbuffer[PACKBUFFERSIZE];
     unsigned    nwords = (PACKBUFFERSIZE >> 1);	/* bytes to CARD16 */
@@ -1131,7 +1223,11 @@ Data16(FSServer *svr, short *data, unsigned len)
  */
 
 static
-doData32(FSServer *svr, long *data, unsigned len, char *packbuffer)
+doData32(svr, data, len, packbuffer)
+    register FSServer *svr;
+    long       *data;
+    unsigned    len;
+    char       *packbuffer;
 {
     long       *lp,
                *lpack;
@@ -1165,7 +1261,10 @@ doData32(FSServer *svr, long *data, unsigned len, char *packbuffer)
 }
 
 void
-Data32(FSServer *svr, short *data, unsigned len)
+Data32(svr, data, len)
+    FSServer   *svr;
+    short      *data;
+    unsigned    len;
 {
     char        packbuffer[PACKBUFFERSIZE];
     unsigned    nwords = (PACKBUFFERSIZE >> 2);	/* bytes to CARD32 */
@@ -1226,7 +1325,9 @@ _FSFreeQ()
  * _FSGetHostname - similar to gethostname but allows special processing.
  */
 int
-_FSGetHostname(char *buf, int maxlen)
+_FSGetHostname(buf, maxlen)
+    char       *buf;
+    int         maxlen;
 {
     int         len;
 
@@ -1236,21 +1337,13 @@ _FSGetHostname(char *buf, int maxlen)
      */
     struct utsname name;
 
-    if ((maxlen <= 0) || (buf == NULL))
-	return 0;
-
-    len = 0;
-    if (uname(&name) >= 0) {
-	len = strlen(name.nodename);
-	if (len >= maxlen)
-	    len = maxlen - 1;
-	strncpy(buf, name.nodename, len);
-    }
+    uname(&name);
+    len = strlen(name.nodename);
+    if (len >= maxlen)
+	len = maxlen - 1;
+    strncpy(buf, name.nodename, len);
     buf[len] = '\0';
 #else
-    if ((maxlen <= 0) || (buf == NULL))
-	return 0;
-
     buf[0] = '\0';
     (void) gethostname(buf, maxlen);
     buf[maxlen - 1] = '\0';
@@ -1264,8 +1357,8 @@ _FSGetHostname(char *buf, int maxlen)
 /*
  * This is not always a macro.
  */
-int
-_FSANYSET(long src)
+_FSANYSET(src)
+    long	*src;
 {
     int i;
 

@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/freetype2/src/base/ftutil.c,v 1.0 tsi Exp $ */
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ftutil.c                                                               */
 /*                                                                         */
@@ -52,7 +58,7 @@
             FT_Long    size,
             void*     *P )
   {
-    FT_Error error = FT_Err_Ok;
+    FT_Error	error = FT_Err_Ok;
 
     FT_ASSERT( P != 0 );
 
@@ -69,12 +75,13 @@
       }
       FT_MEM_ZERO( *P, size );
     }
-    else
+    else if (size < 0)
     {
-      *P = NULL;
-      if ( size < 0 )
-        error = FT_Err_Invalid_Argument;
+      /* may help catch/prevent nasty security issues */
+      error = FT_Err_Invalid_Argument;
     }
+    else
+      *P = NULL;
 
     FT_TRACE7(( "FT_Alloc:" ));
     FT_TRACE7(( " size = %ld, block = 0x%08p, ref = 0x%08p\n",
@@ -93,22 +100,20 @@
               void**     P )
   {
     void*  Q;
-    FT_Error error;
+
 
     FT_ASSERT( P != 0 );
-
-    if ( ( size < 0 ) || ( current < 0 ) )
-    {
-      error = FT_Err_Invalid_Argument;
-      goto Fail;
-    }
 
     /* if the original pointer is NULL, call FT_Alloc() */
     if ( !*P )
       return FT_Alloc( memory, size, P );
 
+    if (size < 0 || current < 0)
+    {
+      return FT_Err_Invalid_Argument;
+    }
+    else if ( size == 0 )
     /* if the new block if zero-sized, clear the current one */
-    if ( size <= 0 )
     {
       FT_Free( memory, P );
       return FT_Err_Ok;
@@ -116,10 +121,7 @@
 
     Q = memory->realloc( memory, current, size, *P );
     if ( !Q )
-    {
-      error = FT_Err_Out_Of_Memory;
       goto Fail;
-    }
 
     if ( size > current )
       FT_MEM_ZERO( (char*)Q + current, size - current );
@@ -131,7 +133,7 @@
     FT_ERROR(( "FT_Realloc:" ));
     FT_ERROR(( " Failed (current %ld, requested %ld)\n",
                current, size ));
-    return error;
+    return FT_Err_Out_Of_Memory;
   }
 
 

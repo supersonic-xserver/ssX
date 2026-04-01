@@ -1,4 +1,4 @@
-XCOMM platform:  $XFree86: xc/config/cf/ncr.cf,v 3.21 2001/01/23 23:31:49 dawes Exp $
+XCOMM platform:  $XFree86: xc/config/cf/ncr.cf,v 3.22 2004/06/02 22:42:53 dawes Exp $
 
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.

@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/lib/GL/mesa/src/drv/Imakefile,v 1.18 2001/03/23 19:18:38 dawes Exp $
+XCOMM $XFree86: xc/lib/GL/mesa/drivers/dri/Imakefile,v 1.1 2004/04/08 10:07:35 alanh Exp $
 
 #ifdef DriDrivers
 

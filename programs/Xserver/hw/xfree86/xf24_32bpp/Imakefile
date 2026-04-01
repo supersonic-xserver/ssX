@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/Imakefile,v 1.6tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/hw/xfree86/xf24_32bpp/Imakefile,v 1.6 2004/06/01 00:17:07 dawes Exp $
 /*
  * Copyright (c) 1994-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -63,9 +63,11 @@ OBJS = 	cfbcpyarea.o cfbgcmisc.o cfbpixmap.o \
 	cfbimage.o cfbscrinit.o cfbwindow.o  \
 	$(XFMODOBJ) cfbgc24.o cfbgc32.o
 
-INCLUDES = -I$(XF86SRC)/xf1bpp -I$(SERVERSRC)/mfb \
+INCLUDES = -I. -I$(XF86SRC)/xf1bpp -I$(SERVERSRC)/mfb \
         -I$(SERVERSRC)/cfb -I$(SERVERSRC)/mi -I$(SERVERSRC)/include \
-        -I$(XF86OSSRC) -I$(XF86COMSRC)
+        -I$(XF86OSSRC) -I$(XF86COMSRC) \
+        -I$(FONTINCSRC) -I$(XINCLUDESRC)
+
 
 ModuleObjectRule()
 LibraryModuleTarget(xf24_32bpp,$(OBJS),.)

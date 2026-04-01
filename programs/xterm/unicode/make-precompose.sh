@@ -1,6 +1,5 @@
 #!/bin/sh
 # $XTermId: make-precompose.sh,v 1.4 2004/11/30 21:16:54 tom Exp $
-# $XFree86$
 cat precompose.c.head | sed -e's/@/$/g'
 cut UnicodeData.txt -d ";" -f 1,6 | \
  grep ";[0-9,A-F]" | grep " " | \

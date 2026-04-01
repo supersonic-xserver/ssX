@@ -1,8 +1,15 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * This file defines macros and types necessary for accessing glide3.
  */
 
-/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/tdfx_glide.h,v 1.1.1.1tsi Exp $ */
+/* $XFree86: xc/extras/Mesa/src/mesa/drivers/dri/tdfx/tdfx_glide.h,v 1.1.1.1 2004/04/08 09:17:20 alanh Exp $ */
 
 #ifndef NEWGLIDE_H
 #define NEWGLIDE_H
@@ -13,12 +20,19 @@ typedef unsigned char FxU8;
 typedef signed char FxI8;
 typedef unsigned short FxU16;
 typedef signed short FxI16;
+#if defined(__alpha__) || defined (__LP64__)
 typedef signed int FxI32;
 typedef unsigned int FxU32;
+#else
+typedef signed long FxI32;
+typedef unsigned long FxU32;
+#endif
+typedef unsigned long AnyPtr;
 typedef int FxBool;
 typedef float FxFloat;
 typedef double FxDouble;
 
+typedef unsigned long FxColor_t;
 typedef struct
 {
    float r, g, b, a;

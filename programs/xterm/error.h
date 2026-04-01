@@ -1,4 +1,13 @@
-/* $XTermId: error.h,v 1.17 2006/02/12 22:43:55 tom Exp $ */
+/*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+ *	$Xorg: error.h,v 1.3 2000/08/17 19:55:08 cpqbld Exp $
+ */
 
 
 /* $XFree86: xc/programs/xterm/error.h,v 1.8 2002/12/27 21:05:22 dickey Exp $ */

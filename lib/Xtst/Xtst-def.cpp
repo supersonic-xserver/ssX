@@ -29,4 +29,4 @@ EXPORTS
  XRecordFreeData
  XRecordDisableContext
  XRecordFreeContext
-/* $XFree86$ */
+/* $Xorg: Xtst-def.cpp,v 1.3 2000/08/17 19:46:23 cpqbld Exp $ */

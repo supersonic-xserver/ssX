@@ -1,4 +1,19 @@
-/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.c,v 1.10tsi Exp $ */
+/* $Xorg: lbx_zlib.c,v 1.6 2001/02/09 02:04:05 xorgcvs Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 
 Copyright 1995, 1998  The Open Group
@@ -49,6 +64,7 @@ from The Open Group.
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * 
  */
+/* $XFree86: xc/lib/lbxutil/lbx_zlib/lbx_zlib.c,v 1.10 2001/12/14 19:56:59 dawes Exp $ */
 
 #ifdef WIN32
 #define _WILLWINSOCK_
@@ -61,10 +77,10 @@ from The Open Group.
 #if !defined(WIN32) && !defined(Lynx)
 #include <sys/param.h>
 #endif
-#include <X11/extensions/lbxbufstr.h>
+#include "lbxbufstr.h"
 #include "lbx_zlib.h"
 #include "os.h"
-#include <X11/extensions/lbxzlib.h>
+#include "lbxzlib.h"
 
 unsigned long stream_out_compressed;
 unsigned long stream_out_uncompressed;

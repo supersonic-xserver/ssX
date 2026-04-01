@@ -1,4 +1,4 @@
-XCOMM $XFree86: xc/programs/Xserver/GL/mesa/GLcore/Imakefile,v 1.9tsi Exp $
+XCOMM $XFree86: xc/programs/Xserver/GL/mesa/GLcore/Imakefile,v 1.8 2004/12/10 17:58:27 alanh Exp $
 /*
  * Copyright (c) 2000-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -91,8 +91,10 @@ SUBDIRS = module
 		../math/DONE ../swrast/DONE ../swrast_setup/DONE \
 		../tnl/DONE ../shader/DONE
 
-     INCLUDES = -I$(MESASRCDIR)/include -I$(GLXLIBSRC)/include \
-		-I$(MESASRCDIR)/src/mesa -I$(SERVERSRC)/include
+     INCLUDES = -I$(INCLUDESRC) -I$(XINCLUDESRC) -I$(EXTINCSRC) \
+		-I$(MESASRCDIR)/include -I$(GLXLIBSRC)/include \
+		-I$(MESASRCDIR)/src/mesa \
+		-I$(SERVERSRC)/include
 
       DEFINES = $(GLX_DEFINES)
 
@@ -101,12 +103,13 @@ ModuleObjectRule()
 
 DepLibraryModuleTarget(GLcore, $(DONES) $(OBJS),$(OBJS) $(XOBJS),extensions)
 InstallLibraryModule(GLcore,$(MODULEDIR),extensions)
-InstallDriverSDKLibraryModule(GLcore,$(DRIVERSDKMODULEDIR),extensions)
 
 #else
 NormalDepLibraryTarget(GLcore, $(DONES) $(OBJS), $(OBJS) $(XOBJS))
 NormalLibraryObjectRule()
 #endif
+
+InstallDriverSDKLibraryModule(GLcore,$(DRIVERSDKMODULEDIR),extensions)
 
 #ifdef IHaveSubdirs
 MakeSubdirs($(SUBDIRS))

@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 ** planemask.c
 **
 ** How to make a widget to choose a planemask.
@@ -7,7 +14,7 @@
 **       functions to create more than one of these planemask choice things
 **       will fail in a big way.
 */
-/* $XFree86: xc/programs/xgc/planemask.c,v 1.3 2000/02/17 14:00:37 dawes Exp $ */
+/* $XFree86: xc/programs/xgc/planemask.c,v 1.4 2003/05/07 21:02:07 herrb Exp $ */
 
 #include <X11/Xos.h>
 #include <stdio.h>

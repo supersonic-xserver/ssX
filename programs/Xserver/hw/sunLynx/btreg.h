@@ -1,3 +1,11 @@
+/* $Xorg: btreg.h,v 1.3 2000/08/17 19:48:36 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright (c) 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -41,6 +49,7 @@
  *
  *	@(#)btreg.h	8.2 (Berkeley) 1/21/94
  */
+/*	$NetBSD: btreg.h,v 1.1.1.3 2001/06/09 15:03:09 tron Exp $ */
 /*	$XFree86: xc/programs/Xserver/hw/sunLynx/btreg.h,v 3.2 2001/01/17 22:36:52 dawes Exp $ */
 
 /*

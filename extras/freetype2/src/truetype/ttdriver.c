@@ -1,10 +1,17 @@
 /***************************************************************************/
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*                                                                         */
 /*  ttdriver.c                                                             */
 /*                                                                         */
 /*    TrueType font driver implementation (body).                          */
 /*                                                                         */
-/*  Copyright 1996-2000 by                                                 */
+/*  Copyright 1996-2001, 2002, 2003, 2004 by                               */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,23 +23,17 @@
 /***************************************************************************/
 
 
-#include <freetype/internal/ftdebug.h>
-#include <freetype/internal/ftstream.h>
-#include <freetype/internal/sfnt.h>
-#include <freetype/ttnameid.h>
-
-
-#ifdef FT_FLAT_COMPILE
+#include <ft2build.h>
+#include FT_INTERNAL_DEBUG_H
+#include FT_INTERNAL_STREAM_H
+#include FT_INTERNAL_SFNT_H
+#include FT_TRUETYPE_IDS_H
+#include FT_SERVICE_XFREE86_NAME_H
 
 #include "ttdriver.h"
 #include "ttgload.h"
 
-#else
-
-#include <truetype/ttdriver.h>
-#include <truetype/ttgload.h>
-
-#endif
+#include "tterrors.h"
 
 
   /*************************************************************************/
@@ -95,13 +96,13 @@
   /*                                                                       */
   /*    They can be implemented by format-specific interfaces.             */
   /*                                                                       */
-  static
-  FT_Error  Get_Kerning( TT_Face     face,
-                         FT_UInt     left_glyph,
-                         FT_UInt     right_glyph,
-                         FT_Vector*  kerning )
+  static FT_Error
+  Get_Kerning( TT_Face     face,
+               FT_UInt     left_glyph,
+               FT_UInt     right_glyph,
+               FT_Vector*  kerning )
   {
-    TT_Kern_0_Pair*  pair;
+    TT_Kern0_Pair  pair;
 
 
     if ( !face )
@@ -122,7 +123,7 @@
 
       while ( left <= right )
       {
-        FT_Int    middle = left + ( ( right - left ) >> 1 );
+        FT_Long   middle = left + ( ( right - left ) >> 1 );
         FT_ULong  cur_pair;
 
 
@@ -190,46 +191,53 @@
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  static
-  FT_Error  Set_Char_Sizes( TT_Size     size,
-                            FT_F26Dot6  char_width,
-                            FT_F26Dot6  char_height,
-                            FT_UInt     horz_resolution,
-                            FT_UInt     vert_resolution )
+  static FT_Error
+  Set_Char_Sizes( TT_Size     size,
+                  FT_F26Dot6  char_width,
+                  FT_F26Dot6  char_height,
+                  FT_UInt     horz_resolution,
+                  FT_UInt     vert_resolution )
   {
-    FT_Size_Metrics*  metrics = &size->root.metrics;
-    TT_Face           face    = (TT_Face)size->root.face;
+    FT_Size_Metrics*  metrics  = &size->root.metrics;
+    FT_Size_Metrics*  metrics2 = &size->metrics;
+    TT_Face           face     = (TT_Face)size->root.face;
     FT_Long           dim_x, dim_y;
 
+
+    *metrics2 = *metrics;
 
     /* This bit flag, when set, indicates that the pixel size must be */
     /* truncated to an integer.  Nearly all TrueType fonts have this  */
     /* bit set, as hinting won't work really well otherwise.          */
     /*                                                                */
-    /* However, for those rare fonts who do not set it, we override   */
-    /* the default computations performed by the base layer.  I       */
-    /* really don't know whether this is useful, but hey, that's the  */
-    /* spec :-)                                                       */
-    /*                                                                */
-    if ( ( face->header.Flags & 8 ) == 0 )
+    if ( ( face->header.Flags & 8 ) != 0 )
     {
-      /* Compute pixel sizes in 26.6 units */
-      dim_x = ( char_width  * horz_resolution ) / 72;
-      dim_y = ( char_height * vert_resolution ) / 72;
-
-      metrics->x_scale = FT_DivFix( dim_x, face->root.units_per_EM );
-      metrics->y_scale = FT_DivFix( dim_y, face->root.units_per_EM );
-
-      metrics->x_ppem  = (FT_UShort)( dim_x >> 6 );
-      metrics->y_ppem  = (FT_UShort)( dim_y >> 6 );
+     /* we need to use rounding in the following computations. Otherwise,
+      * the resulting hinted outlines will be very slightly distorted
+      */
+      dim_x = ( ( char_width  * horz_resolution + (36+32*72) ) / 72 ) & ~63;
+      dim_y = ( ( char_height * vert_resolution + (36+32*72) ) / 72 ) & ~63;
     }
+    else
+    {
+      dim_x = ( ( char_width  * horz_resolution + 36 ) / 72 );
+      dim_y = ( ( char_height * vert_resolution + 36 ) / 72 );
+    }
+
+    /* we only modify "metrics2", not "metrics", so these changes have */
+    /* no effect on the result of the auto-hinter when it is used      */
+    /*                                                                 */
+    metrics2->x_ppem  = (FT_UShort)( dim_x >> 6 );
+    metrics2->y_ppem  = (FT_UShort)( dim_y >> 6 );
+    metrics2->x_scale = FT_DivFix( dim_x, face->root.units_per_EM );
+    metrics2->y_scale = FT_DivFix( dim_y, face->root.units_per_EM );
 
     size->ttmetrics.valid = FALSE;
 #ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
-    size->strike_index    = 0xFFFF;
+    size->strike_index    = 0xFFFFU;
 #endif
 
-    return TT_Reset_Size( size );
+    return tt_size_reset( size );
   }
 
 
@@ -242,33 +250,24 @@
   /*    A driver method used to reset a size's character sizes (horizontal */
   /*    and vertical) expressed in integer pixels.                         */
   /*                                                                       */
-  /* <Input>                                                               */
-  /*    pixel_width  :: The character width expressed in integer pixels.   */
-  /*                                                                       */
-  /*    pixel_height :: The character height expressed in integer pixels.  */
-  /*                                                                       */
   /* <InOut>                                                               */
   /*    size         :: A handle to the target size object.                */
   /*                                                                       */
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  static
-  FT_Error  Set_Pixel_Sizes( TT_Size  size,
-                             FT_UInt  pixel_width,
-                             FT_UInt  pixel_height )
+  static FT_Error
+  Set_Pixel_Sizes( TT_Size  size )
   {
-    FT_UNUSED( pixel_width );
-    FT_UNUSED( pixel_height );
-
     /* many things have been pre-computed by the base layer */
 
+    size->metrics         = size->root.metrics;
     size->ttmetrics.valid = FALSE;
 #ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
-    size->strike_index    = 0xFFFF;
+    size->strike_index    = 0xFFFFU;
 #endif
 
-    return TT_Reset_Size( size );
+    return tt_size_reset( size );
   }
 
 
@@ -298,17 +297,17 @@
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
   /*                                                                       */
-  static
-  FT_Error  Load_Glyph( TT_GlyphSlot  slot,
-                        TT_Size       size,
-                        FT_UShort     glyph_index,
-                        FT_UInt       load_flags )
+  static FT_Error
+  Load_Glyph( TT_GlyphSlot  slot,
+              TT_Size       size,
+              FT_UInt       glyph_index,
+              FT_Int32      load_flags )
   {
     FT_Error  error;
 
 
     if ( !slot )
-      return TT_Err_Invalid_Glyph_Handle;
+      return TT_Err_Invalid_Slot_Handle;
 
     /* check whether we want a scaled outline or bitmap */
     if ( !size )
@@ -326,7 +325,7 @@
 
       if ( !size->ttmetrics.valid )
       {
-        if ( FT_SET_ERROR( TT_Reset_Size( size ) ) )
+        if ( FT_SET_ERROR( tt_size_reset( size ) ) )
           return error;
       }
     }
@@ -346,65 +345,6 @@
   /*************************************************************************/
   /****                                                                 ****/
   /****                                                                 ****/
-  /****             C H A R A C T E R   M A P P I N G S                 ****/
-  /****                                                                 ****/
-  /****                                                                 ****/
-  /*************************************************************************/
-  /*************************************************************************/
-  /*************************************************************************/
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    Get_Char_Index                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    Uses a charmap to return a given character code's glyph index.     */
-  /*                                                                       */
-  /* <Input>                                                               */
-  /*    charmap  :: A handle to the source charmap object.                 */
-  /*    charcode :: The character code.                                    */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    Glyph index.  0 means `undefined character code'.                  */
-  /*                                                                       */
-  static
-  FT_UInt  Get_Char_Index( TT_CharMap  charmap,
-                           FT_Long     charcode )
-  {
-    FT_Error       error;
-    TT_Face        face;
-    TT_CMapTable*  cmap;
-
-
-    cmap = &charmap->cmap;
-    face = (TT_Face)charmap->root.face;
-
-    /* Load table if needed */
-    if ( !cmap->loaded )
-    {
-      SFNT_Interface*  sfnt = (SFNT_Interface*)face->sfnt;
-
-
-      error = sfnt->load_charmap( face, cmap, face->root.stream );
-      if ( error )
-        return 0;
-
-      cmap->loaded = TRUE;
-    }
-
-    if ( cmap->get_index )
-      return cmap->get_index( cmap, charcode );
-    else
-      return 0;
-  }
-
-
-  /*************************************************************************/
-  /*************************************************************************/
-  /*************************************************************************/
-  /****                                                                 ****/
-  /****                                                                 ****/
   /****                D R I V E R  I N T E R F A C E                   ****/
   /****                                                                 ****/
   /****                                                                 ****/
@@ -412,22 +352,32 @@
   /*************************************************************************/
   /*************************************************************************/
 
-
-  static
-  FT_Module_Interface  tt_get_interface( TT_Driver    driver,
-                                         const char*  interface )
+  static const FT_ServiceDescRec  tt_services[] =
   {
-    FT_Module        sfntd = FT_Get_Module( driver->root.root.library,
-                                            "sfnt" );
-    SFNT_Interface*  sfnt;
+    { FT_SERVICE_ID_XF86_NAME, FT_XF86_FORMAT_TRUETYPE },
+    { NULL, NULL }
+  };
 
+  static FT_Module_Interface
+  tt_get_interface( TT_Driver    driver,
+                    const char*  tt_interface )
+  {
+    FT_Module_Interface  result;
+    FT_Module            sfntd;
+    SFNT_Service         sfnt;
+
+
+    result = ft_service_list_lookup( tt_services, tt_interface );
+    if ( result != NULL )
+      return result;
 
     /* only return the default interface from the SFNT module */
+    sfntd = FT_Get_Module( driver->root.root.library, "sfnt" );
     if ( sfntd )
     {
-      sfnt = (SFNT_Interface*)( sfntd->clazz->module_interface );
+      sfnt = (SFNT_Service)( sfntd->clazz->module_interface );
       if ( sfnt )
-        return sfnt->get_interface( FT_MODULE( driver ), interface );
+        return sfnt->get_interface( FT_MODULE( driver ), tt_interface );
     }
 
     return 0;
@@ -437,13 +387,13 @@
   /* The FT_DriverInterface structure is defined in ftdriver.h. */
 
   FT_CALLBACK_TABLE_DEF
-  const FT_Driver_Class  tt_driver_class =
+  const FT_Driver_ClassRec  tt_driver_class =
   {
     {
-      ft_module_font_driver     |
-      ft_module_driver_scalable |
+      FT_MODULE_FONT_DRIVER        |
+      FT_MODULE_DRIVER_SCALABLE    |
 #ifdef TT_CONFIG_OPTION_BYTECODE_INTERPRETER
-      ft_module_driver_has_hinter,
+      FT_MODULE_DRIVER_HAS_HINTER,
 #else
       0,
 #endif
@@ -456,8 +406,8 @@
 
       (void*)0,        /* driver specific interface */
 
-      (FT_Module_Constructor)TT_Init_Driver,
-      (FT_Module_Destructor) TT_Done_Driver,
+      (FT_Module_Constructor)tt_driver_init,
+      (FT_Module_Destructor) tt_driver_done,
       (FT_Module_Requester)  tt_get_interface,
     },
 
@@ -466,53 +416,21 @@
     sizeof ( FT_GlyphSlotRec ),
 
 
-    (FTDriver_initFace)     TT_Init_Face,
-    (FTDriver_doneFace)     TT_Done_Face,
-    (FTDriver_initSize)     TT_Init_Size,
-    (FTDriver_doneSize)     TT_Done_Size,
-    (FTDriver_initGlyphSlot)0,
-    (FTDriver_doneGlyphSlot)0,
+    (FT_Face_InitFunc)       tt_face_init,
+    (FT_Face_DoneFunc)       tt_face_done,
+    (FT_Size_InitFunc)       tt_size_init,
+    (FT_Size_DoneFunc)       tt_size_done,
+    (FT_Slot_InitFunc)       0,
+    (FT_Slot_DoneFunc)       0,
 
-    (FTDriver_setCharSizes) Set_Char_Sizes,
-    (FTDriver_setPixelSizes)Set_Pixel_Sizes,
-    (FTDriver_loadGlyph)    Load_Glyph,
-    (FTDriver_getCharIndex) Get_Char_Index,
+    (FT_Size_ResetPointsFunc)Set_Char_Sizes,
+    (FT_Size_ResetPixelsFunc)Set_Pixel_Sizes,
+    (FT_Slot_LoadFunc)       Load_Glyph,
 
-    (FTDriver_getKerning)   Get_Kerning,
-    (FTDriver_attachFile)   0,
-    (FTDriver_getAdvances)  0
+    (FT_Face_GetKerningFunc) Get_Kerning,
+    (FT_Face_AttachFunc)     0,
+    (FT_Face_GetAdvancesFunc)0
   };
-
-
-#ifdef FT_CONFIG_OPTION_DYNAMIC_DRIVERS
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Function>                                                            */
-  /*    getDriverClass                                                     */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    This function is used when compiling the TrueType driver as a      */
-  /*    shared library (`.DLL' or `.so').  It will be used by the          */
-  /*    high-level library of FreeType to retrieve the address of the      */
-  /*    driver's generic interface.                                        */
-  /*                                                                       */
-  /*    It shouldn't be implemented in a static build, as each driver must */
-  /*    have the same function as an exported entry point.                 */
-  /*                                                                       */
-  /* <Return>                                                              */
-  /*    The address of the TrueType's driver generic interface.  The       */
-  /*    format-specific interface can then be retrieved through the method */
-  /*    interface->get_format_interface.                                   */
-  /*                                                                       */
-  FT_EXPORT_DEF( const FT_Driver_Class* )  getDriverClass( void )
-  {
-    return &tt_driver_class;
-  }
-
-
-#endif /* CONFIG_OPTION_DYNAMIC_DRIVERS */
 
 
 /* END */

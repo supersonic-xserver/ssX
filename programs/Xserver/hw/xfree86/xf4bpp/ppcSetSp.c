@@ -1,4 +1,11 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcSetSp.c,v 1.3 1999/06/06 08:49:02 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
  * Copyright IBM Corporation 1987,1988,1989
  *
@@ -69,6 +76,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: ppcSetSp.c /main/5 1996/02/21 17:58:32 kaleb $ */
 
 #include "xf4bpp.h"
 #include "OScompiler.h"
@@ -83,11 +91,17 @@ SOFTWARE.
  * further on.) 
  */
 static void
-ppcSetScanline(int pixCount, char *psrc, unsigned char *pdst, int pm,
-	       const int alu)
+ppcSetScanline
+(
+    register int	   pixCount,	/* width of scanline in bits */
+    register char          *psrc,
+    register unsigned char *pdst,	/* where to put the bits */
+    register int	   pm,		/* plane mask */
+    const int		   alu		/* raster op */
+)
 {
-int npm = ~pm ;	/* inverted plane mask */
-char tmpx ;
+register int npm = ~pm ;	/* inverted plane mask */
+register char tmpx ;
 
 pm &= 0x0F; npm &= 0x0F; /* GJA */
 
@@ -177,15 +191,21 @@ return ;
  * on a word boundary.
  */ 
 void
-xf4bppSetSpans(DrawablePtr pDrawable, GCPtr pGC, char *psrc,
-	       DDXPointPtr ppt, int *pwidth, int nspans, int fSorted)
+xf4bppSetSpans( pDrawable, pGC, psrc, ppt, pwidth, nspans, fSorted )
+    register DrawablePtr	pDrawable ;
+    GCPtr			pGC ;
+    char			*psrc ;
+    register DDXPointPtr	ppt ;
+    int				*pwidth ;
+    int				nspans ;
+    int				fSorted ;
 {
     unsigned char	*pdstBase = NULL;	/* start of dst bitmap */
     int 		widthDst = 0;		/* width of bitmap in words */
-    BoxPtr 	pbox, pboxLast, pboxTest ;
-    DDXPointPtr pptLast ;
+    register BoxPtr 	pbox, pboxLast, pboxTest ;
+    register DDXPointPtr pptLast ;
     RegionPtr 		prgnDst ;
-    int	width ;
+    register int	width ;
     int			xStart, xEnd ;
     int			yMax ;
     int			alu ;

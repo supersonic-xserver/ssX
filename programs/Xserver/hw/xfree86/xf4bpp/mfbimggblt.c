@@ -1,4 +1,18 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/mfbimggblt.c,v 1.9 2003/11/17 22:20:42 dawes Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 /* Combined Purdue/PurduePlus patches, level 2.0, 1/17/89 */
 /***********************************************************
@@ -48,6 +62,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
+/* $XConsortium: mfbimggblt.c /main/5 1996/02/21 17:56:44 kaleb $ */
 
 #include "xf4bpp.h"
 #include "OScompiler.h"
@@ -93,16 +108,31 @@ three times:
 	mfbImageGlyphBltWhite	|=
 	mfbImageGlyphBltBlack	&=~
 
+    the register allocations for startmask and endmask may not
+be the right thing.  are there two other deserving candidates?
+xoff, pdst, pglyph, and tmpSrc seem like the right things, though.
 */
 
 /* Forward declarations -- GJA */
-static void doImageGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
-			    unsigned int nglyph, CharInfoPtr *ppci,
-			    unsigned char *pglyphBase, ExtentInfoRec *infop);
+static void doImageGlyphBlt(
+    DrawablePtr,
+    GC *,
+    int,
+    int,
+    unsigned int,
+    CharInfoPtr *,
+    unsigned char *,
+    ExtentInfoRec *
+);
 
 void
-xf4bppImageGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
-		    unsigned int nglyph, CharInfoPtr *ppci, pointer pglyphBase)
+xf4bppImageGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    pointer	pglyphBase;	/* start of array of glyphs */
 {
     ExtentInfoRec info;	/* used by QueryGlyphExtents() */
     xRectangle backrect;/* backing rectangle to paint.
@@ -164,9 +194,14 @@ xf4bppImageGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
 }
 
 static void
-doImageGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
-		unsigned int nglyph, CharInfoPtr *ppci,
-		unsigned char *pglyphBase, ExtentInfoRec *infop)
+doImageGlyphBlt(pDrawable, pGC, x, y, nglyph, ppci, pglyphBase,infop)
+    DrawablePtr pDrawable;
+    GC 		*pGC;
+    int 	x, y;
+    unsigned int nglyph;
+    CharInfoPtr *ppci;		/* array of character info */
+    unsigned char *pglyphBase;	/* start of array of glyphs */
+    ExtentInfoRec* infop;	/* used by QueryGlyphExtents() */
 {
     BoxRec bbox;	/* string's bounding box */
 
@@ -180,23 +215,23 @@ doImageGlyphBlt(DrawablePtr pDrawable, GC *pGC, int x, int y,
     int xchar;		/* xorigin of char (mod 32) */
 
 			/* these are used for placing the glyph */
-    int xoff;	/* x offset of left edge of glyph (mod 32) */
-    CARD32 *pdst;
+    register int xoff;	/* x offset of left edge of glyph (mod 32) */
+    register CARD32 *pdst;
 			/* pointer to current longword in dst */
 
     int w;		/* width of glyph in bits */
     int h;		/* height of glyph */
     int widthGlyph;	/* width of glyph, in bytes */
-    unsigned char *pglyph;
+    register unsigned char *pglyph;
 			/* pointer to current row of glyph */
 
 			/* used for putting down glyph */    
-    unsigned int tmpSrc;
+    register unsigned int tmpSrc;
 			/* for getting bits from glyph */
-    int startmask;
-    int endmask;
+    register int startmask;
+    register int endmask;
 
-    int nFirst;/* bits of glyph in current longword */
+    register int nFirst;/* bits of glyph in current longword */
 
     xorg = pDrawable->x;
     yorg = pDrawable->y;

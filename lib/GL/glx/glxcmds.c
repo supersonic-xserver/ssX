@@ -1,4 +1,11 @@
-/* $XFree86: xc/lib/GL/glx/glxcmds.c,v 1.39tsi Exp $ */
+/* $XFree86: xc/lib/GL/glx/glxcmds.c,v 1.36 2004/12/17 16:38:03 tsi Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /*
 ** License Applicability. Except to the extent portions of this file are
 ** made subject to an alternative license as permitted in the SGI Free
@@ -40,16 +47,14 @@
  */
 
 #include "glxclient.h"
-#include <X11/extensions/extutil.h>
-#include <X11/extensions/Xext.h>
+#include <extutil.h>
+#include <Xext.h>
 #include <assert.h>
 #include <string.h>
 #include "glapi.h"
 #ifdef GLX_DIRECT_RENDERING
 #include "indirect_init.h"
-#ifdef XF86VIDMODE
-#include <X11/extensions/xf86vmode.h>
-#endif
+#include <extensions/xf86vmode.h>
 #endif
 #include "glxextensions.h"
 #include "glcontextmodes.h"
@@ -944,7 +949,7 @@ int GLX_PREFIX(glXGetConfig)(Display *dpy, XVisualInfo *vis, int attribute,
 		 int *value_return)
 {
     __GLXdisplayPrivate *priv;
-    __GLXscreenConfigs *psc = NULL;
+    __GLXscreenConfigs *psc;
     int   status;
 
     status = GetGLXPrivScreenConfig( dpy, vis->screen, & priv, & psc );
@@ -1694,7 +1699,6 @@ GLXFBConfig *GLX_PREFIX(glXGetFBConfigs)(Display *dpy, int screen, int *nelement
     __GLcontextModes ** config = NULL;
     int   i;
 
-    *nelements = 0;
     if ( (priv->screenConfigs != NULL)
 	 && (screen >= 0) && (screen <= ScreenCount(dpy))
 	 && (priv->screenConfigs[screen].configs != NULL)
@@ -1824,7 +1828,7 @@ int GLX_PREFIX(glXSwapIntervalSGI)(int interval)
 /*
 ** GLX_MESA_swap_control
 */
-int GLX_PREFIX(glXSwapIntervalMESA)(unsigned interval)
+GLint GLX_PREFIX(glXSwapIntervalMESA)(unsigned interval)
 {
 #ifdef GLX_DIRECT_RENDERING
    GLXContext gc = __glXGetCurrentContext();
@@ -1856,7 +1860,7 @@ int GLX_PREFIX(glXSwapIntervalMESA)(unsigned interval)
    return GLX_BAD_CONTEXT;
 }
  
-int GLX_PREFIX(glXGetSwapIntervalMESA)( void )
+GLint GLX_PREFIX(glXGetSwapIntervalMESA)( void )
 {
 #ifdef GLX_DIRECT_RENDERING
    GLXContext gc = __glXGetCurrentContext();
@@ -1886,7 +1890,7 @@ int GLX_PREFIX(glXGetSwapIntervalMESA)( void )
 ** GLX_MESA_swap_frame_usage
 */
 
-int GLX_PREFIX(glXBeginFrameTrackingMESA)(Display *dpy, GLXDrawable drawable)
+GLint GLX_PREFIX(glXBeginFrameTrackingMESA)(Display *dpy, GLXDrawable drawable)
 {
    int   status = GLX_BAD_CONTEXT;
 #ifdef GLX_DIRECT_RENDERING
@@ -1906,7 +1910,7 @@ int GLX_PREFIX(glXBeginFrameTrackingMESA)(Display *dpy, GLXDrawable drawable)
 }
 
     
-int GLX_PREFIX(glXEndFrameTrackingMESA)(Display *dpy, GLXDrawable drawable)
+GLint GLX_PREFIX(glXEndFrameTrackingMESA)(Display *dpy, GLXDrawable drawable)
 {
    int   status = GLX_BAD_CONTEXT;
 #ifdef GLX_DIRECT_RENDERING
@@ -1926,8 +1930,8 @@ int GLX_PREFIX(glXEndFrameTrackingMESA)(Display *dpy, GLXDrawable drawable)
 }
 
 
-int GLX_PREFIX(glXGetFrameUsageMESA)(Display *dpy, GLXDrawable drawable,
-				       float *usage)
+GLint GLX_PREFIX(glXGetFrameUsageMESA)(Display *dpy, GLXDrawable drawable,
+				       GLfloat *usage)
 {
    int   status = GLX_BAD_CONTEXT;
 #ifdef GLX_DIRECT_RENDERING
@@ -1953,9 +1957,9 @@ int GLX_PREFIX(glXGetFrameUsageMESA)(Display *dpy, GLXDrawable drawable,
 }
 
 
-int GLX_PREFIX(glXQueryFrameTrackingMESA)(Display *dpy, GLXDrawable drawable,
+GLint GLX_PREFIX(glXQueryFrameTrackingMESA)(Display *dpy, GLXDrawable drawable,
 					    int64_t *sbc, int64_t *missedFrames,
-					    float *lastMissedUsage)
+					    GLfloat *lastMissedUsage)
 {
    int   status = GLX_BAD_CONTEXT;
 #ifdef GLX_DIRECT_RENDERING
@@ -2163,7 +2167,7 @@ GLXContext GLX_PREFIX(glXCreateContextWithConfigSGIX)(Display *dpy, GLXFBConfigS
 GLXFBConfigSGIX GLX_PREFIX(glXGetFBConfigFromVisualSGIX)(Display *dpy, XVisualInfo *vis)
 {
     __GLXdisplayPrivate *priv;
-    __GLXscreenConfigs *psc = NULL;
+    __GLXscreenConfigs *psc;
 
     if ( (GetGLXPrivScreenConfig( dpy, vis->screen, & priv, & psc ) != Success)
 	 && __glXExtensionBitIsEnabled( psc, SGIX_fbconfig_bit )

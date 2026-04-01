@@ -1,4 +1,11 @@
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
   Copyright (c) 2002-2003 by Juliusz Chroboczek
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +26,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-/* $XFree86: xc/programs/mkfontscale/list.c,v 1.6tsi Exp $ */
+/* $XFree86: xc/programs/mkfontscale/list.c,v 1.7 2005/02/07 01:01:16 tsi Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>

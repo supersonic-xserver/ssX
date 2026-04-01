@@ -1,5 +1,11 @@
-/* $XFree86: xc/extras/Mesa/src/mesa/swrast_setup/ss_tritmp.h,v 1.0tsi Exp $ */
 /*
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
  * Mesa 3-D graphics library
  * Version:  6.1
  *
@@ -36,9 +42,9 @@ static void TAG(triangle)(GLcontext *ctx, GLuint e0, GLuint e1, GLuint e2 )
    GLfloat offset;
    GLenum mode = GL_FILL;
    GLuint facing = 0;
-   GLchan saved_color[3][4] = {{0, }, };
-   GLchan saved_spec[3][4] = {{0, }, };
-   GLfloat saved_index[3] = {0.0, 0.0, 0.0};
+   GLchan saved_color[3][4];
+   GLchan saved_spec[3][4];
+   GLfloat saved_index[3];
 
    v[0] = &verts[e0];
    v[1] = &verts[e1];

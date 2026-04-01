@@ -1,4 +1,6 @@
 #
+# From: Id: README,v 1.2 1999/05/03 14:21:32 mleisher Exp $
+#
 # Copyright 1996, 1997, 1998, 1999 Computing Research Labs,
 # New Mexico State University
 #
@@ -68,5 +70,3 @@ CHANGES FROM 1.0
 
 08 February 1999
 mleisher@crl.nmsu.edu (Mark Leisher)
-
-$XFree86$

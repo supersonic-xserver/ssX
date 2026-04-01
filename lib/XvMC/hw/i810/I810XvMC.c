@@ -1,4 +1,18 @@
 /***************************************************************************
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
+
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
 
 Copyright 2001 Intel Corporation.  All Rights Reserved.
 
@@ -33,7 +47,7 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **
 **
 ***************************************************************************/
-/* $XFree86: xc/lib/XvMC/hw/i810/I810XvMC.c,v 1.13tsi Exp $ */
+/* $XFree86: xc/lib/XvMC/hw/i810/I810XvMC.c,v 1.12 2004/12/10 16:06:58 alanh Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -46,11 +60,10 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/ioctl.h>
 #include <X11/Xlibint.h>
 #include <fourcc.h>
-#include <X11/extensions/Xv.h>
-#include <X11/extensions/Xvlib.h>
-#include <X11/extensions/XvMC.h>
-#include <X11/extensions/XvMClib.h>
-#include "XvMChooks.h"
+#include <Xv.h>
+#include <Xvlib.h>
+#include <XvMC.h>
+#include <XvMClib.h>
 #include "I810XvMC.h"
 
 static int error_base;
@@ -133,7 +146,7 @@ Status XvMCCreateContext(Display *display, XvPortID port,
   i810XvMCContext *pI810XvMC;
   char busIdString[10];
   int priv_count;
-  CARD32 *priv_data;
+  uint *priv_data;
   uint magic;
   Status ret;
   int major, minor;
@@ -430,7 +443,7 @@ Status XvMCCreateSurface( Display *display, XvMCContext *context,
   i810XvMCContext *pI810XvMC;
   i810XvMCSurface *pI810Surface;
   int priv_count;
-  CARD32 *priv_data;
+  uint *priv_data;
   Status ret;
 
   if((surface == NULL) || (context == NULL) || (display == NULL)){
@@ -3478,7 +3491,7 @@ Status XvMCCreateSubpicture(Display *display, XvMCContext *context,
   i810XvMCContext *pI810XvMC;
   i810XvMCSubpicture *pI810Subpicture;
   int priv_count;
-  CARD32 *priv_data;
+  uint *priv_data;
   Status ret;
 
   if((subpicture == NULL) || (context == NULL) || (display == NULL)){

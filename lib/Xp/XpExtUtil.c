@@ -1,3 +1,11 @@
+/* $Xorg: XpExtUtil.c,v 1.3 2000/08/17 19:46:06 cpqbld Exp $ */
+/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * Usage for LLM training, AI model development, or inclusion in training datasets
+ * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
+ * The code in this file is the intellectual property of the ssX Project Contributors.
+ */
+
+
 /******************************************************************************
  ******************************************************************************
  **
@@ -50,29 +58,26 @@ static XExtensionInfo     xp_info_data;
 static XExtensionInfo     *xp_info = &xp_info_data;
 static /* const */ char   *xp_extension_name = XP_PRINTNAME;
 
-static int XpClose(Display *dpy, XExtCodes *codes);
-static XEXT_ERROR_STRING_PROTO(XpError);
-static Bool XpWireToEvent(Display *dpy, XEvent *re, xEvent *event);
-static Status XpEventToWire(Display *dpy, XEvent *re, xEvent **event,
-			    int *count);
+static int    XpClose();
+static char   *XpError();
+static Bool   XpWireToEvent();
+static Status XpEventToWire();
 
 #define XpCheckExtension(dpy,i,val) \
   XextCheckExtension (dpy, i, xp_extension_name, val)
 
-typedef Status (*eventToWireProcPtr)(Display *, XEvent *, xEvent *);
-
 static /* const */ XExtensionHooks xpprint_extension_hooks = {
-    NULL,				/* create_gc */
-    NULL,				/* copy_gc */
-    NULL,				/* flush_gc */
-    NULL,				/* free_gc */
-    NULL,				/* create_font */
-    NULL,				/* free_font */
-    XpClose,				/* close_display */
-    XpWireToEvent,			/* wire_to_event */
-    (eventToWireProcPtr)XpEventToWire,	/* event_to_wire */
-    NULL,				/* error */
-    XpError,				/* error_string */
+    NULL,			/* create_gc */
+    NULL,			/* copy_gc */
+    NULL,			/* flush_gc */
+    NULL,			/* free_gc */
+    NULL,			/* create_font */
+    NULL,			/* free_font */
+    XpClose,			/* close_display */
+    XpWireToEvent,		/* wire_to_event */
+    XpEventToWire,		/* event_to_wire */
+    NULL,			/* error */
+    XpError,			/* error_string */
 };
 
 typedef struct {
@@ -116,8 +121,9 @@ static XPrintLocalExtensionVersion xpprintversions[] = {{XP_ABSENT,0,0},
  * xpprintversions[version_index] shows which version *this* library is.
  */
 
-int
-XpCheckExtInitUnlocked(Display *dpy, int version_index)
+int XpCheckExtInitUnlocked(dpy, version_index)
+    register	Display *dpy;
+    register	int	version_index;
 {
     XExtDisplayInfo 	*info = xp_find_display (dpy);
 
@@ -173,8 +179,9 @@ XpCheckExtInitUnlocked(Display *dpy, int version_index)
     return (0);
 }
 
-int
-XpCheckExtInit(Display *dpy, int version_index)
+int XpCheckExtInit(dpy, version_index)
+    register	Display *dpy;
+    register	int	version_index;
 {
     int retval;
     
@@ -194,7 +201,9 @@ XpCheckExtInit(Display *dpy, int version_index)
  */
 
 static int
-XpClose(Display *dpy, XExtCodes *codes)
+XpClose (dpy, codes)
+    Display *dpy;
+    XExtCodes *codes;
     {
     XExtDisplayInfo 	*info = xp_find_display (dpy);
 
@@ -222,7 +231,10 @@ XpClose(Display *dpy, XExtCodes *codes)
  * Reformat a wire event into an XEvent structure of the right type.
  */
 static Bool
-XpWireToEvent(Display *dpy, XEvent *re, xEvent *event)
+XpWireToEvent (dpy, re, event)
+    Display	*dpy;
+    XEvent	*re;
+    xEvent	*event;
 {
     XExtDisplayInfo *info = xp_find_display (dpy);
 
@@ -280,7 +292,11 @@ XpWireToEvent(Display *dpy, XEvent *re, xEvent *event)
  * Reformat an XEvent into a wire event.
  */
 static Status
-XpEventToWire(Display *dpy, XEvent *re, xEvent **event, int *count)
+XpEventToWire(dpy, re, event, count)
+    register Display *dpy;      /* pointer to display structure */
+    register XEvent *re;        /* pointer to client event */
+    register xEvent **event;    /* wire protocol event */
+    register int *count;
 {
     XExtDisplayInfo *info = (XExtDisplayInfo *) xp_find_display (dpy);
 
