@@ -824,6 +824,7 @@ CARD32 amdgpu_dri2_extrapolate_msc_delay(xf86CrtcPtr crtc, CARD64 * target_msc,
 	int64_t d, delta_seq;
 	int ret;
 	CARD32 d_ms;
+	int64_t d_ms64;
 
 	if (!last_vblank_ust) {
 		*target_msc = 0;
@@ -870,8 +871,9 @@ CARD32 amdgpu_dri2_extrapolate_msc_delay(xf86CrtcPtr crtc, CARD64 * target_msc,
 	 * from coming back early (due to timer granularity and rounding
 	 * errors) and getting the same MSC it just got
 	 */
-	d_ms = (CARD32) d / 1000;
-	if ((CARD32) d - d_ms * 1000 > 0)
+	d_ms64 = d / 1000;
+	d_ms = (CARD32) d_ms64;
+	if (d - (int64_t)d_ms * 1000 > 0)
 		d_ms += 2;
 	else
 		d_ms++;
