@@ -1223,8 +1223,6 @@ ASTSetupForScreenToScreenColorExpandFill(ScrnInfoPtr pScrn,
 
 }
 
-
-
 static void
 ASTSubsequentScreenToScreenColorExpandFill(ScrnInfoPtr pScrn,
 					   int dst_x, int dst_y, int width, int height,

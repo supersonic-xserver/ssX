@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #ifndef __RENDITION_OPTION_H__
 #define __RENDITION_OPTION_H__
 
@@ -27,8 +18,6 @@ typedef enum {
     OPTION_SHADOW_FB,
     OPTION_ROTATE
 } renditionOpts;
-
-
 
 #ifdef DO_NOT_ACTIVATE
 /*********************************/

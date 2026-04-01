@@ -1,10 +1,8 @@
-/**********************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
@@ -168,7 +166,6 @@ static int      neoFindMode(int xres, int yres, int depth);
  * choice made in the first PreInit.
  */
 static int pix24bpp = 0;
-
 
 static biosMode bios8[] = {	
     { 320, 240, 0x40 },
@@ -689,7 +686,7 @@ neoFindIsaDevice(GDevPtr dev)
     unsigned char id;
     
     vgaIOBase = (inb(0x3CC) & 0x01) ? 0x3D0 : 0x3B0;
-    /* §§§ Too intrusive ? */
+    /* Â§Â§Â§ Too intrusive ? */
     outw(GRAX, 0x2609); /* Unlock NeoMagic registers */
 
     outb(vgaIOBase + 4, 0x1A);
@@ -708,7 +705,6 @@ neoFindIsaDevice(GDevPtr dev)
 	return -1;
     }
 }
-
 
 /* Mandatory */
 Bool
@@ -866,7 +862,6 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
 	       nPtr->NeoPanelHeight,
 	       (type & 0x02) ? "color" : "monochrome",
 	       (type & 0x10) ? "TFT" : "dual scan");
-
 
     switch (nPtr->NeoChipset){
     case NM2070:
@@ -1314,7 +1309,7 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
     clockRanges = (ClockRangePtr)xnfcalloc(sizeof(ClockRange), 1);
     clockRanges->next = NULL;
     clockRanges->ClockMulFactor = 1;
-    clockRanges->minClock = 11000;   /* guessed §§§ */
+    clockRanges->minClock = 11000;   /* guessed Â§Â§Â§ */
     clockRanges->maxClock = maxClock;
     clockRanges->clockIndex = -1;		/* programmable */
     if (!nPtr->internDisp && nPtr->externDisp) 
@@ -1355,7 +1350,7 @@ NEOPreInit(ScrnInfoPtr pScrn, int flags)
     {
        i = xf86ValidateModes(pScrn, pScrn->monitor->Modes,
 			  pScrn->display->modes, clockRanges,
-			  NULL, 256, maxWidth,(8 * pScrn->bitsPerPixel),/*§§§*/
+			  NULL, 256, maxWidth,(8 * pScrn->bitsPerPixel),/*Â§Â§Â§*/
 			  128, maxHeight, pScrn->display->virtualX,
 			  pScrn->display->virtualY, apertureSize,
 			  LOOKUP_BEST_REFRESH);
@@ -1891,7 +1886,7 @@ NEOAdjustFrame(int scrnIndex, int x, int y, int flags)
      * This is a workaround for a higher level bug that causes the cursor
      * to be at the wrong position after a virtual screen resolution change
      */
-    if (nPtr->NeoHWCursorInitialized) { /*§§§ do we still need this?*/
+    if (nPtr->NeoHWCursorInitialized) { /*Â§Â§Â§ do we still need this?*/
 	NeoRepositionCursor();
     }
 #endif

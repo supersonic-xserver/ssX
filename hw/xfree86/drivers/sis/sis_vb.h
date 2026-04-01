@@ -53,5 +53,3 @@ void SISSense30x(ScrnInfoPtr pScrn, Bool quiet);
 void SISSenseChrontel(ScrnInfoPtr pScrn, Bool quiet);
 Bool SISRedetectCRT2Type(ScrnInfoPtr pScrn);
 
-
-

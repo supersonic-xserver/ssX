@@ -644,8 +644,6 @@ XAAOverPushPixelsSolid(
     (*pOverPriv->PushPixelsSolid)(pGC, pBitMap, pDraw, dx, dy, xOrg, yOrg);
 }
 
-
-
 static void 
 XAAOverPolyFillRectSolid(
    DrawablePtr pDraw,
@@ -978,8 +976,6 @@ XAAOverPolyRectangleThinSolid(
 
     (*pOverPriv->PolyRectangleThinSolid)(pDraw, pGC, nRectsInit, pRectsInit);
 }
-
-
 
 static void 
 XAAOverPolylinesWideSolid(

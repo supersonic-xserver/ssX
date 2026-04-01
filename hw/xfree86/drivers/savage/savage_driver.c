@@ -2184,8 +2184,6 @@ static Bool SavageMapMMIO(ScrnInfoPtr pScrn)
     return TRUE;
 }
 
-
-
 static Bool SavageMapFB(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
@@ -2526,8 +2524,6 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     ErrorF("VTotal = %d\n",
 	    mode->CrtcVTotal);
 #endif
-
-
 
     psav->HorizScaleFactor = 1;
 
@@ -2986,8 +2982,6 @@ void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors, int *indicies,
     }
 }
 
-
-
 static void SavageCalcClock(long freq, int min_m, int min_n1, int max_n1,
 
 	/* Make sure linear addressing is enabled after the BIOS call. */
@@ -3133,8 +3127,6 @@ void SavageGEReset(ScrnInfoPtr pScrn, int from_timeout, int line, char *file)
 
     SavageSetGBD(pScrn);
 }
-
-
 
 /* This function is used to debug, it prints out the contents of s3 regs */
 

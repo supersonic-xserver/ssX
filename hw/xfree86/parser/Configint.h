@@ -80,8 +80,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- * Copyright © 2003, 2004, 2005 David H. Dawes
- * Copyright © 2003, 2004, 2005 X-Oz Technologies.
+ * Copyright Â© 2003, 2004, 2005 David H. Dawes
+ * Copyright Â© 2003, 2004, 2005 X-Oz Technologies.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -123,8 +123,6 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-
 
 /* 
  * These definitions are used through out the configuration file parser, but

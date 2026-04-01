@@ -1,18 +1,14 @@
-/***************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2001 Intel Corporation.  All Rights Reserved.
 
@@ -107,7 +103,6 @@ void i810_free_privContext(i810XvMCContext *pI810XvMC) {
 
   I810_LOCK(pI810XvMC,DRM_LOCK_QUIESCENT);
 
-
   pI810XvMC->ref--;
   if(!pI810XvMC->ref) {
     drmUnmapBufs(pI810XvMC->dmabufs);
@@ -121,7 +116,6 @@ void i810_free_privContext(i810XvMCContext *pI810XvMC) {
 
   I810_UNLOCK(pI810XvMC);
 }
-
 
 /***************************************************************************
 // Function: XvMCCreateContext
@@ -185,7 +179,6 @@ _X_EXPORT Status XvMCCreateContext(Display *display, XvPortID port,
     return BadAlloc;
   }
   pI810XvMC = (i810XvMCContext *)context->privData;
-
 
   /* Verify the XvMC extension exists */
   if(! XvMCQueryExtension(display, &event_base,
@@ -431,7 +424,6 @@ _X_EXPORT Status XvMCDestroyContext(Display *display, XvMCContext *context) {
   return Success;
 }
 
-
 /***************************************************************************
 // Function: XvMCCreateSurface
 ***************************************************************************/
@@ -451,7 +443,6 @@ _X_EXPORT Status XvMCCreateSurface( Display *display, XvMCContext *context,
   if(pI810XvMC == NULL) {
     return (error_base + XvMCBadContext);
   }
-
 
   surface->privData = (i810XvMCSurface *)malloc(sizeof(i810XvMCSurface));
   if(!surface->privData) {
@@ -486,7 +477,6 @@ _X_EXPORT Status XvMCCreateSurface( Display *display, XvMCContext *context,
   /* Data == Client Address, offset == Physical address offset */
   pI810Surface->data = pI810XvMC->surfaces.address;
   pI810Surface->offset = pI810XvMC->surfaces.offset;
-
 
   /* 
      i810's MC Engine needs surfaces of 2^x (x= 9,10,11,12) pitch
@@ -598,7 +588,6 @@ _X_EXPORT Status XvMCCreateSurface( Display *display, XvMCContext *context,
   return Success;
 }
 
-
 /***************************************************************************
 // Function: XvMCDestroySurface
 ***************************************************************************/
@@ -708,7 +697,6 @@ _X_EXPORT Status XvMCDestroyMacroBlocks(Display *display, XvMCMacroBlockArray *b
 
   return Success;
 }
-
 
 /***************************************************************************
 // Function: dp (Debug Print)
@@ -963,7 +951,6 @@ static short empty_block[] = {
   0,0,0,0,0,0,0,0
 };
 
-
 /***************************************************************************
 // Function: dispatchYContext
 // Description: Allocate a DMA buffer write the Y MC Context info in it,
@@ -1076,7 +1063,6 @@ static __inline__ void renderIntrainFrameDCT1(uint **datay,uint **datau,
   register uint *du = *datau;
   register uint *dv = *datav;
 
-
   /* Y Blocks */
   *dy++ = GFXBLOCK + 36;
   *dy++ = (1<<30) | (2<<28) | (0x3<<26) | (0x2<<6);
@@ -1127,7 +1113,6 @@ static __inline__ void renderIntrainFrameDCT1(uint **datay,uint **datau,
   *datau = du;
   *datav = dv;
 }
-
 
 /***************************************************************************
 // Function: renderIntrainField
@@ -1186,7 +1171,6 @@ static __inline__ void renderIntrainField(uint **datay,uint **datau,
   *datau = du;
   *datav = dv;
 }
-
 
 /***************************************************************************
 // Function: renderFieldinField
@@ -1503,13 +1487,11 @@ static __inline__ void renderDualPrimeinField(uint **datay,uint **datau,
   /* gfxblock dword 1 */
   uint dw1;
 
-
   uint ysize = y_frame_bytes[mb->coded_block_pattern];
   uint usize = u_frame_bytes[mb->coded_block_pattern];
   uint vsize = v_frame_bytes[mb->coded_block_pattern];
 
   uint xy = ((uint)mb->x<<20) | ((uint)mb->y<<4);
-
 
   if(ps & XVMC_TOP_FIELD) {
     dw1 = (mb->coded_block_pattern<<22) | 3<<12 | 2<<6 | 2<<3 | 3;
@@ -1743,7 +1725,6 @@ static __inline__ void renderFieldinFrameDCT0(uint **datay,uint **datau,
     mvfs_table[mb->motion_vertical_field_select>>2] |
     ((cbp | ((cbp<<2) & 0x30))<<22);
 
-
   fmv.s[0] = mb->PMV[0][0][1]/2;
   fmv.s[1] = mb->PMV[0][0][0];
   fmv.s[2] = mb->PMV[1][0][1]/2;
@@ -1911,7 +1892,6 @@ static __inline__ void renderFrameinFrame(uint **datay,uint **datau,
 
   dw1 = type_table[mb->macroblock_type & 0xf] |
     (((uint)mb->coded_block_pattern)<<22);
-
 
   fmv.s[0] = mb->PMV[0][0][1];
   fmv.s[1] = mb->PMV[0][0][0];
@@ -2343,7 +2323,6 @@ static __inline__ void renderDualPrimeinFrameDCT0(uint **datay,uint **datau,
   }
   /* End Y Blocks */
 
-
   fmv.s[0] /= 2;
   fmv.s[1] /= 2;
   bmv.s[0] /= 2;
@@ -2411,7 +2390,6 @@ static __inline__ void renderDualPrimeinFrameDCT0(uint **datay,uint **datau,
   *datav = dv;
 }
 
-
 /***************************************************************************
 // Function: XvMCRenderSurface
 // Description: This function does the actual HWMC. Given a list of
@@ -2454,7 +2432,6 @@ _X_EXPORT Status XvMCRenderSurface(Display *display, XvMCContext *context,
   uint *datau = NULL;
   uint *datav = NULL;
 
-
   /* Check Parameters for validity */
   if((target_surface == NULL) || (context == NULL) || (display == NULL)) {
     printf("Error, Invalid Target,Context, or DIsplay!\n");   
@@ -2465,7 +2442,6 @@ _X_EXPORT Status XvMCRenderSurface(Display *display, XvMCContext *context,
   if((macroblock_array == NULL) || (blocks == NULL)) {return BadValue;}
   if(context->privData == NULL) {return BadValue;}
   pI810XvMC = (i810XvMCContext *)context->privData;
-
 
   if(target_surface->privData == NULL) {
     printf("Error, Invalid Target Surface!\n");
@@ -2496,7 +2472,6 @@ _X_EXPORT Status XvMCRenderSurface(Display *display, XvMCContext *context,
     }
     privPast = (i810XvMCSurface *)past_surface->privData;
   }
-
 
   /* B Frame Test */
   if(future_surface == NULL) {
@@ -2657,7 +2632,6 @@ _X_EXPORT Status XvMCRenderSurface(Display *display, XvMCContext *context,
       mb->coded_block_pattern = 0;
     }
 
-
     if(mb->motion_type == XVMC_PREDICTION_DUAL_PRIME) {
       /*
 	By default the maps will not be set up for dual
@@ -2703,7 +2677,6 @@ _X_EXPORT Status XvMCRenderSurface(Display *display, XvMCContext *context,
 	*datav++ = privFuture->mi2v;
 	*datav++ = privFuture->mi3v;
     }
-
 
     /* Frame Picture */
     if((picture_structure & XVMC_FRAME_PICTURE) == XVMC_FRAME_PICTURE) {
@@ -2858,7 +2831,6 @@ _X_EXPORT Status XvMCPutSurface(Display *display,XvMCSurface *surface,
   int stat;
   Window win,root,parent,*pChilds;
 
-
   if((display == NULL) || (surface == NULL)) {
     return BadValue;
   }
@@ -2869,7 +2841,6 @@ _X_EXPORT Status XvMCPutSurface(Display *display,XvMCSurface *surface,
   pI810Surface = (i810XvMCSurface *)surface->privData;
   pI810XvMC = (i810XvMCContext *)pI810Surface->privContext;
   pORegs = (i810OverlayRecPtr)pI810XvMC->oregs;
-
 
   switch(surface->surface_type_id) {
   case FOURCC_YV12:
@@ -3240,7 +3211,6 @@ _X_EXPORT Status XvMCPutSurface(Display *display,XvMCSurface *surface,
   } /* switch(surface->surface_type_id) */
   
 
-
   OVERLAY_FLIP(pI810XvMC);
 
   /*
@@ -3451,7 +3421,6 @@ _X_EXPORT Status XvMCHideSurface(Display *display, XvMCSurface *surface) {
     */
     pI810XvMC->last_flip++;
 
-
     /* Now wait until the hardware reads the registers and makes the change. */
     BLOCK_OVERLAY(pI810XvMC,pI810XvMC->current)
 
@@ -3461,16 +3430,11 @@ _X_EXPORT Status XvMCHideSurface(Display *display, XvMCSurface *surface) {
   return Success;
 }
 
-
-
-
 /***************************************************************************
 //
 // Functions that deal with subpictures
 //
 ***************************************************************************/
-
-
 
 /***************************************************************************
 // Function: XvMCCreateSubpicture
@@ -3505,7 +3469,6 @@ _X_EXPORT Status XvMCCreateSubpicture(Display *display, XvMCContext *context,
     return (error_base + XvMCBadContext);
   }
 
-
   subpicture->context_id = context->context_id;
   subpicture->xvimage_id = xvimage_id;
   
@@ -3520,7 +3483,6 @@ _X_EXPORT Status XvMCCreateSubpicture(Display *display, XvMCContext *context,
     return BadAlloc;
   }
   pI810Subpicture = (i810XvMCSubpicture *)subpicture->privData;
-
 
   if((ret = _xvmc_create_subpicture(display, context, subpicture,
 				    &priv_count, &priv_data))) {
@@ -3601,8 +3563,6 @@ _X_EXPORT Status XvMCCreateSubpicture(Display *display, XvMCContext *context,
   pI810XvMC->ref++;
   return Success;
 }
-
-
 
 /***************************************************************************
 // Function: XvMCClearSubpicture
@@ -3725,7 +3685,6 @@ _X_EXPORT Status XvMCCompositeSubpicture(Display *display, XvMCSubpicture *subpi
 
 }
 
-
 /***************************************************************************
 // Function: XvMCDestroySubpicture
 // Description: Destroys the specified subpicture.
@@ -3753,7 +3712,6 @@ _X_EXPORT Status XvMCDestroySubpicture(Display *display, XvMCSubpicture *subpict
     return (error_base + XvMCBadSubpicture);
   }
 
-
   if(pI810Subpicture->last_render) {
     XvMCSyncSubpicture(display,subpicture);
   }
@@ -3766,7 +3724,6 @@ _X_EXPORT Status XvMCDestroySubpicture(Display *display, XvMCSubpicture *subpict
   subpicture->privData = NULL;
   return Success;
 }
-
 
 /***************************************************************************
 // Function: XvMCSetSubpicturePalette
@@ -3833,8 +3790,6 @@ _X_EXPORT Status XvMCBlendSubpicture(Display *display, XvMCSurface *target_surfa
 
   return BadMatch;
 }
-
-
 
 /***************************************************************************
 // Function: XvMCBlendSubpicture2
@@ -4215,7 +4170,6 @@ _X_EXPORT Status XvMCBlendSubpicture2(Display *display,
   *data++ = (5<<23) | (1<<17) | (1<<16);
   *data++ = CMD_FLUSH;
 
-
   /* Dispatch */
   pDMA->used = (unsigned long)data - (unsigned long)pDMA->address;
   mc.idx = pDMA->idx;
@@ -4227,8 +4181,6 @@ _X_EXPORT Status XvMCBlendSubpicture2(Display *display,
   I810_UNLOCK(pI810XvMC);
   return Success;
 }
-
-
 
 /***************************************************************************
 // Function: XvMCSyncSubpicture
@@ -4248,8 +4200,6 @@ _X_EXPORT Status XvMCSyncSubpicture(Display *display, XvMCSubpicture *subpicture
   }while(!ret && (stat & XVMC_RENDERING));
   return ret;
 }
-
-
 
 /***************************************************************************
 // Function: XvMCFlushSubpicture
@@ -4273,8 +4223,6 @@ _X_EXPORT Status XvMCFlushSubpicture(Display *display, XvMCSubpicture *subpictur
 
   return Success;
 }
-
-
 
 /***************************************************************************
 // Function: XvMCGetSubpictureStatus
@@ -4331,7 +4279,6 @@ static XvAttribute I810_XVMC_ATTRIBUTES[] = {
   {XvGettable | XvSettable, 0, 0x1ff, "XV_CONTRAST"},
   {XvGettable | XvSettable, 0, 0x3ff, "XV_SATURATION"}
 };
-
 
 /***************************************************************************
 // Function: XvMCQueryAttributes
@@ -4517,7 +4464,4 @@ _X_EXPORT Status XvMCGetAttribute(Display *display, XvMCContext *context,
   }
   return BadValue;
 }
-
-
-
 

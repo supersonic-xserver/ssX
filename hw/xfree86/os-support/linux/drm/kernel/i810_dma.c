@@ -563,8 +563,6 @@ int i810_dma_init(struct inode *inode, struct file *filp,
 	return retcode;
 }
 
-
-
 /* Most efficient way to verify state for the i810 is as it is
  * emitted.  Non-conformant state is silently dropped.
  *
@@ -676,8 +674,6 @@ static void i810EmitDestVerified( drm_device_t *dev,
 	ADVANCE_LP_RING();
 }
 
-
-
 static void i810EmitState( drm_device_t *dev )
 {
 	drm_i810_private_t *dev_priv = dev->dev_private;
@@ -706,8 +702,6 @@ static void i810EmitState( drm_device_t *dev )
 		sarea_priv->dirty &= ~I810_UPLOAD_TEX1;
 	}
 }
-
-
 
 /* need to verify
  */
@@ -1103,8 +1097,6 @@ int i810_dma_vertex(struct inode *inode, struct file *filp,
 
 	return 0;
 }
-
-
 
 int i810_clear_bufs(struct inode *inode, struct file *filp,
 		   unsigned int cmd, unsigned long arg)

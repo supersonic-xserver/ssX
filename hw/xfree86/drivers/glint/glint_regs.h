@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * glint register file 
  *
@@ -123,8 +114,6 @@
 #define CFGBaseAddr3							0x1C
 #define CFGBaseAddr4							0x20
 #define CFGRomAddr							0x30
-
-
 
 /**********************************
  * GLINT 500TX Region 0 Registers *
@@ -491,8 +480,6 @@
 #define DErrorFlags							0x0838
 #define DTestRegister							0x0848
 #define DFIFODis							0x0868
-
-
 
 /**********************************
  * GLINT Gamma Region 0 Registers *
@@ -912,8 +899,6 @@
 
 #	define LBRF_Compact32  (1 << 17)
 
-
-
 #define LBSourceOffset						GLINT_TAG_ADDR(0x11,0x02)
 #define LBStencil						GLINT_TAG_ADDR(0x11,0x05)
 #define LBDepth							GLINT_TAG_ADDR(0x11,0x06)
@@ -1192,8 +1177,6 @@
 #	define DDCMD_FogEnable                                 1 << 14
 #	define DDCMD_CoverageEnable                            1 << 15
 #	define DDCMD_SubPixelCorrectionEnable                  1 << 16
-
-
 
 #define DrawTriangle						GLINT_TAG_ADDR(0x26,0x01)
 #define RepeatTriangle						GLINT_TAG_ADDR(0x26,0x02)

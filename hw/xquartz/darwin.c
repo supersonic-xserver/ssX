@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Xquartz initialization code
@@ -83,7 +81,6 @@
 //#include "darwinClut8.h"
 
 #include "GL/visualConfigs.h"
-
 
 #ifdef ENABLE_DEBUG_LOG
 FILE *debug_log_fp = NULL;
@@ -173,7 +170,6 @@ DarwinPrintBanner(void)
   ErrorF("Xquartz starting:\n");
   ErrorF("Super Sonic X Server %s\nBuild Date: %s\n", XSERVER_VERSION, BUILD_DATE );
 }
-
 
 /*
  * DarwinSaveScreen
@@ -523,7 +519,6 @@ void InitInput( int argc, char **argv )
     QuartzInitInput(argc, argv);
 }
 
-
 /*
  * DarwinAdjustScreenOrigins
  *  Shift all screens so the X11 (0, 0) coordinate is at the top
@@ -576,7 +571,6 @@ DarwinAdjustScreenOrigins(ScreenInfo *pScreenInfo)
     }
 }
 
-
 /*
  * InitOutput
  *  Initialize screenInfo for all actually accessible framebuffers.
@@ -619,7 +613,6 @@ void InitOutput( ScreenInfo *pScreenInfo, int argc, char **argv )
     DarwinAdjustScreenOrigins(pScreenInfo);
 }
 
-
 /*
  * OsVendorFataError
  */
@@ -627,7 +620,6 @@ void OsVendorFatalError( void )
 {
     ErrorF( "   OsVendorFatalError\n" );
 }
-
 
 /*
  * OsVendorInit
@@ -653,7 +645,6 @@ void OsVendorInit(void)
 #endif
     }
 }
-
 
 /*
  * ddxProcessArgument
@@ -782,7 +773,6 @@ int ddxProcessArgument( int argc, char *argv[], int i )
     return 0;
 }
 
-
 /*
  * ddxUseMsg --
  *  Print out correct use of device dependent commandline options.
@@ -809,7 +799,6 @@ void ddxUseMsg( void )
     ErrorF("\n");
 }
 
-
 /*
  * ddxGiveUp --
  *      Device dependent cleanup. Called by dix before normal server death.
@@ -818,7 +807,6 @@ void ddxGiveUp( void )
 {
     ErrorF( "Quitting Xquartz...\n" );
 }
-
 
 /*
  * AbortDDX --
@@ -929,7 +917,6 @@ xf86SetRootClip (ScreenPtr pScreen, int enable)
 	    (*pScreen->MarkWindow) (pWin);
 	    anyMarked = TRUE;
 	}
-
 
 	if (anyMarked)
 	    (*pScreen->ValidateTree)(pWin, NullWindow, VTOther);

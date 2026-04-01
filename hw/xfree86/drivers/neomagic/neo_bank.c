@@ -1,10 +1,8 @@
-/**********************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
@@ -79,7 +77,6 @@ NEOSetWrite(ScreenPtr pScreen, int bank)
     outw(ioBase, ((((bank << 2) & 0xFF) << 8) | 0x16));
     return 0;
 }
-
 
 int
 NEOSetRead(ScreenPtr pScreen, int bank)

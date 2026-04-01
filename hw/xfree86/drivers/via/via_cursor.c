@@ -97,8 +97,6 @@ VIAHWCursorInit(ScreenPtr pScreen)
     return xf86InitCursor(pScreen, infoPtr);
 }
 
-
-
 void
 VIAShowCursor(ScrnInfoPtr pScrn)
 {

@@ -30,7 +30,7 @@
  *           Dirk Hohndel, <hohndel@suse.de>
  *           Stefan Dirsch, <sndirsch@suse.de>
  *           Mark Vojkovich, <mvojkovi@ucsd.edu>
- *           Michel Dänzer, <michdaen@iiic.ethz.ch>
+ *           Michel DÃ¤nzer, <michdaen@iiic.ethz.ch>
  *
  * this work is sponsored by S.u.S.E. GmbH, Fuerth, Elsa GmbH, Aachen and
  * Siemens Nixdorf Informationssysteme
@@ -535,8 +535,6 @@ Permedia2SubsequentScreenToScreenCopy(ScrnInfoPtr pScrn, int x1, int y1,
     GLINT_WRITE_REG(PrimitiveRectangle | pGlint->BltScanDirection, Render);
     TRACE_EXIT("Permedia2SubsequentScreenToScreenCopy");
 }
-
-
 
 static void 
 Permedia2PolylinesThinSolidWrapper(

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /* Skeleton interface for Bison's Yacc-like parsers in C
 
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
@@ -96,9 +87,6 @@
 #define TRAYICON 275
 #define SILENTEXIT 276
 #define STRING 277
-
-
-
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE

@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * IOKit support for the Darwin X Server
@@ -88,7 +86,6 @@ static IONotificationPortRef    NotificationPortRef;
 static mach_port_t              pmNotificationPort;
 static io_iterator_t            fbIter;
 
-
 /*
  * XFIOKitStoreColors
  * This is a callback from X to change the hardware colormap
@@ -125,7 +122,6 @@ static void XFIOKitStoreColors(
     xfree( newColors );
 }
 
-
 /*
  * DarwinModeBell
  *  FIXME
@@ -137,7 +133,6 @@ void DarwinModeBell(
     int             fbclass)
 {
 }
-
 
 /*
  * DarwinModeGiveUp
@@ -158,7 +153,6 @@ void DarwinModeGiveUp( void )
     }
 }
 
-
 /*
  * ClearEvent
  *  Clear an event from the HID System event queue
@@ -171,7 +165,6 @@ static void ClearEvent(NXEvent * ep)
     ep->data.compound.subType = ep->data.compound.misc.L[0] =
                                 ep->data.compound.misc.L[1] = 0;
 }
-
 
 /*
  * XFIOKitHIDThread
@@ -283,7 +276,6 @@ static void *XFIOKitHIDThread(void *unused)
     return NULL;
 }
 
-
 /*
  * XFIOKitPMThread
  *  Handle power state notifications
@@ -313,7 +305,6 @@ static void *XFIOKitPMThread(void *arg)
     }
     return NULL;
 }
-
 
 /*
  * SetupFBandHID
@@ -549,7 +540,6 @@ static Bool SetupFBandHID(
     return TRUE;
 }
 
-
 /*
  * DarwinModeAddScreen
  *  IOKit specific initialization for each screen.
@@ -576,7 +566,6 @@ Bool DarwinModeAddScreen(
 
     return TRUE;
 }
-
 
 /*
  * XFIOKitShadowUpdate
@@ -615,7 +604,6 @@ static void XFIOKitShadowUpdate(ScreenPtr pScreen,
     }
 }
 
-
 /*
  * DarwinModeSetupScreen
  *  Finalize IOKit specific initialization of each screen.
@@ -650,7 +638,6 @@ Bool DarwinModeSetupScreen(
 
     return TRUE;
 }
-
 
 /*
  * DarwinModeInitOutput
@@ -740,7 +727,6 @@ void DarwinModeInitOutput(
     IOIteratorReset(fbIter);
 }
 
-
 /*
  * DarwinModeInitInput
  *  One-time initialization of IOKit input support.
@@ -764,7 +750,6 @@ void DarwinModeInitInput(
                    XFIOKitHIDThread, NULL);
 
 }
-
 
 /*
  * DarwinModeProcessEvent

@@ -232,8 +232,6 @@ typedef struct _XGI_New_ModeResInfoStruct
 	UCHAR  YChar;
 } XGI_New_ModeResInfoStruct;
 
-
-
 typedef UCHAR DRAM4sType[4];
 
 /* Defines for XGI_CustomT */

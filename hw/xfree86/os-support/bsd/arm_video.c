@@ -542,8 +542,6 @@ xf86EnableInterrupts()
 	return;
 }
 
-
-
 #if 0
 /*
  * XXX This is here for reference.  It needs to be handled differently for the

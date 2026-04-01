@@ -19,8 +19,6 @@
 #include "shadowfb.h"
 #include "servermd.h"
 
-
-
 void
 renditionRefreshArea(ScrnInfoPtr pScreenInfo, int num, BoxPtr pbox)
 {

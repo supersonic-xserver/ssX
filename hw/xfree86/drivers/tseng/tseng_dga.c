@@ -61,9 +61,6 @@ DGAFunctionRec TsengDGAFuncs = {
    NULL  /* Tseng_BlitTransRect */
 };
 
-
-
-
 Bool
 TsengDGAInit(ScreenPtr pScreen)
 {
@@ -206,8 +203,6 @@ Tseng_GetViewport(
 
     return pTseng->DGAViewportStatus;
 }
-
-
 
 static void 
 Tseng_Sync(

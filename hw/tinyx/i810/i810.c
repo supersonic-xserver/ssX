@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 2000, 2001 Nokia Home Communications
 
 All rights reserved.
@@ -850,8 +841,6 @@ i810ScreenInit (KdScreenInfo *screen)
         fprintf(stderr,"Unsupported depth %d\n",screen->fb[0].depth);
         return FALSE;
     }
-
-
 
     /* Set all colours to black */
     for (i=0; i<768; i++) i810c->vga.ModeReg.DAC[i] = 0x00;

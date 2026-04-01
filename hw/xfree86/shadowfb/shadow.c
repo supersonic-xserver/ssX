@@ -175,8 +175,6 @@ static unsigned long ShadowGeneration = 0;
 #define BOX_NOT_EMPTY(box) \
     (((box.x2 - box.x1) > 0) && ((box.y2 - box.y1) > 0))
 
-
-
 Bool
 ShadowFBInit2 (
     ScreenPtr		pScreen,
@@ -613,9 +611,6 @@ ShadowDestroyClip(GCPtr pGC)
     (* pGC->funcs->DestroyClip)(pGC);
     SHADOW_GC_FUNC_EPILOGUE (pGC);
 }
-
-
-
 
 /**********************************************************/
 
@@ -1441,8 +1436,6 @@ ShadowTextExtent(FontPtr pFont, int count, char* chars,
     box->y1 = -FONTMAXBOUNDS(pFont,ascent);
     box->y2 = FONTMAXBOUNDS(pFont,descent);
 }
-
-
 
 static void
 ShadowFontToBox(BoxPtr BB, DrawablePtr pDrawable, GCPtr pGC, int x, int y,

@@ -344,8 +344,6 @@ static int ProcPseudoramiXDispatch (ClientPtr client)
     return BadRequest;
 }
 
-
-
 static int
 SProcPseudoramiXQueryVersion (ClientPtr client)
 {

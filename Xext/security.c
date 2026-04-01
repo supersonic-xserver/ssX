@@ -930,8 +930,6 @@ SecurityCheckDeviceAccess(ClientPtr client, DeviceIntPtr dev, Bool fromRequest)
     return untrusted_got_event;
 } /* SecurityCheckDeviceAccess */
 
-
-
 /* SecurityAuditResourceIDAccess
  *
  * Arguments:
@@ -1950,8 +1948,6 @@ XSecurityOptions(int argc, const char **argv, int i)
     }
     return (i);
 } /* XSecurityOptions */
-
-
 
 /* SecurityExtensionInit
  *

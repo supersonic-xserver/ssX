@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -222,6 +220,4 @@ I740SetCursorColors(ScrnInfoPtr pScrn, int bg, int fg) {
   tmp &= ~EXTENDED_PALETTE;
   pI740->writeControl(pI740, XRX, PIXPIPE_CONFIG_0, tmp);
 }
-
-
 

@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 #ifndef __SIS_DRM_H__
 #define __SIS_DRM_H__
 

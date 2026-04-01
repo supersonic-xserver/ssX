@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  *
  * Copyright 1995-1997 The XFree86 Project, Inc.
@@ -228,9 +219,6 @@ void writescan( unsigned long scan, unsigned long color );
  */
 
 ScrnInfoPtr gpScrn = 0;
-
-
-
 
 void
 SavageInitialize2DEngine(ScrnInfoPtr pScrn)
@@ -588,9 +576,6 @@ SavageInitAccel(ScreenPtr pScreen)
     return XAAInit(pScreen, xaaptr);
 }
 
-
-
-
 /* The sync function for the GE */
 void
 SavageAccelSync(ScrnInfoPtr pScrn)
@@ -674,8 +659,6 @@ SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, int pm, int *rop)
 
     return ret;
 }
-
-
 
 /* These are the ScreenToScreen bitblt functions. We support all ROPs, all
  * directions, and a planemask by adjusting the ROP and using the mono pattern
@@ -1169,8 +1152,6 @@ SavageSubsequentSolidTwoPointLine(
     BCI_SEND( BCI_LINE_MISC( max, ym, xp, yp, 2 * min - max ) );
 }
 #endif
-
-
 
 static void 
 SavageSetClippingRectangle(

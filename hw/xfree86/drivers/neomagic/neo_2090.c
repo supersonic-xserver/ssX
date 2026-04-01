@@ -1,10 +1,8 @@
-/**********************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
@@ -261,7 +259,6 @@ Neo2090SubsequentScreenToScreenCopy(ScrnInfoPtr pScrn,
     }
 }
 
-
 static void
 Neo2090SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
 			     unsigned int planemask)
@@ -281,7 +278,6 @@ Neo2090SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
     /* set foreground color */
     OUTREG(NEOREG_FGCOLOR, color |= (color << nAcl->ColorShiftAmt));
 }
-
 
 static void
 Neo2090SubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
@@ -368,6 +364,4 @@ Neo2093SubsequentColorExpandScanline(ScrnInfoPtr pScrn,	int bufno)
     OUTREG(NEOREG_XYEXT, (1<<16)
 	   | (nAcl->CPUToScreenColorExpandFill_w & 0xffff));
 }
-
-
 

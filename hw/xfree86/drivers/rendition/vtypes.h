@@ -9,8 +9,6 @@
 #ifndef _VTYPES_H_
 #define _VTYPES_H_
 
-
-
 /*
  * includes
  */
@@ -32,8 +30,6 @@
 
 
 #define XSERVER
-
-
 
 /*
  * typedefs
@@ -67,8 +63,6 @@ typedef enum {
     /* 14 reserved */
     /* 15 reserved */
 } vpixfmt;
-
-
 
 /*
  * structs

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "misc.h"
 #include "xf86.h"
 #include "xf86_ansic.h"
@@ -399,10 +390,6 @@ XAARenderPixmapCopySpans(
                 (xorg + pGC->patOrg.x), (yorg + pGC->patOrg.y));
 }
 
-
-
-
-
 	/****************\
 	|     Solid      |
 	\****************/
@@ -563,8 +550,6 @@ XAAFillMono8x8PatternSpans(
 
      SET_SYNC_FLAG(infoRec);
 }
-
-
 
 	/****************\
 	|   Color 8x8    |
@@ -783,8 +768,6 @@ XAAFillCacheExpandSpans(
 
      SET_SYNC_FLAG(infoRec);
 }
-
-
 
 void
 XAAClipAndRenderSpans(

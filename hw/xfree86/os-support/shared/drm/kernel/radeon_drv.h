@@ -220,8 +220,6 @@ extern void radeon_do_release(drm_device_t *dev);
 #define RADEON_BOX_WAIT_IDLE     0x8
 #define RADEON_BOX_TEXTURE_LOAD  0x10
 
-
-
 /* Register definitions, register access macros and drmAddMap constants
  * for Radeon kernel driver.
  */

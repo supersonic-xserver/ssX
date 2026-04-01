@@ -63,8 +63,6 @@ static int  S3QueryImageAttributes(ScrnInfoPtr, int, unsigned short *,
                         	   unsigned short *,  int *, int *);
 static void S3ResetVideoOverlay(ScrnInfoPtr);
 
-
-
 void S3InitVideo(ScreenPtr pScreen)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
@@ -124,16 +122,11 @@ static XF86VideoEncodingRec DummyEncoding[2] =
  	}
 };
 
-
-
-
 static XF86VideoFormatRec Formats[NUM_FORMATS_TEXTURE] =
 {
   	/*{15, TrueColor},*/ {16, TrueColor}, {24, TrueColor} /* ,
     	{15, DirectColor}*/, {16, DirectColor}, {24, DirectColor}
 };
-
-
 
 #define NUM_IMAGES 3
    
@@ -146,8 +139,6 @@ static XF86ImageRec Images[NUM_IMAGES] =
   	XVIMAGE_I420
         /* XVIMAGE_UYVY */
 };
-
-
 
 static int S3SetPortAttributeOverlay(ScrnInfoPtr pScrn, Atom attribute,
 				     INT32 value, pointer data)
@@ -162,8 +153,6 @@ static int S3GetPortAttributeOverlay(ScrnInfoPtr pScrn, Atom attribute,
 	return BadMatch;
 }
 
-
-
 static void S3QueryBestSize(ScrnInfoPtr pScrn, Bool motion, short vid_w,
 			    short vid_h, short drw_w, short drw_h,
                             unsigned int *p_w, unsigned int *p_h,
@@ -172,8 +161,6 @@ static void S3QueryBestSize(ScrnInfoPtr pScrn, Bool motion, short vid_w,
 	*p_w = drw_w;
 	*p_h = drw_h;
 }
-
-
 
 static void S3ResetVideoOverlay(ScrnInfoPtr pScrn)
 {
@@ -315,8 +302,6 @@ static FBAreaPtr S3AllocateMemory(ScrnInfoPtr pScrn, FBAreaPtr area,
   
    return new_area;  
 }
-
-
 
 static void S3DisplayVideoOverlay(ScrnInfoPtr pScrn, int id, int offset,
 				  short width, short height, int pitch,
@@ -468,8 +453,6 @@ static int S3PutImage(ScrnInfoPtr pScrn, short src_x, short src_y,
     return Success;
 }       
 
-
-
 static int S3QueryImageAttributes(ScrnInfoPtr pScrn, int id,
 				  unsigned short *w, unsigned short *h,
 				  int *pitches, int *offsets)
@@ -505,8 +488,6 @@ static int S3QueryImageAttributes(ScrnInfoPtr pScrn, int id,
         
     return size;
 }
-
-
 
 void S3InitStreams(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {       

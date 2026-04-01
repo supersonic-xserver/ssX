@@ -46,8 +46,6 @@
 
 #include "GL/internal/glcore.h"
 
-
-
 typedef struct {
 
     __GLXvisualConfig *pGlxVisual;

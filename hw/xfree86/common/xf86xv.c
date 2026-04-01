@@ -1171,8 +1171,6 @@ xf86XVClipNotify(WindowPtr pWin, int dx, int dy)
   }
 }
 
-
-
 /**** Required XvScreenRec fields ****/
 
 static Bool
@@ -1342,8 +1340,6 @@ xf86XVAllocatePort(
   *ppPort = pPort;
   return Success;
 }
-
-
 
 static int
 xf86XVFreePort(XvPortPtr pPort)
@@ -1620,8 +1616,6 @@ GET_STILL_BAILOUT:
   return ret;
 }
 
-
-
 static int
 xf86XVStopVideo(
    ClientPtr client,
@@ -1674,8 +1668,6 @@ xf86XVGetPortAttribute(
   return((*portPriv->AdaptorRec->GetPortAttribute)(portPriv->pScrn,
 		attribute, p_value, portPriv->DevPriv.ptr));
 }
-
-
 
 static int
 xf86XVQueryBestSize(

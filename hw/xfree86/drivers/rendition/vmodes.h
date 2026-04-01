@@ -15,15 +15,11 @@
 #ifndef __VMODES_H__
 #define __VMODES_H__
 
-
-
 /*
  * includes
  */
 
 #include "vtypes.h"
-
-
 
 /*
  * function prototypes
@@ -37,8 +33,6 @@ void verite_restore(ScrnInfoPtr pScreenInfo, RenditionRegPtr reg);
 int verite_setmode(ScrnInfoPtr pScreenInfo, struct verite_modeinfo_t *mode);
 void verite_setframebase(ScrnInfoPtr pScreenInfo, vu32 framebase);
 int verite_getstride(ScrnInfoPtr pScreenInfo, int *width, vu16 *stride0, vu16 *stride1);
-
-
 
 #endif /* #ifndef _VMODES_H_ */
 

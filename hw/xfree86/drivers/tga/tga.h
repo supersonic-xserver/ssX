@@ -219,8 +219,5 @@ void
 TGASubsequentClippedDashedLine(ScrnInfoPtr pScrn, int x1, int y1, int len,
 			       int err, int phase);
 
-
-
-
 #endif /* _TGA_H_ */
 

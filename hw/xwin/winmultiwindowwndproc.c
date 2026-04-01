@@ -71,8 +71,6 @@ static UINT_PTR		g_uipMousePollingTimerID = 0;
 #define MOUSE_POLLING_INTERVAL		500
 #define WIN_MULTIWINDOW_SHAPE		YES
 
-
-
 /*
  * ConstrainSize - Taken from TWM sources - Respects hints for sizing
  */
@@ -201,8 +199,6 @@ ConstrainSize (WinXSizeHints hints, int *widthp, int *heightp)
   *heightp = dheight;
 }
 #undef makemult
-
-
 
 /*
  * ValidateSizing - Ensures size request respects hints

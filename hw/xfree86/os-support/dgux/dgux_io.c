@@ -37,8 +37,6 @@
 #include "xf86Procs.h"
 #include "xf86_OSlib.h"
 
-
-
 void xf86SoundKbdBell(loudness, pitch, duration)
 int loudness;
 int pitch;
@@ -59,15 +57,11 @@ int duration;
 	}
 }
 
-
-
 void xf86MouseInit(mouse)
 MouseDevPtr mouse;
 {
 	return;
 }
-
-
 
 /* Added for DG/ux: only RDONLY will not crash the Xserver */
 int xf86MouseOn(mouse)

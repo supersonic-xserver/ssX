@@ -265,8 +265,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define HSYNC_ON               0x00
 #define HSYNC_OFF              0x02
 
-
-
 /* p317, 319
  */
 #define VCLK2_VCO_M        0x6008 /* treat as 16 bit? (includes msbs) */
@@ -436,8 +434,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define PGE_ERR_LOCAL_MEM   0x00000005
 #define PGE_ERR_TILED       0x00000006
 
-
-
 /* Page table entries loaded via mmio region, p323
  */
 #define PTE_BASE         0x10000
@@ -479,8 +475,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define RING_VALID_MASK     0x00000001
 #define RING_VALID          0x00000001
 #define RING_INVALID        0x00000000
-
-
 
 /* BitBlt Instructions
  *
@@ -605,14 +599,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define LM_FREQ_133         0x10
 #define LM_FREQ_100         0x00
 
-
-
-
 /* These are 3d state registers, but the state is invarient, so we let
  * the X server handle it:
  */
-
-
 
 /* GFXRENDERSTATE_COLOR_CHROMA_KEY, p135
  */

@@ -200,8 +200,6 @@ TRIDENT_SetMode(
    return TRUE;
 }
 
-
-
 static int  
 TRIDENT_GetViewport(
   ScrnInfoPtr pScrn

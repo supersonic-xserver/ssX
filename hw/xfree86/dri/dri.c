@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 Copyright 2000 VA Linux Systems, Inc.
@@ -127,7 +123,6 @@ DRIDrvMsg(int scrnIndex, MessageType type, const char *format, ...)
     va_end(ap);
 }
 
-
 static void
 DRIOpenDRMCleanup(DRIEntPrivPtr pDRIEntPriv)
 {
@@ -161,7 +156,6 @@ DRIMasterSareaHandle(ScrnInfoPtr pScrn)
 {
     return DRI_ENT_PRIV(pScrn)->hLSAREA;
 }
-
 
 Bool
 DRIOpenDRMMaster(ScrnInfoPtr pScrn,
@@ -313,7 +307,6 @@ DRIOpenDRMMaster(ScrnInfoPtr pScrn,
     DRIOpenDRMCleanup(&tmp);
     return FALSE;
 }
-
 
 Bool
 DRIScreenInit(ScreenPtr pScreen, DRIInfoPtr pDRIInfo, int *pDRMFD)
@@ -1122,7 +1115,6 @@ DRIContextPrivDelete(pointer pResource, XID id)
     return DRIDestroyContextPriv(pDRIContextPriv);
 }
 
-
 /* This walks the drawable timestamp array and invalidates all of them
  * in the case of transition from private to shared backbuffers.  It's
  * not necessary for correctness, because DRIClipNotify gets called in
@@ -1140,7 +1132,6 @@ DRIClipNotifyAllDrawables(ScreenPtr pScreen)
    }
 }
 
-
 static void
 DRITransitionToSharedBuffers(ScreenPtr pScreen)
 {
@@ -1153,7 +1144,6 @@ DRITransitionToSharedBuffers(ScreenPtr pScreen)
 	pDRIInfo->TransitionSingleToMulti3D( pScreen );
 }
 
-
 static void
 DRITransitionToPrivateBuffers(ScreenPtr pScreen)
 {
@@ -1165,7 +1155,6 @@ DRITransitionToPrivateBuffers(ScreenPtr pScreen)
     if (pDRIInfo->TransitionMultiToSingle3D)
 	pDRIInfo->TransitionMultiToSingle3D( pScreen );
 }
-
 
 static void
 DRITransitionTo3d(ScreenPtr pScreen)
@@ -1190,7 +1179,6 @@ DRITransitionTo2d(ScreenPtr pScreen)
     if (pDRIInfo->TransitionTo2d)
 	pDRIInfo->TransitionTo2d( pScreen );
 }
-
 
 static int
 DRIDCNTreeTraversal(WindowPtr pWin, pointer data)
@@ -1659,7 +1647,6 @@ DRIDestroyInfoRec(DRIInfoPtr DRIInfo)
     xfree((char*)DRIInfo);
 }
 
-
 void
 DRIWakeupHandler(pointer wakeupData, int result, pointer pReadmask)
 {
@@ -1914,7 +1901,6 @@ DRIWindowExposures(WindowPtr pWin, RegionPtr prgn, RegionPtr bsreg)
 	pScreen->WindowExposures = DRIWindowExposures;
     }
 }
-
 
 static int
 DRITreeTraversal(WindowPtr pWin, pointer data)
@@ -2228,7 +2214,6 @@ DRIGetDrawableStamp(ScreenPtr pScreen, CARD32 drawable_index)
     return pDRIPriv->pSAREA->drawableTable[drawable_index].stamp;
 }
 
-
 void
 DRIPrintDrawableLock(ScreenPtr pScreen, char *msg)
 {
@@ -2527,7 +2512,6 @@ static void drmSIGIOHandler(int interrupt, void *closure)
 	} while (drmHashNext(hash_table, &key, &value));
     }
 }
-
 
 int drmInstallSIGIOHandler(int fd, void (*f)(int, void *, void *))
 {

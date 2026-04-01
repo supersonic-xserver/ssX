@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 All Rights Reserved.
@@ -178,12 +174,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define OVERLAY_GAMMA_ENABLE   0x04
 #define OVERLAY_GAMMA_DISABLE  0x00
 
-
 /* p380
  */
 #define DISPLAY_BASE       0x70020
 #define DISPLAY_BASE_MASK  0x03fffffc
-
 
 /* Cursor control registers, pp383-384
  */
@@ -217,7 +211,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define MCURSOR_PIPE_B         (1 << 28)
 #define MCURSOR_GAMMA_ENABLE   (1 << 26)
 #define MCURSOR_MEM_TYPE_LOCAL (1 << 25)
-
 
 #define CURSOR_BASEADDR    0x70084
 #define CURSOR_A_BASE      CURSOR_BASEADDR
@@ -253,7 +246,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define CURSOR_B_PALETTE1  0x700D4
 #define CURSOR_B_PALETTE2  0x700D8
 #define CURSOR_B_PALETTE3  0x700DC
-
 
 /* Similar registers exist in Device 0 on the i810 (pp55-65), but I'm
  * not sure they refer to local (graphics) memory.
@@ -360,7 +352,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define VCO_LOOP_DIV_BY_4M     0x00
 #define VCO_LOOP_DIV_BY_16M    0x04
 
-
 /* Instruction Parser Mode Register 
  *    - p281
  *    - 2 new bits.
@@ -373,9 +364,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define STATE_VAR_UPDATE_DISABLE     0x02
 #define PAL_STIP_DISABLE             0x01
 
-
 #define MEMMODE                  0x20dc
-
 
 /* Instruction parser error register.  p279
  */
@@ -480,7 +469,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define TD_CTL                 0x8000
 #define TD_CTL2                0x8004
 
-
 #define ECOSKPD 0x21d0
 #define EXCC    0x2028
 
@@ -498,11 +486,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define TIMESTAMP_QW           0x2358
 #define CLKCMP_QW              0x2360
 
-
-
-
-
-
 /* General error reporting regs, p296
  */
 #define EIR               0x20B0
@@ -513,7 +496,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # define ERR_DISPLAY_OVERLAY_UNDERRUN		(1 << 3)
 # define ERR_MAIN_MEMORY_REFRESH		(1 << 1)
 # define ERR_INSTRUCTION_ERROR			(1 << 0)
-
 
 /* Interrupt Control Registers 
  *   - new bits for i810
@@ -542,7 +524,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define USER_DEFINED             0x0002
 #define BREAKPOINT               0x0001
 
-
 #define INTR_RESERVED            (0x6000 | 		\
 				  DPY_1_FLIP_PENDING |	\
 				  OVL_1_FLIP_PENDING |	\
@@ -563,7 +544,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define MM_FIFO_WATERMARK   0x0001F000
 #define LM_BURST_LENGTH     0x00000700
 #define LM_FIFO_WATERMARK   0x0000001F
-
 
 /* Fence/Tiling ranges [0..7]
  */
@@ -611,7 +591,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define FENCE_PITCH_32      0x00000050
 #define FENCE_PITCH_64	    0x00000060
 #define FENCE_VALID         0x00000001
-
 
 /* Registers to control page table, p274
  */
@@ -721,8 +700,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define RING_VALID          0x00000001
 #define RING_INVALID        0x00000000
 
-
-
 /* BitBlt Instructions
  *
  * There are many more masks & ranges yet to add.
@@ -736,7 +713,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define BR00_OP_MONO_PAT_BLT 0x11C00000
 #define BR00_OP_MONO_SRC_COPY_IMMEDIATE_BLT (0x61 << 22)
 #define BR00_OP_TEXT_IMMEDIATE_BLT 0xc000000
-
 
 #define BR00_TPCY_DISABLE    0x00000000
 #define BR00_TPCY_ENABLE     0x00000010
@@ -784,7 +760,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define BR18_SRC_BGND_CLR    0x00FFFFFF
 #define BR19_SRC_FGND_CLR    0x00FFFFFF
 
-
 /* Instruction parser instructions
  */
 
@@ -792,9 +767,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define INST_OP_FLUSH        0x02000000
 #define INST_FLUSH_MAP_CACHE 0x00000001
 
-
 #define GFX_OP_USER_INTERRUPT ((0<<29)|(2<<23))
-
 
 /* Registers in the i810 host-pci bridge pci config space which affect
  * the i810 graphics operations.  
@@ -846,14 +819,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define LM_FREQ_133         0x10
 #define LM_FREQ_100         0x00
 
-
-
-
 /* These are 3d state registers, but the state is invarient, so we let
  * the X server handle it:
  */
-
-
 
 /* GFXRENDERSTATE_COLOR_CHROMA_KEY, p135
  */
@@ -868,7 +836,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define CC2_COLOR_IDX_SHIFT      24
 #define CC2_COLOR_IDX_MASK       (0xff<<24)
 #define CC2_CHROMA_HI_MASK       ((1<<24)-1)
-
 
 #define GFX_CMD_CONTEXT_SEL      ((0<<29)|(0x5<<23))
 #define CS_UPDATE_LOAD           (1<<17)
@@ -1343,7 +1310,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define UDIB_SHA_BLANK_CODES		0x61148
 #define UDIB_START_END_FILL_CODES	0x6114c
 
-
 #define SDVOUDI				0x61150
 
 #define I830_HTOTAL_MASK 	0xfff0000
@@ -1383,7 +1349,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define ADPA_VSYNC_ACTIVE_LOW	0
 #define ADPA_HSYNC_ACTIVE_HIGH	(1<<3)
 #define ADPA_HSYNC_ACTIVE_LOW	0
-
 
 #define DVOA			0x61120
 #define DVOB			0x61140
@@ -2458,7 +2423,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define INTEL_GMCH_GMS_STOLEN_224M		(0xc << 4)
 #define INTEL_GMCH_GMS_STOLEN_352M		(0xd << 4)
 
-
 #define I915_GCFGC			0xf0
 #define I915_LOW_FREQUENCY_ENABLE		(1 << 7)
 #define I915_DISPLAY_CLOCK_190_200_MHZ		(0 << 4)
@@ -2665,7 +2629,6 @@ typedef enum {
 #define OGAMC2			0x3001c
 #define OGAMC1			0x30020
 #define OGAMC0			0x30024
-
 
 /*
  * Palette registers

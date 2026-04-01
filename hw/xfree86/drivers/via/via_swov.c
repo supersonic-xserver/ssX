@@ -47,8 +47,6 @@
 #include "via_swov.h"
 #include "via_common.h"
 
-
-
 /* E X T E R N   G L O B A L S ----------------------------------------------*/
 
 extern Bool   XserverIsUp;              /* If Xserver had run(register action) */
@@ -1767,8 +1765,6 @@ unsigned long VIAVidUpdateOverlay(ScrnInfoPtr pScrn, LPDDUPDATEOVERLAY lpUpdate)
     return PI_OK;
 
 } /*VIAVidUpdateOverlay*/
-
-
 
 /*************************************************************************
  *  ADJUST FRAME

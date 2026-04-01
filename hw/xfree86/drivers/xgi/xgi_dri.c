@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /* modified from tdfx_dri.c, mga_dri.c */
 
 #include "xf86.h"
@@ -519,8 +510,6 @@ XGIDRIFinishScreenInit(ScreenPtr pScreen)
   
     saPriv->shareWPoffset = pXGI->cmdQueue_shareWP_only2D;
     pXGI->pCQ_shareWritePort = &(saPriv->shareWPoffset);
-
-
 
     XGIIdle
   }

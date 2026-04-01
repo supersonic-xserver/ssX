@@ -446,8 +446,6 @@
 #define BRW_VFCOMPONENT_STORE_IID    6
 #define BRW_VFCOMPONENT_STORE_PID    7
 
-
-
 /* Execution Unit (EU) defines
  */
 
@@ -605,8 +603,6 @@
 #define BRW_LMASK   2
 #define BRW_CMASK   3
 
-
-
 #define BRW_THREAD_NORMAL     0
 #define BRW_THREAD_ATOMIC     1
 #define BRW_THREAD_SWITCH     2
@@ -754,9 +750,6 @@
 #define BRW_SCRATCH_SPACE_SIZE_512K   9
 #define BRW_SCRATCH_SPACE_SIZE_1M     10
 #define BRW_SCRATCH_SPACE_SIZE_2M     11
-
-
-
 
 #define CMD_URB_FENCE                 0x6000
 #define CMD_CONST_BUFFER_STATE        0x6001

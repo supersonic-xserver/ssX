@@ -39,8 +39,6 @@
 
 #include "win.h"
 
-
-
 /* See Porting Layer Definition - p. 58 */
 /*
  * Allocate indexes for the privates that we use.

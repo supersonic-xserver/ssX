@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /********************************************************************
 
    In this file we have GC level replacements for PolyText8/16,
@@ -160,8 +151,6 @@ XAAImageText16TEColorExpansion(
 	pGC->pCompositeClip, n, FONTGLYPHS(pGC->font), infoRec->CharInfo);
 }
 
-
-
 /********************************************************************
 
    GC level replacements for ImageGlyphBlt and PolyGlyphBlt for
@@ -209,9 +198,6 @@ XAAPolyGlyphBltTEColorExpansion(
 	pGC->font, pGC->fgPixel, -1, pGC->alu, pGC->planemask, 
 	pGC->pCompositeClip, nglyph, (unsigned char*)pglyphBase, ppci);
 }
-
-
-
 
 /********************************************************************
 
@@ -318,7 +304,4 @@ XAAGlyphBltTEColorExpansion(
 	nbox--; pbox++;
     }
 }
-
-
-
 

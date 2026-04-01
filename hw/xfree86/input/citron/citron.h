@@ -397,10 +397,6 @@ typedef struct {
 		unsigned char data[MAX_BYTES_TO_TRANSFER];	/* pointer to data area */
 } CitronDDS;
 
-
-
-
-
 /*****************************************************************************
  *	X-Header
  ****************************************************************************/
@@ -415,8 +411,6 @@ const char *CI_INFO		= {"(II)" X_CITOUCH}; /* Informational message */
 const char *CI_WARNING	= {"(WW)" X_CITOUCH}; /* Warning message */
 const char *CI_ERROR	= {"(EE)" X_CITOUCH}; /* Error message */
 const char *CI_UNKNOWN	= {"(?\?)" X_CITOUCH}; /* Unknown message */
-
-
 
 /*****************************************************************************
  *	macros
@@ -520,9 +514,6 @@ typedef struct _cit_privateRec
 }
 cit_PrivateRec, *cit_PrivatePtr;
 
-
-
-
 #define	BL_TDK	0			/* TDK Inverter */
 #define BL_AC	1			/* Applied Concepts inverter */
 #define BL_MAX	1			/* Max. Tables */
@@ -553,8 +544,6 @@ const unsigned short cit_bright_adjust[2] [256] =
 	1601,1607,1613,1619,1625,1631,1636,1642,1648,1654,1659,1665,1670,1676,1681,1687,1692,1697,1703,1708,1713,
 	1718,1723,1728,1733,1738,1743,1748,1752,1757,1762,1766,1771,1775,1779,1784,1788,1792,1796,1801,1805,1809}, /* AC */
 };
-
-
 
 /******************************************************************************
  *		Declarations
@@ -600,8 +589,6 @@ static void cit_CloseTimer(cit_PrivatePtr priv, int nr);
 static CARD32 cit_SuperVisionTimer(OsTimerPtr timer, CARD32 now, pointer arg);
 static CARD32 cit_DualTouchTimer(OsTimerPtr timer, CARD32 now, pointer arg);
 #endif
-
-
 
 /*
  *    DO NOT PUT ANYTHING AFTER THIS ENDIF

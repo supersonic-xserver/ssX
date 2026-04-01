@@ -1,10 +1,8 @@
-/***************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  
 Copyright 2000 Intel Corporation.  All Rights Reserved. 
@@ -368,7 +366,6 @@ static void I810ResetVideo(ScrnInfoPtr pScrn)
     OVERLAY_UPDATE(pI810->OverlayPhysical);
 }
 
-
 static XF86VideoAdaptorPtr 
 I810SetupImageVideo(ScreenPtr screen)
 {
@@ -434,7 +431,6 @@ I810SetupImageVideo(ScreenPtr screen)
 
     return adapt;
 }
-
 
 /* I810ClipVideo -  
 
@@ -618,7 +614,6 @@ I810QueryBestSize(
   *p_w = drw_w;
   *p_h = drw_h; 
 }
-
 
 static void
 I810CopyPackedData(
@@ -978,7 +973,6 @@ I810PutImage(
     int top, left, npixels, nlines, size, loops;
     BoxRec dstBox;
 
-
     /* Clip */
     x1 = src_x;
     x2 = src_x + src_w;
@@ -1034,7 +1028,6 @@ I810PutImage(
     pPriv->UBuf1offset = pPriv->YBuf1offset + (dstPitch * 2 * height);
     pPriv->VBuf1offset = pPriv->UBuf1offset + (dstPitch * height >> 1);
 
-
     /* Make sure this buffer isn't in use */
     loops = 0;
     while (loops < 1000000) {
@@ -1046,7 +1039,6 @@ I810PutImage(
     if(loops >= 1000000) {
       pPriv->currentBuf = !pPriv->currentBuf;
     }
-
 
     /* buffer swap */
     if (pPriv->currentBuf == 0)
@@ -1090,7 +1082,6 @@ I810PutImage(
 
     return Success;
 }
-
 
 static int 
 I810QueryImageAttributes(
@@ -1257,7 +1248,6 @@ I810StopSurface(
     return Success;
 }
 
-
 static int 
 I810FreeSurface(
     XF86SurfacePtr surface
@@ -1292,7 +1282,6 @@ I810SetSurfaceAttribute(
 ){
     return I810SetPortAttribute(pScrn, attribute, value, GET_PORT_PRIVATE(pScrn));
 }
-
 
 static int 
 I810DisplaySurface(
@@ -1374,7 +1363,6 @@ I810DisplaySurface(
 
     return Success;
 }
-
 
 static void 
 I810InitOffscreenImages(ScreenPtr screen)

@@ -272,7 +272,3 @@ AlpXAAInitMMIO(ScreenPtr pScreen)
 	return TRUE;
 }
 
-
-
-
-

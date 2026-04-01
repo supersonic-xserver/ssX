@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
    XFree86 Xv DDX written by Mark Vojkovich (markv@valinux.com) 
    Adapted for KDrive by Pontus Lidman <pontus.lidman@nokia.com>
 
@@ -1153,8 +1144,6 @@ KdXVClipNotify(WindowPtr pWin, int dx, int dy)
   }
 }
 
-
-
 /**** Required XvScreenRec fields ****/
 
 static Bool
@@ -1602,8 +1591,6 @@ KdXVGetPortAttribute(
   return((*portPriv->AdaptorRec->GetPortAttribute)(portPriv->screen, 
 		attribute, (int *) p_value, portPriv->DevPriv.ptr));
 }
-
-
 
 static int
 KdXVQueryBestSize(

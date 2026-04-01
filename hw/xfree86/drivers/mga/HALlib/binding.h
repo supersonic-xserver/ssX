@@ -1,23 +1,19 @@
-/**************************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  @doc MGA MGA_STRUCT
 
  @module MGA Structures | Structure of The MGA Layer
- @normal Copyright © 1997, Matrox Graphics Inc.
+ @normal Copyright Â© 1997, Matrox Graphics Inc.
 
  All Rights Reserved.
 
@@ -267,5 +263,4 @@ ULONG HALSetDisplayStart(LPBOARDHANDLE pBoard, ULONG ulX, ULONG ulY, ULONG ulCrt
 #endif
 
 #endif /* _BINDING */
-
 

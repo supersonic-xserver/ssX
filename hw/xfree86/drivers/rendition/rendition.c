@@ -214,8 +214,6 @@ static const char *vbeSymbols[] = {
     NULL
 };
 
-
-
 #ifdef XFree86LOADER
 
 /* Module loader interface */
@@ -297,8 +295,6 @@ renditionIdentify(int flags)
         "rendition driver (version " RENDITION_VERSION_NAME ") for chipsets",
         renditionChipsets);
 }
-
-
 
 /*
  * This function is called once, at the start of the first server generation to

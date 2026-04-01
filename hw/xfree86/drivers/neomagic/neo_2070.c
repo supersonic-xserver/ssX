@@ -1,10 +1,8 @@
-/**********************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
@@ -227,7 +225,6 @@ Neo2070SubsequentScreenToScreenCopy(ScrnInfoPtr pScrn,
     }
 }
 
-
 static void
 Neo2070SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
 			     unsigned int planemask)
@@ -254,7 +251,6 @@ Neo2070SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
     OUTREG(NEO2070_DSTBITOFF, 0);
 }
 
-
 static void
 Neo2070SubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
 {
@@ -265,8 +261,4 @@ Neo2070SubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
     OUTREG(NEO2070_XYEXT, ((h-1)<<16) | ((w-1) & 0xffff));
     OUTREG(NEO2070_DSTSTART, (y * nAcl->Pitch) + (x * nAcl->PixelWidth));
 }
-
-
-
-
 

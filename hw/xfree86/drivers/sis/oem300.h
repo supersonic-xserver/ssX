@@ -858,8 +858,3 @@ static const UCHAR barco_p1[2][9][7][3] = {
     }
 };
 
-
-
-
-
-

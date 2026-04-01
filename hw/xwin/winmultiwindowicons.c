@@ -348,8 +348,6 @@ winXIconToHICON (WindowPtr pWin)
   return hIcon;
 }
 
-
-
 /*
  * Change the Windows window icon 
  */

@@ -76,8 +76,6 @@
 #define FREQ_MIN   12000
 #define FREQ_MAX  220000
 
-
-
 void S3OutTiIndReg(ScrnInfoPtr pScrn, CARD32 reg, unsigned char mask,
 		   unsigned char data)
 {
@@ -442,8 +440,6 @@ static void S3TiDACSetClock(ScrnInfoPtr pScrn, long freq, int clk)
 	S3TiDACProgramClock(pScrn, clk, n, m, p);
 }
 
-
-
 void S3TiDAC_Init(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
         S3Ptr pS3 = S3PTR(pScrn);
@@ -606,8 +602,6 @@ void S3TiLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indicies, LOCO *colo
 	}
 }
 
-
-
 /* hardware cursor */
 
 static void S3TiSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
@@ -732,16 +726,12 @@ static void S3TiLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *image)
 	outb(vgaCRReg, tmp);
 }
 
-
-
 static Bool S3TiUseHWCursor(ScreenPtr pScreen, CursorPtr pCurs)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
 	S3Ptr pS3 = S3PTR(pScrn);
 	return (pS3->hwCursor);
 }       
-
-
 
 Bool S3Ti_CursorInit(ScreenPtr pScreen)
 {

@@ -1429,8 +1429,6 @@ int i830_swap_bufs(struct inode *inode, struct file *filp,
    	return 0;
 }
 
-
-
 /* Not sure why this isn't set all the time:
  */ 
 static void i830_do_init_pageflip( drm_device_t *dev )
@@ -1539,8 +1537,6 @@ int i830_docopy(struct inode *inode, struct file *filp, unsigned int cmd,
 {
 	return 0;
 }
-
-
 
 int i830_getparam( struct inode *inode, struct file *filp, unsigned int cmd,
 		      unsigned long arg )

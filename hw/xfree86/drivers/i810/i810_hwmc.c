@@ -1,18 +1,14 @@
-/***************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2000 Intel Corporation.  All Rights Reserved.
 
@@ -48,7 +44,6 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/i810/i810_hwmc.c,v 1.7 2005/10/14 15:16:41 tsi Exp $ */
 
-
 #include "xf86.h"
 #include "xf86_OSproc.h"
 #include "xf86Resources.h"
@@ -82,7 +77,6 @@ int I810XvMCCreateSubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSurf,
                                int *num_priv, long **priv );
 void I810XvMCDestroySubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSurf);
 
-
 typedef struct {
   drm_context_t drmcontext;
   unsigned int fbBase;
@@ -93,7 +87,6 @@ typedef struct {
   char busIdString[10];
   char pad[2];
 } I810XvMCCreateContextRec;
-
 
 static int yv12_subpicture_index_list[2] = 
 {
@@ -253,7 +246,6 @@ int I810XvMCCreateContext (ScrnInfoPtr pScrn, XvMCContextPtr pContext,
   DRIInfoPtr pDRIInfo = pI810->pDRIInfo;
   I810XvMCCreateContextRec *contextRec;
 
-
   if(!pI810->directRenderingEnabled) {
     xf86DrvMsg(X_ERROR, pScrn->scrnIndex,
         "I810XvMCCreateContext: Cannot use XvMC without DRI!\n");
@@ -298,7 +290,6 @@ int I810XvMCCreateContext (ScrnInfoPtr pScrn, XvMCContextPtr pContext,
 
   return Success;
 }
-
 
 int I810XvMCCreateSurface (ScrnInfoPtr pScrn, XvMCSurfacePtr pSurf,
                            int *num_priv, long **priv )
@@ -422,9 +413,4 @@ void I810XvMCDestroySubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSubp)
   }
   return;
 }
-
-
-
-
-
 

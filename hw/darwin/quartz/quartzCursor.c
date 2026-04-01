@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Support for using the Quartz Window Manager cursor
@@ -105,7 +103,6 @@ static pthread_cond_t cursorCondition;
         pthread_cond_wait(&cursorCondition, &cursorMutex);              \
         pthread_mutex_unlock(&cursorMutex);                             \
     } ((void)0)
-
 
 /*
  * MakeQDCursor helpers: CTAB_ENTER, interleave
@@ -261,7 +258,6 @@ pixAllocFailed:
     return NULL;
 }
 
-
 /*
  * FreeQDCursor
  * Destroy a QuickDraw color cursor created with MakeQDCursor().
@@ -283,7 +279,6 @@ static void FreeQDCursor(CCrsrHandle cursHandle)
     HUnlock((Handle)cursHandle);
     DisposeHandle((Handle)cursHandle);
 }
-
 
 /*
 ===========================================================================
@@ -331,7 +326,6 @@ QuartzRealizeCursor(
     return TRUE;
 }
 
-
 /*
  * QuartzUnrealizeCursor
  * Free the storage space associated with a realized cursor.
@@ -363,7 +357,6 @@ QuartzUnrealizeCursor(
         return TRUE;
     }
 }
-
 
 /*
  * QuartzSetCursor
@@ -415,7 +408,6 @@ QuartzSetCursor(
     }
 }
 
-
 /*
  * QuartzReallySetCursor
  * Set the QuickDraw cursor. Called from the main thread since changing the
@@ -436,7 +428,6 @@ QuartzReallySetCursor()
     pthread_mutex_unlock(&cursorMutex);
 }
 
-
 /*
  * QuartzMoveCursor
  * Move the cursor. This is a noop for QuickDraw.
@@ -454,14 +445,12 @@ QuartzMoveCursor(
         (*ScreenPriv->spriteFuncs->MoveCursor)(pScreen, x, y);
 }
 
-
 static miPointerSpriteFuncRec quartzSpriteFuncsRec = {
     QuartzRealizeCursor,
     QuartzUnrealizeCursor,
     QuartzSetCursor,
     QuartzMoveCursor
 };
-
 
 /*
 ===========================================================================
@@ -479,7 +468,6 @@ static Bool QuartzCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
     return FALSE;
 }
 
-
 /*
  * QuartzCrossScreen
  */
@@ -487,7 +475,6 @@ static void QuartzCrossScreen(ScreenPtr pScreen, Bool entering)
 {
     return;
 }
-
 
 /*
  * QuartzWarpCursor
@@ -543,7 +530,6 @@ QuartzWarpCursor(
     miPointerUpdate();
 }
 
-
 static miPointerScreenFuncRec quartzScreenFuncsRec = {
     QuartzCursorOffScreen,
     QuartzCrossScreen,
@@ -551,7 +537,6 @@ static miPointerScreenFuncRec quartzScreenFuncsRec = {
     DarwinEQPointerPost,
     DarwinEQSwitchScreen
 };
-
 
 /*
 ===========================================================================
@@ -581,7 +566,6 @@ QuartzCursorQueryBestSize(
         (*ScreenPriv->QueryBestSize)(class, width, height, pScreen);
     }
 }
-
 
 /*
  * QuartzInitCursor
@@ -640,7 +624,6 @@ QuartzInitCursor(
     return TRUE;
 }
 
-
 // X server is hiding. Restore the Aqua cursor.
 void QuartzSuspendXCursor(
     ScreenPtr pScreen )
@@ -650,7 +633,6 @@ void QuartzSuspendXCursor(
     CHANGE_QD_CURSOR(NULL);
     SHOW_QD_CURSOR(pScreen, ScreenPriv->qdCursorVisible);
 }
-
 
 // X server is showing. Restore the X cursor.
 void QuartzResumeXCursor(

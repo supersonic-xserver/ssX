@@ -1,18 +1,14 @@
-/***************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2001 Intel Corporation.  All Rights Reserved.
 
@@ -47,7 +43,6 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  ***************************************************************************/
 
-
 #ifndef I810XVMC_H
 #define I810XVMC_H
 
@@ -58,7 +53,6 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "xf86drm.h"
 #include "../i810_common.h"
 #include <X11/Xlibint.h>
-
 
 /***************************************************************************
 // i810OverlayRec: Structure that is used to reference the overlay
@@ -94,7 +88,6 @@ typedef struct _i810OverlayRec {
   unsigned int OV0CONF;
   unsigned int OV0CMD;
 } i810OverlayRec, *i810OverlayRecPtr;
-
 
 /***************************************************************************
 // i810XvMCDrmMap: Holds the data about the DRM maps

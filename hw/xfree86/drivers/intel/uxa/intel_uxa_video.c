@@ -1,18 +1,14 @@
-/***************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  Copyright 2000 Intel Corporation.  All Rights Reserved.
 
@@ -123,7 +119,6 @@ intel_uxa_video_set_port_attribute(ScrnInfoPtr scrn,
 	}
 }
 
-
 static int xvmc_passthrough(int id)
 {
 #ifdef INTEL_XVMC
@@ -132,7 +127,6 @@ static int xvmc_passthrough(int id)
 	return 0;
 #endif
 }
-
 
 static void
 intel_wait_for_scanline(ScrnInfoPtr scrn, PixmapPtr pixmap,

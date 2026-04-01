@@ -529,6 +529,3 @@ CHIPSHWSetMmioFuncs(ScrnInfoPtr pScrn, CARD8 *base, int offset)
     hwp->MMIOOffset		= offset;
 }
 
-
-
-

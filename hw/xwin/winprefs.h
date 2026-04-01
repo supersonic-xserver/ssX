@@ -122,9 +122,6 @@ typedef struct WINMULTIWINDOWPREFS
 
 } WINMULTIWINDOWPREFS;
 
-
-
-
 /* Functions */
 void
 LoadPreferences();

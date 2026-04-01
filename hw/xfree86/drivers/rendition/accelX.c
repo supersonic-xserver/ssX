@@ -12,9 +12,6 @@
  */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/rendition/accelX.c,v 1.12 2002/04/04 14:05:45 eich Exp $ */
 
-
-
-
 /*
  * includes
  */
@@ -107,8 +104,6 @@ static int Rop2Rop[]={
  /* GXnor,      GXequiv, GXinvert,  GXorReverse, */
     ROP_NOT_S,      ROP_XNOR_SD,  ROP_NAND_SD, ROP_ALLBITS1 };
  /* GXcopyInverted, GXorInverted, GXnand,      GXset */
-
-
 
 /*
  * functions
@@ -233,8 +228,6 @@ RENDITIONAccelXAAInit(ScreenPtr pScreen)
 #endif
 }
 
-
-
 void
 RENDITIONAccelNone(ScrnInfoPtr pScreenInfo)
 {
@@ -258,8 +251,6 @@ RENDITIONAccelNone(ScrnInfoPtr pScreenInfo)
     XAADestroyInfoRec(pRendition->AccelInfoRec);
     pRendition->AccelInfoRec=NULL;
 }
-
-
 
 int
 RENDITIONLoadUcode(ScrnInfoPtr pScreenInfo)
@@ -411,8 +402,6 @@ RENDITIONRestoreUcode(ScrnInfoPtr pScreenInfo)
 #endif
 }
 
-
-
 void
 RENDITIONSaveUcode(ScrnInfoPtr pScreenInfo)
 {
@@ -438,8 +427,6 @@ RENDITIONSaveUcode(ScrnInfoPtr pScreenInfo)
     verite_out8(iob+MEMENDIAN, memend);
     v1k_continue(pScreenInfo);
 }
-
-
 
 /*
  * local functions
@@ -534,8 +521,6 @@ RENDITIONSyncV1000(ScrnInfoPtr pScreenInfo)
 	    (pRendition->board.mode.stride0<<8)); 
 }
 
-
-
 /*
  * screen to screen copy
  */
@@ -584,8 +569,6 @@ RENDITIONSubsequentScreenToScreenCopy(ScrnInfoPtr pScreenInfo,
     verite_out32(iob, P2(dstX, dstY));
 }
 
-
-
 /*
  * solid filled rectangles
  */
@@ -632,8 +615,6 @@ RENDITIONSubsequentSolidFillRect(ScrnInfoPtr pScreenInfo,
     verite_out32(iob, P2(x, y));
     verite_out32(iob, P2(w, h));
 }
-
-
 
 /*
  * line

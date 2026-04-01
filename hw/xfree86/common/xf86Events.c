@@ -229,8 +229,6 @@ TimeSinceLastInputEvent()
   return GetTimeInMillis() - xf86Info.lastEventTime;
 }
 
-
-
 /*
  * SetTimeSinceLastInputEvent --
  *      Set the lastEventTime to now.
@@ -241,8 +239,6 @@ SetTimeSinceLastInputEvent()
 {
   xf86Info.lastEventTime = GetTimeInMillis();
 }
-
-
 
 /*
  * ProcessInputEvents --
@@ -1635,8 +1631,6 @@ XTestGetPointerPos(short *fmousex, short *fmousey)
   *fmousex = x;
   *fmousey = y;
 }
-
-
 
 void
 XTestJumpPointer(int jx, int jy, int dev_type)

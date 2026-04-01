@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
 Copyright © 2002 by David Dawes
@@ -579,7 +575,6 @@ sna_dri2_pixmap_update_bo(struct sna *sna, PixmapPtr pixmap, struct kgem_bo *bo)
 	DBG(("%s: dropping flush hint from handle=%d\n", __FUNCTION__, private->bo->handle));
 	private->bo->flush = false;
 	kgem_bo_destroy(&sna->kgem, private->bo);
-
 
 	buffer->name = kgem_bo_flink(&sna->kgem, bo);
 	buffer->pitch = bo->pitch;

@@ -214,8 +214,6 @@ void I2C_Enable(int pcIndexReg)
 
 } /* I2C_enable */
 
-
-
 /* reverse data */
 long I2C_reverk(register unsigned data)
 {
@@ -231,8 +229,6 @@ long I2C_reverk(register unsigned data)
 
 } /* I2C_reverk */
 
-
-
 /* get an acknowledge back from a slave device */
 int I2C_ack_pc(int pcIndexReg)
 {
@@ -247,8 +243,6 @@ int I2C_ack_pc(int pcIndexReg)
 
 }  /* I2C_ack_pc */
 
-
-
 /* send a start condition */
 void I2C_start_pc(int pcIndexReg)
 {
@@ -259,8 +253,6 @@ void I2C_start_pc(int pcIndexReg)
 
 } /* I2C_start_pc */
 
-
-
 /* send a stop condition */
 void I2C_stop_pc(int pcIndexReg)
 {
@@ -269,8 +261,6 @@ void I2C_stop_pc(int pcIndexReg)
     I2C_regwrit_pc(pcIndexReg, I2C_SDA, 1);
 
 } /* I2C_stop_pc */
-
-
 
 /*  write I2C data */
 int I2C_wdata_pc(int pcIndexReg, unsigned type , unsigned data)
@@ -327,8 +317,6 @@ void I2C_regwrit_pc(int pcIndexReg, unsigned type, unsigned data )
     outb(pcI2CIndex, Reg3C4H);
 
 } /* I2C_regwrit_pc */
-
-
 
 /* Read SDA bit */
 int I2C_regread_pc(int pcIndexReg, unsigned type)

@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /*
  *                   XFree86 vbe module
  *               Copyright 2000 Egbert Eich

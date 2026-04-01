@@ -67,9 +67,6 @@ DGAFunctionRec CirDGAFuncs = {
    NULL  /* Cir_BlitTransRect */
 };
 
-
-
-
 Bool
 CirDGAInit(ScreenPtr pScreen)
 {
@@ -211,8 +208,6 @@ Cir_GetViewport(
 
     return pCir->DGAViewportStatus;
 }
-
-
 
 static void 
 Cir_Sync(

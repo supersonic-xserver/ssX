@@ -1,10 +1,8 @@
-/****************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 *
 *						Realmode X86 Emulator Library
@@ -11612,7 +11610,6 @@ void (*x86emu_optab[256])(u8) =
 /*  0xad */ x86emuOp_lods_word,
 /*  0xac */ x86emuOp_scas_byte,
 /*  0xad */ x86emuOp_scas_word,
-
 
 /*  0xb0 */ x86emuOp_mov_byte_AL_IMM,
 /*  0xb1 */ x86emuOp_mov_byte_CL_IMM,

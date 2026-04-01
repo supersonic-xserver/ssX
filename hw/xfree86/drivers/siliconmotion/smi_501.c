@@ -273,9 +273,6 @@ static void setModeRegisters(reg_table_t *register_table, mode_table_t *mode,
                     ? FIELD_SET(0, PANEL_DISPLAY_CTRL, FORMAT, 16)
                     : FIELD_SET(0, PANEL_DISPLAY_CTRL, FORMAT, 32)));
 
-
-
-
         /* Set timing registers. */
         register_table->horizontal_total
             = FIELD_VALUE(0, PANEL_HORIZONTAL_TOTAL, TOTAL,

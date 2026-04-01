@@ -182,6 +182,4 @@ enum {						/* Select transparency compare */
 
 #define LgSETBITMASK(m) memwl(BITMASK, m);
 
-
-
 #endif  /* __LG_XAA_H */

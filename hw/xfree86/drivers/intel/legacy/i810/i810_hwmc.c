@@ -1,18 +1,14 @@
-/***************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2000 Intel Corporation.  All Rights Reserved.
 
@@ -80,7 +76,6 @@ int I810XvMCCreateSubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSurf,
                                int *num_priv, long **priv );
 void I810XvMCDestroySubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSurf);
 
-
 typedef struct {
   drm_context_t drmcontext;
   unsigned int fbBase;
@@ -91,7 +86,6 @@ typedef struct {
   char busIdString[10];
   char pad[2];
 } I810XvMCCreateContextRec;
-
 
 static int yv12_subpicture_index_list[2] = 
 {
@@ -251,7 +245,6 @@ int I810XvMCCreateContext (ScrnInfoPtr pScrn, XvMCContextPtr pContext,
   DRIInfoPtr pDRIInfo = pI810->pDRIInfo;
   I810XvMCCreateContextRec *contextRec;
 
-
   if(!pI810->directRenderingEnabled) {
     xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
         "I810XvMCCreateContext: Cannot use XvMC without DRI!\n");
@@ -296,7 +289,6 @@ int I810XvMCCreateContext (ScrnInfoPtr pScrn, XvMCContextPtr pContext,
 
   return Success;
 }
-
 
 int I810XvMCCreateSurface (ScrnInfoPtr pScrn, XvMCSurfacePtr pSurf,
                            int *num_priv, long **priv )
@@ -420,9 +412,4 @@ void I810XvMCDestroySubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSubp)
   }
   return;
 }
-
-
-
-
-
 

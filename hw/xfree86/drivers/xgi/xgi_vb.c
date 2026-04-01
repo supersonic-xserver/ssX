@@ -298,7 +298,3 @@ void XGITVPreInit(ScrnInfoPtr pScrn)
     }
 }
 
-
-
-
-

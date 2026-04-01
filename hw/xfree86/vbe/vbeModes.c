@@ -5,19 +5,10 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /* $XFree86: xc/programs/Xserver/hw/xfree86/vbe/vbeModes.c,v 1.9 2005/08/28 20:04:52 tsi Exp $ */
 
 /*
- * Copyright © 2002 David Dawes
+ * Copyright Â© 2002 David Dawes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),

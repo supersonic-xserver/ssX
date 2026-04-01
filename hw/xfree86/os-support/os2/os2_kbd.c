@@ -51,8 +51,6 @@
 #include "xf86Xinput.h"
 #include "xf86OSKbd.h"
 
-
-
 /***************************************************************************/
 
 static void SoundKbdBell(loudness, pitch, duration)

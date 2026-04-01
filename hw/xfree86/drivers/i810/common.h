@@ -4,12 +4,10 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
-Copyright © 2002 David Dawes
+Copyright Â© 2002 David Dawes
 
 All Rights Reserved.
 

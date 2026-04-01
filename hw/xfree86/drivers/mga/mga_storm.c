@@ -1149,8 +1149,6 @@ MGAStormAccelInit(ScreenPtr pScreen)
     return FALSE;
 }
 
-
-
 void
 MGAStormSync(ScrnInfoPtr pScrn)
 {
@@ -1617,8 +1615,6 @@ MGANAME(SubsequentSolidTwoPointLine)(
     OUTREG(MGAREG_DWGCTL, pMga->FilledRectCMD);
 }
 
-
-
 	/***************************\
 	|   8x8 Mono Pattern Fills  |
 	\***************************/
@@ -1671,8 +1667,6 @@ MGANAME(SetupForMono8x8PatternFill)(
     OUTREG(MGAREG_PAT0, patx);
     OUTREG(MGAREG_PAT1, paty);
 }
-
-
 
 static void
 MGANAME(SubsequentMono8x8PatternFillRect)(
@@ -2254,8 +2248,6 @@ MGANAME(SubsequentScreenToScreenColorExpandFill)(
 	OUTREG(MGAREG_DSTORG, pMga->DstOrg);
     }
 }
-
-
 
 #if PSZ == 8
 

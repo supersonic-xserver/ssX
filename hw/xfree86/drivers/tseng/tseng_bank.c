@@ -4,13 +4,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_bank.c,v 1.4 2000/08/08 08:58:06 eich Exp $ */
-
-
-
-
 
 #include "tseng.h"
 

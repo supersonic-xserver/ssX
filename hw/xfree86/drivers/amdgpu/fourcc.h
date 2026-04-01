@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /*
  * Copyright (c) 2000-2003 by The XFree86 Project, Inc.
  *

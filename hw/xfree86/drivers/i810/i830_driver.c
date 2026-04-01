@@ -9,7 +9,7 @@
 /**************************************************************************
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
-Copyright © 2002 by David Dawes
+Copyright Â© 2002 by David Dawes
 
 All Rights Reserved.
 
@@ -56,7 +56,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /*
  * Mode handling is based on the VESA driver written by:
- * Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
+ * Paulo CÃ©sar Pereira de Andrade <pcpa@conectiva.com.br>
  */
 
 /*
@@ -4166,8 +4166,6 @@ I830VESASetMode(ScrnInfoPtr pScrn, DisplayModePtr pMode)
       xf86DrvMsg(pScrn->scrnIndex, X_INFO, "PIPEBCONF is 0x%08lx\n",
 		 (unsigned long)temp);
    }
-
-
 
    if (xf86IsEntityShared(pScrn->entityList[0])) {
       /* Clean this up !! */

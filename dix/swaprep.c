@@ -719,8 +719,6 @@ SListHostsReply(ClientPtr pClient, int size, xListHostsReply *pRep)
     (void)WriteToClient(pClient, size, (char *) pRep);
 }
 
-
-
 void
 SErrorEvent(xError *from, xError *to)
 {

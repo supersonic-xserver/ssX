@@ -2464,8 +2464,6 @@ FreeCo(
     return (errVal);
 }
 
-
-
 /* Redefine color values */
 int
 StoreColors(ColormapPtr pmap, int count, xColorItem *defs)

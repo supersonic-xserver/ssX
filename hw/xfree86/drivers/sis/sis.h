@@ -1216,5 +1216,3 @@ extern int   SiS_GetTVxscale(ScrnInfoPtr pScrn);
 extern int   SiS_GetTVyscale(ScrnInfoPtr pScrn);
 #endif
 
-
-

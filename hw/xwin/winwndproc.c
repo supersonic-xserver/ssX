@@ -50,8 +50,6 @@
 
 Bool			g_fCursor = TRUE;
 
-
-
 /*
  * Called by winWakeupHandler
  * Processes current Windows message

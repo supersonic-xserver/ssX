@@ -116,8 +116,6 @@
 #define V2_MIN_PCF_FREQ  1
 #define V2_MAX_PCF_FREQ  3
 
-
-
 /* 
  * global data
  */
@@ -208,8 +206,6 @@ struct V1000ClocksStr {
 static void set_PLL(IOADDRESS iob, vu32 value);
 static double V1000CalcClock(double target, int *M, int *N, int *P);
 static double V2200CalcClock(double target, int *m, int *n, int *p);
-
-
 
 /*
  * functions
@@ -535,8 +531,6 @@ set_PLL(IOADDRESS iob, vu32 value)
     (void)verite_in8(iob+PLLDEV);
 }
 
-
-
 /* Vxx00CalcClock -- finds PLL parameters to match target
  *                   frequency (in megahertz)
  *
@@ -582,8 +576,6 @@ V1000CalcClock(double target, int *M, int *N, int *P)
 
     return freq;
 }
-
-
 
 static double
 V2200CalcClock(double target, int *m, int *n, int *p)

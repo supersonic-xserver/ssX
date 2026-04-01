@@ -977,8 +977,6 @@ gen7_sampler_state_init(drm_intel_bo * sampler_state_bo,
 	sampler_state->ss3.chroma_key_enable = 0;	/* disable chromakey */
 }
 
-
-
 static drm_intel_bo *gen4_create_sampler_state(intel_screen_private *intel,
 					       sampler_state_filter_t src_filter,
 					       sampler_state_extend_t src_extend,

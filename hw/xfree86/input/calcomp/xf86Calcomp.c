@@ -204,8 +204,6 @@ TearDownProc( pointer p )
 }
 **********************************************************/
 
-
-
 /* 
  * The DeviceControl function should not need to be changed
  * except to remove ErrorFs
@@ -645,11 +643,6 @@ CalcompPreInit(       InputDriverPtr drv,
                 xf86OptionListReport( local->options );
                         local->fd = xf86OpenSerial (local->options);
                         
-
-
-
-
-
 
 	if (local->fd == -1)
 	{

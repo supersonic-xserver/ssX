@@ -1094,8 +1094,6 @@ winCreateColormapNativeGDI (ColormapPtr pColormap);
 Bool
 winDestroyColormapNativeGDI (ColormapPtr pColormap);
 
-
-
 /*
  * winpfbddd.c
  */

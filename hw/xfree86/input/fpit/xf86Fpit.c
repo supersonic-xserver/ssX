@@ -149,9 +149,6 @@ typedef struct {
 	int fpitPassive;	/* translate passive buttons */
 } FpitPrivateRec, *FpitPrivatePtr;
 
-
-
-
 /*
  ***************************************************************************
  *

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 2000, 2001 Nokia Home Communications
 
 All rights reserved.
@@ -216,8 +207,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define CURSOR_Y_POS           0x00
 #define CURSOR_Y_NEG           0x80
 
-
-
 /* Similar registers exist in Device 0 on the i810 (pp55-65), but I'm
  * not sure they refer to local (graphics) memory.
  *
@@ -257,8 +246,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define HSYNC_CNTL             0x02
 #define HSYNC_ON               0x00
 #define HSYNC_OFF              0x02
-
-
 
 /* p317, 319
  */
@@ -410,8 +397,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define PGE_ERR_LOCAL_MEM   0x00000005
 #define PGE_ERR_TILED       0x00000006
 
-
-
 /* Page table entries loaded via mmio region, p323
  */
 #define PTE_BASE         0x10000
@@ -449,8 +434,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define RING_VALID_MASK     0x00000001
 #define RING_VALID          0x00000001
 #define RING_INVALID        0x00000000
-
-
 
 /* BitBlt Instructions
  *
@@ -579,14 +562,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define LM_FREQ_133         0x10
 #define LM_FREQ_100         0x00
 
-
-
-
 /* These are 3d state registers, but the state is invarient, so we let
  * the X server handle it:
  */
-
-
 
 /* GFXRENDERSTATE_COLOR_CHROMA_KEY, p135
  */

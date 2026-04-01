@@ -1,10 +1,8 @@
-/****************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 *
 * Inline helpers for x86emu
@@ -81,6 +79,5 @@ static inline void hw_cpuid (u32 *a, u32 *b, u32 *c, u32 *d)
 }
 
 #endif // __PIC__ && __i386__
-
 
 #endif // __X86EMU_PRIM_X86_GCC_H

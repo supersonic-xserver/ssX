@@ -9,7 +9,7 @@
 /**************************************************************************
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
-Copyright © 2002 by David Dawes
+Copyright Â© 2002 by David Dawes
 
 All Rights Reserved.
 
@@ -742,8 +742,6 @@ I830DRIDoMappings(ScreenPtr pScreen)
       }
    }
 
-
-
    pI830DRI = (I830DRIPtr) pI830->pDRIInfo->devPrivate;
    pI830DRI->deviceID = pI830->PciInfo->chipType;
    pI830DRI->width = pScrn->virtualX;
@@ -1152,18 +1150,12 @@ I830DRICloseFullScreen(ScreenPtr pScreen)
   return TRUE;
 }
 
-
-
 /* Use callbacks from dri.c to support pageflipping mode for a single
  * 3d context without need for any specific full-screen extension.
  *
  * Also see tdfx driver for example of using these callbacks to
  * allocate and free 3d-specific memory on demand.
  */
-
-
-
-
 
 /* Use the miext/shadow module to maintain a list of dirty rectangles.
  * These are blitted to the back buffer to keep both buffers clean

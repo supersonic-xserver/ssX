@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 Copyright © 2002 David Dawes
@@ -995,7 +991,6 @@ static inline struct kgem_bo *sna_pixmap_pin(PixmapPtr pixmap, unsigned flags)
 	priv->pinned |= flags;
 	return priv->gpu_bo;
 }
-
 
 static inline bool
 _sna_transform_point(const PictTransform *transform,

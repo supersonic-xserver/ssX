@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /* Skeleton implementation for Bison's Yacc-like parsers in C
 
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
@@ -72,8 +63,6 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
-
-
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
@@ -123,9 +112,6 @@
 #define TRAYICON 275
 #define SILENTEXIT 276
 #define STRING 277
-
-
-
 
 /* Copy the first part of user declarations.  */
 #line 1 "winprefsyacc.y"
@@ -205,8 +191,6 @@ extern void ErrorF (const char* /*f*/, ...);
 extern char *yytext;
 extern int yylex(void);
 
-
-
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -239,8 +223,6 @@ typedef union YYSTYPE
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
-
-
 
 /* Copy the second part of user declarations.  */
 
@@ -1223,8 +1205,6 @@ int yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
 
-
-
 /* The look-ahead symbol.  */
 int yychar;
 
@@ -1233,8 +1213,6 @@ YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
 int yynerrs;
-
-
 
 /*----------.
 | yyparse.  |
@@ -1294,8 +1272,6 @@ yyparse ()
   YYSTYPE yyvsa[YYINITDEPTH];
   YYSTYPE *yyvs = yyvsa;
   YYSTYPE *yyvsp;
-
-
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
 
@@ -1694,8 +1670,6 @@ yyerrlab:
       }
 #endif
     }
-
-
 
   if (yyerrstatus == 3)
     {

@@ -98,8 +98,6 @@ extern int	     DRM(freelist_put)(drm_device_t *dev, drm_freelist_t *bl,
 				       drm_buf_t *buf);
 extern drm_buf_t     *DRM(freelist_get)(drm_freelist_t *bl, int block);
 
-
-
 #define GLINT_DRI_BUF_COUNT 256
 
 #define GAMMA_OFF(reg)						   \

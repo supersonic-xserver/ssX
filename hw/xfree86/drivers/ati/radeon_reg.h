@@ -1462,8 +1462,6 @@
 #define RADEON_XDLL_CNTL                    0x000c /* PLL */
 #define RADEON_XPLL_CNTL                    0x000b /* PLL */
 
-
-
 				/* Registers for 3D/TCL */
 #define RADEON_PP_BORDER_COLOR_0            0x1d40
 #define RADEON_PP_BORDER_COLOR_1            0x1d44
@@ -2870,13 +2868,9 @@
 #       define RADEON_PCIGART_TRANSLATE_EN     (1 << 0)
 #define RADEON_AIC_LO_ADDR                  0x01dc
 
-
-
 				/* Constants */
 #define RADEON_LAST_FRAME_REG               RADEON_GUI_SCRATCH_REG0
 #define RADEON_LAST_CLEAR_REG               RADEON_GUI_SCRATCH_REG2
-
-
 
 				/* CP packet types */
 #define RADEON_CP_PACKET0                           0x00000000

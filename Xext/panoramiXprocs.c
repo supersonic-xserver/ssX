@@ -15,14 +15,11 @@
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
 
-
-/*****************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -198,7 +195,6 @@ PanoramiXCreateWindow(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXChangeWindowAttributes(ClientPtr client)
 {
@@ -267,7 +263,6 @@ PanoramiXChangeWindowAttributes(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXDestroyWindow(ClientPtr client)
 {
@@ -292,7 +287,6 @@ PanoramiXDestroyWindow(ClientPtr client)
  
     return (result);
 }
-
 
 int
 PanoramiXDestroySubwindows(ClientPtr client)
@@ -319,7 +313,6 @@ PanoramiXDestroySubwindows(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXChangeSaveSet(ClientPtr client)
 {
@@ -341,7 +334,6 @@ PanoramiXChangeSaveSet(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXReparentWindow(ClientPtr client)
@@ -380,7 +372,6 @@ PanoramiXReparentWindow(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXMapWindow(ClientPtr client)
 {
@@ -402,7 +393,6 @@ PanoramiXMapWindow(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXMapSubwindows(ClientPtr client)
@@ -426,7 +416,6 @@ PanoramiXMapSubwindows(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXUnmapWindow(ClientPtr client)
 {
@@ -449,7 +438,6 @@ PanoramiXUnmapWindow(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXUnmapSubwindows(ClientPtr client)
 {
@@ -471,7 +459,6 @@ PanoramiXUnmapSubwindows(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXConfigureWindow(ClientPtr client)
@@ -539,7 +526,6 @@ PanoramiXConfigureWindow(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXCirculateWindow(ClientPtr client)
 {
@@ -561,7 +547,6 @@ PanoramiXCirculateWindow(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXGetGeometry(ClientPtr client)
@@ -721,7 +706,6 @@ PanoramiXCreatePixmap(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXFreePixmap(ClientPtr client)
 {
@@ -748,7 +732,6 @@ PanoramiXFreePixmap(ClientPtr client)
  
     return (result);
 }
-
 
 int
 PanoramiXCreateGC(ClientPtr client)
@@ -875,7 +858,6 @@ PanoramiXChangeGC(ClientPtr client)
 	}
     }
 
-
     FOR_NSCREENS_BACKWARD(j) {
         stuff->gc = gc->info[j].id;
 	if (tile)
@@ -890,7 +872,6 @@ PanoramiXChangeGC(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXCopyGC(ClientPtr client)
@@ -919,7 +900,6 @@ PanoramiXCopyGC(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXSetDashes(ClientPtr client)
 {
@@ -942,7 +922,6 @@ PanoramiXSetDashes(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXSetClipRectangles(ClientPtr client)
 {
@@ -964,7 +943,6 @@ PanoramiXSetClipRectangles(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXFreeGC(ClientPtr client)
@@ -990,7 +968,6 @@ PanoramiXFreeGC(ClientPtr client)
  
     return (result);
 }
-
 
 int
 PanoramiXClearToBackground(ClientPtr client)
@@ -1021,7 +998,6 @@ PanoramiXClearToBackground(ClientPtr client)
  
     return (result);
 }
-
 
 /* 
     For Window to Pixmap copies you're screwed since each screen's
@@ -1178,7 +1154,6 @@ PanoramiXCopyArea(ClientPtr client)
     return (result);
 }
 
-
 int
 PanoramiXCopyPlane(ClientPtr client)
 {
@@ -1283,7 +1258,6 @@ PanoramiXCopyPlane(ClientPtr client)
     return (client->noClientException);
 }
 
-
 int
 PanoramiXPolyPoint(ClientPtr client)
 {
@@ -1342,7 +1316,6 @@ PanoramiXPolyPoint(ClientPtr client)
 	return (client->noClientException);
 }
 
-
 int
 PanoramiXPolyLine(ClientPtr client)
 {
@@ -1400,7 +1373,6 @@ PanoramiXPolyLine(ClientPtr client)
    } else
 	return (client->noClientException);
 }
-
 
 int
 PanoramiXPolySegment(ClientPtr client)
@@ -1463,7 +1435,6 @@ PanoramiXPolySegment(ClientPtr client)
 	  return (client->noClientException);
 }
 
-
 int
 PanoramiXPolyRectangle(ClientPtr client)
 {
@@ -1474,7 +1445,6 @@ PanoramiXPolyRectangle(ClientPtr client)
     REQUEST(xPolyRectangleReq);
 
     REQUEST_AT_LEAST_SIZE(xPolyRectangleReq);
-
 
     if(!(draw = (PanoramiXRes *)SecurityLookupIDByClass(
 		client, stuff->drawable, XRC_DRAWABLE, SecurityWriteAccess)))
@@ -1503,7 +1473,6 @@ PanoramiXPolyRectangle(ClientPtr client)
 		int x_off = panoramiXdataPtr[j].x;
 		int y_off = panoramiXdataPtr[j].y;
 
-
 		if(x_off || y_off) {
 	    	    xRectangle *rects = (xRectangle *) &stuff[1];
 
@@ -1524,7 +1493,6 @@ PanoramiXPolyRectangle(ClientPtr client)
     } else
        return (client->noClientException);
 }
-
 
 int
 PanoramiXPolyArc(ClientPtr client)
@@ -1583,7 +1551,6 @@ PanoramiXPolyArc(ClientPtr client)
     } else
        return (client->noClientException);
 }
-
 
 int
 PanoramiXFillPoly(ClientPtr client)
@@ -1644,7 +1611,6 @@ PanoramiXFillPoly(ClientPtr client)
        return (client->noClientException);
 }
 
-
 int
 PanoramiXPolyFillRectangle(ClientPtr client)
 {
@@ -1703,7 +1669,6 @@ PanoramiXPolyFillRectangle(ClientPtr client)
     } else
        return (client->noClientException);
 }
-
 
 int
 PanoramiXPolyFillArc(ClientPtr client)
@@ -1764,7 +1729,6 @@ PanoramiXPolyFillArc(ClientPtr client)
        return (client->noClientException);
 }
 
-
 int
 PanoramiXPutImage(ClientPtr client)
 {
@@ -1802,7 +1766,6 @@ PanoramiXPutImage(ClientPtr client)
     }
     return (result);
 }
-
 
 int
 PanoramiXGetImage(ClientPtr client)
@@ -1879,7 +1842,6 @@ PanoramiXGetImage(ClientPtr client)
 	widthBytesLine = PixmapBytePad(w, pDraw->depth);
 	length = widthBytesLine * h;
 
-
     } else {
 	widthBytesLine = BitmapBytePad(w);
 	plane = ((Mask)1) << (pDraw->depth - 1);
@@ -1950,7 +1912,6 @@ PanoramiXGetImage(ClientPtr client)
     xfree(pBuf);
     return (client->noClientException);
 }
-
 
 /* The text stuff should be rewritten so that duplication happens
    at the GlyphBlt level.  That is, loading the font and getting
@@ -2034,7 +1995,6 @@ PanoramiXPolyText16(ClientPtr client)
     return (result);
 }
 
-
 int PanoramiXImageText8(ClientPtr client)
 {
     int 	  result = 0, j;
@@ -2073,7 +2033,6 @@ int PanoramiXImageText8(ClientPtr client)
     return (result);
 }
 
-
 int PanoramiXImageText16(ClientPtr client)
 {
     int 	  result = 0, j;
@@ -2111,8 +2070,6 @@ int PanoramiXImageText16(ClientPtr client)
     }
     return (result);
 }
-
-
 
 int PanoramiXCreateColormap(ClientPtr client)
 {
@@ -2154,7 +2111,6 @@ int PanoramiXCreateColormap(ClientPtr client)
     return (result);
 }
 
-
 int PanoramiXFreeColormap(ClientPtr client)
 {
     PanoramiXRes *cmap;
@@ -2180,7 +2136,6 @@ int PanoramiXFreeColormap(ClientPtr client)
 
     return (result);
 }
-
 
 int
 PanoramiXCopyColormapAndFree(ClientPtr client)
@@ -2221,7 +2176,6 @@ PanoramiXCopyColormapAndFree(ClientPtr client)
     return (result);
 }
 
-
 int PanoramiXInstallColormap(ClientPtr client)
 {
     REQUEST(xResourceReq);
@@ -2243,7 +2197,6 @@ int PanoramiXInstallColormap(ClientPtr client)
     }
     return (result);
 }
-
 
 int PanoramiXUninstallColormap(ClientPtr client)
 {
@@ -2267,7 +2220,6 @@ int PanoramiXUninstallColormap(ClientPtr client)
     return (result);
 }
 
-
 int PanoramiXAllocColor(ClientPtr client)
 {
     int           result = 0, j;
@@ -2289,7 +2241,6 @@ int PanoramiXAllocColor(ClientPtr client)
     }
     return (result);
 }
-
 
 int PanoramiXAllocNamedColor(ClientPtr client)
 {
@@ -2313,7 +2264,6 @@ int PanoramiXAllocNamedColor(ClientPtr client)
     return (result);
 }
 
-
 int PanoramiXAllocColorCells(ClientPtr client)
 {
     int           result = 0, j;
@@ -2335,7 +2285,6 @@ int PanoramiXAllocColorCells(ClientPtr client)
     }
     return (result);
 }
-
 
 int PanoramiXAllocColorPlanes(ClientPtr client)
 {
@@ -2359,8 +2308,6 @@ int PanoramiXAllocColorPlanes(ClientPtr client)
     return (result);
 }
 
-
-
 int PanoramiXFreeColors(ClientPtr client)
 {
     int           result = 0, j;
@@ -2381,7 +2328,6 @@ int PanoramiXFreeColors(ClientPtr client)
     }
     return (result);
 }
-
 
 int PanoramiXStoreColors(ClientPtr client)
 {
@@ -2404,7 +2350,6 @@ int PanoramiXStoreColors(ClientPtr client)
     }
     return (result);
 }
-
 
 int PanoramiXStoreNamedColor(ClientPtr client)
 {

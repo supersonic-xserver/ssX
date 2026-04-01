@@ -67,8 +67,6 @@ InputDriverRec DMC = {
         0
 };        
 
-
-
 #ifdef XFree86LOADER
 
 static XF86ModuleVersionInfo VersionRec =
@@ -170,8 +168,6 @@ static const char *default_options[] =
 /*****************************************************************************
  *	Function Definitions
  ****************************************************************************/
-
-
 
 static InputInfoPtr
 DMCPreInit(InputDriverPtr drv, IDevPtr dev, int flags)

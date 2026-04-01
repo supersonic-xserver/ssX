@@ -343,8 +343,6 @@ VIAInitialize2DEngine(ScrnInfoPtr pScrn)
               (((pScrn->displayWidth * pScrn->bitsPerPixel >> 3) >> 3) << 16));
 }
 
-
-
 /* Acceleration init function, sets up pointers to our accelerated functions */
 Bool
 VIAInitAccel(ScreenPtr pScreen)
@@ -541,8 +539,6 @@ VIAInitAccel(ScreenPtr pScreen)
 
     return XAAInit(pScreen, xaaptr);
 }
-
-
 
 /* The sync function for the GE */
 void VIAAccelSync(ScrnInfoPtr pScrn)

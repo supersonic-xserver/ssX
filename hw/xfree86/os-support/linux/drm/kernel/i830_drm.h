@@ -281,8 +281,6 @@ typedef struct _drm_i830_clear {
 	unsigned int clear_depthmask;
 } drm_i830_clear_t;
 
-
-
 /* These may be placeholders if we have more cliprects than
  * I830_NR_SAREA_CLIPRECTS.  In that case, the client sets discard to
  * false, indicating that the buffer will be dispatched again with a

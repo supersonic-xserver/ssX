@@ -15,14 +15,11 @@
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
 
-
-/***********************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
@@ -145,8 +142,6 @@ unsigned long XvRTVideoNotify;
 unsigned long XvRTVideoNotifyList;
 unsigned long XvRTPortNotify;
 
-
-
 /* EXTERNAL */
 
 extern XID clientErrorValue;
@@ -166,9 +161,6 @@ static int XvdiDestroyPortNotify(pointer, XID);
 static int XvdiDestroyVideoNotifyList(pointer, XID);
 static int XvdiDestroyPort(pointer, XID);
 static int XvdiSendVideoNotify(XvPortPtr, DrawablePtr, int);
-
-
-
 
 /*
 ** XvExtensionInit
@@ -581,7 +573,6 @@ XvdiSendVideoNotify(XvPortPtr pPort, DrawablePtr pDraw, int reason)
 
 }
 
-
 int
 XvdiSendPortNotify(
   XvPortPtr pPort,
@@ -613,14 +604,12 @@ XvdiSendPortNotify(
 
 }
 
-
 #define CHECK_SIZE(dw, dh, sw, sh) {                                  \
   if(!dw || !dh || !sw || !sh)  return Success;                       \
   /* The region code will break these if they are too large */        \
   if((dw > 32767) || (dh > 32767) || (sw > 32767) || (sh > 32767))    \
         return BadValue;                                              \
 }
-
 
 int
 XvdiPutVideo(   
@@ -750,7 +739,6 @@ XvdiPutImage(
 					   drw_x, drw_y, drw_w, drw_h,
 					   image, data, sync, width, height);
 }
-
 
 int
 XvdiGetVideo(
@@ -932,7 +920,6 @@ XvdiUngrabPort(
   return Success;
 
 }
-
 
 int
 XvdiSelectVideoNotify(

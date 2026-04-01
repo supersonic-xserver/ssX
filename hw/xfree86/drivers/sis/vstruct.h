@@ -233,8 +233,6 @@ typedef struct _SiS_ModeResInfoStruct
 	UCHAR  YChar;
 } SiS_ModeResInfoStruct;
 
-
-
 typedef UCHAR DRAM4Type[4];
 
 /* Defines for SiS_CustomT */

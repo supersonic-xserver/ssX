@@ -158,9 +158,6 @@ typedef struct __options
     float v_freq;
 } options;
 
-
-
-
 /* prototypes */
 
 void print_value(int n, char *name, float val);
@@ -169,9 +166,6 @@ void print_fb_mode (mode *m);
 mode *vert_refresh (int h_pixels, int v_lines, float freq,
                     int interlaced, int margins);
 options *parse_command_line (int argc, char *argv[]);
-
-
-
 
 /*
  * print_value() - print the result of the named computation; this is
@@ -186,8 +180,6 @@ void print_value(int n, char *name, float val)
         printf("%2d: %-27s: %15f\n", n, name, val);
     }
 }
-
-
 
 /* print_xf86_mode() - print the XServer modeline, given mode timings. */
 
@@ -206,8 +198,6 @@ void print_xf86_mode (mode *m)
             m->vr, m->vss, m->vse, m->vfl);
     
 }
-
-
 
 /*
  * print_fb_mode() - print a mode description in fbset(8) format;
@@ -277,9 +267,6 @@ void print_fb_mode (mode *m)
     printf ("endmode\n\n");
     
 }
-
-
-
 
 /*
  * vert_refresh() - as defined by the GTF Timing Standard, compute the
@@ -650,9 +637,6 @@ mode *vert_refresh (int h_pixels, int v_lines, float freq,
     
 }
 
-
-
-
 /*
  * parse_command_line() - parse the command line and return an
  * alloced structure containing the results.  On error print usage
@@ -728,8 +712,6 @@ options *parse_command_line (int argc, char *argv[])
     return (NULL);
 
 }
-
-
 
 int main (int argc, char *argv[])
 {

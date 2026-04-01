@@ -111,8 +111,6 @@ void xf86OpenConsole()
 		       vtname, strerror(errno));
 	}
 
-
-
         if ((xf86Info.kbdFd = open("/dev/keybd", O_RDONLY|O_NDELAY, 0)) < 0)
         {
             FatalError("xf86OpenConsole: Cannot open keyboard (/dev/keybd), (%s)\n", strerror(errno));

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * Copyright 1997-2000 by Robin Cutshaw <robin@XFree86.Org>
  *
@@ -132,8 +123,6 @@ I128BitBlit(ScrnInfoPtr pScrn, int x1, int y1, int x2, int y2, int w, int h)
 		y1 += h; y1--;
 		y2 += h; y2--;
 	}
-
-
 
 	if (pI128->Chipset == PCI_CHIP_I128) {
 		int bppi;

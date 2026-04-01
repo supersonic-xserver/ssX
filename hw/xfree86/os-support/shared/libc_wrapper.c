@@ -640,8 +640,6 @@ xf86access(const char *pathname, int mode)
     return rc;
 }
 
-
-
 /* limited stdio support */
 
 #define XF86FILE_magic	0x58464856	/* "XFHV" */
@@ -1904,8 +1902,6 @@ xf86GetErrno ()
 }
 
 #undef mapnum
-
-
 
 #if HAVE_SYSV_IPC
 

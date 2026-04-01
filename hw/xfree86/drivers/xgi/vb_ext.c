@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "osdef.h"
 
 #ifdef WIN2000
@@ -46,8 +37,6 @@
 #include <linux/XGIfb.h>
 #endif*/
 #endif
-
-
 
 #include "vb_def.h"
 #include "vgatypes.h"
@@ -554,8 +543,6 @@ VOID XGISetDPMS( PXGI_HW_DEVICE_INFO pXGIHWDE , ULONG VESA_POWER_STATE )
     XGI_LockCRT2( pXGIHWDE , pVBInfo ) ;
 }
 
-
-
 /* --------------------------------------------------------------------- */
 /* Function : XGI_GetSenseStatus */
 /* Input : */
@@ -751,8 +738,6 @@ void XGI_GetSenseStatus( PXGI_HW_DEVICE_INFO HwDeviceExtension , PVB_DEVICE_INFO
     }
     XGI_DisableBridge( HwDeviceExtension, pVBInfo ) ;		/* shampoo 0226 */
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGINew_SenseLCD */

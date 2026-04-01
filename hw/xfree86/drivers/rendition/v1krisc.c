@@ -18,8 +18,6 @@
 #include "v1krisc.h"
 #include "vos.h"
 
-
-
 /*
  * defines
  */
@@ -81,8 +79,6 @@
 
 #define VERITE_MAX_POLLS	100
 
-
-
 /*
  * local function prototypes
  */
@@ -101,8 +97,6 @@ static void risc_step(IOADDRESS io_base, vu32 count);
 #endif
 static void risc_forcestep(IOADDRESS io_base, vu32 instruction);
 static void risc_continue(IOADDRESS io_base);
-
-
 
 /*
  * functions
@@ -129,8 +123,6 @@ v1k_start(ScrnInfoPtr pScreenInfo, vu32 pc)
   v1k_continue(pScreenInfo);
 }
 
-
-
 /*
  * void v1k_continue(ScrnInfoPtr pScreenInfo)
  *
@@ -143,8 +135,6 @@ v1k_continue(ScrnInfoPtr pScreenInfo)
 
   risc_continue(pRendition->board.io_base);
 }
-
-
 
 /*
  * void v1k_stop(ScrnInfoPtr pScreenInfo)
@@ -198,8 +188,6 @@ v1k_stop(ScrnInfoPtr pScreenInfo)
   }
 }
 
-
-
 /* 
  * void v1k_flushicache(ScrnInfoPtr pScreenInfo)
  *
@@ -248,8 +236,6 @@ v1k_flushicache(ScrnInfoPtr pScreenInfo)
   risc_forcestep(io_base, NOP_INSTR);
 }
 
-
-
 /*
  * void v1k_softreset(ScrnInfoPtr pScreenInfo)
  *
@@ -282,8 +268,6 @@ v1k_softreset(ScrnInfoPtr pScreenInfo)
   verite_out8(io_base+MEMENDIAN, MEMENDIAN_NO);	
 }
 
-
-
 /*
 void
 v1k_getriscprocs(verite_board_desc *boardDesc)
@@ -296,8 +280,6 @@ v1k_getriscprocs(verite_board_desc *boardDesc)
     return;
 }
 */
-
-
 
 /*
  * local functions
@@ -321,8 +303,6 @@ verite_iopoll(IOADDRESS port, vu32 data, vu32 mask)
   } while (c <= VERITE_MAX_POLLS);
 }
 
-
-
 /* 
  * static void verite_iopoll8(IOADDRESS port, vu8 data, vu8 mask)
  *
@@ -340,8 +320,6 @@ verite_iopoll8(IOADDRESS port, vu8 data, vu8 mask)
 	  break;
   } while (c <= VERITE_MAX_POLLS);
 }
-
-
 
 /*
  * static vu32 readRF(IOADDRESS io_base, vu8 index)
@@ -378,8 +356,6 @@ readRF(IOADDRESS io_base, vu8 index)
     
   return data;
 }
-
-
 
 /*
  * static void writeRF(IOADDRESS io_base, vu8 index, vu32 data)
@@ -418,8 +394,6 @@ writeRF(IOADDRESS io_base, vu8 index, vu32 data)
   }
 }
 
-
-
 /*
  * static vu32 risc_readmem(IOADDRESS io_base, vu32 addr, vu8 read_type)
  *
@@ -445,8 +419,6 @@ risc_readmem(IOADDRESS io_base, vu32 addr, vu8 read_type)
 
   return data; 
 }
-
-
 
 /*
  * static vu32 risc_writemem(IOADDRESS io_base, vu32 addr, vu32 data, vu8 write_type)
@@ -526,8 +498,6 @@ risc_forcestep(IOADDRESS io_base, vu32 instruction)
   verite_out8(io_base+STATEINDEX, stateindex);
 }
 
-
-
 /*
  * static void risc_continue(IOADDRESS io_base)
  *
@@ -542,8 +512,6 @@ risc_continue(IOADDRESS io_base)
   verite_out8(io_base+DEBUGREG, debugreg&(~HOLDRISC));
   verite_iopoll(io_base+STATEDATA, 0, 0);    /* short pause */
 }
-
-
 
 /*
  * end of file v1krisc.c

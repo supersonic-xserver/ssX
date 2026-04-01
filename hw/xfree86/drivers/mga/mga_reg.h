@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * MGA Millennium (MGA2064W) functions
  * MGA Mystique (MGA1064SG) functions
@@ -235,8 +226,6 @@
 #define MGAREG_CRTC_DATA	0x1fd5
 #define MGAREG_CRTCEXT_INDEX	0x1fde
 #define MGAREG_CRTCEXT_DATA	0x1fdf
-
-
 
 /* MGA bits for registers PCI_OPTION_REG */
 #define MGA1064_OPT_SYS_CLK_PCI   		( 0x00 << 0 )

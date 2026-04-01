@@ -180,8 +180,6 @@ char version[]="Touch Driver V2.1.1  (c) 1999-2003 Citron GmbH";
 
 #define CIT_BUFFER_SIZE	1024
 
-
-
 /******************************************************************************
  * debugging macro
  *****************************************************************************/
@@ -315,10 +313,6 @@ XF86ModuleData citronModuleData = { &VersionRec, SetupProc, TearDownProc};
 
 #endif /* XFree86LOADER */
 
-
-
-
-
 /*
  * Be sure to set vmin appropriately for your device's protocol. You want to
  * read a full packet before returning
@@ -381,8 +375,6 @@ static const char *default_options[] =
 static void cit_SendLockZ(cit_PrivatePtr priv);
 static int cit_SendString(XISBuffer *b, unsigned char cmd, int cnt, char *ustr);
 static Bool cit_GetUserString(cit_PrivatePtr priv, char *ustr_name, char *ustr_cont, Bool scan_flg);
-
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* [xf86CitronFeedback]													*/
@@ -506,8 +498,6 @@ cit_ParseCommand(DeviceIntPtr dev)
 
 	}
 }
-
-
 
 static void
 cit_DriverComm(DeviceIntPtr dev)
@@ -670,8 +660,6 @@ xf86CitronFeedback2 (DeviceIntPtr dev, LedCtrl *ctrl)
 	ctrl->led_mask = (unsigned long)GetTimeInMillis()&0xff;
 }
 
-
-
 #if(PK)
 /* Hexdump a number of Words  */
 /* len is number of words to dump */
@@ -727,8 +715,6 @@ cit_CloseTimer(cit_PrivatePtr priv, int nr)
 	else
 		DBG(5, ErrorF ("%scit_CloseTimer[%d]: Nothing to close\n", CI_WARNING, nr));
 }
-
-
 
 /*****************************************************************************
  *	[cit_SuperVisionTimer] If called reset Serial device
@@ -835,8 +821,6 @@ CitronPreInit (InputDriverPtr drv, IDevPtr dev, int flags)
 	xf86CollectInputOptions(local, default_options, NULL);
 
 /*	xf86OptionListReport(local->options); */
-
-
 
 	debug_level = xf86SetIntOption(local->options, "DebugLevel", 0);
 	if(debug_level)
@@ -1060,8 +1044,6 @@ CitronPreInit (InputDriverPtr drv, IDevPtr dev, int flags)
 	ErrorF ("%sCitronPreInit returning NULL\n", CI_ERROR);
 	return (NULL);
 }
-
-
 
 /*****************************************************************************
  *	[DeviceControl]
@@ -1356,8 +1338,6 @@ ReadInput (LocalDevicePtr local)
 	{
 		cit_ProcessPacket(priv);
 
-
-
 		if (priv->reporting_mode == TS_Scaled)
 		{
 			x = xf86ScaleAxis (priv->raw_x, 0, priv->screen_width, priv->min_x,
@@ -1591,13 +1571,9 @@ QueryHardware (LocalDevicePtr local, int *errmaj, int *errmin)
 	/* Reset the IRT from any mode and wait for end of warmstart */
 	DBG(5, ErrorF("%sQueryHardware called\n", CI_INFO));
 
-
-
 /* Will not work with XFree86 4.0.1 */
 /*	xf86SerialSendBreak (local->fd, 2); */
 	cit_Flush(priv); 
-
-
 
 	/*
 	 * IRT signals end of startup by sending BREAKS with 100 ms length.
@@ -2448,8 +2424,6 @@ static Bool cit_GetRevision(cit_PrivatePtr priv, int selection)
 	return (Success);
 }
 
-
-
 /*****************************************************************************
  *	[cit_GetUserString]
  ****************************************************************************/
@@ -2526,8 +2500,6 @@ static Bool cit_GetUserString(cit_PrivatePtr priv, char *ustr_name, char *ustr_c
 
 	return (Success);
 }
-
-
 
 /*****************************************************************************
  *	[cit_ProcessPacket]
@@ -2710,8 +2682,6 @@ static void cit_ProcessPacket(cit_PrivatePtr priv)
 	DBG(PP+1, ErrorF("%s\t  raw_x=%d, raw_y=%d\n", CI_INFO, priv->raw_x, priv->raw_y));
 }
 
-
-
 /*****************************************************************************
  *	[cit_GetPressureSensors]
  ****************************************************************************/
@@ -2865,6 +2835,4 @@ static int cit_AdjustBright(cit_PrivatePtr priv, int val)
 	}
 	return (255);
 }
-
-
 

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
    Copyright (c) 2002 Apple Computer, Inc. All rights reserved.
 
    Permission is hereby granted, free of charge, to any person
@@ -258,8 +249,6 @@ enum xp_init_options_enum {
     XP_BACKGROUND_EVENTS	= 1 << 1,
 };
 
-
-
 /* Miscellaneous functions */
 
 /* Initialize the plugin library. Only the copy/fill/composite functions
@@ -287,8 +276,6 @@ extern xp_error xp_synchronize (void);
 extern xp_error xp_disable_update (void);
 extern xp_error xp_reenable_update (void);
 
-
-
 /* Cursor functions. */
 
 /* Installs the specified cursor. ARGB-DATA should point to 32-bit
@@ -306,8 +293,6 @@ extern xp_error xp_set_cursor (unsigned int width, unsigned int height,
 
 extern xp_error xp_hide_cursor (void);
 extern xp_error xp_show_cursor (void);
-
-
 
 /* Window functions. */
 
@@ -422,8 +407,6 @@ extern xp_error xp_find_window (int x, int y, xp_window_id above_id,
    successful. */
 extern xp_error xp_get_window_bounds (xp_window_id id, xp_box *bounds_ret);
 
-
-
 /* Window surface functions. */
 
 /* Create a new VRAM surface on the specified window. If successful,
@@ -476,8 +459,6 @@ extern xp_error xp_attach_gl_context (void *cgl_ctx, xp_surface_id sid);
    the surface it's attached to. */
 
 extern xp_error xp_update_gl_context (void *cgl_ctx);
-
-
 
 /* Window frame functions. */
 
@@ -540,8 +521,6 @@ extern xp_error xp_frame_draw (xp_window_id wid, int class, unsigned int attr,
 			       const xp_box *outer, const xp_box *inner,
 			       unsigned int title_len,
 			       const char *title_bytes);
-
-
 
 /* Memory manipulation functions. */
 

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "osdef.h"
 
 #ifdef TC
@@ -61,8 +52,6 @@
 #include "vb_util.h"
 #include "vb_table.h"
 #include "vb_setmode.h"
-
-
 
 #define  IndexMask 0xff
 #ifndef XGI_MASK_DUAL_CHIP
@@ -160,14 +149,7 @@ USHORT   XGI_GetLCDCapPtr(PVB_DEVICE_INFO pVBInfo);
 USHORT   XGI_GetLCDCapPtr1(PVB_DEVICE_INFO pVBInfo);
 XGI301C_Tap4TimingStruct* XGI_GetTap4Ptr(USHORT tempcx, PVB_DEVICE_INFO pVBInfo);
 
-
-
-
 /* USHORT XGINew_flag_clearbuffer; 0: no clear frame buffer 1:clear frame buffer */
-
-
-
-
 
 static USHORT XGINew_MDA_DAC[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
                0x15,0x15,0x15,0x15,0x15,0x15,0x15,0x15,
@@ -278,8 +260,6 @@ void XGI_InitTo330Pointer( UCHAR ChipType ,PVB_DEVICE_INFO pVBInfo)
     pVBInfo->pSR24 = &XGI330_SR24 ;
     pVBInfo->pSR33 = &XGI330_SR33 ;
 
-
-
     pVBInfo->pCRT2Data_1_2 = &XGI330_CRT2Data_1_2 ;
     pVBInfo->pCRT2Data_4_D = &XGI330_CRT2Data_4_D ;
     pVBInfo->pCRT2Data_4_E = &XGI330_CRT2Data_4_E ;
@@ -330,11 +310,6 @@ void XGI_InitTo330Pointer( UCHAR ChipType ,PVB_DEVICE_INFO pVBInfo)
     if ( ChipType == XG20 )
     	pVBInfo->pXGINew_CR97 = &XG20_CR97 ;
 }
-
-
-
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGISetModeNew */
@@ -1183,11 +1158,6 @@ void XGI_SetCRT1CRTC( USHORT ModeNo , USHORT ModeIdIndex , USHORT RefreshRateTab
 
     USHORT i ;
 
-
-
-
-
-
     index = pVBInfo->RefIndex[ RefreshRateTableIndex ].Ext_CRT1CRTC ;	/* Get index */
     index = index&IndexMask ;
 
@@ -1202,8 +1172,6 @@ void XGI_SetCRT1CRTC( USHORT ModeNo , USHORT ModeIdIndex , USHORT RefreshRateTab
         pVBInfo->TimingV[ 0 ].data[ i ] = pVBInfo->XGINEWUB_CRT1Table[ index ].CR[ i + 8 ] ;
 
     XGI_SetCRT1Timing_H( pVBInfo, HwDeviceExtension ) ;
-
-
 
     XGI_SetCRT1Timing_V( ModeIdIndex , ModeNo, pVBInfo ) ;
 
@@ -2274,8 +2242,6 @@ void XGI_ModCRT1Regs( USHORT ModeNo , USHORT ModeIdIndex ,
         XGI_SetCRT1Timing_V( ModeIdIndex , ModeNo , pVBInfo) ;
     }
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGI_SetLVDSRegs */
@@ -3475,9 +3441,6 @@ BOOLEAN XGI_SearchModeID( USHORT ModeNo , USHORT *ModeIdIndex, PVB_DEVICE_INFO p
     return( TRUE ) ;
 }
 
-
-
-
 /* win2000 MM adapter not support standard mode! */
 
 #if 0
@@ -3743,10 +3706,6 @@ void XGI_SenseCRT1( PVB_DEVICE_INFO pVBInfo )
     XGINew_SetReg1( pVBInfo->P3d4 , 0x53 , ( UCHAR )( XGINew_GetReg1( pVBInfo->P3d4 , 0x53 ) & 0xFD ) ) ;
 }
 
-
-
-
-
 #ifdef TC
 /* --------------------------------------------------------------------- */
 /* Function : INT1AReturnCode */
@@ -3829,8 +3788,6 @@ unsigned FindPCIIOBase( unsigned index , unsigned deviceid )
 
 #endif
 
-
-
 #ifdef TC
 /* --------------------------------------------------------------------- */
 /* Function : main */
@@ -3850,8 +3807,6 @@ void main(int argc, char *argv[])
 
     HwDeviceExtension.pjIOAddress = ( FindPCIIOBase( 0 ,0x6300 ) & 0xFF80 ) + 0x30 ;
     HwDeviceExtension.jChipType = XGI_340 ;
-
-
 
     /* HwDeviceExtension.pjIOAddress = ( FindPCIIOBase( 0 , 0x5315 ) & 0xFF80 ) + 0x30 ; */
     
@@ -3898,10 +3853,6 @@ static void XGI_WaitDisplay( PVB_DEVICE_INFO pVBInfo )
 }
 #endif
 
-
-
-
-
 /* --------------------------------------------------------------------- */
 /* Function : */
 /* Input : */
@@ -3913,8 +3864,6 @@ BOOLEAN XGI_CheckDualChip(  PVB_DEVICE_INFO pVBInfo )
     /* Check H/W trap that 2nd chip is present or not. */
     return( ( BOOLEAN )(XGINew_GetReg1( pVBInfo->P3c4 , 0x3A ) & XGI_MASK_DUAL_CHIP ) ) ;
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : SetDualChipRegs */
@@ -4674,11 +4623,6 @@ void XGI_PreSetGroup1(USHORT ModeNo , USHORT ModeIdIndex ,PXGI_HW_DEVICE_INFO Hw
     USHORT tempcx = 0 ,
            CRT1Index = 0 ;
 
-
-
-
-
-
     if ( ModeNo > 0x13 )
     {
         CRT1Index = pVBInfo->RefIndex[ RefreshRateTableIndex ].Ext_CRT1CRTC ;
@@ -5337,9 +5281,6 @@ void XGI_SetGroup2( USHORT ModeNo, USHORT ModeIdIndex, USHORT RefreshRateTableIn
            push1 ,
            push2 ,
            modeflag ;
-
-
-
 
 /*           XGINew_RY1COE = 0 ,
            XGINew_RY2COE = 0 ,
@@ -7533,8 +7474,6 @@ void XGI_GetLCDSync( USHORT* HSyncWidth , USHORT* VSyncWidth, PVB_DEVICE_INFO pV
     return ;
 }
 
-
-
 /* --------------------------------------------------------------------- */
 /* Function : XGI_EnableBridge */
 /* Input : */
@@ -7887,9 +7826,6 @@ void XGI_DisableBridge(PXGI_HW_DEVICE_INFO HwDeviceExtension, PVB_DEVICE_INFO pV
         if ( pVBInfo->VBInfo & ( DisableCRT2Display | SetCRT2ToLCDA | SetSimuScanMode ) )
             XGI_DisplayOff( pVBInfo) ;
     }
-
-
-
 
     if ( HwDeviceExtension->jChipType < XG40 )
     {
@@ -8747,8 +8683,6 @@ void XGI_GetRAMDAC2DATA(USHORT ModeNo , USHORT ModeIdIndex , USHORT RefreshRateT
     pVBInfo->VT = tempbx ;
 }
 
-
-
 /* --------------------------------------------------------------------- */
 /* Function : XGI_GetColorDepth */
 /* Input : */
@@ -8777,8 +8711,6 @@ USHORT XGI_GetColorDepth(USHORT ModeNo , USHORT ModeIdIndex, PVB_DEVICE_INFO pVB
 
     return( ColorDepth[ index ] ) ;
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGI_UnLockCRT2 */
@@ -8820,8 +8752,6 @@ void XGINew_EnableCRT2( PVB_DEVICE_INFO pVBInfo)
     XGINew_SetRegANDOR( pVBInfo->P3c4 , 0x1E , 0xFF , 0x20 ) ;
 }
 
-
-
 /* --------------------------------------------------------------------- */
 /* Function : */
 /* Input : */
@@ -8853,9 +8783,6 @@ void XGINew_LCD_Wait_Time(UCHAR DelayTime, PVB_DEVICE_INFO pVBInfo)
     }
 }
 
-
-
-
 /* --------------------------------------------------------------------- */
 /* Function : XGI_BridgeIsOn */
 /* Input : */
@@ -8879,8 +8806,6 @@ BOOLEAN XGI_BridgeIsOn( PVB_DEVICE_INFO pVBInfo )
             return( 0 ) ;
     }
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGI_LongWait */
@@ -8966,9 +8891,6 @@ void XGI_VBLongWait( PVB_DEVICE_INFO pVBInfo )
     }
     return ;
 }
-
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGI_GetVGAHT2 */

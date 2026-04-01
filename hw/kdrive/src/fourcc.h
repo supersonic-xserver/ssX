@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /*
    This header file contains listings of STANDARD guids for video formats.
    Please do not place non-registered, or incomplete entries in this file.

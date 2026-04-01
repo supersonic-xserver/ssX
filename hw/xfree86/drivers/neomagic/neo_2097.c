@@ -1,10 +1,8 @@
-/**********************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
@@ -103,8 +101,6 @@ static void Neo2097SubsequentScanlineImageWriteRect(ScrnInfoPtr pScrn,
                                 int x, int y, int w, int h, int skipleft);
 static void Neo2097SubsequentImageWriteScanline(ScrnInfoPtr pScrn, int num);
 
-
-
 static unsigned int neo2097Rop[16] = {
     0x000000,    /* 0x0000 - GXclear         */
     0x080000,    /* 0x1000 - GXand           */
@@ -123,7 +119,6 @@ static unsigned int neo2097Rop[16] = {
     0x070000,    /* 0x0111 - GXnand          */
     0x0f0000     /* 0x1111 - GXset           */
 };
-
 
 Bool 
 Neo2097AccelInit(ScreenPtr pScreen)
@@ -307,7 +302,6 @@ Neo2097SubsequentScreenToScreenCopy(ScrnInfoPtr pScrn,
     }
 }
 
-
 static void
 Neo2097SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
 			     unsigned int planemask)
@@ -327,7 +321,6 @@ Neo2097SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
     /* set foreground color */
     OUTREG(NEOREG_FGCOLOR, color |= (color << nAcl->ColorShiftAmt));
 }
-
 
 static void
 Neo2097SubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
@@ -488,7 +481,6 @@ Neo2097SetupForMono8x8PatternFill(ScrnInfoPtr pScrn,
     }
 }
 
-
 static void
 Neo2097SubsequentMono8x8PatternFill(ScrnInfoPtr pScrn,
 				    int patternx,
@@ -524,7 +516,6 @@ Neo2097SetupForScanlineImageWrite(
                              NEO_BC3_SKIP_MAPPING |
                              NEO_BC3_DST_XY_ADDR  | neo2097Rop[rop]);
 }
-
 
 static void 
 Neo2097SubsequentScanlineImageWriteRect(

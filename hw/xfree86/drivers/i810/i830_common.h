@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
 Copyright 2002 Tungsten Graphics Inc., Cedar Park, Texas.
@@ -45,10 +41,8 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _I830_COMMON_H_
 #define _I830_COMMON_H_
 
-
 #define I830_NR_TEX_REGIONS 255	/* maximum due to use of chars for next/prev */
 #define I830_LOG_MIN_TEX_REGION_SIZE 14
-
 
 /* Driver specific DRM command indices
  * NOTE: these are not OS specific, but they are driver specific
@@ -111,7 +105,6 @@ typedef struct {
 #define I830_BOX_TEXTURE_LOAD  0x8 /* populated by kernel */
 #define I830_BOX_LOST_CONTEXT  0x10 /* populated by client */
 
-
 typedef struct {
    	int start;		/* agp offset */
 	int used;		/* nr bytes in use */
@@ -155,7 +148,6 @@ typedef struct {
 #define I830_SETPARAM_TEX_LRU_LOG_GRANULARITY   2
 #define I830_SETPARAM_ALLOW_BATCHBUFFER         3
 
-
 /* A memory manager for regions of shared memory:
  */
 #define I830_MEM_REGION_AGP 1
@@ -177,6 +169,5 @@ typedef struct {
 	int size;
 	int start;	
 } drmI830MemInitHeap;
-
 
 #endif /* _I830_DRM_H_ */

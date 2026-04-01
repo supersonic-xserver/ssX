@@ -213,8 +213,6 @@ static const char *fallback_options[] =
  *	Function Definitions
  ****************************************************************************/
 
-
-
 static InputInfoPtr
 MuTouchPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 {

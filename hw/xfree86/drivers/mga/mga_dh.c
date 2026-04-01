@@ -138,8 +138,6 @@
 #define XPWRCTRL_CFIFOPDN_SHIFT                     4
 #define XPWRCTRL_CFIFOPDN_MASK                      (1 << XPWRCTRL_CFIFOPDN_SHIFT)
 
-
-
 #define POS_HSYNC                  0x00000004
 #define POS_VSYNC                  0x00000008
 
@@ -363,8 +361,6 @@ void MGAEnableSecondOutPut(ScrnInfoPtr pScrn, xMODEINFO *pModeInfo)
 
     pReg->dac2[ MGA1064_DISP_CTL - 0x80] =  ucXDispCtrl; 
 
-
-
     OUTREG( MGAREG_C2CTL,  ulC2CTL);
 
    /* Set DAC2 Synch polarity*/
@@ -398,10 +394,6 @@ void MGAEnableSecondOutPut(ScrnInfoPtr pScrn, xMODEINFO *pModeInfo)
     ErrorF("EXIT MGAEnableSecondOutPut\n");
 #endif
 }
-
-
-
-
 
 void MGACRTC2GetPitch (ScrnInfoPtr pScrn, xMODEINFO *pModeInfo)
 {
@@ -508,14 +500,4 @@ void MGACRTC2SetDisplayStart (ScrnInfoPtr pScrn, xMODEINFO *pModeInfo, CARD32 ba
 #endif
     
 }
-
-
-
-
-
-
-
-
-
-
 

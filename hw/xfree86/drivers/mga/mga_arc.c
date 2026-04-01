@@ -1,18 +1,14 @@
-/************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1989, 1998  The Open Group
 
@@ -39,7 +35,6 @@ in this Software without prior written authorization from The Open Group.
 ********************************************************/
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/mga/mga_arc.c,v 1.14 2005/10/14 15:16:41 tsi Exp $ */
 
-
 #include <X11/X.h>
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -63,12 +58,10 @@ in this Software without prior written authorization from The Open Group.
 #include "mga_reg.h"
 #include "mga_macros.h"
 
-
 /* 
    This is only faster than cfb for stuff other than GXcopy.  
    And even then, only when pci_retries are on.  
 */
-
 
 #define DRAW_POINT(x, y) { \
 	tmp = x; \

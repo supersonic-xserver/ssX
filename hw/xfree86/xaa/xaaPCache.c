@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "misc.h"
 #include "xf86.h"
 #include "xf86_ansic.h"
@@ -68,8 +59,6 @@ TransferList(CacheLinkPtr list, XAACacheInfoPtr array, int num)
   }
 }
 
-
-
 static CacheLinkPtr
 Enlist(CacheLinkPtr link, int x, int y, int w, int h)
 {
@@ -82,8 +71,6 @@ Enlist(CacheLinkPtr link, int x, int y, int w, int h)
     return newLink;
 }
 
-
-
 static CacheLinkPtr
 Delist(CacheLinkPtr link) {
     CacheLinkPtr ret = NULL;
@@ -95,8 +82,6 @@ Delist(CacheLinkPtr link) {
     return ret;
 }
 
-
-
 static void
 FreeList(CacheLinkPtr link) {
     CacheLinkPtr tmp;
@@ -107,8 +92,6 @@ FreeList(CacheLinkPtr link) {
 	xfree(tmp);
     }
 }
-
-
 
 static CacheLinkPtr
 QuadLinks(CacheLinkPtr big, CacheLinkPtr little)
@@ -181,8 +164,6 @@ XAAClosePixmapCache(ScreenPtr pScreen)
 
    infoRec->PixmapCachePrivate = NULL;
 }
-
-
 
 static CacheLinkPtr
 ThinOutPartials(
@@ -1670,8 +1651,6 @@ XAACachePlanarMonoStipple(ScrnInfoPtr pScrn, PixmapPtr pPix)
    return pCache;
 }
 
-
-
 XAACacheInfoPtr
 XAACacheStipple(ScrnInfoPtr pScrn, PixmapPtr pPix, int fg, int bg)
 {
@@ -1749,8 +1728,6 @@ XAACacheStipple(ScrnInfoPtr pScrn, PixmapPtr pPix, int fg, int bg)
    return pCache;
 }
 
-
-
 XAACacheInfoPtr
 XAACacheMono8x8Pattern(ScrnInfoPtr pScrn, int pat0, int pat1)
 {
@@ -1779,8 +1756,6 @@ XAACacheMono8x8Pattern(ScrnInfoPtr pScrn, int pat0, int pat1)
 
    return pCache;
 }
-
-
 
 XAACacheInfoPtr
 XAACacheColor8x8Pattern(ScrnInfoPtr pScrn, PixmapPtr pPix, int fg, int bg)
@@ -1917,8 +1892,6 @@ XAAWritePixmapToCache(
    (*infoRec->WritePixmap)(pScrn, x, y, w, h, src, srcwidth,
 				GXcopy, ~0, -1, bpp, depth);
 }
-
-
 
 void
 XAAWritePixmapToCacheLinear(
@@ -2100,8 +2073,6 @@ XAAWriteColor8x8PatternToCache(
    DEALLOCATE_LOCAL(data);
 }
 
-
-
 int
 XAAStippledFillChooser(GCPtr pGC)
 {
@@ -2260,8 +2231,6 @@ XAAOpaqueStippledFillChooser(GCPtr pGC)
     return 0;
 }
 
-
-
 int
 XAATiledFillChooser(GCPtr pGC)
 {
@@ -2361,8 +2330,6 @@ XAARotateMonoPattern(
 	*pat1 = ((*pat1 >> yorg) & mask) | ((tmp << (32 - yorg)) & ~mask);
     }
 }
-
-
 
 void
 XAAInvalidatePixmapCache(ScreenPtr pScreen)

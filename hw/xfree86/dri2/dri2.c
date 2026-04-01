@@ -1098,8 +1098,6 @@ DRI2WaitSwap(ClientPtr client, DrawablePtr pDrawable)
     return FALSE;
 }
 
-
-
 int
 DRI2SwapBuffers(ClientPtr client, DrawablePtr pDraw, CARD64 target_msc,
                 CARD64 divisor, CARD64 remainder, CARD64 * swap_target,

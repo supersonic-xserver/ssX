@@ -294,8 +294,6 @@ ApmSetMode(ScrnInfoPtr pScrn, DGAModePtr pMode)
     return TRUE;
 }
 
-
-
 static int  
 ApmGetViewport(
   ScrnInfoPtr pScrn

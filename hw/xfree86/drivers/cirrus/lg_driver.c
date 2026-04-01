@@ -336,8 +336,6 @@ LgFreeRec(ScrnInfoPtr pScrn)
 	pScrn->driverPrivate = NULL;
 }
 
-
-
 /*
  * LgCountRAM --
  *
@@ -1231,9 +1229,6 @@ static int LgFindLineData(int displayWidth, int bpp)
 	/* Um, uh oh! */
 	return -1;
 }
-
-
-
 
 static void
 LgRestoreLgRegs(ScrnInfoPtr pScrn, LgRegPtr lgReg)

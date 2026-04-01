@@ -154,7 +154,5 @@ Bool VIADRIFinishScreenInit(ScreenPtr pScreen);
 void viaDRILeaveVT(int scrnIndex);
 void viaDRIEnterVT(int scrnIndex);
 
-
-
 #endif /* XFree86Server */
 #endif /* _VIA_DRI_H_ */

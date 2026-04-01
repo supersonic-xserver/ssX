@@ -864,8 +864,6 @@ xf86SumInit(InputDriverPtr	drv,
 	xf86Msg(X_CONFIG, "Summa: debug level set to %d\n", debug_level);
     }
 
-
-
     s = xf86FindOptionValue(local->options, "Mode");
 
     if (s && (xf86NameCmp(s, "absolute") == 0)) {
@@ -933,8 +931,6 @@ xf86SumInit(InputDriverPtr	drv,
 	    xf86Msg(X_CONFIG, "%s: YOffset = %d\n", 
 		    dev->identifier, priv->dedgeYOffset);
     }
-
-
 
     /* mark the device configured */
     local->flags |= XI86_POINTER_CAPABLE | XI86_CONFIGURED;

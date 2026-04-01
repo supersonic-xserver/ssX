@@ -236,8 +236,6 @@ static XF86ImageRec Images[NUM_IMAGES] =
 	/* XVIMAGE_UYVY */
 };
 
-
-
 static int 
 S3VSetPortAttributeOverlay(
   ScrnInfoPtr pScrn, 
@@ -313,8 +311,6 @@ return BadMatch;
 #endif
 }
 
-
-
 static void 
 S3VQueryBestSize(
   ScrnInfoPtr pScrn, 
@@ -335,8 +331,6 @@ S3VQueryBestSize(
   if( drw_h < vid_h ) *p_h = vid_h;
 #endif
 }
-
-
 
 static void 
 S3VResetVideoOverlay(ScrnInfoPtr pScrn) 
@@ -369,8 +363,6 @@ S3VResetVideoOverlay(ScrnInfoPtr pScrn)
 			       (pPriv->contrast & 0xff));
 #endif /*0*/
 }
-
-
 
 static XF86VideoAdaptorPtr
 S3VAllocAdaptor(ScrnInfoPtr pScrn)
@@ -419,10 +411,6 @@ S3VAllocAdaptor(ScrnInfoPtr pScrn)
 
     return adapt;
 }
-
-
-
-
 
 static XF86VideoAdaptorPtr 
 S3VSetupImageVideoOverlay(ScreenPtr pScreen)
@@ -526,8 +514,6 @@ S3VStopVideo(ScrnInfoPtr pScrn, pointer data, Bool shutdown)
   }
 }
 
-
-
 static FBAreaPtr
 S3VAllocateMemory(
    ScrnInfoPtr pScrn,
@@ -568,8 +554,6 @@ S3VAllocateMemory(
 
    return new_area;
 }
-
-
 
 static void
 S3VDisplayVideoOverlay(

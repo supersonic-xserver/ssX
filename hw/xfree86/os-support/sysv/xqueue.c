@@ -404,8 +404,6 @@ XqEnable(InputInfoPtr pInfo)
     return Success;
 }
 
-
-
 /*
  * xf86XqueDisable --
  *      disable the handling of the Xque

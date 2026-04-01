@@ -1,10 +1,8 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.
@@ -54,7 +52,6 @@
 #define PRIM3D_CLEAR_RECT	(PRIM3D | (0xa<<18))
 #define PRIM3D_ZONE_INIT	(PRIM3D | (0xd<<18))
 #define PRIM3D_MASK		(0x1f<<18)
-
 
 /* p137 */
 #define _3DSTATE_AA_CMD			(CMD_3D | (0x06<<24))
@@ -1083,7 +1080,6 @@
 #define D1_MBZ                          0
 #define D2_MBZ                          0
 
-
 /* MASK_* are the unshifted bitmasks of the destination mask in arithmetic
  * operations
  */
@@ -1365,7 +1361,6 @@ enum gen3_fs_channel {
 			      operand0, \
 			      gen3_fs_operand_none(), \
 			      gen3_fs_operand_none())
-
 
 #define gen3_fs_frc(dest_reg, operand0)					\
 	gen3_fs_arith (FRC, dest_reg, \

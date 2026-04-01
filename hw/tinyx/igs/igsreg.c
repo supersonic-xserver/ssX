@@ -8,7 +8,7 @@
 
  * $XFree86: xc/programs/Xserver/hw/tinyx/igs/igsreg.c,v 1.1 2004/06/02 22:43:01 dawes Exp $
  *
- * Copyright © 2000 Keith Packard
+ * Copyright Â© 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -590,8 +590,6 @@ VgaReg  igs_mr_retry[] = {
     {GREX3C, 2, 1},
     VGA_REG_END
 };
-
-
 
 VgaReg	igs_biga22en[] = {
     {GR3D,   4, 1},

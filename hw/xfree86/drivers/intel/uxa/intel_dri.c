@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
 Copyright © 2002 by David Dawes
@@ -1017,7 +1013,6 @@ static void I830DRI2FlipEventHandler(unsigned int frame,
 	if (flip_info->drawable_id)
 		dixLookupDrawable(&drawable, flip_info->drawable_id, serverClient,
 				  M_ANY, DixWriteAccess);
-
 
 	/* We assume our flips arrive in order, so we don't check the frame */
 	switch (flip_info->type) {

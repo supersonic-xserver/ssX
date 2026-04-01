@@ -615,8 +615,6 @@ RasterBitsToPixels16(uint8 *bits, uint32 bits_increment,
    return;
 }
 
-
-
 /*
  *----------------------------------------------------------------------
  *
@@ -1151,8 +1149,6 @@ RasterBitsToPixels24(uint8 *bits, uint32 bits_increment,
    }
    return;
 }
-
-
 
 /*
  *----------------------------------------------------------------------

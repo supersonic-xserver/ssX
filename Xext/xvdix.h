@@ -1,10 +1,8 @@
-/***********************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
@@ -283,7 +281,6 @@ extern int XvdiMatchPort(XvPortPtr, DrawablePtr);
 extern int XvdiGrabPort(ClientPtr, XvPortPtr, Time, int *);
 extern int XvdiUngrabPort( ClientPtr, XvPortPtr, Time);
 
-
 #if !defined(UNIXCPP)
 
 #define XVCALL(name) Xv##name
@@ -293,7 +290,6 @@ extern int XvdiUngrabPort( ClientPtr, XvPortPtr, Time);
 #define XVCALL(name) Xv/**/name
 
 #endif
-
 
 #endif /* XVDIX_H */
 

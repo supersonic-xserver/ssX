@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #ifndef _XAALOCAL_H
 #define _XAALOCAL_H
 
@@ -52,8 +43,6 @@ typedef void (*RectFuncPtr) (ScrnInfoPtr, int, int, int, int, int, int,
 typedef void (*TrapFuncPtr) (ScrnInfoPtr, int, int, int, int, int, int,
 					  int, int, int, int, int, int,
 					  XAACacheInfoPtr);
-
-
 
 typedef struct _XAAScreen {
    CreateGCProcPtr 		CreateGC;
@@ -1600,8 +1589,6 @@ XAADoGlyphs (CARD8         op,
            int           nlist,
            GlyphListPtr  list,
            GlyphPtr      *glyphs);
-
-
 
 /* helpers */
 void

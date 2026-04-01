@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -42,8 +33,6 @@
 /*
  * Generated on Sat Nov 20 21:25:36 CST 1999
  */
-
-
 
 /*
  * Power Graphic Mode Memory Space Registers
@@ -935,9 +924,6 @@
 #    define ZO_zorgacc_agp 		0x2 		
 #    define ZO_zorg_MASK 		0x3 		/* bits 2-31 */
 #    define ZO_zorg_SHIFT 		2 		
-
-
-
 
 /**************** (END) AUTOMATICLY GENERATED REGISTER FILE ******************/
 

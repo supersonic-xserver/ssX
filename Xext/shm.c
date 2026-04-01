@@ -935,8 +935,6 @@ ProcShmPutImage(ClientPtr client)
     return (client->noClientException);
 }
 
-
-
 static int
 ProcShmGetImage(ClientPtr client)
 {

@@ -15,22 +15,17 @@
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
 
-
-/************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 
@@ -76,7 +71,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define _XSELINUX_NEED_FLASK_MAP
 #include "xselinuxint.h"
 
-
 /* structure passed to auditing callback */
 typedef struct {
     ClientPtr client;	/* client */
@@ -110,7 +104,6 @@ static void SELinuxScreen(CallbackListPtr *, pointer, pointer);
 
 /* "true" pointer value for use as callback data */
 static pointer truep = (pointer)1;
-
 
 /*
  * Performs an SELinux permission check.
@@ -274,7 +267,6 @@ SELinuxLabelResource(XaceResourceAccessRec *rec, SELinuxSubjectRec *subj,
 
     return Success;
 }
-
 
 /*
  * Libselinux Callbacks
@@ -765,7 +757,6 @@ SELinuxServer(CallbackListPtr *pcbl, pointer unused, pointer calldata)
 	rec->status = rc;
 }
 
-
 /*
  * DIX Callbacks
  */
@@ -831,7 +822,6 @@ SELinuxResourceState(CallbackListPtr *pcbl, pointer unused, pointer calldata)
     } else
 	FatalError("SELinux: Unexpected unlabeled window found\n");
 }
-
 
 static int netlink_fd;
 

@@ -606,8 +606,6 @@ static Bool ARKScreenInit(int scrnIndex, ScreenPtr pScreen,
 	return TRUE;
 }
 
-
-
 static void ARKSave(ScrnInfoPtr pScrn)
 {
 	ARKPtr pARK = ARKPTR(pScrn);
@@ -668,8 +666,6 @@ static void ARKSave(ScrnInfoPtr pScrn)
 	/* save RAMDAC regs here, based on type */
 	save->dac_command = get_daccomm(isaIOBase);
 }
-
-
 
 static Bool ARKModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
@@ -935,8 +931,6 @@ static void ARKAdjustFrame(int scrnIndex, int x, int y, int flags)
 	modinx(vgaIOBase + 4, 0x40, 0x07, (base & 0x070000) >> 16);
 }
 
-
-
 static void ARKWriteMode(ScrnInfoPtr pScrn, vgaRegPtr pVga, ARKRegPtr new)
 {
 	ARKPtr pARK = ARKPTR(pScrn);
@@ -1019,8 +1013,6 @@ static Bool ARKEnterVT(int scrnIndex, int flags)
 
 	return TRUE;
 }
-
-
 
 static void ARKLeaveVT(int scrnIndex, int flags)
 {

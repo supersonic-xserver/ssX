@@ -120,8 +120,6 @@ void S3Regdump(ScrnInfoPtr pScrn);
 static void S3DisplayPowerManagementSet(ScrnInfoPtr pScrn,
 					int PowerManagementMode, int flags);
 
-
-
 DriverRec S3 =
 {
 	S3_VERSION,
@@ -837,9 +835,6 @@ static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
 	} else
 		xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Using SW cursor\n");
 
-
-
-
 	if (!miCreateDefColormap(pScreen))
 		return FALSE;
 
@@ -866,9 +861,6 @@ static Bool S3ScreenInit(int scrnIndex, ScreenPtr pScreen,
 
 	return TRUE;
 }
-
-
-
 
 static void S3Save(ScrnInfoPtr pScrn)
 {
@@ -1826,8 +1818,6 @@ void S3BankZero(ScrnInfoPtr pScrn)
 	tmp = inb(vgaCRReg) & 0xf3;
 	outb(vgaCRReg, tmp);
 }
-
-
 
 static void S3DisplayPowerManagementSet(ScrnInfoPtr pScrn,
 					int PowerManagementMode, int flags)

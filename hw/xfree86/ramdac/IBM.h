@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include <xf86RamDac.h>
 
 RamDacHelperRecPtr IBMramdacProbe(ScrnInfoPtr pScrn, RamDacSupportedInfoRecPtr ramdacs);
@@ -130,8 +121,6 @@ void IBMramdac640HWCursorInit(xf86CursorInfoPtr infoPtr);
 #define IBMRGB_vram_mask_2	0x92
 #define IBMRGB_vram_mask_3	0x93
 #define IBMRGB_curs_array	0x100
-
-
 
 /* Constants rgb525.h */  
 

@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /*
  * Copyright (c) 2004, X.Org Foundation
  *

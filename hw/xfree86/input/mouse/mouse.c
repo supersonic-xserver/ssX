@@ -164,8 +164,6 @@ typedef struct _DragLockRec {
 
 } DragLockRec, *DragLockPtr;
 
-
-
 #ifdef XFree86LOADER
 static const OptionInfoRec *MouseAvailableOptions(void *unused);
 #endif
@@ -3576,8 +3574,6 @@ collectData(MouseDevPtr pMse, unsigned char u)
 }
 
 /**************** end of autoprobe stuff *****************/
-
-
 
 #ifdef XFree86LOADER
 ModuleInfoRec MouseInfo = {

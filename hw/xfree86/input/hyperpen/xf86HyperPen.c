@@ -190,7 +190,7 @@ static struct MODEL_ID {
 #define SS_CONFIG	"a"	/* Send configuration (max coords) */
 #define SS_PROMPT_MODE	"D"	/* Prompt mode */
 #define SS_STREAM_MODE	"@"	/* Stream mode */
-#define SS_RATE         "µ"     /* 19200 bps */
+#define SS_RATE         "Âµ"     /* 19200 bps */
 #define SS_ABSOLUTE     "F"     /* absolute mode */
 #define SS_RELATIVE     "E"     /* relative mode */
 #define SS_MACROKEY	"U"	/* enable F-keys */
@@ -250,8 +250,6 @@ xf86HypConvert(LocalDevicePtr	local,
     if (*y > screenInfo.screens[0]->height)
 	*y = screenInfo.screens[0]->height;
 
-
-
     return TRUE;
 }
 
@@ -268,8 +266,6 @@ xf86HypReverseConvert(LocalDevicePtr	local,
     HyperPenDevicePtr	priv = (HyperPenDevicePtr) local->private;
     valuators[0] = ((x * priv->hypXSize) / screenInfo.screens[0]->width);
     valuators[1] = ((y * priv->hypYSize) / screenInfo.screens[0]->height);
-
-
 
     return TRUE;
 }
@@ -291,8 +287,6 @@ xf86HypReadInput(LocalDevicePtr local)
     DeviceIntPtr	device;
     unsigned char	buffer[BUFFER_SIZE];
   
-
-
 
     SYSCALL(len = read(local->fd, buffer, sizeof(buffer)));
 
@@ -348,9 +342,6 @@ is_absolute = stylus;
 		y -= priv->hypOldY;
 	    } 
 
-
-
-
 	
 	
 	hw_pressure=pressure; 
@@ -385,9 +376,6 @@ is_absolute = stylus;
 	    
 	    device = local->dev;
 
-
-
-
             is_core_pointer = xf86IsCorePointer(device);
 
 /* coordonates are ready we can send events */
@@ -406,14 +394,10 @@ is_absolute = stylus;
 		    }
 		}
 
-
-
 	if (priv->hypOldBarrel1 != barrel1) {
 		int delta;
 		delta = barrel1 - priv->hypOldBarrel1;
 		if (priv->hypOldBarrel1 != barrel1) {
-
-
 
 			xf86PostButtonEvent(device, is_absolute, 2, (delta > 0), 0, 3, x, y, pressure);
 		}
@@ -597,8 +581,6 @@ xf86HypOpen(LocalDevicePtr local)
 
 	    DBG(6, ErrorF("started F-keys\n"));
 
-
-
     priv->hypRes = 500;
     res100 = priv->hypRes / 100;
 
@@ -761,8 +743,6 @@ xf86HypProc(DeviceIntPtr pHyp, int what)
     int			loop;
     LocalDevicePtr	local = (LocalDevicePtr)pHyp->public.devicePrivate;
     HyperPenDevicePtr	priv = (HyperPenDevicePtr)PRIVATE(pHyp);
-
-
 
     switch (what) {
 	case DEVICE_INIT:
@@ -1041,8 +1021,6 @@ xf86HypInit(InputDriverPtr	drv,
     if (debug_level > 0) {
 	xf86Msg(X_CONFIG, "%s: debug level set to %d\n", dev->identifier, debug_level);
     }
-
-
 
     s = xf86FindOptionValue(local->options, "Mode");
 

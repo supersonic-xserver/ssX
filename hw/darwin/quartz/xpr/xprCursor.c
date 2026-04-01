@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Xplugin cursor support
@@ -162,7 +160,6 @@ load_cursor(CursorPtr src, int screen)
     return err == Success;
 }
 
-
 /*
 ===========================================================================
 
@@ -186,7 +183,6 @@ QuartzRealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
     return TRUE;
 }
 
-
 /*
  * QuartzUnrealizeCursor
  *  Free the storage space associated with a realized cursor.
@@ -196,7 +192,6 @@ QuartzUnrealizeCursor(ScreenPtr pScreen, CursorPtr pCursor)
 {
     return TRUE;
 }
-
 
 /*
  * QuartzSetCursor
@@ -230,7 +225,6 @@ QuartzSetCursor(ScreenPtr pScreen, CursorPtr pCursor, int x, int y)
     }
 }
 
-
 /*
  * QuartzMoveCursor
  *  Move the cursor. This is a noop for us.
@@ -240,14 +234,12 @@ QuartzMoveCursor(ScreenPtr pScreen, int x, int y)
 {
 }
 
-
 static miPointerSpriteFuncRec quartzSpriteFuncsRec = {
     QuartzRealizeCursor,
     QuartzUnrealizeCursor,
     QuartzSetCursor,
     QuartzMoveCursor
 };
-
 
 /*
 ===========================================================================
@@ -266,7 +258,6 @@ QuartzCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
     return FALSE;
 }
 
-
 /*
  * QuartzCrossScreen
  */
@@ -275,7 +266,6 @@ QuartzCrossScreen(ScreenPtr pScreen, Bool entering)
 {
     return;
 }
-
 
 /*
  * QuartzWarpCursor
@@ -310,7 +300,6 @@ QuartzWarpCursor(ScreenPtr pScreen, int x, int y)
     miPointerUpdate();
 }
 
-
 static miPointerScreenFuncRec quartzScreenFuncsRec = {
     QuartzCursorOffScreen,
     QuartzCrossScreen,
@@ -318,7 +307,6 @@ static miPointerScreenFuncRec quartzScreenFuncsRec = {
     DarwinEQPointerPost,
     DarwinEQSwitchScreen
 };
-
 
 /*
 ===========================================================================
@@ -392,7 +380,6 @@ QuartzInitCursor(ScreenPtr pScreen)
     return TRUE;
 }
 
-
 /*
  * QuartzSuspendXCursor
  *  X server is hiding. Restore the Aqua cursor.
@@ -401,7 +388,6 @@ void
 QuartzSuspendXCursor(ScreenPtr pScreen)
 {
 }
-
 
 /*
  * QuartzResumeXCursor

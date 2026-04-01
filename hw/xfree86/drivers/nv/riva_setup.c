@@ -158,8 +158,6 @@ static CARD8 RivaReadDacData(vgaHWPtr pVga)
     return (VGA_RD08(pRiva->riva.PDIO, VGA_DAC_DATA));
 }
 
-
-
 static xf86MonPtr 
 RivaProbeDDC (ScrnInfoPtr pScrn)
 {

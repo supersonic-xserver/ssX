@@ -15,14 +15,11 @@
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
 
-
-/***********************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
@@ -644,7 +641,6 @@ ProcXvPutStill(ClientPtr client)
 
 }
 
-
 static int
 ProcXvGetVideo(ClientPtr client)
 {
@@ -690,7 +686,6 @@ ProcXvGetVideo(ClientPtr client)
 			    stuff->drw_w, stuff->drw_h);
 
 }
-
 
 static int
 ProcXvGetStill(ClientPtr client)
@@ -841,7 +836,6 @@ ProcXvUngrabPort(ClientPtr client)
   return XVCALL(diUngrabPort)(client, pPort, stuff->time);
 
 }
-
 
 static int
 ProcXvStopVideo(ClientPtr client)
@@ -995,7 +989,6 @@ ProcXvQueryBestSize(ClientPtr client)
   return Success;
 }
 
-
 static int
 ProcXvQueryPortAttributes(ClientPtr client)
 {
@@ -1051,8 +1044,6 @@ ProcXvQueryPortAttributes(ClientPtr client)
 
   return Success;
 }
-
-
 
 static int 
 ProcXvPutImage(ClientPtr client)
@@ -1358,8 +1349,6 @@ ProcXvListImageFormats(ClientPtr client)
   return Success;
 }
 
-
-
 /* Swapped Procs */
 
 static int
@@ -1543,7 +1532,6 @@ SProcXvShmPutImage(ClientPtr client)
 }
 #endif
 
-
 static int
 SProcXvSelectVideoNotify(ClientPtr client)
 {
@@ -1642,7 +1630,6 @@ SProcXvListImageFormats(ClientPtr client)
   swapl(&stuff->port, n);
   return ProcXvListImageFormats(client);
 }
-
 
 static int
 SWriteQueryExtensionReply(
@@ -1783,8 +1770,6 @@ SWriteImageFormatInfo(
   return Success;
 }
 
-
-
 static int
 SWriteGrabPortReply(
    ClientPtr client,
@@ -1869,7 +1854,6 @@ SWriteQueryImageAttributesReply(
   return Success;
 }
 
-
 static int
 SWriteListImageFormatsReply(
    ClientPtr client,
@@ -1886,11 +1870,7 @@ SWriteListImageFormatsReply(
   return Success;
 }
 
-
 #ifdef PANORAMIX
-
-
-
 
 static int
 XineramaXvStopVideo(ClientPtr client)
@@ -1940,7 +1920,6 @@ XineramaXvSetPortAttribute(ClientPtr client)
     }
     return result;
 }
-
 
 #ifdef MITSHM
 static int 
@@ -2125,7 +2104,6 @@ XineramaXvPutStill(ClientPtr client)
     }
     return result;
 }
-
 
 void XineramifyXv(void)
 {

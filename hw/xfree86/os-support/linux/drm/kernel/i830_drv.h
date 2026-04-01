@@ -155,8 +155,6 @@ extern int i830_emit_irq(drm_device_t *dev);
 #define I830_READ16(reg) 	I830_DEREF16(reg)
 #define I830_WRITE16(reg,val)	do { I830_DEREF16(reg) = val; } while (0)
 
-
-
 #define I830_VERBOSE 0
 
 #define RING_LOCALS	unsigned int outring, ringmask, outcount; \

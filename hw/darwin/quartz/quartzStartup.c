@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Startup code for the Quartz Darwin X Server
@@ -59,7 +57,6 @@ typedef void (*GlxWrapInitVisualsPtr)(miInitVisualsProcPtr *);
 static GlxWrapInitVisualsPtr GlxWrapInitVisuals = NULL;
 
 typedef Bool (*QuartzModeBundleInitPtr)(void);
-
 
 /*
  * DarwinHandleGUI
@@ -118,7 +115,6 @@ void DarwinHandleGUI(
     exit(main_exit);
 }
 
-
 /*
  * QuartzLoadDisplayBundle
  *  Try to load the appropriate bundle containing the back end display code.
@@ -175,7 +171,6 @@ Bool QuartzLoadDisplayBundle(
 
     return TRUE;
 }
-
 
 /*
  * LoadGlxBundle
@@ -236,7 +231,6 @@ static void LoadGlxBundle(void)
     CFRelease(bundleURL);
 }
 
-
 /*
  * DarwinGlxExtensionInit
  *  Initialize the GLX extension.
@@ -249,7 +243,6 @@ void DarwinGlxExtensionInit(INITARGS)
     GlxExtensionInit();
 }
 
-
 /*
  * DarwinGlxWrapInitVisuals
  */
@@ -261,7 +254,6 @@ void DarwinGlxWrapInitVisuals(
 
     GlxWrapInitVisuals(procPtr);
 }
-
 
 int DarwinModeProcessArgument( int argc, const char *argv[], int i )
 {

@@ -60,8 +60,6 @@ int leds;
         ioctl(xf86Info.kbdFd, KBD_SET_LED, leds);
 }
 
-
-
 /* ADDED FOR  INTEL DGUX */
 int xf86GetKbdLeds()
 {
@@ -77,19 +75,12 @@ void xf86SetKbdRepeat(char rad)
         return;
 }
 
-
-
-
 /* ADDED FOR INTEL DGUX */
 
 void xf86KbdInit()
 {
         tcgetattr(xf86Info.kbdFd, &kbdtty);
 }
-
-
-
-
 
 /* ADDED FOR INTEL DGUX */
 
@@ -109,10 +100,6 @@ int xf86KbdOn()
         tcsetattr(xf86Info.kbdFd, TCSANOW, &nTty);
         return(xf86Info.kbdFd);
 }
-
-
-
-
 
 /* Intel DG/ux */
 int xf86KbdOff()

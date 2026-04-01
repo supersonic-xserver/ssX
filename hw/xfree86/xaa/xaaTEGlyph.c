@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * Copyright (c) 1998-2004 by The XFree86 Project, Inc.
  * All rights reserved.
@@ -134,8 +125,6 @@ static CARD32 *DrawTETextScanlineWidth9(CARD32 *base, unsigned int **glyphp,
 #endif
 
 #define glyph_scanline_func EXPNAME(XAAGlyphScanlineFunc)
-
-
 
 GlyphScanlineFuncPtr glyph_scanline_func[32] = {
    DrawTETextScanlineGeneric, DrawTETextScanlineGeneric,
@@ -557,15 +546,11 @@ THE_END:
 
 #endif
 
-
-
 /********************************************************************
 
    TRIPLE_BITS_24BPP scanline rendering code.
 
 ********************************************************************/
-
-
 
 static CARD32*
 DrawTextScanline3(
@@ -598,8 +583,6 @@ DrawTextScanline3(
    Generic TE scanline rendering code.
 
 ********************************************************************/
-
-
 
 static CARD32*
 DrawTETextScanlineGeneric(
@@ -941,8 +924,6 @@ DrawTETextScanlineWidth12(
     }
 }
 
-
-
 static CARD32*
 DrawTETextScanlineWidth14(
     CARD32 *base,
@@ -1027,8 +1008,6 @@ DrawTETextScanlineWidth16(
 	glyphp += 8;
     }
 }
-
-
 
 static CARD32*
 DrawTETextScanlineWidth18(

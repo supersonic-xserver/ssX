@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
    Copyright (C) 1998.  The XFree86 Project Inc.
 
@@ -428,8 +419,6 @@ OverlayCloseScreen (int i, ScreenPtr pScreen)
     return (*pScreen->CloseScreen) (i, pScreen);
 }
 
-
-
 static Bool
 OverlayChangeWindowAttributes (WindowPtr pWin, unsigned long mask)
 {
@@ -689,8 +678,6 @@ OverlayDestroyClip(GCPtr pGC)
     (* pGC->funcs->DestroyClip)(pGC);
     OVERLAY_GC_FUNC_EPILOGUE (pGC);
 }
-
-
 
 /******************* Window GC ops ***********************/
 

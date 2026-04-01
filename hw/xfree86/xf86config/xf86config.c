@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * This is a configuration program that will create a base XF86Config
  * file based on menu choices. Its main feature is that clueless users
@@ -837,8 +828,6 @@ keyboard_configuration(void)
         }
 	return;
 }
-
-
 
 /*
  * Monitor configuration.

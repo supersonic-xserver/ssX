@@ -32,7 +32,7 @@
  * dealings in this Software without prior written authorization from
  * Conectiva Linux.
  *
- * Authors: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
+ * Authors: Paulo CÃ©sar Pereira de Andrade <pcpa@conectiva.com.br>
  *          David Dawes <dawes@xfree86.org>
  *
  * $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vesa/vesa.c,v 1.57 2007/01/23 18:03:10 tsi Exp $
@@ -1791,9 +1791,6 @@ VESADisplayPowerManagementSet(ScrnInfoPtr pScrn, int mode,
     WriteCrtc(0x17, crtc17);
     WriteSeq(0x00, 0x03);		  /* End Reset */
 }
-
-
-
 
 /***********************************************************************
  * DGA stuff

@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * (c) Copyright 1996 by Sebastien Marineau
  *			<marineau@genie.uottawa.ca>
@@ -96,8 +87,6 @@ static int (*os2_so_cancel)(int);
 static int (*os2_sock_errno)();
 int os2_set_error(ULONG);
 extern int _files[];
-
-
 
 /* This is a new implementation of select, for improved efficiency */
 /* This function performs select() on sockets  */

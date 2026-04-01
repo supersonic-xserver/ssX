@@ -39,8 +39,6 @@
 #include "via_overlay.h"
 #include "via_driver.h"
 
-
-
 /* F U N C T I O N ----------------------------------------------------------*/
 
 void viaOverlayGetV1Format(VIAPtr pVia, unsigned long dwVideoFlag,LPDDPIXELFORMAT lpDPF, unsigned long * lpdwVidCtl,unsigned long * lpdwHQVCtl )

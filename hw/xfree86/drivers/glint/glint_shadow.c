@@ -5,19 +5,10 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
    Copyright (c) 1999,  The XFree86 Project Inc. 
    Code adapted from mga/mga_shadow.c (Mark Vojkovich <markv@valinux.com>)
-   by Michel Dänzer <michdaen@iiic.ethz.ch>
+   by Michel DÃ¤nzer <michdaen@iiic.ethz.ch>
 */
 
 #include "xf86.h"
@@ -29,8 +20,6 @@
 #include "glint.h"
 #include "shadowfb.h"
 #include "servermd.h"
-
-
 
 void
 GLINTRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)

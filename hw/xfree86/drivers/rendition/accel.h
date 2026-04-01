@@ -23,8 +23,6 @@
 
 #include "vtypes.h"
 
-
-
 /*
  * function prototypes
  */
@@ -37,8 +35,6 @@ int RENDITIONLoadUcode(ScrnInfoPtr pScreenInfo);
 
 void RENDITIONDumpUcode(ScrnInfoPtr pScreenInfo);
 void RENDITIONDrawSomething(ScrnInfoPtr pScreenInfo);
-
-
 
 #endif /* #ifdef __ACCEL_H__ */
 

@@ -1,10 +1,8 @@
-/********************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998, 1999 by Precision Insight, Inc., Cedar Park, Texas.
 
@@ -100,7 +98,6 @@ static void Neo2200SubsequentMono8x8PatternFill(ScrnInfoPtr pScrn,
 						 int w, int h);
 #endif
 
-
 static unsigned int neo2200Rop[16] = {
     0x000000,    /* 0x0000 - GXclear         */
     0x080000,    /* 0x1000 - GXand           */
@@ -119,7 +116,6 @@ static unsigned int neo2200Rop[16] = {
     0x070000,    /* 0x0111 - GXnand          */
     0x0f0000     /* 0x1111 - GXset           */
 };
-
 
 Bool 
 Neo2200AccelInit(ScreenPtr pScreen)
@@ -258,7 +254,6 @@ Neo2200AccelInit(ScreenPtr pScreen)
     default:
 	return FALSE;
     }
-
 
     return(XAAInit(pScreen, infoPtr));
 }
@@ -470,7 +465,6 @@ Neo2200SetupForSolidFillRect(ScrnInfoPtr pScrn, int color, int rop,
     OUTREG(NEOREG_FGCOLOR, color);
 }
 
-
 static void
 Neo2200SubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h)
 {
@@ -526,7 +520,6 @@ Neo2200SetupForScanlineCPUToScreenColorExpandFill(ScrnInfoPtr pScrn,
 	OUTREG(NEOREG_BGCOLOR, bg);
     }
 }
-
 
 static void
 Neo2200SubsequentScanlineCPUToScreenColorExpandFill(ScrnInfoPtr pScrn,
@@ -631,7 +624,6 @@ Neo2200SetupForMono8x8PatternFill(ScrnInfoPtr pScrn,
 	     + patternx) >> 3);
     }
 }
-
 
 static void
 Neo2200SubsequentMono8x8PatternFill(ScrnInfoPtr pScrn,

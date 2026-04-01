@@ -105,8 +105,6 @@ enum VIACHIPTAGS {
 #define VIA_REG_MONOPAT1        0x040
 #define VIA_REG_COLORPAT        0x100       /* from 0x100 to 0x1ff */
 
-
-
 /* defines for VIA video registers */
 #define VIA_REG_INTERRUPT       0x200
 #define VIA_REG_CRTCSTART       0x214

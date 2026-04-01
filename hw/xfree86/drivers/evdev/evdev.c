@@ -1333,8 +1333,6 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device, int num_scroll_axes)
         goto out;
     }
 
-
-
     num_axes += num_scroll_axes;
 
     if (num_axes + num_mt_axes > MAX_VALUATORS) {

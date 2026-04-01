@@ -401,5 +401,3 @@
   MMIO_OUT32(pSiS->IOBase, CS(12), pSiS->HWCursorBackup[12]); \
   /* orSISIDXREG(SISCR,0x5b,0x10); */
 
-
-

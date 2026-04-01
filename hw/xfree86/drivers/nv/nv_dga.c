@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "nv_local.h"
 #include "nv_include.h"
 #include "nv_type.h"
@@ -43,8 +34,6 @@ DGAFunctionRec NV_DGAFuncs = {
    NV_BlitRect,
    NV_BlitTransRect
 };
-
-
 
 static DGAModePtr
 NVSetupDGAMode(
@@ -225,8 +214,6 @@ NV_SetMode(
    
    return TRUE;
 }
-
-
 
 static int  
 NV_GetViewport(

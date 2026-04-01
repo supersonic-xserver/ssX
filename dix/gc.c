@@ -924,8 +924,6 @@ SetGCMask(GCPtr pGC, Mask selectMask, Mask newDataMask)
         pGC->serialNumber |= GC_CHANGE_SERIAL_BIT;        
 }
 
-
-
 /* CreateScratchGC(pScreen, depth)
     like CreateGC, but doesn't do the default tile or stipple,
 since we can't create them without already having a GC.  any code

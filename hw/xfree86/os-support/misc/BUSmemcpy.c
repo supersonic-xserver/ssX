@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /****************************************************************************
 
  For Alpha Linux, BusToMem() and MemToBus() can be simply memcpy(), BUT:

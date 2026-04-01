@@ -857,8 +857,6 @@ NVLeaveVT(int scrnIndex, int flags)
     NVLockUnlock(pNv, 1);
 }
 
-
-
 static void 
 NVBlockHandler (
     int i, 

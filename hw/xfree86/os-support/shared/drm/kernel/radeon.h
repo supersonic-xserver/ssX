@@ -196,8 +196,6 @@ do {						\
     radeon_do_release( dev );			\
 } while (0)
 
-
-
 /* DMA customization:
  */
 #define __HAVE_DMA		1

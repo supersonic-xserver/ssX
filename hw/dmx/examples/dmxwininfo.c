@@ -368,8 +368,6 @@ static void make_window( char *title, int color_flag )
    /* Ready to render! */
 }
 
-
-
 static void draw_cube( void )
 {
    /* X faces */
@@ -424,9 +422,6 @@ static void draw_cube( void )
    glEnd();
 }
 
-
-
-
 static void display_loop( void )
 {
    GLfloat xrot, yrot, zrot;
@@ -467,9 +462,6 @@ static void display_loop( void )
    }
 
 }
-
-
-
 
 int main( int argc, char *argv[] )
 {

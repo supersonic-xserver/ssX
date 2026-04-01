@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Shared code for the Darwin X Server
@@ -167,7 +165,6 @@ DarwinPrintBanner()
 #endif
 }
 
-
 /*
  * DarwinSaveScreen
  *  X screensaver support. Not implemented.
@@ -181,7 +178,6 @@ static Bool DarwinSaveScreen(ScreenPtr pScreen, int on)
     }
     return TRUE;
 }
-
 
 /*
  * DarwinAddScreen
@@ -348,7 +344,6 @@ static void DarwinChangePointerControl(
         ErrorF( "Could not set mouse acceleration with kernel return = 0x%x.\n", kr );
 }
 
-
 /*
  * DarwinMouseProc
  *  Handle the initialization, etc. of a mouse
@@ -408,7 +403,6 @@ static int DarwinMouseProc(
 
     return Success;
 }
-
 
 /*
  * DarwinKeybdProc
@@ -498,7 +492,6 @@ static char * DarwinFindLibraryFile(
     return NULL;
 }
 
-
 /*
  * DarwinParseModifierList
  *  Parse a list of modifier names and return a corresponding modifier mask
@@ -552,7 +545,6 @@ void InitInput( const int argc, const char **argv )
     DarwinModeInitInput(argc, argv);
 }
 
-
 /*
  * DarwinAdjustScreenOrigins
  *  Shift all screens so the X11 (0, 0) coordinate is at the top
@@ -603,7 +595,6 @@ DarwinAdjustScreenOrigins(ScreenInfo *pScreenInfo)
     }
 }
 
-
 /*
  * InitOutput
  *  Initialize screenInfo for all actually accessible framebuffers.
@@ -649,7 +640,6 @@ void InitOutput( ScreenInfo *pScreenInfo, const int argc, const char **argv )
     DarwinAdjustScreenOrigins(pScreenInfo);
 }
 
-
 /*
  * OsVendorFataError
  */
@@ -657,7 +647,6 @@ void OsVendorFatalError( void )
 {
     ErrorF( "   OsVendorFatalError\n" );
 }
-
 
 /*
  * OsVendorPreInit
@@ -691,7 +680,6 @@ void OsVendorInit(void)
         ErrorF("Reading keymap from the system.\n");
     }
 }
-
 
 /*
  * ddxProcessArgument --
@@ -837,7 +825,6 @@ int ddxProcessArgument( int argc, const char *argv[], int i )
     return 0;
 }
 
-
 /*
  * ddxUseMsg --
  *  Print out correct use of device dependent commandline options.
@@ -871,7 +858,6 @@ void ddxUseMsg( void )
     ErrorF("\n");
 }
 
-
 /*
  * ddxGiveUp --
  *      Device dependent cleanup. Called by dix before normal server death.
@@ -882,7 +868,6 @@ void ddxGiveUp( void )
 
     DarwinModeGiveUp();
 }
-
 
 /*
  * AbortDDX --
@@ -899,7 +884,6 @@ void AbortDDX( void )
      */
     ddxGiveUp();
 }
-
 
 #ifdef DPMSExtension
 /*
@@ -919,7 +903,6 @@ int DPMSGet(int *level)
     return -1;
 }
 #endif
-
 
 #include "mivalidate.h" // for union _Validate used by windowstr.h
 #include "windowstr.h"  // for struct _Window

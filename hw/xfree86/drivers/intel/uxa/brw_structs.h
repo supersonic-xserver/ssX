@@ -115,8 +115,6 @@ struct brw_vf_statistics
    unsigned int opcode:16;
 };
 
-
-
 struct brw_binding_table_pointers
 {
    struct header header;
@@ -186,9 +184,6 @@ struct brw_drawrect
    unsigned int xorg:16;  
    unsigned int yorg:16;  
 };
-
-
-
 
 struct brw_global_depth_offset_clamp
 {
@@ -290,15 +285,11 @@ struct brw_polygon_stipple_offset
    } bits0;
 };
 
-
-
 struct brw_polygon_stipple
 {
    struct header header;
    unsigned int stipple[32];
 };
-
-
 
 struct brw_pipeline_select
 {
@@ -463,9 +454,6 @@ struct brw_system_instruction_pointer
    } bits0;
 };
 
-
-
-
 /* State structs for the various fixed function units:
  */
 
@@ -516,8 +504,6 @@ struct thread3
    unsigned int pad3:1;
 };
 
-
-
 struct brw_clip_unit_state
 {
    struct thread0 thread0;
@@ -565,8 +551,6 @@ struct brw_clip_unit_state
    float viewport_ymin;  
    float viewport_ymax;  
 };
-
-
 
 struct brw_cc_unit_state
 {
@@ -659,8 +643,6 @@ struct brw_cc_unit_state
       } alpha_ref;
    } cc7;
 };
-
-
 
 struct brw_sf_unit_state
 {
@@ -1033,8 +1015,6 @@ struct brw_surface_state
        unsigned int x_offset:7;
    } ss5;
 };
-
-
 
 struct brw_vertex_buffer_state
 {

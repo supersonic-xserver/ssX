@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * Copyright (C) 1994-1999 The XFree86 Project, Inc.
  * All rights reserved.
@@ -2313,9 +2304,6 @@ S3VRestoreSTREAMS(ScrnInfoPtr pScrn, unsigned int *streams)
 
 }
 
-
-
-
 /* And this function disables the STREAMS processor as per databook.
  * This is usefull before we do a mode change 
  */
@@ -2340,8 +2328,6 @@ unsigned char tmp;
 
    return;
 }
-
-
 
 /* MapMem - contains half of pre-4.0 EnterLeave function */
 /* The EnterLeave function which en/dis access to IO ports and ext. regs */
@@ -2444,8 +2430,6 @@ S3VMapMem(ScrnInfoPtr pScrn)
   return TRUE;
 }
 
-
-
 /* UnMapMem - contains half of pre-4.0 EnterLeave function */
 /* The EnterLeave function which en/dis access to IO ports and ext. regs */
 
@@ -2471,8 +2455,6 @@ S3VUnmapMem(ScrnInfoPtr pScrn)
 
   return;
 }
-
-
 
 /* Mandatory */
 
@@ -2660,8 +2642,6 @@ S3VScreenInit(int scrnIndex, ScreenPtr pScreen, const int argc, const char **arg
   return TRUE;
 }
 
-
-
 /* Common init routines needed in EnterVT and ScreenInit */
 
 static int
@@ -2721,8 +2701,6 @@ S3VInternalScreenInit( int scrnIndex, ScreenPtr pScreen)
   return ret;
 }
 
-
-
 /* Checks if a mode is suitable for the selected chipset. */
 
 static ModeStatus
@@ -2731,8 +2709,6 @@ S3VValidMode(int index, DisplayModePtr mode, Bool verbose, int flags)
 
   return MODE_OK;
 }
-
-
 
 static Bool
 S3VModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
@@ -3453,9 +3429,6 @@ S3VCloseScreen(int scrnIndex, ScreenPtr pScreen)
   return (*pScreen->CloseScreen)(scrnIndex, pScreen);
 }
 
-
-
-
 /* Do screen blanking */
 
 /* Mandatory */
@@ -3464,10 +3437,6 @@ S3VSaveScreen(ScreenPtr pScreen, int mode)
 {
   return vgaHWSaveScreen(pScreen, mode);
 }
-
-
-
-
 
 /* This function inits the STREAMS processor variables. 
  * This has essentially been taken from the accel/s3_virge code and the databook.
@@ -3609,17 +3578,12 @@ S3VAdjustFrame(int scrnIndex, int x, int y, int flags)
    return;
 }
 
-
-
-
 /* Usually mandatory */
 Bool
 S3VSwitchMode(int scrnIndex, DisplayModePtr mode, int flags)
 {
     return S3VModeInit(xf86Screens[scrnIndex], mode);
 }
-
-
 
 void S3VLoadPalette(
     ScrnInfoPtr pScrn, 
@@ -3685,7 +3649,7 @@ S3VEnableMmio(ScrnInfoPtr pScrn)
 #if 1
   /*
    * set linear base register to the PCI register values
-   * some DX chipsets don´t seem to do it automatically
+   * some DX chipsets donÂ´t seem to do it automatically
    * (EE 06/03/99)
    */
   outb(vgaCRIndex, 0x59);         /*@@@EE*/
@@ -3706,8 +3670,6 @@ S3VEnableMmio(ScrnInfoPtr pScrn)
     outb(vgaCRReg, val | 1);  
   }
 }
-
-
 
 void
 S3VDisableMmio(ScrnInfoPtr pScrn)
@@ -3733,8 +3695,6 @@ S3VDisableMmio(ScrnInfoPtr pScrn)
     outb(vgaCRReg, val | 1);  
   }
 }
-
-
 
 /* This function is used to debug, it prints out the contents of s3 regs */
 

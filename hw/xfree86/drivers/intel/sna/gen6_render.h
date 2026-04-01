@@ -1002,8 +1002,6 @@
 #define GEN6_VFCOMPONENT_STORE_IID    6
 #define GEN6_VFCOMPONENT_STORE_PID    7
 
-
-
 /* Execution Unit (EU) defines
  */
 
@@ -1160,8 +1158,6 @@
 #define GEN6_IMASK   1
 #define GEN6_LMASK   2
 #define GEN6_CMASK   3
-
-
 
 #define GEN6_THREAD_NORMAL     0
 #define GEN6_THREAD_ATOMIC     1

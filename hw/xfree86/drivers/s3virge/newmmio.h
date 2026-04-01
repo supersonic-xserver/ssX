@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * Copyright (C) 1994-1999 The XFree86 Project, Inc.
  * All rights reserved.
@@ -221,8 +212,6 @@ typedef struct  {
         v3d8    v3d8_regs;
 } vga_3bd_regs ;
 
-
-
 typedef struct  {
    char   filler1[-(0xa000-0xa100)];
    int32  patt[-(0xa100-0xa1bc) / sizeof(int32) + 1];
@@ -421,8 +410,6 @@ typedef struct {
         } lbp_regs;
 } mm_virge_regs ;
 
-
-
 #define mmtr	volatile mm_virge_regs *
 
 #define SET_WRT_MASK(msk)	/*  */
@@ -554,8 +541,6 @@ write_mem_barrier(); } while (0)
 /* Cache version */
 #define CACHE_SETL_CMD_SET(val)		do { if (s3vCached_CMD_SET != val) { write_mem_barrier(); ((mmtr)s3vMmioMem)->line_regs.regs.cmd_set = val; s3vCached_CMD_SET = val; s3vCacheMiss++; write_mem_barrier(); } else s3vCacheHit++;} while(0)
 
-
-
 #define SETP_SRC_BASE(val)	((mmtr)s3vMmioMem)->polyfill_regs.regs.src_base = (val)
 #define SETP_DEST_BASE(val)	((mmtr)s3vMmioMem)->polyfill_regs.regs.dest_base = (val)
 #define SETP_CLIP_L_R(l,r)	((mmtr)s3vMmioMem)->polyfill_regs.regs.clip_l_r = ((l)<<16 | (r))
@@ -597,8 +582,6 @@ write_mem_barrier(); } while (0)
 #define SETL3_XSTART(val)	((mmtr)s3vMmioMem)->line3d_regs.regs.xstart = (val)
 #define SETL3_YSTART(val)	((mmtr)s3vMmioMem)->line3d_regs.regs.ystart = (val)
 #define SETL3_YCNT(val)	do { write_mem_barrier(); ((mmtr)s3vMmioMem)->line3d_regs.regs.ycnt = (val); write_mem_barrier(); } while (0)
-
-
 
 #define SETT3_Z_BASE(val)	((mmtr)s3vMmioMem)->triangle3d_regs.regs.z_base = (val)
 #define SETT3_DEST_BASE(val)	((mmtr)s3vMmioMem)->triangle3d_regs.regs.dest_base = (val)
@@ -643,8 +626,6 @@ write_mem_barrier(); } while (0)
 #define SETT3_XSTART02(val)	((mmtr)s3vMmioMem)->triangle3d_regs.regs.xstart02 = (val)
 #define SETT3_YSTART(val)	((mmtr)s3vMmioMem)->triangle3d_regs.regs.ystart = (val)
 #define SETT3_Y01_Y12(y01,y12)	do { write_mem_barrier(); ((mmtr)s3vMmioMem)->triangle3d_regs.regs.y01_y12 = ((y01)<<16 | (y12)); write_mem_barrier(); } while (0)
-
-
 
 #define DBGOUT(p) /* OUTREG8(0x3bc,p) */
 

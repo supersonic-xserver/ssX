@@ -29,8 +29,6 @@
 #include "xf86DDC.h"
 #include "xf86xv.h"
 
-
-
 #ifdef XF86DRI
 #include "xf86drm.h"
 
@@ -40,19 +38,12 @@
 #include "dri.h"
 #include "GL/glxint.h"
 
-
-
-
 #include "xf86dri.h"
 #include "dri.h"
-
-
 
 #include "GL/glxint.h"
 #include "mga_dri.h"
 #endif
-
-
 
 #ifdef USEMGAHAL
 #include "client.h"

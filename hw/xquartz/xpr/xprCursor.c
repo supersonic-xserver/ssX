@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Xplugin cursor support
@@ -69,7 +67,6 @@ static DevPrivateKey darwinCursorScreenKey = &darwinCursorScreenKeyIndex;
 
 #define CURSOR_PRIV(pScreen) ((QuartzCursorScreenPtr) \
     dixLookupPrivate(&pScreen->devPrivates, darwinCursorScreenKey))
-
 
 static Bool
 load_cursor(CursorPtr src, int screen)
@@ -178,7 +175,6 @@ load_cursor(CursorPtr src, int screen)
     return err == Success;
 }
 
-
 /*
 ===========================================================================
 
@@ -202,7 +198,6 @@ QuartzRealizeCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
     return TRUE;
 }
 
-
 /*
  * QuartzUnrealizeCursor
  *  Free the storage space associated with a realized cursor.
@@ -212,7 +207,6 @@ QuartzUnrealizeCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor)
 {
     return TRUE;
 }
-
 
 /*
  * QuartzSetCursor
@@ -272,7 +266,6 @@ QuartzCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
     return FALSE;
 }
 
-
 /*
  * QuartzCrossScreen
  */
@@ -281,7 +274,6 @@ QuartzCrossScreen(ScreenPtr pScreen, Bool entering)
 {
     return;
 }
-
 
 /*
  * QuartzWarpCursor
@@ -306,7 +298,6 @@ QuartzWarpCursor(DeviceIntPtr pDev, ScreenPtr pScreen, int x, int y)
     miPointerUpdateSprite(pDev);
 }
 
-
 static miPointerScreenFuncRec quartzScreenFuncsRec = {
     QuartzCursorOffScreen,
     QuartzCrossScreen,
@@ -314,7 +305,6 @@ static miPointerScreenFuncRec quartzScreenFuncsRec = {
     NULL,
     NULL
 };
-
 
 /*
 ===========================================================================
@@ -392,7 +382,6 @@ void
 QuartzSuspendXCursor(ScreenPtr pScreen)
 {
 }
-
 
 /*
  * QuartzResumeXCursor

@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Cursor support for Darwin X Server
@@ -212,7 +210,6 @@ XFIOKitRealizeCursor8(
     return TRUE;
 }
 
-
 /*
  * XFIOKitRealizeCursor15
  * Convert the X cursor representation to an 15-bit depth
@@ -294,7 +291,6 @@ XFIOKitRealizeCursor15(
     pCursor->devPriv[pScreen->myNum] = (pointer) newCursor;
     return TRUE;
 }
-
 
 /*
  * XFIOKitRealizeCursor24
@@ -379,7 +375,6 @@ XFIOKitRealizeCursor24(
     return TRUE;
 }
 
-
 /*
  * XFIOKitRealizeCursor
  * 
@@ -409,7 +404,6 @@ XFIOKitRealizeCursor(
     return result;
 }
 
-
 /*
  * XFIOKitUnrealizeCursor
  * 
@@ -434,7 +428,6 @@ XFIOKitUnrealizeCursor(
 
     return result;
 }
-
 
 /*
  * XFIOKitSetCursor
@@ -551,7 +544,6 @@ XFIOKitSetCursor(
     (*ScreenPriv->spriteFuncs->SetCursor)(pScreen, pCursor, x, y);
 }
 
-
 /*
  * XFIOKitMoveCursor
  * Move the cursor. This is a noop for a kernel or hardware cursor.
@@ -576,7 +568,6 @@ static miPointerSpriteFuncRec darwinSpriteFuncsRec = {
     XFIOKitMoveCursor
 };
 
-
 /*
 ===========================================================================
 
@@ -592,14 +583,12 @@ static Bool XFIOKitCursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
 {	return FALSE;
 }
 
-
 /*
  * XFIOKitCrossScreen
  */
 static void XFIOKitCrossScreen(ScreenPtr pScreen, Bool entering)
 {	return;
 }
-
 
 /*
  * XFIOKitWarpCursor
@@ -628,7 +617,6 @@ static miPointerScreenFuncRec darwinScreenFuncsRec = {
   DarwinEQSwitchScreen
 };
 
-
 /*
 ===========================================================================
 
@@ -656,7 +644,6 @@ XFIOKitCursorQueryBestSize(
     } else
         (*ScreenPriv->QueryBestSize)(class, width, height, pScreen);
 }
-
 
 /*
  * XFIOKitInitCursor

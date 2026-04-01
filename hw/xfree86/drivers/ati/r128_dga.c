@@ -8,7 +8,7 @@
 
 /*
  * Authors:
- *   Ove Kåven <ovek@transgaming.com>,
+ *   Ove KÃ¥ven <ovek@transgaming.com>,
  *    borrowing some code from the Chips and MGA drivers.
  */
 
@@ -295,8 +295,6 @@ R128_SetMode(
 
    return TRUE;
 }
-
-
 
 static int
 R128_GetViewport(

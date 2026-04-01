@@ -166,8 +166,6 @@ static int			g_nQueueSize;
 static jmp_buf			g_jmpEntry;
 static Bool                     g_shutdown = FALSE;
 
-
-
 /*
  * PushMessage - Push a message onto the queue
  */

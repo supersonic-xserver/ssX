@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Startup code for the IOKit Darwin X Server
@@ -44,7 +42,6 @@
 void GlxExtensionInit(INITARGS);
 void GlxWrapInitVisuals(miInitVisualsProcPtr *procPtr);
 
-
 /*
  * DarwinHandleGUI
  *  This function is called first from main().
@@ -57,7 +54,6 @@ void DarwinHandleGUI(
 {
 }
 
-
 /*
  * DarwinGlxExtensionInit
  *  Initialize the GLX extension.
@@ -68,7 +64,6 @@ void DarwinGlxExtensionInit(INITARGS)
     GlxExtensionInit();
 }
 
-
 /*
  * DarwinGlxWrapInitVisuals
  */
@@ -77,7 +72,6 @@ void DarwinGlxWrapInitVisuals(
 {
     GlxWrapInitVisuals(procPtr);
 }
-
 
 /*
  * DarwinModeProcessArgument
@@ -110,7 +104,6 @@ int DarwinModeProcessArgument(
     return 0;
 }
 
-
 /*
  * DarwinModeSystemKeymapSeed
  *  Changes to NXKeyMapping are not tracked.
@@ -120,7 +113,6 @@ DarwinModeSystemKeymapSeed(void)
 {
     return 0;
 }
-
 
 /*
  * DarwinModeReadSystemKeymap

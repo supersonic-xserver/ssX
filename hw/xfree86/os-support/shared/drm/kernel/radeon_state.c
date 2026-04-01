@@ -484,8 +484,6 @@ static struct {
 	{ RADEON_PP_TEX_SIZE_2, 2, "RADEON_PP_TEX_SIZE_1" },
 };
 
-
-
 /* ================================================================
  * Performance monitoring functions
  */
@@ -723,8 +721,6 @@ static void radeon_cp_dispatch_clear( drm_device_t *dev,
 		tempRB3D_STENCILREFMASK = 0x0;
 
 		tempSE_CNTL = depth_clear->se_cntl;
-
-
 
 		/* Disable TCL */
 
@@ -1062,8 +1058,6 @@ static int bad_prim_vertex_nr( int primitive, int nr )
 	}	
 }
 
-
-
 typedef struct {
 	unsigned int start;
 	unsigned int finish;
@@ -1123,8 +1117,6 @@ static void radeon_cp_dispatch_vertex( drm_device_t *dev,
 		i++;
 	} while ( i < nbox );
 }
-
-
 
 static void radeon_cp_discard_buffer( drm_device_t *dev, drm_buf_t *buf )
 {
@@ -2359,8 +2351,6 @@ int radeon_cp_cmdbuf( DRM_IOCTL_ARGS )
 	COMMIT_RING();
 	return 0;
 }
-
-
 
 int radeon_cp_getparam( DRM_IOCTL_ARGS )
 {

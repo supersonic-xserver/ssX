@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include "servermd.h"
@@ -32,8 +23,6 @@
 #include "mistruct.h"
 #include "dix.h"
 #include "mibstore.h"
-
-
 
 RegionPtr
 cfb24_32CopyArea(
@@ -74,8 +63,6 @@ cfb24_32CopyArea(
 	}
    }
 }
-
-
 
 void 
 cfbDoBitblt24To32(
@@ -546,9 +533,6 @@ cfbDoBitblt32To24(
 	}
     }
 }
-
-
-
 
 static void 
 Do24To24Blt(

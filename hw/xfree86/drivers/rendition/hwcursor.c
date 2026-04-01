@@ -154,8 +154,6 @@ RENDITIONShowCursor(ScrnInfoPtr pScreenInfo)
         );
 }
 
-
-
 static void
 RENDITIONHideCursor(ScrnInfoPtr pScreenInfo)
 {
@@ -167,8 +165,6 @@ RENDITIONHideCursor(ScrnInfoPtr pScreenInfo)
     verite_enablecursor(pScreenInfo, VERITE_NOCURSOR, 0);
 }
 
-
-
 static void
 RENDITIONSetCursorPosition(ScrnInfoPtr pScreenInfo, int x, int y)
 {
@@ -179,8 +175,6 @@ RENDITIONSetCursorPosition(ScrnInfoPtr pScreenInfo, int x, int y)
     verite_movecursor(pScreenInfo, x, y, 1 /* xorigin */, 1 /* yorigin */);
 }
 
-
-
 static void
 RENDITIONSetCursorColors(ScrnInfoPtr pScreenInfo, int bg, int fg)
 {
@@ -190,8 +184,6 @@ RENDITIONSetCursorColors(ScrnInfoPtr pScreenInfo, int bg, int fg)
 
     verite_setcursorcolor(pScreenInfo, bg, fg);
 }
-
-
 
 static void
 RENDITIONLoadCursorImage(ScrnInfoPtr pScreenInfo, unsigned char* src)

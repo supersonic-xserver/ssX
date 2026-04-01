@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  *	Copyright 2000	Ani Joshi <ajoshi@unixbox.com>
  *
@@ -571,8 +562,6 @@ static Bool IMSTTPreInit(ScrnInfoPtr pScrn, int flags)
 	return TRUE;
 }
 
-
-
 static Bool IMSTTMapMem(ScrnInfoPtr pScrn)
 {
 	IMSTTPtr iptr;
@@ -649,8 +638,6 @@ static void IMSTTUnmapMem(ScrnInfoPtr pScrn)
 
 	return;
 }
-
-
 
 static void IMSTTGetVideoMemSize(ScrnInfoPtr pScrn)
 {
@@ -857,9 +844,6 @@ static Bool IMSTTScreenInit(int scrnIndex, ScreenPtr pScreen,
 	return TRUE;
 }
 
-
-
-
 static Bool IMSTTModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode) 
 {
 	IMSTTPtr iptr;
@@ -1062,9 +1046,6 @@ static Bool IMSTTModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 	return TRUE;
 }
-
-
-
 
 static void IMSTTSetClock(ScrnInfoPtr pScrn, unsigned long mhz)
 {
@@ -1270,8 +1251,6 @@ static void IMSTTWriteMode(ScrnInfoPtr pScrn)
 
 	return;
 }
-
-
 
 static void IMSTTAdjustFrame(int scrnIndex, int x, int y, int flags)
 {

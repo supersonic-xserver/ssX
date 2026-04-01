@@ -1,10 +1,8 @@
-/**************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Quartz-specific support for the Darwin X Server
@@ -98,7 +96,6 @@ Bool DarwinModeAddScreen(
     return quartzProcs->AddScreen(index, pScreen);
 }
 
-
 /*
  * DarwinModeSetupScreen
  *  Finalize mode specific setup of each screen.
@@ -117,7 +114,6 @@ Bool DarwinModeSetupScreen(
 
     return TRUE;
 }
-
 
 /*
  * DarwinModeInitOutput
@@ -157,7 +153,6 @@ void DarwinModeInitOutput(
     }
 }
 
-
 /*
  * DarwinModeInitInput
  *  Inform the main thread the X server is ready to handle events.
@@ -172,7 +167,6 @@ void DarwinModeInitInput(
     if (quartzProcs->InitInput)
         quartzProcs->InitInput(argc, argv);
 }
-
 
 /*
  * QuartzUpdateScreens
@@ -238,7 +232,6 @@ static void QuartzUpdateScreens(void)
     /* FIXME: Should we use RREditConnectionInfo(pScreen)? */
 }
 
-
 /*
  * QuartzShow
  *  Show the X server on screen. Does nothing if already shown.
@@ -261,7 +254,6 @@ static void QuartzShow(
     }
 }
 
-
 /*
  * QuartzHide
  *  Remove the X server display from the screen. Does nothing if already
@@ -283,7 +275,6 @@ static void QuartzHide(void)
     QuartzMessageMainThread(kQuartzServerHidden, NULL, 0);
 }
 
-
 /*
  * QuartzSetRootClip
  *  Enable or disable rendering to the X screen.
@@ -302,7 +293,6 @@ static void QuartzSetRootClip(
         }
     }
 }
-
 
 /*
  * QuartzMessageServerThread
@@ -334,7 +324,6 @@ QuartzMessageServerThread(
 
     DarwinEQEnqueue(&xe);
 }
-
 
 /*
  * DarwinModeProcessEvent
@@ -407,7 +396,6 @@ void DarwinModeProcessEvent(
                    xe->u.u.type);
     }
 }
-
 
 /*
  * DarwinModeGiveUp

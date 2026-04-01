@@ -174,8 +174,6 @@ static inline u32 _MGA_READ(u32 *addr)
 #define DMAREG1(r)	(u8)(((r - DWGREG1) >> 2) | 0x80)
 #define DMAREG(r)	(ISREG0(r) ? DMAREG0(r) : DMAREG1(r))
 
-
-
 /* ================================================================
  * Helper macross...
  */
@@ -337,8 +335,6 @@ do {									\
 					 MGA_ENDPRDMASTS)
 
 #define MGA_DMA_DEBUG			0
-
-
 
 /* A reduced set of the mga registers.
  */

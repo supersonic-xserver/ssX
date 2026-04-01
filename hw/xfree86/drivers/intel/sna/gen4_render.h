@@ -1,10 +1,8 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.
@@ -677,7 +675,6 @@
 #define VFCOMPONENT_STORE_IID    6
 #define VFCOMPONENT_STORE_PID    7
 
-
 /* Execution Unit (EU) defines
  */
 
@@ -835,8 +832,6 @@
 #define GEN4_LMASK   2
 #define GEN4_CMASK   3
 
-
-
 #define GEN4_THREAD_NORMAL     0
 #define GEN4_THREAD_ATOMIC     1
 #define GEN4_THREAD_SWITCH     2
@@ -985,9 +980,6 @@
 #define GEN4_SCRATCH_SPACE_SIZE_1M     10
 #define GEN4_SCRATCH_SPACE_SIZE_2M     11
 
-
-
-
 #define CMD_URB_FENCE                 0x6000
 #define CMD_CONST_BUFFER_STATE        0x6001
 #define CMD_CONST_BUFFER              0x6002
@@ -1017,7 +1009,6 @@
 #define CMD_3D_PRIM                   0x7b00
 
 #define CMD_MI_FLUSH                  0x0200
-
 
 /* Various values from the R0 vertex header:
  */
@@ -1058,7 +1049,6 @@ struct header
    unsigned int opcode:16;
 };
 
-
 union header_union
 {
    struct header bits;
@@ -1088,7 +1078,6 @@ struct gen4_3d_control
    unsigned int dword2;   
    unsigned int dword3;   
 };
-
 
 struct gen4_3d_primitive
 {
@@ -1130,8 +1119,6 @@ struct gen4_vf_statistics
    unsigned int opcode:16;
 };
 
-
-
 struct gen4_binding_table_pointers
 {
    struct header header;
@@ -1142,13 +1129,11 @@ struct gen4_binding_table_pointers
    unsigned int wm; 
 };
 
-
 struct gen4_blend_constant_color
 {
    struct header header;
    float blend_constant_color[4];  
 };
-
 
 struct gen4_depthbuffer
 {
@@ -1202,9 +1187,6 @@ struct gen4_drawrect
    unsigned int yorg:16;  
 };
 
-
-
-
 struct gen4_global_depth_offset_clamp
 {
    struct header header;
@@ -1230,7 +1212,6 @@ struct gen4_indexbuffer
    unsigned int buffer_end; 
 };
 
-
 struct gen4_line_stipple
 {   
    struct header header;
@@ -1248,7 +1229,6 @@ struct gen4_line_stipple
       unsigned int inverse_repeat_count:16; 
    } bits1;
 };
-
 
 struct gen4_pipelined_state_pointers
 {
@@ -1292,7 +1272,6 @@ struct gen4_pipelined_state_pointers
    } cc;
 };
 
-
 struct gen4_polygon_stipple_offset
 {
    struct header header;
@@ -1305,15 +1284,11 @@ struct gen4_polygon_stipple_offset
    } bits0;
 };
 
-
-
 struct gen4_polygon_stipple
 {
    struct header header;
    unsigned int stipple[32];
 };
-
-
 
 struct gen4_pipeline_select
 {
@@ -1324,7 +1299,6 @@ struct gen4_pipeline_select
       unsigned int opcode:16;   
    } header;
 };
-
 
 struct gen4_pipe_control
 {
@@ -1351,7 +1325,6 @@ struct gen4_pipe_control
    unsigned int data0;
    unsigned int data1;
 };
-
 
 struct gen4_urb_fence
 {
@@ -1478,12 +1451,8 @@ struct gen4_system_instruction_pointer
    } bits0;
 };
 
-
-
-
 /* State structs for the various fixed function units:
  */
-
 
 struct thread0
 {
@@ -1530,8 +1499,6 @@ struct thread3
    unsigned int const_urb_entry_read_length:6; 
    unsigned int pad3:1;
 };
-
-
 
 struct gen4_clip_unit_state
 {
@@ -1580,8 +1547,6 @@ struct gen4_clip_unit_state
    float viewport_ymin;  
    float viewport_ymax;  
 };
-
-
 
 struct gen4_cc_unit_state
 {
@@ -1675,8 +1640,6 @@ struct gen4_cc_unit_state
    } cc7;
 };
 
-
-
 struct gen4_sf_unit_state
 {
    struct thread0 thread0;
@@ -1749,7 +1712,6 @@ struct gen4_sf_unit_state
 
 };
 
-
 struct gen4_gs_unit_state
 {
    struct thread0 thread0;
@@ -1786,7 +1748,6 @@ struct gen4_gs_unit_state
    } gs6;
 };
 
-
 struct gen4_vs_unit_state
 {
    struct thread0 thread0;
@@ -1820,7 +1781,6 @@ struct gen4_vs_unit_state
       unsigned int pad0:30;
    } vs6;
 };
-
 
 struct gen4_wm_unit_state
 {
@@ -1954,7 +1914,6 @@ struct gen4_sampler_state
       unsigned int monochrome_filter_height:3; 
    } ss3;
 };
-
 
 struct gen4_clipper_viewport
 {
@@ -2098,7 +2057,6 @@ struct gen4_surface_state
 #define GEN4_SURFACE_Y_OFFSET_SHIFT      20
 #define GEN4_SURFACE_Y_OFFSET_MASK       _MASK(23, 20)
 
-
 struct gen4_vertex_buffer_state
 {
    struct {
@@ -2121,7 +2079,6 @@ struct gen4_vb_array_state {
    struct header header;
    struct gen4_vertex_buffer_state vb[GEN4_VBP_MAX];
 };
-
 
 struct gen4_vertex_element_state
 {
@@ -2152,7 +2109,6 @@ struct gen4_vertex_element_packet {
    struct header header;
    struct gen4_vertex_element_state ve[GEN4_VEP_MAX]; /* note: less than _TNL_ATTRIB_MAX */
 };
-
 
 struct gen4_urb_immediate {
    unsigned int opcode:4;
@@ -2251,7 +2207,6 @@ struct gen4_instruction
 	 unsigned int dest_address_mode:1;
       } ia16;
    } bits1;
-
 
    union {
       struct
@@ -2379,7 +2334,6 @@ struct gen4_instruction
 	 unsigned int flag_reg_nr:1;
 	 unsigned int pad2:6;
       } ia16;
-
 
       struct
       {

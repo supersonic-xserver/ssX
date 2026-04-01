@@ -54,8 +54,6 @@
 #define CMD_DD_YUV2RGB				43
 #define CMD_DD_YUV2RGBCk			44
 
-
-
 /*
  * pixel formats (R: red, G: green, B: blue, I: intensity/index, A: alpha)
  *
@@ -75,8 +73,6 @@
 #define FMT_32_8888_ARGB			0xc
 #define FMT_32_888_Y0CrY1Cb			0xd
 
-
-
 /*
  * stride values for address calculation
  */
@@ -94,8 +90,6 @@
 #define STRIDE1_10					5
 #define STRIDE1_11					6
 #define STRIDE1_12					7
-
-
 
 /*
  * raster operations (S: source, D: destination, N: not)
@@ -118,16 +112,12 @@
 #define ROP_OR_SD					0xe
 #define ROP_ALLBITS1				0xf
 
-
-
 /*
  * ... modes
  */
 
 #define MODE_TRANSPARENT			0
 #define MODE_OPAQUE					1
-
-
 
 /*
  * 8x8 predefined monochrome brushes
@@ -139,8 +129,6 @@
 #define HS_BDIAGONAL				3
 #define HS_CROSS					4
 #define HS_DIAGCROSS				5
-
-
 
 /*
  * pen styles for styled lined

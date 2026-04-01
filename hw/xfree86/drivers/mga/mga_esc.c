@@ -338,8 +338,6 @@ static void  EscHRight(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, D
     GetVideoParameterStr(pModeInfo, sResult);
 }
 
-
-
 static void  EscVUp(ScrnInfoPtr pScrn, unsigned long *param, char *sResult, DisplayModePtr pMode)
 {
     MGAPtr pMga = MGAPTR(pScrn);

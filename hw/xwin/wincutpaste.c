@@ -104,9 +104,6 @@ winInitializeClipboard ()
   return TRUE;
 }
 
-
-
-
 #if 0
 #define NEED_EVENTS
 #include <X11/X.h>

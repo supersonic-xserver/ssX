@@ -66,9 +66,6 @@ int SET_IOPL()
     return(1);
 }
 
-
-
-
 void RESET_IOPL()
 {
 

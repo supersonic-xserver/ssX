@@ -229,8 +229,6 @@ RivaResetGraphics(ScrnInfoPtr pScrn)
     RivaSetRopSolid(pRiva, GXcopy);
 }
 
-
-
 /*
  * Synchronise with graphics engine.  Make sure it is idle before returning.
  * Should attempt to yield CPU if busy for awhile.

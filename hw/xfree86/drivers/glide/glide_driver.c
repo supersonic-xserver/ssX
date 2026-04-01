@@ -42,7 +42,7 @@
    - Minor fixes.
 
    1999-11-22
-   - Minor change in GLIDE_FIND_FUNC by Loïc Grenié, grenie@math.jussieu.fr.
+   - Minor change in GLIDE_FIND_FUNC by LoÃ¯c GreniÃ©, grenie@math.jussieu.fr.
 
    TODO
    * Support for adjusting gamma correction.
@@ -435,8 +435,6 @@ GLIDEProbe(DriverPtr drv, int flags)
 }
 	
 
-
-
 /* Mandatory */
 static Bool
 GLIDEPreInit(ScrnInfoPtr pScrn, int flags)
@@ -759,8 +757,6 @@ GLIDEScreenInit(int scrnIndex, ScreenPtr pScreen,
   /* Done */
   return TRUE;
 }
-
-
 
 /*
  * This is called when VT switching back to the X server.  Its job is

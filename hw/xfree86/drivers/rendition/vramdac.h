@@ -15,15 +15,11 @@
 #ifndef __VRAMDAC_H__
 #define __VRAMDAC_H__
 
-
-
 /*
  * includes
  */
 
 #include "vtypes.h"
-
-
 
 /*
  * defines
@@ -36,8 +32,6 @@
 
 #define VERITE_CURSOR32  0
 #define VERITE_CURSOR64  1
-
-
 
 /*
  * function prototypes
@@ -52,8 +46,6 @@ void verite_setcursorcolor(ScrnInfoPtr pScreenInfo, vu32 bg, vu32 fg);
 void verite_loadcursor(ScrnInfoPtr pScreenInfo, vu8 type, vu8 *cursorimage);
 void verite_setpalette(ScrnInfoPtr pScreenInfo, int numColors, int *indices,
 		  LOCO *colors, VisualPtr pVisual);
-
-
 
 #endif /* #ifndef _VRAMDAC_H_ */
 

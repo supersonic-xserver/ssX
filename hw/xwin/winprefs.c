@@ -579,8 +579,6 @@ winIconIsOverride(unsigned hiconIn)
   return 0;
 }
 
-
-
 /*
  * Try and open ~/.XWinrc and /usr/X11R6/lib/X11/system.XWinrc
  * Load it into prefs structure for use by other functions

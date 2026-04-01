@@ -95,14 +95,9 @@
 
 #define TIMER_MASK      (OFF_TIMER | FREE_TIMER)
 
-
-
-
 #define MAKE_ATOM(a) MakeAtom(a, sizeof(a) - 1, TRUE)
 
 static Atom xvBrightness, xvContrast, xvColorKey;
-
-
 
 #define IMAGE_MAX_PHY_WIDTH		1024 /*720*/
 #define IMAGE_MAX_PHY_HEIGHT	1024 /*576*/
@@ -263,8 +258,6 @@ __inline__ static void i740fb_colorkey(ScrnInfoPtr pScrn,unsigned long key)
 
 /*-----------------------------------------------------------------------------------------*/
 
-
-
 static void I740ResetVideo(ScrnInfoPtr pScrn) 
 {
   I740Ptr pI740 = I740PTR(pScrn);
@@ -278,8 +271,6 @@ static void I740ResetVideo(ScrnInfoPtr pScrn)
 
   i740fb_colorkey(pScrn,pPriv->colorKey);
 }
-
-
 
 /* I740ClipVideo -  
 
@@ -1150,8 +1141,6 @@ static void I740InitOffscreenImages(ScreenPtr pScreen)
 
   xf86XVRegisterOffscreenImages(pScreen, offscreenImages, 1);
 }
-
-
 
 static XF86VideoAdaptorPtr I740SetupImageVideo(ScreenPtr pScreen)
 {

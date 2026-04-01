@@ -343,6 +343,3 @@ TGUISetMCLK(ScrnInfoPtr pScrn, int clock, CARD8 *a, CARD8 *b)
     }
 }
 
-
-
-

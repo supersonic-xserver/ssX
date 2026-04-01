@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "misc.h"
 #include "xf86.h"
 #include "xf86_ansic.h"
@@ -121,8 +112,6 @@ XAAPolyFillRect(
     
     XAAClipAndRenderRects(pGC, function, nrectFill, prectInit, xorg, yorg);
 }
-
-
 
 	/*********************\
 	|     Solid Rects     |
@@ -326,8 +315,6 @@ XAARenderCacheExpandRects(
                 pGC->stipple);
 }
 
-
-
 	/***************************\
 	|     Image Write Rects     |
 	\***************************/
@@ -346,8 +333,6 @@ XAARenderImageWriteRects(
                 (xorg + pGC->patOrg.x), (yorg + pGC->patOrg.y),
                 pGC->tile.pixmap);
 }
-
-
 
 	/***************************\
 	|     Pixmap Copy Rects     |
@@ -378,8 +363,6 @@ XAARenderPixmapCopyRects(
                 pCache);
 }
 
-
-
 	/************\
 	|   Solid    |
 	\************/
@@ -402,9 +385,6 @@ XAAFillSolidRects(
      }
      SET_SYNC_FLAG(infoRec);
 }
-
-
-
 
 	/*********************\
 	|  8x8 Mono Patterns  |
@@ -712,14 +692,9 @@ XAAFillCacheBltRects(
     SET_SYNC_FLAG(infoRec);
 }
 
-
-
-
 	/*******************\
 	|  Cache Expansion  |
 	\*******************/
-
-
 
 void 
 XAAFillCacheExpandRects(
@@ -784,8 +759,6 @@ XAAFillCacheExpandRects(
 	/******************\
 	|   Image Writes   |
 	\******************/
-
-
 
 /*  This requires all LEFT_EDGE clipping.  You get too many problems
     with reading past the edge of the pattern otherwise */

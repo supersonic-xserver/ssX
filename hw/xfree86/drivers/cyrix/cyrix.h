@@ -491,8 +491,6 @@ extern void CYRIXAccelInit(ScreenPtr);
 #define BB0_BASE		0xFFFFFF0C	/* Blit buffer 0 base */
 #define BB1_BASE		0xFFFFFF1C	/* Blit buffer 1 base */
 
-
-
 /* SoftVGA CRTC register indices and bit definitions */
 
 #define CrtcExtendedRegisterLock       0x30

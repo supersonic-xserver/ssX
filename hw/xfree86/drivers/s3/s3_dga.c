@@ -170,8 +170,6 @@ SECOND_PASS:
 	return modes;
 }
 
-
-
 Bool S3DGAInit(ScreenPtr pScreen)
 {
 	ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];

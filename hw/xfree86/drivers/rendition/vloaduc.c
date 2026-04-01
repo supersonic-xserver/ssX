@@ -31,8 +31,6 @@
 #define SW16(x) (x)
 #endif /* #ifdef LITTLE_ENDIAN */
 
-
-
 /*
  * local function prototypes 
  */
@@ -43,8 +41,6 @@ static void loadSegment2board(ScrnInfoPtr pScreenInfo, int fd,
 static int seek_and_read_hdr(int fd, void *ptr, long int offset,
 			     int size, int cnt);
 static void mmve(ScrnInfoPtr pScreenInfo, vu32 size, vu8 *data, vu32 phys_addr);
-
-
 
 /*
  * functions
@@ -158,8 +154,6 @@ verite_load_ucfile(ScrnInfoPtr pScreenInfo, char *file_name)
   return SW32(ehdr.e_entry);
 }
 
-
-
 /*
  * local functions
  */
@@ -170,8 +164,6 @@ loadSection2board(ScrnInfoPtr pScreenInfo, int fd, Elf32_Shdr *shdr)
   /*  renditionPtr pRendition = RENDITIONPTR(pScreenInfo); */
    ErrorF("vlib: loadSection2board not implemented yet!\n");
 }
-
-
 
 static void
 loadSegment2board(ScrnInfoPtr pScreenInfo, int fd, Elf32_Phdr *phdr)
@@ -206,8 +198,6 @@ loadSegment2board(ScrnInfoPtr pScreenInfo, int fd, Elf32_Phdr *phdr)
   xfree(data);
 }
 
-
-
 static int
 seek_and_read_hdr(int fd, void *ptr, long int offset, int size, 
                              int cnt)
@@ -220,8 +210,6 @@ seek_and_read_hdr(int fd, void *ptr, long int offset, int size,
 
   return 0 ;
 }
-
-
 
 static void
 mmve(ScrnInfoPtr pScreenInfo, vu32 size, vu8 *data, vu32 phys_addr)

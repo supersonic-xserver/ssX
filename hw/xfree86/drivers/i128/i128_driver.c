@@ -1218,8 +1218,6 @@ I128FreeRec(ScrnInfoPtr pScrn)
     pScrn->driverPrivate = NULL;
 }
 
-
-
 /*
  * I128SoftReset --
  *

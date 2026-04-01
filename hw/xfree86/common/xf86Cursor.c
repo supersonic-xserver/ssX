@@ -438,8 +438,6 @@ xf86CursorOffScreen(ScreenPtr *pScreen, int *x, int *y)
     return TRUE;
 }
 
-
-
 /*
  * xf86CrossScreen --
  *      Switch to another screen

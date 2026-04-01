@@ -1,18 +1,14 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
 All Rights Reserved.
@@ -85,10 +81,8 @@ typedef int DRIWindowRequests;
 #define DRI_3D_WINDOWS_ONLY  1
 #define DRI_ALL_WINDOWS      2
 
-
 typedef void (*ClipNotifyPtr)( WindowPtr, int, int );
 typedef void (*AdjustFramePtr)(int scrnIndex, int x, int y, int flags);
-
 
 /*
  * These functions can be wrapped by the DRI.  Each of these have
@@ -105,7 +99,6 @@ typedef struct {
     ClipNotifyProcPtr            ClipNotify;
     AdjustFramePtr               AdjustFrame;
 } DRIWrappedFuncsRec, *DRIWrappedFuncsPtr;
-
 
 /*
  * Prior to Xorg 6.8.99.8, the DRIInfoRec structure was implicitly versioned
@@ -208,7 +201,6 @@ typedef struct {
 				       * mapped by DDX driver or DRI */
     
 } DRIInfoRec, *DRIInfoPtr;
-
 
 extern Bool DRIOpenDRMMaster(ScrnInfoPtr pScrn, unsigned long sAreaSize,
 			     const char *busID,

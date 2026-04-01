@@ -5,16 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
-
 /*
  * Loosely based on code bearing the following copyright:
  *
@@ -94,8 +84,8 @@
  * authorization from the copyright holder(s) and author(s).
  */
 /*
- * Copyright © 2003, 2004, 2005 David H. Dawes.
- * Copyright © 2003, 2004, 2005 X-Oz Technologies.
+ * Copyright Â© 2003, 2004, 2005 David H. Dawes.
+ * Copyright Â© 2003, 2004, 2005 X-Oz Technologies.
  * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

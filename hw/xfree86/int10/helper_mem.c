@@ -336,5 +336,3 @@ xf86int10ParseBiosLocation(void* options,
     xfree(s);
 }
 
-
-

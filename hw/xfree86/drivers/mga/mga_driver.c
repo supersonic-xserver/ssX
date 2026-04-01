@@ -2661,8 +2661,6 @@ MGAMapMemFBDev(ScrnInfoPtr pScrn)
     return TRUE;
 }
 
-
-
 /*
  * Unmap the framebuffer and MMIO memory.
  */
@@ -2704,9 +2702,6 @@ MGAUnmapMemFBDev(ScrnInfoPtr pScrn)
     /* XXX ILOADBase */
     return TRUE;
 }
-
-
-
 
 /*
  * This function saves the video state.

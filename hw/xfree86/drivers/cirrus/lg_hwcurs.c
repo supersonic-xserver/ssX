@@ -216,8 +216,6 @@ static void LgLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *bits)
     ;
 }
 
-
-
 /*
  * LgFindCursorTile() finds the tile of display memory that will be
  * used to load the pointer image into.  The tile chosen will be the
@@ -287,9 +285,6 @@ LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
     }
   }
 }
-
-
-
 
 /*
  * Hide/disable the HW cursor.

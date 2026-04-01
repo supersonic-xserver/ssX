@@ -1239,5 +1239,3 @@ SiSSubsequentColorExpandScanline(ScrnInfoPtr pScrn, int bufno)
 	}
 }
 
-
-

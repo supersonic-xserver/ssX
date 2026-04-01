@@ -2744,8 +2744,6 @@ static int xf86WcmFilterIntuos(WacomCommonPtr common, WacomChannelPtr pChannel,
     return 0; /* lookin' good */
 }
 
-
-
 /*
  ***************************************************************************
  *
@@ -5284,6 +5282,4 @@ XF86ModuleData wacomModuleData = {&xf86WcmVersionRec,
  * End:
  */
 /* end of xf86Wacom.c */
-
-
 

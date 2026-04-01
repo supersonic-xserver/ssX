@@ -68,9 +68,6 @@ The default value can be set with the driver option Interlaced
 
 */
 
-
-
-
 #undef MIN
 #undef ABS
 #undef CLAMP
@@ -407,10 +404,6 @@ static XF86ImageRec SMI501_VideoImages[] =
         XvTopToBottom                   /* scaline_order            */
     },
 };
-
-
-
-
 
 /**************************************************************************/
 

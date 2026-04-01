@@ -144,8 +144,6 @@ XFree86DGAExtensionInit(INITARGS)
     }
 }
 
-
-
 static void
 XDGAResetProc(ExtensionEntry *extEntry)
 {

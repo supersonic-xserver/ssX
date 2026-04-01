@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 #ifndef _I810_DRI_
 #define _I810_DRI_
 

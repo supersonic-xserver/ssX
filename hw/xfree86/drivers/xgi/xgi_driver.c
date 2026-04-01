@@ -3809,20 +3809,6 @@ XGISpecialRestore(ScrnInfoPtr pScrn)
     unsigned char temp;
     int i;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     if(!(pXGI->ChipFlags & XGICF_Is65x)) return;
     inXGIIDXREG(XGICR, 0x34, temp);
     temp &= 0x7f;

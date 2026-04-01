@@ -37,8 +37,6 @@
 #include "via_driver.h"
 #include "via_regrec.h"
 
-
-
 void viaWaitHQVIdle(VIAPtr pVia)
 {
     while (!IN_HQV_FIRE);

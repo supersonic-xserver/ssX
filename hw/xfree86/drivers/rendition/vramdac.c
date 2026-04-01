@@ -91,8 +91,6 @@
 /* special constants for the Brooktree BT485 RAMDAC */
 #define BT485_INPUT_LIMIT           110000000 
 
-
-
 /*
  * local function prototypes
  */
@@ -109,8 +107,6 @@ static vu8 Bt485_read_cmd3_masked(IOADDRESS port, vu8 mask);
  */
 
 static int Cursor_size=0;
-
-
 
 /*
  * functions
@@ -255,8 +251,6 @@ verite_initdac(ScrnInfoPtr pScreenInfo, vu8 bpp, vu8 doubleclock)
     return 0;
 }
 
-
-
 /*
  * void verite_enablecursor(ScrnInfoPtr pScreenInfo, int type, int size)
  *
@@ -318,8 +312,6 @@ verite_movecursor(ScrnInfoPtr pScreenInfo, vu16 x, vu16 y, vu8 xo, vu8 yo)
     verite_out8(iob+BT485_CURS_Y_HIGH, (y>>8)&0x0f);
 }
 
-
-
 /*
  * void verite_setcursorcolor(ScrnInfoPtr pScreenInfo, vu32 bg, vu32 fg)
  *
@@ -363,8 +355,6 @@ verite_setcursorcolor(ScrnInfoPtr pScreenInfo, vu32 fg, vu32 bg)
     verite_out8(iob+BT485_CURS_DATA, (bg>>8)&0xff );
     verite_out8(iob+BT485_CURS_DATA, bg&0xff );
 }
-
-
 
 /*
  * Oh god, this code is quite a mess ... should be re-written soon.
@@ -448,8 +438,6 @@ verite_loadcursor(ScrnInfoPtr pScreenInfo, vu8 size, vu8 *cursorimage)
     verite_out8(pRendition->board.io_base + MEMENDIAN, memend);
 }
 
-
-
 /* NOTE: count is the actual number of colors decremented by 1 */
 
 void
@@ -501,8 +489,6 @@ Bt485_write_masked(IOADDRESS port, vu8 reg, vu8 mask, vu8 data)
     verite_out8(port+reg, tmp|data);
 }
 
-
-
 /*
  * static void Bt485_write_cmd3_masked(IOADDRESS port, vu8 mask, vu8 data)
  *
@@ -520,8 +506,6 @@ Bt485_write_cmd3_masked(IOADDRESS port, vu8 mask, vu8 data)
  *    Bt485_write_masked(port, BT485_COMMAND_REG_0, 0x7f, 0x00);
  */
 }
-
-
 
 #if 0
 /*

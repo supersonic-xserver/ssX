@@ -1,10 +1,8 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.
@@ -133,7 +131,6 @@
 # define GEN6_3DSTATE_SF_LINE_PROVOKE_SHIFT		27
 # define GEN6_3DSTATE_SF_TRIFAN_PROVOKE_SHIFT		25
 
-
 #define GEN6_3DSTATE_WM				GEN5_3D(3, 0, 0x14)
 /* DW2 */
 # define GEN6_3DSTATE_WM_SAMPLER_COUNT_SHITF			27
@@ -153,7 +150,6 @@
 # define GEN6_3DSTATE_WM_PERSPECTIVE_SAMPLE_BARYCENTRIC		(1 << 12)
 # define GEN6_3DSTATE_WM_PERSPECTIVE_CENTROID_BARYCENTRIC	(1 << 11)
 # define GEN6_3DSTATE_WM_PERSPECTIVE_PIXEL_BARYCENTRIC		(1 << 10)
-
 
 #define GEN6_3DSTATE_CONSTANT_VS		GEN5_3D(3, 0, 0x15)
 #define GEN6_3DSTATE_CONSTANT_GS          	GEN5_3D(3, 0, 0x16)
@@ -765,7 +761,6 @@
 #define VFCOMPONENT_STORE_IID    6
 #define VFCOMPONENT_STORE_PID    7
 
-
 /* Execution Unit (EU) defines
  */
 
@@ -923,8 +918,6 @@
 #define GEN5_LMASK   2
 #define GEN5_CMASK   3
 
-
-
 #define GEN5_THREAD_NORMAL     0
 #define GEN5_THREAD_ATOMIC     1
 #define GEN5_THREAD_SWITCH     2
@@ -1073,9 +1066,6 @@
 #define GEN5_SCRATCH_SPACE_SIZE_1M     10
 #define GEN5_SCRATCH_SPACE_SIZE_2M     11
 
-
-
-
 #define CMD_URB_FENCE                 0x6000
 #define CMD_CONST_BUFFER_STATE        0x6001
 #define CMD_CONST_BUFFER              0x6002
@@ -1105,7 +1095,6 @@
 #define CMD_3D_PRIM                   0x7b00
 
 #define CMD_MI_FLUSH                  0x0200
-
 
 /* Various values from the R0 vertex header:
  */
@@ -1146,7 +1135,6 @@ struct header
    unsigned int opcode:16;
 };
 
-
 union header_union
 {
    struct header bits;
@@ -1176,7 +1164,6 @@ struct gen5_3d_control
    unsigned int dword2;   
    unsigned int dword3;   
 };
-
 
 struct gen5_3d_primitive
 {
@@ -1218,8 +1205,6 @@ struct gen5_vf_statistics
    unsigned int opcode:16;
 };
 
-
-
 struct gen5_binding_table_pointers
 {
    struct header header;
@@ -1230,13 +1215,11 @@ struct gen5_binding_table_pointers
    unsigned int wm; 
 };
 
-
 struct gen5_blend_constant_color
 {
    struct header header;
    float blend_constant_color[4];  
 };
-
 
 struct gen5_depthbuffer
 {
@@ -1290,9 +1273,6 @@ struct gen5_drawrect
    unsigned int yorg:16;  
 };
 
-
-
-
 struct gen5_global_depth_offset_clamp
 {
    struct header header;
@@ -1318,7 +1298,6 @@ struct gen5_indexbuffer
    unsigned int buffer_end; 
 };
 
-
 struct gen5_line_stipple
 {   
    struct header header;
@@ -1336,7 +1315,6 @@ struct gen5_line_stipple
       unsigned int inverse_repeat_count:16; 
    } bits1;
 };
-
 
 struct gen5_pipelined_state_pointers
 {
@@ -1380,7 +1358,6 @@ struct gen5_pipelined_state_pointers
    } cc;
 };
 
-
 struct gen5_polygon_stipple_offset
 {
    struct header header;
@@ -1393,15 +1370,11 @@ struct gen5_polygon_stipple_offset
    } bits0;
 };
 
-
-
 struct gen5_polygon_stipple
 {
    struct header header;
    unsigned int stipple[32];
 };
-
-
 
 struct gen5_pipeline_select
 {
@@ -1412,7 +1385,6 @@ struct gen5_pipeline_select
       unsigned int opcode:16;   
    } header;
 };
-
 
 struct gen5_pipe_control
 {
@@ -1439,7 +1411,6 @@ struct gen5_pipe_control
    unsigned int data0;
    unsigned int data1;
 };
-
 
 struct gen5_urb_fence
 {
@@ -1566,12 +1537,8 @@ struct gen5_system_instruction_pointer
    } bits0;
 };
 
-
-
-
 /* State structs for the various fixed function units:
  */
-
 
 struct thread0
 {
@@ -1618,8 +1585,6 @@ struct thread3
    unsigned int const_urb_entry_read_length:6; 
    unsigned int pad3:1;
 };
-
-
 
 struct gen5_clip_unit_state
 {
@@ -1668,8 +1633,6 @@ struct gen5_clip_unit_state
    float viewport_ymin;  
    float viewport_ymax;  
 };
-
-
 
 struct gen5_cc_unit_state
 {
@@ -1763,8 +1726,6 @@ struct gen5_cc_unit_state
    } cc7;
 };
 
-
-
 struct gen5_sf_unit_state
 {
    struct thread0 thread0;
@@ -1837,7 +1798,6 @@ struct gen5_sf_unit_state
 
 };
 
-
 struct gen5_gs_unit_state
 {
    struct thread0 thread0;
@@ -1874,7 +1834,6 @@ struct gen5_gs_unit_state
    } gs6;
 };
 
-
 struct gen5_vs_unit_state
 {
    struct thread0 thread0;
@@ -1908,7 +1867,6 @@ struct gen5_vs_unit_state
       unsigned int pad0:30;
    } vs6;
 };
-
 
 struct gen5_wm_unit_state
 {
@@ -2035,7 +1993,6 @@ struct gen5_sampler_state {
       uint32_t mbz:6;
    } ss3;
 };
-
 
 struct gen5_clipper_viewport
 {
@@ -2202,7 +2159,6 @@ struct gen5_vb_array_state {
    struct gen5_vertex_buffer_state vb[GEN5_VBP_MAX];
 };
 
-
 struct gen5_vertex_element_state
 {
    struct
@@ -2232,7 +2188,6 @@ struct gen5_vertex_element_packet {
    struct header header;
    struct gen5_vertex_element_state ve[GEN5_VEP_MAX]; /* note: less than _TNL_ATTRIB_MAX */
 };
-
 
 struct gen5_urb_immediate {
    unsigned int opcode:4;
@@ -2331,7 +2286,6 @@ struct gen5_instruction
 	 unsigned int dest_address_mode:1;
       } ia16;
    } bits1;
-
 
    union {
       struct
@@ -2459,7 +2413,6 @@ struct gen5_instruction
 	 unsigned int flag_reg_nr:1;
 	 unsigned int pad2:6;
       } ia16;
-
 
       struct
       {

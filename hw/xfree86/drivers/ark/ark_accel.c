@@ -121,8 +121,6 @@ static void ARKSubsequentSolidFillRect(ScrnInfoPtr pScrn, int x,
 	cury += h;
 }
 
-
-
 static void ARKSetupForScreenToScreenCopy(ScrnInfoPtr pScrn, int xdir,
 					  int ydir, int rop, unsigned int planemask,
 					  int trans_color)
@@ -158,8 +156,6 @@ static void ARKSetupForScreenToScreenCopy(ScrnInfoPtr pScrn, int xdir,
 
 }
 
-
-
 static void ARKSubsequentScreenToScreenCopy(ScrnInfoPtr pScrn,
 					    int x1, int y1,
 					    int x2, int y2,
@@ -189,8 +185,6 @@ static void ARKSubsequentScreenToScreenCopy(ScrnInfoPtr pScrn,
 	OUTREG16(COMMAND, BG_BITMAP | FG_BITMAP | DISABLE_CLIPPING |
 			  BITBLT | cmd_flags);
 }
-
-
 
 Bool ARKAccelInit(ScreenPtr pScreen)
 {

@@ -197,5 +197,3 @@ NVRefreshArea32(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
     }
 }
 
-
-

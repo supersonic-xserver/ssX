@@ -1149,8 +1149,6 @@ void brw_land_fwd_jump(struct brw_compile *p,
 	jmp_insn->bits3.ud = jmpi * ((landing - jmp_insn) - 1);
 }
 
-
-
 /* To integrate with the above, it makes sense that the comparison
  * instruction should populate the flag register.  It might be simpler
  * just to use the flag reg for most WM tasks?

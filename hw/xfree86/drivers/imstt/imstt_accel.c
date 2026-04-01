@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  *	Copyright 2000	Ani Joshi <ajoshi@unixbox.com>
  *
@@ -49,8 +40,6 @@
 
 #include "imstt.h"
 #include "imstt_reg.h"
-
-
 
 static void IMSTTSync(ScrnInfoPtr pScrn)
 {
@@ -192,8 +181,6 @@ static void IMSTTSubsequentScreenToScreenCopy(ScrnInfoPtr pScrn,
 	while(INREG(IMSTT_SSTATUS) & 0x80);
 	while(INREG(IMSTT_SSTATUS) & 0x40);
 }
-
-
 
 Bool IMSTTAccelInit(ScreenPtr pScreen)
 {

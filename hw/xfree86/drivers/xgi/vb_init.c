@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "osdef.h"
 #include "vgatypes.h"
 
@@ -59,9 +50,6 @@
 #include <asm/io.h>
 #include <linux/types.h>
 #endif
-
-
-
 
 static UCHAR    XGINew_ChannelAB,XGINew_DataBusWidth;
 
@@ -173,9 +161,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
 
     /* ULONG j, k ; */
 
-
-
-
     PXGI_DSReg pSR ;
 
     ULONG Temp ;
@@ -185,8 +170,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
     pVBInfo->FBAddr = HwDeviceExtension->pjVideoMemoryAddress ;
     pVBInfo->BaseAddr = ( USHORT )HwDeviceExtension->pjIOAddress ;
     pVideoMemory = ( PUCHAR )pVBInfo->ROMAddr;
-
-
 
     XGI_Newdebugcode( 0x99 ) ;
 
@@ -203,12 +186,8 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
 
     pVBInfo->ISXPDOS = 0 ;
 
-
-
     if ( !HwDeviceExtension->bIntegratedMMEnabled )
         return( FALSE ) ;	/* alan */
-
-
 
     XGI_MemoryCopy( VBIOSVersion , HwDeviceExtension->szVBIOSVer , 4 ) ;
 
@@ -246,8 +225,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
     /* 1.Openkey */
     XGINew_SetReg1( pVBInfo->P3c4 , 0x05 , 0x86 ) ;
 
-
-
     /* 2.Reset Extended register */
 
     for( i = 0x06 ; i < 0x20 ; i++ )
@@ -279,8 +256,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
 
     for( i = 0x79 ; i <= 0x7C ; i++ )
         XGINew_SetReg1( pVBInfo->P3d4 , i , 0 ) ;		/* shampoo 0208 */
-
-
 
     if ( HwDeviceExtension->jChipType == XG20 )
         XGINew_SetReg1( pVBInfo->P3d4 , 0x97 , *pVBInfo->pXGINew_CR97 ) ;
@@ -429,8 +404,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
     }
     XGINew_SetReg1( pVBInfo->P3c4 , 0x33 , *pVBInfo->pSR33 ) ;
 
-
-
     if ( HwDeviceExtension->jChipType >= XG40 )
       SetPowerConsume ( HwDeviceExtension , pVBInfo->P3c4);
 
@@ -453,8 +426,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
 
     if ( HwDeviceExtension->jChipType < XG40 )
         XGINew_SetReg1( pVBInfo->P3d4 , 0x83 , 0x00 ) ;
-
-
 
     if ( HwDeviceExtension->jChipType >= XG40 )
     {
@@ -546,8 +517,6 @@ BOOLEAN XGIInitNew( PXGI_HW_DEVICE_INFO HwDeviceExtension )
 
     return( TRUE ) ;
 } /* end of init */
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : DualChipInit */
@@ -666,9 +635,6 @@ static void DualChipInit( PXGI_HW_DEVICE_INFO HwDeviceExtension ,PVB_DEVICE_INFO
     XGINew_SetReg1( XGINew_2ndP3C4 , 0x05 , 0x00 ) ;
 }
 
-
-
-
 /* ============== alan ====================== */
 
 /* --------------------------------------------------------------------- */
@@ -730,8 +696,6 @@ static UCHAR XGINew_Get310DRAMType(PVB_DEVICE_INFO pVBInfo)
 
     return( data ) ;
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGINew_Delay15us */
@@ -1240,8 +1204,6 @@ static void XGINew_DDR_MRS(PVB_DEVICE_INFO pVBInfo)
 
 /* check if read cache pointer is correct */
 
-
-
 /* --------------------------------------------------------------------- */
 /* Function : XGINew_VerifyMclk */
 /* Input : */
@@ -1283,10 +1245,6 @@ static void XGINew_VerifyMclk( PXGI_HW_DEVICE_INFO  HwDeviceExtension , PVB_DEVI
         }
     }
 }
-
-
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGINew_SetDRAMSize_340 */
@@ -1360,8 +1318,6 @@ void XGINew_SetDRAMSize_310( PXGI_HW_DEVICE_INFO HwDeviceExtension , PVB_DEVICE_
     XGINew_CheckBusWidth_310( pVBInfo) ;
     XGINew_VerifyMclk( HwDeviceExtension, pVBInfo ) ;	/* alan 2000/7/3 */
 
-
-
     if ( XGINew_Get310DRAMType( pVBInfo ) < 2 )
     {
         XGINew_SDRSizing( pVBInfo ) ;
@@ -1371,17 +1327,12 @@ void XGINew_SetDRAMSize_310( PXGI_HW_DEVICE_INFO HwDeviceExtension , PVB_DEVICE_
         XGINew_DDRSizing( pVBInfo) ;
     }
 
-
-
-
     XGINew_SetReg1( pVBInfo->P3c4 , 0x16 , pVBInfo->SR15[ 1 ][ XGINew_RAMType ] ) ;	/* restore SR16 */
 
     XGINew_EnableRefresh(  HwDeviceExtension, pVBInfo ) ;
     data=XGINew_GetReg1( pVBInfo->P3c4 ,0x21 ) ;
     XGINew_SetReg1( pVBInfo->P3c4 , 0x21 , ( USHORT )( data | 0x20 ) ) ;	/* enable read cache */
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : XGINew_SetDRAMModeRegister340 */
@@ -2505,8 +2456,6 @@ void XGINew_SetMemoryClock( PXGI_HW_DEVICE_INFO HwDeviceExtension, PVB_DEVICE_IN
     XGINew_SetReg1( pVBInfo->P3c4 , 0x29 , pVBInfo->MCLKData[ XGINew_RAMType ].SR29 ) ;
     XGINew_SetReg1( pVBInfo->P3c4 , 0x2A , pVBInfo->MCLKData[ XGINew_RAMType ].SR2A ) ;
 
-
-
     XGINew_SetReg1( pVBInfo->P3c4 , 0x2E , pVBInfo->ECLKData[ XGINew_RAMType ].SR2E ) ;
     XGINew_SetReg1( pVBInfo->P3c4 , 0x2F , pVBInfo->ECLKData[ XGINew_RAMType ].SR2F ) ;
     XGINew_SetReg1( pVBInfo->P3c4 , 0x30 , pVBInfo->ECLKData[ XGINew_RAMType ].SR30 ) ;
@@ -2576,8 +2525,6 @@ static void SetPowerConsume ( PXGI_HW_DEVICE_INFO HwDeviceExtension , USHORT XGI
 
     }
 }
-
-
 
 #if defined(LINUX_XF86)||defined(LINUX_KERNEL)
 void XGINew_InitVBIOSData(PXGI_HW_DEVICE_INFO HwDeviceExtension, PVB_DEVICE_INFO pVBInfo)

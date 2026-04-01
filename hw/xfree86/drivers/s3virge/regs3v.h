@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 /*
  * Copyright (C) 1994-1999 The XFree86 Project, Inc.  All Rights Reserved.
  * All rights reserved.
@@ -334,8 +325,6 @@
   } while(0)
 
       
-
-
 
 #define RGB8_PSEUDO      (-1)
 #define RGB16_565         0

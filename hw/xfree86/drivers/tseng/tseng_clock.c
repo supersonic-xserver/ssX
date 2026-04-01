@@ -4,13 +4,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_clock.c,v 1.19 2004/02/13 23:58:44 dawes Exp $ */
-
-
-
-
 
 /*
  *

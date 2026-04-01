@@ -72,8 +72,6 @@
 #define FOURCC_HQVTV1  0x32565148  /*HQV2*/
 #define FOURCC_HQVSW   0x34565148  /*HQV4*/
 
-
-
 /*
  * Actions for MPEG functions
  */
@@ -442,8 +440,6 @@ typedef DDPIXELFORMAT * LPDDPIXELFORMAT;
  * The RGB data in the pixel format structure is valid.
  */
 #define DDPF_RGB				0x00000040l
-
-
 
 /*
  * Return value of Proprietary Interface

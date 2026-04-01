@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "osdef.h"
 #include "vb_def.h"
 #include "vgatypes.h"
@@ -153,8 +144,6 @@ ULONG XGINew_GetReg3( USHORT port )
     return( data ) ;
 }
 
-
-
 /* --------------------------------------------------------------------- */
 /* Function : XGINew_SetRegANDOR */
 /* Input : */
@@ -201,8 +190,6 @@ void XGINew_SetRegOR( USHORT Port , USHORT Index , USHORT DataOR )
     temp |= DataOR ;
     XGINew_SetReg1( Port , Index , temp ) ;
 }
-
-
 
 /* --------------------------------------------------------------------- */
 /* Function : */
@@ -271,6 +258,4 @@ void XGI_Newdebugcode( UCHAR code )
     NewDelaySeconds( 0x3 ) ;
 #endif
 }
-
-
 

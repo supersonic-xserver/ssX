@@ -1,18 +1,14 @@
-/************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright 1987, 1998  The Open Group
 
@@ -35,7 +31,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
-
 
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -256,7 +251,6 @@ InitClientResources(ClientPtr client)
     }
     return TRUE;
 }
-
 
 static int
 Hash(int client, XID id)
@@ -527,7 +521,6 @@ FreeResource(XID id, RESTYPE skipDeleteFuncType)
 		   (unsigned long)id);
 }
 
-
 void
 FreeResourceByType(XID id, RESTYPE type, Bool skipFree)
 {
@@ -657,7 +650,6 @@ FindAllClientResources(
     }
 }
 
-
 pointer
 LookupClientResourceComplex(
     ClientPtr client,
@@ -683,7 +675,6 @@ LookupClientResourceComplex(
     }
     return NULL;
 }
-
 
 void
 FreeClientNeverRetainResources(ClientPtr client)
@@ -833,7 +824,6 @@ SecurityLookupIDByType(ClientPtr client, XID id, RESTYPE rtype, Mask mode)
 	retval = (* client->CheckAccess)(client, id, rtype, mode, retval);
     return retval;
 }
-
 
 pointer
 SecurityLookupIDByClass(ClientPtr client, XID id, RESTYPE classes, Mask mode)

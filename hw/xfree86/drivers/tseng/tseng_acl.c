@@ -4,13 +4,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tseng/tseng_acl.c,v 1.26 2006/12/10 15:58:31 tsi Exp $ */
-
-
-
-
 
 #include "tseng.h"
 #include "tseng_acl.h"
@@ -81,8 +75,6 @@ int W32PatternOpTable[] =
     0x5f,			       /* Xnand              NOT pat OR NOT dst */
     0xff			       /* Xset               1 */
 };
-
-
 
 /**********************************************************************/
 

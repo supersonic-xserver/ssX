@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #include "apm.h"
 #include "xf86cmap.h"
 #include "shadowfb.h"
@@ -1042,7 +1033,7 @@ ApmPreInit(ScrnInfoPtr pScrn, int flags)
 		      pApm->MaxClock = 144000;
 		      break;
 		 case 24:
-		      pApm->MaxClock = 94000; /* Changed from 75000 by Grenié */
+		      pApm->MaxClock = 94000; /* Changed from 75000 by GreniÃ© */
 		      break;
 		 case 32:
 		      pApm->MaxClock = 94500;

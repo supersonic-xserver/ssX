@@ -403,8 +403,6 @@ xf86SetDGAMode(
    return Success;
 }
 
-
-
 /*********** exported ones ***************/
 
 void
@@ -506,8 +504,6 @@ DGAActive(int indx)
 
    return FALSE;
 }
-
-
 
 /*
  * Called whenever the server is shutdown, before the CloseScreen phase.

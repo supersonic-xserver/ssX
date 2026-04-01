@@ -148,8 +148,6 @@ static void CMapSetOverscan(ColormapPtr, int, int *);
 static void CMapReinstallMap(ColormapPtr);
 static void CMapUnwrapScreen(ScreenPtr pScreen);
 
-
-
 Bool xf86HandleColormaps(
     ScreenPtr pScreen,
     int maxColors,
@@ -360,8 +358,6 @@ CMapDestroyColormap (ColormapPtr cmap)
     	pScreen->DestroyColormap = CMapDestroyColormap;
     }
 }
-
-
 
 static void
 CMapStoreColors(
@@ -713,7 +709,7 @@ CMapSetOverscan(ColormapPtr pmap, int defs, int *indices)
     /*
      * Search for a new overscan index in the following cases:
      *
-     *   - The index hasn't yet been initialised.  In this case search
+     *   - The index hasn't yet been initialised.Â  In this case search
      *     for an index that is black or a close match to black.
      *
      *   - The colour of the old index is changed.  In this case search

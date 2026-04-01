@@ -374,8 +374,6 @@ RivaLeaveVT(int scrnIndex, int flags)
     pRiva->riva.LockUnlock(&pRiva->riva, 1);
 }
 
-
-
 /*
  * This is called at the end of each server generation.  It restores the
  * original (text) mode.  It should also unmap the video memory, and free

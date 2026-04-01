@@ -111,7 +111,3 @@ typedef struct lgRec {
 # endif /* _LG_PRIVATE_ */
 #endif /* LG_H */
 
-
-
-
-

@@ -4,8 +4,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
 #line 3 "winprefslex.c"
 
 #define  YY_INT_ALIGNED short int
@@ -2072,8 +2070,6 @@ void yyfree (void * ptr )
 #define YYTABLES_NAME "yytables"
 
 #line 92 "winprefslex.l"
-
-
 
 /*
  * Run-of-the mill requirement for yacc

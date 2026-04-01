@@ -15,14 +15,11 @@
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
 
-
-/*****************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
 Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -122,7 +119,6 @@ Equipment Corporation.
 #endif
 #include "modinit.h"
 
-
 #ifdef PANORAMIX
 
 #ifdef GLXPROXY
@@ -215,7 +211,6 @@ GCFuncs XineramaGCFuncs = {
 #define Xinerama_GC_FUNC_EPILOGUE(pGC)\
     pGCPriv->wrapFuncs = (pGC)->funcs;\
     (pGC)->funcs = &XineramaGCFuncs;
-
 
 static Bool
 XineramaCloseScreen(int i, ScreenPtr pScreen)
@@ -443,15 +438,12 @@ XineramaDestroyClip(GCPtr pGC)
     Xinerama_GC_FUNC_EPILOGUE(pGC);
 }
 
-
-
 int
 XineramaDeleteResource(pointer data, XID id)
 {
     xfree(data);
     return 1;
 }
-
 
 static Bool
 XineramaFindIDOnAnyScreen(pointer resource, XID id, pointer privdata)
@@ -477,7 +469,6 @@ typedef struct {
    int screen;
    int id;
 } PanoramiXSearchData;
-
 
 static Bool
 XineramaFindIDByScrnum(pointer resource, XID id, pointer privdata)
@@ -1033,14 +1024,12 @@ PanoramiXConsolidate(void)
 	}
     }
 
-
     root = (PanoramiXRes *) xalloc(sizeof(PanoramiXRes));
     root->type = XRT_WINDOW;
     defmap = (PanoramiXRes *) xalloc(sizeof(PanoramiXRes));
     defmap->type = XRT_COLORMAP;
     saver = (PanoramiXRes *) xalloc(sizeof(PanoramiXRes));
     saver->type = XRT_WINDOW;
-
 
     for (i =  0; i < PanoramiXNumScreens; i++) {
 	root->info[i].id = WindowTable[i]->drawable.id;
@@ -1056,7 +1045,6 @@ PanoramiXConsolidate(void)
     AddResource(saver->info[0].id, XRT_WINDOW, saver);
     AddResource(defmap->info[0].id, XRT_COLORMAP, defmap);
 }
-
 
 /*
  *	PanoramiXResetProc()
@@ -1077,7 +1065,6 @@ PanoramiXResetProc(ExtensionEntry* extEntry)
 
     Xfree(panoramiXdataPtr);
 }
-
 
 int
 ProcPanoramiXQueryVersion(ClientPtr client)
@@ -1181,7 +1168,6 @@ ProcPanoramiXGetScreenSize(ClientPtr client)
 	return client->noClientException;
 }
 
-
 int
 ProcXineramaIsActive(ClientPtr client)
 {
@@ -1203,7 +1189,6 @@ ProcXineramaIsActive(ClientPtr client)
     WriteToClient (client, sizeof(xXineramaIsActiveReply), (char *) &rep);
     return client->noClientException;
 }
-
 
 int
 ProcXineramaQueryScreens(ClientPtr client)
@@ -1249,7 +1234,6 @@ ProcXineramaQueryScreens(ClientPtr client)
     return client->noClientException;
 }
 
-
 static int
 ProcPanoramiXDispatch (ClientPtr client)
 {   REQUEST(xReq);
@@ -1271,7 +1255,6 @@ ProcPanoramiXDispatch (ClientPtr client)
     return BadRequest;
 }
 
-
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
 #define SHIFT_L(v,s) (v) << (s)
 #define SHIFT_R(v,s) (v) >> (s)
@@ -1292,7 +1275,6 @@ CopyBits(char *dst, int shiftL, char *src, int bytes)
 	dst++; src++;
     }
 }
-
 
 /* Caution.  This doesn't support 2 and 4 bpp formats.  We expect
    1 bpp and planar data to be already cleared when presented

@@ -46,8 +46,6 @@
 #define CALCOMP_INIT_CHECKSUM	0
 #define CALCOMP_BODY_LEN			6
 
-
-
 /*************************************************************************/
 #define SYSCALL(call) while(((call) == -1) && (errno == EINTR))
 

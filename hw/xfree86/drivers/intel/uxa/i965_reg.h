@@ -1,10 +1,8 @@
-/**************************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
 
  *
  * Copyright 2003 Tungsten Graphics, Inc., Cedar Park, Texas.
@@ -134,7 +132,6 @@
 # define GEN6_3DSTATE_SF_LINE_PROVOKE_SHIFT		27
 # define GEN6_3DSTATE_SF_TRIFAN_PROVOKE_SHIFT		25
 
-
 #define GEN6_3DSTATE_WM				BRW_3D(3, 0, 0x14)
 /* DW2 */
 # define GEN6_3DSTATE_WM_SAMPLER_COUNT_SHITF			27
@@ -154,7 +151,6 @@
 # define GEN6_3DSTATE_WM_PERSPECTIVE_SAMPLE_BARYCENTRIC		(1 << 12)
 # define GEN6_3DSTATE_WM_PERSPECTIVE_CENTROID_BARYCENTRIC	(1 << 11)
 # define GEN6_3DSTATE_WM_PERSPECTIVE_PIXEL_BARYCENTRIC		(1 << 10)
-
 
 #define GEN6_3DSTATE_CONSTANT_VS		BRW_3D(3, 0, 0x15)
 #define GEN6_3DSTATE_CONSTANT_GS          	BRW_3D(3, 0, 0x16)
@@ -302,7 +298,6 @@
 #define GEN7_3DSTATE_PUSH_CONSTANT_ALLOC_PS             BRW_3D(3, 1, 0x16)
 /* DW1 */
 # define GEN7_PUSH_CONSTANT_BUFFER_OFFSET_SHIFT 16
-
 
 #define PIPELINE_SELECT_3D		0
 #define PIPELINE_SELECT_MEDIA		1

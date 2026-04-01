@@ -344,8 +344,6 @@ static void S3SubsequentSolidBresenhamLine(ScrnInfoPtr pScrn,
 	}
 }
 
-
-
 static void S3SubsequentSolidHorVertLine(ScrnInfoPtr pScrn,
 					 int x, int y, int len, int dir)
 {

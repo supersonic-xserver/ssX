@@ -1446,8 +1446,6 @@ XGI_New_SetCRT1Group(XGI_Private *XGI_Pr, PXGI_HW_DEVICE_INFO HwInfo,
 */
 }
 
-
-
 /*********************************************/
 /*         HELPER: RESET VIDEO BRIDGE        */
 /*********************************************/

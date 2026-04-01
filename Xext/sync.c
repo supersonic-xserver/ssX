@@ -23,15 +23,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright 1991, 1993, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -432,8 +423,6 @@ SyncCheckTriggerNegativeTransition(SyncTrigger *pTrigger, CARD64 oldval)
 	     XSyncValueLessOrEqual(pTrigger->pCounter->value,
 				   pTrigger->test_value)));
 }
-
-
 
 static int 
 SyncInitTrigger(ClientPtr client, SyncTrigger *pTrigger,
@@ -2351,8 +2340,6 @@ SyncExtensionInit(INITARGS)
 /*
  * ***** SERVERTIME implementation - should go in its own file in OS directory?
  */
-
-
 
 static pointer ServertimeCounter;
 static XSyncValue Now;

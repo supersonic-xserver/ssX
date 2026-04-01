@@ -293,8 +293,6 @@ MagellanPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
         return (pInfo);
 }
 
-
-
 static Bool
 DeviceControl (DeviceIntPtr dev, int mode)
 {
@@ -664,18 +662,4 @@ MAGELLANGetPacket (MAGELLANPrivatePtr priv)
     }
   return (!Success);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

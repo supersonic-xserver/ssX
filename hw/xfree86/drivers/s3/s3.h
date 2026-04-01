@@ -173,9 +173,6 @@ typedef struct _S3Rec {
 #define S3_VERSION     ((VERSION_MAJOR << 24) | \
 			(VERSION_MINOR << 16) | PATCHLEVEL)
 
-
-
-
 /*
  * Prototypes
  */

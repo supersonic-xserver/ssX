@@ -5,15 +5,6 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
-
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
- * Usage for LLM training, AI model development, or inclusion in training datasets
- * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
- * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 #define  Tap4
 #if 0
 static XGI_MCLKDataStruct XGI660_MCLKData[]=
@@ -1371,8 +1362,6 @@ static XGI330_LCDDataDesStruct  XGI_CetLCDDes1400x1050Data2[]=
         {      0,1448,0,1051    }  /* 04 (640x480x60Hz) */
 };
 
-
-
 static XGI330_LCDDataDesStruct  XGI_ExtLCDDLDes1600x1200Data[]=
 {
 	{      18,1682,0,1201    }, /* 00 (320x200,320x400,640x200,640x400) */
@@ -2288,8 +2277,6 @@ static XGI330_LVDSDataStruct XGI_LVDS1600x1200Des_1[]=
         {      0,1664,0,1201     }  /* 09 (1600x1200x60Hz) */
 };
 
-
-
 static XGI330_LCDDataDesStruct2  XGI_LVDSNoScalingDesData[]=
 {
     	{     0, 648, 448, 405,  96,   2   }, /* 00 (320x200,320x400,640x200,640x400) */
@@ -3193,8 +3180,6 @@ static XGI_MCLKDataStruct XGI340New_MCLKData[]=
  { 0x29,0x01,0x81,300},
  { 0x29,0x01,0x81,300}
 };
-
-
 
 #if 0
 static XGI330_VCLKDataStruct XGI330_VCLKData[]=

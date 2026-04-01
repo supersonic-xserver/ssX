@@ -211,8 +211,6 @@ void radeon_mem_takedown( struct mem_block **heap )
 	*heap = 0;
 }
 
-
-
 /* IOCTL HANDLERS */
 
 static struct mem_block **get_heap( drm_radeon_private_t *dev_priv,
@@ -267,8 +265,6 @@ int radeon_mem_alloc( DRM_IOCTL_ARGS )
 	
 	return 0;
 }
-
-
 
 int radeon_mem_free( DRM_IOCTL_ARGS )
 {
