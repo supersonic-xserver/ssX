@@ -315,9 +315,10 @@ MakeServerAuthFile (struct display *d, FILE ** file)
 	d->authFile = malloc (len);
 	if (!d->authFile)
 	    return FALSE;
-	if (d->clientAuthFile && *d->clientAuthFile)
-	    strcpy (d->authFile, d->clientAuthFile);
-	else
+	if (d->clientAuthFile && *d->clientAuthFile) {
+	    strncpy (d->authFile, d->clientAuthFile, len - 1);
+	    d->authFile[len - 1] = '\0';
+	} else
 	{
 	    sprintf (d->authFile, "%s/%s", authDir, authdir1);
 	    r = stat(d->authFile, &statb);
