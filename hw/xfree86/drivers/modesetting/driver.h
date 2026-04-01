@@ -36,6 +36,9 @@
  *   Aaron Plattner <aplattner@nvidia.com>
  */
 
+#ifndef XSERVER_XFREE86_DRIVER_H
+#define XSERVER_XFREE86_DRIVER_H
+
 #include <errno.h>
 #include <drm.h>
 #include <xf86drm.h>
@@ -58,6 +61,7 @@ struct ms_vrr_priv {
 
 typedef enum {
     OPTION_SW_CURSOR,
+    OPTION_CURSOR_SIZE,
     OPTION_DEVICE_PATH,
     OPTION_SHADOW_FB,
     OPTION_ACCEL_METHOD,
@@ -68,13 +72,14 @@ typedef enum {
     OPTION_VARIABLE_REFRESH,
     OPTION_USE_GAMMA_LUT,
     OPTION_ASYNC_FLIP_SECONDARIES,
+    OPTION_TEARFREE,
 } modesettingOpts;
 
 typedef struct
 {
     int fd;
     int fd_ref;
-    unsigned long fd_wakeup_registered; /* server generation for which fd has been registered for wakeup handling */
+    x_server_generation_t fd_wakeup_registered; /* server generation for which fd has been registered for wakeup handling */
     int fd_wakeup_ref;
     unsigned int assigned_crtcs;
 } modesettingEntRec, *modesettingEntPtr;
@@ -93,10 +98,13 @@ struct ms_drm_queue {
     struct xorg_list list;
     xf86CrtcPtr crtc;
     uint32_t seq;
+    uint64_t msc;
     void *data;
     ScrnInfoPtr scrn;
     ms_drm_handler_proc handler;
     ms_drm_abort_proc abort;
+    Bool kernel_queued;
+    Bool aborted;
 };
 
 typedef struct _modesettingRec {
@@ -109,9 +117,8 @@ typedef struct _modesettingRec {
     Bool noAccel;
     CloseScreenProcPtr CloseScreen;
     CreateWindowProcPtr CreateWindow;
-    unsigned int SaveGeneration;
+    x_server_generation_t SaveGeneration;
 
-    CreateScreenResourcesProcPtr createScreenResources;
     ScreenBlockHandlerProcPtr BlockHandler;
     miPointerSpriteFuncPtr SpriteFuncs;
     void *driver;
@@ -132,7 +139,8 @@ typedef struct _modesettingRec {
     DamagePtr damage;
     Bool dirty_enabled;
 
-    uint32_t cursor_width, cursor_height;
+    uint32_t cursor_image_width;
+    uint32_t cursor_image_height;
 
     Bool has_queue_sequence;
     Bool tried_queue_sequence;
@@ -209,12 +217,14 @@ void ms_drm_abort(ScrnInfoPtr scrn,
                   void *match_data);
 void ms_drm_abort_seq(ScrnInfoPtr scrn, uint32_t seq);
 
+Bool ms_drm_queue_is_empty(void);
+
 Bool xf86_crtc_on(xf86CrtcPtr crtc);
 
 xf86CrtcPtr ms_dri2_crtc_covering_drawable(DrawablePtr pDraw);
 RRCrtcPtr   ms_randr_crtc_covering_drawable(DrawablePtr pDraw);
 
-int ms_get_crtc_ust_msc(xf86CrtcPtr crtc, uint64_t *ust, uint64_t *msc);
+int ms_get_crtc_ust_msc(xf86CrtcPtr crtc, CARD64 *ust, CARD64 *msc);
 
 uint64_t ms_kernel_msc_to_crtc_msc(xf86CrtcPtr crtc, uint64_t sequence, Bool is64bit);
 
@@ -239,14 +249,28 @@ typedef void (*ms_pageflip_abort_proc)(modesettingPtr ms, void *data);
 Bool ms_do_pageflip(ScreenPtr screen,
                     PixmapPtr new_front,
                     void *event,
-                    int ref_crtc_vblank_pipe,
+                    xf86CrtcPtr ref_crtc,
                     Bool async,
                     ms_pageflip_handler_proc pageflip_handler,
                     ms_pageflip_abort_proc pageflip_abort,
                     const char *log_prefix);
 
+Bool
+ms_tearfree_dri_abort(xf86CrtcPtr crtc,
+                      Bool (*match)(void *data, void *match_data),
+                      void *match_data);
+
+void
+ms_tearfree_dri_abort_all(xf86CrtcPtr crtc);
+
+Bool ms_do_tearfree_flip(ScreenPtr screen, xf86CrtcPtr crtc);
+
 #endif
 
 int ms_flush_drm_events(ScreenPtr screen);
+void ms_drain_drm_events(ScreenPtr screen);
 Bool ms_window_has_variable_refresh(modesettingPtr ms, WindowPtr win);
 void ms_present_set_screen_vrr(ScrnInfoPtr scrn, Bool vrr_enabled);
+Bool ms_tearfree_is_active_on_crtc(xf86CrtcPtr crtc);
+
+#endif /* XSERVER_XFREE86_DRIVER_H */
