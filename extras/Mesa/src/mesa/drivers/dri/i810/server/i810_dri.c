@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file server/i810_dri.c
+/* \file server/i810_dri.c
  * \brief File to perform the device-specific initialization tasks typically
  * done in the X server.
  *

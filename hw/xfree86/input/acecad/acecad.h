@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 2001 Edouard TISSERANT <tissered@esstin.u-nancy.fr>
+/* Copyright (c) 2001 Edouard TISSERANT <tissered@esstin.u-nancy.fr>
  * Parts inspired from Shane Watts <shane@bofh.asn.au> Xfree 3 Acecad Driver
  * Thanks to Emily, from AceCad, For giving me documents.
  * 

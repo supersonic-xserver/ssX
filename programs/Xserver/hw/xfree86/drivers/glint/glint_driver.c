@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright 1997-2001 by Alan Hourihane, Wigan, England.
+/* Copyright 1997-2001 by Alan Hourihane, Wigan, England.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -29,7 +26,7 @@
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  *           Dirk Hohndel, <hohndel@suse.de>
  *	     Stefan Dirsch, <sndirsch@suse.de>
- *	     Michel Dänzer, <michdaen@iiic.ethz.ch>
+ *	     Michel Dï¿½nzer, <michdaen@iiic.ethz.ch>
  *	     Sven Luther, <luther@dpt-info.u-strasbg.fr>
  *
  * this work is sponsored by S.u.S.E. GmbH, Fuerth, Elsa GmbH, Aachen, 

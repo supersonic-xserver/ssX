@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * sunIo.c --
+/* sunIo.c --
  *	Functions to handle input from the keyboard and mouse.
  *
  * Copyright 1987 by the Regents of the University of California

@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies). All
+/* Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies). All
  * rights reserved.
  * Copyright (c) 1993, 2010, Oracle and/or its affiliates. All rights reserved.
  *
@@ -154,9 +151,7 @@ DetermineClientPid(struct _Client * client)
  * client has connected, use GetClientCmdName/Args to determine the
  * string at other times.
  *
- * @param[in]  pid     Process ID of a client.
-
- * @param[out] cmdname Client process name without arguments. You must
+ * @param[in]  pid     Process ID of a client./* @param[out] cmdname Client process name without arguments. You must
  *                     release this by calling free. On error NULL is
  *                     returned. Pass NULL if you aren't interested in
  *                     this value.

@@ -4,12 +4,10 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file drm_sarea.h 
+/* \file drm_sarea.h 
  * \brief SAREA definitions
  *
- * \author Michel Dänzer <michel@daenzer.net>
+ * \author Michel Dï¿½nzer <michel@daenzer.net>
  */
 
 /*

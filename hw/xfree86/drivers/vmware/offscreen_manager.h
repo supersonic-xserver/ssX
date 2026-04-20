@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (C) 1998-2002 VMware, Inc.
+/* Copyright (C) 1998-2002 VMware, Inc.
  * All Rights Reserved
  * **********************************************************/
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vmware/offscreen_manager.h,v 1.2 2002/12/11 17:07:58 dawes Exp $ */

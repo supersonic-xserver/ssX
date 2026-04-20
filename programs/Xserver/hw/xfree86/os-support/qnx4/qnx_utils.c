@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_utils.c,v 1.1 1999/12/27 00:45:48 robin Exp $
+/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/qnx4/qnx_utils.c,v 1.1 1999/12/27 00:45:48 robin Exp $
  */
 
 #include <limits.h>

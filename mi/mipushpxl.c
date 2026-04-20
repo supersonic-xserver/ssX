@@ -74,9 +74,7 @@ WARNING:
     this code works if the 1-bit deep pixmap format returned by GetSpans
 is the same as the format defined by the mfb code (i.e. 32-bit padding
 per scanline, scanline unit = 32 bits; later, this might mean
-bitsizeof(int) padding and sacnline unit == bitsizeof(int).)
-
- */
+bitsizeof(int) padding and sacnline unit == bitsizeof(int).)/*/
 
 /*
  * in order to have both (MSB_FIRST and LSB_FIRST) versions of this

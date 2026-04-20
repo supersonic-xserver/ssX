@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 1999 by The XFree86 Project, Inc.
+/* Copyright (c) 1999 by The XFree86 Project, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -31,7 +28,7 @@
  * dealings in this Software without prior written authorization from the
  * XFree86 Project.
  *
- * Author: Paulo César Pereira de Andrade
+ * Author: Paulo Cï¿½sar Pereira de Andrade
  */
 
 /* $XFree86: xc/programs/xedit/ispell.c,v 1.21 2004/10/23 15:29:32 dawes Exp $ */
@@ -839,60 +836,60 @@ IspellConvertHtmlAmp(char *buf)
 	}
 	else if (strcmp(&buf[1], "acute") == 0) {
 	    switch (*buf) {
-		case 'a': ch = 'á'; break;
-		case 'e': ch = 'é'; break;
-		case 'i': ch = 'í'; break;
-		case 'o': ch = 'ó'; break;
-		case 'u': ch = 'ú'; break;
-		case 'A': ch = 'Á'; break;
-		case 'E': ch = 'É'; break;
-		case 'I': ch = 'Í'; break;
-		case 'O': ch = 'Ó'; break;
-		case 'U': ch = 'Ú'; break;
+		case 'a': ch = 'ï¿½'; break;
+		case 'e': ch = 'ï¿½'; break;
+		case 'i': ch = 'ï¿½'; break;
+		case 'o': ch = 'ï¿½'; break;
+		case 'u': ch = 'ï¿½'; break;
+		case 'A': ch = 'ï¿½'; break;
+		case 'E': ch = 'ï¿½'; break;
+		case 'I': ch = 'ï¿½'; break;
+		case 'O': ch = 'ï¿½'; break;
+		case 'U': ch = 'ï¿½'; break;
 	    }
 	}
 	else if (strcmp(&buf[1], "grave") == 0) {
 	    switch (*buf) {
-		case 'a': ch = 'à'; break;
-		case 'e': ch = 'è'; break;
-		case 'i': ch = 'ì'; break;
-		case 'o': ch = 'ò'; break;
-		case 'u': ch = 'ù'; break;
-		case 'A': ch = 'À'; break;
-		case 'E': ch = 'È'; break;
-		case 'I': ch = 'Ì'; break;
-		case 'O': ch = 'Ò'; break;
-		case 'U': ch = 'Ù'; break;
+		case 'a': ch = 'ï¿½'; break;
+		case 'e': ch = 'ï¿½'; break;
+		case 'i': ch = 'ï¿½'; break;
+		case 'o': ch = 'ï¿½'; break;
+		case 'u': ch = 'ï¿½'; break;
+		case 'A': ch = 'ï¿½'; break;
+		case 'E': ch = 'ï¿½'; break;
+		case 'I': ch = 'ï¿½'; break;
+		case 'O': ch = 'ï¿½'; break;
+		case 'U': ch = 'ï¿½'; break;
 	    }
 	}
 	else if (strcmp(&buf[1], "tilde") == 0) {
 	    switch (*buf) {
-		case 'a': ch = 'ã'; break;
-		case 'o': ch = 'õ'; break;
-		case 'n': ch = 'ñ'; break;
-		case 'A': ch = 'ã'; break;
-		case 'O': ch = 'Õ'; break;
-		case 'N': ch = 'Ñ'; break;
+		case 'a': ch = 'ï¿½'; break;
+		case 'o': ch = 'ï¿½'; break;
+		case 'n': ch = 'ï¿½'; break;
+		case 'A': ch = 'ï¿½'; break;
+		case 'O': ch = 'ï¿½'; break;
+		case 'N': ch = 'ï¿½'; break;
 	    }
 	}
 	else if (strcmp(&buf[1], "circ") == 0) {
 	    switch (*buf) {
-		case 'a': ch = 'â'; break;
-		case 'e': ch = 'ê'; break;
-		case 'i': ch = 'î'; break;
-		case 'o': ch = 'ô'; break;
-		case 'u': ch = 'û'; break;
-		case 'A': ch = 'Â'; break;
-		case 'E': ch = 'Ê'; break;
-		case 'I': ch = 'Î'; break;
-		case 'O': ch = 'Ô'; break;
-		case 'U': ch = 'Û'; break;
+		case 'a': ch = 'ï¿½'; break;
+		case 'e': ch = 'ï¿½'; break;
+		case 'i': ch = 'ï¿½'; break;
+		case 'o': ch = 'ï¿½'; break;
+		case 'u': ch = 'ï¿½'; break;
+		case 'A': ch = 'ï¿½'; break;
+		case 'E': ch = 'ï¿½'; break;
+		case 'I': ch = 'ï¿½'; break;
+		case 'O': ch = 'ï¿½'; break;
+		case 'U': ch = 'ï¿½'; break;
 	    }
 	}
 	else if (strcmp(&buf[1], "cedil") == 0) {
 	    switch (*buf) {
-		case 'c': ch = 'ç'; break;
-		case 'C': ch = 'Ç'; break;
+		case 'c': ch = 'ï¿½'; break;
+		case 'C': ch = 'ï¿½'; break;
 	    }
 	}
 	/* add more cases here */

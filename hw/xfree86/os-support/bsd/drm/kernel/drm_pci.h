@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file drm_pci.h
+/* \file drm_pci.h
  * \brief PCI consistent, DMA-accessible memory functions.
  *
  * \author Eric Anholt <anholt@FreeBSD.org>

@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * Copyright © 2007-2008 Tiago Vignatti <vignatti at freedesktop org>
  * Copyright © 2010 Nokia
  *

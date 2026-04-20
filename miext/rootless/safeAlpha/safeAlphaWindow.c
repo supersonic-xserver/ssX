@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Specialized window functions to protect the alpha channel
+/* Specialized window functions to protect the alpha channel
  */
 /*
  * Copyright (c) 2002-2003 Torrey T. Lyons. All Rights Reserved.
@@ -36,7 +33,7 @@
 /* Portions of this file are based on fbwindow.c, which contains the
  * following copyright:
  *
- * Copyright © 1998 Keith Packard
+ * Copyright ï¿½ 1998 Keith Packard
  */
 /* $XFree86: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaWindow.c,v 1.3 2006/02/19 15:51:31 tsi Exp $ */
 

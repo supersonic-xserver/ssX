@@ -78,7 +78,5 @@ extern _X_EXPORT void DeleteCallbackList(
 
 extern _X_EXPORT void InitCallbackManager(void);
 
-#endif /* CALLBACK_H */
-
- */
+#endif /* CALLBACK_H *//*/
  */

@@ -524,9 +524,7 @@ GX1SetupFor8x8PatternMonoExpand(ScrnInfoPtr pScreenInfo,
  *  patterny	:This is set based on rop data.
  *       fg		:Specifies the foreground color
  *       bg		:Specifies the background color
- *  planemask	:Specifies the value of masking from rop data
-
- * Returns		:none
+ *  planemask	:Specifies the value of masking from rop data/* Returns		:none
  *
  * Comments		:The patterns specified is ignored inside the function
  * Sample application uses:
@@ -565,9 +563,7 @@ GX1Subsequent8x8PatternMonoExpand(ScrnInfoPtr pScreenInfo,
  *      ydir    :This is set based on rop data.
  *      rop		:sets the raster operation
  *	transparency:tobeadded
- *  planemask	:Specifies the value of masking from rop data
-
- * Returns		:none
+ *  planemask	:Specifies the value of masking from rop data/* Returns		:none
  *
  * Comments		:The patterns specified is ignored inside the function
 *----------------------------------------------------------------------------
@@ -1153,9 +1149,7 @@ OPTGX1SubsequentFillRectSolid(ScrnInfoPtr pScreenInfo,
  *      ydir    :This is set based on rop data.
  *      rop		:sets the raster operation
  *	transparency:tobeadded
- *  planemask	:Specifies the value of masking from rop data
-
- * Returns		:none
+ *  planemask	:Specifies the value of masking from rop data/* Returns		:none
  *
  * Comments		:The patterns specified is ignored inside the function
 *----------------------------------------------------------------------------

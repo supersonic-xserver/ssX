@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/lib/XThrStub/UIThrStubs.c,v 3.6 2004/06/01 00:16:57 dawes Exp $
+/* $XFree86: xc/lib/XThrStub/UIThrStubs.c,v 3.6 2004/06/01 00:16:57 dawes Exp $
  *
  * Copyright (c) 1995 David E. Wexelblat.  All rights reserved
  *

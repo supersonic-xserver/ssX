@@ -6,9 +6,7 @@
  */
 
 
-/*
-
- *
+/*/*
  * Copyright (C) 1998, 1999 by Alan Hourihane, Wigan, England.
  * Parts Copyright (C) 2001-2004 Thomas Winischhofer, Vienna, Austria.
  *

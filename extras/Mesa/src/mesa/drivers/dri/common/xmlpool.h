@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * !!! Important: This file is encoded in UTF-8 !!!
  *
  * Note (Emacs): You need Mule. In Debian the package is called

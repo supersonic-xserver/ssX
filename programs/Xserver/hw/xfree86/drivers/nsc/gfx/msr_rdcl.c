@@ -431,9 +431,7 @@ redcloud_build_mbus_tree(void)
 }
 
 /*------------------------------------------------------------------
- * redcloud_init_msr_devices (PRIVATE ROUTINE - NOT PART OF DURANGO API)
-
- * Handles the details of finding each possible device on the MBUS.
+ * redcloud_init_msr_devices (PRIVATE ROUTINE - NOT PART OF DURANGO API)/* Handles the details of finding each possible device on the MBUS.
  * If a given device is not found, its structure is left uninitialized.
  * If a given device is found, its structure is updated.
  *

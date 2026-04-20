@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file drm_dma.h 
+/* \file drm_dma.h 
  * DMA IOCTL and function support
  *
  * \author Rickard E. (Rik) Faith <faith@valinux.com>

@@ -1,15 +1,12 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/xrandr/xrandr.c,v 1.12 2002/11/01 20:04:00 keithp Exp $
+/* $XFree86: xc/programs/xrandr/xrandr.c,v 1.12 2002/11/01 20:04:00 keithp Exp $
  *
- * Copyright © 2001 Keith Packard, member of The XFree86 Project, Inc.
- * Copyright © 2002 Hewlett Pacard Company, Inc.
+ * Copyright ï¿½ 2001 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright ï¿½ 2002 Hewlett Pacard Company, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that

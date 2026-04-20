@@ -279,9 +279,7 @@ out:
  *	informations and to emit the events for both devices if provided
  *	with one of the two structs. This point is relevant only if the
  *	two devices are actives at the same time.
- *
-
- ***************************************************************************
+ */***************************************************************************
  */
 static void xf86PmxReadInput(LocalDevicePtr local)
 {

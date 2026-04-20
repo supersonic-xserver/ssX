@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Created: Thu Jan 11 21:20:43 2001 by gareth@valinux.com
+/* Created: Thu Jan 11 21:20:43 2001 by gareth@valinux.com
  *
  * Copyright 1999 Matrox Graphics Inc.
  * All Rights Reserved.

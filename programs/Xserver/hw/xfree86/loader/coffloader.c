@@ -374,9 +374,7 @@ COFFGetSymbolGlinkValue(COFFModulePtr cofffile, int index)
 	4 0000000c 804c0000 	l     r2,0(r12)	# Get address of functions
 	5 00000010 7c4903a6	mtctr  r2	# load destination address
 	6 00000014 804c0004	l     r2,4(r12)	# get TOC of function
-	7 00000018 4e800420	bctr		# branch to it
-
- */
+	7 00000018 4e800420	bctr		# branch to it/*/
     if (symbol) {
 	symval = (unsigned char *)&symbol->code.glink;
 #ifdef COFFDEBUG

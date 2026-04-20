@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Support for RENDER extension while protecting the alpha channel
+/* Support for RENDER extension while protecting the alpha channel
  */
 /*
  * Copyright (c) 2002-2003 Torrey T. Lyons. All Rights Reserved.
@@ -37,7 +34,7 @@
 /* This file is largely based on fbcompose.c and fbpict.c, which contain
  * the following copyright:
  *
- * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
+ * Copyright ï¿½ 2000 Keith Packard, member of The XFree86 Project, Inc.
  */
  /* $XFree86: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaPicture.c,v 1.6 2007/04/09 15:37:19 tsi Exp $ */
 

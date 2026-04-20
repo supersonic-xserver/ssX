@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * First, the stuff that ends up in the outside-world include file
+/* First, the stuff that ends up in the outside-world include file
  = typedef off_t regoff_t;
  = typedef struct {
  = 	int re_magic;

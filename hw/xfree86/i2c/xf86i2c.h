@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *  Copyright (C) 1998 Itai Nahshon, Michael Schimek
+/*  Copyright (C) 1998 Itai Nahshon, Michael Schimek
  */
 
 /* $XFree86: xc/programs/Xserver/hw/xfree86/i2c/xf86i2c.h,v 1.12 2004/09/11 01:33:06 dawes Exp $ */

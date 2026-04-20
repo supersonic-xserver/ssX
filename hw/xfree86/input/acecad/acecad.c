@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 2001 Edouard TISSERANT <tissered@esstin.u-nancy.fr>
+/* Copyright (c) 2001 Edouard TISSERANT <tissered@esstin.u-nancy.fr>
  * Parts inspired from Shane Watts <shane@bofh.asn.au> XFree86 3 Acecad Driver
  * Thanks to Emily, from AceCad, For giving me documents.
  * 
@@ -817,7 +815,7 @@ QueryHardware (AceCadPrivatePtr priv)
 	XisbBlockDuration (priv->buffer, 1000000);
 	NewPacket (priv);
 
-	/*xf86Msg(X_CONFIG, "Acecad Tablet init envoyé \n");*/
+	/*xf86Msg(X_CONFIG, "Acecad Tablet init envoyï¿½ \n");*/
 
 	if ((AceCadGetPacket (priv) == Success))
 	{

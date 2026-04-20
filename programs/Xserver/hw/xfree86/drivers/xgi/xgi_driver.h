@@ -40,9 +40,7 @@
 /* VESA */
 /*     The following is included because there are BIOSes out there that
  *     report incomplete mode lists. These are 630 BIOS versions <2.01.2x
- *
-
- */
+ */*/
 				             /*     8      16    (24)    32   */
 static const UShort  VESAModeIndex_320x200[]   = {0x138, 0x10e, 0x000, 0x000};
 static const UShort  VESAModeIndex_320x240[]   = {0x132, 0x135, 0x000, 0x000};

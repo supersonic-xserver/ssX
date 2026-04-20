@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.  All Rights Reserved.
+/* Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.  All Rights Reserved.
  * Copyright (c) 2005 Jesse Barnes <jbarnes@virtuousgeek.org>
  * Copyright © 2010 Intel Corporation
  *

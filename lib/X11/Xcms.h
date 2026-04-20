@@ -267,14 +267,10 @@ typedef void (*XcmsScreenFreeProc)(
  *       device-independent colour conversion code uses it as:
 
 typedef Status (*XcmsConversionProc)(XcmsCCC, XcmsColor *, XcmsColor *, 
-				     unsigned int);
-
- *       while the device-dependent code uses it as:
+				     unsigned int);/*       while the device-dependent code uses it as:
 
 typedef Status (*XcmsConversionProc)(XcmsCCC, XcmsColor *, unsigned int,
-				     Bool *);
-
- *       Until this is reworked, it's probably best to leave it unprotoized.
+				     Bool *);/*       Until this is reworked, it's probably best to leave it unprotoized.
  *       The code works regardless.
  */
 typedef Status (*XcmsDDConversionProc)( /* using device-dependent version */

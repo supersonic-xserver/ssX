@@ -1,17 +1,14 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Abstraction of the AGP GART interface.
+/* Abstraction of the AGP GART interface.
  *
  * This version is for both Linux and FreeBSD.
  *
- * Copyright © 2000-2001 Nokia Home Communications
- * Copyright © 2000 VA Linux Systems, Inc.
+ * Copyright ï¿½ 2000-2001 Nokia Home Communications
+ * Copyright ï¿½ 2000 VA Linux Systems, Inc.
  
 All rights reserved.
 
@@ -38,9 +35,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 Except as contained in this notice, the name of a copyright holder
 shall not be used in advertising or otherwise to promote the sale, use
 or other dealings in this Software without prior written authorization
-of the copyright holder.
-
- */
+of the copyright holder./*/
 
 /* $XFree86: xc/programs/Xserver/hw/tinyx/linux/agp.c,v 1.2 2004/06/23 19:40:16 tsi Exp $ */
 /*

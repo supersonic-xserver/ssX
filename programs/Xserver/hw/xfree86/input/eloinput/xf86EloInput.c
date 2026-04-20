@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * (C) Copyright 2004 Fred Gleason <fredg@salemradiolabs.com>
+/* (C) Copyright 2004 Fred Gleason <fredg@salemradiolabs.com>
  *
  * Parts of this driver are based on the Elographics driver.
  * Copyright 1995, 1999 by Patrick Lecoanet, France. <lecoanet@cena.dgac.fr>

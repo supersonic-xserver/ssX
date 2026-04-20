@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/xterm/fontutils.h,v 1.14 2005/01/14 01:50:02 dickey Exp $
+/* $XFree86: xc/programs/xterm/fontutils.h,v 1.14 2005/01/14 01:50:02 dickey Exp $
  */
 
 /************************************************************

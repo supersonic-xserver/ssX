@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Created: Mon Jan  4 10:05:05 1999 by sclin@sis.com.tw
+/* Created: Mon Jan  4 10:05:05 1999 by sclin@sis.com.tw
  *
  * Copyright 2000 Silicon Integrated Systems Corp, Inc., HsinChu, Taiwan.
  * All rights reserved.

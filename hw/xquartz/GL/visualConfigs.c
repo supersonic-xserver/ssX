@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 2007, 2008 Apple Inc.
+/* Copyright (c) 2007, 2008 Apple Inc.
  * Copyright (c) 2004 Torrey T. Lyons. All Rights Reserved.
  * Copyright (c) 2002 Greg Parker. All Rights Reserved.
  *

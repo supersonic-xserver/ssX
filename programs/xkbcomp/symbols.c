@@ -28,9 +28,7 @@
  DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, 
  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
- THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
- ********************************************************/
+ THE USE OR PERFORMANCE OF THIS SOFTWARE./********************************************************/
 /* $XFree86: xc/programs/xkbcomp/symbols.c,v 3.16 2003/10/31 14:32:04 pascal Exp $ */
 
 #include "xkbcomp.h"

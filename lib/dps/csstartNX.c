@@ -1,4 +1,3 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
@@ -6,9 +5,7 @@
  */
 
 
-  csstartNX.c
-
- * (c) Copyright 1992-1994 Adobe Systems Incorporated.
+  csstartNX.c/* (c) Copyright 1992-1994 Adobe Systems Incorporated.
  * All rights reserved.
  * 
  * Permission to use, copy, modify, distribute, and sublicense this software

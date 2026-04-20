@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file drm_proc.h 
+/* \file drm_proc.h 
  * /proc support for DRM
  *
  * \author Rickard E. (Rik) Faith <faith@valinux.com>

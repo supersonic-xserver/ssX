@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file radeon_subset_vtx.c
+/* \file radeon_subset_vtx.c
  * \brief Vertex buffering.
  *
  * \author Keith Whitwell <keith@tungstengraphics.com>

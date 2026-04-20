@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/xmh/toc.c,v 3.5 2002/04/05 21:06:29 dickey Exp $
+/* $XFree86: xc/programs/xmh/toc.c,v 3.5 2002/04/05 21:06:29 dickey Exp $
  *
  *
  *			  COPYRIGHT 1987

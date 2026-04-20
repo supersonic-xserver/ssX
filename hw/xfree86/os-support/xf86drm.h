@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file xf86drm.h 
+/* \file xf86drm.h 
  * OS-independent header for DRM user-level library interface.
  *
  * \author Rickard E. (Rik) Faith <faith@valinux.com>

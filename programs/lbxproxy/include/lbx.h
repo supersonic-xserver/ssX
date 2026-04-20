@@ -356,9 +356,7 @@ extern int numLargeRequestsInQueue;
  * essentially the same way -- whenever possible, it will try to respond 
  * to the client without sending the request all the way to the X server.
  * The goal is to remove a roudn-trip entirely -- even though not a lot of data
- * is involved, remving the roundtrip can make this useful.
-
- * Unfortunately, figuring out *when* its safe is very nasty.  First
+ * is involved, remving the roundtrip can make this useful./* Unfortunately, figuring out *when* its safe is very nasty.  First
  * there are all the possibile stages outlined above.  If the proxy
  * isn't waiting, thinking there might be pending data, it can always
  * short-circuit the request.  However, this is the rare case.  When

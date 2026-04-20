@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Push Pixels for 8 bit displays.
+/* Push Pixels for 8 bit displays.
  */
 
 /* $XFree86: xc/programs/Xserver/cfb/cfbpush8.c,v 1.6 2001/12/14 19:59:24 dawes Exp $ */

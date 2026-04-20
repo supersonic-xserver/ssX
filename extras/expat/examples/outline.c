@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * outline.c
+/* outline.c
  *
  * Copyright 1999, Clark Cooper
  * All rights reserved.

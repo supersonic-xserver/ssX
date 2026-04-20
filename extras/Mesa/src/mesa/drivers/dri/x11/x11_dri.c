@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Mesa 3-D graphics library
+/* Mesa 3-D graphics library
  * Version: 0.1
  *
  * Copyright (C) 1999-2002  Brian Paul   All Rights Reserved.

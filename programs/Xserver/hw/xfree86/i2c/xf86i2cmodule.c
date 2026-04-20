@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * This code is derived from and inspired by the I2C driver
  * from the Linux kernel.
  *      (c) 1998 Gerd Knorr <kraxel@cs.tu-berlin.de>

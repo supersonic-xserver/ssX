@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Fill 32 bit tiled rectangles.  Used by both PolyFillRect and PaintWindow.
+/* Fill 32 bit tiled rectangles.  Used by both PolyFillRect and PaintWindow.
  * no depth dependencies.
  */
 /* $XFree86: xc/programs/Xserver/cfb/cfbtile32.c,v 3.7 2003/10/29 22:44:53 tsi Exp $ */

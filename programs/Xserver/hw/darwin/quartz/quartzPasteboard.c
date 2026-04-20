@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * quartzPasteboard.c
+/* quartzPasteboard.c
  *
  * Aqua pasteboard <-> X cut buffer
  * Greg Parker     gparker@cs.stanford.edu     March 8, 2001

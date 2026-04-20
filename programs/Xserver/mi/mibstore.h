@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * mibstore.h --
+/* mibstore.h --
  *	Header file for users of the MI backing-store scheme.
  *
  * Copyright (c) 1987 by the Regents of the University of California

@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * amigaC.c --
+/* amigaC.c --
  *	Functions for handling the amiga BWTWO board.
  *
  * Copyright (c) 1987 by the Regents of the University of California

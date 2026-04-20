@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file ati_pcigart.h 
+/* \file ati_pcigart.h 
  * ATI PCI GART support
  *
  * \author Gareth Hughes <gareth@valinux.com>

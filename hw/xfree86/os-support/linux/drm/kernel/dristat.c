@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Created: Mon Jan 15 05:05:07 2001 by faith@acm.org
+/* Created: Mon Jan 15 05:05:07 2001 by faith@acm.org
  *
  * Copyright 2000 VA Linux Systems, Inc., Fremont, California.
  * All Rights Reserved.

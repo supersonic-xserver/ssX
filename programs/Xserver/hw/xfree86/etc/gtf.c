@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * gcc gtf.c -o gtf -lm -Wall
  *
  * Copyright (c) 2001, Andy Ritger  aritger@nvidia.com

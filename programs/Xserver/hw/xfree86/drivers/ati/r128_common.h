@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Created: Sun Apr  9 18:16:28 2000 by kevin@precisioninsight.com
+/* Created: Sun Apr  9 18:16:28 2000 by kevin@precisioninsight.com
  *
  * Copyright 1999, 2000 Precision Insight, Inc., Cedar Park, Texas.
  * Copyright 2002 Tungsten Graphics, Inc., Cedar Park, Texas.

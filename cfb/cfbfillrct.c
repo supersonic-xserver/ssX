@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Fill rectangles.
+/* Fill rectangles.
  */
 /* $XFree86: xc/programs/Xserver/cfb/cfbfillrct.c,v 3.10 2005/10/14 15:16:18 tsi Exp $ */
 

@@ -16,15 +16,12 @@
  */
 
 
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *	File:  xtest1di.c
+/*	File:  xtest1di.c
  *
  *	This file contains the device independent parts of the input
  *	synthesis extension.

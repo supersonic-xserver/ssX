@@ -818,9 +818,7 @@ ElfGetPltAddr(ELFModulePtr elffile, int index)
      4  00000000  3d 80 00 00                   lis     r12,hi16(realfunc)
      5  00000004  61 8c 00 00                   ori     r12,r12,lo16(realfunc)
      6  00000008  7d 89 03 a6                   mtctr   r12
-     7  0000000c  4e 80 04 20                   bctr
-
- */
+     7  0000000c  4e 80 04 20                   bctr/*/
 
 	    symbol->code.plt[0] = 0x3d80;	/* lis     r12 */
 	    symbol->code.plt[1] =
