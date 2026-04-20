@@ -4,7 +4,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/*
 Copyright 1996, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its

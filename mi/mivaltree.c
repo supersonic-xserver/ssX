@@ -28,7 +28,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from The Open Group./*
+in this Software without prior written authorization from The Open Group.
  * Copyright 1987, 1988, 1989 by 
  * Digital Equipment Corporation, Maynard, Massachusetts,
  * 
