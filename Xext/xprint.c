@@ -107,7 +107,7 @@ copyright holders.
 #include <X11/extensions/Printstr.h>
 #include "../Xprint/DiPrint.h"
 #include "../Xprint/attributes.h"
-#include "modinit.h"
+
 
 static void XpResetProc(ExtensionEntry *);
 

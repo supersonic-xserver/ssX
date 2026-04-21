@@ -98,7 +98,9 @@ PERFORMANCE OF THIS SOFTWARE.
 #endif
 #endif
 
-#include "modinit.h"
+#if 0
+
+#endif
 
 #ifdef XSYNC
 

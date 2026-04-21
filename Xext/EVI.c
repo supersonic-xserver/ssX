@@ -55,7 +55,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define _XEVI_SERVER_
 #include <X11/extensions/XEVIstr.h>
 #include "EVIstruct.h"
-#include "modinit.h"
+
 #include "scrnintstr.h"
 
 #ifdef EVI

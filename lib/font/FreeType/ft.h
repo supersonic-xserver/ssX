@@ -2,9 +2,6 @@
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 1997 by Mark Leisher
 Copyright (c) 1998-2002 by Juliusz Chroboczek
 

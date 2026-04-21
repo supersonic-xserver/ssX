@@ -20,9 +20,6 @@
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 1992  X Consortium
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -126,7 +123,7 @@ in this Software without prior written authorization from the X Consortium.
 #include <stdio.h>
 #endif
 
-#include "modinit.h"
+
 
 #ifdef SCREENSAVER
 #if 0

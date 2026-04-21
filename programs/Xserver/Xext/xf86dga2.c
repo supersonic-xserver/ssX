@@ -38,7 +38,7 @@
 #include <string.h>
 #endif
 
-#include "modinit.h"
+
 
 static DISPATCH_PROC(ProcXDGADispatch);
 static DISPATCH_PROC(SProcXDGADispatch);

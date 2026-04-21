@@ -57,7 +57,11 @@ from The Open Group.
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
+#if 0
 #include <X11/extensions/bigreqstr.h>
+#else
+#include <X11/extensions/bigreqsproto.h>
+#endif
 #include "opaque.h"
 /* modinit.h not present in static build - symbols provided by extnsionst.h */
 

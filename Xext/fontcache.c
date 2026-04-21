@@ -67,7 +67,7 @@
 #include <X11/Xfuncproto.h>
 
 #include "swaprep.h"
-#include "modinit.h"
+
 
 #ifdef FONTCACHE
 static int miscErrorBase;

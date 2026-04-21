@@ -4,6 +4,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
 Copyright 2007 Peter Hutterer <peter@cs.unisa.edu.au>
 
 Permission to use, copy, modify, distribute, and sell this software and its

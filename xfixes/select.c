@@ -220,7 +220,7 @@ ProcXFixesSelectSelectionInput(ClientPtr client)
     int rc;
 
     REQUEST_SIZE_MATCH(xXFixesSelectSelectionInputReq);
-    rc = dixLookupWindow(&pWin, stuff->window, client, DixGetAttrAccess);
+    rc = dixLookupWindow(&pWin, stuff->window, client, 0);
     if (rc != Success)
         return rc;
     if (stuff->eventMask & ~SelectionAllEvents) {

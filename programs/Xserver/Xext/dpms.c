@@ -99,7 +99,7 @@ Equipment Corporation.
 #include "dpms.h"
 #include "dpmsstr.h"
 #include "dpmsproc.h"
-#include "modinit.h"
+
 
 #ifdef DPMSExtension
 #if 0

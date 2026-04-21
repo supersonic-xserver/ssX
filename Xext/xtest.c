@@ -22,6 +22,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
 Copyright 1992, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -63,7 +64,9 @@ from The Open Group.
 #include "sleepuntil.h"
 #define _XTEST_SERVER_
 #include <X11/extensions/XTest.h>
+#if 0
 #include <X11/extensions/xteststr.h>
+#endif
 #ifdef XINPUT
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
@@ -74,7 +77,7 @@ from The Open Group.
 #include "xf86_ansic.h"
 #endif
 
-#include "modinit.h"
+
 
 #if 0
 static unsigned char XTestReqCode;

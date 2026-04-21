@@ -52,7 +52,7 @@
 #include "Xfuncproto.h"
 
 #include "swaprep.h"
-#include "modinit.h"
+
 
 static int miscErrorBase;
 

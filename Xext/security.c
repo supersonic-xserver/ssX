@@ -127,7 +127,7 @@ extern unsigned char LbxReqCode;
 #undef index
 #endif
 
-#include "modinit.h"
+
 
 #ifdef XCSECURITY
 

@@ -92,7 +92,7 @@ in this Software without prior written authorization from The Open Group.
 #include "panoramiXsrv.h"
 #endif
 
-#include "modinit.h"
+
 
 #ifdef MITSHM
 

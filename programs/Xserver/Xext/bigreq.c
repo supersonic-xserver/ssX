@@ -44,7 +44,7 @@ from The Open Group.
 #include "extnsionst.h"
 #include "bigreqstr.h"
 #include "opaque.h"
-#include "modinit.h"
+
 
 #if 0
 static unsigned char XBigReqCode;

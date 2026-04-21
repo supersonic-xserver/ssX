@@ -1,11 +1,11 @@
 /************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/************************************************************
  Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -27,7 +27,8 @@
  DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, 
  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
- THE USE OR PERFORMANCE OF THIS SOFTWARE./********************************************************/
+ THE USE OR PERFORMANCE OF THIS SOFTWARE.
+********************************************************/
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>

@@ -296,4 +296,8 @@ typedef struct _CharInfo *CharInfoPtr; /* also in fonts/include/font.h */
 #define _XTYPEDEF_CHARINFOPTR
 #endif
 
+#ifndef xallocarray
+#define xallocarray(num, size) reallocarray(NULL, (num), (size))
+#endif
+
 #endif /* MISC_H */

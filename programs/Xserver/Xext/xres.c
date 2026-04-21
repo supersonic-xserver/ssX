@@ -20,7 +20,7 @@
 #include "swaprep.h"
 #include "XResproto.h"
 #include "pixmapstr.h"
-#include "modinit.h"
+
 
 static int
 ProcXResQueryVersion (ClientPtr client)

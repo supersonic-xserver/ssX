@@ -45,7 +45,7 @@ from The Open Group.
 #include "extnsionst.h"
 #include "swaprep.h"
 #include "xcmiscstr.h"
-#include "modinit.h"
+
 
 #if HAVE_STDINT_H
 #include <stdint.h>

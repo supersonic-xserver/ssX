@@ -14,13 +14,12 @@
  * Architect: Collin Beyer (HaplessIdiot)
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
-
- This codebase is protected under the SSX Jesterman's Creed.
+/* is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
+/*
 Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -117,7 +116,7 @@ Equipment Corporation.
 #ifdef RENDER
 #include "picturestr.h"
 #endif
-#include "modinit.h"
+
 
 #ifdef PANORAMIX
 

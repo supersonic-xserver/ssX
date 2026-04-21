@@ -56,7 +56,7 @@
 #include <string.h>
 #endif
 
-#include "modinit.h"
+
 
 #ifdef XFreeXDGA
 

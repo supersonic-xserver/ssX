@@ -45,7 +45,7 @@
 
 #include "Xproto.h"
 
-#include "modinit.h"
+
 
 static MODULESETUPPROTO(extmodSetup);
 
