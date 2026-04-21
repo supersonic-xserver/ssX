@@ -1356,3 +1356,9 @@ ResetOsBuffers(void)
 	xfree(oco);
     }
 }
+
+int
+WriteFdToClient(ClientPtr client, int fd, Bool do_close)
+{
+	return -1;
+}

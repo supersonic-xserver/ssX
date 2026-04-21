@@ -22,6 +22,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
 Copyright 1992, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -103,7 +104,7 @@ ProcBigReqDispatch(ClientPtr client)
     int n;
 
     if (client->swapped) {
-	swaps(&stuff->length, n);
+	swaps(&stuff->length);
     }
     if (stuff->brReqType != X_BigReqEnable)
 	return BadRequest;
@@ -114,8 +115,8 @@ ProcBigReqDispatch(ClientPtr client)
     rep.sequenceNumber = client->sequence;
     rep.max_request_size = maxBigRequestSize;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.max_request_size, n);
+    	swaps(&rep.sequenceNumber);
+	swapl(&rep.max_request_size);
     }
     WriteToClient(client, sizeof(xBigReqEnableReply), (char *)&rep);
     return(client->noClientException);

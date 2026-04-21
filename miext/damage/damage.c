@@ -1813,7 +1813,7 @@ DamageSetup (ScreenPtr pScreen)
 	damageGCPrivateIndex = AllocateGCPrivateIndex ();
 	if (damageGCPrivateIndex == -1)
 	    return FALSE;
-	damagePixPrivateIndex = AllocatePixmapPrivateIndex ();
+	damagePixPrivateIndex = AllocatePicturePrivateIndex ();
 	if (damagePixPrivateIndex == -1)
 	    return FALSE;
 	damageWinPrivateIndex = AllocateWindowPrivateIndex ();
@@ -1826,7 +1826,7 @@ DamageSetup (ScreenPtr pScreen)
 
     if (!AllocateGCPrivate (pScreen, damageGCPrivateIndex, sizeof (DamageGCPrivRec)))
 	return FALSE;
-    if (!AllocatePixmapPrivate (pScreen, damagePixPrivateIndex, 0))
+    if (!AllocatePicturePrivate (pScreen, damagePixPrivateIndex, 0))
 	return FALSE;
     if (!AllocateWindowPrivate (pScreen, damageWinPrivateIndex, 0))
 	return FALSE;

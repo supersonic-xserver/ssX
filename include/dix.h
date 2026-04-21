@@ -759,4 +759,10 @@ typedef struct {
 extern void SetVendorRelease(int release);
 extern void SetVendorString(const char *string);
 
+/* SSX_LEGACY_BRIDGE */
+/* Allow compatibility for modern ssX code to run with legacy ssX drivers */
+#if SSX_LEGACY_BUILD
+extern WindowPtr dixLookupWindow(WindowPtr *pWin, XID id, ClientPtr client, Mask access);
+#endif
+
 #endif /* DIX_H */
