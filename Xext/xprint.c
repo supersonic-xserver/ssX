@@ -22,7 +22,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
 (c) Copyright 1996 Sun Microsystems, Inc.

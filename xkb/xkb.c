@@ -79,6 +79,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <stdio.h>
 #include <X11/X.h>
+#include <X11/Xlib.h>
 #define	NEED_EVENTS
 #define	NEED_REPLIES
 #include <X11/Xproto.h>
@@ -212,7 +213,6 @@ ProcXkbUseExtension(ClientPtr client)
 {
     REQUEST(xkbUseExtensionReq);
     xkbUseExtensionReply	rep;
-    int n;
     int	supported;
 
     REQUEST_SIZE_MATCH(xkbUseExtensionReq);
@@ -581,7 +581,6 @@ ProcXkbGetState(ClientPtr client)
     rep.compatState = xkb->compat_state;
     rep.ptrBtnState = xkb->ptr_buttons;
     if (client->swapped) {
-	int n;
 	swaps(&rep.sequenceNumber);
 	swaps(&rep.ptrBtnState);
     }
@@ -703,22 +702,22 @@ ProcXkbGetControls(ClientPtr client)
 	swapl(&rep.length);
 	swaps(&rep.internalVMods);
 	swaps(&rep.ignoreLockVMods);
-	swapl(&rep.enabledCtrls, n);
-	swaps(&rep.repeatDelay, n);
-	swaps(&rep.repeatInterval, n);
-	swaps(&rep.slowKeysDelay, n);
-	swaps(&rep.debounceDelay, n);
-	swaps(&rep.mkDelay, n);
-	swaps(&rep.mkInterval, n);
-	swaps(&rep.mkTimeToMax, n);
-	swaps(&rep.mkMaxSpeed, n);
-	swaps(&rep.mkCurve, n);
-	swaps(&rep.axTimeout, n);
-	swapl(&rep.axtCtrlsMask, n);
-	swapl(&rep.axtCtrlsValues, n);
-	swaps(&rep.axtOptsMask, n);
-	swaps(&rep.axtOptsValues, n);
-	swaps(&rep.axOptions, n);
+	swapl(&rep.enabledCtrls);
+	swaps(&rep.repeatDelay);
+	swaps(&rep.repeatInterval);
+	swaps(&rep.slowKeysDelay);
+	swaps(&rep.debounceDelay);
+	swaps(&rep.mkDelay);
+	swaps(&rep.mkInterval);
+	swaps(&rep.mkTimeToMax);
+	swaps(&rep.mkMaxSpeed);
+	swaps(&rep.mkCurve);
+	swaps(&rep.axTimeout);
+	swapl(&rep.axtCtrlsMask);
+	swapl(&rep.axtCtrlsValues);
+	swaps(&rep.axtOptsMask);
+	swaps(&rep.axtOptsValues);
+	swaps(&rep.axOptions);
     }
     WriteToClient(client, SIZEOF(xkbGetControlsReply), (char *)&rep);
     return(client->noClientException);
@@ -986,8 +985,7 @@ XkbWriteKeyTypes(	XkbDescPtr		xkb,
 	wire->nMapEntries = type->map_count;
 	wire->preserve = (type->preserve!=NULL);
 	if (client->swapped) {
-	    int n;
-	    swaps(&wire->virtualMods,n);
+	    swaps(&wire->virtualMods);
 	}	
 
 	buf= (char *)&wire[1];
@@ -1004,7 +1002,7 @@ XkbWriteKeyTypes(	XkbDescPtr		xkb,
 		wire->virtualMods= entry->mods.vmods;
 		if (client->swapped) {
 		    int n;
-		    swaps(&wire->virtualMods,n);
+		    swaps(&wire->virtualMods);
 		}
 	    }
 	    buf= (char *)wire;
@@ -1019,7 +1017,7 @@ XkbWriteKeyTypes(	XkbDescPtr		xkb,
 		    pwire->virtualMods= preserve->vmods;
 		    if (client->swapped) {
 			int n;
-			swaps(&pwire->virtualMods,n);
+			swaps(&pwire->virtualMods);
 		    }
 		}
 		buf= (char *)pwire;
@@ -1100,9 +1098,9 @@ unsigned	i;
 	memcpy((char *)buf,(char *)pSym,outMap->nSyms*4);
 	if (client->swapped) {
 	    int n,nSyms= outMap->nSyms;
-	    swaps(&outMap->nSyms,n);
+	    swaps(&outMap->nSyms);
 	    while (nSyms-->0) {
-		swapl(buf,n);
+		swapl(buf);
 		buf+= 4;
 	    }
 	}
@@ -1390,11 +1388,11 @@ char		*desc,*start;
     }
     if (client->swapped) {
 	int n;
-	swaps(&rep->sequenceNumber,n);
-	swapl(&rep->length,n);
-	swaps(&rep->present,n);
-	swaps(&rep->totalSyms,n);
-	swaps(&rep->totalActs,n);
+	swaps(&rep->sequenceNumber);
+	swapl(&rep->length);
+	swaps(&rep->present);
+	swaps(&rep->totalSyms);
+	swaps(&rep->totalActs);
     }
     WriteToClient(client, (i=SIZEOF(xkbGetMapReply)), (char *)rep);
     WriteToClient(client, len, start);
@@ -1716,7 +1714,7 @@ xkbSymMapWireDesc*	wire = *wireRtrn;
 	KeySym *pSyms;
 	unsigned nG;
 	if (client->swapped) {
-	    swaps(&wire->nSyms,nG);
+	    swaps(&wire->nSyms);
 	}
         /* mmc: Checking the Nodes: 1/ good group information? */
 	nG = XkbNumGroups(wire->groupInfo);
@@ -2102,7 +2100,7 @@ unsigned		first,last;
 	    if (client->swapped) {
 		int n;
 		for (s=0;s<wire->nSyms;s++) {
-		    swapl(&newSyms[s],n);
+		    swapl(&newSyms[s]);
 		}
 	    }
 	}
@@ -2597,7 +2595,7 @@ int		size;
 		memcpy((char*)&wire->act,(char*)&sym->act,sz_xkbActionWireDesc);
 		if (client->swapped) {
 		    int n;
-		    swapl(&wire->sym,n);
+		    swapl(&wire->sym);
 		}
 	    }
 	    if (rep->groups) {
@@ -2609,7 +2607,7 @@ int		size;
 			grp->virtualMods= compat->groups[i].vmods;
 			if (client->swapped) {
 			    int n;
-			    swaps(&grp->virtualMods,n);
+			    swaps(&grp->virtualMods);
 			}
 			grp++;
 		    }
@@ -2623,11 +2621,11 @@ int		size;
 
     if (client->swapped) {
 	int n;
-	swaps(&rep->sequenceNumber,n);
-	swapl(&rep->length,n);
-	swaps(&rep->firstSI,n);
-	swaps(&rep->nSI,n);
-	swaps(&rep->nTotalSI,n);
+	swaps(&rep->sequenceNumber);
+	swapl(&rep->length);
+	swaps(&rep->firstSI);
+	swaps(&rep->nSI);
+	swaps(&rep->nTotalSI);
     }
 
     WriteToClient(client, SIZEOF(xkbGetCompatMapReply), (char *)rep);
@@ -2743,7 +2741,7 @@ ProcXkbSetCompatMap(ClientPtr client)
 	for (i=0;i<stuff->nSI;i++,wire++,sym++) {
 	    if (client->swapped) {
 		int n;
-		swapl(&wire->sym,n);
+		swapl(&wire->sym);
 	    }
 	    sym->sym= wire->sym;
 	    sym->mods= wire->mods;
@@ -2766,7 +2764,7 @@ ProcXkbSetCompatMap(ClientPtr client)
 	    if (stuff->groups&bit) {
 		if (client->swapped) {
 		    int n;
-		    swaps(&wire->virtualMods,n);
+		    swaps(&wire->virtualMods);
 		}
 		compat->groups[i].mask= wire->realMods;
 		compat->groups[i].real_mods= wire->realMods;
@@ -2849,8 +2847,8 @@ ProcXkbGetIndicatorState(ClientPtr client)
     rep.state = sli->effectiveState;
 
     if (client->swapped) {
-	swaps(&rep.sequenceNumber,i);
-	swapl(&rep.state,i);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.state);
     }
     WriteToClient(client, SIZEOF(xkbGetIndicatorStateReply), (char *)&rep);
     return client->noClientException;
@@ -2903,8 +2901,8 @@ unsigned	bit;
 		    wire->ctrls= indicators->maps[i].ctrls;
 		    if (client->swapped) {
 			int n;
-			swaps(&wire->virtualMods,n);
-			swapl(&wire->ctrls,n);
+			swaps(&wire->virtualMods);
+			swapl(&wire->ctrls);
 		    }
 		    wire++;
 		}
@@ -2919,10 +2917,10 @@ unsigned	bit;
     }
     else map = NULL;
     if (client->swapped) {
-	swaps(&rep->sequenceNumber,i);
-	swapl(&rep->length,i);
-	swapl(&rep->which,i);
-	swapl(&rep->realIndicators,i);
+	swaps(&rep->sequenceNumber);
+	swapl(&rep->length);
+	swapl(&rep->which);
+	swapl(&rep->realIndicators);
     }
     WriteToClient(client, SIZEOF(xkbGetIndicatorMapReply), (char *)rep);
     if (map) {
@@ -3006,8 +3004,8 @@ ProcXkbSetIndicatorMap(ClientPtr client)
 	if (stuff->which&bit) {
 	    if (client->swapped) {
 		int n;
-		swaps(&from->virtualMods,n);
-		swapl(&from->ctrls,n);
+		swaps(&from->virtualMods);
+		swapl(&from->ctrls);
 	    }
 	    CHK_MASK_LEGAL(i,from->whichGroups,XkbIM_UseAnyGroup);
 	    CHK_MASK_LEGAL(i,from->whichMods,XkbIM_UseAnyMods);
@@ -3123,11 +3121,11 @@ ProcXkbGetNamedIndicator(ClientPtr client)
     }
     if ( client->swapped ) {
 	int n;
-	swapl(&rep.length,n);
-	swaps(&rep.sequenceNumber,n);
-	swapl(&rep.indicator,n);
-	swaps(&rep.virtualMods,n);
-	swapl(&rep.ctrls,n);
+	swapl(&rep.length);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.indicator);
+	swaps(&rep.virtualMods);
+	swapl(&rep.ctrls);
     }
 
     WriteToClient(client,SIZEOF(xkbGetNamedIndicatorReply), (char *)&rep);
@@ -3288,8 +3286,7 @@ Atom *atm;
 	if (atoms[i]!=None) {
 	    *atm= atoms[i];
 	    if (swap) {
-		int n;
-		swapl(atm,n);
+		swapl(atm);
 	    }
 	    atm++;
 	}
@@ -3413,11 +3410,11 @@ char *			desc;
     which= rep->which;
     if (client->swapped) {
 	int n;
-	swaps(&rep->sequenceNumber,n);
-	swapl(&rep->length,n);
-	swapl(&rep->which,n);
-	swaps(&rep->virtualMods,n);
-	swapl(&rep->indicators,n);
+	swaps(&rep->sequenceNumber);
+	swapl(&rep->length);
+	swapl(&rep->which);
+	swaps(&rep->virtualMods);
+	swapl(&rep->indicators);
     }
 
     start = desc = (char *)ALLOCATE_LOCAL(length);
@@ -3427,7 +3424,7 @@ char *			desc;
 	*((CARD32 *)desc)= xkb->names->keycodes;
 	if (client->swapped) {
 	    int n;
-	    swapl(desc,n);
+	    swapl(desc);
 	}
 	desc+= 4;
     }
@@ -3435,7 +3432,7 @@ char *			desc;
 	*((CARD32 *)desc)= xkb->names->geometry;
 	if (client->swapped) {
 	    int n;
-	    swapl(desc,n);
+	    swapl(desc);
 	}
 	desc+= 4;
     }
@@ -3443,7 +3440,7 @@ char *			desc;
 	*((CARD32 *)desc)= xkb->names->symbols;
 	if (client->swapped) {
 	    int n;
-	    swapl(desc,n);
+	    swapl(desc);
 	}
 	desc+= 4;
     }
@@ -3452,7 +3449,7 @@ char *			desc;
 	atm[0]= (CARD32)xkb->names->phys_symbols;
 	if (client->swapped) {
 	    int n;
-	    swapl(&atm[0],n);
+	    swapl(&atm[0]);
 	}
 	desc+= 4;
     }
@@ -3460,7 +3457,7 @@ char *			desc;
 	*((CARD32 *)desc)= (CARD32)xkb->names->types;
 	if (client->swapped) {
 	    int n;
-	    swapl(desc,n);
+	    swapl(desc);
 	}
 	desc+= 4;
     }
@@ -3468,7 +3465,7 @@ char *			desc;
 	*((CARD32 *)desc)= (CARD32)xkb->names->compat;
 	if (client->swapped) {
 	    int n;
-	    swapl(desc,n);
+	    swapl(desc);
 	}
 	desc+= 4;
     }
@@ -3480,7 +3477,7 @@ char *			desc;
 	    *atm= (CARD32)type->name;
 	    if (client->swapped) {
 		int n;
-		swapl(atm,n);
+		swapl(atm);
 	    }
 	}
 	desc= (char *)atm;
@@ -3502,7 +3499,7 @@ char *			desc;
 		    *atm= type->level_names[l];
 		    if (client->swapped) {
 			unsigned n;
-			swapl(atm,n);
+			swapl(atm);
 		    }
 		}
 		desc+= type->num_levels*4;
@@ -3538,8 +3535,7 @@ char *			desc;
 	for (i=0;i<rep->nRadioGroups;i++,atm++) {
 	    *atm= (CARD32)xkb->names->radio_groups[i];
 	    if (client->swapped) {
-		unsigned n;
-		swapl(atm,n);
+		swapl(atm);
 	    }
 	}
 	desc+= rep->nRadioGroups*4;
@@ -3599,8 +3595,7 @@ int i;
 
     for (i=0;i<nAtoms;i++,wire++) {
 	if (swapped) {
-	    int n;
-	    swapl(wire,n);
+	    swapl(wire);
 	}
 	if ((((Atom)*wire)!=None)&&(!ValidAtom((Atom)*wire))) {
 	    *pError= ((Atom)*wire);
@@ -3620,8 +3615,7 @@ unsigned i,bit;
 	if ((present&bit)==0)
 	    continue;
 	if (swapped) {
-	    int n;
-	    swapl(wire,n);
+	    swapl(wire);
 	}
 	if ((((Atom)*wire)!=None)&&(!ValidAtom(((Atom)*wire)))) {
 	    *pError= (Atom)*wire;
@@ -4014,8 +4008,7 @@ CARD16	len,*pLen;
     pLen= (CARD16 *)wire;
     *pLen= len;
     if (swap) {
-	int n;
-	swaps(pLen,n);
+	swaps(pLen);
     }
     memcpy(&wire[2],str,len);
     wire+= ((2+len+3)/4)*4;
@@ -4130,8 +4123,7 @@ xkbShapeWireDesc *	shapeWire;
 	     shapeWire->approxNdx= XkbOutlineIndex(shape,shape->approx);
 	else shapeWire->approxNdx= XkbNoShape;
 	if (swap) {
-	    int n;
-	    swapl(&shapeWire->name,n);
+	    swapl(&shapeWire->name);
 	}
 	wire= (char *)&shapeWire[1];
 	for (o=0,ol=shape->outlines;o<shape->num_outlines;o++,ol++) {
@@ -4147,9 +4139,8 @@ xkbShapeWireDesc *	shapeWire;
 		ptWire[p].x= pt->x;
 		ptWire[p].y= pt->y;
 		if (swap) {
-		    int n;
-		    swaps(&ptWire[p].x,n);
-		    swaps(&ptWire[p].y,n);
+		    swaps(&ptWire[p].x);
+		    swaps(&ptWire[p].y);
 		}
 	    }
 	    wire= (char *)&ptWire[ol->num_points];
@@ -4192,10 +4183,9 @@ xkbDoodadWireDesc *	doodadWire;
 	doodadWire->any.top= doodad->any.top;
 	doodadWire->any.left= doodad->any.left;
 	if (swap) {
-	    int n;
-	    swapl(&doodadWire->any.name,n);
-	    swaps(&doodadWire->any.top,n);
-	    swaps(&doodadWire->any.left,n);
+	    swapl(&doodadWire->any.name);
+	    swaps(&doodadWire->any.top);
+	    swaps(&doodadWire->any.left);
 	}
 	switch (doodad->any.type) {
 	    case XkbOutlineDoodad:
@@ -4204,8 +4194,7 @@ xkbDoodadWireDesc *	doodadWire;
 		doodadWire->shape.colorNdx= doodad->shape.color_ndx;
 		doodadWire->shape.shapeNdx= doodad->shape.shape_ndx;
 		if (swap) {
-		    int n;
-		    swaps(&doodadWire->shape.angle,n);
+		    swaps(&doodadWire->shape.angle);
 		}
 		break;
 	    case XkbTextDoodad:
@@ -4214,10 +4203,9 @@ xkbDoodadWireDesc *	doodadWire;
 		doodadWire->text.height= doodad->text.height;
 		doodadWire->text.colorNdx= doodad->text.color_ndx;
 		if (swap) {
-		    int n;
-		    swaps(&doodadWire->text.angle,n);
-		    swaps(&doodadWire->text.width,n);
-		    swaps(&doodadWire->text.height,n);
+		    swaps(&doodadWire->text.angle);
+		    swaps(&doodadWire->text.width);
+		    swaps(&doodadWire->text.height);
 		}
 		wire= XkbWriteCountedString(wire,doodad->text.text,swap);
 		wire= XkbWriteCountedString(wire,doodad->text.font,swap);
@@ -4255,8 +4243,7 @@ xkbOverlayWireDesc *	olWire;
    olWire->name= ol->name;
    olWire->nRows= ol->num_rows;
    if (swap) {
-	int n;
-	swapl(&olWire->name,n);
+	swapl(&olWire->name);
    }
    wire= (char *)&olWire[1];
    for (r=0,row=ol->rows;r<ol->num_rows;r++,row++) {
@@ -4334,13 +4321,12 @@ xkbSectionWireDesc *	sectionWire;
 	sectionWire->nOverlays= section->num_overlays;
 	sectionWire->pad= 0;
 	if (swap) {
-	    int n;
-	    swapl(&sectionWire->name,n);
-	    swaps(&sectionWire->top,n);
-	    swaps(&sectionWire->left,n);
-	    swaps(&sectionWire->width,n);
-	    swaps(&sectionWire->height,n);
-	    swaps(&sectionWire->angle,n);
+	    swapl(&sectionWire->name);
+	    swaps(&sectionWire->top);
+	    swaps(&sectionWire->left);
+	    swaps(&sectionWire->width);
+	    swaps(&sectionWire->height);
+	    swaps(&sectionWire->angle);
 	}
 	wire= (char *)&sectionWire[1];
 	if (section->rows) {
@@ -4355,9 +4341,8 @@ xkbSectionWireDesc *	sectionWire;
 		rowWire->vertical= row->vertical;
 		rowWire->pad= 0;
 		if (swap) {
-		    int n;
-		    swaps(&rowWire->top,n);
-		    swaps(&rowWire->left,n);
+		    swaps(&rowWire->top);
+		    swaps(&rowWire->left);
 		}
 		wire= (char *)&rowWire[1];
 		if (row->keys) {
@@ -4371,8 +4356,7 @@ xkbSectionWireDesc *	sectionWire;
 			keyWire[k].shapeNdx= key->shape_ndx;
 			keyWire[k].colorNdx= key->color_ndx;
 			if (swap) {
-			    int n;
-			    swaps(&keyWire[k].gap,n);
+			    swaps(&keyWire[k].gap);
 			}
 		    }
 		    wire= (char *)&keyWire[row->num_keys];
@@ -4474,18 +4458,17 @@ XkbSendGeometry(	ClientPtr		client,
 	start= NULL;
     }
     if (client->swapped) {
-	int n;
-	swaps(&rep->sequenceNumber,n);
-	swapl(&rep->length,n);
-	swapl(&rep->name,n);
-	swaps(&rep->widthMM,n);
-	swaps(&rep->heightMM,n);
-	swaps(&rep->nProperties,n);
-	swaps(&rep->nColors,n);
-	swaps(&rep->nShapes,n);
-	swaps(&rep->nSections,n);
-	swaps(&rep->nDoodads,n);
-	swaps(&rep->nKeyAliases,n);
+	swaps(&rep->sequenceNumber);
+	swapl(&rep->length);
+	swapl(&rep->name);
+	swaps(&rep->widthMM);
+	swaps(&rep->heightMM);
+	swaps(&rep->nProperties);
+	swaps(&rep->nColors);
+	swaps(&rep->nShapes);
+	swaps(&rep->nSections);
+	swaps(&rep->nDoodads);
+	swaps(&rep->nKeyAliases);
     }
     WriteToClient(client, SIZEOF(xkbGetGeometryReply), (char *)rep);
     if (len>0)
@@ -4537,8 +4520,7 @@ CARD16	len,*plen;
     wire= *wire_inout;
     plen= (CARD16 *)wire;
     if (swap) {
-	int n;
-	swaps(plen,n);
+	swaps(plen);
     }
     len= *plen;
     str= (char *)_XkbAlloc(len+1);
@@ -4564,11 +4546,10 @@ XkbDoodadPtr		doodad;
     dWire= (xkbDoodadWireDesc *)(*wire_inout);
     wire= (char *)&dWire[1];
     if (client->swapped) {
-	int n;
-	swapl(&dWire->any.name,n);
-	swaps(&dWire->any.top,n);
-	swaps(&dWire->any.left,n);
-	swaps(&dWire->any.angle,n);
+	swapl(&dWire->any.name);
+	swaps(&dWire->any.top);
+	swaps(&dWire->any.left);
+	swaps(&dWire->any.angle);
     }
     CHK_ATOM_ONLY(dWire->any.name);
     doodad= XkbAddGeomDoodad(geom,section,dWire->any.name);
@@ -4602,9 +4583,8 @@ XkbDoodadPtr		doodad;
 		return BadMatch;
 	    }
 	    if (client->swapped) {
-		int n;
-		swaps(&dWire->text.width,n);
-		swaps(&dWire->text.height,n);
+		swaps(&dWire->text.width);
+		swaps(&dWire->text.height);
 	    }
 	    doodad->text.width= dWire->text.width;
 	    doodad->text.height= dWire->text.height;
@@ -4670,8 +4650,7 @@ xkbOverlayRowWireDesc *	rWire;
     wire= *wire_inout;
     olWire= (xkbOverlayWireDesc *)wire;
     if (client->swapped) {
-	int n;
-	swapl(&olWire->name,n);
+	swapl(&olWire->name);
     }
     CHK_ATOM_ONLY(olWire->name);
     ol= XkbAddGeomOverlay(section,olWire->name,olWire->nRows);
@@ -4723,13 +4702,12 @@ XkbSectionPtr		section;
 	int		r;
 	xkbRowWireDesc *	rWire;
 	if (client->swapped) {
-	    int n;
-	    swapl(&sWire->name,n);
-	    swaps(&sWire->top,n);
-	    swaps(&sWire->left,n);
-	    swaps(&sWire->width,n);
-	    swaps(&sWire->height,n);
-	    swaps(&sWire->angle,n);
+	    swapl(&sWire->name);
+	    swaps(&sWire->top);
+	    swaps(&sWire->left);
+	    swaps(&sWire->width);
+	    swaps(&sWire->height);
+	    swaps(&sWire->angle);
 	}
 	CHK_ATOM_ONLY(sWire->name);
 	section= XkbAddGeomSection(geom,sWire->name,sWire->nRows,
@@ -4748,9 +4726,8 @@ XkbSectionPtr		section;
 	    XkbRowPtr		row;
 	    xkbKeyWireDesc *	kWire;
 	    if (client->swapped) {
-		int n;
-		swaps(&rWire->top,n);
-		swaps(&rWire->left,n);
+		swaps(&rWire->top);
+		swaps(&rWire->left);
 	    }
 	    row= XkbAddGeomRow(section,rWire->nKeys);
 	    if (!row)
@@ -4845,9 +4822,8 @@ char *		wire;
 		    pt->x= ptWire[p].x;
 		    pt->y= ptWire[p].y;
 		    if (client->swapped) {
-			int n;
-			swaps(&pt->x,n);
-			swaps(&pt->y,n);
+			swaps(&pt->x);
+			swaps(&pt->y);
 		    }
 		}
 		ol->num_points= olWire->nPoints;
@@ -5069,12 +5045,11 @@ ProcXkbPerClientFlags(ClientPtr client)
 	rep.autoCtrls= rep.autoCtrlValues= 0;
     }
     if ( client->swapped ) {
-	int n;
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.supported,n);
-	swapl(&rep.value,n);
-	swapl(&rep.autoCtrls,n);
-	swapl(&rep.autoCtrlValues,n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.supported);
+	swapl(&rep.value);
+	swapl(&rep.autoCtrls);
+	swapl(&rep.autoCtrlValues);
     }
     WriteToClient(client,SIZEOF(xkbPerClientFlagsReply), (char *)&rep);
     return client->noClientException;
@@ -5195,16 +5170,15 @@ ProcXkbListComponents(ClientPtr client)
     if (list.nTotal>list.maxRtrn)
 	rep.extra = (list.nTotal-list.maxRtrn);
     if (client->swapped) {
-	int n;
-	swaps(&rep.sequenceNumber,n);
-	swapl(&rep.length,n);
-	swaps(&rep.nKeymaps,n);
-	swaps(&rep.nKeycodes,n);
-	swaps(&rep.nTypes,n);
-	swaps(&rep.nCompatMaps,n);
-	swaps(&rep.nSymbols,n);
-	swaps(&rep.nGeometries,n);
-	swaps(&rep.extra,n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swaps(&rep.nKeymaps);
+	swaps(&rep.nKeycodes);
+	swaps(&rep.nTypes);
+	swaps(&rep.nCompatMaps);
+	swaps(&rep.nSymbols);
+	swaps(&rep.nGeometries);
+	swaps(&rep.extra);
     }
     WriteToClient(client,SIZEOF(xkbListComponentsReply),(char *)&rep);
     if (list.nPool && list.pool) {
@@ -5463,11 +5437,10 @@ ProcXkbGetKbdByName(ClientPtr client)
 
     reported= rep.reported;
     if ( client->swapped ) {
-	int n;
-	swaps(&rep.sequenceNumber,n);
-	swapl(&rep.length,n);
-	swaps(&rep.found,n);
-	swaps(&rep.reported,n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swaps(&rep.found);
+	swaps(&rep.reported);
     }
     WriteToClient(client,SIZEOF(xkbGetKbdByNameReply), (char *)&rep);
     if (reported&(XkbGBN_SymbolsMask|XkbGBN_TypesMask))
@@ -5652,13 +5625,12 @@ int			length;
     wire.physIndicators= 	sli->physIndicators;
     wire.state=			sli->effectiveState;
     if (client->swapped) {
-	int n;
-	swaps(&wire.ledClass,n);
-	swaps(&wire.ledID,n);
-	swapl(&wire.namesPresent,n);
-	swapl(&wire.mapsPresent,n);
-	swapl(&wire.physIndicators,n);
-	swapl(&wire.state,n);
+	swaps(&wire.ledClass);
+	swaps(&wire.ledID);
+	swapl(&wire.namesPresent);
+	swapl(&wire.mapsPresent);
+	swapl(&wire.physIndicators);
+	swapl(&wire.state);
     }
     WriteToClient(client,SIZEOF(xkbDeviceLedsWireDesc),(char *)&wire);
     length+= SIZEOF(xkbDeviceLedsWireDesc);
@@ -5670,8 +5642,7 @@ int			length;
 		if (sli->namesPresent&bit) {
 		    awire= (CARD32)sli->names[i];
 		    if (client->swapped) {
-			int n;
-			swapl(&awire,n);
+			swapl(&awire);
 		    }
 		    WriteToClient(client,4,(char *)&awire);
 		    length+= 4;
@@ -5691,9 +5662,8 @@ int			length;
 		    iwire.virtualMods=	sli->maps[i].mods.vmods;
 		    iwire.ctrls= 	sli->maps[i].ctrls;
 		    if (client->swapped) {
-			int n;
-			swaps(&iwire.virtualMods,n);
-			swapl(&iwire.ctrls,n);
+			swaps(&iwire.virtualMods);
+			swapl(&iwire.ctrls);
 		    }
 		    WriteToClient(client,SIZEOF(xkbIndicatorMapWireDesc),
 								(char *)&iwire);
@@ -5848,14 +5818,13 @@ char *			str;
     supported= rep.supported;
     nDeviceLedFBs = rep.nDeviceLedFBs;
     if (client->swapped) {
-	int n;
-	swaps(&rep.sequenceNumber,n);
-	swapl(&rep.length,n);
-	swaps(&rep.present,n);
-	swaps(&rep.supported,n);
-	swaps(&rep.unsupported,n);
-	swaps(&rep.nDeviceLedFBs,n);
-	swapl(&rep.type,n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swaps(&rep.present);
+	swaps(&rep.supported);
+	swaps(&rep.unsupported);
+	swaps(&rep.nDeviceLedFBs);
+	swapl(&rep.type);
     }
     WriteToClient(client,SIZEOF(xkbGetDeviceInfoReply), (char *)&rep);
 
@@ -5917,12 +5886,11 @@ XkbSrvLedInfoPtr 	sli;
     ledWire= (xkbDeviceLedsWireDesc *)wire;
     for (i=0;i<num;i++) {
 	if (client->swapped) {
-	   int n;
-	   swaps(&ledWire->ledClass,n);
-	   swaps(&ledWire->ledID,n);
-	   swapl(&ledWire->namesPresent,n);
-	   swapl(&ledWire->mapsPresent,n);
-	   swapl(&ledWire->physIndicators,n);
+	   swaps(&ledWire->ledClass);
+	   swaps(&ledWire->ledID);
+	   swapl(&ledWire->namesPresent);
+	   swapl(&ledWire->mapsPresent);
+	   swapl(&ledWire->physIndicators);
 	}
 
         sli= XkbFindSrvLedInfo(dev,ledWire->ledClass,ledWire->ledID,
@@ -5945,8 +5913,7 @@ XkbSrvLedInfoPtr 	sli;
 	    if (nNames>0) {
 		for (n=0;n<nNames;n++) {
 		    if (client->swapped) {
-			int t;
-			swapl(atomWire,t);
+			swapl(atomWire);
 		    }
 		    CHK_ATOM_OR_NONE3(((Atom)(*atomWire)),client->errorValue,
 							*status_rtrn,NULL);
@@ -5957,9 +5924,8 @@ XkbSrvLedInfoPtr 	sli;
 	    if (nMaps>0) {
 		for (n=0;n<nMaps;n++) {
 		    if (client->swapped) {
-			int t;
-			swaps(&mapWire->virtualMods,t);
-			swapl(&mapWire->ctrls,t);
+			swaps(&mapWire->virtualMods);
+			swapl(&mapWire->ctrls);
 		    }
 		    CHK_MASK_LEGAL3(0x21,mapWire->whichGroups,
 						XkbIM_UseAnyGroup,
@@ -6211,12 +6177,11 @@ xkbSetDebuggingFlagsReply 	rep;
     rep.supportedFlags = ~0;
     rep.supportedCtrls = ~0;
     if ( client->swapped ) {
-	int n;
-	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.currentFlags, n);
-	swapl(&rep.currentCtrls, n);
-	swapl(&rep.supportedFlags, n);
-	swapl(&rep.supportedCtrls, n);
+	swaps(&rep.sequenceNumber);
+	swapl(&rep.currentFlags);
+	swapl(&rep.currentCtrls);
+	swapl(&rep.supportedFlags);
+	swapl(&rep.supportedCtrls);
     }
     WriteToClient(client,SIZEOF(xkbSetDebuggingFlagsReply), (char *)&rep);
     return client->noClientException;

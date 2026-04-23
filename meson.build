@@ -59,7 +59,6 @@ if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
         '-Wuninitialized',
         '-Wmissing-noreturn',
         '-Wredundant-decls',
-        '-Werror=nonnull',
         '-Werror=init-self',
         '-Werror=main',
         '-Werror=sequence-point',

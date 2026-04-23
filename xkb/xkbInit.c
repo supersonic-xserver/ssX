@@ -894,7 +894,7 @@ extern unsigned int	XkbDfltAccessXFeedback;
 extern unsigned char	XkbDfltAccessXOptions;
 
 int
-XkbProcessArguments(int argc,const char *argv[],int i)
+XkbProcessArguments(int argc, char *argv[],int i)
 {
     if (strcmp(argv[i],"-kb")==0) {
 	noXkbExtension= True;

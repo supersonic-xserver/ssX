@@ -22,7 +22,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/*
    Copyright (c) 1999 - The XFree86 Project Inc.
 
    Written by Mark Vojkovich

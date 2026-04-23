@@ -81,6 +81,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <ctype.h>
 #include <math.h>
 #define NEED_EVENTS 1
+#include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #define	XK_CYRILLIC
