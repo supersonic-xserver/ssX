@@ -17,6 +17,7 @@
 #include <stdio.h>
 #define NEED_EVENTS 1
 #include <X11/X.h>
+#include <X11/Xlib.h>
 #include "windowstr.h"
 #define XKBSRV_NEED_FILE_FUNCS
 #include <X11/extensions/XKBsrv.h>

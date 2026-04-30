@@ -522,19 +522,19 @@ XkbNameMatchesPattern(char *name,char *ptrn)
 		ptrn++;
 		continue;
 	    }
-	    return False;
+	    return xFalse;
 	}
 	if (ptrn[0]=='?') {
 	    if (UNMATCHABLE(name[0]))
-		return False;
+		return xFalse;
 	}
 	else if (ptrn[0]=='*') {
 	    if ((!UNMATCHABLE(name[0]))&&XkbNameMatchesPattern(name+1,ptrn))
-		return True;
+		return xTrue;
 	    return XkbNameMatchesPattern(name,ptrn+1);
 	}
 	else if (ptrn[0]!=name[0])
-	    return False;
+	    return xFalse;
 	name++;
 	ptrn++;
     }

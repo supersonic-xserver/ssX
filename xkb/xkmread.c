@@ -50,14 +50,6 @@
 #include <xkbsrv.h>
 #include <X11/extensions/XKBgeom.h>
 
-Atom
-XkbInternAtom(Display *dpy,char *str,Bool only_if_exists)
-{
-    if (str==NULL)
-	return None;
-    return MakeAtom(str,strlen(str),!only_if_exists);
-}
-
 #ifndef SEEK_SET
 #define	SEEK_SET 0
 #endif
