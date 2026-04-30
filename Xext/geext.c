@@ -113,10 +113,10 @@ ProcGEQueryVersion(ClientPtr client)
 
     if (client->swapped)
     {
-	swaps(&rep.sequenceNumber, n);
-        swapl(&rep.length, n);
-        swaps(&rep.majorVersion, n);
-        swaps(&rep.minorVersion, n);
+	swaps(&rep.sequenceNumber);
+        swapl(&rep.length);
+        swaps(&rep.majorVersion);
+        swaps(&rep.minorVersion);
     }
 
     WriteToClient(client, sizeof(xGEQueryVersionReply), (char*)&rep);
@@ -137,10 +137,10 @@ SProcGEQueryVersion(ClientPtr client)
     int n;
     REQUEST(xGEQueryVersionReq);
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xGEQueryVersionReq);
-    swaps(&stuff->majorVersion, n);
-    swaps(&stuff->minorVersion, n);
+    swaps(&stuff->majorVersion);
+    swaps(&stuff->minorVersion);
     return(*ProcGEVector[stuff->ReqType])(client);
 }
 

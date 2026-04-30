@@ -666,7 +666,7 @@ BAIL:
 /***====================================================================***/
 
 XkbPropertyPtr
-XkbAddGeomProperty(XkbGeometryPtr geom,char *name,char *value)
+XkbAddGeomProperty(XkbGeometryPtr geom,const char *name,const char *value)
 {
 register int i;
 register XkbPropertyPtr prop;
@@ -704,7 +704,7 @@ register XkbPropertyPtr prop;
 }
 
 XkbKeyAliasPtr
-XkbAddGeomKeyAlias(XkbGeometryPtr geom,char *aliasStr,char *realStr)
+XkbAddGeomKeyAlias(XkbGeometryPtr geom,const char *aliasStr,const char *realStr)
 {
 register int i;
 register XkbKeyAliasPtr alias;
@@ -731,7 +731,7 @@ register XkbKeyAliasPtr alias;
 }
 
 XkbColorPtr
-XkbAddGeomColor(XkbGeometryPtr geom,char *spec,unsigned int pixel)
+XkbAddGeomColor(XkbGeometryPtr geom,const char *spec,unsigned int pixel)
 {
 register int i;
 register XkbColorPtr color;

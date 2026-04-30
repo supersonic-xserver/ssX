@@ -76,15 +76,16 @@ sync_value(int64_t value)
 static void
 test_create_counter(xcb_connection_t *c)
 {
+    int i;
     xcb_sync_query_counter_cookie_t queries[ARRAY_SIZE(some_values)];
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         xcb_sync_counter_t counter = xcb_generate_id(c);
         xcb_sync_create_counter(c, counter, sync_value(some_values[i]));
         queries[i] = xcb_sync_query_counter_unchecked(c, counter);
     }
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         int64_t value = counter_value(c, queries[i]);
 
         if (value != some_values[i]) {
@@ -102,17 +103,18 @@ test_create_counter(xcb_connection_t *c)
 static void
 test_set_counter(xcb_connection_t *c)
 {
+    int i;
     xcb_sync_counter_t counter = xcb_generate_id(c);
     xcb_sync_query_counter_cookie_t queries[ARRAY_SIZE(some_values)];
 
     xcb_sync_create_counter(c, counter, sync_value(0));
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         xcb_sync_set_counter(c, counter, sync_value(some_values[i]));
         queries[i] = xcb_sync_query_counter_unchecked(c, counter);
     }
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         int64_t value = counter_value(c, queries[i]);
 
         if (value != some_values[i]) {
@@ -129,18 +131,19 @@ static void
 test_change_counter_basic(xcb_connection_t *c)
 {
     int iterations = 4;
+    int i;
     xcb_sync_query_counter_cookie_t queries[iterations];
 
     xcb_sync_counter_t counter = xcb_generate_id(c);
     xcb_sync_create_counter(c, counter, sync_value(0));
 
-    for (int i = 0; i < iterations; i++) {
+    for (i = 0; i < iterations; i++) {
         xcb_sync_change_counter(c, counter, sync_value(i));
         queries[i] = xcb_sync_query_counter_unchecked(c, counter);
     }
 
     int64_t expected_value = 0;
-    for (int i = 0; i < iterations; i++) {
+    for (i = 0; i < iterations; i++) {
         expected_value += i;
         int64_t value = counter_value(c, queries[i]);
 
@@ -159,6 +162,7 @@ static void
 test_change_counter_overflow(xcb_connection_t *c)
 {
     int iterations = 4;
+    int i;
     xcb_sync_query_counter_cookie_t queries[iterations];
     xcb_void_cookie_t changes[iterations];
     static const struct {
@@ -173,7 +177,7 @@ test_change_counter_overflow(xcb_connection_t *c)
     xcb_sync_counter_t counter = xcb_generate_id(c);
     xcb_sync_create_counter(c, counter, sync_value(0));
 
-    for (int i = 0; i < ARRAY_SIZE(overflow_args); i++) {
+    for (i = 0; i < ARRAY_SIZE(overflow_args); i++) {
         int64_t a = overflow_args[i].a;
         int64_t b = overflow_args[i].b;
         xcb_sync_set_counter(c, counter, sync_value(a));
@@ -182,7 +186,7 @@ test_change_counter_overflow(xcb_connection_t *c)
         queries[i] = xcb_sync_query_counter(c, counter);
     }
 
-    for (int i = 0; i < ARRAY_SIZE(overflow_args); i++) {
+    for (i = 0; i < ARRAY_SIZE(overflow_args); i++) {
         int64_t a = overflow_args[i].a;
         int64_t b = overflow_args[i].b;
         xcb_sync_query_counter_reply_t *reply =
@@ -228,19 +232,20 @@ test_change_counter_overflow(xcb_connection_t *c)
 static void
 test_change_alarm_value(xcb_connection_t *c)
 {
+    int i;
     xcb_sync_alarm_t alarm = xcb_generate_id(c);
     xcb_sync_query_alarm_cookie_t queries[ARRAY_SIZE(some_values)];
 
     xcb_sync_create_alarm(c, alarm, 0, NULL);
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         uint32_t values[] = { some_values[i] >> 32, some_values[i] };
 
         xcb_sync_change_alarm(c, alarm, XCB_SYNC_CA_VALUE, values);
         queries[i] = xcb_sync_query_alarm_unchecked(c, alarm);
     }
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         xcb_sync_query_alarm_reply_t *reply =
             xcb_sync_query_alarm_reply(c, queries[i], NULL);
         int64_t value = pack_sync_value(reply->trigger.wait_value);
@@ -258,19 +263,20 @@ test_change_alarm_value(xcb_connection_t *c)
 static void
 test_change_alarm_delta(xcb_connection_t *c)
 {
+    int i;
     xcb_sync_alarm_t alarm = xcb_generate_id(c);
     xcb_sync_query_alarm_cookie_t queries[ARRAY_SIZE(some_values)];
 
     xcb_sync_create_alarm(c, alarm, 0, NULL);
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         uint32_t values[] = { some_values[i] >> 32, some_values[i] };
 
         xcb_sync_change_alarm(c, alarm, XCB_SYNC_CA_DELTA, values);
         queries[i] = xcb_sync_query_alarm_unchecked(c, alarm);
     }
 
-    for (int i = 0; i < ARRAY_SIZE(some_values); i++) {
+    for (i = 0; i < ARRAY_SIZE(some_values); i++) {
         xcb_sync_query_alarm_reply_t *reply =
             xcb_sync_query_alarm_reply(c, queries[i], NULL);
         int64_t value = pack_sync_value(reply->delta);

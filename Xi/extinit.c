@@ -608,12 +608,12 @@ SEventDeviceValuator (from, to)
     INT32 *ip B32;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
-    swaps(&to->device_state,n);
+    swaps(&to->sequenceNumber);
+    swaps(&to->device_state);
     ip = &to->valuator0;
     for (i=0; i<6; i++)
 	{
-        swapl((ip+i),n);	/* macro - braces are required	    */
+        swapl((ip+i));	/* macro - braces are required	    */
 	}
     }
 
@@ -625,9 +625,9 @@ SEventFocus (from, to)
     register char	n;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
-    swapl(&to->time, n);
-    swapl(&to->window, n);
+    swaps(&to->sequenceNumber);
+    swapl(&to->time);
+    swapl(&to->window);
     }
 
 void
@@ -640,12 +640,12 @@ SDeviceStateNotifyEvent (from, to)
     INT32 *ip B32;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
-    swapl(&to->time, n);
+    swaps(&to->sequenceNumber);
+    swapl(&to->time);
     ip = &to->valuator0;
     for (i=0; i<3; i++)
 	{
-        swapl((ip+i),n);	/* macro - braces are required	    */
+        swapl((ip+i));	/* macro - braces are required	    */
 	}
     }
 
@@ -657,7 +657,7 @@ SDeviceKeyStateNotifyEvent (from, to)
     register char	n;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
+    swaps(&to->sequenceNumber);
     }
 
 void
@@ -668,7 +668,7 @@ SDeviceButtonStateNotifyEvent (from, to)
     register char	n;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
+    swaps(&to->sequenceNumber);
     }
 
 void
@@ -679,8 +679,8 @@ SChangeDeviceNotifyEvent (from, to)
     register char	n;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
-    swapl(&to->time, n);
+    swaps(&to->sequenceNumber);
+    swapl(&to->time);
     }
 
 void
@@ -691,8 +691,8 @@ SDeviceMappingNotifyEvent (from, to)
     register char	n;
 
     *to = *from;
-    swaps(&to->sequenceNumber,n);
-    swapl(&to->time, n);
+    swaps(&to->sequenceNumber);
+    swapl(&to->time);
     }
 
 /************************************************************************
