@@ -4,7 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  *
- * Copyright © 2026 ssX Project. Contributions: azuriteshift, collinbeyer
+ * Copyright © 2026 ssX Project. Contributions: azuriteshift, painter4supersonicx, collinbeyer
  */
 
 /* $XFree86: xc/programs/Xserver/include/resource.h,v 1.14 2006/02/19 15:51:31 tsi Exp $ */
