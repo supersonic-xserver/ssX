@@ -63,10 +63,8 @@ from The Open Group.
 #include "dixevents.h"
 #include "sleepuntil.h"
 #define _XTEST_SERVER_
-#include <X11/extensions/XTest.h>
-#if 0
-#include <X11/extensions/xteststr.h>
-#endif
+#include "extensions/XTest.h"
+#include "extensions/xteststr.h"
 #ifdef XINPUT
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>

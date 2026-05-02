@@ -31,6 +31,7 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+#include "os.h"
 #include "privates.h"
 
     /*

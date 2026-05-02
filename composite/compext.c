@@ -67,6 +67,8 @@
 #endif
 
 #include "compint.h"
+#include "xace.h"
+#include "dixaccess.h"
 
 #define SERVER_COMPOSITE_MAJOR	0
 #define SERVER_COMPOSITE_MINOR	4
@@ -76,6 +78,7 @@ static int	CompositeClientPrivateIndex;
 RESTYPE		CompositeClientWindowType;
 RESTYPE		CompositeClientSubwindowsType;
 RESTYPE		CompositeClientOverlayType;
+Bool        noCompositeExtension;
 
 static void deleteCompOverlayClient (CompOverlayClientPtr pOcToDel, 
 				     ScreenPtr pScreen);
@@ -264,7 +267,7 @@ ProcCompositeCreateRegionFromBorderClip (ClientPtr client)
     pRegion = XFixesRegionCopy (pBorderClip);
     if (!pRegion)
 	return BadAlloc;
-    REGION_TRANSLATE (pScreen, pRegion, -pWin->drawable.x, -pWin->drawable.y);
+    REGION_TRANSLATE (pWin->drawable.pScreen, pRegion, -pWin->drawable.x, -pWin->drawable.y);
     
     if (!AddResource (stuff->region, RegionResType, (pointer) pRegion))
 	return BadAlloc;

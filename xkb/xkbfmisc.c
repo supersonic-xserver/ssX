@@ -42,17 +42,36 @@
 #include <X11/Xfuncs.h>
 
 #include <X11/X.h>
+#include <X11/Xlib.h>
 #define	NEED_EVENTS
 #include <X11/keysym.h>
 #include <X11/Xproto.h>
 #include "misc.h"
 #include "inputstr.h"
 #include "dix.h"
+#include "xkbstr.h"
+#include "xkbfile.h"
+#include "xkbsrv.h"
+#include "../lib/xkbfile/XKM.h"
+typedef struct _XkbFileInfo {
+    unsigned		type;
+    unsigned		defined;
+    XkbDescPtr	 	xkb;
+} XkbFileInfo,*XkbFileInfoPtr;
+#include "extensions/XKBproto.h"
 #include <X11/extensions/XKBstr.h>
 #define XKBSRV_NEED_FILE_FUNCS	1
 #include "XKBsrv_compat.h"
 #include <X11/extensions/XKBgeom.h>
 #include "xkb.h"
+
+static void
+_AddIncl(	FILE *		file,
+		XkbFileInfo *	result,
+		Bool 		topLevel,
+		Bool 		showImplicit,
+		int 		index,
+		void *		priv);
 
 unsigned
 _XkbKSCheckCase(KeySym ks)
@@ -164,190 +183,198 @@ _AddIncl(	FILE *		file,
 }
 
 Bool
-XkbWriteXKBKeymapForNames(	FILE *			file,
-				XkbComponentNamesPtr	names,
-				Display *		dpy,
-				XkbDescPtr		xkb,
-				unsigned		want,
-				unsigned		need)
+XkbWriteXKBKeymapForNames(FILE * file,
+                          XkbComponentNamesPtr names,
+                          XkbDescPtr xkb, unsigned want, unsigned need)
 {
-char *		name,*tmp;
-unsigned	complete;
-XkbNamesPtr	old_names;
-int		multi_section;
-unsigned	wantNames,wantConfig,wantDflts;
-XkbFileInfo	finfo;
+    const char *tmp;
+    unsigned complete;
+    XkbNamesPtr old_names;
+    int multi_section;
+    unsigned wantNames, wantConfig, wantDflts;
 
-    bzero(&finfo,sizeof(XkbFileInfo));
+    complete = 0;
+    if (COMPLETE(names->keycodes))
+        complete |= XkmKeyNamesMask;
+    if (COMPLETE(names->types))
+        complete |= XkmTypesMask;
+    if (COMPLETE(names->compat))
+        complete |= XkmCompatMapMask;
+    if (COMPLETE(names->symbols))
+        complete |= XkmSymbolsMask;
+    if (COMPLETE(names->geometry))
+        complete |= XkmGeometryMask;
+    want |= (complete | need);
+    if (want & XkmSymbolsMask)
+        want |= XkmKeyNamesMask | XkmTypesMask;
 
-    complete= 0;
-    if ((name=names->keymap)==NULL)	name= "default";
-    if (COMPLETE(names->keycodes))	complete|= XkmKeyNamesMask;
-    if (COMPLETE(names->types))		complete|= XkmTypesMask;
-    if (COMPLETE(names->compat))	complete|= XkmCompatMapMask;
-    if (COMPLETE(names->symbols))	complete|= XkmSymbolsMask;
-    if (COMPLETE(names->geometry))	complete|= XkmGeometryMask;
-    want|= (complete|need);
-    if (want&XkmSymbolsMask)
-	want|= XkmKeyNamesMask|XkmTypesMask;
+    if (want == 0)
+        return FALSE;
 
-    if (want==0)
-	return False;
+    if (xkb) {
+        old_names = xkb->names;
 
-    if (xkb!=NULL) {
-	 old_names= xkb->names;
-	 finfo.type= 0;
-	 finfo.defined= 0;
-	 finfo.xkb= xkb;
-	 if (!XkbDetermineFileType(&finfo,XkbXKBFile,NULL))
-	    return False;
-    }
-    else old_names= NULL;
-
-    wantConfig= want&(~complete);
-    if (xkb!=NULL) {
-	if (wantConfig&XkmTypesMask) {
-	    if ((!xkb->map) || (xkb->map->num_types<XkbNumRequiredTypes))
-		wantConfig&= ~XkmTypesMask;
-	}
-	if (wantConfig&XkmCompatMapMask) {
-	    if ((!xkb->compat) || (xkb->compat->num_si<1))
-		wantConfig&= ~XkmCompatMapMask;
-	}
-	if (wantConfig&XkmSymbolsMask) {
-	    if ((!xkb->map) || (!xkb->map->key_sym_map))
-		wantConfig&= ~XkmSymbolsMask;
-	}
-	if (wantConfig&XkmIndicatorsMask) {
-	    if (!xkb->indicators)
-		wantConfig&= ~XkmIndicatorsMask;
-	}
-	if (wantConfig&XkmKeyNamesMask) {
-	    if ((!xkb->names)||(!xkb->names->keys))
-		wantConfig&= ~XkmKeyNamesMask;
-	}
-	if ((wantConfig&XkmGeometryMask)&&(!xkb->geom))
-	    wantConfig&= ~XkmGeometryMask;
+        xkb->defined = 0;
+        /* Wow would it ever be neat if we didn't need this noise. */
+        if (xkb->names && xkb->names->keys)
+            xkb->defined |= XkmKeyNamesMask;
+        if (xkb->map && xkb->map->types)
+            xkb->defined |= XkmTypesMask;
+        if (xkb->compat)
+            xkb->defined |= XkmCompatMapMask;
+        if (xkb->map && xkb->map->num_syms)
+            xkb->defined |= XkmSymbolsMask;
+        if (xkb->indicators)
+            xkb->defined |= XkmIndicatorsMask;
+        if (xkb->geom)
+            xkb->defined |= XkmGeometryMask;
     }
     else {
-	wantConfig= 0;
+        old_names = NULL;
     }
-    complete|= wantConfig;
 
-    wantDflts= 0;
-    wantNames= want&(~complete);
-    if ((xkb!=NULL) && (old_names!=NULL)) {
-	if (wantNames&XkmTypesMask) {
-	    if (old_names->types!=None) {
-		tmp= XkbAtomGetString(dpy,old_names->types);
-		names->types= _XkbDupString(tmp);
-	    }
-	    else {
-		wantDflts|= XkmTypesMask;
-	    }
-	    complete|= XkmTypesMask; 
-	}
-	if (wantNames&XkmCompatMapMask) {
-	    if (old_names->compat!=None) {
-		tmp= XkbAtomGetString(dpy,old_names->compat);
-		names->compat= _XkbDupString(tmp);
-	    }
-	    else wantDflts|= XkmCompatMapMask;
-	    complete|= XkmCompatMapMask; 
-	}
-	if (wantNames&XkmSymbolsMask) {
-	    if (old_names->symbols==None)
-		return False;
-	    tmp= XkbAtomGetString(dpy,old_names->symbols);
-	    names->symbols= _XkbDupString(tmp);
-	    complete|= XkmSymbolsMask; 
-	}
-	if (wantNames&XkmKeyNamesMask) {
-	   if (old_names->keycodes!=None) {
-		tmp= XkbAtomGetString(dpy,old_names->keycodes);
-		names->keycodes= _XkbDupString(tmp);
-	    }
-	    else wantDflts|= XkmKeyNamesMask;
-	    complete|= XkmKeyNamesMask;
-	}
-	if (wantNames&XkmGeometryMask) {
-	    if (old_names->geometry==None)
-		return False;
-	    tmp= XkbAtomGetString(dpy,old_names->geometry);
-	    names->geometry= _XkbDupString(tmp);
-	    complete|= XkmGeometryMask; 
-	    wantNames&= ~XkmGeometryMask;
-	}
+    wantConfig = want & (~complete);
+    if (xkb != NULL) {
+        if (wantConfig & XkmTypesMask) {
+            if ((!xkb->map) || (xkb->map->num_types < XkbNumRequiredTypes))
+                wantConfig &= ~XkmTypesMask;
+        }
+        if (wantConfig & XkmCompatMapMask) {
+            if ((!xkb->compat) || (xkb->compat->num_si < 1))
+                wantConfig &= ~XkmCompatMapMask;
+        }
+        if (wantConfig & XkmSymbolsMask) {
+            if ((!xkb->map) || (!xkb->map->key_sym_map))
+                wantConfig &= ~XkmSymbolsMask;
+        }
+        if (wantConfig & XkmIndicatorsMask) {
+            if (!xkb->indicators)
+                wantConfig &= ~XkmIndicatorsMask;
+        }
+        if (wantConfig & XkmKeyNamesMask) {
+            if ((!xkb->names) || (!xkb->names->keys))
+                wantConfig &= ~XkmKeyNamesMask;
+        }
+        if ((wantConfig & XkmGeometryMask) && (!xkb->geom))
+            wantConfig &= ~XkmGeometryMask;
     }
-    if (complete&XkmCompatMapMask)
-	complete|= XkmIndicatorsMask|XkmVirtualModsMask;
-    else if (complete&(XkmSymbolsMask|XkmTypesMask))
-	complete|= XkmVirtualModsMask;
+    else {
+        wantConfig = 0;
+    }
+    complete |= wantConfig;
+
+    wantDflts = 0;
+    wantNames = want & (~complete);
+    if ((xkb != NULL) && (old_names != NULL)) {
+        if (wantNames & XkmTypesMask) {
+            if (old_names->types != None) {
+                tmp = NameForAtom(old_names->types);
+                names->types = Xstrdup(tmp);
+            }
+            else {
+                wantDflts |= XkmTypesMask;
+            }
+            complete |= XkmTypesMask;
+        }
+        if (wantNames & XkmCompatMapMask) {
+            if (old_names->compat != None) {
+                tmp = NameForAtom(old_names->compat);
+                names->compat = Xstrdup(tmp);
+            }
+            else
+                wantDflts |= XkmCompatMapMask;
+            complete |= XkmCompatMapMask;
+        }
+        if (wantNames & XkmSymbolsMask) {
+            if (old_names->symbols == None)
+                return FALSE;
+            tmp = NameForAtom(old_names->symbols);
+            names->symbols = Xstrdup(tmp);
+            complete |= XkmSymbolsMask;
+        }
+        if (wantNames & XkmKeyNamesMask) {
+            if (old_names->keycodes != None) {
+                tmp = NameForAtom(old_names->keycodes);
+                names->keycodes = Xstrdup(tmp);
+            }
+            else
+                wantDflts |= XkmKeyNamesMask;
+            complete |= XkmKeyNamesMask;
+        }
+        if (wantNames & XkmGeometryMask) {
+            if (old_names->geometry == None)
+                return FALSE;
+            tmp = NameForAtom(old_names->geometry);
+            names->geometry = Xstrdup(tmp);
+            complete |= XkmGeometryMask;
+            wantNames &= ~XkmGeometryMask;
+        }
+    }
+    if (complete & XkmCompatMapMask)
+        complete |= XkmIndicatorsMask | XkmVirtualModsMask;
+    else if (complete & (XkmSymbolsMask | XkmTypesMask))
+        complete |= XkmVirtualModsMask;
     if (need & (~complete))
-	return False;
-    if ((complete&XkmSymbolsMask)&&((XkmKeyNamesMask|XkmTypesMask)&(~complete)))
-	return False;
+        return FALSE;
+    if ((complete & XkmSymbolsMask) &&
+        ((XkmKeyNamesMask | XkmTypesMask) & (~complete)))
+        return FALSE;
 
-    multi_section= 1;
-    if (((complete&XkmKeymapRequired)==XkmKeymapRequired)&&
-	((complete&(~XkmKeymapLegal))==0)) {
-	fprintf(file,"xkb_keymap \"%s\" {\n",name);
+    multi_section = 1;
+    if (((complete & XkmKeymapRequired) == XkmKeymapRequired) &&
+        ((complete & (~XkmKeymapLegal)) == 0)) {
+        fprintf(file, "xkb_keymap \"default\" {\n");
     }
-    else if (((complete&XkmSemanticsRequired)==XkmSemanticsRequired)&&
-	((complete&(~XkmSemanticsLegal))==0)) {
-	fprintf(file,"xkb_semantics \"%s\" {\n",name);
+    else if (((complete & XkmSemanticsRequired) == XkmSemanticsRequired) &&
+             ((complete & (~XkmSemanticsLegal)) == 0)) {
+        fprintf(file, "xkb_semantics \"default\" {\n");
     }
-    else if (((complete&XkmLayoutRequired)==XkmLayoutRequired)&&
-	((complete&(~XkmLayoutLegal))==0)) {
-	fprintf(file,"xkb_layout \"%s\" {\n",name);
+    else if (((complete & XkmLayoutRequired) == XkmLayoutRequired) &&
+             ((complete & (~XkmLayoutLegal)) == 0)) {
+        fprintf(file, "xkb_layout \"default\" {\n");
     }
-    else if (XkmSingleSection(complete&(~XkmVirtualModsMask))) {
-	multi_section= 0;
+    else if (XkmSingleSection(complete & (~XkmVirtualModsMask))) {
+        multi_section = 0;
     }
     else {
-	return False;
+        return FALSE;
     }
 
-    wantNames= complete&(~(wantConfig|wantDflts));
-    name= names->keycodes;
-    if (wantConfig&XkmKeyNamesMask)
-	XkbWriteXKBKeycodes(file,&finfo,False,False,_AddIncl,name);
-    else if (wantDflts&XkmKeyNamesMask)
-	fprintf(stderr,"Default symbols not implemented yet!\n");
-    else if (wantNames&XkmKeyNamesMask)
-	XkbWriteSectionFromName(file,"keycodes",name);
+    wantNames = complete & (~(wantConfig | wantDflts));
+    if (wantConfig & XkmKeyNamesMask)
+        XkbWriteXKBKeycodes(file, xkb, FALSE, FALSE, _AddIncl, names->keycodes);
+    else if (wantDflts & XkmKeyNamesMask)
+        fprintf(stderr, "Default symbols not implemented yet!\n");
+    else if (wantNames & XkmKeyNamesMask)
+        XkbWriteSectionFromName(file, "keycodes", names->keycodes);
 
-    name= names->types;
-    if (wantConfig&XkmTypesMask)
-	XkbWriteXKBKeyTypes(file,&finfo,False,False,_AddIncl,name);
-    else if (wantDflts&XkmTypesMask)
-	fprintf(stderr,"Default types not implemented yet!\n");
-    else if (wantNames&XkmTypesMask)
-	XkbWriteSectionFromName(file,"types",name);
+    if (wantConfig & XkmTypesMask)
+        XkbWriteXKBKeyTypes(file, xkb, FALSE, FALSE, _AddIncl, names->types);
+    else if (wantDflts & XkmTypesMask)
+        fprintf(stderr, "Default types not implemented yet!\n");
+    else if (wantNames & XkmTypesMask)
+        XkbWriteSectionFromName(file, "types", names->types);
 
-    name= names->compat;
-    if (wantConfig&XkmCompatMapMask)
-	XkbWriteXKBCompatMap(file,&finfo,False,False,_AddIncl,name);
-    else if (wantDflts&XkmCompatMapMask)
-	fprintf(stderr,"Default interps not implemented yet!\n");
-    else if (wantNames&XkmCompatMapMask)
-	XkbWriteSectionFromName(file,"compatibility",name);
+    if (wantConfig & XkmCompatMapMask)
+        XkbWriteXKBCompatMap(file, xkb, FALSE, FALSE, _AddIncl, names->compat);
+    else if (wantDflts & XkmCompatMapMask)
+        fprintf(stderr, "Default interps not implemented yet!\n");
+    else if (wantNames & XkmCompatMapMask)
+        XkbWriteSectionFromName(file, "compatibility", names->compat);
 
-    name= names->symbols;
-    if (wantConfig&XkmSymbolsMask)
-	XkbWriteXKBSymbols(file,&finfo,False,False,_AddIncl,name);
-    else if (wantNames&XkmSymbolsMask)
-	XkbWriteSectionFromName(file,"symbols",name);
+    if (wantConfig & XkmSymbolsMask)
+        XkbWriteXKBSymbols(file, xkb, FALSE, FALSE, _AddIncl, names->symbols);
+    else if (wantNames & XkmSymbolsMask)
+        XkbWriteSectionFromName(file, "symbols", names->symbols);
 
-    name= names->geometry;
-    if (wantConfig&XkmGeometryMask)
-	XkbWriteXKBGeometry(file,&finfo,False,False,_AddIncl,name);
-    else if (wantNames&XkmGeometryMask)
-	XkbWriteSectionFromName(file,"geometry",name);
+    if (wantConfig & XkmGeometryMask)
+        XkbWriteXKBGeometry(file, xkb, FALSE, FALSE, _AddIncl, names->geometry);
+    else if (wantNames & XkmGeometryMask)
+        XkbWriteSectionFromName(file, "geometry", names->geometry);
 
     if (multi_section)
-	fprintf(file,"};\n");
-    return True;
+        fprintf(file, "};\n");
+    return TRUE;
 }
 
 /***====================================================================***/

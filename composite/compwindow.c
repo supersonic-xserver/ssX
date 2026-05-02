@@ -49,6 +49,7 @@
 #endif
 
 #include "compint.h"
+#include "dixaccess.h"
 
 #ifdef COMPOSITE_DEBUG
 static int

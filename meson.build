@@ -560,7 +560,6 @@ if legacy_mode
         'include/legacy-proto',
         'include/legacy-proto/X11',
         'include/fonts',
-        'programs/Xserver/include',
         'dix',
         'Xext',
         'Xi',
@@ -580,7 +579,6 @@ if legacy_mode
         'randr',
         'render',
         'xfixes',
-        'programs/Xserver/include',
     )
 else
     inc = include_directories(
