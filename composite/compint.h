@@ -154,6 +154,7 @@ typedef struct _CompScreen {
     VisualID			*alternateVisuals;
 
     WindowPtr                   pOverlayWin;
+    Window			overlayWid;
     CompOverlayClientPtr        pOverlayClients;
     
 } CompScreenRec, *CompScreenPtr;
@@ -168,7 +169,7 @@ extern int  CompSubwindowsPrivateIndex;
 
 extern RESTYPE		CompositeClientWindowType;
 extern RESTYPE		CompositeClientSubwindowsType;
-
+extern RESTYPE		CompositeClientOverlayType;
 /*
  * compalloc.c
  */
@@ -224,6 +225,25 @@ CompositeRegisterAlternateVisuals (ScreenPtr pScreen,
 
 Bool
 compScreenInit (ScreenPtr pScreen);
+
+/*
+ * compoverlay.c
+ */
+
+void
+compFreeOverlayClient (CompOverlayClientPtr pOcToDel);
+
+CompOverlayClientPtr
+compFindOverlayClient (ScreenPtr pScreen, ClientPtr pClient);
+    
+CompOverlayClientPtr
+compCreateOverlayClient (ScreenPtr pScreen, ClientPtr pClient);
+
+Bool
+compCreateOverlayWindow (ScreenPtr pScreen);
+
+void
+compDestroyOverlayWindow (ScreenPtr pScreen);
 
 /*
  * compwindow.c
@@ -290,9 +310,6 @@ compCopyWindow (WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc);
 
 void
 compWindowUpdate (WindowPtr pWin);
-
-void
-deleteCompOverlayClientsForScreen (ScreenPtr pScreen);
 
 WindowPtr
 CompositeRealChildHead (WindowPtr pWin);

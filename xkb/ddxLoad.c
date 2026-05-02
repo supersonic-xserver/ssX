@@ -46,7 +46,17 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define	XKBSRV_NEED_FILE_FUNCS
 #include "XKBsrv_compat.h"
 #include <X11/extensions/XI.h>
+#include "xkbstr.h"
+#include "extensions/XKBproto.h"
+extern	FILE *XkbDDXOpenConfigFile(
+	char *	/* mapName */,
+	char *	/* fileNameRtrn */,
+	int	/* fileNameRtrnLen */
+);
+#include <X11/Xlib.h>
+#include "xkbsrv.h"
 #include "xkb.h"
+#include "xkbfile.h"
 
 #if defined(CSRG_BASED) || defined(linux) || defined(__sgi) || defined(AIXV3) || defined(__osf__) || defined(__GNU__)
 #include <paths.h>

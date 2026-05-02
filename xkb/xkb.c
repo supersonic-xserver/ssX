@@ -79,7 +79,16 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <stdio.h>
 #include <X11/X.h>
+#if 0
 #include <X11/Xlib.h>
+#else
+typedef struct {
+	unsigned long pixel;
+	unsigned short red, green, blue;
+	char flags;  /* do_red, do_green, do_blue */
+	char pad;
+} XColor;
+#endif
 #define	NEED_EVENTS
 #define	NEED_REPLIES
 #include <X11/Xproto.h>

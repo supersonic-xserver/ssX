@@ -116,4 +116,9 @@ BOOL GEDeviceMaskIsSet(WindowPtr pWin, DeviceIntPtr pDev,
 
 void GEExtensionInit(void);
 
+typedef struct _GenericClientMasks {
+    Mask                eventMasks[MAXEXTENSIONS];
+    GenericMaskPtr      geClients;
+} GenericClientMasksRec, *GenericClientMasksPtr;
+
 #endif /* _GEEXT_H_ */

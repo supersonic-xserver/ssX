@@ -970,8 +970,6 @@ extern void XkbSendNewKeyboardNotify(
 #ifdef XKBSRV_NEED_FILE_FUNCS
 
 #include <X11/extensions/XKMformat.h>
-/* Forward declare XColor for XKBfile.h */
-typedef struct _XColor XColor;
 #include <X11/extensions/XKBfile.h>
 #include <X11/extensions/XKBrules.h>
 

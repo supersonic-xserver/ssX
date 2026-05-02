@@ -43,19 +43,19 @@ RegionResFree(void *data, XID id)
 {
     RegionPtr pRegion = (RegionPtr) data;
 
-    RegionDestroy(pRegion);
+    miRegionDestroy(pRegion);
     return Success;
 }
 
 RegionPtr
 XFixesRegionCopy(RegionPtr pRegion)
 {
-    RegionPtr pNew = RegionCreate(RegionExtents(pRegion),
-                                  RegionNumRects(pRegion));
+    RegionPtr pNew = miRegionCreate(miRegionExtents(pRegion),
+                                  miRegionNumRects(pRegion));
 
     if (!pNew)
         return (RegionPtr)NULL;
-    if (!RegionCopy(pNew, pRegion)) {
+    if (!miRegionCopy(pNew, pRegion)) {
         RegionDestroy(pNew);
         return (RegionPtr)NULL;
     }

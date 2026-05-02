@@ -31,6 +31,7 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+#include "privates.h"
 
     /*
      *  Basic transpose step

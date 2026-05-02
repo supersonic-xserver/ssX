@@ -916,8 +916,8 @@ register int	i,nDoodads;
 XkbOverlayKeyPtr
 XkbAddGeomOverlayKey(	XkbOverlayPtr		overlay,
 			XkbOverlayRowPtr 	row,
-			char *			over,
-			char *			under)
+			const char *			over,
+			const char *			under)
 {
 register int	i;
 XkbOverlayKeyPtr key;

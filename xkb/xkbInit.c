@@ -44,6 +44,12 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "opaque.h"
 #include "property.h"
 #define	XKBSRV_NEED_FILE_FUNCS
+typedef struct {
+	unsigned long pixel;
+	unsigned short red, green, blue;
+	char flags;  /* do_red, do_green, do_blue */
+	char pad;
+} XColor;
 #include <X11/extensions/XKBsrv.h>
 #include <X11/extensions/XKBgeom.h>
 #include <X11/extensions/XKMformat.h>
@@ -116,7 +122,7 @@ typedef struct	_SrvXkmInfo {
 #define	XKB_DFLT_RULES_PROP	True
 #endif
 
-const char	*	XkbBaseDirectory=	XKB_BASE_DIRECTORY;
+extern char	*	XkbBaseDirectory=	XKB_BASE_DIRECTORY;
 char	*		XkbInitialMap=		NULL;
 int	 		XkbWantAccessX=		0;	
 static XkbFileInfo *	_XkbInitFileInfo=	NULL;
