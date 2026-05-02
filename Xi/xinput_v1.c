@@ -599,11 +599,10 @@ ProcXI1ChangeDeviceControl(ClientPtr client)
 int
 SProcXI1GetExtensionVersion(ClientPtr client)
 {
-    char n;
     REQUEST(xGetExtensionVersionReq);
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_AT_LEAST_SIZE(xGetExtensionVersionReq);
-    swaps(&stuff->nbytes, n);
+    swaps(&stuff->nbytes);
     return ProcXI1GetExtensionVersion(client);
 }
 
@@ -613,9 +612,8 @@ SProcXI1GetExtensionVersion(ClientPtr client)
 int
 SProcXI1ListInputDevices(ClientPtr client)
 {
-    char n;
     REQUEST(xListInputDevicesReq);
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     return ProcXI1ListInputDevices(client);
 }
 
@@ -626,11 +624,10 @@ void
 SRepXI1GetExtensionVersion(ClientPtr client, int size,
                         xGetExtensionVersionReply *rep)
 {
-    char n;
-    swaps(&rep->sequenceNumber, n);
-    swapl(&rep->length, n);
-    swaps(&rep->major_version, n);
-    swaps(&rep->minor_version, n);
+    swaps(&rep->sequenceNumber);
+    swapl(&rep->length);
+    swaps(&rep->major_version);
+    swaps(&rep->minor_version);
     WriteToClient(client, size, (char *)rep);
 }
 
@@ -641,9 +638,8 @@ void
 SRepXI1ListInputDevices(ClientPtr client, int size,
                      xListInputDevicesReply *rep)
 {
-    char n;
-    swaps(&rep->sequenceNumber, n);
-    swapl(&rep->length, n);
+    swaps(&rep->sequenceNumber);
+    swapl(&rep->length);
     WriteToClient(client, size, (char *)rep);
 }
 
@@ -653,10 +649,9 @@ SRepXI1ListInputDevices(ClientPtr client, int size,
 void
 SRepXI1OpenDevice(ClientPtr client, int size, xOpenDeviceReply *rep)
 {
-    char n;
-    swaps(&rep->sequenceNumber, n);
-    swapl(&rep->length, n);
-    swaps(&rep->num_classes, n);
+    swaps(&rep->sequenceNumber);
+    swapl(&rep->length);
+    swaps(&rep->num_classes);
     WriteToClient(client, size, (char *)rep);
 }
 
@@ -667,9 +662,8 @@ void
 SRepXI1SetDeviceMode(ClientPtr client, int size,
                    xSetDeviceModeReply *rep)
 {
-    char n;
-    swaps(&rep->sequenceNumber, n);
-    swapl(&rep->length, n);
+    swaps(&rep->sequenceNumber);
+    swapl(&rep->length);
     WriteToClient(client, size, (char *)rep);
 }
 

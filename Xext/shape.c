@@ -1205,7 +1205,6 @@ SProcShapeRectangles(ClientPtr client)
 static int
 SProcShapeMask(ClientPtr client)
 {
-    char   n;
     REQUEST (xShapeMaskReq);
 
     swaps (&stuff->length);
@@ -1220,65 +1219,60 @@ SProcShapeMask(ClientPtr client)
 static int
 SProcShapeCombine(ClientPtr client)
 {
-    char   n;
     REQUEST (xShapeCombineReq);
 
-    swaps (&stuff->length, n);
+    swaps (&stuff->length);
     REQUEST_SIZE_MATCH (xShapeCombineReq);
-    swapl (&stuff->dest, n);
-    swaps (&stuff->xOff, n);
-    swaps (&stuff->yOff, n);
-    swapl (&stuff->src, n);
+    swapl (&stuff->dest);
+    swaps (&stuff->xOff);
+    swaps (&stuff->yOff);
+    swapl (&stuff->src);
     return ProcShapeCombine (client);
 }
 
 static int
 SProcShapeOffset(ClientPtr client)
 {
-    char   n;
     REQUEST (xShapeOffsetReq);
 
-    swaps (&stuff->length, n);
+    swaps (&stuff->length);
     REQUEST_SIZE_MATCH (xShapeOffsetReq);
-    swapl (&stuff->dest, n);
-    swaps (&stuff->xOff, n);
-    swaps (&stuff->yOff, n);
+    swapl (&stuff->dest);
+    swaps (&stuff->xOff);
+    swaps (&stuff->yOff);
     return ProcShapeOffset (client);
 }
 
 static int
 SProcShapeQueryExtents(ClientPtr client)
 {
-    char   n;
     REQUEST (xShapeQueryExtentsReq);
 
-    swaps (&stuff->length, n);
+    swaps (&stuff->length);
     REQUEST_SIZE_MATCH (xShapeQueryExtentsReq);
-    swapl (&stuff->window, n);
+    swapl (&stuff->window);
     return ProcShapeQueryExtents (client);
 }
 
 static int
 SProcShapeSelectInput(ClientPtr client)
 {
-    char   n;
     REQUEST (xShapeSelectInputReq);
 
-    swaps (&stuff->length, n);
+    swaps (&stuff->length);
     REQUEST_SIZE_MATCH (xShapeSelectInputReq);
-    swapl (&stuff->window, n);
+    swapl (&stuff->window);
     return ProcShapeSelectInput (client);
 }
 
 static int
 SProcShapeInputSelected(ClientPtr client)
 {
-    int    n;
     REQUEST (xShapeInputSelectedReq);
 
-    swaps (&stuff->length, n);
+    swaps (&stuff->length);
     REQUEST_SIZE_MATCH (xShapeInputSelectedReq);
-    swapl (&stuff->window, n);
+    swapl (&stuff->window);
     return ProcShapeInputSelected (client);
 }
 
@@ -1286,11 +1280,10 @@ static int
 SProcShapeGetRectangles(ClientPtr client)
 {
     REQUEST(xShapeGetRectanglesReq);
-    char   n;
 
-    swaps (&stuff->length, n);
+    swaps (&stuff->length);
     REQUEST_SIZE_MATCH(xShapeGetRectanglesReq);
-    swapl (&stuff->window, n);
+    swapl (&stuff->window);
     return ProcShapeGetRectangles (client);
 }
 

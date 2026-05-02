@@ -1579,8 +1579,7 @@ xkbKeyTypeWireDesc	*wire = *wireRtrn;
     for (i=0;i<req->nTypes;i++) {
 	unsigned	width;
 	if (client->swapped) {
-	    int s;
-	    swaps(&wire->virtualMods,s);
+	    swaps(&wire->virtualMods);
 	}
 	n= i+req->firstType;
 	width= wire->numLevels;
@@ -1606,8 +1605,7 @@ xkbKeyTypeWireDesc	*wire = *wireRtrn;
 	    preWire= (xkbModsWireDesc *)&mapWire[wire->nMapEntries];
 	    for (n=0;n<wire->nMapEntries;n++) {
 		if (client->swapped) {
-		    int s;
-		    swaps(&mapWire[n].virtualMods,s);
+		    swaps(&mapWire[n].virtualMods);
 		}
 		if (mapWire[n].realMods&(~wire->realMods)) {
 		    *nMapsRtrn= _XkbErrCode4(0x06,n,mapWire[n].realMods,
@@ -1625,8 +1623,7 @@ xkbKeyTypeWireDesc	*wire = *wireRtrn;
 		}
 		if (wire->preserve) {
 		    if (client->swapped) {
-			int s;
-			swaps(&preWire[n].virtualMods,s);
+			swaps(&preWire[n].virtualMods);
 		    }
 		    if (preWire[n].realMods&(~mapWire[n].realMods)) {
 			*nMapsRtrn= _XkbErrCode4(0x09,n,preWire[n].realMods,
