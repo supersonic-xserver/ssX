@@ -38,7 +38,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define _XEVI_SERVER_
 #include "XEVIstr.h"
 #include "EVIstruct.h"
-#include "modinit.h"
+
 
 #if 0
 static unsigned char XEVIReqCode = 0;

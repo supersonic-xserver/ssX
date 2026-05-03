@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file drm_init.h 
+/* \file drm_init.h 
  * Setup/Cleanup for DRM
  *
  * \author Rickard E. (Rik) Faith <faith@valinux.com>

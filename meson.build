@@ -59,7 +59,6 @@ if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
         '-Wuninitialized',
         '-Wmissing-noreturn',
         '-Wredundant-decls',
-        '-Werror=nonnull',
         '-Werror=init-self',
         '-Werror=main',
         '-Werror=sequence-point',
@@ -561,7 +560,6 @@ if legacy_mode
         'include/legacy-proto',
         'include/legacy-proto/X11',
         'include/fonts',
-        'programs/Xserver/include',
         'dix',
         'Xext',
         'Xi',
@@ -581,7 +579,6 @@ if legacy_mode
         'randr',
         'render',
         'xfixes',
-        'programs/Xserver/include',
     )
 else
     inc = include_directories(
@@ -615,9 +612,9 @@ top_srcdir_inc = include_directories('.')
 serverconfigdir = join_paths(get_option('libdir'), 'xorg')
 
 manpage_config = configuration_data()
-manpage_config.set('vendorversion', '"xorg-server @0@" "X Version 11"'.format(meson.project_version()))
-manpage_config.set('xorgversion', '"xorg-server @0@" "X Version 11"'.format(meson.project_version()))
-manpage_config.set('xservername', 'Xorg')
+manpage_config.set('vendorversion', '"supersonic-xserver @0@" "X Version 11"'.format(meson.project_version()))
+manpage_config.set('xorgversion', '"supersonic-xserver @0@" "X Version 11"'.format(meson.project_version()))
+manpage_config.set('xservername', 'ssX')
 manpage_config.set('xconfigfile', 'xorg.conf')
 manpage_config.set('projectroot', get_option('prefix'))
 manpage_config.set('apploaddir', '$(appdefaultdir)')

@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XConsortium: s3Cursor.c,v 1.5 95/01/23 15:33:57 kaleb Exp $
+/* $XConsortium: s3Cursor.c,v 1.5 95/01/23 15:33:57 kaleb Exp $
  * $XFree86: xc/programs/Xserver/hw/xfree86/accel/s3/s3Cursor.c,v 3.19 1995/06/29 13:30:49 dawes Exp $
  * 
  * Copyright 1991 MIPS Computer Systems, Inc.

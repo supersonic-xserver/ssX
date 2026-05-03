@@ -1,10 +1,10 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
 Copyright 1993, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -124,7 +124,7 @@ from The Open Group.
 #endif /* HAS_SHM */
 #include "dix.h"
 #include "miline.h"
-#include "mfb.h"
+#include "../../mfb/mfb.h"
 #include "micmap.h"
 
 #define VFB_DEFAULT_WIDTH  1280
@@ -944,7 +944,7 @@ vfbWriteXWDFileHeader(ScreenPtr pScreen)
 	for (i = 0; i < pvfb->ncolors; i++)
 	{
 	    register char n;
-	    swapl(&pvfb->pXWDCmap[i].pixel, n);
+	    swapl(&pvfb->pXWDCmap[i].pixel);
 	}
     }
 }

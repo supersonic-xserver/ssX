@@ -86,31 +86,21 @@ in this Software without prior written authorization from The Open Group.
  verticalList        Boolean            Boolean         False
  width		     Width		Dimension	0          **1
  x		     Position		Position	0
- y		     Position		Position	0
-
- **1 - If the Width or Height of the list widget is zero (0) then the value
+ y		     Position		Position	0/**1 - If the Width or Height of the list widget is zero (0) then the value
        is set to the minimum size necessay to fit the entire list.
 
        If both Width and Height are zero then they are adjusted to fit the
        entire list that is created width the number of default columns 
-       specified in the defaultColumns resource.
-
- **2 - This is an array of strings the specify elements of the list.
+       specified in the defaultColumns resource./**2 - This is an array of strings the specify elements of the list.
        This resource must be specified. 
-       (What good is a list widget without a list??  :-)
-
- **3 - Longest is the length of the widest string in pixels.
-
- **4 - If either of these values are zero (0) then the list widget calculates
+       (What good is a list widget without a list??  :-)/**3 - Longest is the length of the widest string in pixels./**4 - If either of these values are zero (0) then the list widget calculates
        the correct value. 
 
        (This allows you to make startup faster if you already have 
         this information calculated)
 
        NOTE: If the numberStrings value is zero the list must 
-             be NULL terminated.
-
- **5 - By setting the List.Columns resource you can force the application to
+             be NULL terminated./**5 - By setting the List.Columns resource you can force the application to
        have a given number of columns.	     
         
  **6 - This returns the name and index of the item selected in an 

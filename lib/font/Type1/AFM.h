@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * The contents of this file are subject to the CID Font Code Public Licence
  * Version 1.0 (the "License"). You may not use this file except in compliance
  * with the Licence. You may obtain a copy of the License at Silicon Graphics,

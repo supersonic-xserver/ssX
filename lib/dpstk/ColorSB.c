@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * ColorSB.c
+/* ColorSB.c
  *
  * (c) Copyright 1993-1994 Adobe Systems Incorporated.
  * All rights reserved.

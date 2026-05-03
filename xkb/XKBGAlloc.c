@@ -1,11 +1,8 @@
 /************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
 Permission to use, copy, modify, and distribute this
@@ -669,7 +666,7 @@ BAIL:
 /***====================================================================***/
 
 XkbPropertyPtr
-XkbAddGeomProperty(XkbGeometryPtr geom,char *name,char *value)
+XkbAddGeomProperty(XkbGeometryPtr geom,const char *name,const char *value)
 {
 register int i;
 register XkbPropertyPtr prop;
@@ -707,7 +704,7 @@ register XkbPropertyPtr prop;
 }
 
 XkbKeyAliasPtr
-XkbAddGeomKeyAlias(XkbGeometryPtr geom,char *aliasStr,char *realStr)
+XkbAddGeomKeyAlias(XkbGeometryPtr geom,const char *aliasStr,const char *realStr)
 {
 register int i;
 register XkbKeyAliasPtr alias;
@@ -734,7 +731,7 @@ register XkbKeyAliasPtr alias;
 }
 
 XkbColorPtr
-XkbAddGeomColor(XkbGeometryPtr geom,char *spec,unsigned int pixel)
+XkbAddGeomColor(XkbGeometryPtr geom,const char *spec,unsigned int pixel)
 {
 register int i;
 register XkbColorPtr color;
@@ -919,8 +916,8 @@ register int	i,nDoodads;
 XkbOverlayKeyPtr
 XkbAddGeomOverlayKey(	XkbOverlayPtr		overlay,
 			XkbOverlayRowPtr 	row,
-			char *			over,
-			char *			under)
+			const char *			over,
+			const char *			under)
 {
 register int	i;
 XkbOverlayKeyPtr key;

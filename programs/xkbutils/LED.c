@@ -28,9 +28,7 @@
  DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, 
  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
- THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
- ********************************************************/
+ THE USE OR PERFORMANCE OF THIS SOFTWARE./********************************************************/
 /* $XFree86: xc/programs/xkbutils/LED.c,v 1.5 2001/07/25 15:05:25 dawes Exp $ */
 
 #include <X11/IntrinsicP.h>

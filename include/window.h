@@ -246,13 +246,13 @@ extern WindowPtr MoveWindowInStack(
     WindowPtr /*pWin*/,
     WindowPtr /*pNextSib*/);
 
-void SetWinSize(
+extern void SetWinSize(
     WindowPtr /*pWin*/);
 
-void SetBorderSize(
+extern void SetBorderSize(
     WindowPtr /*pWin*/);
 
-void ResizeChildrenWinSize(
+extern void ResizeChildrenWinSize(
     WindowPtr /*pWin*/,
     int /*dx*/,
     int /*dy*/,

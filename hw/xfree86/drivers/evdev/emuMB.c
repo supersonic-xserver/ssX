@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
+/* Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  * Copyright 1993 by David Dawes <dawes@xfree86.org>
  * Copyright 2002 by SuSE Linux AG, Author: Egbert Eich
  * Copyright 1994-2002 by The XFree86 Project, Inc.

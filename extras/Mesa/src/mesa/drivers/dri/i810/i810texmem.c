@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * GLX Hardware Device Driver for Intel i810
+/* GLX Hardware Device Driver for Intel i810
  * Copyright (C) 1999 Keith Whitwell
  * Texmem interface changes (C) 2003 Dave Airlie
  *

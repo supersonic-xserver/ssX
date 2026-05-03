@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright © 2006 Sun Microsystems
+/* Copyright © 2006 Sun Microsystems
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -157,6 +154,7 @@ typedef struct _CompScreen {
     VisualID			*alternateVisuals;
 
     WindowPtr                   pOverlayWin;
+    Window			overlayWid;
     CompOverlayClientPtr        pOverlayClients;
     
 } CompScreenRec, *CompScreenPtr;
@@ -171,7 +169,7 @@ extern int  CompSubwindowsPrivateIndex;
 
 extern RESTYPE		CompositeClientWindowType;
 extern RESTYPE		CompositeClientSubwindowsType;
-
+extern RESTYPE		CompositeClientOverlayType;
 /*
  * compalloc.c
  */
@@ -227,6 +225,25 @@ CompositeRegisterAlternateVisuals (ScreenPtr pScreen,
 
 Bool
 compScreenInit (ScreenPtr pScreen);
+
+/*
+ * compoverlay.c
+ */
+
+void
+compFreeOverlayClient (CompOverlayClientPtr pOcToDel);
+
+CompOverlayClientPtr
+compFindOverlayClient (ScreenPtr pScreen, ClientPtr pClient);
+    
+CompOverlayClientPtr
+compCreateOverlayClient (ScreenPtr pScreen, ClientPtr pClient);
+
+Bool
+compCreateOverlayWindow (ScreenPtr pScreen);
+
+void
+compDestroyOverlayWindow (ScreenPtr pScreen);
 
 /*
  * compwindow.c
@@ -293,9 +310,6 @@ compCopyWindow (WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc);
 
 void
 compWindowUpdate (WindowPtr pWin);
-
-void
-deleteCompOverlayClientsForScreen (ScreenPtr pScreen);
 
 WindowPtr
 CompositeRealChildHead (WindowPtr pWin);

@@ -121,7 +121,7 @@ from The Open Group.
 
 #include <stdio.h>
 
-#include "modinit.h"
+
 #include "appgroup.h"
 
 #ifdef XAPPGROUP

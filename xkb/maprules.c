@@ -1,11 +1,11 @@
 /************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/********************************************************
  Copyright (c) 1996 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -28,8 +28,7 @@
  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
- ********************************************************/
+********************************************************/
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -52,6 +51,7 @@
 #include <X11/keysym.h>
 #include "misc.h"
 #include "inputstr.h"
+#include "xkbrules.h"
 #include "dix.h"
 #include <X11/extensions/XKBstr.h>
 #define XKBSRV_NEED_FILE_FUNCS
@@ -1276,6 +1276,15 @@ register int i;
     return;
 }
 
+typedef struct _XkbRF_Rules {
+    unsigned short sz_rules;
+    unsigned short num_rules;
+    XkbRF_RulePtr rules;
+    unsigned short sz_groups;
+    unsigned short num_groups;
+    XkbRF_GroupPtr groups;
+} XkbRF_RulesRec, *XkbRF_RulesPtr;
+
 void
 XkbRF_Free(XkbRF_RulesPtr rules,Bool freeRules)
 {
@@ -1309,7 +1318,7 @@ XkbRF_GroupPtr	group;
 	    if (rule->compat)	_XkbFree(rule->compat);
 	    if (rule->geometry)	_XkbFree(rule->geometry);
 	    if (rule->keymap)	_XkbFree(rule->keymap);
-	    bzero((char *)rule,sizeof(XkbRF_RuleRec));
+	    bzero((char *)rule,sizeof(XkbRF_RulesRec));
 	}
 	_XkbFree(rules->rules);
 	rules->num_rules= rules->sz_rules= 0;
@@ -1318,8 +1327,6 @@ XkbRF_GroupPtr	group;
 
     if (rules->groups) {
 	for (i=0, group=rules->groups;i<rules->num_groups;i++,group++) {
-	    if (group->name)	_XkbFree(group->name);
-	    if (group->words)	_XkbFree(group->words);
 	}
 	_XkbFree(rules->groups);
 	rules->num_groups= 0;

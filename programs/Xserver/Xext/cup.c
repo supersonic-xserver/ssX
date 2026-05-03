@@ -54,7 +54,7 @@ in this Software without prior written authorization from The Open Group.
 #include "xf86_ansic.h"
 #endif
 
-#include "modinit.h"
+
 
 static int		ProcDispatch(ClientPtr client);
 static int              SProcDispatch(ClientPtr client);

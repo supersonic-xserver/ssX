@@ -16,13 +16,13 @@
  */
 
 
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
 Copyright 1992, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -57,7 +57,11 @@ from The Open Group.
 #include "os.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
+#if 0
 #include <X11/extensions/bigreqstr.h>
+#else
+#include <X11/extensions/bigreqsproto.h>
+#endif
 #include "opaque.h"
 /* modinit.h not present in static build - symbols provided by extnsionst.h */
 
@@ -104,7 +108,7 @@ ProcBigReqDispatch(ClientPtr client)
     int n;
 
     if (client->swapped) {
-	swaps(&stuff->length, n);
+	swaps(&stuff->length);
     }
     if (stuff->brReqType != X_BigReqEnable)
 	return BadRequest;
@@ -115,8 +119,8 @@ ProcBigReqDispatch(ClientPtr client)
     rep.sequenceNumber = client->sequence;
     rep.max_request_size = maxBigRequestSize;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.max_request_size, n);
+    	swaps(&rep.sequenceNumber);
+	swapl(&rep.max_request_size);
     }
     WriteToClient(client, sizeof(xBigReqEnableReply), (char *)&rep);
     return(client->noClientException);

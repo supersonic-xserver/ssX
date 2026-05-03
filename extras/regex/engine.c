@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * The matching engine and friends.  This file is #included by regexec.c
+/* The matching engine and friends.  This file is #included by regexec.c
  * after suitable #defines of a variety of macros used herein, so that
  * different state representations can be used without duplicating masses
  * of code.

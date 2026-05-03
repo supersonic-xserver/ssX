@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright © 2002 Keith Packard
+/* Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -223,7 +220,7 @@ ProcXFixesSelectSelectionInput(ClientPtr client)
     int rc;
 
     REQUEST_SIZE_MATCH(xXFixesSelectSelectionInputReq);
-    rc = dixLookupWindow(&pWin, stuff->window, client, DixGetAttrAccess);
+    rc = dixLookupWindow(&pWin, stuff->window, client, 0);
     if (rc != Success)
         return rc;
     if (stuff->eventMask & ~SelectionAllEvents) {
@@ -311,9 +308,7 @@ SelectionFreeWindow(void *data, XID id)
 Bool
 XFixesSelectionInit(void)
 {
-    SelectionClientType = CreateNewResourceType(SelectionFreeClient,
-                                                "XFixesSelectionClient");
-    SelectionWindowType = CreateNewResourceType(SelectionFreeWindow,
-                                                "XFixesSelectionWindow");
+    SelectionClientType = CreateNewResourceType(SelectionFreeClient);
+    SelectionWindowType = CreateNewResourceType(SelectionFreeWindow);
     return SelectionClientType && SelectionWindowType;
 }

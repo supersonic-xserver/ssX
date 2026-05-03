@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *  Fast C2P (Chunky-to-Planar) Conversion
+/*  Fast C2P (Chunky-to-Planar) Conversion
  *
  *  NOTES:
  *    - This code was inspired by Scout's C2P tutorial
@@ -34,6 +31,8 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+#include "os.h"
+#include "privates.h"
 
     /*
      *  Basic transpose step

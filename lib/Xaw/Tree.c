@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $Xorg: Tree.c,v 1.4 2001/02/09 02:03:47 xorgcvs Exp $
+/* $Xorg: Tree.c,v 1.4 2001/02/09 02:03:47 xorgcvs Exp $
  *
 
 Copyright 1990, 1994, 1998  The Open Group
@@ -29,9 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from The Open Group.
-
- * Copyright 1989 Prentice Hall
+in this Software without prior written authorization from The Open Group./* Copyright 1989 Prentice Hall
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose and without fee is hereby granted, provided that the above

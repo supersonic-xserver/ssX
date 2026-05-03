@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file hash.c
+/* \file hash.c
  * Generic hash table. 
  *
  * Used for display lists and texture objects.  The hash functions are

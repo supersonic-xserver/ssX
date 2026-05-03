@@ -16,14 +16,13 @@
  */
 
 
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/*
    Copyright (c) 2002  XFree86 Inc
 */
 /* $XFree86: xc/programs/Xserver/Xext/xres.c,v 1.11 2005/10/14 15:16:12 tsi Exp $ */
@@ -39,7 +38,7 @@
 #include "swaprep.h"
 #include <X11/extensions/XResproto.h>
 #include "pixmapstr.h"
-#include "modinit.h"
+
 
 #ifdef RES
 

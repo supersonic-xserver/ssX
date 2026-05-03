@@ -1,6 +1,6 @@
 /*
  * Copyright © 2026 ssX Project
- * Contributions and credits: azuriteshift and collinbeyer
+ * Contributions and credits: azuriteshift, painter4supersonicx and collinbeyer
  *
  * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
@@ -36,9 +36,7 @@
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
- ********************************************************/
-
-/***====================================================================***/
+*/
 
 typedef struct _XkbRF_VarDefs {
 	char *			model;

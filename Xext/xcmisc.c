@@ -16,13 +16,13 @@
  */
 
 
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
 Copyright 1993, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -59,8 +59,12 @@ from The Open Group.
 #include "dixstruct.h"
 #include "extnsionst.h"
 #include "swaprep.h"
+#if 0
 #include <X11/extensions/xcmiscstr.h>
-#include "modinit.h"
+
+#else
+#include <X11/extensions/xcmiscproto.h>
+#endif
 
 #if 0
 static unsigned char XCMiscCode;
@@ -117,9 +121,9 @@ ProcXCMiscGetVersion(ClientPtr client)
     rep.majorVersion = XCMiscMajorVersion;
     rep.minorVersion = XCMiscMinorVersion;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-	swaps(&rep.majorVersion, n);
-	swaps(&rep.minorVersion, n);
+    	swaps(&rep.sequenceNumber);
+	swaps(&rep.majorVersion);
+	swaps(&rep.minorVersion);
     }
     WriteToClient(client, sizeof(xXCMiscGetVersionReply), (char *)&rep);
     return(client->noClientException);
@@ -140,9 +144,9 @@ ProcXCMiscGetXIDRange(ClientPtr client)
     rep.start_id = min_id;
     rep.count = max_id - min_id + 1;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.start_id, n);
-	swapl(&rep.count, n);
+    	swaps(&rep.sequenceNumber);
+	swapl(&rep.start_id);
+	swapl(&rep.count);
     }
     WriteToClient(client, sizeof(xXCMiscGetXIDRangeReply), (char *)&rep);
     return(client->noClientException);
@@ -172,9 +176,9 @@ ProcXCMiscGetXIDList(ClientPtr client)
     rep.length = count;
     rep.count = count;
     if (client->swapped) {
-    	swaps(&rep.sequenceNumber, n);
-	swapl(&rep.length, n);
-	swapl(&rep.count, n);
+    	swaps(&rep.sequenceNumber);
+	swapl(&rep.length);
+	swapl(&rep.count);
     }
     WriteToClient(client, sizeof(xXCMiscGetXIDListReply), (char *)&rep);
     if (count) {
@@ -208,10 +212,10 @@ SProcXCMiscGetVersion(ClientPtr client)
     int n;
     REQUEST(xXCMiscGetVersionReq);
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xXCMiscGetVersionReq);
-    swaps(&stuff->majorVersion, n);
-    swaps(&stuff->minorVersion, n);
+    swaps(&stuff->majorVersion);
+    swaps(&stuff->minorVersion);
     return ProcXCMiscGetVersion(client);
 }
 
@@ -221,7 +225,7 @@ SProcXCMiscGetXIDRange(ClientPtr client)
     int n;
     REQUEST(xReq);
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     return ProcXCMiscGetXIDRange(client);
 }
 
@@ -231,8 +235,8 @@ SProcXCMiscGetXIDList(ClientPtr client)
     int n;
     REQUEST(xXCMiscGetXIDListReq);
 
-    swaps(&stuff->length, n);
-    swapl(&stuff->count, n);
+    swaps(&stuff->length);
+    swapl(&stuff->count);
     return ProcXCMiscGetXIDList(client);
 }
 

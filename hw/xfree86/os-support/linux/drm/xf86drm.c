@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file xf86drm.c 
+/* \file xf86drm.c 
  * User-level interface to DRM device
  *
  * \author Rickard E. (Rik) Faith <faith@valinux.com>

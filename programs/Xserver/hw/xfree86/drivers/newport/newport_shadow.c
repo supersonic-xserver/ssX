@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Id: newport_shadow.c,v 1.3 2000/11/29 20:58:10 agx Exp $
+/* Id: newport_shadow.c,v 1.3 2000/11/29 20:58:10 agx Exp $
  */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_shadow.c,v 1.3 2002/09/30 22:17:55 alanh Exp $ */
 

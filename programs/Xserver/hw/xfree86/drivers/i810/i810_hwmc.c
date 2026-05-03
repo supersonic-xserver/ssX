@@ -11,9 +11,6 @@
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright 2000 Intel Corporation.  All Rights Reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a

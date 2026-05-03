@@ -628,6 +628,8 @@ extern void Error(char *str);
 extern const char *LogTypeToTxt(MessageType type);
 extern void LogPrintMarkers(void);
 
+extern void xorg_backtrace(void);
+
 #ifndef IN_MODULE
 #if defined(NEED_SNPRINTF)
 extern int snprintf(char *str, size_t size, const char *format, ...)

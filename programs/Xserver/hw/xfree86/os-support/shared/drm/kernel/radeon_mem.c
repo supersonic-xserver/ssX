@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * Copyright (C) The Weather Channel, Inc.  2002.  All Rights Reserved.
  * 
  * The Weather Channel (TM) funded Tungsten Graphics to develop the

@@ -16,15 +16,12 @@
  */
 
 
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright 2007-2008 Peter Hutterer
+/* Copyright 2007-2008 Peter Hutterer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -116,10 +113,10 @@ ProcGEQueryVersion(ClientPtr client)
 
     if (client->swapped)
     {
-	swaps(&rep.sequenceNumber, n);
-        swapl(&rep.length, n);
-        swaps(&rep.majorVersion, n);
-        swaps(&rep.minorVersion, n);
+	swaps(&rep.sequenceNumber);
+        swapl(&rep.length);
+        swaps(&rep.majorVersion);
+        swaps(&rep.minorVersion);
     }
 
     WriteToClient(client, sizeof(xGEQueryVersionReply), (char*)&rep);
@@ -140,10 +137,10 @@ SProcGEQueryVersion(ClientPtr client)
     int n;
     REQUEST(xGEQueryVersionReq);
 
-    swaps(&stuff->length, n);
+    swaps(&stuff->length);
     REQUEST_SIZE_MATCH(xGEQueryVersionReq);
-    swaps(&stuff->majorVersion, n);
-    swaps(&stuff->minorVersion, n);
+    swaps(&stuff->majorVersion);
+    swaps(&stuff->minorVersion);
     return(*ProcGEVector[stuff->ReqType])(client);
 }
 

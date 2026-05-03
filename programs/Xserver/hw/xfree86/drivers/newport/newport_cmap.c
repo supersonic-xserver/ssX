@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Id: newport_cmap.c,v 1.1 2000/11/29 20:58:10 agx Exp $
+/* Id: newport_cmap.c,v 1.1 2000/11/29 20:58:10 agx Exp $
  */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_cmap.c,v 1.3 2002/12/10 04:03:00 dawes Exp $ */
 

@@ -1,17 +1,14 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Accelerated rootless blit
+/* Accelerated rootless blit
  */
 /*
  * This code is largely copied from fbBlt.c.
  *
- * Copyright © 1998 Keith Packard
+ * Copyright ï¿½ 1998 Keith Packard
  * Copyright (c) 2002 Apple Computer, Inc. All Rights Reserved.
  * Copyright (c) 2003 Torrey T. Lyons. All Rights Reserved.
  *

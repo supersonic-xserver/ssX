@@ -11,9 +11,6 @@
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright 2001 VA Linux Systems Inc., Fremont, California.
 
 All Rights Reserved.

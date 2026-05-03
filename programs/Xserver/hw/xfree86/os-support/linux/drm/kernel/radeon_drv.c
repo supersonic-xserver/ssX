@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file radeon_drv.c
+/* \file radeon_drv.c
  * ATI Radeon driver
  *
  * \author Gareth Hughes <gareth@valinux.com>

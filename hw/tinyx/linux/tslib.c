@@ -1,19 +1,16 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/Xserver/hw/tinyx/linux/tslib.c,v 1.2 2005/10/14 15:16:28 tsi Exp $
+/* $XFree86: xc/programs/Xserver/hw/tinyx/linux/tslib.c,v 1.2 2005/10/14 15:16:28 tsi Exp $
  * TSLIB based touchscreen driver for TinyX
  * Derived from ts.c by Keith Packard
  * Derived from ps2.c by Jim Gettys
  *
- * Copyright © 1999 Keith Packard
- * Copyright © 2000 Compaq Computer Corporation
- * Copyright © 2002 MontaVista Software Inc.
+ * Copyright ï¿½ 1999 Keith Packard
+ * Copyright ï¿½ 2000 Compaq Computer Corporation
+ * Copyright ï¿½ 2002 MontaVista Software Inc.
  * 
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that

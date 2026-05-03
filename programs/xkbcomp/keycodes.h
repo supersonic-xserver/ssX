@@ -28,9 +28,7 @@
  DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, 
  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
- THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
- ********************************************************/
+ THE USE OR PERFORMANCE OF THIS SOFTWARE./********************************************************/
 /* $XFree86: xc/programs/xkbcomp/keycodes.h,v 1.3 2002/07/01 02:26:01 tsi Exp $ */
 
 #ifndef KEYCODES_H

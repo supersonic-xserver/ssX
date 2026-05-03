@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (C) 1994 Bradley A. Grantham and Lawrence A. Kesteloot
+/* Copyright (C) 1994 Bradley A. Grantham and Lawrence A. Kesteloot
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

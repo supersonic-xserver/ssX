@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *
+/*
  * Copyright © 2024 Enrico Weigelt, metux IT consult <info@metux.net>
  */
 #ifndef __SNA_EDIDPARSE_H

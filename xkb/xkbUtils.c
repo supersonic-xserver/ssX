@@ -1,11 +1,8 @@
 /************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
 Permission to use, copy, modify, and distribute this
@@ -84,6 +81,12 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <ctype.h>
 #include <math.h>
 #define NEED_EVENTS 1
+typedef struct {
+	unsigned long pixel;
+	unsigned short red, green, blue;
+	char flags;  /* do_red, do_green, do_blue */
+	char pad;
+} XColor;
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #define	XK_CYRILLIC

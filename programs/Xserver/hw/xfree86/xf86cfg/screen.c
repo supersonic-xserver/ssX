@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
+/* Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -31,7 +28,7 @@
  * dealings in this Software without prior written authorization from
  * Conectiva Linux.
  *
- * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
+ * Author: Paulo Cï¿½sar Pereira de Andrade <pcpa@conectiva.com.br>
  *
  * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/screen.c,v 1.9 2002/06/06 21:03:32 paulo Exp $
  */
@@ -353,9 +350,7 @@ ChangeScreen(XF86ConfMonitorPtr mon, XF86ConfMonitorPtr oldmon,
 	    |			     |
     +-------+			     +-------+
     |					     |
-    +----------------------------------------+
-
- */
+    +----------------------------------------+/*/
 static double oxs = 0.0, oys = 0.0, oxe = 100.0, oye = 70.0;
 static double ixs = 7.0, iys = 7.0, ixe = 93.0, iye = 63.0;
 static double lin[] = { 25.0, 70.0, 25.0, 75.0,  5.0, 75.0,  5.0, 80.0,

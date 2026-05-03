@@ -61,7 +61,7 @@ in this Software without prior written authorization from The Open Group.
 #include "extnsionst.h"
 #define _MITMISC_SERVER_
 #include <X11/extensions/mitmiscstr.h>
-#include "modinit.h"
+
 
 #ifdef MITMISC
 extern Bool permitOldBugs;

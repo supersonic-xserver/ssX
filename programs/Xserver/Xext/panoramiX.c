@@ -103,7 +103,7 @@ Equipment Corporation.
 #ifdef RENDER
 #include "picturestr.h"
 #endif
-#include "modinit.h"
+
 
 
 PanoramiXData 	*panoramiXdataPtr = NULL;

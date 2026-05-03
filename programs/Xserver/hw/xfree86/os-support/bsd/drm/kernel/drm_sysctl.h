@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright 2003 Eric Anholt
+/* Copyright 2003 Eric Anholt
  * All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

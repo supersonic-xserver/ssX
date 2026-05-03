@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * This module converts keysym values into the corresponding ISO 10646
+/* This module converts keysym values into the corresponding ISO 10646
  * (UCS, Unicode) values.
  *
  * The array keysymtab[] contains pairs of X11 keysym values for graphical

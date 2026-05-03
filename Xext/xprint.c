@@ -16,14 +16,13 @@
  */
 
 
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/*
 (c) Copyright 1996 Hewlett-Packard Company
 (c) Copyright 1996 International Business Machines Corp.
 (c) Copyright 1996 Sun Microsystems, Inc.
@@ -108,7 +107,7 @@ copyright holders.
 #include <X11/extensions/Printstr.h>
 #include "../Xprint/DiPrint.h"
 #include "../Xprint/attributes.h"
-#include "modinit.h"
+
 
 static void XpResetProc(ExtensionEntry *);
 

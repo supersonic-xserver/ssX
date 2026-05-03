@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * printf routines which xalloc their buffer
+/* printf routines which xalloc their buffer
  */ 
 /*
  * Copyright (c) 2004 Alexander Gottwald

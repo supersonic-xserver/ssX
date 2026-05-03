@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright © 2003 Keith Packard
+/* Copyright © 2003 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -46,19 +43,19 @@ RegionResFree(void *data, XID id)
 {
     RegionPtr pRegion = (RegionPtr) data;
 
-    RegionDestroy(pRegion);
+    miRegionDestroy(pRegion);
     return Success;
 }
 
 RegionPtr
 XFixesRegionCopy(RegionPtr pRegion)
 {
-    RegionPtr pNew = RegionCreate(RegionExtents(pRegion),
-                                  RegionNumRects(pRegion));
+    RegionPtr pNew = miRegionCreate(miRegionExtents(pRegion),
+                                  miRegionNumRects(pRegion));
 
     if (!pNew)
         return (RegionPtr)NULL;
-    if (!RegionCopy(pNew, pRegion)) {
+    if (!miRegionCopy(pNew, pRegion)) {
         RegionDestroy(pNew);
         return (RegionPtr)NULL;
     }
@@ -68,7 +65,7 @@ XFixesRegionCopy(RegionPtr pRegion)
 Bool
 XFixesRegionInit(void)
 {
-    RegionResType = CreateNewResourceType(RegionResFree, "XFixesRegion");
+    RegionResType = CreateNewResourceType(RegionResFree);
 
     return RegionResType != 0;
 }

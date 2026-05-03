@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file context.c
+/* \file context.c
  * Mesa context/visual/framebuffer management functions.
  * \author Brian Paul
  */

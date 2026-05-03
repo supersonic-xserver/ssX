@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/xcalc/math.c,v 1.6 2003/05/27 22:26:59 tsi Exp $ 
+/* $XFree86: xc/programs/xcalc/math.c,v 1.6 2003/05/27 22:26:59 tsi Exp $ 
  *
  *  math.c  -  mathematics functions for a hand calculator under X
  *

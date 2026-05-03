@@ -2752,9 +2752,7 @@ static void ApplicationShellInsertChild(
 
 /**************************************************************************
 
-  Session Protocol Participation
-
- *************************************************************************/
+  Session Protocol Participation/*************************************************************************/
 
 #define XtSessionCheckpoint	0
 #define XtSessionInteract	1

@@ -1,11 +1,8 @@
 /************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
-
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
 Permission to use, copy, modify, and distribute this
@@ -47,6 +44,12 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "opaque.h"
 #include "property.h"
 #define	XKBSRV_NEED_FILE_FUNCS
+typedef struct {
+	unsigned long pixel;
+	unsigned short red, green, blue;
+	char flags;  /* do_red, do_green, do_blue */
+	char pad;
+} XColor;
 #include <X11/extensions/XKBsrv.h>
 #include <X11/extensions/XKBgeom.h>
 #include <X11/extensions/XKMformat.h>
@@ -119,7 +122,7 @@ typedef struct	_SrvXkmInfo {
 #define	XKB_DFLT_RULES_PROP	True
 #endif
 
-const char	*	XkbBaseDirectory=	XKB_BASE_DIRECTORY;
+extern char	*	XkbBaseDirectory=	XKB_BASE_DIRECTORY;
 char	*		XkbInitialMap=		NULL;
 int	 		XkbWantAccessX=		0;	
 static XkbFileInfo *	_XkbInitFileInfo=	NULL;
@@ -897,7 +900,7 @@ extern unsigned int	XkbDfltAccessXFeedback;
 extern unsigned char	XkbDfltAccessXOptions;
 
 int
-XkbProcessArguments(int argc,const char *argv[],int i)
+XkbProcessArguments(int argc, char *argv[],int i)
 {
     if (strcmp(argv[i],"-kb")==0) {
 	noXkbExtension= True;

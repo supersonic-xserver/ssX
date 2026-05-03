@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 2000-2001 Martin Kroeker (mk@daveg.com)
+/* Copyright (c) 2000-2001 Martin Kroeker (mk@daveg.com)
  * code derived from sample driver
  * Copyright (c) 1998  Metro Link Incorporated
  *

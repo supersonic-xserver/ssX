@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
+/* Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -31,7 +28,7 @@
  * dealings in this Software without prior written authorization from
  * Conectiva Linux.
  *
- * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
+ * Author: Paulo Cï¿½sar Pereira de Andrade <pcpa@conectiva.com.br>
  *
  * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/help.c,v 1.8 2003/11/03 05:11:58 tsi Exp $
  */
@@ -199,7 +196,7 @@ HelpCancelAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
  * dealings in this Software without prior written authorization from the
  * XFree86 Project.
  *
- * Author: Paulo César Pereira de Andrade
+ * Author: Paulo Cï¿½sar Pereira de Andrade
  */
 
 #define Html_Peek(parser)	((parser)->next)
@@ -1058,52 +1055,52 @@ Html_Parse1(Html_Parser *parser)
 	    }
 	    else if (strcmp(buf + 1, "acute") == 0) {
 		switch (*buf) {
-		    case 'a': idx = 'á'; break;	case 'e': idx = 'é'; break;
-		    case 'i': idx = 'í'; break;	case 'o': idx = 'ó'; break;
-		    case 'u': idx = 'ú'; break;	case 'A': idx = 'Á'; break;
-		    case 'E': idx = 'É'; break;	case 'I': idx = 'Í'; break;
-		    case 'O': idx = 'Ó'; break;	case 'U': idx = 'Ú'; break;
-		    case 'y': idx = 'ý'; break;	case 'Y': idx = 'Ý'; break;
+		    case 'a': idx = 'ï¿½'; break;	case 'e': idx = 'ï¿½'; break;
+		    case 'i': idx = 'ï¿½'; break;	case 'o': idx = 'ï¿½'; break;
+		    case 'u': idx = 'ï¿½'; break;	case 'A': idx = 'ï¿½'; break;
+		    case 'E': idx = 'ï¿½'; break;	case 'I': idx = 'ï¿½'; break;
+		    case 'O': idx = 'ï¿½'; break;	case 'U': idx = 'ï¿½'; break;
+		    case 'y': idx = 'ï¿½'; break;	case 'Y': idx = 'ï¿½'; break;
 		}
 	    }
 	    else if (strcmp(buf + 1, "grave") == 0) {
 		switch (*buf) {
-		    case 'a': idx = 'à'; break;	case 'e': idx = 'è'; break;
-		    case 'i': idx = 'ì'; break;	case 'o': idx = 'ò'; break;
-		    case 'u': idx = 'ù'; break;	case 'A': idx = 'À'; break;
-		    case 'E': idx = 'È'; break;	case 'I': idx = 'Ì'; break;
-		    case 'O': idx = 'Ò'; break;	case 'U': idx = 'Ù'; break;
+		    case 'a': idx = 'ï¿½'; break;	case 'e': idx = 'ï¿½'; break;
+		    case 'i': idx = 'ï¿½'; break;	case 'o': idx = 'ï¿½'; break;
+		    case 'u': idx = 'ï¿½'; break;	case 'A': idx = 'ï¿½'; break;
+		    case 'E': idx = 'ï¿½'; break;	case 'I': idx = 'ï¿½'; break;
+		    case 'O': idx = 'ï¿½'; break;	case 'U': idx = 'ï¿½'; break;
 		}
 	    }
 	    else if (strcmp(buf + 1, "tilde") == 0) {
 		switch (*buf) {
-		    case 'a': idx = 'ã'; break;	case 'o': idx = 'õ'; break;
-		    case 'n': idx = 'ñ'; break;	case 'A': idx = 'Ã'; break;
-		    case 'O': idx = 'Õ'; break;	case 'N': idx = 'Ñ'; break;
+		    case 'a': idx = 'ï¿½'; break;	case 'o': idx = 'ï¿½'; break;
+		    case 'n': idx = 'ï¿½'; break;	case 'A': idx = 'ï¿½'; break;
+		    case 'O': idx = 'ï¿½'; break;	case 'N': idx = 'ï¿½'; break;
 		}
 	    }
 	    else if (strcmp(buf + 1, "circ") == 0) {
 		switch (*buf) {
-		    case 'a': idx = 'â'; break;	case 'e': idx = 'ê'; break;
-		    case 'i': idx = 'î'; break;	case 'o': idx = 'ô'; break;
-		    case 'u': idx = 'û'; break;	case 'A': idx = 'Â'; break;
-		    case 'E': idx = 'Ê'; break;	case 'I': idx = 'Î'; break;
-		    case 'O': idx = 'Ô'; break;	case 'U': idx = 'Û'; break;
+		    case 'a': idx = 'ï¿½'; break;	case 'e': idx = 'ï¿½'; break;
+		    case 'i': idx = 'ï¿½'; break;	case 'o': idx = 'ï¿½'; break;
+		    case 'u': idx = 'ï¿½'; break;	case 'A': idx = 'ï¿½'; break;
+		    case 'E': idx = 'ï¿½'; break;	case 'I': idx = 'ï¿½'; break;
+		    case 'O': idx = 'ï¿½'; break;	case 'U': idx = 'ï¿½'; break;
 		}
 	    }
 	    else if (strcmp(buf + 1, "uml") == 0) {
 		switch (*buf) {
 		    case 'a': idx = 0xe4;break;	case 'e': idx = 0xeb;break;
 		    case 'i': idx = 0xef;break;	case 'o': idx = 0xf6;break;
-		    case 'u': idx = 'ü'; break;	case 'A': idx = 0xc4;break;
+		    case 'u': idx = 'ï¿½'; break;	case 'A': idx = 0xc4;break;
 		    case 'E': idx = 0xcb;break;	case 'I': idx = 0xfc;break;
-		    case 'O': idx = 0xd6;break;	case 'U': idx = 'Ü'; break;
+		    case 'O': idx = 0xd6;break;	case 'U': idx = 'ï¿½'; break;
 		    case 'y': idx = 0xff;break;
 		}
 	    }
 	    else if (strcmp(buf + 1, "cedil") == 0) {
 		switch (*buf) {
-		    case 'c': idx = 'ç'; break;	case 'C': idx = 'Ç'; break;
+		    case 'c': idx = 'ï¿½'; break;	case 'C': idx = 'ï¿½'; break;
 		}
 	    }
 	    else if (strcmp(buf + 1, "slash") == 0) {
@@ -1135,7 +1132,7 @@ Html_Parse1(Html_Parser *parser)
 	    else if (strcasecmp(buf, "copy") == 0)
 		idx = 0xa9;
 	    else if (strcasecmp(buf, "ordf") == 0)
-		idx = 'ª';
+		idx = 'ï¿½';
 	    else if (strcasecmp(buf, "laquo") == 0)
 		idx = 0xab;
 	    else if (strcasecmp(buf, "not") == 0)
@@ -1147,13 +1144,13 @@ Html_Parse1(Html_Parser *parser)
 	    else if (strcasecmp(buf, "macr") == 0)
 		idx = 0xaf;
 	    else if (strcasecmp(buf, "deg") == 0)
-		idx = '°';
+		idx = 'ï¿½';
 	    else if (strcasecmp(buf, "plusmn") == 0)
 		idx = 0xb1;
 	    else if (strcasecmp(buf, "sup2") == 0)
-		idx = '²';
+		idx = 'ï¿½';
 	    else if (strcasecmp(buf, "sup3") == 0)
-		idx = '³';
+		idx = 'ï¿½';
 	    else if (strcasecmp(buf, "acute") == 0)
 		idx = 0xb4;
 	    else if (strcasecmp(buf, "micro") == 0)
@@ -1165,9 +1162,9 @@ Html_Parse1(Html_Parser *parser)
 	    else if (strcasecmp(buf, "cedil") == 0)
 		idx = 0xb8;
 	    else if (strcasecmp(buf, "supl") == 0)
-		idx = '¹';
+		idx = 'ï¿½';
 	    else if (strcasecmp(buf, "ordm") == 0)
-		idx = 'º';
+		idx = 'ï¿½';
 	    else if (strcasecmp(buf, "raquo") == 0)
 		idx = 0xbb;
 	    else if (strcasecmp(buf, "frac14") == 0)

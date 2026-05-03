@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Register Layouts of the various newport chips
+/* Register Layouts of the various newport chips
  * mostly as found in linux/include/asm/newport.h 
  */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/newport/newport_regs.h,v 1.4 2006/01/09 14:59:54 dawes Exp $ */

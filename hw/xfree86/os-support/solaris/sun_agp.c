@@ -1,17 +1,14 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Abstraction of the AGP GART interface.
+/* Abstraction of the AGP GART interface.
  *
  * This version is for Solaris.
  *
- * Copyright © 2000 VA Linux Systems, Inc.
- * Copyright © 2001 The XFree86 Project, Inc.
+ * Copyright ï¿½ 2000 VA Linux Systems, Inc.
+ * Copyright ï¿½ 2001 The XFree86 Project, Inc.
  */
 /* Copyright 2005 Sun Microsystems, Inc.  All rights reserved.
  *

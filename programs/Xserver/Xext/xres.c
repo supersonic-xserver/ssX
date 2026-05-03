@@ -1,4 +1,3 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
@@ -21,7 +20,7 @@
 #include "swaprep.h"
 #include "XResproto.h"
 #include "pixmapstr.h"
-#include "modinit.h"
+
 
 static int
 ProcXResQueryVersion (ClientPtr client)

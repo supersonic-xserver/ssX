@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file context.h
+/* \file context.h
  * Mesa context/visual/framebuffer management functions.
  *
  * There are three Mesa data types which are meant to be used by device

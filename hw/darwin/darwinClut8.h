@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Darwin default 8-bit Colormap for StaticColor
+/* Darwin default 8-bit Colormap for StaticColor
  */
 /* $XFree86: xc/programs/Xserver/hw/darwin/darwinClut8.h,v 1.2 2003/03/04 01:37:59 torrey Exp $ */
 

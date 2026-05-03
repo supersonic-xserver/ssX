@@ -14,8 +14,7 @@
  * Architect: Collin Beyer (HaplessIdiot)
  * Licensed under ssX-Custom (See LICENSE Sections 13-19)
  */
-
- This codebase is protected under the SSX Jesterman's Creed.
+/* is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
@@ -26,7 +25,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
+/*
 Copyright 1989, 1998  The Open Group
 
 Permission to use, copy, modify, distribute, and sell this software and its
@@ -89,6 +88,8 @@ SOFTWARE.
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "inputstr.h"
+#include "optionstr.h"
+typedef struct _InputOption InputOption;
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XIproto.h>
 #include "XIstubs.h"

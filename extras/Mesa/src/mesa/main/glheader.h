@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file glheader.h
+/* \file glheader.h
  * Top-most include file.
  *
  * This is the top-most include file of the Mesa sources.

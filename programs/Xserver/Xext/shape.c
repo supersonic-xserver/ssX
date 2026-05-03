@@ -53,7 +53,7 @@ in this Software without prior written authorization from The Open Group.
 #ifdef EXTMODULE
 #include "xf86_ansic.h"
 #endif
-#include "modinit.h"
+
 
 typedef	RegionPtr (*CreateDftPtr)(
 	WindowPtr /* pWin */

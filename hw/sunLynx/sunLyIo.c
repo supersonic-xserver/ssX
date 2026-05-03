@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * This is sunIo.c modified for LynxOS
+/* This is sunIo.c modified for LynxOS
  * Copyright 1996 by Thomas Mueller
  *
  * Permission to use, copy, modify, distribute, and sell this software and its

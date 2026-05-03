@@ -9473,9 +9473,7 @@ SiS_ReadDDC(SiS_Private *SiS_Pr, USHORT DDCdatatype, unsigned char *buffer)
 
    Returns 0xFFFF if error, otherwise
        if DDCdatatype > 0:  Returns 0 if reading OK (included a correct checksum)
-       if DDCdatatype = 0:  Returns supported DDC modes
-
- */
+       if DDCdatatype = 0:  Returns supported DDC modes/*/
 USHORT
 SiS_HandleDDC(SiS_Private *SiS_Pr, unsigned long VBFlags, int VGAEngine,
               USHORT adaptnum, USHORT DDCdatatype, unsigned char *buffer)

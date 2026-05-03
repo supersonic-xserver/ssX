@@ -1,4 +1,3 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
@@ -39,7 +38,7 @@
 #include <string.h>
 #endif
 
-#include "modinit.h"
+
 
 static DISPATCH_PROC(ProcXDGADispatch);
 static DISPATCH_PROC(SProcXDGADispatch);

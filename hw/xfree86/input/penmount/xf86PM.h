@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (c) 1999  Machine Vision Holdings Incorporated
+/* Copyright (c) 1999  Machine Vision Holdings Incorporated
  * Author: David Woodhouse <David.Woodhouse@mvhi.com>
  *
  * Template driver used: Copyright (c) 1998  Metro Link Incorporated

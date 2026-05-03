@@ -79,7 +79,7 @@ University of California.
 #include "opaque.h"
 #define  XTestSERVER_SIDE
 #include "xtestext1.h"
-#include "modinit.h"
+
 
 #include "xtest1dd.h"
 

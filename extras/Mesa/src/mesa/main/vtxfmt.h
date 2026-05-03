@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file vtxfmt.h
+/* \file vtxfmt.h
  * 
  * \author Keith Whitwell <keith@tungstengraphics.com>
  * \author Gareth Hughes

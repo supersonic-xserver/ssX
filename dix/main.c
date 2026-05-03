@@ -274,7 +274,7 @@ main(int argc, const char *argv[], char *envp[])
      * handlers, thus have no direct calling path back to main and thus
      * can't be passed argc, argv as parameters */
     argcGlobal = argc;
-    argvGlobal = (char **)argv;
+    argvGlobal = (const char **)argv;
     /* prep X authority file from environment; this can be overriden by a
      * command line option */
     xauthfile = getenv("XAUTHORITY");

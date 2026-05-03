@@ -1,11 +1,11 @@
 /************************************************************
-/* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
+ * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
-
+/************************************************************
  Copyright (c) 1994 by Silicon Graphics Computer Systems, Inc.
 
  Permission to use, copy, modify, and distribute this
@@ -28,8 +28,7 @@
  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE 
  OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
  THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
- ********************************************************/
+********************************************************/
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -41,6 +40,7 @@
 #include <X11/Xfuncs.h>
 
 #include <X11/X.h>
+#include <X11/Xlib.h>
 #define	NEED_EVENTS
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
@@ -50,14 +50,6 @@
 #define	 XKBSRV_NEED_FILE_FUNCS
 #include <xkbsrv.h>
 #include <X11/extensions/XKBgeom.h>
-
-Atom
-XkbInternAtom(Display *dpy,char *str,Bool only_if_exists)
-{
-    if (str==NULL)
-	return None;
-    return MakeAtom(str,strlen(str),!only_if_exists);
-}
 
 #ifndef SEEK_SET
 #define	SEEK_SET 0

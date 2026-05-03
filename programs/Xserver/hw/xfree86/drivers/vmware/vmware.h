@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (C) 1998-2001 VMware, Inc.
+/* Copyright (C) 1998-2001 VMware, Inc.
  * All Rights Reserved
  * Id: vmware.h,v 1.6 2001/01/30 18:13:47 bennett Exp $
  * **********************************************************/

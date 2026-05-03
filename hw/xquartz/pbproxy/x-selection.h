@@ -5,6 +5,7 @@
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
 
+/*
    Copyright (c) 2002, 2008 Apple Computer, Inc. All rights reserved.
 
    Permission is hereby granted, free of charge, to any person

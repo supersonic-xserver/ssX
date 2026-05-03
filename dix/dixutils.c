@@ -959,3 +959,12 @@ InitCallbackManager()
     numCallbackListsToCleanup = 0;
     listsToCleanup = NULL;
 }
+
+#if SSX_LEGACY_BUILD
+WindowPtr
+dixLookupWindow(WindowPtr *pWin, XID id, ClientPtr client, Mask access)
+{
+    return LookupWindow(id, client);
+}
+#endif
+

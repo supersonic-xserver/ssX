@@ -1,15 +1,12 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/Xserver/randr/randr.c,v 1.22 2003/11/06 18:38:15 tsi Exp $
+/* $XFree86: xc/programs/Xserver/randr/randr.c,v 1.22 2003/11/06 18:38:15 tsi Exp $
  *
- * Copyright © 2000, Compaq Computer Corporation, 
- * Copyright © 2002, Hewlett Packard, Inc.
+ * Copyright ï¿½ 2000, Compaq Computer Corporation, 
+ * Copyright ï¿½ 2002, Hewlett Packard, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that

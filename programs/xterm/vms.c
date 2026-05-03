@@ -401,9 +401,7 @@ static void tt_echo_ast(TT_BUF_STRUCT *buff_addr)
  *  are fatal, except DATAOVERUN and DATALOST,these errors can be ignored.
 
  CAREFUL! Whatever calls this must NOT pass more than VMS_TERM_BUFFER_SIZE
- bytes at a time.  This definition has been moved to VMS.H
-
- */
+ bytes at a time.  This definition has been moved to VMS.H/*/
 
 int tt_write(char *tt_write_buf, int size)
 {

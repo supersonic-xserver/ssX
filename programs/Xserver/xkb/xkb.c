@@ -43,7 +43,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define	XKBSRV_NEED_FILE_FUNCS
 #include "XKBsrv.h"
 #include "extnsionst.h"
-#include "modinit.h"
+
 #include "xkb.h"
 
 #include "XI.h"

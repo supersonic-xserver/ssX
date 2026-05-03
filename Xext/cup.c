@@ -71,7 +71,7 @@ in this Software without prior written authorization from The Open Group.
 #include "xf86_ansic.h"
 #endif
 
-#include "modinit.h"
+
 
 #ifdef TOGCUP
 

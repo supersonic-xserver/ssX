@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/xdm/dm_auth.h,v 1.4 2003/10/27 21:39:06 herrb Exp $
+/* $XFree86: xc/programs/xdm/dm_auth.h,v 1.4 2003/10/27 21:39:06 herrb Exp $
  */
 
 /************************************************************

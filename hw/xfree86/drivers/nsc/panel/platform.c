@@ -345,9 +345,7 @@ FindStringInSeg(unsigned int segment_address, char *string_ptr)
 
 }					/* end FindStringInSeg() */
 
-/**********************************************************************
-
- * TRUE_FALSE get_sys_board_type( SYS_BOARD_INFO *sys_info,
+/**********************************************************************/* TRUE_FALSE get_sys_board_type( SYS_BOARD_INFO *sys_info,
  * SYS_BOARD_INFO *sys_board_array_base)  Checks the system
  * BIOS area for Xpressrom information. If found, searches the  BIOS 
  * area for one of names in the array pointed to by sys_board_array_ptr.

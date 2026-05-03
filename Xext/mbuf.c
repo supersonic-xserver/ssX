@@ -65,7 +65,7 @@ in this Software without prior written authorization from The Open Group.
 #include "resource.h"
 #include "opaque.h"
 #include "sleepuntil.h"
-#include "modinit.h"
+
 #define _MULTIBUF_SERVER_	/* don't want Xlib structures */
 #include <X11/extensions/multibufst.h>
 #include "mbufproc.h"

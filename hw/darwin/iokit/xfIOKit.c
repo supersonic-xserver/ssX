@@ -2,9 +2,7 @@
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
- */
-
- *
+ *//*
  * IOKit support for the Darwin X Server
  *
  * HISTORY:

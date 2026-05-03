@@ -1,14 +1,11 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $XFree86: xc/programs/Xserver/miext/shadow/shadow.h,v 1.7 2002/12/02 20:37:24 tsi Exp $
+/* $XFree86: xc/programs/Xserver/miext/shadow/shadow.h,v 1.7 2002/12/02 20:37:24 tsi Exp $
  *
- * Copyright © 2000 Keith Packard
+ * Copyright ï¿½ 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -33,6 +30,7 @@
 #define _SHADOW_H_
 
 #include "scrnintstr.h"
+#include "damage.h"
 
 #ifdef RENDER
 #include "picturestr.h"
@@ -56,6 +54,7 @@ typedef void *(*ShadowWindowProc) (ScreenPtr	pScreen,
 
 typedef struct _shadowBuf {
     shadowBufPtr	pNext;
+    DamagePtr	pDamage;
     ShadowUpdateProc	update;
     ShadowWindowProc	window;
     RegionRec		damage;

@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (C) 1998 Itai Nahshon, Michael Schimek
+/* Copyright (C) 1998 Itai Nahshon, Michael Schimek
  *
  * The original code was derived from and inspired by 
  * the I2C driver from the Linux kernel.

@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * File: winmultiwindowicons.h
+/* File: winmultiwindowicons.h
  * Purpose: interface for multiwindow mode icon functions
  *
  * Copyright (c) Jon TURNEY 2012

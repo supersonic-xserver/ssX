@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * $Xorg: xset.c,v 1.6 2001/02/09 02:05:58 xorgcvs Exp $
+/* $Xorg: xset.c,v 1.6 2001/02/09 02:05:58 xorgcvs Exp $
  */
 
 /*

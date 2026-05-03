@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * Copyright (C) 1998-2001 VMware, Inc.
+/* Copyright (C) 1998-2001 VMware, Inc.
  * All Rights Reserved
  * **********************************************************/
 /* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/vmware/vmware.c,v 1.29 2007/01/23 18:03:11 tsi Exp $ */

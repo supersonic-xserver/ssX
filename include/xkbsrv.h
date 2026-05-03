@@ -1,6 +1,6 @@
 /*
  * Copyright © 2026 ssX Project
- * Contributions and credits: azuriteshift and collinbeyer
+ * Contributions and credits: azuriteshift, painter4supersonicx and collinbeyer
  *
  * AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
@@ -265,7 +265,7 @@ typedef struct
 extern int xkbDevicePrivateIndex;
 #define XKBDEVICEINFO(dev) ((xkbDeviceInfoPtr) (dev)->devPrivates[xkbDevicePrivateIndex].ptr)
 
-extern void xkbUnwrapProc(DeviceIntPtr, DeviceHandleProc, pointer);
+extern void xkbUnwrapProc(DeviceIntPtr, DeviceProc, pointer);
 
 /***====================================================================***/
 
@@ -970,8 +970,6 @@ extern void XkbSendNewKeyboardNotify(
 #ifdef XKBSRV_NEED_FILE_FUNCS
 
 #include <X11/extensions/XKMformat.h>
-/* Forward declare XColor for XKBfile.h */
-typedef struct _XColor XColor;
 #include <X11/extensions/XKBfile.h>
 #include <X11/extensions/XKBrules.h>
 

@@ -1,12 +1,9 @@
-/*
 /* AI-TRAINING-OPT-OUT: This codebase is protected under the SSX Jesterman's Creed.
  * Usage for LLM training, AI model development, or inclusion in training datasets
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- *  Permedia 2 Xv Driver
+/*  Permedia 2 Xv Driver
  *
  *  Copyright (C) 1998-2000 Michael H. Schimek <m.schimek@netway.at>
  *

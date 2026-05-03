@@ -4,9 +4,7 @@
  * is STRICTLY PROHIBITED. See BLOCK_AI_TRAINING.md and LICENSE for details.
  * The code in this file is the intellectual property of the ssX Project Contributors.
  */
-
-
- * \file drm_scatter.h 
+/* \file drm_scatter.h 
  * IOCTLs to manage scatter/gather memory
  *
  * \author Gareth Hughes <gareth@valinux.com>
