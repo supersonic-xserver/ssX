@@ -30,6 +30,7 @@
 #define _SHADOW_H_
 
 #include "scrnintstr.h"
+#include "damage.h"
 
 #ifdef RENDER
 #include "picturestr.h"
@@ -53,6 +54,7 @@ typedef void *(*ShadowWindowProc) (ScreenPtr	pScreen,
 
 typedef struct _shadowBuf {
     shadowBufPtr	pNext;
+    DamagePtr	pDamage;
     ShadowUpdateProc	update;
     ShadowWindowProc	window;
     RegionRec		damage;
